@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Real-Logic-SBE" default="all" basedir=".">
+    <description>
+      build Real Logic SBE
+    </description>
+  <!-- set global properties for this build -->
+  <property file="build.properties"/>
+  <property name="module.name" value="reallogic-sbe"/>
+  <property name="dir.main.src" location="main/java"/>
+  <property name="dir.main.build" location="target/main/java/classes"/>
+  <property name="dir.test.src" location="test/java"/>
+  <property name="dir.test.build" location="target/test/java/classes"/>
+  <property name="dir.test.lib" location="test/lib"/>
+  <property name="dir.reports" location="target/reports"/>
+  <!-- unit test reports go here -->
+  <property name="dir.reports.unit" location="target/reports/unit"/>
+  <property name="dir.dist" location="target/dist"/>
+  <property name="dir.resources" location="main/resources"/>
+
+  <path id="project.classpath">
+    <pathelement path="${CLASSPATH}"/>
+  </path>
+
+  <path id="test.classpath">
+    <pathelement path="${dir.test.build}"/>
+    <pathelement path="${dir.main.build}"/>
+    <fileset dir="${dir.test.lib}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${dir.main.build}"/>
+    <mkdir dir="${dir.test.build}"/>
+    <mkdir dir="${dir.dist}"/>
+    <mkdir dir="${dir.reports}"/>
+    <mkdir dir="${dir.reports.unit}"/>
+  </target>
+
+  <target name="compile" depends="init" description="compile the source">
+    <!-- Compile the java code from src into build -->
+    <javac srcdir="${dir.main.src}" destdir="${dir.main.build}" includeAntRuntime="false" debug="true">
+      <classpath refid="project.classpath"/>
+      <classpath refid="test.classpath"/>
+      <compilerarg value="-Xlint:unchecked"/>
+    </javac>
+  </target>
+
+  <target name="test" depends="compile" description="unit test">
+    <sequential>
+      <javac srcdir="${dir.test.src}" destdir="${dir.test.build}" includeAntRuntime="false" debug="true">
+	<classpath refid="project.classpath"/>
+	<classpath refid="test.classpath"/>
+	<compilerarg value="-Xlint:unchecked"/>
+      </javac>
+      <junit printsummary="withOutAndErr" errorProperty="test.failed" failureProperty="test.failed">
+	<sysproperty key="results.dir" value="${dir.reports.unit}"/>
+	<classpath refid="project.classpath"/>
+	<classpath refid="test.classpath"/>
+	<formatter type="xml"/>
+	<formatter type="plain" usefile="false"/>
+	<batchtest fork="true" todir="${dir.reports.unit}">
+	  <fileset dir="${dir.test.src}">
+	    <include name="**/*Test.java"/>
+	  </fileset>
+	</batchtest>
+      </junit>
+      <junitreport todir="${dir.reports.unit}">
+	<fileset dir="${dir.reports.unit}">
+	  <include name="TEST-*.xml"/>
+	</fileset>
+	<report todir="${dir.reports.unit}"/>
+      </junitreport>
+      <fail message="Tests failed. Check log and/or reports." if="test.failed"/>
+    </sequential>
+  </target>
+
+  <target name="dist" depends="compile" description="generate the distribution" >
+    <jar destfile="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar">
+      <fileset dir="${dir.main.build}"/>
+      <fileset dir="${dir.resources}"/>
+    </jar>
+  </target>
+
+  <target name="clean" description="clean up" >
+    <delete dir="target"/>
+  </target>
+
+  <target name="all" depends="clean, compile, dist, test"/>
+</project>
