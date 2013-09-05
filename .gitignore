@@ -3,4 +3,5 @@ target
 GTAGS
 GRTAGS
 GPATH
-
+prop
+.DS_Store
