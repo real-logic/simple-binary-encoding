@@ -98,7 +98,8 @@ public class XMLSchemaParser
     private static void addEncodedDataTypes(Map<String,Type> map, NodeList list)
     {
 	for (int i = 0; i < list.getLength(); i++) {
-	    // System.out.println(list.item(i).getFirstChild().getNodeValue()); 
+	    Type t = new EncodedDataType(list.item(i));
+	    map.put(t.getName(), t);
 	}
     }
 

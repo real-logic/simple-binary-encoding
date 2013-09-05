@@ -15,7 +15,74 @@
  */
 package uk.co.real_logic.sbe;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NamedNodeMap;
+
+/**
+ * An SBE type. One of encodedDataType, compositeType, enumType, or setType per the SBE spec.
+ */
 public class Type
 {
-    
+    /** default presence attribute for Types */
+    public static final String DEFAULT_PRESENCE = "required";
+
+    /** name of the type. Used in the types map */
+    private final String name;
+    private final Presence presence;
+
+    /**
+     * NOTE: additional constructors can be used for additional parsers
+     */
+
+    /**
+     * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
+     *
+     * @param node from the XML Schema Parsing
+     */
+    public Type(final Node node)
+    {
+	NamedNodeMap attrs = node.getAttributes();
+
+	this.name = attrs.getNamedItem("name").getNodeValue();
+
+	/** grab common field schema attributes
+	 * - name (required)
+	 * - presence (required by XSD to provide default)
+	 * - fixUsage (optional - must be in type or message field)
+	 * - description (optional)
+	 */
+	// The schema should set default, so this should always be available
+	this.presence = Presence.lookup(attrs.getNamedItem("presence").getNodeValue());
+	
+	
+    }
+
+    /**
+     * Return the name of the type
+     *
+     * @return name of the Type
+     */
+    public String getName()
+    {
+	return name;
+    }
+
+    /**
+     * Return the presence of the type
+     *
+     * @return presence of the Type
+     */
+    public Presence getPresence()
+    {
+	return presence;
+    }
+
+    /**
+     * The size (in octets) of the Type
+     */
+    public int size()
+    {
+	// TODO actually delegate this to subtypes
+	return 0;
+    }
 }
