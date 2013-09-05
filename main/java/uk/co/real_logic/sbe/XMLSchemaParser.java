@@ -142,4 +142,37 @@ public class XMLSchemaParser
 	}
     }
 
+    /**
+     * Helper function that throws an exception when the attribute is not 
+     *
+     * @param node that should have the attribute
+     * @param attrName that is to be looked up
+     * @return value of the attibute
+     * @throws IllegalArgumentException if the attribute is not present
+     */
+    public static String getXMLAttributeValue(final Node node, final String attrName)
+    {
+	Node n = node.getAttributes().getNamedItem(attrName);
+
+	if (n == null)
+	    throw new IllegalArgumentException("Element attribute is not present: " + attrName);
+	return n.getNodeValue();
+    }
+
+    /**
+     * Helper function that hides the null return from {@link org.w3c.dom.Node.getNamedItem()}
+     *
+     * @param node that could be null
+     * @param attrName that is to be looked up
+     * @return null or value of the attribute
+     */
+    public static String getXMLAttributeValueNullable(final Node node, final String attrName)
+    {
+	Node n = node.getAttributes().getNamedItem(attrName);
+
+	if (n == null)
+	    return null;
+	return n.getNodeValue();
+    }
+
 }

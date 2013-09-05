@@ -28,7 +28,12 @@ public class Type
 
     /** name of the type. Used in the types map */
     private final String name;
+    /** presence of the type. */
     private final Presence presence;
+    /** descrption of the type. */
+    private final String description;
+    /** fixUsage of the type. */
+    private final String fixUsage;
 
     /**
      * NOTE: additional constructors can be used for additional parsers
@@ -41,20 +46,17 @@ public class Type
      */
     public Type(final Node node)
     {
-	NamedNodeMap attrs = node.getAttributes();
-
-	this.name = attrs.getNamedItem("name").getNodeValue();
-
 	/** grab common field schema attributes
 	 * - name (required)
 	 * - presence (required by XSD to provide default)
 	 * - fixUsage (optional - must be in type or message field)
 	 * - description (optional)
 	 */
-	// The schema should set default, so this should always be available
-	this.presence = Presence.lookup(attrs.getNamedItem("presence").getNodeValue());
-	
-	
+	this.name = XMLSchemaParser.getXMLAttributeValue(node, "name");
+	// The schema should set default, so "presence" should always be available
+	this.presence = Presence.lookup(XMLSchemaParser.getXMLAttributeValue(node, "presence"));
+	this.description = XMLSchemaParser.getXMLAttributeValueNullable(node, "description");
+	this.fixUsage = XMLSchemaParser.getXMLAttributeValueNullable(node, "fixUsage");
     }
 
     /**
