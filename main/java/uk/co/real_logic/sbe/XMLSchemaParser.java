@@ -1,3 +1,4 @@
+/* -*- mode: java; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil -*- */
 /*
  * Copyright 2013 Real Logic Ltd.
  *
@@ -159,11 +160,11 @@ public class XmlSchemaParser
      */
     public static String getXMLAttributeValue(final Node node, final String attrName)
     {
-	Node n = node.getAttributes().getNamedItem(attrName);
+        Node n = node.getAttributes().getNamedItem(attrName);
 
-	if (n == null)
-	    throw new IllegalArgumentException("Element attribute is not present: " + attrName);
-	return n.getNodeValue();
+        if (n == null)
+            throw new IllegalArgumentException("Element attribute is not present: " + attrName);
+        return n.getNodeValue();
     }
 
     /**
@@ -175,11 +176,19 @@ public class XmlSchemaParser
      */
     public static String getXMLAttributeValueNullable(final Node node, final String attrName)
     {
-	Node n = node.getAttributes().getNamedItem(attrName);
+        Node n = node.getAttributes().getNamedItem(attrName);
 
-	if (n == null)
-	    return null;
-	return n.getNodeValue();
+        if (n == null)
+            return null;
+        return n.getNodeValue();
+    }
+
+    /**
+     * Testindent
+     */
+    public static void test()
+    {
+
     }
 
 }

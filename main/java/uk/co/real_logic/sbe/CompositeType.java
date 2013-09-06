@@ -1,3 +1,4 @@
+/* -*- mode: java; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil -*- */
 /*
  * Copyright 2013 Real Logic Ltd.
  *
