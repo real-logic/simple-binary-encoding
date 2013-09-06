@@ -18,36 +18,39 @@ package uk.co.real_logic.sbe;
 /**
  * Class to encapsulate a field within an SBE message. This Intermediate Representation (IR)
  * is language neutral.
- *
+ * <p/>
  * Processing and optimization is run over a list of IRNodes to perform various functions
  * - ordering of fields based on size
  * - padding of fields in order to provide expansion room
  * - computing offsets of individual fields
  * - etc.
  */
-public class IRNode
+public class IrNode
 {
     /** constants */
 
-    /** size not determined */
+    /** Size not determined */
     private final static int INVALID_SIZE = -1;
-    /** offset not computed or set */
+
+    /** Offset not computed or set */
     private final static int INVALID_OFFSET = -1;
 
     /** Type of field */
     private final Type type;
+
     /** Size of field */
     private int size;
+
     /** Offset of field from start of message */
     private int offset;
 
     /**
-     * Construct an IRNode
+     * Construct an IrNode
      */
-    public IRNode(Type type)
+    public IrNode(final Type type)
     {
-	this.type = type;
-	this.size = type.size();
-	this.offset = INVALID_OFFSET;
+        this.type = type;
+        this.size = type.size();
+        this.offset = INVALID_OFFSET;
     }
 }

@@ -17,10 +17,10 @@ package uk.co.real_logic.sbe;
 
 /**
  * primitiveTypes
- *
+ * <p/>
  * Primitive type	Description	                        Length (octets)
  * char             character                               1
- * int8	        Signed byte	                        1
+ * int8	            Signed byte	                        1
  * uint8	        Unsigned byte / single-byte character	1
  * int16	        16-bit signed integer	                2
  * uint16	        16-bit unsigned integer	                2
@@ -43,13 +43,13 @@ public enum Primitive
 
     private final String name;
     private final int size;
-    
+
     Primitive(final String name, final int size)
     {
-	this.name = name;
-	this.size = size;
+        this.name = name;
+        this.size = size;
     }
-    
+
     /**
      * The name of the primitive type as a String
      *
@@ -57,9 +57,9 @@ public enum Primitive
      */
     public String primitiveName()
     {
-	return name;
+        return name;
     }
-    
+
     /**
      * The size of the primitive type in octets
      *
@@ -67,25 +67,26 @@ public enum Primitive
      */
     public int size()
     {
-	return size;
+        return size;
     }
-    
+
     /**
      * Lookup name of Primitive and return enum
      *
-     * @param n of primitiveType to lookup
+     * @param value of primitiveType to lookup
      * @return the {@link Primitive} matching the name
      * @throws IllegalArgumentException if name not found
      */
-    public static Primitive lookup(final String n)
+    public static Primitive lookup(final String value)
     {
-	for (final Primitive p : values())
-	{
-	    if (n.equals(p.name))
-	    {
-		return p;
-	    }
-	}
-	throw new IllegalArgumentException("No PrimitiveType for String: " + n);
+        for (final Primitive p : values())
+        {
+            if (value.equals(p.name))
+            {
+                return p;
+            }
+        }
+
+        throw new IllegalArgumentException("No PrimitiveType for value: " + value);
     }
 }

@@ -22,7 +22,6 @@ import org.w3c.dom.Node;
  */
 public class SetType extends Type
 {
-
     /**
      * Construct a new SetType from XML Schema.
      *
@@ -30,11 +29,11 @@ public class SetType extends Type
      */
     public SetType(final Node node)
     {
-	super(node); // set the common schema attributes
-	
-	/**
-	 * grab attributes from schema
-	 * - encodingType (required)
-	 */
+        super(node); // set the common schema attributes
+
+        /**
+         * grab attributes from schema
+         * - encodingType (required)
+         */
     }
 }

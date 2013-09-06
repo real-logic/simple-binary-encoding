@@ -16,19 +16,18 @@
 package uk.co.real_logic.sbe;
 
 import org.w3c.dom.Node;
-import org.w3c.dom.NamedNodeMap;
 
 /**
  * An SBE type. One of encodedDataType, compositeType, enumType, or setType per the SBE spec.
  */
 public class Type
 {
-    /** default presence attribute for Types */
+    /** Default presence attribute for Types */
     public static final String DEFAULT_PRESENCE = "required";
 
-    /** name of the type. Used in the types map */
+    /** Name of the type. Used in the types map */
     private final String name;
-    /** presence of the type. */
+    /** Presence requirement for the type */
     private final Presence presence;
     /** descrption of the type. */
     private final String description;
@@ -66,7 +65,7 @@ public class Type
      */
     public String getName()
     {
-	return name;
+        return name;
     }
 
     /**
@@ -76,7 +75,7 @@ public class Type
      */
     public Presence getPresence()
     {
-	return presence;
+        return presence;
     }
 
     /**
@@ -84,7 +83,7 @@ public class Type
      */
     public int size()
     {
-	// TODO actually delegate this to subtypes
-	return 0;
+        // TODO actually delegate this to subtypes
+        return 0;
     }
 }
