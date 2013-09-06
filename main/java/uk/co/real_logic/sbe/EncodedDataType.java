@@ -52,9 +52,9 @@ public class EncodedDataType extends Type
 	 * - minValue (optional)
 	 * - maxValue (optional)
 	 */
-	this.primitive = Primitive.lookup(XMLSchemaParser.getXMLAttributeValue(node, "primitiveType"));
-	this.length = Integer.parseInt(XMLSchemaParser.getXMLAttributeValue(node, "length"));
-	this.varLen = Boolean.parseBoolean(XMLSchemaParser.getXMLAttributeValue(node, "variableLength"));
+	this.primitive = Primitive.lookup(XmlSchemaParser.getXmlAttributeValue(node, "primitiveType"));
+	this.length = Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(node, "length"));
+	this.varLen = Boolean.parseBoolean(XmlSchemaParser.getXmlAttributeValue(node, "variableLength"));
 	// TODO: handle nullValue (mutually exclusive with presence of required and optional), minValue, and maxValue
     }
 }

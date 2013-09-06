@@ -52,11 +52,11 @@ public class Type
 	 * - fixUsage (optional - must be in type or message field)
 	 * - description (optional)
 	 */
-	this.name = XMLSchemaParser.getXMLAttributeValue(node, "name");
+	this.name = XmlSchemaParser.getXmlAttributeValue(node, "name");
 	// The schema should set default, so "presence" should always be available
-	this.presence = Presence.lookup(XMLSchemaParser.getXMLAttributeValue(node, "presence"));
-	this.description = XMLSchemaParser.getXMLAttributeValueNullable(node, "description");
-	this.fixUsage = XMLSchemaParser.getXMLAttributeValueNullable(node, "fixUsage");
+	this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValue(node, "presence"));
+	this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
+	this.fixUsage = XmlSchemaParser.getXmlAttributeValueNullable(node, "fixUsage");
     }
 
     /**

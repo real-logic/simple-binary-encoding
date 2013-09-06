@@ -17,6 +17,7 @@
 package uk.co.real_logic.sbe;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -158,7 +159,7 @@ public class XmlSchemaParser
      * @return value of the attibute
      * @throws IllegalArgumentException if the attribute is not present
      */
-    public static String getXMLAttributeValue(final Node node, final String attrName)
+    public static String getXmlAttributeValue(final Node node, final String attrName)
     {
         Node n = node.getAttributes().getNamedItem(attrName);
 
@@ -174,7 +175,7 @@ public class XmlSchemaParser
      * @param attrName that is to be looked up
      * @return null or value of the attribute
      */
-    public static String getXMLAttributeValueNullable(final Node node, final String attrName)
+    public static String getXmlAttributeValueNullable(final Node node, final String attrName)
     {
         Node n = node.getAttributes().getNamedItem(attrName);
 

@@ -22,5 +22,5 @@ import org.junit.Test;
 public class EncodedDataTypeTest
 {
     private static final String TEST_XML_STRING = "<types>" +
-	"</types>"
+        "</types>";
 }
