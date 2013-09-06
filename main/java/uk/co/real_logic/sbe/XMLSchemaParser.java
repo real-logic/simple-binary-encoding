@@ -182,13 +182,4 @@ public class XmlSchemaParser
             return null;
         return n.getNodeValue();
     }
-
-    /**
-     * Testindent
-     */
-    public static void test()
-    {
-
-    }
-
 }
