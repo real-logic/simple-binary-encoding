@@ -16,7 +16,6 @@
 package uk.co.real_logic.sbe;
 
 import org.w3c.dom.Node;
-import org.w3c.dom.NamedNodeMap;
 
 /**
  * SBE encodedDataType

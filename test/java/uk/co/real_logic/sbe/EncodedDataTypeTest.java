@@ -15,29 +15,11 @@
  */
 package uk.co.real_logic.sbe;
 
-import java.util.List;
+import org.junit.Assert;
+import org.junit.Test;
 
-import org.w3c.dom.Node;
-
-/**
- * SBE compositeType
- */
-public class CompositeType extends Type
+public class EncodedDataTypeTest
 {
-    /**
-     * A composite is a sequence of encodedDataTypes, so we have a list of them
-     */
-    private List<EncodedDataType> composites;
-
-    /**
-     * Construct a new compositeType from XML Schema.
-     *
-     * @param node from the XML Schema Parsing
-     */
-    public CompositeType(final Node node)
-    {
-	super(node); // set the common schema attributes
-
-	// TODO: iterate over children nodes to grab encoded data types
-    }
+    private static final String TEST_XML_STRING = "<types>" +
+	"</types>"
 }
