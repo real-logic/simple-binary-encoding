@@ -23,10 +23,14 @@ import org.w3c.dom.NamedNodeMap;
  */
 public class Type
 {
-    /** default presence attribute for Types */
+    /**
+     * default presence attribute for Types
+     */
     public static final String DEFAULT_PRESENCE = "required";
 
-    /** name of the type. Used in the types map */
+    /**
+     * name of the type. Used in the types map
+     */
     private final String name;
     private final Presence presence;
 
@@ -41,20 +45,18 @@ public class Type
      */
     public Type(final Node node)
     {
-	NamedNodeMap attrs = node.getAttributes();
+        NamedNodeMap attrs = node.getAttributes();
 
-	this.name = attrs.getNamedItem("name").getNodeValue();
+        this.name = attrs.getNamedItem("name").getNodeValue();
 
-	/** grab common field schema attributes
-	 * - name (required)
-	 * - presence (required by XSD to provide default)
-	 * - fixUsage (optional - must be in type or message field)
-	 * - description (optional)
-	 */
-	// The schema should set default, so this should always be available
-	this.presence = Presence.lookup(attrs.getNamedItem("presence").getNodeValue());
-	
-	
+        /** grab common field schema attributes
+         * - name (required)
+         * - presence (required by XSD to provide default)
+         * - fixUsage (optional - must be in type or message field)
+         * - description (optional)
+         */
+        // The schema should set default, so this should always be available
+        this.presence = Presence.lookup(attrs.getNamedItem("presence").getNodeValue());
     }
 
     /**
@@ -64,7 +66,7 @@ public class Type
      */
     public String getName()
     {
-	return name;
+        return name;
     }
 
     /**
@@ -74,7 +76,7 @@ public class Type
      */
     public Presence getPresence()
     {
-	return presence;
+        return presence;
     }
 
     /**
@@ -82,7 +84,7 @@ public class Type
      */
     public int size()
     {
-	// TODO actually delegate this to subtypes
-	return 0;
+        // TODO actually delegate this to subtypes
+        return 0;
     }
 }

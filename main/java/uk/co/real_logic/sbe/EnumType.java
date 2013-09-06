@@ -30,11 +30,11 @@ public class EnumType extends Type
      */
     public EnumType(final Node node)
     {
-	super(node); // set the common schema attributes
-	
-	/**
-	 * grab attributes from schema
-	 * - encodingType (required)
-	 */
+        super(node); // set the common schema attributes
+
+        /**
+         * grab attributes from schema
+         * - encodingType (required)
+         */
     }
 }

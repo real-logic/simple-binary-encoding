@@ -16,21 +16,21 @@
 package uk.co.real_logic.sbe;
 
 /**
- * presence attribute for Type
+ * Presence attribute for Type
  */
 public enum Presence
 {
     REQUIRED("required"),
     CONSTANT("constant"),
     OPTIONAL("optional");
-    
+
     private final String value;
-    
+
     Presence(final String value)
     {
-	this.value = value;
+        this.value = value;
     }
-    
+
     /**
      * The value as a String of the presence.
      *
@@ -38,25 +38,26 @@ public enum Presence
      */
     public String value()
     {
-	return value;
+        return value;
     }
-    
+
     /**
      * Lookup Presence value and return enum
      *
-     * @param v of presence to lookup
+     * @param value of presence to lookup
      * @return the {@link Presence} matching the value
      * @throws IllegalArgumentException if the value is not found
      */
-    public static Presence lookup(final String v)
+    public static Presence lookup(final String value)
     {
-	for (final Presence p : values())
-	{
-	    if (v.equals(p.value))
-	    {
-		return p;
-	    }
-	}
-	throw new IllegalArgumentException("No Presence for String: " + v);
+        for (final Presence p : values())
+        {
+            if (value.equals(p.value))
+            {
+                return p;
+            }
+        }
+
+        throw new IllegalArgumentException("No Presence for String: " + value);
     }
 }

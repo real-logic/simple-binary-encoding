@@ -15,19 +15,16 @@
  */
 package uk.co.real_logic.sbe;
 
-import java.util.List;
-
 import org.w3c.dom.Node;
-import org.w3c.dom.NamedNodeMap;
+
+import java.util.List;
 
 /**
  * SBE compositeType
  */
 public class CompositeType extends Type
 {
-    /**
-     * A composite is a sequence of encodedDataTypes, so we have a list of them
-     */
+    /** A composite is a sequence of encodedDataTypes, so we have a list of them */
     private List<EncodedDataType> composites;
 
     /**
@@ -37,8 +34,8 @@ public class CompositeType extends Type
      */
     public CompositeType(final Node node)
     {
-	super(node); // set the common schema attributes
+        super(node); // set the common schema attributes
 
-	// TODO: iterate over children nodes to grab encoded data types
+        // TODO: iterate over children nodes to grab encoded data types
     }
 }

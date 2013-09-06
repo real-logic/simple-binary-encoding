@@ -23,10 +23,12 @@ import org.w3c.dom.NamedNodeMap;
  */
 public class EncodedDataType extends Type
 {
-    /** the primitiveType this Type encodes as */
+    /** The primitiveType this Type encodes as */
     private final Primitive primitive;
-    /** number of elements of the primitive type */
+
+    /** Number of elements of the primitive type */
     private final int length;
+
     /** variable length or not */
     private final boolean varLen;
 
@@ -37,23 +39,23 @@ public class EncodedDataType extends Type
      */
     public EncodedDataType(final Node node)
     {
-	super(node); // set the common schema attributes
+        super(node); // set the common schema attributes
 
-	/**
-	 * Grab schema attributes
-	 * - primitiveType (required)
-	 * - length (default = 1)
-	 * - variableLength (default = false)
-	 *
-	 * TODO:
-	 * - nullValue (optional)
-	 * - minValue (optional)
-	 * - maxValue (optional)
-	 */
-	NamedNodeMap attrs = node.getAttributes();
-	this.primitive = Primitive.lookup(attrs.getNamedItem("primitiveType").getNodeValue());
-	this.length = Integer.parseInt(attrs.getNamedItem("length").getNodeValue());
-	this.varLen = Boolean.parseBoolean(attrs.getNamedItem("variableLength").getNodeValue());
-	// TODO: handle nullValue (mutually exclusive with presence of required and optional), minValue, and maxValue
+        /**
+         * Grab schema attributes
+         * - primitiveType (required)
+         * - length (default = 1)
+         * - variableLength (default = false)
+         *
+         * TODO:
+         * - nullValue (optional)
+         * - minValue (optional)
+         * - maxValue (optional)
+         */
+        NamedNodeMap attrs = node.getAttributes();
+        this.primitive = Primitive.lookup(attrs.getNamedItem("primitiveType").getNodeValue());
+        this.length = Integer.parseInt(attrs.getNamedItem("length").getNodeValue());
+        this.varLen = Boolean.parseBoolean(attrs.getNamedItem("variableLength").getNodeValue());
+        // TODO: handle nullValue (mutually exclusive with presence of required and optional), minValue, and maxValue
     }
 }
