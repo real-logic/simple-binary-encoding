@@ -100,7 +100,7 @@ public class XmlSchemaParser
      */
     private static void addEncodedDataTypes(Map<String, Type> map, NodeList list)
     {
-        for (int i = 0; i < list.getLength(); i++)
+        for (int i = 0, size = list.getLength(); i < size; i++)
         {
             Type t = new EncodedDataType(list.item(i));
             map.put(t.getName(), t);
@@ -115,7 +115,7 @@ public class XmlSchemaParser
      */
     private static void addCompositeTypes(Map<String, Type> map, NodeList list)
     {
-        for (int i = 0; i < list.getLength(); i++)
+        for (int i = 0, size = list.getLength(); i < size; i++)
         {
             // System.out.println(list.item(i).getFirstChild().getNodeValue());
         }
@@ -129,7 +129,7 @@ public class XmlSchemaParser
      */
     private static void addEnumTypes(Map<String, Type> map, NodeList list)
     {
-        for (int i = 0; i < list.getLength(); i++)
+        for (int i = 0, size = list.getLength(); i < size; i++)
         {
             // System.out.println(list.item(i).getFirstChild().getNodeValue());
         }
@@ -143,7 +143,7 @@ public class XmlSchemaParser
      */
     private static void addSetTypes(Map<String, Type> map, NodeList list)
     {
-        for (int i = 0; i < list.getLength(); i++)
+        for (int i = 0, size = list.getLength(); i < size; i++)
         {
             // System.out.println(list.item(i).getFirstChild().getNodeValue());
         }
