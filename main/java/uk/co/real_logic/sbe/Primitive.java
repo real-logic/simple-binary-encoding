@@ -87,6 +87,6 @@ public enum Primitive
             }
         }
 
-        throw new IllegalArgumentException("No PrimitiveType for String: " + value);
+        throw new IllegalArgumentException("No PrimitiveType for value: " + value);
     }
 }

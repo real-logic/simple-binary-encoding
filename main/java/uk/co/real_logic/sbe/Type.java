@@ -23,15 +23,13 @@ import org.w3c.dom.NamedNodeMap;
  */
 public class Type
 {
-    /**
-     * default presence attribute for Types
-     */
+    /** Default presence attribute for Types */
     public static final String DEFAULT_PRESENCE = "required";
 
-    /**
-     * name of the type. Used in the types map
-     */
+    /** Name of the type. Used in the types map */
     private final String name;
+
+    /** Presence requirement for the type */
     private final Presence presence;
 
     /**

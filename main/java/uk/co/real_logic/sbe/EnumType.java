@@ -22,7 +22,6 @@ import org.w3c.dom.Node;
  */
 public class EnumType extends Type
 {
-
     /**
      * Construct a new enumType from XML Schema.
      *

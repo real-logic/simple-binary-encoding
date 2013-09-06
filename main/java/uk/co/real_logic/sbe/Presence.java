@@ -58,6 +58,6 @@ public enum Presence
             }
         }
 
-        throw new IllegalArgumentException("No Presence for String: " + value);
+        throw new IllegalArgumentException("No Presence for value: " + value);
     }
 }
