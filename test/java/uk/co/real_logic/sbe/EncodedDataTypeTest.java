@@ -94,6 +94,22 @@ public class EncodedDataTypeTest
     }
 
     @Test
+    public void basicMultipleTypeTest()
+        throws Exception
+    {
+        final String testXmlString = "<types>" + 
+            "<type name=\"testType1\" presence=\"required\" primitiveType=\"char\" length=\"1\" variableLength=\"false\"/>" +
+            "<type name=\"testType2\" presence=\"required\" primitiveType=\"int8\" length=\"1\" variableLength=\"false\"/>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        // assert that testType is in map and name of Type is correct
+        assertThat(valueOf(map.size()), is(valueOf(2)));
+        assertThat(map.get("testType1").getName(), is("testType1"));
+        assertThat(map.get("testType2").getName(), is("testType2"));
+    }
+
+    @Test
     public void defaultAttributesSingleTypeTest()
         throws Exception
     {
@@ -113,7 +129,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void presenceAttributeSingleTypeTest()
+    public void presenceAttributeMultipleTypeTest()
         throws Exception
     {
         final String testXmlString = "<types>" + 
@@ -164,25 +180,74 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void basicMultipleTypeTest()
+    public void primitiveTypeAttributeMultipleTypeTest()
         throws Exception
     {
         final String testXmlString = "<types>" + 
-            "<type name=\"testType1\" presence=\"required\" primitiveType=\"char\" length=\"1\" variableLength=\"false\"/>" +
-            "<type name=\"testType2\" presence=\"required\" primitiveType=\"int8\" length=\"1\" variableLength=\"false\"/>" +
+            "<type name=\"testTypeChar\" primitiveType=\"char\"/>" +
+            "<type name=\"testTypeInt8\" primitiveType=\"int8\"/>" +
+            "<type name=\"testTypeInt16\" primitiveType=\"int16\"/>" +
+            "<type name=\"testTypeInt32\" primitiveType=\"int32\"/>" +
+            "<type name=\"testTypeInt64\" primitiveType=\"int64\"/>" +
+            "<type name=\"testTypeUInt8\" primitiveType=\"uint8\"/>" +
+            "<type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
+            "<type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
+            "<type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        // assert that testType is in map and name of Type is correct
-        assertThat(valueOf(map.size()), is(valueOf(2)));
-        assertThat(map.get("testType1").getName(), is("testType1"));
-        assertThat(map.get("testType2").getName(), is("testType2"));
+        assertThat(((EncodedDataType)map.get("testTypeChar")).getPrimitiveType().toString(), is(Primitive.CHAR.toString()));
+        assertThat(((EncodedDataType)map.get("testTypeInt8")).getPrimitiveType().toString(), is(Primitive.INT8.toString()));
+        assertThat(((EncodedDataType)map.get("testTypeInt16")).getPrimitiveType().toString(), is(Primitive.INT16.toString()));
+        assertThat(((EncodedDataType)map.get("testTypeInt32")).getPrimitiveType().toString(), is(Primitive.INT32.toString()));
+        assertThat(((EncodedDataType)map.get("testTypeInt64")).getPrimitiveType().toString(), is(Primitive.INT64.toString()));
+        assertThat(((EncodedDataType)map.get("testTypeUInt8")).getPrimitiveType().toString(), is(Primitive.UINT8.toString()));
+        assertThat(((EncodedDataType)map.get("testTypeUInt16")).getPrimitiveType().toString(), is(Primitive.UINT16.toString()));
+        assertThat(((EncodedDataType)map.get("testTypeUInt32")).getPrimitiveType().toString(), is(Primitive.UINT32.toString()));
+        assertThat(((EncodedDataType)map.get("testTypeUInt64")).getPrimitiveType().toString(), is(Primitive.UINT64.toString()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void unknownPrimitiveTypeAttributeSingleTypeTest()
+        throws Exception
+    {
+        final String testXmlString = "<types>" + 
+            "<type name=\"testTypeUnknown\" primitiveType=\"XXXX\"/>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+    }
+
+    @Test
+    public void primitiveTypeSizeMultipleTypeTest()
+        throws Exception
+    {
+        final String testXmlString = "<types>" + 
+            "<type name=\"testTypeChar\" primitiveType=\"char\"/>" +
+            "<type name=\"testTypeInt8\" primitiveType=\"int8\"/>" +
+            "<type name=\"testTypeInt16\" primitiveType=\"int16\"/>" +
+            "<type name=\"testTypeInt32\" primitiveType=\"int32\"/>" +
+            "<type name=\"testTypeInt64\" primitiveType=\"int64\"/>" +
+            "<type name=\"testTypeUInt8\" primitiveType=\"uint8\"/>" +
+            "<type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
+            "<type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
+            "<type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        assertThat(valueOf(((EncodedDataType)map.get("testTypeChar")).size()), is(valueOf(1)));
+        assertThat(valueOf(((EncodedDataType)map.get("testTypeInt8")).size()), is(valueOf(1)));
+        assertThat(valueOf(((EncodedDataType)map.get("testTypeInt16")).size()), is(valueOf(2)));
+        assertThat(valueOf(((EncodedDataType)map.get("testTypeInt32")).size()), is(valueOf(4)));
+        assertThat(valueOf(((EncodedDataType)map.get("testTypeInt64")).size()), is(valueOf(8)));
+        assertThat(valueOf(((EncodedDataType)map.get("testTypeUInt8")).size()), is(valueOf(1)));
+        assertThat(valueOf(((EncodedDataType)map.get("testTypeUInt16")).size()), is(valueOf(2)));
+        assertThat(valueOf(((EncodedDataType)map.get("testTypeUInt32")).size()), is(valueOf(4)));
+        assertThat(valueOf(((EncodedDataType)map.get("testTypeUInt64")).size()), is(valueOf(8)));
     }
 
     /**
      * Tests for:
-     * - primitiveType adding themselves correctly
-     * - correct sizing set for Type
      * - description being saved
      * - fixUsage being saved
      */

@@ -87,4 +87,14 @@ public class EncodedDataType extends Type
     {
         return primitive;
     }
+
+    /**
+     * The size (in octets) of the Type
+     *
+     * @return size of the primitiveType
+     */
+    public int size()
+    {
+        return primitive.size();
+    }
 }
