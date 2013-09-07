@@ -59,6 +59,32 @@ public class EncodedDataType extends Type
     }
 
     /**
+     * Construct a new EncodedDataType with direct values
+     *
+     * @param name of the type
+     * @param presence of the type
+     * @param description of the type or null
+     * @param fixUsage of the type or null
+     * @param primitive of the EncodedDataType
+     * @param length of the EncodedDataType
+     * @param varLen of the EncodedDataType
+     */
+    public EncodedDataType(final String name,
+                           final Presence presence,
+                           final String description,
+                           final String fixUsage,
+                           final Primitive primitive,
+                           final int length,
+                           final boolean varLen)
+    {
+        super(name, presence, description, fixUsage);  // TODO: use similar constructor for super so setting all specifics
+        this.primitive = primitive;
+        this.length = length;
+        this.varLen = varLen;
+        // TODO: add nullValue, minValue, maxValue
+    }
+
+    /**
      * Return the length attribute of the type
      *
      * @return length attribute of the type
@@ -89,7 +115,7 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The size (in octets) of the Type
+     * The size (in octets) of the primitiveType
      *
      * @return size of the primitiveType
      */

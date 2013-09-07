@@ -45,11 +45,6 @@ import static org.junit.Assert.assertTrue;
 
 public class EncodedDataTypeTest
 {
-    /**
-     * These tests do not use the XSD. So, some attributes should be set by EncodedDataType
-     * - length
-     * - variableLength
-     */
 
     /**
      * Grab type nodes, parse them, and populate map for those types.
@@ -247,8 +242,13 @@ public class EncodedDataTypeTest
     }
 
     /**
-     * Tests for:
+     * TODO: Tests for:
      * - description being saved
-     * - fixUsage being saved
+     * - no description set returns null on getDescription()
+     * - valid fixUsage being saved
+     * - unknown fixUsage used returns IllegalArgumentException
+     * - nullValue
+     * - minValue
+     * - maxValue
      */
 }

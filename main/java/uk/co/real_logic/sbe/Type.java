@@ -46,17 +46,36 @@ public class Type
      */
     public Type(final Node node)
     {
-	/** grab common field schema attributes
-	 * - name (required)
-	 * - presence (required by XSD to provide default)
-	 * - fixUsage (optional - must be in type or message field)
-	 * - description (optional)
-	 */
-	this.name = XmlSchemaParser.getXmlAttributeValue(node, "name");
-	// The schema should set default, so "presence" should always be available, but let's set a default
-	this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValue(node, "presence", "required"));
-	this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
-	this.fixUsage = XmlSchemaParser.getXmlAttributeValueNullable(node, "fixUsage");
+        /** grab common field schema attributes
+         * - name (required)
+         * - presence (required by XSD to provide default)
+         * - fixUsage (optional - must be in type or message field)
+         * - description (optional)
+         */
+        this.name = XmlSchemaParser.getXmlAttributeValue(node, "name");
+        // The schema should set default, so "presence" should always be available, but let's set a default anyway
+        this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValue(node, "presence", "required"));
+        this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
+        this.fixUsage = XmlSchemaParser.getXmlAttributeValueNullable(node, "fixUsage");
+    }
+
+    /**
+     * Construct a new Type from direct values.
+     *
+     * @param name of the type
+     * @param presence of the type
+     * @param description of the type or null
+     * @param fixUsage of the type or null
+     */
+    public Type(final String name,
+                final Presence presence,
+                final String description,
+                final String fixUsage)
+    {
+        this.name = name;
+        this.presence = presence;
+        this.description = description;
+        this.fixUsage = fixUsage;
     }
 
     /**

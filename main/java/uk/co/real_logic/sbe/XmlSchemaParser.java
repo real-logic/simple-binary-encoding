@@ -61,7 +61,7 @@ public class XmlSchemaParser
      * @param stream to read schema from
      * @return list of Intermediate Representation nodes
      */
-    public static List<IrNode> parse(final InputStream stream)
+    public static List<IrNode> parseAndGenerateIr(final InputStream stream)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
         /** set up XML parsing */
@@ -77,7 +77,16 @@ public class XmlSchemaParser
         /** init types table/map for lookup by <field> elements */
         Map<String, Type> typesMap = new HashMap<String, Type>();
 
-        // TODO: add primitiveTypes to typesMap?
+        // add primitiveTypes to typesMap - these could be in a static XInclude that is always brought in...
+        typesMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, null, Primitive.CHAR, 1, false));
+        typesMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, null, Primitive.INT8, 1, false));
+        typesMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, null, Primitive.INT16, 1, false));
+        typesMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, null, Primitive.INT32, 1, false));
+        typesMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, null, Primitive.INT64, 1, false));
+        typesMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, null, Primitive.UINT8, 1, false));
+        typesMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, null, Primitive.UINT16, 1, false));
+        typesMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, null, Primitive.UINT32, 1, false));
+        typesMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, null, Primitive.UINT64, 1, false));
 
         /** grab all "type" types (encodedDataType) and add to types table */
         addEncodedDataTypes(typesMap, (NodeList)xPath.compile(typeXPathExpr).evaluate(document, XPathConstants.NODESET));
@@ -119,6 +128,7 @@ public class XmlSchemaParser
     {
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
+            // TODO: may need to pass in map to constructor so it can look up the types
             // System.out.println(list.item(i).getFirstChild().getNodeValue());
         }
     }

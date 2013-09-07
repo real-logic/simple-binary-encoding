@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe;
 
 import org.w3c.dom.Node;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * SBE compositeType
@@ -36,6 +37,24 @@ public class CompositeType extends Type
     {
         super(node); // set the common schema attributes
 
+        composites = new ArrayList<EncodedDataType>();
         // TODO: iterate over children nodes to grab encoded data types
     }
+
+    /**
+     * The size (in octets) of the list of EncodedDataTypes
+     *
+     * @return size of the compositeType
+     */
+    public int size()
+    {
+        int sz = 0;
+
+        for (EncodedDataType t : composites)
+        {
+            sz += t.size();
+        }
+        return sz;
+    }
+
 }
