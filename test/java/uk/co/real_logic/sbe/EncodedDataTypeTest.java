@@ -112,6 +112,35 @@ public class EncodedDataTypeTest
         assertThat(valueOf(d.getVariableLength()), is(valueOf(Boolean.FALSE)));
     }
 
+    @Test
+    public void presenceAttributeSingleTypeTest()
+        throws Exception
+    {
+        final String testXmlString = "<types>" + 
+            "<type name=\"testTypeDefault\" primitiveType=\"char\"/>" +
+            "<type name=\"testTypeRequired\" presence=\"required\" primitiveType=\"char\"/>" +
+            "<type name=\"testTypeOptional\" presence=\"optional\" primitiveType=\"char\"/>" +
+            "<type name=\"testTypeConstant\" presence=\"constant\" primitiveType=\"char\"/>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        assertThat(map.get("testTypeDefault").getPresence().toString(), is(Presence.REQUIRED.toString()));
+        assertThat(map.get("testTypeRequired").getPresence().toString(), is(Presence.REQUIRED.toString()));
+        assertThat(map.get("testTypeOptional").getPresence().toString(), is(Presence.OPTIONAL.toString()));
+        assertThat(map.get("testTypeConstant").getPresence().toString(), is(Presence.CONSTANT.toString()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void unknownPresenceAttributeSingleTypeTest()
+        throws Exception
+    {
+        final String testXmlString = "<types>" + 
+            "<type name=\"testTyeUnknown\" presence=\"XXXXX\" primitiveType=\"char\"/>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void noPrimitiveTypeAttributeSingleTypeTest()
         throws Exception
