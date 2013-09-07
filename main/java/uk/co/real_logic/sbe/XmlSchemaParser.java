@@ -197,7 +197,7 @@ public class XmlSchemaParser
     }
 
     /**
-     * Helper function that hides the null return from {@link org.w3c.dom.Node.getNamedItem()}
+     * Helper function that hides the null return from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}
      *
      * @param node that could be null
      * @param attrName that is to be looked up
