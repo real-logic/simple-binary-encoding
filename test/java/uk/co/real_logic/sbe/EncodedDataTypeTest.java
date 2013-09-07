@@ -70,7 +70,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void basicSingleTypeTest()
+    public void shouldHandleSettingAllAttributes()
         throws Exception
     {
         final String testXmlString = "<types>" + 
@@ -89,7 +89,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void basicMultipleTypeTest()
+    public void shouldHandleMultipleTypes()
         throws Exception
     {
         final String testXmlString = "<types>" + 
@@ -105,7 +105,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void defaultAttributesSingleTypeTest()
+    public void shouldSetAppropriateDefaultsWhenNoneSpecified()
         throws Exception
     {
         final String testXmlString = "<types>" + 
@@ -124,7 +124,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void presenceAttributeMultipleTypeTest()
+    public void shouldUseAppropriatePresence()
         throws Exception
     {
         final String testXmlString = "<types>" + 
@@ -142,7 +142,7 @@ public class EncodedDataTypeTest
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void unknownPresenceAttributeSingleTypeTest()
+    public void shouldThrowExceptionWhenUnknownPresenceSpecified()
         throws Exception
     {
         final String testXmlString = "<types>" + 
@@ -153,7 +153,7 @@ public class EncodedDataTypeTest
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void noPrimitiveTypeAttributeSingleTypeTest()
+    public void shouldThrowExceptionWhenNoPrimitiveTypeSpecified()
         throws Exception
     {
         final String testXmlString = "<types>" + 
@@ -164,7 +164,7 @@ public class EncodedDataTypeTest
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void noNameAttributeSingleTypeTest()
+    public void shouldThrowExceptionWhenNoNameSpecified()
         throws Exception
     {
         final String testXmlString = "<types>" + 
@@ -175,7 +175,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void primitiveTypeAttributeMultipleTypeTest()
+    public void shouldUseAppropriatePrimitiveType()
         throws Exception
     {
         final String testXmlString = "<types>" + 
@@ -203,7 +203,7 @@ public class EncodedDataTypeTest
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void unknownPrimitiveTypeAttributeSingleTypeTest()
+    public void shouldThrowExceptionWhenUnknownPrimitiveTypeSpecified()
         throws Exception
     {
         final String testXmlString = "<types>" + 
@@ -214,7 +214,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void primitiveTypeSizeMultipleTypeTest()
+    public void shouldReturnCorrectSizeForPrimitiveTypes()
         throws Exception
     {
         final String testXmlString = "<types>" + 
@@ -241,10 +241,34 @@ public class EncodedDataTypeTest
         assertThat(valueOf(((EncodedDataType)map.get("testTypeUInt64")).size()), is(valueOf(8)));
     }
 
+    @Test
+    public void shouldReturnCorrectDescriptionForType()
+        throws Exception
+    {
+        final String desc = "basic description attribute of a type element";
+        final String testXmlString = "<types>" + 
+            "<type name=\"testTypeDescription\" primitiveType=\"char\" description=\"" + desc + "\"/>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        assertThat(map.get("testTypeDescription").getDescription(), is(desc));
+    }
+
+    @Test
+    public void shouldReturnNullOnNoDescriptionSet()
+        throws Exception
+    {
+        final String testXmlString = "<types>" + 
+            "<type name=\"testTypeNoDescription\" primitiveType=\"char\"/>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        String description = map.get("testTypeNoDescription").getDescription();
+        Assert.assertNull(description);
+    }
+
     /**
      * TODO: Tests for:
-     * - description being saved
-     * - no description set returns null on getDescription()
      * - valid fixUsage being saved
      * - unknown fixUsage used returns IllegalArgumentException
      * - nullValue
