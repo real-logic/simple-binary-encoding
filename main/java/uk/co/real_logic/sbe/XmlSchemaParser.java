@@ -184,8 +184,7 @@ public class XmlSchemaParser
      * @param node that should have the attribute
      * @param attrName that is to be looked up
      * @param defValue String to return if not set
-     * @return value of the attibute
-     * @throws IllegalArgumentException if the attribute is not present
+     * @return value of the attibute or defValue
      */
     public static String getXmlAttributeValue(final Node node, final String attrName, final String defValue)
     {
