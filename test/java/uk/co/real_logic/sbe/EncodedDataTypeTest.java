@@ -267,10 +267,44 @@ public class EncodedDataTypeTest
         Assert.assertNull(description);
     }
 
+    @Test
+    public void shouldReturnCorrectFixUsageForType()
+        throws Exception
+    {
+        final String fixUsage = "char";
+        final String testXmlString = "<types>" + 
+            "<type name=\"testTypeFIX\" primitiveType=\"char\" fixUsage=\"" + fixUsage + "\"/>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        assertThat(map.get("testTypeFIX").getFixUsage().toString(), is(FixUsage.CHAR.toString()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenUnknownFixUsageSpecified()
+        throws Exception
+    {
+        final String testXmlString = "<types>" + 
+            "<type name=\"testTypeUnknown\" primitiveType=\"char\" fixUsage=\"XXXX\"/>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+    }
+
+    @Test
+    public void shouldReturnFixUsageNOTSETWhenNotSpecified()
+        throws Exception
+    {
+        final String testXmlString = "<types>" + 
+            "<type name=\"testTypeFIX\" primitiveType=\"char\"/>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        assertThat(map.get("testTypeFIX").getFixUsage().toString(), is(FixUsage.NOTSET.toString()));
+    }        
+
     /**
      * TODO: Tests for:
-     * - valid fixUsage being saved
-     * - unknown fixUsage used returns IllegalArgumentException
      * - nullValue
      * - minValue
      * - maxValue
