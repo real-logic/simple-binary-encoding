@@ -78,15 +78,15 @@ public class XmlSchemaParser
         Map<String, Type> typesMap = new HashMap<String, Type>();
 
         // add primitiveTypes to typesMap - these could be in a static XInclude that is always brought in...
-        typesMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, null, Primitive.CHAR, 1, false));
-        typesMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, null, Primitive.INT8, 1, false));
-        typesMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, null, Primitive.INT16, 1, false));
-        typesMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, null, Primitive.INT32, 1, false));
-        typesMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, null, Primitive.INT64, 1, false));
-        typesMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, null, Primitive.UINT8, 1, false));
-        typesMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, null, Primitive.UINT16, 1, false));
-        typesMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, null, Primitive.UINT32, 1, false));
-        typesMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, null, Primitive.UINT64, 1, false));
+        typesMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.CHAR, 1, false));
+        typesMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT8, 1, false));
+        typesMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT16, 1, false));
+        typesMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT32, 1, false));
+        typesMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT64, 1, false));
+        typesMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT8, 1, false));
+        typesMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT16, 1, false));
+        typesMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT32, 1, false));
+        typesMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT64, 1, false));
 
         /** grab all "type" types (encodedDataType) and add to types table */
         addEncodedDataTypes(typesMap, (NodeList)xPath.compile(typeXPathExpr).evaluate(document, XPathConstants.NODESET));

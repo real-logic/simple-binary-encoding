@@ -33,7 +33,7 @@ public class Type
     /** descrption of the type. */
     private final String description;
     /** fixUsage of the type. */
-    private final String fixUsage;
+    private final FixUsage fixUsage;
 
     /**
      * NOTE: additional constructors can be used for additional parsers
@@ -56,7 +56,7 @@ public class Type
         // The schema should set default, so "presence" should always be available, but let's set a default anyway
         this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValue(node, "presence", "required"));
         this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
-        this.fixUsage = XmlSchemaParser.getXmlAttributeValueNullable(node, "fixUsage");
+        this.fixUsage = FixUsage.lookup(XmlSchemaParser.getXmlAttributeValueNullable(node, "fixUsage"));
     }
 
     /**
@@ -70,7 +70,7 @@ public class Type
     public Type(final String name,
                 final Presence presence,
                 final String description,
-                final String fixUsage)
+                final FixUsage fixUsage)
     {
         this.name = name;
         this.presence = presence;
@@ -100,10 +100,32 @@ public class Type
 
     /**
      * The size (in octets) of the Type
+     *
+     * @return size of the type in octets
      */
     public int size()
     {
-        // TODO actually delegate this to subtypes
+        /** overridden by subtypes. This returns 0 by default. */
         return 0;
+    }
+
+    /**
+     * The description of the Type (if set) or null
+     *
+     * @return description set by the type or null
+     */
+    public String getDescription()
+    {
+        return description;
+    }
+
+    /**
+     * The fixUsage of the Type
+     *
+     * @return {@link FixUsage} of the Type if set or {@link FixUsage.NOTSET} if not set
+     */
+    public FixUsage getFixUsage()
+    {
+        return fixUsage;
     }
 }
