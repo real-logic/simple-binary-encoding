@@ -53,8 +53,8 @@ public class Type
 	 * - description (optional)
 	 */
 	this.name = XmlSchemaParser.getXmlAttributeValue(node, "name");
-	// The schema should set default, so "presence" should always be available
-	this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValue(node, "presence"));
+	// The schema should set default, so "presence" should always be available, but let's set a default
+	this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValue(node, "presence", "required"));
 	this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
 	this.fixUsage = XmlSchemaParser.getXmlAttributeValueNullable(node, "fixUsage");
     }

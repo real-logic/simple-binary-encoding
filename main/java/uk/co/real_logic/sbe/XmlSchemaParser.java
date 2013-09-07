@@ -152,7 +152,7 @@ public class XmlSchemaParser
     }
 
     /**
-     * Helper function that throws an exception when the attribute is not 
+     * Helper function that throws an exception when the attribute is not set
      *
      * @param node that should have the attribute
      * @param attrName that is to be looked up
@@ -165,6 +165,24 @@ public class XmlSchemaParser
 
         if (n == null)
             throw new IllegalArgumentException("Element attribute is not present: " + attrName);
+        return n.getNodeValue();
+    }
+
+    /**
+     * Helper function that uses a default value when value not set
+     *
+     * @param node that should have the attribute
+     * @param attrName that is to be looked up
+     * @param defValue String to return if not set
+     * @return value of the attibute
+     * @throws IllegalArgumentException if the attribute is not present
+     */
+    public static String getXmlAttributeValue(final Node node, final String attrName, final String defValue)
+    {
+        Node n = node.getAttributes().getNamedItem(attrName);
+
+        if (n == null)
+            return defValue;
         return n.getNodeValue();
     }
 

@@ -41,20 +41,50 @@ public class EncodedDataType extends Type
     {
         super(node); // set the common schema attributes
 
-	/**
-	 * Grab schema attributes
-	 * - primitiveType (required)
-	 * - length (default = 1)
-	 * - variableLength (default = false)
-	 *
-	 * TODO:
-	 * - nullValue (optional)
-	 * - minValue (optional)
-	 * - maxValue (optional)
-	 */
-	this.primitive = Primitive.lookup(XmlSchemaParser.getXmlAttributeValue(node, "primitiveType"));
-	this.length = Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(node, "length"));
-	this.varLen = Boolean.parseBoolean(XmlSchemaParser.getXmlAttributeValue(node, "variableLength"));
-	// TODO: handle nullValue (mutually exclusive with presence of required and optional), minValue, and maxValue
+        /**
+         * Grab schema attributes
+         * - primitiveType (required)
+         * - length (default = 1)
+         * - variableLength (default = false)
+         *
+         * TODO:
+         * - nullValue (optional)
+         * - minValue (optional)
+         * - maxValue (optional)
+         */
+        this.primitive = Primitive.lookup(XmlSchemaParser.getXmlAttributeValue(node, "primitiveType"));
+        this.length = Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(node, "length", "1"));
+        this.varLen = Boolean.parseBoolean(XmlSchemaParser.getXmlAttributeValue(node, "variableLength", "false"));
+        // TODO: handle nullValue (mutually exclusive with presence of required and optional), minValue, and maxValue
+    }
+
+    /**
+     * Return the length attribute of the type
+     *
+     * @return length attribute of the type
+     */
+    public int getLength()
+    {
+        return length;
+    }
+
+    /**
+     * Return the variableLength attribute of the type
+     *
+     * @return variableLength boolean of the type
+     */
+    public boolean getVariableLength()
+    {
+        return varLen;
+    }
+
+    /**
+     * Return the primitiveType attribute of the type
+     *
+     * @return primitiveType attribute of the type
+     */
+    public Primitive getPrimitiveType()
+    {
+        return primitive;
     }
 }
