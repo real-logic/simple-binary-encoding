@@ -131,7 +131,7 @@ public class EncodedDataTypeTest
             "<type name=\"testTypeDefault\" primitiveType=\"char\"/>" +
             "<type name=\"testTypeRequired\" presence=\"required\" primitiveType=\"char\"/>" +
             "<type name=\"testTypeOptional\" presence=\"optional\" primitiveType=\"char\"/>" +
-            "<type name=\"testTypeConstant\" presence=\"constant\" primitiveType=\"char\"/>" +
+            "<type name=\"testTypeConstant\" presence=\"constant\" primitiveType=\"char\">A</type>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -303,8 +303,35 @@ public class EncodedDataTypeTest
         assertThat(map.get("testTypeFIX").getFixUsage().toString(), is(FixUsage.NOTSET.toString()));
     }        
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenConstantPresenceButNoDataSpecified()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+            "<type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\">" +
+            "</type>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+    }
+
+    @Test
+    public void shouldReturnCorrectPresenceConstantWhenSpecified()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+            "<type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\">" +
+            "F" +
+            "</type>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        assertThat(valueOf(((EncodedDataType)map.get("testTypePresenceConst")).getConstantValue()), is(valueOf('F')));
+    }
+
     /**
      * TODO: Tests for:
+     * - presence="constant" and value set
      * - nullValue
      * - minValue
      * - maxValue

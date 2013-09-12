@@ -32,6 +32,9 @@ public class EncodedDataType extends Type
     /** variable length or not */
     private final boolean varLen;
 
+    /** value of constant if used */
+    private final int constValue;
+
     /**
      * Construct a new encodedDataType from XML Schema.
      *
@@ -55,11 +58,22 @@ public class EncodedDataType extends Type
         this.primitive = Primitive.lookup(XmlSchemaParser.getXmlAttributeValue(node, "primitiveType"));
         this.length = Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(node, "length", "1"));
         this.varLen = Boolean.parseBoolean(XmlSchemaParser.getXmlAttributeValue(node, "variableLength", "false"));
+        // TODO: handle constant presence by grabbing child node and parsing it's CDATA based on primitive (save it)
+        if (this.getPresence() == Presence.CONSTANT)
+        {
+            if (node.getFirstChild() == null)
+                throw new IllegalArgumentException("type has declared presence \"constant\" but XML node has no data");
+
+            this.constValue = Primitive.parseConstValue2Int(this.primitive, node.getFirstChild().getNodeValue());
+        } else {
+            this.constValue = 0;
+        }
+
         // TODO: handle nullValue (mutually exclusive with presence of required and optional), minValue, and maxValue
     }
 
     /**
-     * Construct a new EncodedDataType with direct values
+     * Construct a new EncodedDataType with direct values. Does not handle constant values.
      *
      * @param name of the type
      * @param presence of the type
@@ -77,10 +91,11 @@ public class EncodedDataType extends Type
                            final int length,
                            final boolean varLen)
     {
-        super(name, presence, description, fixUsage);  // TODO: use similar constructor for super so setting all specifics
+        super(name, presence, description, fixUsage);
         this.primitive = primitive;
         this.length = length;
         this.varLen = varLen;
+        this.constValue = 0;
         // TODO: add nullValue, minValue, maxValue
     }
 
@@ -122,5 +137,19 @@ public class EncodedDataType extends Type
     public int size()
     {
         return primitive.size();
+    }
+
+    /**
+     * The constant value of the type (if )
+     *
+     * @return value of the constant for this type
+     */
+    public int getConstantValue()
+        throws IllegalArgumentException
+    {
+        if (getPresence() != Presence.CONSTANT)
+            throw new IllegalArgumentException("type is not of constant presence");
+
+        return constValue;
     }
 }

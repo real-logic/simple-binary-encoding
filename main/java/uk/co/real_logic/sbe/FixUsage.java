@@ -52,6 +52,11 @@ package uk.co.real_logic.sbe;
  * Reserved4000Plus
  * XMLData
  * Language
+ *
+ * fixUsage must be specified in the <type> or <field> specification
+ * - if in the type, then field inherits the specification
+ * - if in the type and in the field, then field should override?
+ * - if not in the type, then field must specify it
  */
 public enum FixUsage
 {
