@@ -331,7 +331,6 @@ public class EncodedDataTypeTest
 
     /**
      * TODO: Tests for:
-     * - presence="constant" and value set
      * - nullValue
      * - minValue
      * - maxValue

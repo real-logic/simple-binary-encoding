@@ -58,7 +58,8 @@ public class EncodedDataType extends Type
         this.primitive = Primitive.lookup(XmlSchemaParser.getXmlAttributeValue(node, "primitiveType"));
         this.length = Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(node, "length", "1"));
         this.varLen = Boolean.parseBoolean(XmlSchemaParser.getXmlAttributeValue(node, "variableLength", "false"));
-        // TODO: handle constant presence by grabbing child node and parsing it's CDATA based on primitive (save it)
+
+        // handle constant presence by grabbing child node and parsing it's CDATA based on primitive (save it)
         if (this.getPresence() == Presence.CONSTANT)
         {
             if (node.getFirstChild() == null)
@@ -66,10 +67,14 @@ public class EncodedDataType extends Type
 
             this.constValue = Primitive.parseConstValue2Int(this.primitive, node.getFirstChild().getNodeValue());
         } else {
-            this.constValue = 0;
+            this.constValue = 0; /** this value is invalid unless presence is constant */
         }
 
         // TODO: handle nullValue (mutually exclusive with presence of required and optional), minValue, and maxValue
+        /**
+         * NullValue, MinValue, MaxValue
+         * - if the schema overrides the primitives values, then it sets a flag and fills the value for null/min/max
+         */
     }
 
     /**
