@@ -41,7 +41,7 @@ public class EncodedDataType extends Type
     /**
      * value of constant if used
      */
-    private final int constValue;
+    private final PrimitiveValue constValue;
 
     /**
      * Construct a new encodedDataType from XML Schema.
@@ -75,11 +75,11 @@ public class EncodedDataType extends Type
                 throw new IllegalArgumentException("type has declared presence \"constant\" but XML node has no data");
             }
 
-            this.constValue = Primitive.parseConstValue2Int(this.primitive, node.getFirstChild().getNodeValue());
+            this.constValue = new PrimitiveValue(this.primitive, node.getFirstChild().getNodeValue());
         }
         else
         {
-            this.constValue = 0; /** this value is invalid unless presence is constant */
+            this.constValue = null; /* this value is invalid unless presence is constant */
         }
 
         // TODO: handle nullValue (mutually exclusive with presence of required and optional), minValue, and maxValue
@@ -87,6 +87,7 @@ public class EncodedDataType extends Type
          * NullValue, MinValue, MaxValue
          * - if the schema overrides the primitives values, then it sets a flag and fills the value for null/min/max
          */
+        
     }
 
     /**
@@ -112,7 +113,7 @@ public class EncodedDataType extends Type
         this.primitive = primitive;
         this.length = length;
         this.varLen = varLen;
-        this.constValue = 0;
+        this.constValue = null;
         // TODO: add nullValue, minValue, maxValue
     }
 
@@ -157,11 +158,11 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The constant value of the type (if )
+     * The constant value of the type if specified
      *
      * @return value of the constant for this type
      */
-    public int getConstantValue()
+    public PrimitiveValue getConstantValue()
         throws IllegalArgumentException
     {
         if (getPresence() != Presence.CONSTANT)

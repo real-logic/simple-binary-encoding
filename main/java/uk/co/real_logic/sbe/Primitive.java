@@ -19,16 +19,16 @@ package uk.co.real_logic.sbe;
 /**
  * primitiveTypes
  * <p/>
- * Primitive type	Description	                        Length (octets)   Null        Min          Max
- * char             character                               1             0           0x20         0x7E
- * int8	            Signed byte	                            1             -128        -127         127
- * uint8	        Unsigned byte / single-byte character	1             255         0            254
- * int16	        16-bit signed integer	                2             -32768      -32767       32767
- * uint16	        16-bit unsigned integer	                2             65535       0            65534
- * int32	        32-bit signed integer	                4             2^31        -2^31 + 1    2^31 - 1
- * uint32	        32-bit unsigned integer	                4             2^32 - 1    0            2^32 - 2
- * int64	        64-bit signed integer	                8             2^63        -2^63 + 1    2^63 - 1
- * uint64	        64-bit unsigned integer	                8             2^64 - 1    0            2^64 - 2
+ * Primitive type	Description	                        Length (octets)
+ * char             character                               1
+ * int8	            Signed byte	                            1
+ * uint8	        Unsigned byte / single-byte character	1
+ * int16	        16-bit signed integer	                2
+ * uint16	        16-bit unsigned integer	                2
+ * int32	        32-bit signed integer	                4
+ * uint32	        32-bit unsigned integer	                4
+ * int64	        64-bit signed integer	                8
+ * uint64	        64-bit unsigned integer	                8
  */
 public enum Primitive
 {
@@ -89,41 +89,5 @@ public enum Primitive
         }
 
         throw new IllegalArgumentException("No PrimitiveType for value: " + value);
-    }
-
-    /**
-     * Parse constant value string and return int representation
-     *
-     * @param primitive that this is supposed to be
-     * @param value     of the constant expressed as a String
-     * @return int representation of the constant
-     * @throws IllegalArgumentException if parsing not known for type
-     */
-    public static int parseConstValue2Int(final Primitive primitive, final String value)
-    {
-        switch (primitive)
-        {
-            case CHAR:
-                if (value.length() > 1)
-                {
-                    throw new IllegalArgumentException("constant char value malformed");
-                }
-                return value.getBytes()[0];
-
-            case INT8:
-            case INT16:
-            case INT32:
-            case INT64:
-            case UINT8:
-            case UINT16:
-            case UINT32:
-            case UINT64:
-                // TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit ints...
-                // TODO: What if the value is a long rather than an int?
-                return Integer.parseInt(value);
-
-            default:
-                throw new IllegalArgumentException("Do not know how to parse this primitive type for constant value");
-        }
     }
 }
