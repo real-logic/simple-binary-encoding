@@ -121,8 +121,10 @@ public enum FixUsage
      */
     public static FixUsage lookup(final String value)
     {
-	if (value == null)
-	    return NOTSET;
+	    if (value == null)
+        {
+            return NOTSET;
+        }
 
         for (final FixUsage f : values())
         {

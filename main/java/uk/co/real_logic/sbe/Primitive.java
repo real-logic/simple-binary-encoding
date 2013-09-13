@@ -95,7 +95,7 @@ public enum Primitive
      * Parse constant value string and return int representation
      *
      * @param primitive that this is supposed to be
-     * @param value of the constant expressed as a String
+     * @param value     of the constant expressed as a String
      * @return int representation of the constant
      * @throws IllegalArgumentException if parsing not known for type
      */
@@ -103,23 +103,27 @@ public enum Primitive
     {
         switch (primitive)
         {
-        case CHAR:
-            if (value.length() > 1)
-                throw new IllegalArgumentException("constant char value malformed");
+            case CHAR:
+                if (value.length() > 1)
+                {
+                    throw new IllegalArgumentException("constant char value malformed");
+                }
+                return value.getBytes()[0];
 
-            return value.getBytes()[0];
-        case INT8:
-        case INT16:
-        case INT32:
-        case INT64:
-        case UINT8:
-        case UINT16:
-        case UINT32:
-        case UINT64:
-            // TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit ints...
-            return Integer.parseInt(value);
-        default:
-            throw new IllegalArgumentException("Do not know how to parse this primitive type for constant value");
+            case INT8:
+            case INT16:
+            case INT32:
+            case INT64:
+            case UINT8:
+            case UINT16:
+            case UINT32:
+            case UINT64:
+                // TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit ints...
+                // TODO: What if the value is a long rather than an int?
+                return Integer.parseInt(value);
+
+            default:
+                throw new IllegalArgumentException("Do not know how to parse this primitive type for constant value");
         }
     }
 }

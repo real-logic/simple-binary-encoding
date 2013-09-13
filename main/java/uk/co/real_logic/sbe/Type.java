@@ -30,12 +30,12 @@ public class Type
     private final String name;
     /** Presence requirement for the type */
     private final Presence presence;
-    /** descrption of the type. */
+    /** Description of the type. */
     private final String description;
-    /** fixUsage of the type. */
+    /** FixUsage of the type. */
     private final FixUsage fixUsage;
 
-    /**
+    /*
      * NOTE: additional constructors can be used for additional parsers
      */
 
@@ -46,7 +46,8 @@ public class Type
      */
     public Type(final Node node)
     {
-        /** grab common field schema attributes
+        /*
+         * Grab common field schema attributes
          * - name (required)
          * - presence (required by XSD to provide default)
          * - fixUsage (optional - must be in type or message field)
@@ -99,13 +100,14 @@ public class Type
     }
 
     /**
-     * The size (in octets) of the Type
+     * The size (in octets) of the Type.
+     * <p>
+     * Overridden by subtypes. This returns 0 by default.
      *
      * @return size of the type in octets
      */
     public int size()
     {
-        /** overridden by subtypes. This returns 0 by default. */
         return 0;
     }
 
@@ -122,7 +124,7 @@ public class Type
     /**
      * The fixUsage of the Type
      *
-     * @return {@link FixUsage} of the Type if set or {@link FixUsage.NOTSET} if not set
+     * @return {@link FixUsage} of the Type if set or {@link FixUsage#NOTSET} if not set
      */
     public FixUsage getFixUsage()
     {

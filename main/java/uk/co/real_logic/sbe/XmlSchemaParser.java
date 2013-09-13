@@ -38,31 +38,49 @@ import java.util.Map;
  */
 public class XmlSchemaParser
 {
-    /** XPath expression for accessing the type nodes under types */
+    /**
+     * XPath expression for accessing the type nodes under types
+     */
     public static final String typeXPathExpr = "/messageSchema/types/type";
 
-    /** XPath expression for accessing the composite nodes under types */
+    /**
+     * XPath expression for accessing the composite nodes under types
+     */
     public static final String compositeXPathExpr = "/messageSchema/types/composite";
 
-    /** XPath expression for accessing the enum nodes under types */
+    /**
+     * XPath expression for accessing the enum nodes under types
+     */
     public static final String enumXPathExpr = "/messageSchema/types/enum";
 
-    /** XPath expression for accessing the set nodes under types */
+    /**
+     * XPath expression for accessing the set nodes under types
+     */
     public static final String setXPathExpr = "/messageSchema/types/set";
 
-    /** XPath expression for accessing the message nodes under messageSchema */
+    /**
+     * XPath expression for accessing the message nodes under messageSchema
+     */
     public static final String messageXPathExpr = "/messageSchema/message";
 
-    /** XPath expression for accessing the messageSchema root document node's package attribute */
+    /**
+     * XPath expression for accessing the messageSchema root document node's package attribute
+     */
     public static final String messageSchemaPackageXPathExpr = "/messageSchema@package";
 
-    /** XPath expression for accessing the messageSchema root document node's version attribute */
+    /**
+     * XPath expression for accessing the messageSchema root document node's version attribute
+     */
     public static final String messageSchemaVersionXPathExpr = "/messageSchema@version";
 
-    /** XPath expression for accessing the messageSchema root document node's description attribute */
+    /**
+     * XPath expression for accessing the messageSchema root document node's description attribute
+     */
     public static final String messageSchemaDescriptionXPathExpr = "/messageSchema@description";
 
-    /** XPath expression for accessing the messageSchema root document node's byteOrder attribute */
+    /**
+     * XPath expression for accessing the messageSchema root document node's byteOrder attribute
+     */
     public static final String messageSchemaByteOrderXPathExpr = "/messageSchema@byteOrder";
 
     /**
@@ -76,8 +94,8 @@ public class XmlSchemaParser
     public static List<IrNode> parseAndGenerateIr(final InputStream stream)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
-        /** set up XML parsing */
-        /**
+        /* set up XML parsing */
+        /*
          * We could do the builder by pieces, but ... why?
          * DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
          * DocumentBuilder builder = builderFactory.newDocumentBuilder();
@@ -86,8 +104,8 @@ public class XmlSchemaParser
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream);
         XPath xPath = XPathFactory.newInstance().newXPath();
 
-        /** Grab messageSchema attributes */
-        /**
+        /* Grab messageSchema attributes */
+        /*
          * package
          * version - optional
          * description - optional
@@ -99,9 +117,11 @@ public class XmlSchemaParser
         String byteOrder = xPath.compile(messageSchemaByteOrderXPathExpr).evaluate(document);
 
         if (byteOrder == null)
-            byteOrder = new String("littleEndian");
+        {
+            byteOrder = "littleEndian";
+        }
 
-        /** init types table/map for lookup by <field> elements */
+        /* init types table/map for lookup by <field> elements */
         Map<String, Type> typesMap = new HashMap<String, Type>();
 
         // add primitiveTypes to typesMap - these could be in a static XInclude that is always brought in...
@@ -116,18 +136,18 @@ public class XmlSchemaParser
         typesMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT32, 1, false));
         typesMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT64, 1, false));
 
-        /** grab all "type" types (encodedDataType) and add to types table */
+        /* grab all "type" types (encodedDataType) and add to types table */
         addEncodedDataTypes(typesMap, (NodeList)xPath.compile(typeXPathExpr).evaluate(document, XPathConstants.NODESET));
-        /** grab all "composite" types (compositeType) and add to types table */
+        /* grab all "composite" types (compositeType) and add to types table */
         addCompositeTypes(typesMap, (NodeList)xPath.compile(compositeXPathExpr).evaluate(document, XPathConstants.NODESET));
-        /** grab all "enum" types (enumType) and add to types table */
+        /* grab all "enum" types (enumType) and add to types table */
         addEnumTypes(typesMap, (NodeList)xPath.compile(enumXPathExpr).evaluate(document, XPathConstants.NODESET));
-        /** grab all "set" types (setType) and add to types table */
+        /* grab all "set" types (setType) and add to types table */
         addSetTypes(typesMap, (NodeList)xPath.compile(setXPathExpr).evaluate(document, XPathConstants.NODESET));
 
-        /** TODO: once all <types> handled, we can move to the actual encoding layout */
+        /* TODO: once all <types> handled, we can move to the actual encoding layout */
 
-        /** TODO: grab all <message> elements and handle them - this is where IR is generated */
+        /* TODO: grab all <message> elements and handle them - this is where IR is generated */
         return null;
     }
 
@@ -145,7 +165,9 @@ public class XmlSchemaParser
             Type t = new EncodedDataType(list.item(i));
 
             if (map.get(t.getName()) != null)
+            {
                 throw new IllegalArgumentException("SBE type already exists: " + t.getName());
+            }
 
             map.put(t.getName(), t);
         }
@@ -197,7 +219,7 @@ public class XmlSchemaParser
     /**
      * Helper function that throws an exception when the attribute is not set
      *
-     * @param node that should have the attribute
+     * @param node     that should have the attribute
      * @param attrName that is to be looked up
      * @return value of the attibute
      * @throws IllegalArgumentException if the attribute is not present
@@ -207,14 +229,17 @@ public class XmlSchemaParser
         Node n = node.getAttributes().getNamedItem(attrName);
 
         if (n == null)
+        {
             throw new IllegalArgumentException("Element attribute is not present: " + attrName);
+        }
+
         return n.getNodeValue();
     }
 
     /**
      * Helper function that uses a default value when value not set
      *
-     * @param node that should have the attribute
+     * @param node     that should have the attribute
      * @param attrName that is to be looked up
      * @param defValue String to return if not set
      * @return value of the attibute or defValue
@@ -224,14 +249,17 @@ public class XmlSchemaParser
         Node n = node.getAttributes().getNamedItem(attrName);
 
         if (n == null)
+        {
             return defValue;
+        }
+
         return n.getNodeValue();
     }
 
     /**
      * Helper function that hides the null return from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}
      *
-     * @param node that could be null
+     * @param node     that could be null
      * @param attrName that is to be looked up
      * @return null or value of the attribute
      */
@@ -240,7 +268,10 @@ public class XmlSchemaParser
         Node n = node.getAttributes().getNamedItem(attrName);
 
         if (n == null)
+        {
             return null;
+        }
+
         return n.getNodeValue();
     }
 }
