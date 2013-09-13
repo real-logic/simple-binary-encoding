@@ -23,16 +23,24 @@ import org.w3c.dom.Node;
  */
 public class EncodedDataType extends Type
 {
-    /** The primitiveType this Type encodes as */
+    /**
+     * The primitiveType this Type encodes as
+     */
     private final Primitive primitive;
 
-    /** Number of elements of the primitive type */
+    /**
+     * Number of elements of the primitive type
+     */
     private final int length;
 
-    /** variable length or not */
+    /**
+     * variable length or not
+     */
     private final boolean varLen;
 
-    /** value of constant if used */
+    /**
+     * value of constant if used
+     */
     private final int constValue;
 
     /**
@@ -62,10 +70,14 @@ public class EncodedDataType extends Type
         if (this.getPresence() == Presence.CONSTANT)
         {
             if (node.getFirstChild() == null)
+            {
                 throw new IllegalArgumentException("type has declared presence \"constant\" but XML node has no data");
+            }
 
             this.constValue = Primitive.parseConstValue2Int(this.primitive, node.getFirstChild().getNodeValue());
-        } else {
+        }
+        else
+        {
             this.constValue = 0;
         }
 
@@ -75,13 +87,13 @@ public class EncodedDataType extends Type
     /**
      * Construct a new EncodedDataType with direct values. Does not handle constant values.
      *
-     * @param name of the type
-     * @param presence of the type
+     * @param name        of the type
+     * @param presence    of the type
      * @param description of the type or null
-     * @param fixUsage of the type or null
-     * @param primitive of the EncodedDataType
-     * @param length of the EncodedDataType
-     * @param varLen of the EncodedDataType
+     * @param fixUsage    of the type or null
+     * @param primitive   of the EncodedDataType
+     * @param length      of the EncodedDataType
+     * @param varLen      of the EncodedDataType
      */
     public EncodedDataType(final String name,
                            final Presence presence,
@@ -148,7 +160,9 @@ public class EncodedDataType extends Type
         throws IllegalArgumentException
     {
         if (getPresence() != Presence.CONSTANT)
+        {
             throw new IllegalArgumentException("type is not of constant presence");
+        }
 
         return constValue;
     }

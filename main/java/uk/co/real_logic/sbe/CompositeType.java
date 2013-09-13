@@ -39,7 +39,7 @@ import java.util.ArrayList;
 public class CompositeType extends Type
 {
     /** A composite is a sequence of encodedDataTypes, so we have a list of them */
-    private List<EncodedDataType> composites;
+    private final List<EncodedDataType> composites;
 
     /**
      * Construct a new compositeType from XML Schema.
@@ -67,7 +67,7 @@ public class CompositeType extends Type
         {
             sz += t.size();
         }
+
         return sz;
     }
-
 }
