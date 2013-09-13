@@ -114,7 +114,10 @@ public class PrimitiveValue
     }
 
     /**
-     * 
+     * Return string reresentaiton of this object
+     *
+     * @return String representing object value
+     * @throws IllegalArgumentException if unknown representation
      */
     public String toString()
     {
@@ -126,7 +129,13 @@ public class PrimitiveValue
 		throw new IllegalArgumentException("unknown PrimitiveValue representation");
 	}
     }
-    
+
+    /**
+     * Determine if two values are equivalent
+     *
+     * @param value to compare this value with
+     * @return equivalence of values
+     */
     public boolean equals(Object value)
     {
 	if (value instanceof PrimitiveValue)
