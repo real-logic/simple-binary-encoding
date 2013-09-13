@@ -94,8 +94,8 @@ public class XmlSchemaParser
     public static List<IrNode> parseAndGenerateIr(final InputStream stream)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
-        /** set up XML parsing */
-        /**
+        /* set up XML parsing */
+        /*
          * We could do the builder by pieces, but ... why?
          * DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
          * DocumentBuilder builder = builderFactory.newDocumentBuilder();
@@ -104,8 +104,8 @@ public class XmlSchemaParser
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream);
         XPath xPath = XPathFactory.newInstance().newXPath();
 
-        /** Grab messageSchema attributes */
-        /**
+        /* Grab messageSchema attributes */
+        /*
          * package
          * version - optional
          * description - optional
@@ -121,7 +121,7 @@ public class XmlSchemaParser
             byteOrder = "littleEndian";
         }
 
-        /** init types table/map for lookup by <field> elements */
+        /* init types table/map for lookup by <field> elements */
         Map<String, Type> typesMap = new HashMap<String, Type>();
 
         // add primitiveTypes to typesMap - these could be in a static XInclude that is always brought in...
@@ -136,18 +136,18 @@ public class XmlSchemaParser
         typesMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT32, 1, false));
         typesMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT64, 1, false));
 
-        /** grab all "type" types (encodedDataType) and add to types table */
+        /* grab all "type" types (encodedDataType) and add to types table */
         addEncodedDataTypes(typesMap, (NodeList)xPath.compile(typeXPathExpr).evaluate(document, XPathConstants.NODESET));
-        /** grab all "composite" types (compositeType) and add to types table */
+        /* grab all "composite" types (compositeType) and add to types table */
         addCompositeTypes(typesMap, (NodeList)xPath.compile(compositeXPathExpr).evaluate(document, XPathConstants.NODESET));
-        /** grab all "enum" types (enumType) and add to types table */
+        /* grab all "enum" types (enumType) and add to types table */
         addEnumTypes(typesMap, (NodeList)xPath.compile(enumXPathExpr).evaluate(document, XPathConstants.NODESET));
-        /** grab all "set" types (setType) and add to types table */
+        /* grab all "set" types (setType) and add to types table */
         addSetTypes(typesMap, (NodeList)xPath.compile(setXPathExpr).evaluate(document, XPathConstants.NODESET));
 
-        /** TODO: once all <types> handled, we can move to the actual encoding layout */
+        /* TODO: once all <types> handled, we can move to the actual encoding layout */
 
-        /** TODO: grab all <message> elements and handle them - this is where IR is generated */
+        /* TODO: grab all <message> elements and handle them - this is where IR is generated */
         return null;
     }
 
