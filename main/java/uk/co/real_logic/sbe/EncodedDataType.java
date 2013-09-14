@@ -204,6 +204,11 @@ public class EncodedDataType extends Type
      */
     public int size()
     {
+        if (getPresence() == Presence.CONSTANT)
+        {
+            return 0;
+        }
+
         return primitive.size();
     }
 

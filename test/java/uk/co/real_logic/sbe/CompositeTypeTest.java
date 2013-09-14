@@ -89,14 +89,19 @@ public class CompositeTypeTest
         assertThat(decimal.getName(), is("decimal"));
 	assertThat(decimal.getType("mantissa").getPrimitiveType(), is(Primitive.INT64));
 	assertThat(decimal.getType("exponent").getPrimitiveType(), is(Primitive.INT8));
+	assertThat(valueOf(decimal.size()), is(valueOf(9)));
         CompositeType decimal32 = (CompositeType)map.get("decimal32");
         assertThat(decimal32.getName(), is("decimal32"));
 	assertThat(decimal32.getType("mantissa").getPrimitiveType(), is(Primitive.INT32));
 	assertThat(decimal32.getType("exponent").getPrimitiveType(), is(Primitive.INT8));
+	assertThat(decimal32.getType("exponent").getPresence(), is(Presence.CONSTANT));
+	assertThat(valueOf(decimal32.size()), is(valueOf(4)));
         CompositeType decimal64 = (CompositeType)map.get("decimal64");
         assertThat(decimal64.getName(), is("decimal64"));
 	assertThat(decimal64.getType("mantissa").getPrimitiveType(), is(Primitive.INT64));
 	assertThat(decimal64.getType("exponent").getPrimitiveType(), is(Primitive.INT8));
+	assertThat(decimal64.getType("exponent").getPresence(), is(Presence.CONSTANT));
+	assertThat(valueOf(decimal64.size()), is(valueOf(8)));
     }
 
     /**

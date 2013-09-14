@@ -76,9 +76,8 @@ public class CompositeType extends Type
             EncodedDataType t = new EncodedDataType(list.item(i));
             compositeList.add(t);
             compositeMap.put(t.getName(), t);
-            // TODO: check for existing name for the type
+            // TODO: check for existing name for the type in this composite before adding to map
 
-            // TODO: need get(typeName) method for returning EncodedDataType for named type of composite
             // TODO: CompositeType implement Iterator so this can be iterated?
         }
     }
