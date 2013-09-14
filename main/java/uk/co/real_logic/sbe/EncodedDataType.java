@@ -39,9 +39,24 @@ public class EncodedDataType extends Type
     private final boolean varLen;
 
     /**
-     * value of constant if used
+     * value of constant if used (or null if not)
      */
     private final PrimitiveValue constValue;
+
+    /**
+     * min value override of primitive type (or null for no override)
+     */
+    private final PrimitiveValue minValue;
+
+    /**
+     * max value override of primitive type (or null for no override)
+     */
+    private final PrimitiveValue maxValue;
+
+    /**
+     * null value override of primitive type (or null for no override)
+     */
+    private final PrimitiveValue nullValue;
 
     /**
      * Construct a new encodedDataType from XML Schema.
@@ -82,12 +97,47 @@ public class EncodedDataType extends Type
             this.constValue = null; /* this value is invalid unless presence is constant */
         }
 
-        // TODO: handle nullValue (mutually exclusive with presence of required and optional), minValue, and maxValue
         /**
          * NullValue, MinValue, MaxValue
-         * - if the schema overrides the primitives values, then it sets a flag and fills the value for null/min/max
+         * - if the schema overrides the primitives values, then save the values here. Else, we use the Primitive min/max/null
          */
-        
+
+        String minValueStr = XmlSchemaParser.getXmlAttributeValueNullable(node, "minValue");
+        if (minValueStr != null)
+        {
+            this.minValue = new PrimitiveValue(this.primitive, minValueStr);
+        }
+        else
+        {
+            this.minValue = null; /* this value is invalid unless minValue specified for type */
+        }
+
+        String maxValueStr = XmlSchemaParser.getXmlAttributeValueNullable(node, "maxValue");
+        if (maxValueStr != null)
+        {
+            this.maxValue = new PrimitiveValue(this.primitive, maxValueStr);
+        }
+        else
+        {
+            this.maxValue = null; /* this value is invalid unless maxValue specified for type */
+        }
+
+        String nullValueStr = XmlSchemaParser.getXmlAttributeValueNullable(node, "nullValue");
+        if (nullValueStr != null)
+        {
+            // nullValue is mutually exclusive with presence=required or constant
+            if (this.getPresence() != Presence.OPTIONAL)
+            {
+                throw new IllegalArgumentException("nullValue set, but presence is not optional");
+            }
+
+            this.nullValue = new PrimitiveValue(this.primitive, nullValueStr);
+        }
+        else
+        {
+            // TODO: should we check for presence=optional and flag it? No, should default to primitive nullValue
+            this.nullValue = null; /* this value is invalid unless nullValue specified for type */
+        }
     }
 
     /**
@@ -114,7 +164,9 @@ public class EncodedDataType extends Type
         this.length = length;
         this.varLen = varLen;
         this.constValue = null;
-        // TODO: add nullValue, minValue, maxValue
+        this.minValue = null;
+        this.maxValue = null;
+        this.nullValue = null;
     }
 
     /**
@@ -171,5 +223,50 @@ public class EncodedDataType extends Type
         }
 
         return constValue;
+    }
+
+    /**
+     * The minValue of the type
+     *
+     * @return value of the minValue primitive or type
+     */
+    public PrimitiveValue getMinValue()
+    {
+        if (minValue == null)
+        {
+            return primitive.minValue();
+        }
+
+        return minValue;
+    }
+
+    /**
+     * The maxValue of the type
+     *
+     * @return value of the maxValue primitive or type
+     */
+    public PrimitiveValue getMaxValue()
+    {
+        if (maxValue == null)
+        {
+            return primitive.maxValue();
+        }
+
+        return maxValue;
+    }
+
+    /**
+     * The nullValue of the type
+     *
+     * @return value of the nullValue primitive or type
+     */
+    public PrimitiveValue getNullValue()
+    {
+        if (nullValue == null)
+        {
+            return primitive.nullValue();
+        }
+
+        return nullValue;
     }
 }

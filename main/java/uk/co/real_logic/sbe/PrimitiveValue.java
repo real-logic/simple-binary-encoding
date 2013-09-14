@@ -40,41 +40,41 @@ public class PrimitiveValue
      * int64	        2^63        -2^63 + 1    2^63 - 1
      * uint64	        2^64 - 1    0            2^64 - 2
      */
-    private static final long MIN_VALUE_CHAR = 0x20;
-    private static final long MAX_VALUE_CHAR = 0x7E;
-    private static final long NULL_VALUE_CHAR = 0;
+    public static final long MIN_VALUE_CHAR = 0x20;
+    public static final long MAX_VALUE_CHAR = 0x7E;
+    public static final long NULL_VALUE_CHAR = 0;
 
-    private static final long MIN_VALUE_INT8 = -127;
-    private static final long MAX_VALUE_INT8 = 127;
-    private static final long NULL_VALUE_INT8 = -128;
+    public static final long MIN_VALUE_INT8 = -127;
+    public static final long MAX_VALUE_INT8 = 127;
+    public static final long NULL_VALUE_INT8 = -128;
 
-    private static final long MIN_VALUE_UINT8 = 0;
-    private static final long MAX_VALUE_UINT8 = 254;
-    private static final long NULL_VALUE_UINT8 = 255;
+    public static final long MIN_VALUE_UINT8 = 0;
+    public static final long MAX_VALUE_UINT8 = 254;
+    public static final long NULL_VALUE_UINT8 = 255;
 
-    private static final long MIN_VALUE_INT16 = -32767;
-    private static final long MAX_VALUE_INT16 = 32767;
-    private static final long NULL_VALUE_INT16 = -32768;
+    public static final long MIN_VALUE_INT16 = -32767;
+    public static final long MAX_VALUE_INT16 = 32767;
+    public static final long NULL_VALUE_INT16 = -32768;
 
-    private static final long MIN_VALUE_UINT16 = 0;
-    private static final long MAX_VALUE_UINT16 = 65534;
-    private static final long NULL_VALUE_UINT16 = 65535;
+    public static final long MIN_VALUE_UINT16 = 0;
+    public static final long MAX_VALUE_UINT16 = 65534;
+    public static final long NULL_VALUE_UINT16 = 65535;
 
-    private static final long MIN_VALUE_INT32 = -2147483647;
-    private static final long MAX_VALUE_INT32 = 2147483647;
-    private static final long NULL_VALUE_INT32 = -2147483648;
+    public static final long MIN_VALUE_INT32 = -2147483647;
+    public static final long MAX_VALUE_INT32 = 2147483647;
+    public static final long NULL_VALUE_INT32 = -2147483648;
 
-    private static final long MIN_VALUE_UINT32 = 0;
-    private static final long MAX_VALUE_UINT32 = 0xFFFFFFFD;
-    private static final long NULL_VALUE_UINT32 = 0xFFFFFFFE;
+    public static final long MIN_VALUE_UINT32 = 0;
+    public static final long MAX_VALUE_UINT32 = 0xFFFFFFFD;
+    public static final long NULL_VALUE_UINT32 = 0xFFFFFFFE;
 
-    private static final long MIN_VALUE_INT64 = Long.MIN_VALUE + 1;  // -2^63 + 1
-    private static final long MAX_VALUE_INT64 = Long.MAX_VALUE;      //  2^63 - 1  (SBE spec says -12^63 - 1)
-    private static final long NULL_VALUE_INT64 = Long.MIN_VALUE;     // -2^63
+    public static final long MIN_VALUE_INT64 = Long.MIN_VALUE + 1;  // -2^63 + 1
+    public static final long MAX_VALUE_INT64 = Long.MAX_VALUE;      //  2^63 - 1  (SBE spec says -12^63 - 1)
+    public static final long NULL_VALUE_INT64 = Long.MIN_VALUE;     // -2^63
 
-    private static final long MIN_VALUE_UINT64 = 0;
-    private static final long MAX_VALUE_UINT64 = Long.MAX_VALUE;  // TODO: placeholder for now (replace with BigInteger?)
-    private static final long NULL_VALUE_UINT64 = Long.MIN_VALUE; // TODO: placeholder for now (replace with BigInteger?)
+    public static final long MIN_VALUE_UINT64 = 0;
+    public static final long MAX_VALUE_UINT64 = Long.MAX_VALUE;  // TODO: placeholder for now (replace with BigInteger?)
+    public static final long NULL_VALUE_UINT64 = Long.MIN_VALUE; // TODO: placeholder for now (replace with BigInteger?)
 
     /**
      * value expressed as a long
