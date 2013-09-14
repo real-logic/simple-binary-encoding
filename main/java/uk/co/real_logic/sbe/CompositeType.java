@@ -16,14 +16,21 @@
  */
 package uk.co.real_logic.sbe;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * SBE compositeType
  *
- * decimal types can use mantissa and exponent portions as min/max/null. 
+ * decimal types can use mantissa and exponent portions as min/max/null.
  *
  *              Length  Exponent     Min                Max              Null
  * decimal      9       -128 to 127  
@@ -38,8 +45,15 @@ import java.util.ArrayList;
  */
 public class CompositeType extends Type
 {
-    /** A composite is a sequence of encodedDataTypes, so we have a list of them */
-    private final List<EncodedDataType> composites;
+    /**
+     * A composite is a sequence of encodedDataTypes, so we have a list of them 
+     */
+    private final List<EncodedDataType> compositeList;
+
+    /**
+     * A composite map that holds all the types within this composite for easy retrieval
+     */
+    private final Map<String, EncodedDataType> compositeMap;
 
     /**
      * Construct a new compositeType from XML Schema.
@@ -47,11 +61,37 @@ public class CompositeType extends Type
      * @param node from the XML Schema Parsing
      */
     public CompositeType(final Node node)
+        throws XPathExpressionException
     {
         super(node); // set the common schema attributes
 
-        composites = new ArrayList<EncodedDataType>();
-        // TODO: iterate over children nodes to grab encoded data types
+        compositeList = new ArrayList<EncodedDataType>();
+        compositeMap = new HashMap<String, EncodedDataType>();
+
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        NodeList list = (NodeList)xPath.compile("type").evaluate(node, XPathConstants.NODESET);
+
+        for (int i = 0, size = list.getLength(); i < size; i++)
+        {
+            EncodedDataType t = new EncodedDataType(list.item(i));
+            compositeList.add(t);
+            compositeMap.put(t.getName(), t);
+            // TODO: check for existing name for the type
+
+            // TODO: need get(typeName) method for returning EncodedDataType for named type of composite
+            // TODO: CompositeType implement Iterator so this can be iterated?
+        }
+    }
+
+    /**
+     * Return the EncodedDataType within this composite with the given name
+     *
+     * @param name of the EncodedDataType to return
+     * @return type requested
+     */
+    public EncodedDataType getType(final String name)
+    {
+        return compositeMap.get(name);
     }
 
     /**
@@ -63,7 +103,7 @@ public class CompositeType extends Type
     {
         int sz = 0;
 
-        for (EncodedDataType t : composites)
+        for (EncodedDataType t : compositeList)
         {
             sz += t.size();
         }

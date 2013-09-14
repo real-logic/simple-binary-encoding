@@ -125,7 +125,6 @@ public class XmlSchemaParser
         Map<String, Type> typesMap = new HashMap<String, Type>();
 
         // add primitiveTypes to typesMap - these could be in a static XInclude that is always brought in...
-        // TODO: add in the minValue, maxValue, and nullValue settings to these
         typesMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.CHAR, 1, false));
         typesMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT8, 1, false));
         typesMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT16, 1, false));

@@ -478,9 +478,4 @@ public class EncodedDataTypeTest
 
         parseTestXmlWithMap("/types/type", testXmlString);
     }
-
-    /**
-     * TODO: Tests for:
-     * - nullValue exceptions
-     */
 }

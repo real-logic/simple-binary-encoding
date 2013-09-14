@@ -72,8 +72,6 @@ public class EncodedDataType extends Type
          * - primitiveType (required)
          * - length (default = 1)
          * - variableLength (default = false)
-         *
-         * TODO:
          * - nullValue (optional)
          * - minValue (optional)
          * - maxValue (optional)
