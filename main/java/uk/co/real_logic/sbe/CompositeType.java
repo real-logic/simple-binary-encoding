@@ -77,8 +77,6 @@ public class CompositeType extends Type
             compositeList.add(t);
             compositeMap.put(t.getName(), t);
             // TODO: check for existing name for the type in this composite before adding to map
-
-            // TODO: CompositeType implement Iterator so this can be iterated?
         }
     }
 
@@ -109,4 +107,15 @@ public class CompositeType extends Type
 
         return sz;
     }
+
+    /**
+     * Return list of the EncodedDataTypes that compose this composite
+     *
+     * @return {@link java.util.list} that holds the types in this composite
+     */
+    public List<EncodedDataType> getTypeList()
+    {
+        return compositeList;
+    }
+    
 }

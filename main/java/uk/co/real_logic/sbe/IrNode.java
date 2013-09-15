@@ -25,6 +25,10 @@ package uk.co.real_logic.sbe;
  * - padding of fields in order to provide expansion room
  * - computing offsets of individual fields
  * - etc.
+ * <p/>
+ * Error and Warning Checks
+ * - set padding and offsets being off
+ * - enums with duplicate values? or 
  */
 public class IrNode
 {

@@ -104,14 +104,40 @@ public class CompositeTypeTest
 	assertThat(valueOf(decimal64.size()), is(valueOf(8)));
     }
 
+    @Test
+    public void shouldHandleCompositeTypeList()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<composite name=\"decimal\">" +
+            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+            "  <type name=\"exponent\" primitiveType=\"int8\"/>" +
+	    "</composite>" +
+	    "<composite name=\"decimal32\">" +
+            "  <type name=\"mantissa\" primitiveType=\"int32\"/>" +
+            "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
+	    "</composite>" +
+	    "<composite name=\"decimal64\">" +
+            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+            "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
+	    "</composite>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
+	CompositeType c = (CompositeType)map.get("decimal");
+	assertThat(valueOf(c.getTypeList().size()), is(valueOf(2)));
+	assertThat(c.getTypeList().get(0).getName(), is("mantissa"));
+	assertThat(c.getTypeList().get(1).getName(), is("exponent"));
+    }
+
     /**
      * TODO:
-     * decimal32 from spec
-     * decimal64 from spec
      * messageHeader example
      * groupSize
      * Price
      * PriceNULL
+     * MonthYear (SBE spec)
+     * etc.
      */
 
 }

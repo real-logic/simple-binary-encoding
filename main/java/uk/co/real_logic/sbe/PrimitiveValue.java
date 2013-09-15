@@ -138,17 +138,29 @@ public class PrimitiveValue
      */
     public boolean equals(Object value)
     {
-	if (value instanceof PrimitiveValue)
-	{
-	    PrimitiveValue lhs = (PrimitiveValue)value;
-
-	    if (lhs.representation == this.representation &&
-		lhs.longValue == this.longValue)
-	    {
-		return true;
-	    }
-	}
-	return false;
+        if (value instanceof PrimitiveValue)
+        {
+            PrimitiveValue lhs = (PrimitiveValue)value;
+            
+            if (lhs.representation == this.representation &&
+                lhs.longValue == this.longValue)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * return hashCode for value. This is the underlying representations hashCode for the value
+     *
+     * @return int value of the hashCode
+     */
+    public int hashCode()
+    {
+        Long l = new Long(longValue);
+        // TODO: insufficient, but will work for enumType
+        return l.hashCode();
     }
 
     /**
