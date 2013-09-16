@@ -15,7 +15,8 @@
   <!-- unit test reports go here -->
   <property name="dir.reports.unit" location="target/reports/unit"/>
   <property name="dir.dist" location="target/dist"/>
-  <property name="dir.resources" location="main/resources"/>
+  <property name="dir.main.resources" location="main/resources"/>
+  <property name="dir.test.resources" location="test/resources"/>
 
   <path id="project.classpath">
     <pathelement path="${CLASSPATH}"/>
@@ -24,6 +25,7 @@
   <path id="test.classpath">
     <pathelement path="${dir.test.build}"/>
     <pathelement path="${dir.main.build}"/>
+    <pathelement path="${dir.test.resources}"/>
     <fileset dir="${dir.test.lib}">
       <include name="*.jar"/>
     </fileset>
@@ -81,7 +83,7 @@
   <target name="dist" depends="compile" description="generate the distribution" >
     <jar destfile="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar">
       <fileset dir="${dir.main.build}"/>
-      <fileset dir="${dir.resources}"/>
+      <fileset dir="${dir.main.resources}"/>
     </jar>
   </target>
 

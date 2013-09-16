@@ -64,24 +64,9 @@ public class XmlSchemaParser
     public static final String messageXPathExpr = "/messageSchema/message";
 
     /**
-     * XPath expression for accessing the messageSchema root document node's package attribute
+     * XPath expression for accessing the messageSchema root document node
      */
-    public static final String messageSchemaPackageXPathExpr = "/messageSchema@package";
-
-    /**
-     * XPath expression for accessing the messageSchema root document node's version attribute
-     */
-    public static final String messageSchemaVersionXPathExpr = "/messageSchema@version";
-
-    /**
-     * XPath expression for accessing the messageSchema root document node's description attribute
-     */
-    public static final String messageSchemaDescriptionXPathExpr = "/messageSchema@description";
-
-    /**
-     * XPath expression for accessing the messageSchema root document node's byteOrder attribute
-     */
-    public static final String messageSchemaByteOrderXPathExpr = "/messageSchema@byteOrder";
+    public static final String messageSchemaXPathExpr = "/messageSchema";
 
     /**
      * Take an input stream and parse it generating Intermediate Representation.
@@ -112,15 +97,12 @@ public class XmlSchemaParser
          * byteOrder - bigEndian or littleEndian (default)
          * TODO: save these in the IrNode
          */
-        String pack = xPath.compile(messageSchemaPackageXPathExpr).evaluate(document);
-        String description = xPath.compile(messageSchemaDescriptionXPathExpr).evaluate(document);
-        String version = xPath.compile(messageSchemaVersionXPathExpr).evaluate(document);
-        String byteOrder = xPath.compile(messageSchemaByteOrderXPathExpr).evaluate(document);
+        Node messageSchemaNode = (Node)xPath.compile(messageSchemaXPathExpr).evaluate(document, XPathConstants.NODE);
 
-        if (byteOrder == null)
-        {
-            byteOrder = "littleEndian";
-        }
+        String pack = getXmlAttributeValue(messageSchemaNode, "package");
+        String description = getXmlAttributeValueNullable(messageSchemaNode, "description");
+        String version = getXmlAttributeValueNullable(messageSchemaNode, "version");
+        String byteOrder = getXmlAttributeValue(messageSchemaNode, "byteOrder", "littleEndian");
 
         /* init types table/map for lookup by <field> elements */
         Map<String, Type> typesMap = new HashMap<String, Type>();
