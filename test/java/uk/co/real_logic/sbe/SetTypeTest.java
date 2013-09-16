@@ -39,7 +39,7 @@ import static java.lang.Boolean.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class EnumTypeTest
+public class SetTypeTest
 {
 
     /**
@@ -47,7 +47,7 @@ public class EnumTypeTest
      *
      * @param xPathExpr for type nodes in XML
      * @param xml string to parse
-     * @return map of name to EnumType nodes
+     * @return map of name to SetType nodes
      */
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
@@ -59,34 +59,34 @@ public class EnumTypeTest
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            Type t = new EnumType(list.item(i));
+            Type t = new SetType(list.item(i));
             map.put(t.getName(), t);
         }
         return map;
     }
 
     @Test
-    public void shouldHandleBinaryEnumType()
+    public void shouldHandleBinarySetType()
         throws Exception
     {
         final String testXmlString = "<types>" +
-	    "<enum name=\"biOp\" encodingType=\"int8\">" +
-	    " <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
-	    " <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
-	    "</enum>" +
+	    "<set name=\"biOp\" encodingType=\"uint8\">" +
+	    " <choice name=\"Bit0\" description=\"Bit 0\">0</choice>" +
+	    " <choice name=\"Bit1\" description=\"Bit 1\">1</choice>" +
+	    "</set>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
-	EnumType e = (EnumType)map.get("biOp");
+        Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
+	SetType e = (SetType)map.get("biOp");
 	assertThat(e.getName(), is("biOp"));
-	assertThat(e.getEncodingType(), is(Primitive.INT8));
-	assertThat(valueOf(e.getValidValueSet().size()), is(valueOf(2)));
-	assertThat(e.getValidValue("on").getPrimitiveValue(), is(new PrimitiveValue(Primitive.INT8, "1")));
-	assertThat(e.getValidValue("off").getPrimitiveValue(), is(new PrimitiveValue(Primitive.INT8, "0")));
+	assertThat(e.getEncodingType(), is(Primitive.UINT8));
+	assertThat(valueOf(e.getChoiceSet().size()), is(valueOf(2)));
+	assertThat(e.getChoice("Bit1").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "1")));
+	assertThat(e.getChoice("Bit0").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "0")));
     }
 
     @Test
-    public void shouldHandleEnumTypeList()
+    public void shouldHandleSetTypeList()
         throws Exception
     {
 	//CompositeType c = (CompositeType)map.get("decimal");
@@ -98,11 +98,9 @@ public class EnumTypeTest
     /**
      * TODO:
      * - illegal encodingType
-     * - optional presence with nullValue
      * - duplicate value
      * - duplicate name
-     * - char encoding type with mix of letters and numbers
-     * - spec examples: Side, Boolean, Boolean with optional null
+     * - spec examples: 
      * etc.
      */
 }
