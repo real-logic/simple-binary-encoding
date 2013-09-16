@@ -47,7 +47,7 @@ public class CompositeTypeTest
      *
      * @param xPathExpr for type nodes in XML
      * @param xml string to parse
-     * @return map of name to EncodedDataType nodes
+     * @return map of name to CompositeType nodes
      */
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
@@ -66,21 +66,13 @@ public class CompositeTypeTest
     }
 
     @Test
-    public void shouldHandleDecimalCompositeTypes()
+    public void shouldHandleDecimalCompositeType()
         throws Exception
     {
         final String testXmlString = "<types>" +
 	    "<composite name=\"decimal\">" +
             "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
             "  <type name=\"exponent\" primitiveType=\"int8\"/>" +
-	    "</composite>" +
-	    "<composite name=\"decimal32\">" +
-            "  <type name=\"mantissa\" primitiveType=\"int32\"/>" +
-            "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
-	    "</composite>" +
-	    "<composite name=\"decimal64\">" +
-            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
 	    "</composite>" +
             "</types>";
 
@@ -90,17 +82,47 @@ public class CompositeTypeTest
 	assertThat(decimal.getType("mantissa").getPrimitiveType(), is(Primitive.INT64));
 	assertThat(decimal.getType("exponent").getPrimitiveType(), is(Primitive.INT8));
 	assertThat(valueOf(decimal.size()), is(valueOf(9)));
+    }
+
+    @Test
+    public void shouldHandleDecimal32CompositeType()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<composite name=\"decimal32\">" +
+            "  <type name=\"mantissa\" primitiveType=\"int32\"/>" +
+            "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
+	    "</composite>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         CompositeType decimal32 = (CompositeType)map.get("decimal32");
         assertThat(decimal32.getName(), is("decimal32"));
 	assertThat(decimal32.getType("mantissa").getPrimitiveType(), is(Primitive.INT32));
 	assertThat(decimal32.getType("exponent").getPrimitiveType(), is(Primitive.INT8));
 	assertThat(decimal32.getType("exponent").getPresence(), is(Presence.CONSTANT));
+	assertThat(((EncodedDataType)decimal32.getType("exponent")).getConstantValue(), is (new PrimitiveValue(Primitive.INT8, "-2")));
 	assertThat(valueOf(decimal32.size()), is(valueOf(4)));
+    }
+
+    @Test
+    public void shouldHandleDecimal64CompositeType()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<composite name=\"decimal64\">" +
+            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+            "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
+	    "</composite>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         CompositeType decimal64 = (CompositeType)map.get("decimal64");
         assertThat(decimal64.getName(), is("decimal64"));
 	assertThat(decimal64.getType("mantissa").getPrimitiveType(), is(Primitive.INT64));
 	assertThat(decimal64.getType("exponent").getPrimitiveType(), is(Primitive.INT8));
 	assertThat(decimal64.getType("exponent").getPresence(), is(Presence.CONSTANT));
+	assertThat(((EncodedDataType)decimal64.getType("exponent")).getConstantValue(), is (new PrimitiveValue(Primitive.INT8, "-2")));
 	assertThat(valueOf(decimal64.size()), is(valueOf(8)));
     }
 
@@ -113,14 +135,6 @@ public class CompositeTypeTest
             "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
             "  <type name=\"exponent\" primitiveType=\"int8\"/>" +
 	    "</composite>" +
-	    "<composite name=\"decimal32\">" +
-            "  <type name=\"mantissa\" primitiveType=\"int32\"/>" +
-            "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
-	    "</composite>" +
-	    "<composite name=\"decimal64\">" +
-            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
-	    "</composite>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
@@ -130,14 +144,35 @@ public class CompositeTypeTest
 	assertThat(c.getTypeList().get(1).getName(), is("exponent"));
     }
 
-    /**
-     * TODO:
-     * messageHeader example
-     * groupSize
-     * Price
-     * PriceNULL
-     * MonthYear (SBE spec)
-     * etc.
-     */
+    @Test
+    public void shouldHandleCompositeHasNullableType()
+        throws Exception
+    {
+	final String nullValueStr = "9223372036854775807";
+        final String testXmlString = "<types>" +
+	    "<composite name=\"PRICENULL\" description=\"Price NULL\" fixUsage=\"Price\">" +
+            " <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" + nullValueStr + "\" primitiveType=\"int64\"/>" +
+            " <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">-7</type>" +
+	    "</composite>" +
+            "</types>";
 
+        Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
+	CompositeType c = (CompositeType)map.get("PRICENULL");
+	assertThat(((EncodedDataType)c.getType("mantissa")).getNullValue(), is(new PrimitiveValue(Primitive.INT64, nullValueStr)));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenCompositeTypeHasTypeNameDuplicates()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<composite name=\"decimal\">" +
+            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+            "  <type name=\"exponent\" primitiveType=\"int8\"/>" +
+	    "</composite>" +
+            "</types>";
+
+	parseTestXmlWithMap("/types/composite", testXmlString);
+    }
 }

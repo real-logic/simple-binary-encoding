@@ -110,6 +110,7 @@ public class XmlSchemaParser
          * version - optional
          * description - optional
          * byteOrder - bigEndian or littleEndian (default)
+         * TODO: save these in the IrNode
          */
         String pack = xPath.compile(messageSchemaPackageXPathExpr).evaluate(document);
         String description = xPath.compile(messageSchemaDescriptionXPathExpr).evaluate(document);
@@ -145,8 +146,13 @@ public class XmlSchemaParser
         addSetTypes(typesMap, (NodeList)xPath.compile(setXPathExpr).evaluate(document, XPathConstants.NODESET));
 
         /* TODO: once all <types> handled, we can move to the actual encoding layout */
-
+        /**
+         * TODO: check for messageHeader type and use it for the main header
+         */
         /* TODO: grab all <message> elements and handle them - this is where IR is generated */
+        /**
+         * TODO: need a message object to hold sequenced fields. Fields point back to Types. Traversing the fields generates IrNodes
+         */
         return null;
     }
 

@@ -95,8 +95,8 @@ public class PrimitiveValue
      */
     public PrimitiveValue(final long value)
     {
-	this.longValue = value;
-	this.representation = LONG_VALUE_REPRESENTATION;
+        this.longValue = value;
+        this.representation = LONG_VALUE_REPRESENTATION;
     }
 
     /**
@@ -109,8 +109,24 @@ public class PrimitiveValue
      */
     public PrimitiveValue(final Primitive primitive, final String value)
     {
-	this.longValue = parseConstValue2Long(primitive, value);
-	this.representation = LONG_VALUE_REPRESENTATION;
+        this.longValue = parseConstValue2Long(primitive, value);
+        this.representation = LONG_VALUE_REPRESENTATION;
+    }
+
+    /**
+     * Return long value for this PrimitiveValue
+     *
+     * @return value expressed as a long
+     * @throws IllegalArgumentException if not a long value representation
+     */
+    public long longValue()
+    {
+        if (representation != LONG_VALUE_REPRESENTATION)
+        {
+            throw new IllegalArgumentException("PrimitiveValue is not a long representation");
+        }
+
+        return longValue;
     }
 
     /**

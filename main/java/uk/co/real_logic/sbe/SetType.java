@@ -125,12 +125,19 @@ public class SetType extends Type
             /**
              * attrs: name(required), description(optional)
              * value: the value of the Choice
-             * TODO: choice values are bit positions (0, 1, 2, 3, 4, etc.) from LSB to MSB
              */
             this.encodingType = encodingType;
             this.name = XmlSchemaParser.getXmlAttributeValue(node, "name");
             this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
             this.value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());
+
+            /**
+             * choice values are bit positions (0, 1, 2, 3, 4, etc.) from LSB to MSB
+             */
+            if (this.value.longValue() >= (encodingType.size() * 8))
+            {
+                throw new IllegalArgumentException("choice value out of bounds: " + this.value.longValue());
+            }
         }
 
         public PrimitiveValue getPrimitiveValue()

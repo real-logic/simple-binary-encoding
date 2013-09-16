@@ -70,39 +70,166 @@ public class EnumTypeTest
         throws Exception
     {
         final String testXmlString = "<types>" +
-	    "<enum name=\"biOp\" encodingType=\"int8\">" +
+	    "<enum name=\"biOp\" encodingType=\"uint8\">" +
 	    " <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
 	    " <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
 	    "</enum>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
-	EnumType e = (EnumType)map.get("biOp");
-	assertThat(e.getName(), is("biOp"));
-	assertThat(e.getEncodingType(), is(Primitive.INT8));
-	assertThat(valueOf(e.getValidValueSet().size()), is(valueOf(2)));
-	assertThat(e.getValidValue("on").getPrimitiveValue(), is(new PrimitiveValue(Primitive.INT8, "1")));
-	assertThat(e.getValidValue("off").getPrimitiveValue(), is(new PrimitiveValue(Primitive.INT8, "0")));
+        EnumType e = (EnumType)map.get("biOp");
+        assertThat(e.getName(), is("biOp"));
+        assertThat(e.getEncodingType(), is(Primitive.UINT8));
+        assertThat(valueOf(e.getValidValueSet().size()), is(valueOf(2)));
+        assertThat(e.getValidValue("on").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "1")));
+        assertThat(e.getValidValue("off").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "0")));
     }
-
+    
+    @Test
+    public void shouldHandleBooleanEnumType()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+            "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
+            " <validValue name=\"false\">0</validValue>" +
+            " <validValue name=\"true\">1</validValue>" +
+            "</enum>" +
+            "</types>";
+        
+        Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
+        EnumType e = (EnumType)map.get("boolean");
+        assertThat(e.getName(), is("boolean"));
+        assertThat(e.getEncodingType(), is(Primitive.UINT8));
+        assertThat(valueOf(e.getValidValueSet().size()), is(valueOf(2)));
+        assertThat(e.getValidValue("true").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "1")));
+        assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "0")));
+    }
+    
+    @Test
+    public void shouldHandleOptionalBooleanEnumType()
+        throws Exception
+    {
+        final String nullValueStr = "255";
+        final String testXmlString = "<types>" +
+            "<enum name=\"optionalBoolean\" encodingType=\"uint8\" presence=\"optional\" nullValue=\"" + nullValueStr + "\" fixUsage=\"Boolean\">" +
+            " <validValue name=\"false\">0</validValue>" +
+            " <validValue name=\"true\">1</validValue>" +
+            "</enum>" +
+            "</types>";
+        
+        Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
+        EnumType e = (EnumType)map.get("optionalBoolean");
+        assertThat(e.getName(), is("optionalBoolean"));
+        assertThat(e.getEncodingType(), is(Primitive.UINT8));
+        assertThat(valueOf(e.getValidValueSet().size()), is(valueOf(2)));
+        assertThat(e.getValidValue("true").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "1")));
+        assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "0")));
+        assertThat(e.getNullValue(), is(new PrimitiveValue(Primitive.UINT8, nullValueStr)));
+    }
+    
     @Test
     public void shouldHandleEnumTypeList()
         throws Exception
     {
-	//CompositeType c = (CompositeType)map.get("decimal");
-	//assertThat(valueOf(c.getTypeList().size()), is(valueOf(2)));
-	//assertThat(c.getTypeList().get(0).getName(), is("mantissa"));
-	//assertThat(c.getTypeList().get(1).getName(), is("exponent"));
+        final String testXmlString = "<types>" +
+            "<enum name=\"triOp\" encodingType=\"uint8\">" +
+            " <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
+            " <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
+            " <validValue name=\"not-known\" description=\"switch is unknown\">2</validValue>" +
+            "</enum>" +
+            "</types>";
+        
+        Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
+        EnumType e = (EnumType)map.get("triOp");
+        assertThat(e.getName(), is("triOp"));
+        assertThat(e.getEncodingType(), is(Primitive.UINT8));
+        
+        int foundOn = 0, foundOff = 0, foundNotKnown = 0, count = 0;
+        for (Map.Entry<String, EnumType.ValidValue> entry : e.getValidValueSet())
+        {
+            if (entry.getKey().equals("on"))
+            {
+                foundOn++;
+            }
+            else if (entry.getKey().equals("off"))
+            {
+                foundOff++;
+            }
+            else if (entry.getKey().equals("not-known"))
+            {
+                foundNotKnown++;
+            }
+            count++;
+        }
+        assertThat(valueOf(count), is(valueOf(3)));
+        assertThat(valueOf(foundOn), is(valueOf(1)));
+        assertThat(valueOf(foundOff), is(valueOf(1)));
+        assertThat(valueOf(foundNotKnown), is(valueOf(1)));
     }
 
-    /**
-     * TODO:
-     * - illegal encodingType
-     * - optional presence with nullValue
-     * - duplicate value
-     * - duplicate name
-     * - char encoding type with mix of letters and numbers
-     * - spec examples: Side, Boolean, Boolean with optional null
-     * etc.
-     */
+    @Test
+    public void shouldHandleCharEnumEncodingType()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<enum name=\"mixed\" encodingType=\"char\">" +
+	    " <validValue name=\"Cee\">C</validValue>" +
+	    " <validValue name=\"One\">1</validValue>" +
+	    " <validValue name=\"Two\">2</validValue>" +
+	    " <validValue name=\"Eee\">E</validValue>" +
+	    "</enum>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
+        EnumType e = (EnumType)map.get("mixed");
+        assertThat(e.getEncodingType(), is(Primitive.CHAR));
+        assertThat(e.getValidValue("Cee").getPrimitiveValue(), is(new PrimitiveValue(Primitive.CHAR, "C")));
+        assertThat(e.getValidValue("One").getPrimitiveValue(), is(new PrimitiveValue(Primitive.CHAR, "1")));
+        assertThat(e.getValidValue("Two").getPrimitiveValue(), is(new PrimitiveValue(Primitive.CHAR, "2")));
+        assertThat(e.getValidValue("Eee").getPrimitiveValue(), is(new PrimitiveValue(Primitive.CHAR, "E")));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<enum name=\"boolean\" encodingType=\"int64\" fixUsage=\"Boolean\">" +
+	    " <validValue name=\"false\">0</validValue>" +
+	    " <validValue name=\"true\">1</validValue>" +
+	    "</enum>" +
+            "</types>";
+
+        parseTestXmlWithMap("/types/enum", testXmlString);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenDuplicateValueSpecified()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
+	    " <validValue name=\"false\">0</validValue>" +
+	    " <validValue name=\"anotherFalse\">0</validValue>" +
+	    " <validValue name=\"true\">1</validValue>" +
+	    "</enum>" +
+            "</types>";
+
+        parseTestXmlWithMap("/types/enum", testXmlString);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenDuplicateNameSpecified()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
+	    " <validValue name=\"false\">0</validValue>" +
+	    " <validValue name=\"false\">2</validValue>" +
+	    " <validValue name=\"true\">1</validValue>" +
+	    "</enum>" +
+            "</types>";
+
+        parseTestXmlWithMap("/types/enum", testXmlString);
+    }
 }

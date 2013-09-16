@@ -52,7 +52,7 @@ public class EnumType extends Type
          * - nullValue (optional with presence=optional)
          */
         this.encodingType = Primitive.lookup(XmlSchemaParser.getXmlAttributeValue(node, "encodingType"));
-        if (this.encodingType != Primitive.CHAR && this.encodingType != Primitive.INT8)
+        if (this.encodingType != Primitive.CHAR && this.encodingType != Primitive.UINT8)
         {
             throw new IllegalArgumentException("unknown encodingType " + this.encodingType);
         }
@@ -111,6 +111,21 @@ public class EnumType extends Type
     public ValidValue getValidValue(final String name)
     {
         return nameMap.get(name);
+    }
+
+    /**
+     * The nullValue of the type
+     *
+     * @return value of the nullValue primitive or type
+     */
+    public PrimitiveValue getNullValue()
+    {
+        if (nullValue == null)
+        {
+            return encodingType.nullValue();
+        }
+
+        return nullValue;
     }
 
     /**

@@ -89,18 +89,100 @@ public class SetTypeTest
     public void shouldHandleSetTypeList()
         throws Exception
     {
-	//CompositeType c = (CompositeType)map.get("decimal");
-	//assertThat(valueOf(c.getTypeList().size()), is(valueOf(2)));
-	//assertThat(c.getTypeList().get(0).getName(), is("mantissa"));
-	//assertThat(c.getTypeList().get(1).getName(), is("exponent"));
+        final String testXmlString = "<types>" +
+	    "<set name=\"listed\" encodingType=\"uint8\">" +
+	    " <choice name=\"Bit0\">0</choice>" +
+	    " <choice name=\"Bit1\">1</choice>" +
+	    " <choice name=\"Bit2\">2</choice>" +
+	    " <choice name=\"Bit3\">3</choice>" +
+	    "</set>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
+	SetType e = (SetType)map.get("listed");
+	assertThat(e.getEncodingType(), is(Primitive.UINT8));
+
+        int foundBit0 = 0, foundBit1 = 0, foundBit2 = 0, foundBit3 = 0, count = 0;
+        for (Map.Entry<String, SetType.Choice> entry : e.getChoiceSet())
+        {
+            if (entry.getKey().equals("Bit0"))
+            {
+                foundBit0++;
+            }
+            else if (entry.getKey().equals("Bit1"))
+            {
+                foundBit1++;
+            }
+            else if (entry.getKey().equals("Bit2"))
+            {
+                foundBit2++;
+            }
+            else if (entry.getKey().equals("Bit3"))
+            {
+                foundBit3++;
+            }
+            count++;
+        }
+        assertThat(valueOf(count), is(valueOf(4)));
+        assertThat(valueOf(foundBit0), is(valueOf(1)));
+        assertThat(valueOf(foundBit1), is(valueOf(1)));
+        assertThat(valueOf(foundBit2), is(valueOf(1)));
+        assertThat(valueOf(foundBit3), is(valueOf(1)));
     }
 
-    /**
-     * TODO:
-     * - illegal encodingType
-     * - duplicate value
-     * - duplicate name
-     * - spec examples: 
-     * etc.
-     */
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<set name=\"biOp\" encodingType=\"char\">" +
+	    " <choice name=\"Bit0\">0</choice>" +
+	    " <choice name=\"Bit1\">1</choice>" +
+	    "</set>" +
+            "</types>";
+
+        parseTestXmlWithMap("/types/set", testXmlString);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenDuplicateValueSpecified()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<set name=\"biOp\" encodingType=\"uint8\">" +
+	    " <choice name=\"Bit0\">0</choice>" +
+	    " <choice name=\"AnotherBit0\">0</choice>" +
+	    "</set>" +
+            "</types>";
+
+        parseTestXmlWithMap("/types/set", testXmlString);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenDuplicateNameSpecified()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<set name=\"biOp\" encodingType=\"uint8\">" +
+	    " <choice name=\"Bit0\">0</choice>" +
+	    " <choice name=\"Bit0\">1</choice>" +
+	    "</set>" +
+            "</types>";
+
+        parseTestXmlWithMap("/types/set", testXmlString);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenValueOutOfBoundsSpecified()
+        throws Exception
+    {
+        final String testXmlString = "<types>" +
+	    "<set name=\"biOp\" encodingType=\"uint8\">" +
+	    " <choice name=\"Bit0\">0</choice>" +
+	    " <choice name=\"Bit100\">100</choice>" +
+	    "</set>" +
+            "</types>";
+
+        parseTestXmlWithMap("/types/set", testXmlString);
+    }
 }

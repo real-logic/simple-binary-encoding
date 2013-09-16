@@ -74,9 +74,14 @@ public class CompositeType extends Type
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             EncodedDataType t = new EncodedDataType(list.item(i));
+
+            if (compositeMap.get(t.getName()) != null)
+            {
+                throw new IllegalArgumentException("composite already has type name: " + t.getName());
+            }
+
             compositeList.add(t);
             compositeMap.put(t.getName(), t);
-            // TODO: check for existing name for the type in this composite before adding to map
         }
     }
 
