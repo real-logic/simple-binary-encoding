@@ -129,7 +129,7 @@ public class EnumType extends Type
     }
 
     /**
-     * TODO: can iteraate like (Map.Entry<String, ValidValue> entry : EnumType.getValidValueSet()) with this
+     * TODO: can iterate like (Map.Entry<String, ValidValue> entry : EnumType.getValidValueSet()) with this
      */
     public Set<Map.Entry<String, ValidValue>> getValidValueSet()
     {
@@ -139,7 +139,7 @@ public class EnumType extends Type
     /**
      * Class to hold valid values for EnumType
      */
-    public class ValidValue
+    public static class ValidValue
     {
         private final String name;
         private final String description;

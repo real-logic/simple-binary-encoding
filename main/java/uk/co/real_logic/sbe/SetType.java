@@ -97,7 +97,7 @@ public class SetType extends Type
     }
 
     /**
-     * TODO: can iteraate like (Map.Entry<String, Choice> entry : EnumType.getChoiceSet()) with this
+     * TODO: can iterate like (Map.Entry<String, Choice> entry : EnumType.getChoiceSet()) with this
      */
     public Set<Map.Entry<String, Choice>> getChoiceSet()
     {

@@ -62,6 +62,7 @@ public class EncodedDataTypeTest
             Type t = new EncodedDataType(list.item(i));
             map.put(t.getName(), t);
         }
+
         return map;
     }
 
