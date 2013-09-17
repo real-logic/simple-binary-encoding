@@ -110,9 +110,40 @@ public class XmlSchemaParser
 
         /* TODO: once all <types> handled, we can move to the actual encoding layout */
         /**
-         * TODO: check for messageHeader type and use it for the main header
+         * TODO: check for messageHeader type and use it for the main header (generate a special IrNode for it)
          */
         /* TODO: grab all <message> elements and handle them - this is where IR is generated */
+        /**
+         * Map<long, Message> messageMap = populateMessageMap(document, xPath);
+         *
+         * message
+         * - name (required) - unique?
+         * - id (required) - unique
+         * - description (optional)
+         * - blockLength (optional)
+         *
+         * within populateMessageMap:
+         * - List<Element> - Element is either field or group
+         * - may not need maps
+         * - XPath for field or group: "field|group", then use Node.getNodeName() to check which one it is
+         *
+         * field
+         * - name (required) - unique within message?
+         * - id (required) - unique within message?
+         * - type (required)
+         * - refId (optional)
+         * - description (optional)
+         * - offset (optional)
+         * - groupName (optional)
+         *
+         * group
+         * - name (required) - unique within message?
+         * - description (optional)
+         * - blockLength (optional)
+         *
+         * data
+         * - 
+         */
         /**
          * TODO: need a message object to hold sequenced fields. Fields point back to Types. Traversing the fields generates IrNodes
          */
