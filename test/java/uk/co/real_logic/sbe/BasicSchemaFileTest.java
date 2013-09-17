@@ -51,7 +51,7 @@ public class BasicSchemaFileTest
     public void shouldHandleBasicFile()
         throws Exception
     {
-        XmlSchemaParser.parseAndGenerateIr(getLocalResource("BasicSchemaFileTest.xml"));
+        XmlSchemaParser.parseXmlAndGenerateIr(getLocalResource("BasicSchemaFileTest.xml"));
     }
 
 }

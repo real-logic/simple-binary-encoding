@@ -72,7 +72,7 @@ public class XmlSchemaParser
      * @param stream to read schema from
      * @return list of Intermediate Representation nodes
      */
-    public static List<IrNode> parseAndGenerateIr(final InputStream stream)
+    public static List<IrNode> parseXmlAndGenerateIr(final InputStream stream)
         throws Exception
     {
         /* set up XML parsing */
@@ -139,9 +139,29 @@ public class XmlSchemaParser
          *
          * data
          * - 
+         *
          */
-        /**
+        /*
          * TODO: need a message object to hold sequenced fields. Fields point back to Types. Traversing the fields generates IrNodes
+         * - instead of List<IrNode>, need a container, IrContainer
+         *   - IrContainer
+         *     - is representation of a single message
+         *     - has
+         *       - List<IrNode> for fields and groups (Element)
+         *       - package, version, description, byteOrder
+         *     - is representation of a single message
+         * - separate functions:
+         *   - IrContainer generateIrFromMessage(message)
+         *   - IrContainer optimizeForSpace(IrContainer) = generates new IrContainer with optimization
+         *   - IrContainer optimizeForDecodeSpeed(IrContainer) = generates new IrContainer with optimization
+         *   - IrContainer optimizeForEncodeSpeed(IrContainer) = generates new IrContainer with optimization
+         *   - String generateFixSbeSchemaFromIr(IrContainer)
+         *   - String generateAsn1FromIr(IrContainer)
+         *   - String generateGpbFromIr(IrContainer)
+         *   - String generateThriftFromIr(IrContainer)
+         *
+         * Ultra-Meta
+         *   - IrContainer parseIrAndGenerateIr(filename) = read in serialized (with SBE) Ir and generate a new internal IrContainer
          */
         return null;
     }
