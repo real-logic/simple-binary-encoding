@@ -31,11 +31,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import static java.lang.Integer.*;
-import static java.lang.Boolean.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -46,7 +44,7 @@ public class EnumTypeTest
      * Grab type nodes, parse them, and populate map for those types.
      *
      * @param xPathExpr for type nodes in XML
-     * @param xml string to parse
+     * @param xml       string to parse
      * @return map of name to EnumType nodes
      */
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
@@ -62,6 +60,7 @@ public class EnumTypeTest
             Type t = new EnumType(list.item(i));
             map.put(t.getName(), t);
         }
+
         return map;
     }
 
@@ -70,10 +69,10 @@ public class EnumTypeTest
         throws Exception
     {
         final String testXmlString = "<types>" +
-	    "<enum name=\"biOp\" encodingType=\"uint8\">" +
-	    " <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
-	    " <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
-	    "</enum>" +
+            "<enum name=\"biOp\" encodingType=\"uint8\">" +
+            " <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
+            " <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
+            "</enum>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
@@ -84,7 +83,7 @@ public class EnumTypeTest
         assertThat(e.getValidValue("on").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "1")));
         assertThat(e.getValidValue("off").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "0")));
     }
-    
+
     @Test
     public void shouldHandleBooleanEnumType()
         throws Exception
@@ -95,7 +94,7 @@ public class EnumTypeTest
             " <validValue name=\"true\">1</validValue>" +
             "</enum>" +
             "</types>";
-        
+
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("boolean");
         assertThat(e.getName(), is("boolean"));
@@ -104,7 +103,7 @@ public class EnumTypeTest
         assertThat(e.getValidValue("true").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "1")));
         assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "0")));
     }
-    
+
     @Test
     public void shouldHandleOptionalBooleanEnumType()
         throws Exception
@@ -116,7 +115,7 @@ public class EnumTypeTest
             " <validValue name=\"true\">1</validValue>" +
             "</enum>" +
             "</types>";
-        
+
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("optionalBoolean");
         assertThat(e.getName(), is("optionalBoolean"));
@@ -126,7 +125,7 @@ public class EnumTypeTest
         assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "0")));
         assertThat(e.getNullValue(), is(new PrimitiveValue(Primitive.UINT8, nullValueStr)));
     }
-    
+
     @Test
     public void shouldHandleEnumTypeList()
         throws Exception
@@ -138,12 +137,12 @@ public class EnumTypeTest
             " <validValue name=\"not-known\" description=\"switch is unknown\">2</validValue>" +
             "</enum>" +
             "</types>";
-        
+
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("triOp");
         assertThat(e.getName(), is("triOp"));
         assertThat(e.getEncodingType(), is(Primitive.UINT8));
-        
+
         int foundOn = 0, foundOff = 0, foundNotKnown = 0, count = 0;
         for (Map.Entry<String, EnumType.ValidValue> entry : e.getValidValueSet())
         {
@@ -172,12 +171,12 @@ public class EnumTypeTest
         throws Exception
     {
         final String testXmlString = "<types>" +
-	    "<enum name=\"mixed\" encodingType=\"char\">" +
-	    " <validValue name=\"Cee\">C</validValue>" +
-	    " <validValue name=\"One\">1</validValue>" +
-	    " <validValue name=\"Two\">2</validValue>" +
-	    " <validValue name=\"Eee\">E</validValue>" +
-	    "</enum>" +
+            "<enum name=\"mixed\" encodingType=\"char\">" +
+            " <validValue name=\"Cee\">C</validValue>" +
+            " <validValue name=\"One\">1</validValue>" +
+            " <validValue name=\"Two\">2</validValue>" +
+            " <validValue name=\"Eee\">E</validValue>" +
+            "</enum>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
@@ -194,10 +193,10 @@ public class EnumTypeTest
         throws Exception
     {
         final String testXmlString = "<types>" +
-	    "<enum name=\"boolean\" encodingType=\"int64\" fixUsage=\"Boolean\">" +
-	    " <validValue name=\"false\">0</validValue>" +
-	    " <validValue name=\"true\">1</validValue>" +
-	    "</enum>" +
+            "<enum name=\"boolean\" encodingType=\"int64\" fixUsage=\"Boolean\">" +
+            " <validValue name=\"false\">0</validValue>" +
+            " <validValue name=\"true\">1</validValue>" +
+            "</enum>" +
             "</types>";
 
         parseTestXmlWithMap("/types/enum", testXmlString);
@@ -208,11 +207,11 @@ public class EnumTypeTest
         throws Exception
     {
         final String testXmlString = "<types>" +
-	    "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
-	    " <validValue name=\"false\">0</validValue>" +
-	    " <validValue name=\"anotherFalse\">0</validValue>" +
-	    " <validValue name=\"true\">1</validValue>" +
-	    "</enum>" +
+            "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
+            " <validValue name=\"false\">0</validValue>" +
+            " <validValue name=\"anotherFalse\">0</validValue>" +
+            " <validValue name=\"true\">1</validValue>" +
+            "</enum>" +
             "</types>";
 
         parseTestXmlWithMap("/types/enum", testXmlString);
@@ -223,11 +222,11 @@ public class EnumTypeTest
         throws Exception
     {
         final String testXmlString = "<types>" +
-	    "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
-	    " <validValue name=\"false\">0</validValue>" +
-	    " <validValue name=\"false\">2</validValue>" +
-	    " <validValue name=\"true\">1</validValue>" +
-	    "</enum>" +
+            "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
+            " <validValue name=\"false\">0</validValue>" +
+            " <validValue name=\"false\">2</validValue>" +
+            " <validValue name=\"true\">1</validValue>" +
+            "</enum>" +
             "</types>";
 
         parseTestXmlWithMap("/types/enum", testXmlString);

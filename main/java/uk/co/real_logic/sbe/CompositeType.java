@@ -103,20 +103,20 @@ public class CompositeType extends Type
      */
     public int size()
     {
-        int sz = 0;
+        int size = 0;
 
         for (EncodedDataType t : compositeList)
         {
-            sz += t.size();
+            size += t.size();
         }
 
-        return sz;
+        return size;
     }
 
     /**
      * Return list of the EncodedDataTypes that compose this composite
      *
-     * @return {@link java.util.list} that holds the types in this composite
+     * @return {@link java.util.List} that holds the types in this composite
      */
     public List<EncodedDataType> getTypeList()
     {

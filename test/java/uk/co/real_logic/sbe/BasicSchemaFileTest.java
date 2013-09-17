@@ -37,20 +37,21 @@ public class BasicSchemaFileTest
      */
     public InputStream getLocalResource(final String name)
     {
-        InputStream  strm = this.getClass().getClassLoader().getResourceAsStream(name);
-        
-        if (strm == null)
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream(name);
+
+        if (in == null)
         {
             throw new RuntimeException("could not find " + name);
         }
-        return strm;
+
+        return in;
     }
 
     @Test
     public void shouldHandleBasicFile()
-	throws Exception
+        throws Exception
     {
-	XmlSchemaParser.parseAndGenerateIr(getLocalResource("BasicSchemaFileTest.xml"));
+        XmlSchemaParser.parseAndGenerateIr(getLocalResource("BasicSchemaFileTest.xml"));
     }
 
 }

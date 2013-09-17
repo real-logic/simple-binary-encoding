@@ -91,7 +91,7 @@ public class PrimitiveValue
     /**
      * Construct and fill in value as a long
      *
-     * @param value 
+     * @param value in long format
      */
     public PrimitiveValue(final long value)
     {
@@ -104,7 +104,6 @@ public class PrimitiveValue
      *
      * @param primitive that this is supposed to be
      * @param value     expressed as a String
-     * @return long representation of the value
      * @throws IllegalArgumentException if parsing not known for type
      */
     public PrimitiveValue(final Primitive primitive, final String value)
@@ -130,20 +129,20 @@ public class PrimitiveValue
     }
 
     /**
-     * Return string reresentaiton of this object
+     * Return string representation of this object
      *
      * @return String representing object value
      * @throws IllegalArgumentException if unknown representation
      */
     public String toString()
     {
-	switch (representation)
-	{
-	    case LONG_VALUE_REPRESENTATION:
-		return Long.toString(longValue);
-	    default:
-		throw new IllegalArgumentException("unknown PrimitiveValue representation");
-	}
+        switch (representation)
+        {
+            case LONG_VALUE_REPRESENTATION:
+                return Long.toString(longValue);
+            default:
+                throw new IllegalArgumentException("unknown PrimitiveValue representation");
+        }
     }
 
     /**
@@ -152,21 +151,22 @@ public class PrimitiveValue
      * @param value to compare this value with
      * @return equivalence of values
      */
-    public boolean equals(Object value)
+    public boolean equals(final Object value)
     {
-        if (value instanceof PrimitiveValue)
+        if (null != value && value instanceof PrimitiveValue)
         {
             PrimitiveValue lhs = (PrimitiveValue)value;
-            
+
             if (lhs.representation == this.representation &&
                 lhs.longValue == this.longValue)
             {
                 return true;
             }
         }
+
         return false;
     }
-    
+
     /**
      * return hashCode for value. This is the underlying representations hashCode for the value
      *
@@ -174,9 +174,7 @@ public class PrimitiveValue
      */
     public int hashCode()
     {
-        Long l = new Long(longValue);
-        // TODO: insufficient, but will work for enumType
-        return l.hashCode();
+        return (int)(longValue ^ (longValue>>> 32));
     }
 
     /**
