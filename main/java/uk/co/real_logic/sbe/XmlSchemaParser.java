@@ -77,7 +77,7 @@ public class XmlSchemaParser
      * @return list of Intermediate Representation nodes
      */
     public static List<IrNode> parseAndGenerateIr(final InputStream stream)
-        throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
+        throws Exception
     {
         /* set up XML parsing */
         /*
@@ -104,28 +104,9 @@ public class XmlSchemaParser
         String version = getXmlAttributeValueNullable(messageSchemaNode, "version");
         String byteOrder = getXmlAttributeValue(messageSchemaNode, "byteOrder", "littleEndian");
 
-        /* init types table/map for lookup by <field> elements */
-        Map<String, Type> typesMap = new HashMap<String, Type>();
+        /* grab all types and populate map of names to Type objects */
+        Map<String, Type> typesMap = populateTypesMap(document, xPath);
 
-        // add primitiveTypes to typesMap - these could be in a static XInclude that is always brought in...
-        typesMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.CHAR, 1, false));
-        typesMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT8, 1, false));
-        typesMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT16, 1, false));
-        typesMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT32, 1, false));
-        typesMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT64, 1, false));
-        typesMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT8, 1, false));
-        typesMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT16, 1, false));
-        typesMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT32, 1, false));
-        typesMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT64, 1, false));
-
-        /* grab all "type" types (encodedDataType) and add to types table */
-        addEncodedDataTypes(typesMap, (NodeList)xPath.compile(typeXPathExpr).evaluate(document, XPathConstants.NODESET));
-        /* grab all "composite" types (compositeType) and add to types table */
-        addCompositeTypes(typesMap, (NodeList)xPath.compile(compositeXPathExpr).evaluate(document, XPathConstants.NODESET));
-        /* grab all "enum" types (enumType) and add to types table */
-        addEnumTypes(typesMap, (NodeList)xPath.compile(enumXPathExpr).evaluate(document, XPathConstants.NODESET));
-        /* grab all "set" types (setType) and add to types table */
-        addSetTypes(typesMap, (NodeList)xPath.compile(setXPathExpr).evaluate(document, XPathConstants.NODESET));
 
         /* TODO: once all <types> handled, we can move to the actual encoding layout */
         /**
@@ -139,68 +120,85 @@ public class XmlSchemaParser
     }
 
     /**
-     * Add encodedDataType (if any) to Types Map
+     * Scan XML for all types (encodedDataType, compositeType, enumType, and setType) and save in map
      *
-     * @param map  of types
-     * @param list of Nodes
+     * @param document for the XML parsing
+     * @param xPath    for XPath expression reuse
+     * @return {@link java.util.Map} of name {@link java.lang.String} to Type
      */
-    private static void addEncodedDataTypes(Map<String, Type> map, NodeList list)
-        throws IllegalArgumentException
+    public static Map<String, Type> populateTypesMap(Document document, XPath xPath)
+        throws Exception
     {
-        for (int i = 0, size = list.getLength(); i < size; i++)
-        {
-            Type t = new EncodedDataType(list.item(i));
+        final Map<String, Type> typesMap = new HashMap<String, Type>();
 
-            if (map.get(t.getName()) != null)
-            {
-                throw new IllegalArgumentException("SBE type already exists: " + t.getName());
-            }
+        // add primitiveTypes to typesMap - these could be in a static XInclude that is always brought in...
+        typesMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.CHAR, 1, false));
+        typesMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT8, 1, false));
+        typesMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT16, 1, false));
+        typesMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT32, 1, false));
+        typesMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT64, 1, false));
+        typesMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT8, 1, false));
+        typesMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT16, 1, false));
+        typesMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT32, 1, false));
+        typesMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT64, 1, false));
 
-            map.put(t.getName(), t);
-        }
+        iterateOverNodeList((NodeList)xPath.compile(typeXPathExpr).evaluate(document, XPathConstants.NODESET),
+                            new IteratorCallback() 
+                            {
+                                @Override
+                                public void execute(Node node) throws Exception
+                                {
+                                    addTypeWithNameCheck(typesMap, new EncodedDataType(node));
+                                }
+                            });
+        
+        iterateOverNodeList((NodeList)xPath.compile(compositeXPathExpr).evaluate(document, XPathConstants.NODESET),
+                            new IteratorCallback() 
+                            {
+                                @Override
+                                public void execute(Node node) throws Exception
+                                {
+                                    addTypeWithNameCheck(typesMap, new CompositeType(node));
+                                }
+                            });
+
+        iterateOverNodeList((NodeList)xPath.compile(enumXPathExpr).evaluate(document, XPathConstants.NODESET),
+                            new IteratorCallback() 
+                            {
+                                @Override
+                                public void execute(Node node) throws Exception
+                                {
+                                    addTypeWithNameCheck(typesMap, new EnumType(node));
+                                }
+                            });
+
+        iterateOverNodeList((NodeList)xPath.compile(setXPathExpr).evaluate(document, XPathConstants.NODESET),
+                            new IteratorCallback()
+                            {
+                                @Override
+                                public void execute(Node node) throws Exception
+                                {
+                                    addTypeWithNameCheck(typesMap, new SetType(node));
+                                }
+                            });
+
+        return typesMap;
     }
 
     /**
-     * Add compositeType (if any) to Types Map
+     * Helper function to add a Type to a map based on name. Checks to make sure name does not exist.
      *
-     * @param map  of types
-     * @param list of Nodes
+     * @param map  of names to Type objects
+     * @param type to be added to map
      */
-    private static void addCompositeTypes(Map<String, Type> map, NodeList list)
+    private static void addTypeWithNameCheck(Map<String, Type> map, Type type)
     {
-        for (int i = 0, size = list.getLength(); i < size; i++)
+        if (map.get(type.getName()) != null)
         {
-            // TODO: may need to pass in map to constructor so it can look up the types
-            // System.out.println(list.item(i).getFirstChild().getNodeValue());
+            throw new IllegalArgumentException("SBE type already exists: " + type.getName());
         }
-    }
 
-    /**
-     * Add enumType (if any) to Types Map
-     *
-     * @param map  of types
-     * @param list of Nodes
-     */
-    private static void addEnumTypes(Map<String, Type> map, NodeList list)
-    {
-        for (int i = 0, size = list.getLength(); i < size; i++)
-        {
-            // System.out.println(list.item(i).getFirstChild().getNodeValue());
-        }
-    }
-
-    /**
-     * Add setType (if any) to Types Map
-     *
-     * @param map  of types
-     * @param list of Nodes
-     */
-    private static void addSetTypes(Map<String, Type> map, NodeList list)
-    {
-        for (int i = 0, size = list.getLength(); i < size; i++)
-        {
-            // System.out.println(list.item(i).getFirstChild().getNodeValue());
-        }
+        map.put(type.getName(), type);
     }
 
     /**
@@ -261,4 +259,29 @@ public class XmlSchemaParser
 
         return n.getNodeValue();
     }
+
+    /**
+     * Interface for iterator callback objects
+     */
+    private interface IteratorCallback
+    {
+        public void execute(final Node node) throws Exception;
+    }
+
+    /**
+     * Add compositeType (if any) to Types Map
+     *
+     * @param list     of Nodes
+     * @param callback object to execute for each node
+     */
+    private static void iterateOverNodeList(NodeList list, IteratorCallback cb)
+        throws Exception
+    {
+        for (int i = 0, size = list.getLength(); i < size; i++)
+        {
+            cb.execute(list.item(i));
+        }
+    }
+
+    
 }
