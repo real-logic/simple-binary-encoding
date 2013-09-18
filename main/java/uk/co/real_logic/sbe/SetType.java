@@ -107,7 +107,7 @@ public class SetType extends Type
     /**
      * Class to hold valid values for EnumType
      */
-    public class Choice
+    public static class Choice
     {
         private final String name;
         private final String description;

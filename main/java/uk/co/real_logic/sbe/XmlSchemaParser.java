@@ -103,58 +103,27 @@ public class XmlSchemaParser
         /* grab all types and populate map of names to Type objects */
         Map<String, Type> typesMap = populateTypesMap(document, xPath);
 
+        /* grab all messages defined and populate map of id to Message objects */
+        Map<Long, Message> messageMap = populateMessageMap(document, xPath, typesMap);
 
-        /* TODO: once all <types> handled, we can move to the actual encoding layout */
-        /**
-         * TODO: check for messageHeader type and use it for the main header (generate a special IrNode for it)
-         */
-        /* TODO: grab all <message> elements and handle them - this is where IR is generated */
-        /**
-         * Map<long, Message> messageMap = populateMessageMap(document, xPath);
-         *
-         * message
-         * - name (required) - unique?
-         * - id (required) - unique
-         * - description (optional)
-         * - blockLength (optional)
-         *
-         * within populateMessageMap:
-         * - List<Element> - Element is either field or group
-         * - may not need maps
-         * - XPath for field or group: "field|group", then use Node.getNodeName() to check which one it is
-         *
-         * field
-         * - name (required) - unique within message?
-         * - id (required) - unique within message?
-         * - type (required)
-         * - refId (optional)
-         * - description (optional)
-         * - offset (optional)
-         * - groupName (optional)
-         *
-         * group
-         * - name (required) - unique within message?
-         * - description (optional)
-         * - blockLength (optional)
-         *
-         * data
-         * - 
-         *
-         */
+        /* once all <types> handled, we can move to the actual encoding layout */
+        /* TODO: check for messageHeader type and use it for the main header */
+
         /*
          * TODO: need a message object to hold sequenced fields. Fields point back to Types. Traversing the fields generates IrNodes
          * - instead of List<IrNode>, need a container, IrContainer
-         *   - IrContainer
+         *   - IrContainer (or IrMessage?)
          *     - is representation of a single message
          *     - has
-         *       - List<IrNode> for fields and groups (Element)
-         *       - package, version, description, byteOrder
+         *       - List<IrNode> for fields and groups (Elements)
+         *       - package, version, description, byteOrder, messageHeader, etc.
          *     - is representation of a single message
          * - separate functions:
-         *   - IrContainer generateIrFromMessage(message)
+         *   - IrContainer generateIrFromMessage(message) = message has all the associated references to Types, etc.
          *   - IrContainer optimizeForSpace(IrContainer) = generates new IrContainer with optimization
          *   - IrContainer optimizeForDecodeSpeed(IrContainer) = generates new IrContainer with optimization
          *   - IrContainer optimizeForEncodeSpeed(IrContainer) = generates new IrContainer with optimization
+         *   - IrContainer optimizeForOnTheFlyDecoder(IrContainer) = generates new IrContainer that uses embedded type fields for On-The-Fly optimization
          *   - String generateFixSbeSchemaFromIr(IrContainer)
          *   - String generateAsn1FromIr(IrContainer)
          *   - String generateGpbFromIr(IrContainer)
@@ -249,6 +218,48 @@ public class XmlSchemaParser
     }
 
     /**
+     * Scan XML for all message definitions and save in map
+     *
+     * @param document for the XML parsing
+     * @param xPath    for XPath expression reuse
+     * @param typesMap to use for Type objects
+     * @return {@link java.util.Map} of id to Message
+     */
+    public static Map<Long, Message> populateMessageMap(Document document, XPath xPath, final Map<String, Type> typesMap)
+        throws Exception
+    {
+        final Map<Long, Message> map = new HashMap<Long, Message>();
+
+        iterateOverNodeList((NodeList)xPath.compile(messageXPathExpr).evaluate(document, XPathConstants.NODESET),
+                            new IteratorCallback() 
+                            {
+                                @Override
+                                public void execute(Node node) throws Exception
+                                {
+                                    addMessageWithIdCheck(map, new Message(node, typesMap));
+                                }
+                            });
+
+        return map;
+    }
+
+    /**
+     * Helper function to add a Message to a map based on id. Checks to make sure id does not exist.
+     *
+     * @param map     of id to Message objects
+     * @param message to be added to map
+     */
+    private static void addMessageWithIdCheck(Map<Long, Message> map, Message message)
+    {
+        if (map.get(message.getId()) != null)
+        {
+            throw new IllegalArgumentException("SBE message id already exists: " + message.getId());
+        }
+
+        map.put(message.getId(), message);
+    }
+
+    /**
      * Helper function that throws an exception when the attribute is not set
      *
      * @param node     that should have the attribute
@@ -260,9 +271,9 @@ public class XmlSchemaParser
     {
         Node n = node.getAttributes().getNamedItem(attrName);
 
-        if (n == null)
+        if (n == null || n.getNodeValue().equals(""))
         {
-            throw new IllegalArgumentException("Element attribute is not present: " + attrName);
+            throw new IllegalArgumentException("Element attribute is not present or is empty: " + attrName);
         }
 
         return n.getNodeValue();

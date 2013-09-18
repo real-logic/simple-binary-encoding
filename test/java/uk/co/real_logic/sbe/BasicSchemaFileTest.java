@@ -54,4 +54,11 @@ public class BasicSchemaFileTest
         XmlSchemaParser.parseXmlAndGenerateIr(getLocalResource("BasicSchemaFileTest.xml"));
     }
 
+    @Test
+    public void shouldHandleBasicFileWithGroup()
+        throws Exception
+    {
+        XmlSchemaParser.parseXmlAndGenerateIr(getLocalResource("BasicGroupSchemaFileTest.xml"));
+    }
+
 }
