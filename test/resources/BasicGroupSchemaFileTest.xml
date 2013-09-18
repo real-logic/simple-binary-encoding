@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" package="SBE tests" fixVersion="5.2" description="Unit Test" byteOrder="littleEndian" xsi:schemaLocation="http://www.fixprotocol.org/ns/simple/1.0/SimpleBinary1-0.xsd">
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   package="SBE tests"
+                   fixVersion="5.2"
+                   description="Unit Test"
+                   byteOrder="littleEndian"
+                   xsi:schemaLocation="http://www.fixprotocol.org/ns/simple/1.0/SimpleBinary1-0.xsd">
   <types>
     <type name="Symbol" description="Symbol" length="20" primitiveType="char" fixUsage="char"/>
     <composite name="messageHeader" description="Template ID and length of message root" fixUsage="Length">

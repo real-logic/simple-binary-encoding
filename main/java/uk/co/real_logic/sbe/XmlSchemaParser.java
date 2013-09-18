@@ -332,7 +332,7 @@ public class XmlSchemaParser
      * @param list     of Nodes
      * @param callback object to execute for each node
      */
-    private static void iterateOverNodeList(NodeList list, IteratorCallback callback)
+    private static void iterateOverNodeList(final NodeList list, final IteratorCallback callback)
         throws Exception
     {
         for (int i = 0, size = list.getLength(); i < size; i++)
@@ -340,6 +340,4 @@ public class XmlSchemaParser
             callback.execute(list.item(i));
         }
     }
-
-    
 }
