@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe;
+package uk.co.real_logic.sbe.ir;
+
 
 /**
  * Class to encapsulate a field within an SBE message. This Intermediate Representation (IR)
@@ -40,9 +41,6 @@ public class IrNode
     /** Offset not computed or set */
     private final static int INVALID_OFFSET = -1;
 
-    /** Type of field */
-    private final Type type;
-
     /** Size of field */
     private int size;
 
@@ -52,10 +50,9 @@ public class IrNode
     /**
      * Construct an IrNode
      */
-    public IrNode(final Type type)
+    public IrNode()
     {
-        this.type = type;
-        this.size = type.size();
+        this.size = 0;
         this.offset = INVALID_OFFSET;
     }
 }

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe;
+package uk.co.real_logic.sbe.xml;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -65,14 +65,14 @@ public class XmlSchemaParser
     public static final String messageSchemaXPathExpr = "/messageSchema";
 
     /**
-     * Take an input stream and parse it generating Intermediate Representation.
+     * Take an input stream and parse it generating map of template ID to Message objects.
      * Input could be from {@link java.io.FileInputStream}, {@link java.io.ByteArrayInputStream}, etc.
      * Exceptions are passed back up for any problems.
      *
      * @param stream to read schema from
-     * @return list of Intermediate Representation nodes
+     * @return map of SBE template IDs to Message objects
      */
-    public static List<IrNode> parseXmlAndGenerateIr(final InputStream stream)
+    public static Map<Long, Message> parseXmlAndGenerateMessageMap(final InputStream stream)
         throws Exception
     {
         /* set up XML parsing */
@@ -91,14 +91,18 @@ public class XmlSchemaParser
          * version - optional
          * description - optional
          * byteOrder - bigEndian or littleEndian (default)
-         * TODO: save these in the IrNode
+         * TODO: save these in each Message object
          */
         Node messageSchemaNode = (Node)xPath.compile(messageSchemaXPathExpr).evaluate(document, XPathConstants.NODE);
 
-        String pack = getXmlAttributeValue(messageSchemaNode, "package");
+        String pkg = getXmlAttributeValue(messageSchemaNode, "package");
         String description = getXmlAttributeValueNullable(messageSchemaNode, "description");
         String version = getXmlAttributeValueNullable(messageSchemaNode, "version");
         String byteOrder = getXmlAttributeValue(messageSchemaNode, "byteOrder", "littleEndian");
+
+        /**
+         * TODO: use java.nio.ByteOrder to save byte order enumeration
+         */
 
         /* grab all types and populate map of names to Type objects */
         Map<String, Type> typesMap = populateTypesMap(document, xPath);
@@ -106,7 +110,13 @@ public class XmlSchemaParser
         /* grab all messages defined and populate map of id to Message objects */
         Map<Long, Message> messageMap = populateMessageMap(document, xPath, typesMap);
 
-        /* once all <types> handled, we can move to the actual encoding layout */
+        /*
+         * What is different between Message and the IR
+         * - IR is platform, schema, and language independent. It is abstract layout only.
+         * - Message is FIX/SBE XML Schema specific
+         * 
+         */
+
         /* TODO: check for messageHeader type and use it for the main header */
 
         /*
@@ -118,6 +128,7 @@ public class XmlSchemaParser
          *       - List<IrNode> for fields and groups (Elements)
          *       - package, version, description, byteOrder, messageHeader, etc.
          *     - is representation of a single message
+         * - each Ir element needs to have its own ByteOrder (optionally) - suggested by Gil
          * - separate functions:
          *   - IrContainer generateIrFromMessage(message) = message has all the associated references to Types, etc.
          *   - IrContainer optimizeForSpace(IrContainer) = generates new IrContainer with optimization
@@ -132,7 +143,7 @@ public class XmlSchemaParser
          * Ultra-Meta
          *   - IrContainer parseIrAndGenerateIr(filename) = read in serialized (with SBE) Ir and generate a new internal IrContainer
          */
-        return null;
+        return messageMap;
     }
 
     /**

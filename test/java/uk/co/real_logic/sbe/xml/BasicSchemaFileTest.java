@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe;
+package uk.co.real_logic.sbe.xml;
 
 import java.io.InputStream;
 
@@ -45,14 +45,14 @@ public class BasicSchemaFileTest
     public void shouldHandleBasicFile()
         throws Exception
     {
-        XmlSchemaParser.parseXmlAndGenerateIr(getLocalResource("BasicSchemaFileTest.xml"));
+        XmlSchemaParser.parseXmlAndGenerateMessageMap(getLocalResource("BasicSchemaFileTest.xml"));
     }
 
     @Test
     public void shouldHandleBasicFileWithGroup()
         throws Exception
     {
-        XmlSchemaParser.parseXmlAndGenerateIr(getLocalResource("BasicGroupSchemaFileTest.xml"));
+        XmlSchemaParser.parseXmlAndGenerateMessageMap(getLocalResource("BasicGroupSchemaFileTest.xml"));
     }
 
 }
