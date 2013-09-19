@@ -39,6 +39,7 @@ public class Message
     private final String description;
     private final long blockLength;
     private final List<Field> fieldList;
+    private final String fixMsgType;
 
     /**
      * Construct a new message from XML Schema.
@@ -64,6 +65,7 @@ public class Message
         this.name = XmlSchemaParser.getXmlAttributeValue(node, "name");                                    // required
         this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");              // optional
         this.blockLength = Long.parseLong(XmlSchemaParser.getXmlAttributeValue(node, "blockLength", "0")); // 0 means not set
+        this.fixMsgType = XmlSchemaParser.getXmlAttributeValueNullable(node, "fixMsgType");                // optional
 
         this.fieldList = parseXmlFieldsAndGroups(node, typesMap);
     }
@@ -72,10 +74,13 @@ public class Message
         throws XPathExpressionException, IllegalArgumentException
     {
         XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile("field|group").evaluate(node, XPathConstants.NODESET);
+        NodeList list = (NodeList)xPath.compile("field|group|data").evaluate(node, XPathConstants.NODESET);
 
         List<Field> fieldList = new ArrayList<Field>();
+
         Map<String, Field> entryCountFieldMap = new HashMap<String, Field>();  // used for holding entry count fields and matching up
+
+        Map<Integer, Field> lengthFieldMap = new HashMap<Integer, Field>();    // used for holding length fields and matching up
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
@@ -117,12 +122,39 @@ public class Message
                 {
                     entryCountFieldMap.put(f.getGroupName(), f);
                 }
+
+                /* save refId for matching up with data if this is a Length field */
+                if (f.getRefId() != Field.INVALID_ID)
+                {
+                    lengthFieldMap.put(new Integer(f.getRefId()), f);
+                }
+            }
+            else if (list.item(i).getNodeName().equals("data"))
+            {
+        		/* use the Field constructor that is for field (even though this is a data) */
+                f = new Field(list.item(i),
+                              XmlSchemaParser.getXmlAttributeValue(list.item(i), "name"),
+                              Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(list.item(i), "id")),
+                              lookupType(typesMap, XmlSchemaParser.getXmlAttributeValue(list.item(i), "type")));
+
+                /* match up with length field */
+                Integer lengthFieldRefId = new Integer(f.getId());
+                Field lengthField = lengthFieldMap.get(lengthFieldRefId);
+
+                if (lengthField == null)
+                {
+                    throw new IllegalArgumentException("could not find length field for data field: " + f.getName());
+                }
+
+                f.setLengthField(lengthField);
+                lengthFieldMap.remove(lengthFieldRefId); // remove field so that it can be reused
             }
 
             fieldList.add(f);
         }
         /*
          * TODO: if the entryCountMap is not empty, then it means something didn't get matched up... warning?
+         * TODO: same for lengthFieldMap
          */
         return fieldList;
     }
@@ -182,33 +214,22 @@ public class Message
      */
     public static class Field
     {
-        /*
-             * field
-             * - name (required) - unique within message?
-             * - id (required) - unique within message?
-             * - type (required)
-             * - refId (optional)
-             * - description (optional)
-             * - offset (optional)
-             * - groupName (optional)
-             *
-             * group
-             * - name (required) - unique within message? field for num entries must precede it!
-             * - description (optional)
-             * - blockLength (optional)
-         */
         public static final int INVALID_ID = Integer.MAX_VALUE;  // id must only be short, so this is way out of range.
+        public static final String INVALID_ID_STRING = Integer.toString(INVALID_ID);
 
-        private final String name;                      // required for field & group
-        private final String description;               // optional for field & group
-        private final String groupName;                 // optional for field (not present for group)
-        private final int id;                           // required for field (not present for group)
-        private final Type type;                        // required for field (not present for group)
-        private final long offset;                      // optional for field (not present for group)
-        private final FixUsage fixUsage;                // optional for field (not present for group?)
-        private final long blockLength;                 // optional for group (not present for field)
+        private final String name;                      // required for field/data & group
+        private final String description;               // optional for field/data & group
+        private final String groupName;                 // optional for field/date (not present for group)
+        private final int id;                           // required for field/data (not present for group)
+        private final Type type;                        // required for field/data (not present for group)
+        private final long offset;                      // optional for field/data (not present for group)
+        private final FixUsage fixUsage;                // optional for field/data (not present for group?)
+        private final Presence presence;                // optional for field/data (not present for group)  null means not set
+        private final int refId;                        // optional for field (not present for group or data) INVALID_ID means not set
+        private final long blockLength;                 // optional for group (not present for field/data)
         private List<Field> groupFieldList;
         private Field entryCountField;                  // used by group fields as the entry count field
+        private Field lengthField;                      // used by data fields as the length field
 
         /**
          * The field constructor
@@ -222,9 +243,12 @@ public class Message
             this.type = type;
             this.offset = Long.parseLong(XmlSchemaParser.getXmlAttributeValue(node, "offset", "0"));
             this.fixUsage = FixUsage.lookup(XmlSchemaParser.getXmlAttributeValueNullable(node, "fixUsage"));
+            this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValueNullable(node, "presence"));
+            this.refId = Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(node, "refId", INVALID_ID_STRING));
             this.blockLength = 0;
             this.groupFieldList = null;   // has no meaning if not group
             this.entryCountField = null;  // has no meaning if not group
+            this.lengthField = null;      // will be set later
 
             /* fixUsage must be present or must be on the type. If on both, they must agree. */
             if (this.fixUsage == null && this.type.getFixUsage() == null)
@@ -251,9 +275,12 @@ public class Message
             this.type = null;
             this.offset = 0;
             this.fixUsage = null;
+            this.presence = null;
+            this.refId = INVALID_ID;
             this.blockLength = Long.parseLong(XmlSchemaParser.getXmlAttributeValue(node, "blockLength", "0"));
             this.groupFieldList = null;    // for now. Set later.
             this.entryCountField = null;   // for now. Set later.
+            this.lengthField = null;       // has no meaning for group.
         }
 
         public void setGroupFieldList(final List<Field> list)
@@ -264,6 +291,11 @@ public class Message
         public void setEntryCountField(final Field field)
         {
             entryCountField = field;
+        }
+
+        public void setLengthField(final Field field)
+        {
+            lengthField = field;
         }
 
         public List<Field> getGroupFieldList()
@@ -289,6 +321,11 @@ public class Message
         public int getId()
         {
             return id;
+        }
+
+        public int getRefId()
+        {
+            return refId;
         }
 
         public Type getType()

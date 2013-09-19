@@ -92,8 +92,7 @@ public enum FixUsage
     RESERVED1000PLUS("Reserved1000Plus"),
     RESERVED4000PLUS("Reserved4000Plus"),
     XMLDATA("XMLData"),
-    LANGUAGE("Language"),
-    NOTSET("");
+    LANGUAGE("Language");
 
     private final String name;
 

@@ -51,6 +51,11 @@ public enum Presence
      */
     public static Presence lookup(final String value)
     {
+        if (value == null)
+        {
+            return null;
+        }
+
         for (final Presence p : values())
         {
             if (value.equals(p.value))

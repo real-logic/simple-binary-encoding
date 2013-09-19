@@ -55,4 +55,11 @@ public class BasicSchemaFileTest
         XmlSchemaParser.parseXmlAndGenerateMessageMap(getLocalResource("BasicGroupSchemaFileTest.xml"));
     }
 
+    @Test
+    public void shouldHandleBasicFileWithVariableLengthData()
+        throws Exception
+    {
+        XmlSchemaParser.parseXmlAndGenerateMessageMap(getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
+    }
+
 }

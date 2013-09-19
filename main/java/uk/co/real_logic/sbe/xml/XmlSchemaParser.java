@@ -99,6 +99,7 @@ public class XmlSchemaParser
         String pkg = getXmlAttributeValue(messageSchemaNode, "package");
         String description = getXmlAttributeValueNullable(messageSchemaNode, "description");
         Long version = Long.parseLong(getXmlAttributeValue(messageSchemaNode, "version", "0"));  // default version is 0
+        String fixVersion = getXmlAttributeValueNullable(messageSchemaNode, "fixVersion");
         ByteOrder byteOrder = lookupByteOrder(getXmlAttributeValue(messageSchemaNode, "byteOrder", "littleEndian"));
 
         /* grab all types and populate map of names to Type objects */
@@ -106,6 +107,8 @@ public class XmlSchemaParser
 
         /* grab all messages defined and populate map of id to Message objects */
         Map<Long, Message> messageMap = populateMessageMap(document, xPath, typesMap);
+
+        // TODO: run checks and validation on Messages in Message Map
 
         /*
          * What is different between Message and the IR
