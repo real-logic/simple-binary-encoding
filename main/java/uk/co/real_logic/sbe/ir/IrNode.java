@@ -16,10 +16,9 @@
  */
 package uk.co.real_logic.sbe.ir;
 
-
 /**
  * Class to encapsulate a field within an SBE message. This Intermediate Representation (IR)
- * is language neutral.
+ * is language, schema, platform independent.
  * <p/>
  * Processing and optimization is run over a list of IRNodes to perform various functions
  * - ordering of fields based on size
@@ -40,6 +39,14 @@ public class IrNode
 
     /** Offset not computed or set */
     private final static int INVALID_OFFSET = -1;
+
+    /**
+     * TODO:
+     * - need an IrType (which includes IEEE-754, etc.) that encapsulates basic encoding
+     * - per field ByteOrder
+     * - 
+     * 
+     */
 
     /** Size of field */
     private int size;

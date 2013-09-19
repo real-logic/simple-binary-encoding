@@ -123,7 +123,7 @@ public enum FixUsage
     {
 	    if (value == null)
         {
-            return NOTSET;
+            return null;
         }
 
         for (final FixUsage f : values())

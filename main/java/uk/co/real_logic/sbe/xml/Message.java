@@ -25,6 +25,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -63,16 +64,18 @@ public class Message
         this.name = XmlSchemaParser.getXmlAttributeValue(node, "name");                                    // required
         this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");              // optional
         this.blockLength = Long.parseLong(XmlSchemaParser.getXmlAttributeValue(node, "blockLength", "0")); // 0 means not set
+
         this.fieldList = parseXmlFieldsAndGroups(node, typesMap);
     }
 
     private static List<Field> parseXmlFieldsAndGroups(final Node node, final Map<String, Type> typesMap)
-        throws XPathExpressionException
+        throws XPathExpressionException, IllegalArgumentException
     {
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile("field|group").evaluate(node, XPathConstants.NODESET);
 
         List<Field> fieldList = new ArrayList<Field>();
+        Map<String, Field> entryCountFieldMap = new HashMap<String, Field>();  // used for holding entry count fields and matching up
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
@@ -81,11 +84,24 @@ public class Message
             if (list.item(i).getNodeName().equals("group"))
             {
                 /*
-                 * TODO: must search for previously parsed field that has groupName = to name (can this map be only visible on the stack?)
+                 * must search for previously parsed field that has groupName = to name (can this map be only visible on the stack?)
+                 * must exist as it had to be placed before the group.
                  */
+
                 /* use the Field constructor that is for group (not field) */
                 f = new Field(list.item(i),
                               XmlSchemaParser.getXmlAttributeValue(list.item(i), "name"));
+
+                Field entryCountField = entryCountFieldMap.get(f.getName());
+
+                if (entryCountField == null)
+                {
+                    throw new IllegalArgumentException("could not find entry count field for group: " + f.getName());
+                }
+
+                f.setEntryCountField(entryCountField);
+                entryCountFieldMap.remove(f.getName()); // remove field so that it can't be reused as this level
+
                 f.setGroupFieldList(parseXmlFieldsAndGroups(list.item(i), typesMap)); // recursive call
             }
             else if (list.item(i).getNodeName().equals("field"))
@@ -95,11 +111,19 @@ public class Message
                               XmlSchemaParser.getXmlAttributeValue(list.item(i), "name"),
                               Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(list.item(i), "id")),
                               lookupType(typesMap, XmlSchemaParser.getXmlAttributeValue(list.item(i), "type")));
+
+                /* save field for matching up with group if this is an entry count field */
+                if (f.getGroupName() != null)
+                {
+                    entryCountFieldMap.put(f.getGroupName(), f);
+                }
             }
 
             fieldList.add(f);
         }
-
+        /*
+         * TODO: if the entryCountMap is not empty, then it means something didn't get matched up... warning?
+         */
         return fieldList;
     }
 
@@ -107,6 +131,7 @@ public class Message
      * static method to encapsulate exception for them type does not exist.
      */
     private static Type lookupType(final Map<String, Type> map, final String name)
+        throws IllegalArgumentException
     {
         Type t = map.get(name);
 
@@ -176,11 +201,14 @@ public class Message
 
         private final String name;                      // required for field & group
         private final String description;               // optional for field & group
+        private final String groupName;                 // optional for field (not present for group)
         private final int id;                           // required for field (not present for group)
         private final Type type;                        // required for field (not present for group)
         private final long offset;                      // optional for field (not present for group)
+        private final FixUsage fixUsage;                // optional for field (not present for group?)
         private final long blockLength;                 // optional for group (not present for field)
         private List<Field> groupFieldList;
+        private Field entryCountField;                  // used by group fields as the entry count field
 
         /**
          * The field constructor
@@ -189,12 +217,26 @@ public class Message
         {
             this.name = name;
             this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
+            this.groupName = XmlSchemaParser.getXmlAttributeValueNullable(node, "groupName");
             this.id = id;
             this.type = type;
             this.offset = Long.parseLong(XmlSchemaParser.getXmlAttributeValue(node, "offset", "0"));
+            this.fixUsage = FixUsage.lookup(XmlSchemaParser.getXmlAttributeValueNullable(node, "fixUsage"));
             this.blockLength = 0;
-            this.groupFieldList = null; // has no meaning if not group
-            // TODO: fixUsage must be present or must be on the type
+            this.groupFieldList = null;   // has no meaning if not group
+            this.entryCountField = null;  // has no meaning if not group
+
+            /* fixUsage must be present or must be on the type. If on both, they must agree. */
+            if (this.fixUsage == null && this.type.getFixUsage() == null)
+            {
+                throw new IllegalArgumentException("Missing fixUsage on type and field: " + this.name);
+            }
+            else if (this.fixUsage != null && this.type.getFixUsage() != null && this.fixUsage != this.type.getFixUsage())
+            {
+                System.out.println(this.fixUsage + " " + this.type.getFixUsage());
+                
+                throw new IllegalArgumentException("Mismatched fixUsage on type and field: " + this.name);
+            }
         }
 
         /**
@@ -204,16 +246,24 @@ public class Message
         {
             this.name = name;
             this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
+            this.groupName = null;
             this.id = INVALID_ID;
             this.type = null;
             this.offset = 0;
+            this.fixUsage = null;
             this.blockLength = Long.parseLong(XmlSchemaParser.getXmlAttributeValue(node, "blockLength", "0"));
-            this.groupFieldList = null; // for now. Set later.
+            this.groupFieldList = null;    // for now. Set later.
+            this.entryCountField = null;   // for now. Set later.
         }
 
         public void setGroupFieldList(final List<Field> list)
         {
             groupFieldList = list;
+        }
+
+        public void setEntryCountField(final Field field)
+        {
+            entryCountField = field;
         }
 
         public List<Field> getGroupFieldList()
@@ -229,6 +279,11 @@ public class Message
         public String getDescription()
         {
             return description;
+        }
+
+        public String getGroupName()
+        {
+            return groupName;
         }
 
         public int getId()

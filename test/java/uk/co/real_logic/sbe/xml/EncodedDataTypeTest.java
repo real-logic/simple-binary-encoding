@@ -297,7 +297,7 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat(map.get("testTypeFIX").getFixUsage(), is(FixUsage.NOTSET));
+        Assert.assertNull(map.get("testTypeFIX").getFixUsage());
     }        
 
     @Test(expected = IllegalArgumentException.class)

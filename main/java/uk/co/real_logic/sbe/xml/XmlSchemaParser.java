@@ -112,12 +112,12 @@ public class XmlSchemaParser
 
         /*
          * What is different between Message and the IR
-         * - IR is platform, schema, and language independent. It is abstract layout only.
-         * - Message is FIX/SBE XML Schema specific
-         * 
+         * - IR is platform, schema, and language independent. It is abstract layout & metadata only.
+         * - Message is FIX/SBE XML Schema specific.
          */
 
         /* TODO: check for messageHeader type and use it for the main header */
+        /* TODO: Message needs to hold (in addition to fields): schemaPackage, schemaDescription, schemaVersion, schemaByteOrder, messageHeader */
 
         /*
          * TODO: need a message object to hold sequenced fields. Fields point back to Types. Traversing the fields generates IrNodes
@@ -159,15 +159,15 @@ public class XmlSchemaParser
         final Map<String, Type> typesMap = new HashMap<String, Type>();
 
         // add primitiveTypes to typesMap - these could be in a static XInclude that is always brought in...
-        typesMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.CHAR, 1, false));
-        typesMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT8, 1, false));
-        typesMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT16, 1, false));
-        typesMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT32, 1, false));
-        typesMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.INT64, 1, false));
-        typesMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT8, 1, false));
-        typesMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT16, 1, false));
-        typesMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT32, 1, false));
-        typesMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, FixUsage.NOTSET, Primitive.UINT64, 1, false));
+        typesMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, null, Primitive.CHAR, 1, false));
+        typesMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, null, Primitive.INT8, 1, false));
+        typesMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, null, Primitive.INT16, 1, false));
+        typesMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, null, Primitive.INT32, 1, false));
+        typesMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, null, Primitive.INT64, 1, false));
+        typesMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, null, Primitive.UINT8, 1, false));
+        typesMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, null, Primitive.UINT16, 1, false));
+        typesMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, null, Primitive.UINT32, 1, false));
+        typesMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, null, Primitive.UINT64, 1, false));
 
         iterateOverNodeList((NodeList)xPath.compile(typeXPathExpr).evaluate(document, XPathConstants.NODESET),
                             new IteratorCallback() 
@@ -264,7 +264,7 @@ public class XmlSchemaParser
     {
         if (map.get(message.getId()) != null)
         {
-            throw new IllegalArgumentException("SBE message id already exists: " + message.getId());
+            throw new IllegalArgumentException("SBE message template id already exists: " + message.getId());
         }
 
         map.put(message.getId(), message);
