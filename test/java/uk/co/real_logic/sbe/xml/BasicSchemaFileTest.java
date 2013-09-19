@@ -45,21 +45,21 @@ public class BasicSchemaFileTest
     public void shouldHandleBasicFile()
         throws Exception
     {
-        XmlSchemaParser.parseXmlAndGenerateMessageMap(getLocalResource("BasicSchemaFileTest.xml"));
+        XmlSchemaParser.parseXmlAndGenerateMessageSchema(getLocalResource("BasicSchemaFileTest.xml"));
     }
 
     @Test
     public void shouldHandleBasicFileWithGroup()
         throws Exception
     {
-        XmlSchemaParser.parseXmlAndGenerateMessageMap(getLocalResource("BasicGroupSchemaFileTest.xml"));
+        XmlSchemaParser.parseXmlAndGenerateMessageSchema(getLocalResource("BasicGroupSchemaFileTest.xml"));
     }
 
     @Test
     public void shouldHandleBasicFileWithVariableLengthData()
         throws Exception
     {
-        XmlSchemaParser.parseXmlAndGenerateMessageMap(getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
+        XmlSchemaParser.parseXmlAndGenerateMessageSchema(getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
     }
 
 }

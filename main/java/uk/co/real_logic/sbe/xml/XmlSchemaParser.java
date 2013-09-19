@@ -66,14 +66,14 @@ public class XmlSchemaParser
     public static final String messageSchemaXPathExpr = "/messageSchema";
 
     /**
-     * Take an input stream and parse it generating map of template ID to Message objects.
+     * Take an input stream and parse it generating map of template ID to Message objects, types, and schema
      * Input could be from {@link java.io.FileInputStream}, {@link java.io.ByteArrayInputStream}, etc.
      * Exceptions are passed back up for any problems.
      *
      * @param stream to read schema from
-     * @return map of SBE template IDs to Message objects
+     * @return {@link uk.co.real_logic.sbe.xml.MessageSchema} object that holds the schema
      */
-    public static Map<Long, Message> parseXmlAndGenerateMessageMap(final InputStream stream)
+    public static MessageSchema parseXmlAndGenerateMessageSchema(final InputStream stream)
         throws Exception
     {
         /* set up XML parsing */
@@ -86,65 +86,54 @@ public class XmlSchemaParser
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream);
         XPath xPath = XPathFactory.newInstance().newXPath();
 
-        /* Grab messageSchema attributes */
-        /*
-         * package
-         * version - optional
-         * description - optional
-         * byteOrder - bigEndian or littleEndian (default)
-         * TODO: save these in each Message object
-         */
-        Node messageSchemaNode = (Node)xPath.compile(messageSchemaXPathExpr).evaluate(document, XPathConstants.NODE);
-
-        String pkg = getXmlAttributeValue(messageSchemaNode, "package");
-        String description = getXmlAttributeValueNullable(messageSchemaNode, "description");
-        Long version = Long.parseLong(getXmlAttributeValue(messageSchemaNode, "version", "0"));  // default version is 0
-        String fixVersion = getXmlAttributeValueNullable(messageSchemaNode, "fixVersion");
-        ByteOrder byteOrder = lookupByteOrder(getXmlAttributeValue(messageSchemaNode, "byteOrder", "littleEndian"));
-
         /* grab all types and populate map of names to Type objects */
-        Map<String, Type> typesMap = populateTypesMap(document, xPath);
+        Map<String, Type> typeMap = populateTypeMap(document, xPath);
 
         /* grab all messages defined and populate map of id to Message objects */
-        Map<Long, Message> messageMap = populateMessageMap(document, xPath, typesMap);
+        Map<Long, Message> messageMap = populateMessageMap(document, xPath, typeMap);
 
-        // TODO: run checks and validation on Messages in Message Map
+        /* grab messageSchema attributes and save maps*/
+        MessageSchema schema = new MessageSchema((Node)xPath.compile(messageSchemaXPathExpr).evaluate(document, XPathConstants.NODE),
+                                                 typeMap, messageMap);
 
-        /*
-         * What is different between Message and the IR
-         * - IR is platform, schema, and language independent. It is abstract layout & metadata only.
-         * - Message is FIX/SBE XML Schema specific.
-         */
+        // TODO: run additional checks and validation on Messages in Message Map
 
-        /* TODO: check for messageHeader type and use it for the main header */
-        /* TODO: Message needs to hold (in addition to fields): schemaPackage, schemaDescription, schemaVersion, schemaByteOrder, messageHeader */
-
-        /*
-         * TODO: need a message object to hold sequenced fields. Fields point back to Types. Traversing the fields generates IrNodes
-         * - instead of List<IrNode>, need a container, IrContainer
-         *   - IrContainer (or IrMessage?)
-         *     - is representation of a single message
-         *     - has
-         *       - List<IrNode> for fields and groups (Elements)
-         *       - package, version, description, byteOrder, messageHeader, etc.
-         *     - is representation of a single message
-         * - each Ir element needs to have its own ByteOrder (optionally) - suggested by Gil
-         * - separate functions:
-         *   - IrContainer generateIrFromMessage(message) = message has all the associated references to Types, etc.
-         *   - IrContainer optimizeForSpace(IrContainer) = generates new IrContainer with optimization
-         *   - IrContainer optimizeForDecodeSpeed(IrContainer) = generates new IrContainer with optimization
-         *   - IrContainer optimizeForEncodeSpeed(IrContainer) = generates new IrContainer with optimization
-         *   - IrContainer optimizeForOnTheFlyDecoder(IrContainer) = generates new IrContainer that uses embedded type fields for On-The-Fly optimization
-         *   - String generateFixSbeSchemaFromIr(IrContainer)
-         *   - String generateAsn1FromIr(IrContainer)
-         *   - String generateGpbFromIr(IrContainer)
-         *   - String generateThriftFromIr(IrContainer)
-         *
-         * Ultra-Meta
-         *   - IrContainer parseIrAndGenerateIr(filename) = read in serialized (with SBE) Ir and generate a new internal IrContainer
-         */
-        return messageMap;
+        return schema;
     }
+
+    /*
+     * What is different between Message and the IR
+     * - IR is platform, schema, and language independent. It is abstract layout & metadata only.
+     * - Message is FIX/SBE XML Schema specific.
+     */
+    
+    /* TODO: check for messageHeader type and use it for the main header */
+    /* TODO: Message needs to hold (in addition to fields): schemaPackage, schemaDescription, schemaVersion, schemaByteOrder, messageHeader */
+    
+    /*
+     * TODO: need a message object to hold sequenced fields. Fields point back to Types. Traversing the fields generates IrNodes
+     * - instead of List<IrNode>, need a container, IrContainer
+     *   - IrContainer (or IrMessage?)
+     *     - is representation of a single message
+     *     - has
+     *       - List<IrNode> for fields and groups (Elements)
+     *       - package, version, description, byteOrder, messageHeader, etc.
+     *     - is representation of a single message
+     * - each Ir element needs to have its own ByteOrder (optionally) - suggested by Gil
+     * - separate functions:
+     *   - IrContainer generateIrFromMessage(message) = message has all the associated references to Types, etc.
+     *   - IrContainer optimizeForSpace(IrContainer) = generates new IrContainer with optimization
+     *   - IrContainer optimizeForDecodeSpeed(IrContainer) = generates new IrContainer with optimization
+     *   - IrContainer optimizeForEncodeSpeed(IrContainer) = generates new IrContainer with optimization
+     *   - IrContainer optimizeForOnTheFlyDecoder(IrContainer) = generates new IrContainer that uses embedded type fields for On-The-Fly optimization
+     *   - String generateFixSbeSchemaFromIr(IrContainer)
+     *   - String generateAsn1FromIr(IrContainer)
+     *   - String generateGpbFromIr(IrContainer)
+     *   - String generateThriftFromIr(IrContainer)
+     *
+     * Ultra-Meta
+     *   - IrContainer parseIrAndGenerateIr(filename) = read in serialized (with SBE) Ir and generate a new internal IrContainer
+     */
 
     /**
      * Scan XML for all types (encodedDataType, compositeType, enumType, and setType) and save in map
@@ -153,7 +142,7 @@ public class XmlSchemaParser
      * @param xPath    for XPath expression reuse
      * @return {@link java.util.Map} of name {@link java.lang.String} to Type
      */
-    public static Map<String, Type> populateTypesMap(Document document, XPath xPath)
+    public static Map<String, Type> populateTypeMap(Document document, XPath xPath)
         throws Exception
     {
         final Map<String, Type> typesMap = new HashMap<String, Type>();

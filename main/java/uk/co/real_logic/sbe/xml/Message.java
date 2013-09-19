@@ -257,8 +257,6 @@ public class Message
             }
             else if (this.fixUsage != null && this.type.getFixUsage() != null && this.fixUsage != this.type.getFixUsage())
             {
-                System.out.println(this.fixUsage + " " + this.type.getFixUsage());
-                
                 throw new IllegalArgumentException("Mismatched fixUsage on type and field: " + this.name);
             }
         }
