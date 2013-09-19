@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.nio.ByteOrder;
 
 /**
  * Encapsulate the XML Schema parsing for SBE so that other representations may be used to generate IR
@@ -97,12 +98,8 @@ public class XmlSchemaParser
 
         String pkg = getXmlAttributeValue(messageSchemaNode, "package");
         String description = getXmlAttributeValueNullable(messageSchemaNode, "description");
-        String version = getXmlAttributeValueNullable(messageSchemaNode, "version");
-        String byteOrder = getXmlAttributeValue(messageSchemaNode, "byteOrder", "littleEndian");
-
-        /**
-         * TODO: use java.nio.ByteOrder to save byte order enumeration
-         */
+        Long version = Long.parseLong(getXmlAttributeValue(messageSchemaNode, "version", "0"));  // default version is 0
+        ByteOrder byteOrder = lookupByteOrder(getXmlAttributeValue(messageSchemaNode, "byteOrder", "littleEndian"));
 
         /* grab all types and populate map of names to Type objects */
         Map<String, Type> typesMap = populateTypesMap(document, xPath);
@@ -327,6 +324,26 @@ public class XmlSchemaParser
         }
 
         return n.getNodeValue();
+    }
+
+    /**
+     * Helper function to convert a schema byteOrder (littleEndian or bigEndian) into a {@link java.nio.ByteOrder}
+     *
+     * @param order specified as a FIX SBE string
+     * @return ByteOrder representation
+     */
+    public static ByteOrder lookupByteOrder(final String order)
+    {
+        if (order.equals("littleEndian"))
+        {
+            return ByteOrder.LITTLE_ENDIAN;
+        }
+        else if (order.equals("bigEndian"))
+        {
+            return ByteOrder.BIG_ENDIAN;
+        }
+
+        return ByteOrder.LITTLE_ENDIAN;
     }
 
     /**
