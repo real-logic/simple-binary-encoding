@@ -206,6 +206,16 @@ public class Message
     }
 
     /**
+     * Return the list of fields in the message
+     *
+     * @return {@link java.util.List} of the Field objects in this Message
+     */
+    public List<Field> getFieldList()
+    {
+        return fieldList;
+    }
+
+    /**
      * TODO: provide iterator interface to iterate through all fields and groups seamlessly for IR generation
      */
 

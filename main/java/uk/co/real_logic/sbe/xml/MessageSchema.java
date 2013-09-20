@@ -56,4 +56,9 @@ public class MessageSchema
 	Long longId = new Long(id);
 	return messageMap.get(longId);
     }
+
+    public ByteOrder getByteOrder()
+    {
+	return byteOrder;
+    }
 }

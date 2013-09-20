@@ -71,9 +71,49 @@ public class IrNode
         this.byteOrder = byteOrder;
     }
 
+    public IrNode(final MetaData metaData)
+    {
+        this.primitiveType = null;
+        this.size = 0;
+        this.offset = 0;
+        this.metaData = metaData;
+        this.byteOrder = null;
+    }
+
+    public Primitive getPrimitive()
+    {
+        return primitiveType;
+    }
+
+    public int size()
+    {
+        return size;
+    }
+
+    public int getOffset()
+    {
+        return offset;
+    }
+
+    public MetaData getMetaData()
+    {
+        return metaData;
+    }
+
+    public ByteOrder getByteOrder()
+    {
+        return byteOrder;
+    }
+
     public enum Flag
     {
-        START, END, NONE;
+        STRUCT_START,
+        STRUCT_END,
+        FIELD_START,
+        FIELD_END,
+        GROUP_START,
+        GROUP_END,
+        NONE;
     }
 
     /**
@@ -81,7 +121,7 @@ public class IrNode
      */
     public static class MetaData
     {
-        private static final int INVALID_ID = Integer.MAX_VALUE;
+        public static final int INVALID_ID = Integer.MAX_VALUE;
 
         private final String name;
         private final int id;
@@ -92,6 +132,21 @@ public class IrNode
             this.name = name;
             this.id = id;
             this.flag = flag;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public int getId()
+        {
+            return id;
+        }
+
+        public Flag getFlag()
+        {
+            return flag;
         }
     }
 }
