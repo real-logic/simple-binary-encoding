@@ -16,50 +16,82 @@
  */
 package uk.co.real_logic.sbe.ir;
 
+import uk.co.real_logic.sbe.Primitive;
+
+import java.nio.ByteOrder;
+
 /**
- * Class to encapsulate a field within an SBE message. This Intermediate Representation (IR)
+ * Class to encapsulate an atom of data. This Intermediate Representation (IR)
  * is language, schema, platform independent.
  * <p/>
- * Processing and optimization is run over a list of IRNodes to perform various functions
+ * Processing and optimization could be run over a list of IrNodes to perform various functions
  * - ordering of fields based on size
  * - padding of fields in order to provide expansion room
  * - computing offsets of individual fields
  * - etc.
- * <p/>
- * Error and Warning Checks
- * - set padding and offsets being off
- * - enums with duplicate values? or 
  */
 public class IrNode
 {
     /** constants */
 
     /** Size not determined */
-    private final static int INVALID_SIZE = -1;
+    private final static int VARIABLE_SIZE = -1;
 
     /** Offset not computed or set */
-    private final static int INVALID_OFFSET = -1;
+    private final static int UNKNOWN_OFFSET = -1;
 
-    /**
-     * TODO:
-     * - need an IrType (which includes IEEE-754, etc.) that encapsulates basic encoding
-     * - per field ByteOrder
-     * - 
-     * 
-     */
+    /** how to encode field */
+    private Primitive primitiveType;
 
     /** Size of field */
     private int size;
 
-    /** Offset of field from start of message */
+    /** Offset of field from start of buffer */
     private int offset;
+
+    /** Meta Data associated with node */
+    private MetaData metaData;
+
+    /** byteOrder of the data */
+    private ByteOrder byteOrder;
 
     /**
      * Construct an IrNode
      */
-    public IrNode()
+    public IrNode(final Primitive primitiveType, 
+                  final int size, 
+                  final int offset, 
+                  final MetaData metaData,
+                  final ByteOrder byteOrder)
     {
-        this.size = 0;
-        this.offset = INVALID_OFFSET;
+        this.primitiveType = primitiveType;
+        this.size = size;
+        this.offset = offset;
+        this.metaData = metaData;
+        this.byteOrder = byteOrder;
+    }
+
+    public enum Flag
+    {
+        START, END, NONE;
+    }
+
+    /**
+     * class to encapsulate IrNode metadata
+     */
+    public static class MetaData
+    {
+        private static final int INVALID_ID = Integer.MAX_VALUE;
+
+        private final String name;
+        private final int id;
+        private final Flag flag;
+        
+        public MetaData(final String name, final int id, final Flag flag)
+        {
+            this.name = name;
+            this.id = id;
+            this.flag = flag;
+        }
     }
 }

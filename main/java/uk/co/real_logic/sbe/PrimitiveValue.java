@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.xml;
+package uk.co.real_logic.sbe;
 
 /**
  * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants

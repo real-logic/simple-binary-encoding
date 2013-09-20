@@ -16,6 +16,9 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveValue;
+
 import org.w3c.dom.Node;
 
 /**
@@ -65,7 +68,7 @@ public class EncodedDataType extends Type
      */
     public EncodedDataType(final Node node)
     {
-        super(node); // set the common schema attributes
+        super(node, TypeOfType.ENCODEDDATA); // set the common schema attributes
 
         /**
          * Grab schema attributes
@@ -157,7 +160,7 @@ public class EncodedDataType extends Type
                            final int length,
                            final boolean varLen)
     {
-        super(name, presence, description, fixUsage);
+        super(name, presence, description, fixUsage, TypeOfType.ENCODEDDATA);
         this.primitive = primitive;
         this.length = length;
         this.varLen = varLen;

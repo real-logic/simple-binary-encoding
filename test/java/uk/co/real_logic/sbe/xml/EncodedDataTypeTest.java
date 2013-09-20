@@ -16,6 +16,9 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveValue;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;

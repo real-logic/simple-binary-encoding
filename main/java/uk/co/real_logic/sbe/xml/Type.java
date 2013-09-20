@@ -34,6 +34,8 @@ public class Type
     private final String description;
     /** FixUsage of the type. */
     private final FixUsage fixUsage;
+    /** type of this Type */
+    private final TypeOfType type;
 
     /*
      * NOTE: additional constructors can be used for additional parsers
@@ -44,7 +46,7 @@ public class Type
      *
      * @param node from the XML Schema Parsing
      */
-    public Type(final Node node)
+    public Type(final Node node, final TypeOfType type)
     {
         /*
          * Grab common field schema attributes
@@ -58,6 +60,7 @@ public class Type
         this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValue(node, "presence", "required"));
         this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
         this.fixUsage = FixUsage.lookup(XmlSchemaParser.getXmlAttributeValueNullable(node, "fixUsage"));
+        this.type = type;
     }
 
     /**
@@ -67,16 +70,19 @@ public class Type
      * @param presence of the type
      * @param description of the type or null
      * @param fixUsage of the type or null
+     * @param type of this Type
      */
     public Type(final String name,
                 final Presence presence,
                 final String description,
-                final FixUsage fixUsage)
+                final FixUsage fixUsage,
+                final TypeOfType type)
     {
         this.name = name;
         this.presence = presence;
         this.description = description;
         this.fixUsage = fixUsage;
+        this.type = type;
     }
 
     /**
@@ -124,10 +130,24 @@ public class Type
     /**
      * The fixUsage of the Type
      *
-     * @return {@link FixUsage} of the Type if set or {@link FixUsage#NOTSET} if not set
+     * @return {@link FixUsage} of the Type if set or null if not set
      */
     public FixUsage getFixUsage()
     {
         return fixUsage;
     }
+
+    public TypeOfType getTypeOfType()
+    {
+        return type;
+    }
+
+    /**
+     * 
+     */
+    public enum TypeOfType
+    {
+        ENCODEDDATA, COMPOSITE, ENUM, SET;
+    }
+    
 }

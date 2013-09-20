@@ -51,5 +51,9 @@ public class MessageSchema
 	return typeMap.get("messageHeader");
     }
 
-    
+    public Message getMessage(long id)
+    {
+	Long longId = new Long(id);
+	return messageMap.get(longId);
+    }
 }

@@ -16,6 +16,9 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveValue;
+
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -63,7 +66,7 @@ public class CompositeType extends Type
     public CompositeType(final Node node)
         throws XPathExpressionException
     {
-        super(node); // set the common schema attributes
+        super(node, TypeOfType.COMPOSITE); // set the common schema attributes
 
         compositeList = new ArrayList<EncodedDataType>();
         compositeMap = new HashMap<String, EncodedDataType>();

@@ -16,6 +16,9 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveValue;
+
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -43,7 +46,7 @@ public class SetType extends Type
     public SetType(final Node node)
         throws XPathExpressionException, IllegalArgumentException
     {
-        super(node); // set the common schema attributes
+        super(node, TypeOfType.SET); // set the common schema attributes
 
         /**
          * grab attributes from schema
