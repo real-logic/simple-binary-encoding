@@ -107,6 +107,8 @@ public class IrNode
 
     public enum Flag
     {
+        MESSAGE_START,
+        MESSAGE_END,
         STRUCT_START,
         STRUCT_END,
         FIELD_START,
@@ -121,13 +123,13 @@ public class IrNode
      */
     public static class MetaData
     {
-        public static final int INVALID_ID = Integer.MAX_VALUE;
+        public static final long INVALID_ID = Long.MAX_VALUE;
 
         private final String name;
-        private final int id;
+        private final long id;
         private final Flag flag;
         
-        public MetaData(final String name, final int id, final Flag flag)
+        public MetaData(final String name, final long id, final Flag flag)
         {
             this.name = name;
             this.id = id;
@@ -139,7 +141,7 @@ public class IrNode
             return name;
         }
 
-        public int getId()
+        public long getId()
         {
             return id;
         }

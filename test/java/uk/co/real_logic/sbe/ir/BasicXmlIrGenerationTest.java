@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import static java.lang.Integer.*;
+import static java.lang.Long.*;
 import static java.lang.Boolean.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -121,28 +122,42 @@ public class BasicXmlIrGenerationTest
        /*
         * assert the basic structure of the message IR
         */
-        assertThat(valueOf(ir.size()), is(valueOf(3)));
+        assertThat(valueOf(ir.size()), is(valueOf(5)));
 
         /* assert all elements of node 0 */
-        assertThat(ir.get(0).getMetaData().getFlag(), is(IrNode.Flag.FIELD_START));
-        assertThat(ir.get(0).getMetaData().getName(), is("Tag40001"));
-        assertThat(valueOf(ir.get(0).getMetaData().getId()), is(valueOf(40001)));
+        assertThat(ir.get(0).getMetaData().getFlag(), is(IrNode.Flag.MESSAGE_START));
+        assertThat(ir.get(0).getMetaData().getName(), is("TestMessage50001"));
+        assertThat(valueOf(ir.get(0).getMetaData().getId()), is(valueOf(50001L)));
         assertThat(valueOf(ir.get(0).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(0).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 1 */
-        assertThat(ir.get(1).getMetaData().getFlag(), is(IrNode.Flag.NONE));
-        assertThat(ir.get(1).getMetaData().getName(), is("uint32"));
-        assertThat(valueOf(ir.get(1).getMetaData().getId()), is(valueOf(IrNode.MetaData.INVALID_ID)));
-        assertThat(valueOf(ir.get(1).size()), is(valueOf(4)));
+        assertThat(ir.get(1).getMetaData().getFlag(), is(IrNode.Flag.FIELD_START));
+        assertThat(ir.get(1).getMetaData().getName(), is("Tag40001"));
+        assertThat(valueOf(ir.get(1).getMetaData().getId()), is(valueOf(40001L)));
+        assertThat(valueOf(ir.get(1).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(1).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 2 */
-        assertThat(ir.get(2).getMetaData().getFlag(), is(IrNode.Flag.FIELD_END));
-        assertThat(ir.get(2).getMetaData().getName(), is("Tag40001"));
-        assertThat(valueOf(ir.get(2).getMetaData().getId()), is(valueOf(40001)));
-        assertThat(valueOf(ir.get(2).size()), is(valueOf(0)));
+        assertThat(ir.get(2).getMetaData().getFlag(), is(IrNode.Flag.NONE));
+        assertThat(ir.get(2).getMetaData().getName(), is("uint32"));
+        assertThat(valueOf(ir.get(2).getMetaData().getId()), is(valueOf(IrNode.MetaData.INVALID_ID)));
+        assertThat(valueOf(ir.get(2).size()), is(valueOf(4)));
         assertThat(valueOf(ir.get(2).getOffset()), is(valueOf(0)));
+
+        /* assert all elements of node 3 */
+        assertThat(ir.get(3).getMetaData().getFlag(), is(IrNode.Flag.FIELD_END));
+        assertThat(ir.get(3).getMetaData().getName(), is("Tag40001"));
+        assertThat(valueOf(ir.get(3).getMetaData().getId()), is(valueOf(40001L)));
+        assertThat(valueOf(ir.get(3).size()), is(valueOf(0)));
+        assertThat(valueOf(ir.get(3).getOffset()), is(valueOf(0)));
+
+        /* assert all elements of node 4 */
+        assertThat(ir.get(4).getMetaData().getFlag(), is(IrNode.Flag.MESSAGE_END));
+        assertThat(ir.get(4).getMetaData().getName(), is("TestMessage50001"));
+        assertThat(valueOf(ir.get(4).getMetaData().getId()), is(valueOf(50001L)));
+        assertThat(valueOf(ir.get(4).size()), is(valueOf(0)));
+        assertThat(valueOf(ir.get(4).getOffset()), is(valueOf(0)));
     }
 
 }

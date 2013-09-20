@@ -46,8 +46,12 @@ public class IrGenerator
 
     public List<IrNode> generateForMessage(Message msg)
     {
+	addStartOrEndNode(msg, IrNode.Flag.MESSAGE_START);
+
 	/* add all the fields */
 	addAllFields(msg.getFieldList());
+
+	addStartOrEndNode(msg, IrNode.Flag.MESSAGE_END);
 
 	/* return IR */
 	return irNodeList;
@@ -73,6 +77,14 @@ public class IrGenerator
 
 	/* return IR */
 	return irNodeList;
+    }
+
+    /**
+     * The Message version
+     */
+    private void addStartOrEndNode(final Message msg, final IrNode.Flag flag)
+    {
+	irNodeList.add(new IrNode(new IrNode.MetaData(msg.getName(), msg.getId().longValue(), flag)));
     }
 
     /**
@@ -161,7 +173,7 @@ public class IrGenerator
 	IrNode.MetaData md;
 	IrNode node;
 	String name = type.getName();
-	int id = IrNode.MetaData.INVALID_ID;
+	long id = IrNode.MetaData.INVALID_ID;
 
 	// this might work better as a switch case
 	if (type.getPresence() == Presence.REQUIRED)
