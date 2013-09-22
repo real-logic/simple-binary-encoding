@@ -18,6 +18,8 @@ package uk.co.real_logic.sbe.xml;
 
 import org.w3c.dom.Node;
 
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
+
 /**
  * An SBE type. One of encodedDataType, compositeType, enumType, or setType per the SBE spec.
  */
@@ -26,20 +28,11 @@ public class Type
     /** Default presence attribute for Types */
     public static final String DEFAULT_PRESENCE = "required";
 
-    /** Name of the type. Used in the types map */
     private final String name;
-    /** Presence requirement for the type */
     private final Presence presence;
-    /** Description of the type. */
     private final String description;
-    /** FixUsage of the type. */
     private final FixUsage fixUsage;
-    /** type of this Type */
     private final TypeOfType type;
-
-    /*
-     * NOTE: additional constructors can be used for additional parsers
-     */
 
     /**
      * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
@@ -55,11 +48,11 @@ public class Type
          * - fixUsage (optional - must be in type or message field)
          * - description (optional)
          */
-        this.name = XmlSchemaParser.getXmlAttributeValue(node, "name");
+        name = getXmlAttributeValue(node, "name");
         // The schema should set default, so "presence" should always be available, but let's set a default anyway
-        this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValue(node, "presence", "required"));
-        this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
-        this.fixUsage = FixUsage.lookup(XmlSchemaParser.getXmlAttributeValueNullable(node, "fixUsage"));
+        presence = Presence.lookup(getXmlAttributeValue(node, "presence", "required"));
+        description = getXmlAttributeValueOrNull(node, "description");
+        fixUsage = FixUsage.lookup(getXmlAttributeValueOrNull(node, "fixUsage"));
         this.type = type;
     }
 
@@ -147,7 +140,6 @@ public class Type
      */
     public enum TypeOfType
     {
-        ENCODEDDATA, COMPOSITE, ENUM, SET;
+        ENCODEDDATA, COMPOSITE, ENUM, SET
     }
-    
 }

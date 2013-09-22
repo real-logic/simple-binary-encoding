@@ -16,19 +16,17 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.Primitive;
-import uk.co.real_logic.sbe.PrimitiveValue;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * SBE compositeType
@@ -48,15 +46,8 @@ import java.util.HashMap;
  */
 public class CompositeType extends Type
 {
-    /**
-     * A composite is a sequence of encodedDataTypes, so we have a list of them 
-     */
-    private final List<EncodedDataType> compositeList;
-
-    /**
-     * A composite map that holds all the types within this composite for easy retrieval
-     */
-    private final Map<String, EncodedDataType> compositeMap;
+    private final List<EncodedDataType> compositeList = new ArrayList<EncodedDataType>();
+    private final Map<String, EncodedDataType> compositeMap = new HashMap<String, EncodedDataType>();
 
     /**
      * Construct a new compositeType from XML Schema.
@@ -67,9 +58,6 @@ public class CompositeType extends Type
         throws XPathExpressionException
     {
         super(node, TypeOfType.COMPOSITE); // set the common schema attributes
-
-        compositeList = new ArrayList<EncodedDataType>();
-        compositeMap = new HashMap<String, EncodedDataType>();
 
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile("type").evaluate(node, XPathConstants.NODESET);
@@ -108,7 +96,7 @@ public class CompositeType extends Type
     {
         int size = 0;
 
-        for (EncodedDataType t : compositeList)
+        for (final EncodedDataType t : compositeList)
         {
             size += t.size();
         }
@@ -125,5 +113,4 @@ public class CompositeType extends Type
     {
         return compositeList;
     }
-    
 }

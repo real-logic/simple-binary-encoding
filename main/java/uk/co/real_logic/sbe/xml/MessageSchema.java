@@ -21,6 +21,8 @@ import org.w3c.dom.Node;
 import java.util.Map;
 import java.nio.ByteOrder;
 
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
+
 /**
  * Class to encapsulate the messageSchema attributes as well as messageHeader type reference for multiple Message objects
  */
@@ -28,37 +30,37 @@ public class MessageSchema
 {
     private final String pkg;                         // package (optional?)
     private final String description;                 // description (optional)
-    private final Long version;                       // version (optional - default is 0)
+    private final long version;                       // version (optional - default is 0)
     private final String fixVersion;                  // fixVersion (optional)
     private final ByteOrder byteOrder;                // byteOrder (optional - default is littleEndian)
     private final Map<String, Type> typeMap;
     private final Map<Long, Message> messageMap;
 
-    public MessageSchema(final Node node, Map<String, Type> typeMap, Map<Long, Message> messageMap)
+    public MessageSchema(final Node node,
+                         final Map<String, Type> typeMap,
+                         final Map<Long, Message> messageMap)
     {
-	this.pkg = XmlSchemaParser.getXmlAttributeValue(node, "package");
-	this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
-	this.version = Long.parseLong(XmlSchemaParser.getXmlAttributeValue(node, "version", "0"));  // default version is 0
-	this.fixVersion = XmlSchemaParser.getXmlAttributeValueNullable(node, "fixVersion");
-	this.byteOrder = XmlSchemaParser.lookupByteOrder(XmlSchemaParser.getXmlAttributeValue(node, "byteOrder", "littleEndian"));
-	this.typeMap = typeMap;
-	this.messageMap = messageMap;
+        this.pkg = getXmlAttributeValue(node, "package");
+        this.description = getXmlAttributeValueOrNull(node, "description");
+        this.version = Long.parseLong(getXmlAttributeValue(node, "version", "0"));  // default version is 0
+        this.fixVersion = getXmlAttributeValueOrNull(node, "fixVersion");
+        this.byteOrder = lookupByteOrder(getXmlAttributeValue(node, "byteOrder", "littleEndian"));
+        this.typeMap = typeMap;
+        this.messageMap = messageMap;
     }
 
     public Type getMessageHeader()
     {
-	/* search types for defined messageHeader */
-	return typeMap.get("messageHeader");
+        return typeMap.get("messageHeader");
     }
 
-    public Message getMessage(long id)
+    public Message getMessage(final long id)
     {
-	Long longId = new Long(id);
-	return messageMap.get(longId);
+        return messageMap.get(Long.valueOf(id));
     }
 
     public ByteOrder getByteOrder()
     {
-	return byteOrder;
+        return byteOrder;
     }
 }

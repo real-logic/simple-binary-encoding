@@ -16,12 +16,13 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.Primitive;
-import uk.co.real_logic.sbe.PrimitiveValue;
-
+import org.junit.Assert;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveValue;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,24 +35,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import static java.lang.Integer.*;
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.valueOf;
+import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class EncodedDataTypeTest
 {
-
-    /**
-     * Grab type nodes, parse them, and populate map for those types.
-     *
-     * @param xPathExpr for type nodes in XML
-     * @param xml string to parse
-     * @return map of name to EncodedDataType nodes
-     */
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
@@ -73,8 +63,9 @@ public class EncodedDataTypeTest
     public void shouldHandleSettingAllAttributes()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testType\" presence=\"required\" primitiveType=\"char\" length=\"1\" variableLength=\"false\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testType\" presence=\"required\" primitiveType=\"char\" length=\"1\" variableLength=\"false\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -92,9 +83,10 @@ public class EncodedDataTypeTest
     public void shouldHandleMultipleTypes()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testType1\" presence=\"required\" primitiveType=\"char\" length=\"1\" variableLength=\"false\"/>" +
-            "<type name=\"testType2\" presence=\"required\" primitiveType=\"int8\" length=\"1\" variableLength=\"false\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testType1\" presence=\"required\" primitiveType=\"char\" length=\"1\" variableLength=\"false\"/>" +
+            "    <type name=\"testType2\" presence=\"required\" primitiveType=\"int8\" length=\"1\" variableLength=\"false\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -108,8 +100,9 @@ public class EncodedDataTypeTest
     public void shouldSetAppropriateDefaultsWhenNoneSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testType\" primitiveType=\"char\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testType\" primitiveType=\"char\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -127,11 +120,12 @@ public class EncodedDataTypeTest
     public void shouldUseAppropriatePresence()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testTypeDefault\" primitiveType=\"char\"/>" +
-            "<type name=\"testTypeRequired\" presence=\"required\" primitiveType=\"char\"/>" +
-            "<type name=\"testTypeOptional\" presence=\"optional\" primitiveType=\"char\"/>" +
-            "<type name=\"testTypeConstant\" presence=\"constant\" primitiveType=\"char\">A</type>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeDefault\" primitiveType=\"char\"/>" +
+            "    <type name=\"testTypeRequired\" presence=\"required\" primitiveType=\"char\"/>" +
+            "    <type name=\"testTypeOptional\" presence=\"optional\" primitiveType=\"char\"/>" +
+            "    <type name=\"testTypeConstant\" presence=\"constant\" primitiveType=\"char\">A</type>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -145,8 +139,9 @@ public class EncodedDataTypeTest
     public void shouldThrowExceptionWhenUnknownPresenceSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testTyeUnknown\" presence=\"XXXXX\" primitiveType=\"char\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTyeUnknown\" presence=\"XXXXX\" primitiveType=\"char\"/>" +
             "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
@@ -156,8 +151,9 @@ public class EncodedDataTypeTest
     public void shouldThrowExceptionWhenNoPrimitiveTypeSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testType\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testType\"/>" +
             "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
@@ -167,8 +163,9 @@ public class EncodedDataTypeTest
     public void shouldThrowExceptionWhenNoNameSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type primitiveType=\"char\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type primitiveType=\"char\"/>" +
             "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
@@ -178,16 +175,17 @@ public class EncodedDataTypeTest
     public void shouldUseAppropriatePrimitiveType()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testTypeChar\" primitiveType=\"char\"/>" +
-            "<type name=\"testTypeInt8\" primitiveType=\"int8\"/>" +
-            "<type name=\"testTypeInt16\" primitiveType=\"int16\"/>" +
-            "<type name=\"testTypeInt32\" primitiveType=\"int32\"/>" +
-            "<type name=\"testTypeInt64\" primitiveType=\"int64\"/>" +
-            "<type name=\"testTypeUInt8\" primitiveType=\"uint8\"/>" +
-            "<type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
-            "<type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
-            "<type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeChar\" primitiveType=\"char\"/>" +
+            "    <type name=\"testTypeInt8\" primitiveType=\"int8\"/>" +
+            "    <type name=\"testTypeInt16\" primitiveType=\"int16\"/>" +
+            "    <type name=\"testTypeInt32\" primitiveType=\"int32\"/>" +
+            "    <type name=\"testTypeInt64\" primitiveType=\"int64\"/>" +
+            "    <type name=\"testTypeUInt8\" primitiveType=\"uint8\"/>" +
+            "    <type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
+            "    <type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
+            "    <type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -206,8 +204,9 @@ public class EncodedDataTypeTest
     public void shouldThrowExceptionWhenUnknownPrimitiveTypeSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testTypeUnknown\" primitiveType=\"XXXX\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeUnknown\" primitiveType=\"XXXX\"/>" +
             "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
@@ -217,16 +216,17 @@ public class EncodedDataTypeTest
     public void shouldReturnCorrectSizeForPrimitiveTypes()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testTypeChar\" primitiveType=\"char\"/>" +
-            "<type name=\"testTypeInt8\" primitiveType=\"int8\"/>" +
-            "<type name=\"testTypeInt16\" primitiveType=\"int16\"/>" +
-            "<type name=\"testTypeInt32\" primitiveType=\"int32\"/>" +
-            "<type name=\"testTypeInt64\" primitiveType=\"int64\"/>" +
-            "<type name=\"testTypeUInt8\" primitiveType=\"uint8\"/>" +
-            "<type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
-            "<type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
-            "<type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeChar\" primitiveType=\"char\"/>" +
+            "    <type name=\"testTypeInt8\" primitiveType=\"int8\"/>" +
+            "    <type name=\"testTypeInt16\" primitiveType=\"int16\"/>" +
+            "    <type name=\"testTypeInt32\" primitiveType=\"int32\"/>" +
+            "    <type name=\"testTypeInt64\" primitiveType=\"int64\"/>" +
+            "    <type name=\"testTypeUInt8\" primitiveType=\"uint8\"/>" +
+            "    <type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
+            "    <type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
+            "    <type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -246,8 +246,9 @@ public class EncodedDataTypeTest
         throws Exception
     {
         final String desc = "basic description attribute of a type element";
-        final String testXmlString = "<types>" + 
-            "<type name=\"testTypeDescription\" primitiveType=\"char\" description=\"" + desc + "\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeDescription\" primitiveType=\"char\" description=\"" + desc + "\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -258,8 +259,9 @@ public class EncodedDataTypeTest
     public void shouldReturnNullOnNoDescriptionSet()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testTypeNoDescription\" primitiveType=\"char\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeNoDescription\" primitiveType=\"char\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -272,8 +274,9 @@ public class EncodedDataTypeTest
         throws Exception
     {
         final String fixUsage = "char";
-        final String testXmlString = "<types>" + 
-            "<type name=\"testTypeFIX\" primitiveType=\"char\" fixUsage=\"" + fixUsage + "\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeFIX\" primitiveType=\"char\" fixUsage=\"" + fixUsage + "\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -284,8 +287,9 @@ public class EncodedDataTypeTest
     public void shouldThrowExceptionWhenUnknownFixUsageSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testTypeUnknown\" primitiveType=\"char\" fixUsage=\"XXXX\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeUnknown\" primitiveType=\"char\" fixUsage=\"XXXX\"/>" +
             "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
@@ -295,8 +299,9 @@ public class EncodedDataTypeTest
     public void shouldReturnFixUsageNOTSETWhenNotSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" + 
-            "<type name=\"testTypeFIX\" primitiveType=\"char\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeFIX\" primitiveType=\"char\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -307,9 +312,9 @@ public class EncodedDataTypeTest
     public void shouldThrowExceptionWhenConstantPresenceButNoDataSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" +
-            "<type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\">" +
-            "</type>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\"></type>" +
             "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
@@ -319,10 +324,9 @@ public class EncodedDataTypeTest
     public void shouldReturnCorrectPresenceConstantWhenSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" +
-            "<type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\">" +
-            "F" +
-            "</type>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\">F</type>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -333,16 +337,17 @@ public class EncodedDataTypeTest
     public void shouldReturnDefaultMinValueWhenSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" +
-            "<type name=\"testTypeDefaultCharMinValue\" primitiveType=\"char\"/>" +
-            "<type name=\"testTypeDefaultInt8MinValue\" primitiveType=\"int8\"/>" +
-            "<type name=\"testTypeDefaultInt16MinValue\" primitiveType=\"int16\"/>" +
-            "<type name=\"testTypeDefaultInt32MinValue\" primitiveType=\"int32\"/>" +
-            "<type name=\"testTypeDefaultInt64MinValue\" primitiveType=\"int64\"/>" +
-            "<type name=\"testTypeDefaultUInt8MinValue\" primitiveType=\"uint8\"/>" +
-            "<type name=\"testTypeDefaultUInt16MinValue\" primitiveType=\"uint16\"/>" +
-            "<type name=\"testTypeDefaultUInt32MinValue\" primitiveType=\"uint32\"/>" +
-            "<type name=\"testTypeDefaultUInt64MinValue\" primitiveType=\"uint64\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeDefaultCharMinValue\" primitiveType=\"char\"/>" +
+            "    <type name=\"testTypeDefaultInt8MinValue\" primitiveType=\"int8\"/>" +
+            "    <type name=\"testTypeDefaultInt16MinValue\" primitiveType=\"int16\"/>" +
+            "    <type name=\"testTypeDefaultInt32MinValue\" primitiveType=\"int32\"/>" +
+            "    <type name=\"testTypeDefaultInt64MinValue\" primitiveType=\"int64\"/>" +
+            "    <type name=\"testTypeDefaultUInt8MinValue\" primitiveType=\"uint8\"/>" +
+            "    <type name=\"testTypeDefaultUInt16MinValue\" primitiveType=\"uint16\"/>" +
+            "    <type name=\"testTypeDefaultUInt32MinValue\" primitiveType=\"uint32\"/>" +
+            "    <type name=\"testTypeDefaultUInt64MinValue\" primitiveType=\"uint64\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -361,16 +366,17 @@ public class EncodedDataTypeTest
     public void shouldReturnDefaultMaxValueWhenSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" +
-            "<type name=\"testTypeDefaultCharMaxValue\" primitiveType=\"char\"/>" +
-            "<type name=\"testTypeDefaultInt8MaxValue\" primitiveType=\"int8\"/>" +
-            "<type name=\"testTypeDefaultInt16MaxValue\" primitiveType=\"int16\"/>" +
-            "<type name=\"testTypeDefaultInt32MaxValue\" primitiveType=\"int32\"/>" +
-            "<type name=\"testTypeDefaultInt64MaxValue\" primitiveType=\"int64\"/>" +
-            "<type name=\"testTypeDefaultUInt8MaxValue\" primitiveType=\"uint8\"/>" +
-            "<type name=\"testTypeDefaultUInt16MaxValue\" primitiveType=\"uint16\"/>" +
-            "<type name=\"testTypeDefaultUInt32MaxValue\" primitiveType=\"uint32\"/>" +
-            "<type name=\"testTypeDefaultUInt64MaxValue\" primitiveType=\"uint64\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeDefaultCharMaxValue\" primitiveType=\"char\"/>" +
+            "    <type name=\"testTypeDefaultInt8MaxValue\" primitiveType=\"int8\"/>" +
+            "    <type name=\"testTypeDefaultInt16MaxValue\" primitiveType=\"int16\"/>" +
+            "    <type name=\"testTypeDefaultInt32MaxValue\" primitiveType=\"int32\"/>" +
+            "    <type name=\"testTypeDefaultInt64MaxValue\" primitiveType=\"int64\"/>" +
+            "    <type name=\"testTypeDefaultUInt8MaxValue\" primitiveType=\"uint8\"/>" +
+            "    <type name=\"testTypeDefaultUInt16MaxValue\" primitiveType=\"uint16\"/>" +
+            "    <type name=\"testTypeDefaultUInt32MaxValue\" primitiveType=\"uint32\"/>" +
+            "    <type name=\"testTypeDefaultUInt64MaxValue\" primitiveType=\"uint64\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -389,16 +395,17 @@ public class EncodedDataTypeTest
     public void shouldReturnDefaultNullValueWhenSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" +
-            "<type name=\"testTypeDefaultCharNullValue\" primitiveType=\"char\"/>" +
-            "<type name=\"testTypeDefaultInt8NullValue\" primitiveType=\"int8\"/>" +
-            "<type name=\"testTypeDefaultInt16NullValue\" primitiveType=\"int16\"/>" +
-            "<type name=\"testTypeDefaultInt32NullValue\" primitiveType=\"int32\"/>" +
-            "<type name=\"testTypeDefaultInt64NullValue\" primitiveType=\"int64\"/>" +
-            "<type name=\"testTypeDefaultUInt8NullValue\" primitiveType=\"uint8\"/>" +
-            "<type name=\"testTypeDefaultUInt16NullValue\" primitiveType=\"uint16\"/>" +
-            "<type name=\"testTypeDefaultUInt32NullValue\" primitiveType=\"uint32\"/>" +
-            "<type name=\"testTypeDefaultUInt64NullValue\" primitiveType=\"uint64\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeDefaultCharNullValue\" primitiveType=\"char\"/>" +
+            "    <type name=\"testTypeDefaultInt8NullValue\" primitiveType=\"int8\"/>" +
+            "    <type name=\"testTypeDefaultInt16NullValue\" primitiveType=\"int16\"/>" +
+            "    <type name=\"testTypeDefaultInt32NullValue\" primitiveType=\"int32\"/>" +
+            "    <type name=\"testTypeDefaultInt64NullValue\" primitiveType=\"int64\"/>" +
+            "    <type name=\"testTypeDefaultUInt8NullValue\" primitiveType=\"uint8\"/>" +
+            "    <type name=\"testTypeDefaultUInt16NullValue\" primitiveType=\"uint16\"/>" +
+            "    <type name=\"testTypeDefaultUInt32NullValue\" primitiveType=\"uint32\"/>" +
+            "    <type name=\"testTypeDefaultUInt64NullValue\" primitiveType=\"uint64\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -426,9 +433,10 @@ public class EncodedDataTypeTest
     public void shouldReturnCorrectMinValueWhenSpecified()
         throws Exception
     {
-        final String minVal = Long.toString(10);
-        final String testXmlString = "<types>" +
-            "<type name=\"testTypeInt8MinValue\" primitiveType=\"int8\" minValue=\"" + minVal + "\"/>" +
+        final String minVal = "10";
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeInt8MinValue\" primitiveType=\"int8\" minValue=\"" + minVal + "\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -439,9 +447,10 @@ public class EncodedDataTypeTest
     public void shouldReturnCorrectMaxValueWhenSpecified()
         throws Exception
     {
-        final String maxVal = Long.toString(10);
-        final String testXmlString = "<types>" +
-            "<type name=\"testTypeInt8MaxValue\" primitiveType=\"int8\" maxValue=\"" + maxVal + "\"/>" +
+        final String maxVal = "10";
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeInt8MaxValue\" primitiveType=\"int8\" maxValue=\"" + maxVal + "\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -452,9 +461,10 @@ public class EncodedDataTypeTest
     public void shouldReturnCorrectNullValueWhenSpecified()
         throws Exception
     {
-        final String nullVal = Long.toString(10);
-        final String testXmlString = "<types>" +
-            "<type name=\"testTypeInt8NullValue\" primitiveType=\"int8\" presence=\"optional\" nullValue=\"" + nullVal + "\"/>" +
+        final String nullVal = "10";
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeInt8NullValue\" primitiveType=\"int8\" presence=\"optional\" nullValue=\"" + nullVal + "\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -465,8 +475,9 @@ public class EncodedDataTypeTest
     public void shouldThrowExceptionWhenNullValueWithPresenceRequired()
         throws Exception
     {
-        final String testXmlString = "<types>" +
-            "<type name=\"testType\" primitiveType=\"int8\" presence=\"required\" nullValue=\"10\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testType\" primitiveType=\"int8\" presence=\"required\" nullValue=\"10\"/>" +
             "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
@@ -476,8 +487,9 @@ public class EncodedDataTypeTest
     public void shouldThrowExceptionWhenNullValueWithPresenceConstant()
         throws Exception
     {
-        final String testXmlString = "<types>" +
-            "<type name=\"testType\" primitiveType=\"int8\" presence=\"constant\" nullValue=\"10\"/>" +
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testType\" primitiveType=\"int8\" presence=\"constant\" nullValue=\"10\"/>" +
             "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);

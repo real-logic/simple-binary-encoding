@@ -106,7 +106,7 @@ public enum FixUsage
      *
      * @return the name as a String
      */
-    public String fixUsageName()
+    public String getName()
     {
         return name;
     }

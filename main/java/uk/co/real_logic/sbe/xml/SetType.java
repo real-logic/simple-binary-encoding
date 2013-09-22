@@ -16,6 +16,8 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import uk.co.real_logic.sbe.Primitive;
 import uk.co.real_logic.sbe.PrimitiveValue;
 
@@ -23,11 +25,11 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
  * SBE setType
@@ -52,15 +54,15 @@ public class SetType extends Type
          * grab attributes from schema
          * - encodingType (required) - must be either uint8, uint16, uint32, or uint64 
          */
-        this.encodingType = Primitive.lookup(XmlSchemaParser.getXmlAttributeValue(node, "encodingType"));
-        if (this.encodingType != Primitive.UINT8 && this.encodingType != Primitive.UINT16 &&
-            this.encodingType != Primitive.UINT32 && this.encodingType != Primitive.UINT64)
+        encodingType = Primitive.lookup(getXmlAttributeValue(node, "encodingType"));
+        if (encodingType != Primitive.UINT8 && encodingType != Primitive.UINT16 &&
+            encodingType != Primitive.UINT32 && encodingType != Primitive.UINT64)
         {
             throw new IllegalArgumentException("unknown encodingType " + this.encodingType);
         }
 
-        this.choiceMap = new HashMap<PrimitiveValue, Choice>();
-        this.nameMap = new HashMap<String, Choice>();
+        choiceMap = new HashMap<PrimitiveValue, Choice>();
+        nameMap = new HashMap<String, Choice>();
 
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile("choice").evaluate(node, XPathConstants.NODESET);
@@ -69,18 +71,18 @@ public class SetType extends Type
         {
             Choice c = new Choice(list.item(i), encodingType);
 
-            if (this.choiceMap.get(c.getPrimitiveValue()) != null)
+            if (choiceMap.get(c.getPrimitiveValue()) != null)
             {
-                throw new IllegalArgumentException("choice value already exists: " + c.getPrimitiveValue().toString());
+                throw new IllegalArgumentException("choice value already exists: " + c.getPrimitiveValue());
             }
 
-            if (this.nameMap.get(c.getName()) != null)
+            if (nameMap.get(c.getName()) != null)
             {
                 throw new IllegalArgumentException("choice already exists for name: " + c.getName());
             }
 
-            this.choiceMap.put(c.getPrimitiveValue(), c);
-            this.nameMap.put(c.getName(), c);
+            choiceMap.put(c.getPrimitiveValue(), c);
+            nameMap.put(c.getName(), c);
         }
     }
 
@@ -130,14 +132,14 @@ public class SetType extends Type
              * value: the value of the Choice
              */
             this.encodingType = encodingType;
-            this.name = XmlSchemaParser.getXmlAttributeValue(node, "name");
-            this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
-            this.value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());
+            name = getXmlAttributeValue(node, "name");
+            description = getXmlAttributeValueOrNull(node, "description");
+            value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());
 
             /**
              * choice values are bit positions (0, 1, 2, 3, 4, etc.) from LSB to MSB
              */
-            if (this.value.longValue() >= (encodingType.size() * 8))
+            if (value.longValue() >= (encodingType.size() * 8))
             {
                 throw new IllegalArgumentException("choice value out of bounds: " + this.value.longValue());
             }

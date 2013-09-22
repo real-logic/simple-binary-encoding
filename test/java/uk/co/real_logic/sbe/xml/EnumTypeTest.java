@@ -16,12 +16,12 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.Primitive;
-import uk.co.real_logic.sbe.PrimitiveValue;
-
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveValue;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,9 +34,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import static java.lang.Integer.*;
+import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -71,7 +69,8 @@ public class EnumTypeTest
     public void shouldHandleBinaryEnumType()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<enum name=\"biOp\" encodingType=\"uint8\">" +
             " <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
             " <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
@@ -91,7 +90,8 @@ public class EnumTypeTest
     public void shouldHandleBooleanEnumType()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
             " <validValue name=\"false\">0</validValue>" +
             " <validValue name=\"true\">1</validValue>" +
@@ -112,7 +112,8 @@ public class EnumTypeTest
         throws Exception
     {
         final String nullValueStr = "255";
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<enum name=\"optionalBoolean\" encodingType=\"uint8\" presence=\"optional\" nullValue=\"" + nullValueStr + "\" fixUsage=\"Boolean\">" +
             " <validValue name=\"false\">0</validValue>" +
             " <validValue name=\"true\">1</validValue>" +
@@ -133,7 +134,8 @@ public class EnumTypeTest
     public void shouldHandleEnumTypeList()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<enum name=\"triOp\" encodingType=\"uint8\">" +
             " <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
             " <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
@@ -173,7 +175,8 @@ public class EnumTypeTest
     public void shouldHandleCharEnumEncodingType()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<enum name=\"mixed\" encodingType=\"char\">" +
             " <validValue name=\"Cee\">C</validValue>" +
             " <validValue name=\"One\">1</validValue>" +
@@ -195,7 +198,8 @@ public class EnumTypeTest
     public void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<enum name=\"boolean\" encodingType=\"int64\" fixUsage=\"Boolean\">" +
             " <validValue name=\"false\">0</validValue>" +
             " <validValue name=\"true\">1</validValue>" +
@@ -209,7 +213,8 @@ public class EnumTypeTest
     public void shouldThrowExceptionWhenDuplicateValueSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
             " <validValue name=\"false\">0</validValue>" +
             " <validValue name=\"anotherFalse\">0</validValue>" +
@@ -224,7 +229,8 @@ public class EnumTypeTest
     public void shouldThrowExceptionWhenDuplicateNameSpecified()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
             " <validValue name=\"false\">0</validValue>" +
             " <validValue name=\"false\">2</validValue>" +

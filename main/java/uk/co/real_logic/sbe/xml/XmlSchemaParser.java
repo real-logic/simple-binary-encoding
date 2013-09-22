@@ -16,22 +16,19 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.Primitive;
-import uk.co.real_logic.sbe.PrimitiveValue;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import uk.co.real_logic.sbe.Primitive;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.nio.ByteOrder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Encapsulate the XML Schema parsing for SBE so that other representations may be used to generate IR
@@ -96,8 +93,8 @@ public class XmlSchemaParser
         Map<Long, Message> messageMap = populateMessageMap(document, xPath, typeMap);
 
         /* grab messageSchema attributes and save maps*/
-        MessageSchema schema = new MessageSchema((Node)xPath.compile(messageSchemaXPathExpr).evaluate(document, XPathConstants.NODE),
-                                                 typeMap, messageMap);
+        final Node node = (Node)xPath.compile(messageSchemaXPathExpr).evaluate(document, XPathConstants.NODE);
+        MessageSchema schema = new MessageSchema(node, typeMap, messageMap);
 
         // TODO: run additional checks and validation on Messages in Message Map
 
@@ -254,12 +251,12 @@ public class XmlSchemaParser
      */
     private static void addMessageWithIdCheck(Map<Long, Message> map, Message message)
     {
-        if (map.get(message.getId()) != null)
+        if (map.get(Long.valueOf(message.getId())) != null)
         {
             throw new IllegalArgumentException("SBE message template id already exists: " + message.getId());
         }
 
-        map.put(message.getId(), message);
+        map.put(Long.valueOf(message.getId()), message);
     }
 
     /**
@@ -267,7 +264,7 @@ public class XmlSchemaParser
      *
      * @param node     that should have the attribute
      * @param attrName that is to be looked up
-     * @return value of the attibute
+     * @return value of the attribute
      * @throws IllegalArgumentException if the attribute is not present
      */
     public static String getXmlAttributeValue(final Node node, final String attrName)
@@ -288,7 +285,7 @@ public class XmlSchemaParser
      * @param node     that should have the attribute
      * @param attrName that is to be looked up
      * @param defValue String to return if not set
-     * @return value of the attibute or defValue
+     * @return value of the attribute or defValue
      */
     public static String getXmlAttributeValue(final Node node, final String attrName, final String defValue)
     {
@@ -309,7 +306,7 @@ public class XmlSchemaParser
      * @param attrName that is to be looked up
      * @return null or value of the attribute
      */
-    public static String getXmlAttributeValueNullable(final Node node, final String attrName)
+    public static String getXmlAttributeValueOrNull(final Node node, final String attrName)
     {
         Node n = node.getAttributes().getNamedItem(attrName);
 
@@ -329,16 +326,17 @@ public class XmlSchemaParser
      */
     public static ByteOrder lookupByteOrder(final String order)
     {
-        if (order.equals("littleEndian"))
+        switch (order)
         {
-            return ByteOrder.LITTLE_ENDIAN;
-        }
-        else if (order.equals("bigEndian"))
-        {
-            return ByteOrder.BIG_ENDIAN;
-        }
+            case "littleEndian":
+                return ByteOrder.LITTLE_ENDIAN;
 
-        return ByteOrder.LITTLE_ENDIAN;
+            case "bigEndian":
+                return ByteOrder.BIG_ENDIAN;
+
+            default:
+                return ByteOrder.LITTLE_ENDIAN;
+        }
     }
 
     /**

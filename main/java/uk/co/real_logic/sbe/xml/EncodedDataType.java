@@ -26,39 +26,12 @@ import org.w3c.dom.Node;
  */
 public class EncodedDataType extends Type
 {
-    /**
-     * The primitiveType this Type encodes as
-     */
     private final Primitive primitive;
-
-    /**
-     * Number of elements of the primitive type
-     */
     private final int length;
-
-    /**
-     * variable length or not
-     */
     private final boolean varLen;
-
-    /**
-     * value of constant if used (or null if not)
-     */
     private final PrimitiveValue constValue;
-
-    /**
-     * min value override of primitive type (or null for no override)
-     */
     private final PrimitiveValue minValue;
-
-    /**
-     * max value override of primitive type (or null for no override)
-     */
     private final PrimitiveValue maxValue;
-
-    /**
-     * null value override of primitive type (or null for no override)
-     */
     private final PrimitiveValue nullValue;
 
     /**
@@ -103,7 +76,7 @@ public class EncodedDataType extends Type
          * - if the schema overrides the primitives values, then save the values here. Else, we use the Primitive min/max/null
          */
 
-        String minValueStr = XmlSchemaParser.getXmlAttributeValueNullable(node, "minValue");
+        String minValueStr = XmlSchemaParser.getXmlAttributeValueOrNull(node, "minValue");
         if (minValueStr != null)
         {
             this.minValue = new PrimitiveValue(this.primitive, minValueStr);
@@ -113,7 +86,7 @@ public class EncodedDataType extends Type
             this.minValue = null; /* this value is invalid unless minValue specified for type */
         }
 
-        String maxValueStr = XmlSchemaParser.getXmlAttributeValueNullable(node, "maxValue");
+        String maxValueStr = XmlSchemaParser.getXmlAttributeValueOrNull(node, "maxValue");
         if (maxValueStr != null)
         {
             this.maxValue = new PrimitiveValue(this.primitive, maxValueStr);
@@ -123,7 +96,7 @@ public class EncodedDataType extends Type
             this.maxValue = null; /* this value is invalid unless maxValue specified for type */
         }
 
-        String nullValueStr = XmlSchemaParser.getXmlAttributeValueNullable(node, "nullValue");
+        String nullValueStr = XmlSchemaParser.getXmlAttributeValueOrNull(node, "nullValue");
         if (nullValueStr != null)
         {
             // nullValue is mutually exclusive with presence=required or constant
