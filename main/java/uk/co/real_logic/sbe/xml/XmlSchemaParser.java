@@ -54,12 +54,6 @@ public class XmlSchemaParser
     public static MessageSchema parse(final InputStream in)
         throws Exception
     {
-        /*
-         * We could do the builder by pieces, but ... why?
-         * DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-         * DocumentBuilder builder = builderFactory.newDocumentBuilder();
-         * Document document = builder.parse(in);
-         */
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
         XPath xPath = XPathFactory.newInstance().newXPath();
 
