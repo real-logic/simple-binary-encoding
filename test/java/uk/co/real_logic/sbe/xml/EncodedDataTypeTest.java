@@ -340,26 +340,10 @@ public class EncodedDataTypeTest
         final String testXmlString =
             "<types>" +
             "    <type name=\"testTypeDefaultCharMinValue\" primitiveType=\"char\"/>" +
-            "    <type name=\"testTypeDefaultInt8MinValue\" primitiveType=\"int8\"/>" +
-            "    <type name=\"testTypeDefaultInt16MinValue\" primitiveType=\"int16\"/>" +
-            "    <type name=\"testTypeDefaultInt32MinValue\" primitiveType=\"int32\"/>" +
-            "    <type name=\"testTypeDefaultInt64MinValue\" primitiveType=\"int64\"/>" +
-            "    <type name=\"testTypeDefaultUInt8MinValue\" primitiveType=\"uint8\"/>" +
-            "    <type name=\"testTypeDefaultUInt16MinValue\" primitiveType=\"uint16\"/>" +
-            "    <type name=\"testTypeDefaultUInt32MinValue\" primitiveType=\"uint32\"/>" +
-            "    <type name=\"testTypeDefaultUInt64MinValue\" primitiveType=\"uint64\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypeDefaultCharMinValue")).getMinValue()), is(new PrimitiveValue(PrimitiveValue.MIN_VALUE_CHAR)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt8MinValue")).getMinValue()), is(new PrimitiveValue(PrimitiveValue.MIN_VALUE_INT8)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt16MinValue")).getMinValue()), is(new PrimitiveValue(PrimitiveValue.MIN_VALUE_INT16)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt32MinValue")).getMinValue()), is(new PrimitiveValue(PrimitiveValue.MIN_VALUE_INT32)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt64MinValue")).getMinValue()), is(new PrimitiveValue(PrimitiveValue.MIN_VALUE_INT64)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt8MinValue")).getMinValue()), is(new PrimitiveValue(PrimitiveValue.MIN_VALUE_UINT8)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt16MinValue")).getMinValue()), is(new PrimitiveValue(PrimitiveValue.MIN_VALUE_UINT16)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt32MinValue")).getMinValue()), is(new PrimitiveValue(PrimitiveValue.MIN_VALUE_UINT32)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt64MinValue")).getMinValue()), is(new PrimitiveValue(PrimitiveValue.MIN_VALUE_UINT64)));
+        Assert.assertNull(((EncodedDataType)map.get("testTypeDefaultCharMinValue")).getMinValue());
     }
 
     @Test
@@ -369,26 +353,10 @@ public class EncodedDataTypeTest
         final String testXmlString =
             "<types>" +
             "    <type name=\"testTypeDefaultCharMaxValue\" primitiveType=\"char\"/>" +
-            "    <type name=\"testTypeDefaultInt8MaxValue\" primitiveType=\"int8\"/>" +
-            "    <type name=\"testTypeDefaultInt16MaxValue\" primitiveType=\"int16\"/>" +
-            "    <type name=\"testTypeDefaultInt32MaxValue\" primitiveType=\"int32\"/>" +
-            "    <type name=\"testTypeDefaultInt64MaxValue\" primitiveType=\"int64\"/>" +
-            "    <type name=\"testTypeDefaultUInt8MaxValue\" primitiveType=\"uint8\"/>" +
-            "    <type name=\"testTypeDefaultUInt16MaxValue\" primitiveType=\"uint16\"/>" +
-            "    <type name=\"testTypeDefaultUInt32MaxValue\" primitiveType=\"uint32\"/>" +
-            "    <type name=\"testTypeDefaultUInt64MaxValue\" primitiveType=\"uint64\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypeDefaultCharMaxValue")).getMaxValue()), is(new PrimitiveValue(PrimitiveValue.MAX_VALUE_CHAR)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt8MaxValue")).getMaxValue()), is(new PrimitiveValue(PrimitiveValue.MAX_VALUE_INT8)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt16MaxValue")).getMaxValue()), is(new PrimitiveValue(PrimitiveValue.MAX_VALUE_INT16)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt32MaxValue")).getMaxValue()), is(new PrimitiveValue(PrimitiveValue.MAX_VALUE_INT32)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt64MaxValue")).getMaxValue()), is(new PrimitiveValue(PrimitiveValue.MAX_VALUE_INT64)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt8MaxValue")).getMaxValue()), is(new PrimitiveValue(PrimitiveValue.MAX_VALUE_UINT8)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt16MaxValue")).getMaxValue()), is(new PrimitiveValue(PrimitiveValue.MAX_VALUE_UINT16)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt32MaxValue")).getMaxValue()), is(new PrimitiveValue(PrimitiveValue.MAX_VALUE_UINT32)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt64MaxValue")).getMaxValue()), is(new PrimitiveValue(PrimitiveValue.MAX_VALUE_UINT64)));
+        Assert.assertNull(((EncodedDataType)map.get("testTypeDefaultCharMaxValue")).getMaxValue());
     }
 
     @Test
@@ -398,35 +366,10 @@ public class EncodedDataTypeTest
         final String testXmlString =
             "<types>" +
             "    <type name=\"testTypeDefaultCharNullValue\" primitiveType=\"char\"/>" +
-            "    <type name=\"testTypeDefaultInt8NullValue\" primitiveType=\"int8\"/>" +
-            "    <type name=\"testTypeDefaultInt16NullValue\" primitiveType=\"int16\"/>" +
-            "    <type name=\"testTypeDefaultInt32NullValue\" primitiveType=\"int32\"/>" +
-            "    <type name=\"testTypeDefaultInt64NullValue\" primitiveType=\"int64\"/>" +
-            "    <type name=\"testTypeDefaultUInt8NullValue\" primitiveType=\"uint8\"/>" +
-            "    <type name=\"testTypeDefaultUInt16NullValue\" primitiveType=\"uint16\"/>" +
-            "    <type name=\"testTypeDefaultUInt32NullValue\" primitiveType=\"uint32\"/>" +
-            "    <type name=\"testTypeDefaultUInt64NullValue\" primitiveType=\"uint64\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypeDefaultCharNullValue")).getNullValue()),
-                   is(new PrimitiveValue(PrimitiveValue.NULL_VALUE_CHAR)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt8NullValue")).getNullValue()),
-                   is(new PrimitiveValue(PrimitiveValue.NULL_VALUE_INT8)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt16NullValue")).getNullValue()),
-                   is(new PrimitiveValue(PrimitiveValue.NULL_VALUE_INT16)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt32NullValue")).getNullValue()),
-                   is(new PrimitiveValue(PrimitiveValue.NULL_VALUE_INT32)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultInt64NullValue")).getNullValue()),
-                   is(new PrimitiveValue(PrimitiveValue.NULL_VALUE_INT64)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt8NullValue")).getNullValue()),
-                   is(new PrimitiveValue(PrimitiveValue.NULL_VALUE_UINT8)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt16NullValue")).getNullValue()),
-                   is(new PrimitiveValue(PrimitiveValue.NULL_VALUE_UINT16)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt32NullValue")).getNullValue()),
-                   is(new PrimitiveValue(PrimitiveValue.NULL_VALUE_UINT32)));
-        assertThat((((EncodedDataType)map.get("testTypeDefaultUInt64NullValue")).getNullValue()),
-                   is(new PrimitiveValue(PrimitiveValue.NULL_VALUE_UINT64)));
+        Assert.assertNull(((EncodedDataType)map.get("testTypeDefaultCharNullValue")).getNullValue());
     }
 
     @Test

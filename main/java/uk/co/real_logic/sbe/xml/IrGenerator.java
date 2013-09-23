@@ -78,17 +78,17 @@ public class IrGenerator
 
     private void addStartOrEndNode(final Message msg, final IrNode.Flag flag)
     {
-        irNodeList.add(new IrNode(new IrNode.Metadata(msg.getName(), msg.getId(), generateIrId(), flag)));
+        irNodeList.add(new IrNode(new IrNode.Metadata(msg.getName(), msg.getId(), generateIrId(), flag, msg.getDescription())));
     }
 
     private void addStartOrEndNode(final Type type, final IrNode.Flag flag)
     {
-        irNodeList.add(new IrNode(new IrNode.Metadata(type.getName(), IrNode.Metadata.INVALID_ID, generateIrId(), flag)));
+        irNodeList.add(new IrNode(new IrNode.Metadata(type.getName(), IrNode.Metadata.INVALID_ID, generateIrId(), flag, type.getDescription())));
     }
 
     private void addStartOrEndNode(final Message.Field field, final IrNode.Flag flag)
     {
-        irNodeList.add(new IrNode(new IrNode.Metadata(field.getName(), field.getId(), generateIrId(), flag)));
+        irNodeList.add(new IrNode(new IrNode.Metadata(field.getName(), field.getId(), generateIrId(), flag, field.getDescription())));
     }
 
     private void addAllFields(final List<Message.Field> fieldList)
@@ -153,34 +153,31 @@ public class IrGenerator
 
     }
 
+    /*
+     * generate IrNode for encoded types
+     */
     private void add(final EncodedDataType type, final Message.Field field)
     {
-        String name = type.getName();
-        long id = IrNode.Metadata.INVALID_ID;
+        IrNode.Metadata md = null;
 
         // this might work better as a switch case
         if (type.getPresence() == Presence.REQUIRED)
         {
-            irNodeList.add(new IrNode(type.getPrimitiveType(), type.size(), currentOffset,
-                                      new IrNode.Metadata(name, id, IrNode.Metadata.INVALID_ID, IrNode.Flag.NONE), byteOrder));
-            currentOffset += type.size();
+            md = new IrNode.Metadata(type.getName(), type.getMinValue(), type.getMaxValue());
         }
         else if (type.getPresence() == Presence.OPTIONAL)
         {
-            // TODO: add nullValue info into MD
-
-            irNodeList.add(new IrNode(type.getPrimitiveType(), type.size(), currentOffset,
-                                      new IrNode.Metadata(name, id, IrNode.Metadata.INVALID_ID, IrNode.Flag.NONE), byteOrder));
-            currentOffset += type.size();
+            md = new IrNode.Metadata(type.getName(), type.getMinValue(), type.getMaxValue(), type.getNullValue());
         }
         else if (type.getPresence() == Presence.CONSTANT)
         {
-            // TODO: add constant value info into MD, create new Flag = CONSTANT, etc.
-
-            irNodeList.add(new IrNode(type.getPrimitiveType(), type.size(), currentOffset,
-                                      new IrNode.Metadata(name, id, IrNode.Metadata.INVALID_ID, IrNode.Flag.NONE), byteOrder));
-
-            // TODO: What about offset update? Constants are not sent. So, no size and no offset impact.
+            md = new IrNode.Metadata(type.getName(), type.getConstantValue());
         }
+
+        /* create and add the IrNode itself */
+        irNodeList.add(new IrNode(type.getPrimitiveType(), type.size(), currentOffset, byteOrder, md));
+
+        /* update the offset */
+        currentOffset += type.size();
     }
 }

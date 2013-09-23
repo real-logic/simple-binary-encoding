@@ -207,30 +207,20 @@ public class EncodedDataType extends Type
     /**
      * The minValue of the type
      *
-     * @return value of the minValue primitiveType or type
+     * @return value of the minValue
      */
     public PrimitiveValue getMinValue()
     {
-        if (minValue == null)
-        {
-            return primitiveType.minValue();
-        }
-
         return minValue;
     }
 
     /**
      * The maxValue of the type
      *
-     * @return value of the maxValue primitiveType or type
+     * @return value of the maxValue
      */
     public PrimitiveValue getMaxValue()
     {
-        if (maxValue == null)
-        {
-            return primitiveType.maxValue();
-        }
-
         return maxValue;
     }
 
@@ -241,11 +231,6 @@ public class EncodedDataType extends Type
      */
     public PrimitiveValue getNullValue()
     {
-        if (nullValue == null)
-        {
-            return primitiveType.nullValue();
-        }
-
         return nullValue;
     }
 }

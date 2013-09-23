@@ -17,6 +17,7 @@
 package uk.co.real_logic.sbe.ir;
 
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.PrimitiveValue;
 
 import java.nio.ByteOrder;
 
@@ -43,29 +44,34 @@ public class IrNode
     private final PrimitiveType primitiveType;
     private final int size;
     private final int offset;
-    private final Metadata metadata;
     private final ByteOrder byteOrder;
+    private final Metadata metadata;
 
     /**
      * Construct an {@link IrNode} by providing values for all fields.
      *
-     * @param primitiveType representing this node.
+     * @param primitiveType representing this node or null.
      * @param size          of the node in bytes.
      * @param offset        within the {@link uk.co.real_logic.sbe.xml.Message}.
-     * @param metadata      for the {@link uk.co.real_logic.sbe.xml.Message}.
      * @param byteOrder     for the encoding.
+     * @param metadata      for the {@link uk.co.real_logic.sbe.xml.Message}.
      */
     public IrNode(final PrimitiveType primitiveType,
                   final int size,
                   final int offset,
-                  final Metadata metadata,
-                  final ByteOrder byteOrder)
+                  final ByteOrder byteOrder,
+                  final Metadata metadata)
     {
         this.primitiveType = primitiveType;
         this.size = size;
         this.offset = offset;
-        this.metadata = metadata;
         this.byteOrder = byteOrder;
+        this.metadata = metadata;
+
+        if (metadata == null)
+        {
+            throw new RuntimeException("metadata of IrNode must not be null");
+        }
     }
 
     /**
@@ -78,8 +84,13 @@ public class IrNode
         this.primitiveType = null;
         this.size = 0;
         this.offset = 0;
-        this.metadata = metadata;
         this.byteOrder = null;
+        this.metadata = metadata;
+
+        if (metadata == null)
+        {
+            throw new RuntimeException("metadata of IrNode must not be null");
+        }
     }
 
     public PrimitiveType getPrimitiveType()
@@ -130,18 +141,20 @@ public class IrNode
         private final long id;
         private final long irId;
         private final Flag flag;
+        private final PrimitiveValue minValue;
+        private final PrimitiveValue maxValue;
+        private final PrimitiveValue nullValue;
+        private final PrimitiveValue constValue;
+        private final String description;
 
         /*
-         * constValue
-         * nullValue
-         * minValue
-         * maxValue
-         * description (for START/END and others)
          * ENUM_START
-         *    ENUM_VALUE
+         *    ENUM_ENCODING
+         *    ENUM_VALUE...
          * ENUM_END
          * SET_START
-         *    SET_CHOICE
+         *    SET_ENCODING
+         *    SET_CHOICE...
          * SET_END
          *
          * irId = generated Id field
@@ -154,15 +167,90 @@ public class IrNode
          * GROUP_END -
          */
 
+        /**
+         * Default constructor that is used for START/END nodes.
+         *
+         * @param name        of the type, field, message, etc.
+         * @param id          of the type, field, message, etc.
+         * @param irId        of the IrNode.
+         * @param flag        representing the flag for the metadata of the IrNode.
+         * @param description representing the type, field, message, etc.
+         */
         public Metadata(final String name,
                         final long id,
                         final long irId,
-                        final Flag flag)
+                        final Flag flag,
+                        final String description)
         {
             this.name = name;
             this.id = id;
             this.irId = irId;
             this.flag = flag;
+            this.minValue = null;
+            this.maxValue = null;
+            this.nullValue = null;
+            this.constValue = null;
+            this.description = description;
+        }
+
+        /**
+         * Constructor that is used for {@link uk.co.real_logic.sbe.xml.Presence#REQUIRED} encoding nodes.
+         *
+         * @param name     of the type.
+         * @param minValue of the type or null.
+         * @param maxValue of the type or null.
+         */
+        public Metadata(final String name, final PrimitiveValue minValue, final PrimitiveValue maxValue)
+        {
+            this.name = name;
+            this.id = INVALID_ID;
+            this.irId = INVALID_ID;
+            this.flag = IrNode.Flag.NONE;
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+            this.nullValue = null;
+            this.constValue = null;
+            this.description = null;
+        }
+
+        /**
+         * Constructor that is used for {@link uk.co.real_logic.sbe.xml.Presence#OPTIONAL} encoding nodes.
+         *
+         * @param name       of the type.
+         * @param minValue   of the type or null.
+         * @param maxValue   of the type or null.
+         * @param nullValue  of the type.
+         */
+        public Metadata(final String name, final PrimitiveValue minValue, final PrimitiveValue maxValue, final PrimitiveValue nullValue)
+        {
+            this.name = name;
+            this.id = INVALID_ID;
+            this.irId = INVALID_ID;
+            this.flag = IrNode.Flag.NONE;
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+            this.nullValue = nullValue;
+            this.constValue = null;
+            this.description = null;
+        }
+
+        /**
+         * Constructor that is used for {@link uk.co.real_logic.sbe.xml.Presence#CONSTANT} encoding nodes.
+         *
+         * @param name       of the type.
+         * @param constValue of the type.
+         */
+        public Metadata(final String name, final PrimitiveValue constValue)
+        {
+            this.name = name;
+            this.id = INVALID_ID;
+            this.irId = INVALID_ID;
+            this.flag = IrNode.Flag.NONE;
+            this.minValue = null;
+            this.maxValue = null;
+            this.nullValue = null;
+            this.constValue = constValue;
+            this.description = null;
         }
 
         public String getName()
