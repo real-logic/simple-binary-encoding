@@ -43,7 +43,7 @@ public enum Presence
     }
 
     /**
-     * Lookup Presence value and return enum
+     * Lookup Presence value and return enum.
      *
      * @param value of presence to lookup
      * @return the {@link Presence} matching the value

@@ -19,16 +19,62 @@ package uk.co.real_logic.sbe;
 /**
  * primitiveTypes
  * <p/>
- * Primitive type    Description                            Length (octets)
- * char             character                               1
- * int8                Signed byte                                1
- * uint8            Unsigned byte / single-byte character    1
- * int16            16-bit signed integer                    2
- * uint16            16-bit unsigned integer                    2
- * int32            32-bit signed integer                    4
- * uint32            32-bit unsigned integer                    4
- * int64            64-bit signed integer                    8
- * uint64            64-bit unsigned integer                    8
+ * <table>
+ *     <thead>
+ *         <tr>
+ *             <th>Primitive Type</th>
+ *             <th>Description</th>
+ *             <th>Length (octets)</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>char</td>
+ *             <td>Character</td>
+ *             <td>1</td>
+ *         </tr>
+ *         <tr>
+ *             <td>int8</td>
+ *             <td>Signed byte</td>
+ *             <td>1</td>
+ *         </tr>
+ *         <tr>
+ *             <td>uint8</td>
+ *             <td>Unsigned Byte / single byte character</td>
+ *             <td>1</td>
+ *         </tr>
+ *         <tr>
+ *             <td>int16</td>
+ *             <td>Signed integer</td>
+ *             <td>2</td>
+ *         </tr>
+ *         <tr>
+ *             <td>uint16</td>
+ *             <td>Unsigned integer</td>
+ *             <td>2</td>
+ *         </tr>
+ *         <tr>
+ *             <td>int32</td>
+ *             <td>Signed integer</td>
+ *             <td>4</td>
+ *         </tr>
+ *         <tr>
+ *             <td>uint32</td>
+ *             <td>Unsigned integer</td>
+ *             <td>4</td>
+ *         </tr>
+ *         <tr>
+ *             <td>int64</td>
+ *             <td>Signed integer</td>
+ *             <td>8</td>
+ *         </tr>
+ *         <tr>
+ *             <td>uint64</td>
+ *             <td>Unsigned integer</td>
+ *             <td>8</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
  */
 public enum Primitive
 {

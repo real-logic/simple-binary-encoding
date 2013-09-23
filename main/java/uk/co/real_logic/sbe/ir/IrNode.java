@@ -25,10 +25,12 @@ import java.nio.ByteOrder;
  * is language, schema, platform independent.
  * <p/>
  * Processing and optimization could be run over a list of IrNodes to perform various functions
- * - ordering of fields based on size
- * - padding of fields in order to provide expansion room
- * - computing offsets of individual fields
- * - etc.
+ * <ul>
+ *     <li>ordering of fields based on size</li>
+ *     <li>padding of fields in order to provide expansion room</li>
+ *     <li>computing offsets of individual fields</li>
+ *     <li>etc.</li>
+ * </ul>
  */
 public class IrNode
 {
@@ -67,7 +69,7 @@ public class IrNode
     }
 
     /**
-     * Construct a default {@link IrNode} based on {@link uk.co.real_logic.sbe.ir.IrNode.Metadata} with defaults for other fields.
+     * Construct a default {@link IrNode} based on {@link Metadata} with defaults for other fields.
      *
      * @param metadata for this node.
      */

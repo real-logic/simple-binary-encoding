@@ -17,46 +17,50 @@
 package uk.co.real_logic.sbe.xml;
 
 /**
- * FixUsage
+ * FixUsage type.
  * <p>
- * int
- * Length
- * TagNum
- * SeqNum
- * NumInGroup
- * DayOfMonth
- * float
- * Qty
- * Price
- * Amt
- * Percentage
- * char
- * Boolean
- * String
- * MultipleCharValue
- * MultipleStringValue
- * Country
- * Currency
- * Exchange
- * MonthYear
- * UTCTimestamp
- * UTCTimeOnly
- * UTCDateOnly
- * LocalMktDate
- * TZTimeOnly
- * TZTimestamp
- * data
- * Pattern
- * Reserved100Plus
- * Reserved1000Plus
- * Reserved4000Plus
- * XMLData
- * Language
- *
- * fixUsage must be specified in the &lt;type&gt; or &lt;field&gt; specification
- * - if in the type, then field inherits the specification
- * - if in the type and in the field, then field should override?
- * - if not in the type, then field must specify it
+ * <ul>
+ *     <li>int</li>
+ *     <li>Length</li>
+ *     <li>TagNum</li>
+ *     <li>SeqNum</li>
+ *     <li>NumInGroup</li>
+ *     <li>DayOfMonth</li>
+ *     <li>float</li>
+ *     <li>Qty</li>
+ *     <li>Price</li>
+ *     <li>Amt</li>
+ *     <li>Percentage</li>
+ *     <li>char</li>
+ *     <li>Boolean</li>
+ *     <li>String</li>
+ *     <li>MultipleCharValue</li>
+ *     <li>MultipleStringValue</li>
+ *     <li>Country</li>
+ *     <li>Currency</li>
+ *     <li>Exchange</li>
+ *     <li>MonthYear</li>
+ *     <li>UTCTimestamp</li>
+ *     <li>UTCTimeOnly</li>
+ *     <li>UTCDateOnly</li>
+ *     <li>LocalMktDate</li>
+ *     <li>TZTimeOnly</li>
+ *     <li>TZTimestamp</li>
+ *     <li>data</li>
+ *     <li>Pattern</li>
+ *     <li>Reserved100Plus</li>
+ *     <li>Reserved1000Plus</li>
+ *     <li>Reserved4000Plus</li>
+ *     <li>XMLData</li>
+ *     <li>Language</li>
+ * </ul>
+ * <p>
+ * FixUsage must be specified in the &lt;type&gt; or &lt;field&gt; specification
+ * <ul>
+ *     <li>if in the type, then field inherits the specification</li>
+ *     <li>if in the type and in the field, then field should override?</li>
+ *     <li>if not in the type, then field must specify it</li>
+ * </ul>
  */
 public enum FixUsage
 {

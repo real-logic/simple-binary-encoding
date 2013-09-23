@@ -24,7 +24,8 @@ import java.nio.ByteOrder;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
- * Class to encapsulate the messageSchema attributes as well as messageHeader type reference for multiple Message objects
+ * Class to encapsulate the message schema attributes as well as messageHeader
+ * type reference for multiple {@link Message} objects.
  */
 public class MessageSchema
 {

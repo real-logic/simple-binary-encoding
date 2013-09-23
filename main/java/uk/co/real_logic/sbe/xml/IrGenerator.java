@@ -23,11 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class to hold all the state while generating the IrNode list
+ * Class to hold all the state while generating the {@link IrNode} list.
  * <p/>
- * usage:
- * irg = new IrGenerator()
- * irg.generateForMessage(message)
+ * Usage:
+ * <code>
+ *     <pre>
+ *    irg = new IrGenerator();
+ *    irg.generateForMessage(message);
+ *     </pre>
+ * </code>
  */
 public class IrGenerator
 {

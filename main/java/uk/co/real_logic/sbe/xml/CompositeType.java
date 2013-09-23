@@ -29,20 +29,105 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * SBE compositeType
- *
- * decimal types can use mantissa and exponent portions as min/max/null.
- *
- *                      Length  Exponent     Min                Max              Null
- * decimal              9       -128 to 127
- *  int64 mantissa                           -2^63 + 1          2^64(2^63 - 1)   -2^63
- *  int8 exponent               10^127 to 10^-128  10^127
- * decimal64            8       -128 to 127
- *  int64 mantissa                          -2^63 + 1          2^64(2^63 - 1)   -2^63
- *  constant exponent           10^127 to 10^-128  10^127
- * decimal32            4       -128 to 127
- *  int32 mantissa                          -2^32 + 1          2^32(2^31 - 1)   -2^31
- *  constant exponent           10^-127            10^127
+ * SBE compositeType.
+ * <p>
+ * Decimal types can use mantissa and exponent portions as min/max/null.
+ * <table>
+ *     <thead>
+ *         <tr>
+ *             <th></th>
+ *             <th></th>
+ *             <th>Length</th>
+ *             <th>Exponent</th>
+ *             <th>Min</th>
+ *             <th>Max</th>
+ *             <th>Null</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>decimal</td>
+ *             <td></td>
+ *             <td>9</td>
+ *             <td>-128 to 127</td>
+ *             <td></td>
+ *             <td></td>
+ *             <td></td>
+ *         </tr>
+ *         <tr>
+ *             <td></td>
+ *             <td>int64 mantissa</td>
+ *             <td></td>
+ *             <td></td>
+ *             <td>-2^63 + 1</td>
+ *             <td>2^64(2^63 - 1)</td>
+ *             <td>-2^63</td>
+ *         </tr>
+ *         <tr>
+ *             <td></td>
+ *             <td>int8 exponent</td>
+ *             <td></td>
+ *             <td></td>
+ *             <td>10^127</td>
+ *             <td>10^-128</td>
+ *             <td>10^127</td>
+ *         </tr>
+ *         <tr>
+ *             <td>decimal64</td>
+ *             <td></td>
+ *             <td>8</td>
+ *             <td>-128 to 127</td>
+ *             <td></td>
+ *             <td></td>
+ *             <td></td>
+ *         </tr>
+ *         <tr>
+ *             <td></td>
+ *             <td>int64 mantissa</td>
+ *             <td></td>
+ *             <td></td>
+ *             <td>-2^63 + 1</td>
+ *             <td>2^64(2^63 - 1)</td>
+ *             <td>-2^63</td>
+ *         </tr>
+ *         <tr>
+ *             <td></td>
+ *             <td>constant exponent</td>
+ *             <td></td>
+ *             <td></td>
+ *             <td>10^127</td>
+ *             <td>10^-128</td>
+ *             <td>10^127</td>
+ *         </tr>
+ *         <tr>
+ *             <td>decimal32</td>
+ *             <td></td>
+ *             <td>4</td>
+ *             <td>-128 to 127</td>
+ *             <td></td>
+ *             <td></td>
+ *             <td></td>
+ *         </tr>
+ *         <tr>
+ *             <td></td>
+ *             <td>int32 mantissa</td>
+ *             <td></td>
+ *             <td></td>
+ *             <td>-2^31 + 1</td>
+ *             <td>2^32(2^31 - 1)</td>
+ *             <td>-2^63</td>
+ *         </tr>
+ *         <tr>
+ *             <td></td>
+ *             <td>constant exponent</td>
+ *             <td></td>
+ *             <td></td>
+ *             <td>10^127</td>
+ *             <td>10^-128</td>
+ *             <td>10^127</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
  */
 public class CompositeType extends Type
 {

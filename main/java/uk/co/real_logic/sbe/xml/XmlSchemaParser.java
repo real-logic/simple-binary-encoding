@@ -32,7 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Encapsulate the XML Schema parsing for SBE so that other representations may be used to generate IR
+ * Encapsulate the XML Schema parsing for SBE so that other representations may be
+ * used to generate independent representation.
  */
 public class XmlSchemaParser
 {

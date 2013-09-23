@@ -35,6 +35,8 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
  */
 public class Message
 {
+    private static final String FIELD_OR_GROUP_OR_DATA_EXPR = "field|group|data";
+
     private final long id;
     private final String name;
     private final String description;
@@ -75,7 +77,7 @@ public class Message
         throws XPathExpressionException, IllegalArgumentException
     {
         XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile("field|group|data").evaluate(node, XPathConstants.NODESET);
+        NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, XPathConstants.NODESET);
 
         List<Field> fieldList = new ArrayList<Field>();
         Map<String, Field> entryCountFieldMap = new HashMap<String, Field>();  // used for holding entry count fields and matching up
@@ -224,19 +226,19 @@ public class Message
         public static final int INVALID_ID = Integer.MAX_VALUE;  // id must only be short, so this is way out of range.
         public static final String INVALID_ID_STRING = Integer.toString(INVALID_ID);
 
-        private final String name;                      // required for field/data & group
-        private final String description;               // optional for field/data & group
-        private final String groupName;                 // optional for field/date (not present for group)
-        private final int id;                           // required for field/data (not present for group)
-        private final Type type;                        // required for field/data (not present for group)
-        private final long offset;                      // optional for field/data (not present for group)
-        private final FixUsage fixUsage;                // optional for field/data (not present for group?)
-        private final Presence presence;                // optional for field/data (not present for group)  null means not set
-        private final int refId;                        // optional for field (not present for group or data) INVALID_ID means not set
-        private final long blockLength;                 // optional for group (not present for field/data)
+        private final String name;          // required for field/data & group
+        private final String description;   // optional for field/data & group
+        private final String groupName;     // optional for field/date (not present for group)
+        private final int id;               // required for field/data (not present for group)
+        private final Type type;            // required for field/data (not present for group)
+        private final long offset;          // optional for field/data (not present for group)
+        private final FixUsage fixUsage;    // optional for field/data (not present for group?)
+        private final Presence presence;    // optional for field/data (not present for group)  null means not set
+        private final int refId;            // optional for field (not present for group or data) INVALID_ID means not set
+        private final long blockLength;     // optional for group (not present for field/data)
         private List<Field> groupFieldList;
-        private Field entryCountField;                  // used by group fields as the entry count field
-        private Field lengthField;                      // used by data fields as the length field
+        private Field entryCountField;      // used by group fields as the entry count field
+        private Field lengthField;          // used by data fields as the length field
 
         /**
          * The field constructor
@@ -257,7 +259,7 @@ public class Message
             this.entryCountField = null;  // has no meaning if not group
             this.lengthField = null;      // will be set later
 
-            /* fixUsage must be present or must be on the type. If on both, they must agree. */
+            // fixUsage must be present or must be on the type. If on both, they must agree.
             if (this.fixUsage == null && this.type.getFixUsage() == null)
             {
                 throw new IllegalArgumentException("Missing fixUsage on type and field: " + this.name);

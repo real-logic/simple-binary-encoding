@@ -36,8 +36,8 @@ public class EnumType extends Type
 {
     private final Primitive encodingType;
     private final PrimitiveValue nullValue;
-    private final Map<PrimitiveValue, ValidValue> valueMap = new HashMap<PrimitiveValue, ValidValue>();
-    private final Map<String, ValidValue> nameMap = new HashMap<String, ValidValue>();
+    private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new HashMap<PrimitiveValue, ValidValue>();
+    private final Map<String, ValidValue> validValueByNameMap = new HashMap<String, ValidValue>();
 
     /**
      * Construct a new enumType from XML Schema.
@@ -83,18 +83,18 @@ public class EnumType extends Type
         {
             ValidValue v = new ValidValue(list.item(i), encodingType);
 
-            if (valueMap.get(v.getPrimitiveValue()) != null)
+            if (validValueByPrimitiveValueMap.get(v.getPrimitiveValue()) != null)
             {
                 throw new IllegalArgumentException("validValue already exists for value: " + v.getPrimitiveValue());
             }
 
-            if (nameMap.get(v.getName()) != null)
+            if (validValueByNameMap.get(v.getName()) != null)
             {
                 throw new IllegalArgumentException("validValue already exists for name: " + v.getName());
             }
 
-            valueMap.put(v.getPrimitiveValue(), v);
-            nameMap.put(v.getName(), v);
+            validValueByPrimitiveValueMap.put(v.getPrimitiveValue(), v);
+            validValueByNameMap.put(v.getName(), v);
         }
     }
 
@@ -105,12 +105,12 @@ public class EnumType extends Type
 
     public ValidValue getValidValue(final PrimitiveValue value)
     {
-        return valueMap.get(value);
+        return validValueByPrimitiveValueMap.get(value);
     }
 
     public ValidValue getValidValue(final String name)
     {
-        return nameMap.get(name);
+        return validValueByNameMap.get(name);
     }
 
     /**
@@ -133,7 +133,7 @@ public class EnumType extends Type
      */
     public Set<Map.Entry<String, ValidValue>> getValidValueSet()
     {
-        return nameMap.entrySet();
+        return validValueByNameMap.entrySet();
     }
 
     /**
@@ -147,14 +147,14 @@ public class EnumType extends Type
         private final Primitive encodingType;
 
         /**
-         * Construct a ValidValue given the XML node and the encodingType
+         * Construct a ValidValue given the XML node and the encodingType.
          *
          * @param node         that contains the validValue
          * @param encodingType for the enum
          */
         public ValidValue(final Node node, final Primitive encodingType)
         {
-            /**
+            /*
              * attrs: name(required), description(optional)
              * value: the value of the validValue
              */
