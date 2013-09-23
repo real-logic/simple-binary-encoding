@@ -16,9 +16,11 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import org.junit.Test;
+
 import java.io.InputStream;
 
-import org.junit.Test;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parseXmlAndGenerateMessageSchema;
 
 public class BasicSchemaFileTest
 {
@@ -31,11 +33,11 @@ public class BasicSchemaFileTest
      */
     public InputStream getLocalResource(final String name)
     {
-        InputStream in = this.getClass().getClassLoader().getResourceAsStream(name);
+        InputStream in = getClass().getClassLoader().getResourceAsStream(name);
 
         if (in == null)
         {
-            throw new RuntimeException("could not find " + name);
+            throw new RuntimeException("Could not find " + name);
         }
 
         return in;
@@ -45,21 +47,20 @@ public class BasicSchemaFileTest
     public void shouldHandleBasicFile()
         throws Exception
     {
-        XmlSchemaParser.parseXmlAndGenerateMessageSchema(getLocalResource("BasicSchemaFileTest.xml"));
+        parseXmlAndGenerateMessageSchema(getLocalResource("BasicSchemaFileTest.xml"));
     }
 
     @Test
     public void shouldHandleBasicFileWithGroup()
         throws Exception
     {
-        XmlSchemaParser.parseXmlAndGenerateMessageSchema(getLocalResource("BasicGroupSchemaFileTest.xml"));
+        parseXmlAndGenerateMessageSchema(getLocalResource("BasicGroupSchemaFileTest.xml"));
     }
 
     @Test
     public void shouldHandleBasicFileWithVariableLengthData()
         throws Exception
     {
-        XmlSchemaParser.parseXmlAndGenerateMessageSchema(getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
+        parseXmlAndGenerateMessageSchema(getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
     }
-
 }

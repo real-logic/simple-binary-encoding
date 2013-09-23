@@ -16,6 +16,8 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import uk.co.real_logic.sbe.Primitive;
 import uk.co.real_logic.sbe.PrimitiveValue;
 
@@ -23,10 +25,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,8 +36,8 @@ public class EnumType extends Type
 {
     private final Primitive encodingType;
     private final PrimitiveValue nullValue;
-    private final Map<PrimitiveValue, ValidValue> valueMap;
-    private final Map<String, ValidValue> nameMap;
+    private final Map<PrimitiveValue, ValidValue> valueMap = new HashMap<PrimitiveValue, ValidValue>();
+    private final Map<String, ValidValue> nameMap = new HashMap<String, ValidValue>();
 
     /**
      * Construct a new enumType from XML Schema.
@@ -54,13 +54,13 @@ public class EnumType extends Type
          * - encodingType (required) - must be either 'char' or 'int8' according to spec
          * - nullValue (optional with presence=optional)
          */
-        this.encodingType = Primitive.lookup(XmlSchemaParser.getXmlAttributeValue(node, "encodingType"));
-        if (this.encodingType != Primitive.CHAR && this.encodingType != Primitive.UINT8)
+        encodingType = Primitive.lookup(XmlSchemaParser.getXmlAttributeValue(node, "encodingType"));
+        if (encodingType != Primitive.CHAR && encodingType != Primitive.UINT8)
         {
-            throw new IllegalArgumentException("unknown encodingType " + this.encodingType);
+            throw new IllegalArgumentException("unknown encodingType " + encodingType);
         }
 
-        String nullValueStr = XmlSchemaParser.getXmlAttributeValueNullable(node, "nullValue");
+        String nullValueStr = XmlSchemaParser.getXmlAttributeValueOrNull(node, "nullValue");
         if (nullValueStr != null)
         {
             // nullValue is mutually exclusive with presence=required or constant
@@ -69,15 +69,12 @@ public class EnumType extends Type
                 throw new IllegalArgumentException("nullValue set, but presence is not optional");
             }
 
-            this.nullValue = new PrimitiveValue(this.encodingType, nullValueStr);
+            nullValue = new PrimitiveValue(this.encodingType, nullValueStr);
         }
         else
         {
-            this.nullValue = null;
+            nullValue = null;
         }
-
-        this.valueMap = new HashMap<PrimitiveValue, ValidValue>();
-        this.nameMap = new HashMap<String, ValidValue>();
 
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile("validValue").evaluate(node, XPathConstants.NODESET);
@@ -86,18 +83,18 @@ public class EnumType extends Type
         {
             ValidValue v = new ValidValue(list.item(i), encodingType);
 
-            if (this.valueMap.get(v.getPrimitiveValue()) != null)
+            if (valueMap.get(v.getPrimitiveValue()) != null)
             {
-                throw new IllegalArgumentException("validValue already exists for value: " + v.getPrimitiveValue().toString());
+                throw new IllegalArgumentException("validValue already exists for value: " + v.getPrimitiveValue());
             }
 
-            if (this.nameMap.get(v.getName()) != null)
+            if (nameMap.get(v.getName()) != null)
             {
                 throw new IllegalArgumentException("validValue already exists for name: " + v.getName());
             }
 
-            this.valueMap.put(v.getPrimitiveValue(), v);
-            this.nameMap.put(v.getName(), v);
+            valueMap.put(v.getPrimitiveValue(), v);
+            nameMap.put(v.getName(), v);
         }
     }
 
@@ -162,9 +159,9 @@ public class EnumType extends Type
              * value: the value of the validValue
              */
             this.encodingType = encodingType;
-            this.name = XmlSchemaParser.getXmlAttributeValue(node, "name");
-            this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
-            this.value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());
+            name = XmlSchemaParser.getXmlAttributeValue(node, "name");
+            description = XmlSchemaParser.getXmlAttributeValueOrNull(node, "description");
+            value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());
         }
 
         public PrimitiveValue getPrimitiveValue()

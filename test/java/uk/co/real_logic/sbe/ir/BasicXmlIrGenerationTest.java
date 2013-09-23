@@ -16,6 +16,7 @@
  */
 package uk.co.real_logic.sbe.ir;
 
+import org.junit.Test;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
@@ -24,12 +25,8 @@ import uk.co.real_logic.sbe.Primitive;
 import java.io.InputStream;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import static java.lang.Integer.*;
-import static java.lang.Long.*;
-import static java.lang.Boolean.*;
+import static java.lang.Integer.valueOf;
+import static java.lang.Long.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -122,7 +119,7 @@ public class BasicXmlIrGenerationTest
         MessageSchema schema = XmlSchemaParser.parseXmlAndGenerateMessageSchema(getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
 
-        List<IrNode> ir = irg.generateForMessage(schema.getMessage(new Long(50001)));
+        List<IrNode> ir = irg.generateForMessage(schema.getMessage(50001));
  
        /*
         * assert the basic structure of the message IR
@@ -165,5 +162,4 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(4).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(4).getOffset()), is(valueOf(0)));
     }
-
 }

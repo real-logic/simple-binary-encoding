@@ -16,12 +16,12 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.Primitive;
-import uk.co.real_logic.sbe.PrimitiveValue;
-
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveValue;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,22 +34,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import static java.lang.Integer.*;
+import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class CompositeTypeTest
 {
-
-    /**
-     * Grab type nodes, parse them, and populate map for those types.
-     *
-     * @param xPathExpr for type nodes in XML
-     * @param xml       string to parse
-     * @return map of name to CompositeType nodes
-     */
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
@@ -63,6 +53,7 @@ public class CompositeTypeTest
             Type t = new CompositeType(list.item(i));
             map.put(t.getName(), t);
         }
+
         return map;
     }
 
@@ -70,7 +61,8 @@ public class CompositeTypeTest
     public void shouldHandleDecimalCompositeType()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<composite name=\"decimal\">" +
             "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
             "  <type name=\"exponent\" primitiveType=\"int8\"/>" +
@@ -89,7 +81,8 @@ public class CompositeTypeTest
     public void shouldHandleDecimal32CompositeType()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<composite name=\"decimal32\">" +
             "  <type name=\"mantissa\" primitiveType=\"int32\"/>" +
             "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
@@ -110,7 +103,8 @@ public class CompositeTypeTest
     public void shouldHandleDecimal64CompositeType()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<composite name=\"decimal64\">" +
             "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
             "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
@@ -131,7 +125,8 @@ public class CompositeTypeTest
     public void shouldHandleCompositeTypeList()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<composite name=\"decimal\">" +
             "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
             "  <type name=\"exponent\" primitiveType=\"int8\"/>" +
@@ -150,7 +145,8 @@ public class CompositeTypeTest
         throws Exception
     {
         final String nullValueStr = "9223372036854775807";
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<composite name=\"PRICENULL\" description=\"Price NULL\" fixUsage=\"Price\">" +
             " <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" + nullValueStr + "\" primitiveType=\"int64\"/>" +
             " <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">-7</type>" +
@@ -166,7 +162,8 @@ public class CompositeTypeTest
     public void shouldThrowExceptionWhenCompositeTypeHasTypeNameDuplicates()
         throws Exception
     {
-        final String testXmlString = "<types>" +
+        final String testXmlString =
+            "<types>" +
             "<composite name=\"decimal\">" +
             "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
             "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +

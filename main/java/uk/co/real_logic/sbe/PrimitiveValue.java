@@ -18,28 +18,23 @@ package uk.co.real_logic.sbe;
 
 /**
  * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
+ * <p/>
+ * Primitive type	Null        Min          Max
+ * char             0           0x20         0x7E
+ * int8	        -128        -127         127
+ * uint8	        255         0            254
+ * int16	        -32768      -32767       32767
+ * uint16	        65535       0            65534
+ * int32	        2^31        -2^31 + 1    2^31 - 1
+ * uint32	        2^32 - 1    0            2^32 - 2
+ * int64	        2^63        -2^63 + 1    2^63 - 1
+ * uint64	        2^64 - 1    0            2^64 - 2
  */
 public class PrimitiveValue
 {
-    /**
-     * Representation of value is a Java long
-     */
-    private static final int LONG_VALUE_REPRESENTATION = 0x1;
+    /** Representation of value is a Java long */
+    public static final int LONG_VALUE_REPRESENTATION = 0x1;
 
-    /**
-     * SBE primitiveType null/min/max value default constants
-     * <p/>
-     * Primitive type	Null        Min          Max
-     * char             0           0x20         0x7E
-     * int8	        -128        -127         127
-     * uint8	        255         0            254
-     * int16	        -32768      -32767       32767
-     * uint16	        65535       0            65534
-     * int32	        2^31        -2^31 + 1    2^31 - 1
-     * uint32	        2^32 - 1    0            2^32 - 2
-     * int64	        2^63        -2^63 + 1    2^63 - 1
-     * uint64	        2^64 - 1    0            2^64 - 2
-     */
     public static final long MIN_VALUE_CHAR = 0x20;
     public static final long MAX_VALUE_CHAR = 0x7E;
     public static final long NULL_VALUE_CHAR = 0;
@@ -76,16 +71,7 @@ public class PrimitiveValue
     public static final long MAX_VALUE_UINT64 = Long.MAX_VALUE;  // TODO: placeholder for now (replace with BigInteger?)
     public static final long NULL_VALUE_UINT64 = Long.MIN_VALUE; // TODO: placeholder for now (replace with BigInteger?)
 
-    /**
-     * value expressed as a long
-     * Java max = 2^63 - 1
-     * Java min = -2^63
-     */
     private final long longValue;
-
-    /**
-     * Representation of the value internally to this class
-     */
     private final int representation;
 
     /**
@@ -95,8 +81,8 @@ public class PrimitiveValue
      */
     public PrimitiveValue(final long value)
     {
-        this.longValue = value;
-        this.representation = LONG_VALUE_REPRESENTATION;
+        longValue = value;
+        representation = LONG_VALUE_REPRESENTATION;
     }
 
     /**
@@ -108,8 +94,8 @@ public class PrimitiveValue
      */
     public PrimitiveValue(final Primitive primitive, final String value)
     {
-        this.longValue = parseConstValue2Long(primitive, value);
-        this.representation = LONG_VALUE_REPRESENTATION;
+        longValue = parseConstValue2Long(primitive, value);
+        representation = LONG_VALUE_REPRESENTATION;
     }
 
     /**
@@ -140,6 +126,7 @@ public class PrimitiveValue
         {
             case LONG_VALUE_REPRESENTATION:
                 return Long.toString(longValue);
+
             default:
                 throw new IllegalArgumentException("unknown PrimitiveValue representation");
         }
@@ -168,7 +155,7 @@ public class PrimitiveValue
     }
 
     /**
-     * return hashCode for value. This is the underlying representations hashCode for the value
+     * Return hashCode for value. This is the underlying representations hashCode for the value
      *
      * @return int value of the hashCode
      */
@@ -178,7 +165,7 @@ public class PrimitiveValue
     }
 
     /**
-     * Parse constant value string and return long representation
+     * Parse constant value string and return long value
      *
      * @param primitive that this is supposed to be
      * @param value     expressed as a String
@@ -205,7 +192,7 @@ public class PrimitiveValue
             case UINT32:
             case UINT64:
                 /**
-                 * TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit ints...
+                 * TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit integers...
                  */
                 return Long.parseLong(value);
 
@@ -213,5 +200,4 @@ public class PrimitiveValue
                 throw new IllegalArgumentException("Do not know how to parse this primitive type for constant value");
         }
     }
-
 }

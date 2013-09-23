@@ -16,25 +16,26 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
+
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
  * An SBE message.
  */
 public class Message
 {
-    private final Long id;
+    private final long id;
     private final String name;
     private final String description;
     private final long blockLength;
@@ -61,13 +62,13 @@ public class Message
          * group
          * - name (required) - unique within message? field for num entries must precede it!
          */
-        this.id = new Long(XmlSchemaParser.getXmlAttributeValue(node, "id"));                              // required
-        this.name = XmlSchemaParser.getXmlAttributeValue(node, "name");                                    // required
-        this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");              // optional
-        this.blockLength = Long.parseLong(XmlSchemaParser.getXmlAttributeValue(node, "blockLength", "0")); // 0 means not set
-        this.fixMsgType = XmlSchemaParser.getXmlAttributeValueNullable(node, "fixMsgType");                // optional
+        id = Long.parseLong(getXmlAttributeValue(node, "id"));                        // required
+        name = getXmlAttributeValue(node, "name");                                    // required
+        description = getXmlAttributeValueOrNull(node, "description");                // optional
+        blockLength = Long.parseLong(getXmlAttributeValue(node, "blockLength", "0")); // 0 means not set
+        fixMsgType = getXmlAttributeValueOrNull(node, "fixMsgType");                  // optional
 
-        this.fieldList = parseXmlFieldsAndGroups(node, typesMap);
+        fieldList = parseXmlFieldsAndGroups(node, typesMap);
     }
 
     private static List<Field> parseXmlFieldsAndGroups(final Node node, final Map<String, Type> typesMap)
@@ -77,9 +78,7 @@ public class Message
         NodeList list = (NodeList)xPath.compile("field|group|data").evaluate(node, XPathConstants.NODESET);
 
         List<Field> fieldList = new ArrayList<Field>();
-
         Map<String, Field> entryCountFieldMap = new HashMap<String, Field>();  // used for holding entry count fields and matching up
-
         Map<Integer, Field> lengthFieldMap = new HashMap<Integer, Field>();    // used for holding length fields and matching up
 
         for (int i = 0, size = list.getLength(); i < size; i++)
@@ -94,8 +93,7 @@ public class Message
                  */
 
                 /* use the Field constructor that is for group (not field) */
-                f = new Field(list.item(i),
-                              XmlSchemaParser.getXmlAttributeValue(list.item(i), "name"));
+                f = new Field(list.item(i), getXmlAttributeValue(list.item(i), "name"));
 
                 Field entryCountField = entryCountFieldMap.get(f.getName());
 
@@ -113,9 +111,9 @@ public class Message
             {
         		/* use the Field constructor that is for field (not group) */
                 f = new Field(list.item(i),
-                              XmlSchemaParser.getXmlAttributeValue(list.item(i), "name"),
-                              Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(list.item(i), "id")),
-                              lookupType(typesMap, XmlSchemaParser.getXmlAttributeValue(list.item(i), "type")));
+                              getXmlAttributeValue(list.item(i), "name"),
+                              Integer.parseInt(getXmlAttributeValue(list.item(i), "id")),
+                              lookupType(typesMap, getXmlAttributeValue(list.item(i), "type")));
 
                 /* save field for matching up with group if this is an entry count field */
                 if (f.getGroupName() != null)
@@ -133,9 +131,9 @@ public class Message
             {
         		/* use the Field constructor that is for field (even though this is a data) */
                 f = new Field(list.item(i),
-                              XmlSchemaParser.getXmlAttributeValue(list.item(i), "name"),
-                              Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(list.item(i), "id")),
-                              lookupType(typesMap, XmlSchemaParser.getXmlAttributeValue(list.item(i), "type")));
+                              getXmlAttributeValue(list.item(i), "name"),
+                              Integer.parseInt(getXmlAttributeValue(list.item(i), "id")),
+                              lookupType(typesMap, getXmlAttributeValue(list.item(i), "type")));
 
                 /* match up with length field */
                 Integer lengthFieldRefId = new Integer(f.getId());
@@ -180,7 +178,7 @@ public class Message
      *
      * @return id of the message
      */
-    public Long getId()
+    public long getId()
     {
         return id;
     }
@@ -247,14 +245,14 @@ public class Message
         public Field(final Node node, final String name, final int id, final Type type)
         {
             this.name = name;
-            this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
-            this.groupName = XmlSchemaParser.getXmlAttributeValueNullable(node, "groupName");
+            this.description = XmlSchemaParser.getXmlAttributeValueOrNull(node, "description");
+            this.groupName = XmlSchemaParser.getXmlAttributeValueOrNull(node, "groupName");
             this.id = id;
             this.type = type;
-            this.offset = Long.parseLong(XmlSchemaParser.getXmlAttributeValue(node, "offset", "0"));
-            this.fixUsage = FixUsage.lookup(XmlSchemaParser.getXmlAttributeValueNullable(node, "fixUsage"));
-            this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValueNullable(node, "presence"));
-            this.refId = Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(node, "refId", INVALID_ID_STRING));
+            this.offset = Long.parseLong(getXmlAttributeValue(node, "offset", "0"));
+            this.fixUsage = FixUsage.lookup(XmlSchemaParser.getXmlAttributeValueOrNull(node, "fixUsage"));
+            this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValueOrNull(node, "presence"));
+            this.refId = Integer.parseInt(getXmlAttributeValue(node, "refId", INVALID_ID_STRING));
             this.blockLength = 0;
             this.groupFieldList = null;   // has no meaning if not group
             this.entryCountField = null;  // has no meaning if not group
@@ -277,7 +275,7 @@ public class Message
         public Field(final Node node, final String name)
         {
             this.name = name;
-            this.description = XmlSchemaParser.getXmlAttributeValueNullable(node, "description");
+            this.description = XmlSchemaParser.getXmlAttributeValueOrNull(node, "description");
             this.groupName = null;
             this.id = INVALID_ID;
             this.type = null;
@@ -285,7 +283,7 @@ public class Message
             this.fixUsage = null;
             this.presence = null;
             this.refId = INVALID_ID;
-            this.blockLength = Long.parseLong(XmlSchemaParser.getXmlAttributeValue(node, "blockLength", "0"));
+            this.blockLength = Long.parseLong(getXmlAttributeValue(node, "blockLength", "0"));
             this.groupFieldList = null;    // for now. Set later.
             this.entryCountField = null;   // for now. Set later.
             this.lengthField = null;       // has no meaning for group.

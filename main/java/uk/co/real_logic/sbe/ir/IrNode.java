@@ -23,7 +23,7 @@ import java.nio.ByteOrder;
 /**
  * Class to encapsulate an atom of data. This Intermediate Representation (IR)
  * is language, schema, platform independent.
- * <p/>
+ * <p>
  * Processing and optimization could be run over a list of IrNodes to perform various functions
  * - ordering of fields based on size
  * - padding of fields in order to provide expansion room
@@ -32,28 +32,26 @@ import java.nio.ByteOrder;
  */
 public class IrNode
 {
-    /** constants */
-
     /** Size not determined */
-    private final static int VARIABLE_SIZE = -1;
+    public static final int VARIABLE_SIZE = -1;
 
     /** Offset not computed or set */
-    private final static int UNKNOWN_OFFSET = -1;
+    public static final int UNKNOWN_OFFSET = -1;
 
     /** how to encode field */
-    private Primitive primitiveType;
+    private final Primitive primitiveType;
 
     /** Size of field */
-    private int size;
+    private final int size;
 
     /** Offset of field from start of buffer */
-    private int offset;
+    private final int offset;
 
     /** Meta Data associated with node */
-    private MetaData metaData;
+    private final MetaData metaData;
 
     /** byteOrder of the data */
-    private ByteOrder byteOrder;
+    private final ByteOrder byteOrder;
 
     /**
      * Construct an IrNode
@@ -115,7 +113,7 @@ public class IrNode
         FIELD_END,
         GROUP_START,
         GROUP_END,
-        NONE;
+        NONE
     }
 
     /**
