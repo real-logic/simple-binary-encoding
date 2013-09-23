@@ -20,6 +20,8 @@
     <property name="checkstyle.config.file" location="test/conf/checkstyle.xml"/>
     <property name="checkstyle.output.file" location="${dir.reports.checkstyle}/results.xml"/>
 
+    <property name="dir.docs" value="target/docs"/>
+
     <path id="test.classpath">
         <pathelement path="${dir.main.build}"/>
         <pathelement path="${dir.test.build}"/>
@@ -36,6 +38,7 @@
         <mkdir dir="${dir.main.build}"/>
         <mkdir dir="${dir.test.build}"/>
         <mkdir dir="${dir.dist}"/>
+        <mkdir dir="${dir.docs}"/>
         <mkdir dir="${dir.reports}"/>
         <mkdir dir="${dir.reports.unit}"/>
         <mkdir dir="${dir.reports.checkstyle}"/>
@@ -94,11 +97,30 @@
         </sequential>
     </target>
 
-    <target name="dist" depends="build" description="Generate the distribution">
+    <target name="javadoc" depends="build">
+        <javadoc sourcepath="${dir.main.src}"
+                 destdir="${dir.docs}"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="Simple Binary Encoding">
+            <arg value="-XDignore.symbol.file"/>
+            <doctitle><![CDATA[<h1>Simple Binary Encoding</h1>]]></doctitle>
+            <bottom><![CDATA[<i>Copyright &#169; 2013 Real Logic Ltd. All Rights Reserved.</i>]]></bottom>
+        </javadoc>
+    </target>
+
+    <target name="dist" depends="build, javadoc" description="Generate the distribution">
         <jar destfile="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar">
             <fileset dir="${dir.main.build}"/>
         </jar>
+        <jar destfile="${dir.dist}/${module.name}-api-${build.version}-${DSTAMP}.jar">
+            <fileset dir="${dir.docs}"/>
+        </jar>
+        <jar destfile="${dir.dist}/${module.name}-src-${build.version}-${DSTAMP}.jar">
+            <fileset dir="${dir.main.src}"/>
+        </jar>
     </target>
 
-    <target name="all" depends="clean, checkstyle, build, test, dist"/>
+    <target name="all" depends="clean, checkstyle, build, test, javadoc, dist"/>
 </project>
