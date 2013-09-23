@@ -411,7 +411,8 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).getNullValue()), is(new PrimitiveValue(PrimitiveType.INT8, nullVal)));
+        assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).getNullValue()),
+                   is(new PrimitiveValue(PrimitiveType.INT8, nullVal)));
     }
 
     @Test(expected = IllegalArgumentException.class)

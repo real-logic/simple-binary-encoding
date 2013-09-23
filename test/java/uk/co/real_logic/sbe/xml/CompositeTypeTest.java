@@ -144,18 +144,18 @@ public class CompositeTypeTest
     public void shouldHandleCompositeHasNullableType()
         throws Exception
     {
-        final String nullValueStr = "9223372036854775807";
+        final String nullValStr = "9223372036854775807";
         final String testXmlString =
             "<types>" +
             "<composite name=\"PRICENULL\" description=\"Price NULL\" fixUsage=\"Price\">" +
-            "    <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" + nullValueStr + "\" primitiveType=\"int64\"/>" +
+            "    <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" + nullValStr + "\" primitiveType=\"int64\"/>" +
             "    <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">-7</type>" +
             "</composite>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         CompositeType c = (CompositeType)map.get("PRICENULL");
-        assertThat((c.getType("mantissa")).getNullValue(), is(new PrimitiveValue(PrimitiveType.INT64, nullValueStr)));
+        assertThat((c.getType("mantissa")).getNullValue(), is(new PrimitiveValue(PrimitiveType.INT64, nullValStr)));
     }
 
     @Test(expected = IllegalArgumentException.class)
