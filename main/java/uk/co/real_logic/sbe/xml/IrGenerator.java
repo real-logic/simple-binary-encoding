@@ -37,11 +37,13 @@ public class IrGenerator
     private List<IrNode> irNodeList;
     private int currentOffset;
     private ByteOrder byteOrder;
+    private long irIdCursor;
 
     public IrGenerator()
     {
 	this.irNodeList = new ArrayList<IrNode>();
 	this.currentOffset = 0;
+	this.irIdCursor = 1;
     }
 
     public List<IrNode> generateForMessage(Message msg)
@@ -79,12 +81,17 @@ public class IrGenerator
 	return irNodeList;
     }
 
+    private long generateIrId()
+    {
+	return irIdCursor++;
+    }
+
     /**
      * The Message version
      */
     private void addStartOrEndNode(final Message msg, final IrNode.Flag flag)
     {
-	irNodeList.add(new IrNode(new IrNode.MetaData(msg.getName(), msg.getId().longValue(), flag)));
+	irNodeList.add(new IrNode(new IrNode.MetaData(msg.getName(), msg.getId().longValue(), generateIrId(), flag)));
     }
 
     /**
@@ -92,7 +99,7 @@ public class IrGenerator
      */
     private void addStartOrEndNode(final Type type, final IrNode.Flag flag)
     {
-	irNodeList.add(new IrNode(new IrNode.MetaData(type.getName(), IrNode.MetaData.INVALID_ID, flag)));
+	irNodeList.add(new IrNode(new IrNode.MetaData(type.getName(), IrNode.MetaData.INVALID_ID, generateIrId(), flag)));
     }
 
     /**
@@ -100,7 +107,7 @@ public class IrGenerator
      */
     private void addStartOrEndNode(final Message.Field field, final IrNode.Flag flag)
     {
-	irNodeList.add(new IrNode(new IrNode.MetaData(field.getName(), field.getId(), flag)));
+	irNodeList.add(new IrNode(new IrNode.MetaData(field.getName(), field.getId(), generateIrId(), flag)));
     }
 
     private void addAllFields(List<Message.Field> fieldList)
@@ -178,7 +185,7 @@ public class IrGenerator
 	// this might work better as a switch case
 	if (type.getPresence() == Presence.REQUIRED)
 	{
-	    md = new IrNode.MetaData(name, id, IrNode.Flag.NONE);
+	    md = new IrNode.MetaData(name, id, IrNode.MetaData.INVALID_ID, IrNode.Flag.NONE);
 	    node = new IrNode(type.getPrimitiveType(), type.size(), currentOffset, md, byteOrder);
 
 	    /* add node */
@@ -189,8 +196,8 @@ public class IrGenerator
 	}
 	else if (type.getPresence() == Presence.OPTIONAL)
 	{
-	    // TODO: add nullValue info into MD
-	    md = new IrNode.MetaData(name, id, IrNode.Flag.NONE);
+	    // TODO: add nullValue info into MD.value, create new Flag = OPTIONAL
+	    md = new IrNode.MetaData(name, id, IrNode.MetaData.INVALID_ID, IrNode.Flag.NONE);
 	    node = new IrNode(type.getPrimitiveType(), type.size(), currentOffset, md, byteOrder);
 
 	    /* add node */
@@ -201,8 +208,8 @@ public class IrGenerator
 	}
 	else if (type.getPresence() == Presence.CONSTANT)
 	{
-	    // TODO: add constant value info into MD, create new Flag = CONSTANT, etc.
-	    md = new IrNode.MetaData(name, id, IrNode.Flag.NONE);
+	    // TODO: add constant value info into MD.value, create new Flag = CONSTANT, etc.
+	    md = new IrNode.MetaData(name, id, IrNode.MetaData.INVALID_ID, IrNode.Flag.NONE);
 	    node = new IrNode(type.getPrimitiveType(), type.size(), currentOffset, md, byteOrder);
 
 	    /* add node */

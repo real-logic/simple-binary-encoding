@@ -127,12 +127,40 @@ public class IrNode
 
         private final String name;
         private final long id;
+        private final long irId;
         private final Flag flag;
+
+        /*
+         * constValue
+         * nullValue
+         * minValue
+         * maxValue
+         * description (for START/END and others)
+         * ENUM_START
+         *    ENUM_VALUE
+         * ENUM_END
+         * SET_START
+         *    SET_CHOICE
+         * SET_END
+         *
+         * irId = generated Id field
+         * length field (START_STRUCT or normal) has xRefIrId for <data> field
+         * VAR_START has xRefIrId to length FIELD_START
+         * count field (START_STRUCT or normal) has xRefId for <group> field
+         * GROUP_START has xRefIrId to count FIELD_START
+         *
+         * GROUP_START - point to field id that holds count
+         * GROUP_END - 
+         */
         
-        public MetaData(final String name, final long id, final Flag flag)
+        public MetaData(final String name,
+                        final long id,
+                        final long irId,
+                        final Flag flag)
         {
             this.name = name;
             this.id = id;
+            this.irId = irId;
             this.flag = flag;
         }
 
