@@ -41,7 +41,6 @@ public class IrGenerator
     private final List<IrNode> irNodeList = new ArrayList<IrNode>();
     private int currentOffset = 0;
     private ByteOrder byteOrder;
-    private long irIdCursor = 1;
 
     public List<IrNode> generateForMessage(final Message msg)
     {
@@ -74,24 +73,45 @@ public class IrGenerator
         return irNodeList;
     }
 
-    private long generateIrId()
-    {
-        return irIdCursor++;
-    }
-
     private void addStartOrEndNode(final Message msg, final IrNode.Flag flag)
     {
-        irNodeList.add(new IrNode(new IrNode.Metadata(msg.getName(), msg.getId(), generateIrId(), flag, msg.getDescription())));
+        irNodeList.add(new IrNode(new IrNode.Metadata(msg.getName(), msg.getId(), 0,
+                                                      IrNode.Metadata.INVALID_ID, flag, msg.getDescription())));
     }
 
     private void addStartOrEndNode(final Type type, final IrNode.Flag flag)
     {
-        irNodeList.add(new IrNode(new IrNode.Metadata(type.getName(), IrNode.Metadata.INVALID_ID, generateIrId(), flag, type.getDescription())));
+        irNodeList.add(new IrNode(new IrNode.Metadata(type.getName(), IrNode.Metadata.INVALID_ID, IrNode.Metadata.INVALID_ID,
+                                                      IrNode.Metadata.INVALID_ID, flag, type.getDescription())));
     }
 
     private void addStartOrEndNode(final Message.Field field, final IrNode.Flag flag)
     {
-        irNodeList.add(new IrNode(new IrNode.Metadata(field.getName(), field.getId(), generateIrId(), flag, field.getDescription())));
+        long xRefIrId = IrNode.Metadata.INVALID_ID;
+
+        if (field.getEntryCountField() != null)
+        {
+            /* a group field */
+            xRefIrId = field.getEntryCountField().getIrId();
+        }
+        else if (field.getLengthField() != null)
+        {
+            /* a data field */
+            xRefIrId = field.getLengthField().getIrId();
+        }
+        else if (field.getGroupField() != null)
+        {
+            /* an entry count field for a group field */
+            xRefIrId = field.getGroupField().getIrId();
+        }
+        else if (field.getDataField() != null)
+        {
+            /* a length field for a data field */
+            xRefIrId = field.getDataField().getIrId();
+        }
+
+        irNodeList.add(new IrNode(new IrNode.Metadata(field.getName(), field.getId(), field.getIrId(),
+                                                      xRefIrId, flag, field.getDescription())));
     }
 
     private void addAllFields(final List<Message.Field> fieldList)
@@ -100,10 +120,10 @@ public class IrGenerator
         {
             if (field.getType() == null)
             {
-                // TODO: group item START/END, MD, etc. Tying back to count field, etc.
-
+                addStartOrEndNode(field, IrNode.Flag.GROUP_START);
                 // add all the fields in the group
                 addAllFields(field.getGroupFieldList());
+                addStartOrEndNode(field, IrNode.Flag.GROUP_END);
             }
             else if (field.getType() instanceof EncodedDataType)
             {

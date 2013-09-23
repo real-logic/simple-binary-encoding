@@ -146,6 +146,7 @@ public class IrNode
         private final String name;
         private final long id;
         private final long irId;
+        private final long xRefIrId;
         private final Flag flag;
         private final PrimitiveValue minValue;
         private final PrimitiveValue maxValue;
@@ -154,18 +155,10 @@ public class IrNode
         private final String description;
 
         /*
-         * ENUM_START
-         *    ENUM_ENCODING
-         *    ENUM_VALUE...
-         * ENUM_END
-         * SET_START
-         *    SET_ENCODING
-         *    SET_CHOICE...
-         * SET_END
          *
          * irId = generated Id field
          * length field (START_STRUCT or normal) has xRefIrId for <data> field (generateIrId for <data> field and save)
-         * VAR_START has xRefIrId to length FIELD_START
+         * DATA_START has xRefIrId to length FIELD_START
          * count field (START_STRUCT or normal) has xRefId for <group> field (generateIrId for <group> field and save)
          * GROUP_START has xRefIrId to count FIELD_START
          *
@@ -179,18 +172,21 @@ public class IrNode
          * @param name        of the type, field, message, etc.
          * @param id          of the type, field, message, etc.
          * @param irId        of the IrNode.
+         * @param xRefIrId    of the IrNode this node cross references to.
          * @param flag        representing the flag for the metadata of the IrNode.
          * @param description representing the type, field, message, etc.
          */
         public Metadata(final String name,
                         final long id,
                         final long irId,
+                        final long xRefIrId,
                         final Flag flag,
                         final String description)
         {
             this.name = name;
             this.id = id;
             this.irId = irId;
+            this.xRefIrId = xRefIrId;
             this.flag = flag;
             this.minValue = null;
             this.maxValue = null;
@@ -211,6 +207,7 @@ public class IrNode
             this.name = name;
             this.id = INVALID_ID;
             this.irId = INVALID_ID;
+            this.xRefIrId = INVALID_ID;
             this.flag = IrNode.Flag.NONE;
             this.minValue = minValue;
             this.maxValue = maxValue;
@@ -232,6 +229,7 @@ public class IrNode
             this.name = name;
             this.id = INVALID_ID;
             this.irId = INVALID_ID;
+            this.xRefIrId = INVALID_ID;
             this.flag = IrNode.Flag.NONE;
             this.minValue = minValue;
             this.maxValue = maxValue;
@@ -251,6 +249,7 @@ public class IrNode
             this.name = name;
             this.id = INVALID_ID;
             this.irId = INVALID_ID;
+            this.xRefIrId = INVALID_ID;
             this.flag = IrNode.Flag.NONE;
             this.minValue = null;
             this.maxValue = null;
@@ -272,6 +271,7 @@ public class IrNode
             this.name = name;
             this.id = INVALID_ID;
             this.irId = INVALID_ID;
+            this.xRefIrId = INVALID_ID;
             this.flag = flag;
             this.minValue = null;
             this.maxValue = null;

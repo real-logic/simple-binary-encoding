@@ -43,6 +43,7 @@ public class Message
     private final long blockLength;
     private final List<Field> fieldList;
     private final String fixMsgType;
+    private int irIdCursor = 1;
 
     /**
      * Construct a new message from XML Schema.
@@ -73,7 +74,7 @@ public class Message
         fieldList = parseFieldsAndGroups(messageNode, typeByNameMap);
     }
 
-    private static List<Field> parseFieldsAndGroups(final Node node, final Map<String, Type> typeByNameMap)
+    private List<Field> parseFieldsAndGroups(final Node node, final Map<String, Type> typeByNameMap)
         throws XPathExpressionException, IllegalArgumentException
     {
         XPath xPath = XPathFactory.newInstance().newXPath();
@@ -104,7 +105,15 @@ public class Message
                     throw new IllegalArgumentException("could not find entry count field for group: " + f.getName());
                 }
 
+                /* associate the group and entry count field objects */
                 f.setEntryCountField(entryCountField);
+                entryCountField.setGroupField(f);
+
+                /* associate the group and entry count field IR IDs */
+                f.setIrId(irIdCursor++);
+                f.setXRefIrId(entryCountField.getIrId());
+                entryCountField.setXRefIrId(f.getIrId());
+
                 entryCountFieldMap.remove(f.getName()); // remove field so that it can't be reused as this level
 
                 f.setGroupFieldList(parseFieldsAndGroups(list.item(i), typeByNameMap)); // recursive call
@@ -121,12 +130,14 @@ public class Message
                 if (f.getGroupName() != null)
                 {
                     entryCountFieldMap.put(f.getGroupName(), f);
+                    f.setIrId(irIdCursor++);
                 }
 
                 /* save refId for matching up with data if this is a Length field */
                 if (f.getRefId() != Field.INVALID_ID)
                 {
-                    lengthFieldMap.put(new Integer(f.getRefId()), f);
+                    lengthFieldMap.put(Integer.valueOf(f.getRefId()), f);
+                    f.setIrId(irIdCursor++);
                 }
             }
             else if (list.item(i).getNodeName().equals("data"))
@@ -138,16 +149,23 @@ public class Message
                               lookupType(typeByNameMap, getAttributeValue(list.item(i), "type")));
 
                 /* match up with length field */
-                Integer lengthFieldRefId = new Integer(f.getId());
-                Field lengthField = lengthFieldMap.get(lengthFieldRefId);
+                Field lengthField = lengthFieldMap.get(Integer.valueOf(f.getId()));
 
                 if (lengthField == null)
                 {
                     throw new IllegalArgumentException("could not find length field for data field: " + f.getName());
                 }
 
+                /* associate the data and length field objects */
                 f.setLengthField(lengthField);
-                lengthFieldMap.remove(lengthFieldRefId); // remove field so that it can be reused
+                lengthField.setDataField(f);
+
+                /* associate the data and length field IR IDs */
+                f.setIrId(irIdCursor++);
+                f.setXRefIrId(lengthField.getIrId());
+                lengthField.setXRefIrId(f.getIrId());
+
+                lengthFieldMap.remove(Integer.valueOf(f.getId())); // remove field so that it can be reused
             }
 
             fieldList.add(f);
@@ -215,10 +233,6 @@ public class Message
     }
 
     /**
-     * TODO: provide iterator interface to iterate through all fields and groups seamlessly for IR generation
-     */
-
-    /**
      * Class to hold field (or group) information
      */
     public static class Field
@@ -239,6 +253,10 @@ public class Message
         private List<Field> groupFieldList;
         private Field entryCountField;      // used by group fields as the entry count field
         private Field lengthField;          // used by data fields as the length field
+        private Field groupField;           // used by entry count fields as the group field
+        private Field dataField;            // used by length fields as the data field
+        private int irId = INVALID_ID;      // used to identify this field by an IR ID
+        private int xRefIrId = INVALID_ID;  // used to identify an associated field by an IR ID
 
         /**
          * The field constructor
@@ -258,6 +276,8 @@ public class Message
             this.groupFieldList = null;   // has no meaning if not group
             this.entryCountField = null;  // has no meaning if not group
             this.lengthField = null;      // will be set later
+            this.groupField = null;       // will be set later
+            this.dataField = null;        // will be set later
 
             // fixUsage must be present or must be on the type. If on both, they must agree.
             if (this.fixUsage == null && this.type.getFixUsage() == null)
@@ -288,6 +308,8 @@ public class Message
             this.groupFieldList = null;    // for now. Set later.
             this.entryCountField = null;   // for now. Set later.
             this.lengthField = null;       // has no meaning for group.
+            this.groupField = null;        // has no meaning
+            this.dataField = null;         // has no meaning
         }
 
         public void setGroupFieldList(final List<Field> list)
@@ -295,9 +317,19 @@ public class Message
             groupFieldList = list;
         }
 
+        public List<Field> getGroupFieldList()
+        {
+            return groupFieldList;
+        }
+
         public void setEntryCountField(final Field field)
         {
             entryCountField = field;
+        }
+
+        public Field getEntryCountField()
+        {
+            return entryCountField;
         }
 
         public void setLengthField(final Field field)
@@ -305,9 +337,29 @@ public class Message
             lengthField = field;
         }
 
-        public List<Field> getGroupFieldList()
+        public Field getLengthField()
         {
-            return groupFieldList;
+            return lengthField;
+        }
+
+        public void setGroupField(final Field field)
+        {
+            groupField = field;
+        }
+
+        public Field getGroupField()
+        {
+            return groupField;
+        }
+
+        public void setDataField(final Field field)
+        {
+            dataField = field;
+        }
+
+        public Field getDataField()
+        {
+            return dataField;
         }
 
         public String getName()
@@ -348,6 +400,26 @@ public class Message
         public long getBlockLength()
         {
             return blockLength;
+        }
+
+        public void setIrId(final int id)
+        {
+            irId = id;
+        }
+
+        public int getIrId()
+        {
+            return irId;
+        }
+
+        public void setXRefIrId(final int id)
+        {
+            xRefIrId = id;
+        }
+
+        public int getXRefIrId()
+        {
+            return xRefIrId;
         }
     }
 }
