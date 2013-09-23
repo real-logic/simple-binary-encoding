@@ -100,6 +100,7 @@
     <target name="javadoc" depends="build">
         <javadoc sourcepath="${dir.main.src}"
                  destdir="${dir.docs}"
+                 overview="${dir.main.src}/overview.html"
                  author="true"
                  version="true"
                  use="true"
