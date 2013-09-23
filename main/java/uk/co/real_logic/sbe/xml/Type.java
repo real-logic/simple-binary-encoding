@@ -32,21 +32,19 @@ public class Type
     private final Presence presence;
     private final String description;
     private final FixUsage fixUsage;
-    private final TypeOfType type;
 
     /**
      * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
      *
      * @param node from the XML Schema Parsing
      */
-    public Type(final Node node, final TypeOfType type)
+    public Type(final Node node)
     {
         name = getAttributeValue(node, "name");
         // The schema should set default, so "presence" should always be available, but let's set a default anyway
         presence = Presence.lookup(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
         fixUsage = FixUsage.lookup(getAttributeValueOrNull(node, "fixUsage"));
-        this.type = type;
     }
 
     /**
@@ -56,19 +54,16 @@ public class Type
      * @param presence of the type
      * @param description of the type or null
      * @param fixUsage of the type or null
-     * @param type of this Type
      */
     public Type(final String name,
                 final Presence presence,
                 final String description,
-                final FixUsage fixUsage,
-                final TypeOfType type)
+                final FixUsage fixUsage)
     {
         this.name = name;
         this.presence = presence;
         this.description = description;
         this.fixUsage = fixUsage;
-        this.type = type;
     }
 
     /**
@@ -121,18 +116,5 @@ public class Type
     public FixUsage getFixUsage()
     {
         return fixUsage;
-    }
-
-    public TypeOfType getTypeOfType()
-    {
-        return type;
-    }
-
-    /**
-     *
-     */
-    public enum TypeOfType
-    {
-        ENCODEDDATA, COMPOSITE, ENUM, SET
     }
 }
