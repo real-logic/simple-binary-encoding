@@ -44,12 +44,12 @@ public class XmlSchemaParser
     private static final String MESSAGE_SCHEMA_XPATH_EXPR = "/messageSchema";
 
     /**
-     * Take an input in and parse it generating map of template ID to Message objects, types, and schema
+     * Take an {@link InputStream} and parse it generating map of template ID to Message objects, types, and schema
      * Input could be from {@link java.io.FileInputStream}, {@link java.io.ByteArrayInputStream}, etc.
      * Exceptions are passed back up for any problems.
      *
-     * @param in to read schema from
-     * @return {@link MessageSchema} object that holds the schema
+     * @param in stream from which schema is read.
+     * @return {@link MessageSchema} metadata for the schema.
      */
     public static MessageSchema parse(final InputStream in)
         throws Exception
