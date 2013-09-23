@@ -128,6 +128,12 @@ public class IrNode
         FIELD_END,
         GROUP_START,
         GROUP_END,
+        ENUM_START,
+        ENUM_VALUE,
+        ENUM_END,
+        SET_START,
+        SET_CHOICE,
+        SET_END,
         NONE
     }
 
@@ -251,6 +257,27 @@ public class IrNode
             this.nullValue = null;
             this.constValue = constValue;
             this.description = null;
+        }
+
+        /**
+         * Constructor that is used for enum ValidValue entries as well as set choice entries
+         *
+         * @param name        of the validValue or choice
+         * @param description of the validValue of choice
+         * @param value       of the validValue or choice
+         * @param flag        of this value for Enum vs. Set determination
+         */
+        public Metadata(final String name, final String description, final PrimitiveValue value, final IrNode.Flag flag)
+        {
+            this.name = name;
+            this.id = INVALID_ID;
+            this.irId = INVALID_ID;
+            this.flag = flag;
+            this.minValue = null;
+            this.maxValue = null;
+            this.nullValue = null;
+            this.constValue = value;         // we overload constValue to hold this
+            this.description = description;
         }
 
         public String getName()

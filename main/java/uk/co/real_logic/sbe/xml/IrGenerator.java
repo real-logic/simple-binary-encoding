@@ -17,10 +17,13 @@
 package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.ir.IrNode;
+import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.PrimitiveValue;
 
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class to hold all the state while generating the {@link IrNode} list.
@@ -141,16 +144,82 @@ public class IrGenerator
         addStartOrEndNode(type, IrNode.Flag.STRUCT_END);
     }
 
-    // TODO: EnumType version
+    /*
+     * generate IrNodes for enumerated types
+     */
     private void add(final EnumType type, final Message.Field field)
     {
+        PrimitiveValue nullValue = null;
+        PrimitiveType encodingType = type.getEncodingType();
 
+        addStartOrEndNode(type, IrNode.Flag.ENUM_START);
+
+        /*
+         * If presence is optional, then use nullValue specified. If not specified, then use encodingType null value
+         */
+        if (type.getPresence() == Presence.OPTIONAL)
+        {
+            nullValue = type.getNullValue();
+
+            if (nullValue == null)
+            {
+                nullValue = encodingType.nullValue();
+            }
+        }
+
+        IrNode.Metadata md = new IrNode.Metadata(encodingType.primitiveName(), null, null, nullValue);
+
+        irNodeList.add(new IrNode(encodingType, encodingType.size(), currentOffset, byteOrder, md));
+
+        /* loop over values and add each as an IrNode */
+        for (Map.Entry<String, EnumType.ValidValue> entry : type.getValidValueSet())
+        {
+            add(entry.getValue());
+        }
+
+        addStartOrEndNode(type, IrNode.Flag.ENUM_END);
+
+        currentOffset += encodingType.size();
     }
 
-    // TODO: SetType version
+    /*
+     * generate IrNode for ValidValue of EnumType
+     */
+    private void add(final EnumType.ValidValue value)
+    {
+        irNodeList.add(new IrNode(new IrNode.Metadata(value.getName(), value.getDescription(), value.getPrimitiveValue() , IrNode.Flag.ENUM_VALUE)));
+    }
+
+    /*
+     * generate IrNodes for bitset types
+     */
     private void add(final SetType type, final Message.Field field)
     {
+        PrimitiveType encodingType = type.getEncodingType();
 
+        addStartOrEndNode(type, IrNode.Flag.SET_START);
+
+        IrNode.Metadata md = new IrNode.Metadata(encodingType.primitiveName(), null, null);
+
+        irNodeList.add(new IrNode(encodingType, encodingType.size(), currentOffset, byteOrder, md));
+
+        /* loop over values and add each as an IrNode */
+        for (Map.Entry<String, SetType.Choice> entry : type.getChoiceSet())
+        {
+            add(entry.getValue());
+        }
+
+        addStartOrEndNode(type, IrNode.Flag.SET_END);
+
+        currentOffset += encodingType.size();
+    }
+
+    /*
+     * generate IrNode for Choice of SetType
+     */
+    private void add(final SetType.Choice value)
+    {
+        irNodeList.add(new IrNode(new IrNode.Metadata(value.getName(), value.getDescription(), value.getPrimitiveValue() , IrNode.Flag.SET_CHOICE)));
     }
 
     /*

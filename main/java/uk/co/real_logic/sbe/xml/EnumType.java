@@ -49,7 +49,7 @@ public class EnumType extends Type
     {
         super(node); // set the common schema attributes
 
-        /**
+        /*
          * grab attributes from schema
          * - encodingType (required) - must be either 'char' or 'int8' according to spec
          * - nullValue (optional with presence=optional)
@@ -116,20 +116,15 @@ public class EnumType extends Type
     /**
      * The nullValue of the type
      *
-     * @return value of the nullValue primitive or type
+     * @return value of the nullValue
      */
     public PrimitiveValue getNullValue()
     {
-        if (nullValue == null)
-        {
-            return encodingType.nullValue();
-        }
-
         return nullValue;
     }
 
     /**
-     * TODO: can iterate like (Map.Entry<String, ValidValue> entry : EnumType.getValidValueSet()) with this
+     * can iterate like (Map.Entry<String, ValidValue> entry : EnumType.getValidValueSet()) with this
      */
     public Set<Map.Entry<String, ValidValue>> getValidValueSet()
     {
