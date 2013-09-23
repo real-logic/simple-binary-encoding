@@ -59,6 +59,8 @@
             <property name="option" value="eol"/>
         </module>
 
+        <module name="NeedBraces"/>
+
         <module name="ParenPad"/>
 
         <module name="TypecastParenPad"/>
