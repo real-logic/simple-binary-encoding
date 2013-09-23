@@ -19,16 +19,72 @@ package uk.co.real_logic.sbe;
 /**
  * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
  * <p/>
- * PrimitiveType type  Null        Min          Max
- * char            0           0x20         0x7E
- * int8            -128        -127         127
- * uint8           255         0            254
- * int16           -32768      -32767       32767
- * uint16          65535       0            65534
- * int32           2^31        -2^31 + 1    2^31 - 1
- * uint32          2^32 - 1    0            2^32 - 2
- * int64           2^63        -2^63 + 1    2^63 - 1
- * uint64          2^64 - 1    0            2^64 - 2
+ * <table>
+ *     <thead>
+ *         <tr>
+ *             <th>PrimitiveType</th>
+ *             <th>Null</th>
+ *             <th>Min</th>
+ *             <th>Max</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>char</td>
+ *             <td>0</td>
+ *             <td>0x20</td>
+ *             <td>0x7E</td>
+ *         </tr>
+ *         <tr>
+ *             <td>int8</td>
+ *             <td>-128</td>
+ *             <td>-127</td>
+ *             <td>127</td>
+ *         </tr>
+ *         <tr>
+ *             <td>uint8</td>
+ *             <td>255</td>
+ *             <td>0</td>
+ *             <td>254</td>
+ *         </tr>
+ *         <tr>
+ *             <td>int16</td>
+ *             <td>-32768</td>
+ *             <td>-32767</td>
+ *             <td>32767</td>
+ *         </tr>
+ *         <tr>
+ *             <td>uint16</td>
+ *             <td>65535</td>
+ *             <td>0</td>
+ *             <td>65534</td>
+ *         </tr>
+ *         <tr>
+ *             <td>int32</td>
+ *             <td>2^31</td>
+ *             <td>-2^31 + 1</td>
+ *             <td>2^31 - 1</td>
+ *         </tr>
+ *         <tr>
+ *             <td>uint32</td>
+ *             <td>2^32 - 1</td>
+ *             <td>0</td>
+ *             <td>2^32 - 2</td>
+ *         </tr>
+ *         <tr>
+ *             <td>int64</td>
+ *             <td>2^63</td>
+ *             <td>-2^63 + 1</td>
+ *             <td>2^63 - 1</td>
+ *         </tr>
+ *         <tr>
+ *             <td>uint64</td>
+ *             <td>2^64 - 1</td>
+ *             <td>0</td>
+ *             <td>2^64 - 2</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
  */
 public class PrimitiveValue
 {
@@ -64,7 +120,7 @@ public class PrimitiveValue
     public static final long NULL_VALUE_UINT32 = 0xFFFFFFFE;
 
     public static final long MIN_VALUE_INT64 = Long.MIN_VALUE + 1;  // -2^63 + 1
-    public static final long MAX_VALUE_INT64 = Long.MAX_VALUE;      //  2^63 - 1  (SBE spec says -12^63 - 1)
+    public static final long MAX_VALUE_INT64 = Long.MAX_VALUE;      //  2^63 - 1  (SBE spec says -2^63 - 1)
     public static final long NULL_VALUE_INT64 = Long.MIN_VALUE;     // -2^63
 
     public static final long MIN_VALUE_UINT64 = 0;

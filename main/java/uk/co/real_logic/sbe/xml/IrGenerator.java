@@ -32,7 +32,7 @@ import java.util.Map;
  * <code>
  *     <pre>
  *    irg = new IrGenerator();
- *    irg.generateForMessage(message);
+ *    list = irg.generateForMessage(message);
  *     </pre>
  * </code>
  */
@@ -152,6 +152,13 @@ public class IrGenerator
         }
     }
 
+    /*
+     * The encoded field types are below.
+     */
+
+    /*
+     * generate IrNodes for composite types
+     */
     private void add(final CompositeType type, final Message.Field field)
     {
         addStartOrEndNode(type, IrNode.Flag.STRUCT_START);

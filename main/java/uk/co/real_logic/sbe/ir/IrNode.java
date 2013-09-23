@@ -27,7 +27,7 @@ import java.nio.ByteOrder;
  * <p/>
  * Processing and optimization could be run over a list of IrNodes to perform various functions
  * <ul>
- *     <li>ordering of fields based on size</li>
+ *     <li>re-ordering of fields based on size</li>
  *     <li>padding of fields in order to provide expansion room</li>
  *     <li>computing offsets of individual fields</li>
  *     <li>etc.</li>
@@ -108,6 +108,11 @@ public class IrNode
         return offset;
     }
 
+    /**
+     * Return the {@link Metadata} of the {@link IrNode}.
+     *
+     * @return metadata of the {@link IrNode}
+     */
     public Metadata getMetadata()
     {
         return metadata;
@@ -118,22 +123,55 @@ public class IrNode
         return byteOrder;
     }
 
+    /**
+     * Flag used to determine the {@link IrNode} type. These flags start/end various entities such as
+     * fields, composites, messages, repeating groups, enumerations, bitsets, etc.
+     */
     public enum Flag
     {
+        /** flag denoting the start of a message */
         MESSAGE_START,
+
+        /** flag denoting the end of a message */
         MESSAGE_END,
+
+        /** flag denoting the start of a struct (composite) */
         STRUCT_START,
+
+        /** flag denoting the end of a struct (composite) */
         STRUCT_END,
+
+        /** flag denoting the start of a field */
         FIELD_START,
+
+        /** flag denoting the end of a field */
         FIELD_END,
+
+        /** flag denoting the start of a repeating group */
         GROUP_START,
+
+        /** flag denoting the end of a repeating group */
         GROUP_END,
+
+        /** flag denoting the start of an enumeration */
         ENUM_START,
+
+        /** flag denoting a value of an enumeration */
         ENUM_VALUE,
+
+        /** flag denoting the end of an enumeration */
         ENUM_END,
+
+        /** flag denoting the start of a bitset */
         SET_START,
+
+        /** flag denoting a bit value (choice) of a bitset */
         SET_CHOICE,
+
+        /** flag denoting the end of a bitset */
         SET_END,
+
+        /** flag denoting the {@link IrNode} is a basic encoding node */
         NONE
     }
 
