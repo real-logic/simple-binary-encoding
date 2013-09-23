@@ -142,7 +142,7 @@ public class CompositeType extends Type
     public CompositeType(final Node node)
         throws XPathExpressionException
     {
-        super(node, TypeOfType.COMPOSITE); // set the common schema attributes
+        super(node); // set the common schema attributes
 
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile("type").evaluate(node, XPathConstants.NODESET);

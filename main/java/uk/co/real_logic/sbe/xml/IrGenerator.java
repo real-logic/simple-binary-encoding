@@ -61,7 +61,7 @@ public class IrGenerator
         {
             throw new IllegalArgumentException("Message header not defined for messageSchema");
         }
-        else if (type.getTypeOfType() != Type.TypeOfType.COMPOSITE)
+        else if (!(type instanceof CompositeType))
         {
             throw new IllegalArgumentException("Message header is not composite");
         }

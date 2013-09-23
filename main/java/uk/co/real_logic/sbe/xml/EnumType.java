@@ -47,7 +47,7 @@ public class EnumType extends Type
     public EnumType(final Node node)
         throws XPathExpressionException, IllegalArgumentException
     {
-        super(node, TypeOfType.ENUM); // set the common schema attributes
+        super(node); // set the common schema attributes
 
         /**
          * grab attributes from schema

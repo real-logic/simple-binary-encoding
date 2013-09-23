@@ -41,7 +41,7 @@ public class EncodedDataType extends Type
      */
     public EncodedDataType(final Node node)
     {
-        super(node, TypeOfType.ENCODEDDATA); // set the common schema attributes
+        super(node); // set the common schema attributes
 
         /**
          * Grab schema attributes
@@ -133,7 +133,7 @@ public class EncodedDataType extends Type
                            final int length,
                            final boolean varLen)
     {
-        super(name, presence, description, fixUsage, TypeOfType.ENCODEDDATA);
+        super(name, presence, description, fixUsage);
         this.primitiveType = primitiveType;
         this.length = length;
         this.varLen = varLen;
