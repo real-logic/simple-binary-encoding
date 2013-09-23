@@ -52,7 +52,7 @@ public class SetType extends Type
          * grab attributes from schema
          * - encodingType (required) - must be either uint8, uint16, uint32, or uint64
          */
-        encodingType = Primitive.lookup(getXmlAttributeValue(node, "encodingType"));
+        encodingType = Primitive.lookup(getAttributeValue(node, "encodingType"));
         if (encodingType != Primitive.UINT8 && encodingType != Primitive.UINT16 &&
             encodingType != Primitive.UINT32 && encodingType != Primitive.UINT64)
         {
@@ -124,8 +124,8 @@ public class SetType extends Type
         public Choice(final Node node, final Primitive encodingType)
         {
             this.encodingType = encodingType;
-            name = getXmlAttributeValue(node, "name");
-            description = getXmlAttributeValueOrNull(node, "description");
+            name = getAttributeValue(node, "name");
+            description = getAttributeValueOrNull(node, "description");
             value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());
 
             // choice values are bit positions (0, 1, 2, 3, 4, etc.) from LSB to MSB

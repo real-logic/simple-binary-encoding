@@ -55,7 +55,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageHeader()
         throws Exception
     {
-        MessageSchema schema = parseXmlAndGenerateMessageSchema(getLocalResource("BasicSchemaFileTest.xml"));
+        MessageSchema schema = parse(getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
 
         List<IrNode> ir = irg.generateForHeader(schema);
@@ -113,7 +113,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForBasicMessage()
         throws Exception
     {
-        MessageSchema schema = parseXmlAndGenerateMessageSchema(getLocalResource("BasicSchemaFileTest.xml"));
+        MessageSchema schema = parse(getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
 
         List<IrNode> ir = irg.generateForMessage(schema.getMessage(50001));

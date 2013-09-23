@@ -33,30 +33,30 @@ public class MessageSchema
     private final long version;                       // version (optional - default is 0)
     private final String fixVersion;                  // fixVersion (optional)
     private final ByteOrder byteOrder;                // byteOrder (optional - default is littleEndian)
-    private final Map<String, Type> typeMap;
-    private final Map<Long, Message> messageMap;
+    private final Map<String, Type> typeByNameMap;
+    private final Map<Long, Message> messageByIdMap;
 
-    public MessageSchema(final Node node,
-                         final Map<String, Type> typeMap,
-                         final Map<Long, Message> messageMap)
+    public MessageSchema(final Node schemaNode,
+                         final Map<String, Type> typeByNameMap,
+                         final Map<Long, Message> messageByIdMap)
     {
-        this.pkg = getXmlAttributeValue(node, "package");
-        this.description = getXmlAttributeValueOrNull(node, "description");
-        this.version = Long.parseLong(getXmlAttributeValue(node, "version", "0"));  // default version is 0
-        this.fixVersion = getXmlAttributeValueOrNull(node, "fixVersion");
-        this.byteOrder = lookupByteOrder(getXmlAttributeValue(node, "byteOrder", "littleEndian"));
-        this.typeMap = typeMap;
-        this.messageMap = messageMap;
+        this.pkg = getAttributeValue(schemaNode, "package");
+        this.description = getAttributeValueOrNull(schemaNode, "description");
+        this.version = Long.parseLong(getAttributeValue(schemaNode, "version", "0"));  // default version is 0
+        this.fixVersion = getAttributeValueOrNull(schemaNode, "fixVersion");
+        this.byteOrder = lookupByteOrder(getAttributeValue(schemaNode, "byteOrder", "littleEndian"));
+        this.typeByNameMap = typeByNameMap;
+        this.messageByIdMap = messageByIdMap;
     }
 
     public Type getMessageHeader()
     {
-        return typeMap.get("messageHeader");
+        return typeByNameMap.get("messageHeader");
     }
 
     public Message getMessage(final long id)
     {
-        return messageMap.get(Long.valueOf(id));
+        return messageByIdMap.get(Long.valueOf(id));
     }
 
     public ByteOrder getByteOrder()

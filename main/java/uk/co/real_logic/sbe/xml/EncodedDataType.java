@@ -52,9 +52,9 @@ public class EncodedDataType extends Type
          * - minValue (optional)
          * - maxValue (optional)
          */
-        this.primitive = Primitive.lookup(XmlSchemaParser.getXmlAttributeValue(node, "primitiveType"));
-        this.length = Integer.parseInt(XmlSchemaParser.getXmlAttributeValue(node, "length", "1"));
-        this.varLen = Boolean.parseBoolean(XmlSchemaParser.getXmlAttributeValue(node, "variableLength", "false"));
+        this.primitive = Primitive.lookup(XmlSchemaParser.getAttributeValue(node, "primitiveType"));
+        this.length = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "length", "1"));
+        this.varLen = Boolean.parseBoolean(XmlSchemaParser.getAttributeValue(node, "variableLength", "false"));
 
         // handle constant presence by grabbing child node and parsing it's CDATA based on primitive (save it)
         if (this.getPresence() == Presence.CONSTANT)
@@ -76,7 +76,7 @@ public class EncodedDataType extends Type
          * - if the schema overrides the primitives values, then save the values here. Else, we use the Primitive min/max/null
          */
 
-        String minValueStr = XmlSchemaParser.getXmlAttributeValueOrNull(node, "minValue");
+        String minValueStr = XmlSchemaParser.getAttributeValueOrNull(node, "minValue");
         if (minValueStr != null)
         {
             this.minValue = new PrimitiveValue(this.primitive, minValueStr);
@@ -86,7 +86,7 @@ public class EncodedDataType extends Type
             this.minValue = null; /* this value is invalid unless minValue specified for type */
         }
 
-        String maxValueStr = XmlSchemaParser.getXmlAttributeValueOrNull(node, "maxValue");
+        String maxValueStr = XmlSchemaParser.getAttributeValueOrNull(node, "maxValue");
         if (maxValueStr != null)
         {
             this.maxValue = new PrimitiveValue(this.primitive, maxValueStr);
@@ -96,7 +96,7 @@ public class EncodedDataType extends Type
             this.maxValue = null; /* this value is invalid unless maxValue specified for type */
         }
 
-        String nullValueStr = XmlSchemaParser.getXmlAttributeValueOrNull(node, "nullValue");
+        String nullValueStr = XmlSchemaParser.getAttributeValueOrNull(node, "nullValue");
         if (nullValueStr != null)
         {
             // nullValue is mutually exclusive with presence=required or constant

@@ -44,38 +44,34 @@ public class XmlSchemaParser
     private static final String MESSAGE_SCHEMA_XPATH_EXPR = "/messageSchema";
 
     /**
-     * Take an input stream and parse it generating map of template ID to Message objects, types, and schema
+     * Take an input in and parse it generating map of template ID to Message objects, types, and schema
      * Input could be from {@link java.io.FileInputStream}, {@link java.io.ByteArrayInputStream}, etc.
      * Exceptions are passed back up for any problems.
      *
-     * @param stream to read schema from
+     * @param in to read schema from
      * @return {@link MessageSchema} object that holds the schema
      */
-    public static MessageSchema parseXmlAndGenerateMessageSchema(final InputStream stream)
+    public static MessageSchema parse(final InputStream in)
         throws Exception
     {
         /*
          * We could do the builder by pieces, but ... why?
          * DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
          * DocumentBuilder builder = builderFactory.newDocumentBuilder();
-         * Document document = builder.parse(stream);
+         * Document document = builder.parse(in);
          */
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream);
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
         XPath xPath = XPathFactory.newInstance().newXPath();
 
-        /* grab all types and populate map of names to Type objects */
-        Map<String, Type> typeMap = populateTypeMap(document, xPath);
+        Map<String, Type> typeByNameMap = findTypes(document, xPath);
+        Map<Long, Message> messageByIdMap = findMessages(document, xPath, typeByNameMap);
 
-        /* grab all messages defined and populate map of id to Message objects */
-        Map<Long, Message> messageMap = populateMessageMap(document, xPath, typeMap);
-
-        /* grab messageSchema attributes and save maps*/
-        final Node node = (Node)xPath.compile(MESSAGE_SCHEMA_XPATH_EXPR).evaluate(document, XPathConstants.NODE);
-        MessageSchema schema = new MessageSchema(node, typeMap, messageMap);
+        final Node schemaNode = (Node)xPath.compile(MESSAGE_SCHEMA_XPATH_EXPR).evaluate(document, XPathConstants.NODE);
+        MessageSchema messageSchema = new MessageSchema(schemaNode, typeByNameMap, messageByIdMap);
 
         // TODO: run additional checks and validation on Messages in Message Map
 
-        return schema;
+        return messageSchema;
     }
 
     /*
@@ -118,28 +114,28 @@ public class XmlSchemaParser
      * @param xPath    for XPath expression reuse
      * @return {@link java.util.Map} of name {@link java.lang.String} to Type
      */
-    public static Map<String, Type> populateTypeMap(final Document document, final XPath xPath)
+    public static Map<String, Type> findTypes(final Document document, final XPath xPath)
         throws Exception
     {
-        final Map<String, Type> typesMap = new HashMap<String, Type>();
+        final Map<String, Type> typeByNameMap = new HashMap<String, Type>();
 
-        // add primitiveTypes to typesMap - these could be in a static XInclude that is always brought in...
-        typesMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, null, Primitive.CHAR, 1, false));
-        typesMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, null, Primitive.INT8, 1, false));
-        typesMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, null, Primitive.INT16, 1, false));
-        typesMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, null, Primitive.INT32, 1, false));
-        typesMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, null, Primitive.INT64, 1, false));
-        typesMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, null, Primitive.UINT8, 1, false));
-        typesMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, null, Primitive.UINT16, 1, false));
-        typesMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, null, Primitive.UINT32, 1, false));
-        typesMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, null, Primitive.UINT64, 1, false));
+        // Add primitiveTypes to typeByNameMap - these could be in a static XInclude that is always brought in...
+        typeByNameMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, null, Primitive.CHAR, 1, false));
+        typeByNameMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, null, Primitive.INT8, 1, false));
+        typeByNameMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, null, Primitive.INT16, 1, false));
+        typeByNameMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, null, Primitive.INT32, 1, false));
+        typeByNameMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, null, Primitive.INT64, 1, false));
+        typeByNameMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, null, Primitive.UINT8, 1, false));
+        typeByNameMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, null, Primitive.UINT16, 1, false));
+        typeByNameMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, null, Primitive.UINT32, 1, false));
+        typeByNameMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, null, Primitive.UINT64, 1, false));
 
         forEach((NodeList)xPath.compile(TYPE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
                 new NodeFunction()
                 {
                     public void execute(final Node node) throws XPathExpressionException
                     {
-                        addTypeWithNameCheck(typesMap, new EncodedDataType(node));
+                        addTypeWithNameCheck(typeByNameMap, new EncodedDataType(node));
                     }
                 });
 
@@ -148,7 +144,7 @@ public class XmlSchemaParser
                 {
                     public void execute(final Node node) throws XPathExpressionException
                     {
-                        addTypeWithNameCheck(typesMap, new CompositeType(node));
+                        addTypeWithNameCheck(typeByNameMap, new CompositeType(node));
                     }
                 });
 
@@ -157,7 +153,7 @@ public class XmlSchemaParser
                 {
                     public void execute(final Node node) throws XPathExpressionException
                     {
-                        addTypeWithNameCheck(typesMap, new EnumType(node));
+                        addTypeWithNameCheck(typeByNameMap, new EnumType(node));
                     }
                 });
 
@@ -166,27 +162,27 @@ public class XmlSchemaParser
                 {
                     public void execute(final Node node) throws XPathExpressionException
                     {
-                        addTypeWithNameCheck(typesMap, new SetType(node));
+                        addTypeWithNameCheck(typeByNameMap, new SetType(node));
                     }
                 });
 
-        return typesMap;
+        return typeByNameMap;
     }
 
     /**
-     * Helper function to add a Type to a map based on name. Checks to make sure name does not exist.
+     * Helper function to add a Type to a typeByNameMap based on name. Checks to make sure name does not exist.
      *
-     * @param map  of names to Type objects
-     * @param type to be added to map
+     * @param typeByNameMap  of names to Type objects
+     * @param type to be added to typeByNameMap
      */
-    private static void addTypeWithNameCheck(Map<String, Type> map, Type type)
+    private static void addTypeWithNameCheck(final Map<String, Type> typeByNameMap, final Type type)
     {
-        if (map.get(type.getName()) != null)
+        if (typeByNameMap.get(type.getName()) != null)
         {
             throw new IllegalArgumentException("SBE type already exists: " + type.getName());
         }
 
-        map.put(type.getName(), type);
+        typeByNameMap.put(type.getName(), type);
     }
 
     /**
@@ -194,112 +190,112 @@ public class XmlSchemaParser
      *
      * @param document for the XML parsing
      * @param xPath    for XPath expression reuse
-     * @param typesMap to use for Type objects
+     * @param typeByNameMap to use for Type objects
      * @return {@link java.util.Map} of id to Message
      */
-    public static Map<Long, Message> populateMessageMap(final Document document,
-                                                        final XPath xPath,
-                                                        final Map<String, Type> typesMap)
+    public static Map<Long, Message> findMessages(final Document document,
+                                                  final XPath xPath,
+                                                  final Map<String, Type> typeByNameMap)
         throws Exception
     {
-        final Map<Long, Message> map = new HashMap<Long, Message>();
+        final Map<Long, Message> messageByIdMap = new HashMap<Long, Message>();
 
         forEach((NodeList)xPath.compile(MESSAGE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
                 new NodeFunction()
                 {
                     public void execute(final Node node) throws XPathExpressionException
                     {
-                        addMessageWithIdCheck(map, new Message(node, typesMap));
+                        addMessageWithIdCheck(messageByIdMap, new Message(node, typeByNameMap));
                     }
                 });
 
-        return map;
+        return messageByIdMap;
     }
 
     /**
-     * Helper function to add a Message to a map based on id. Checks to make sure id does not exist.
+     * Helper function to add a Message to a messageByIdMap based on id. Checks to make sure id does not exist.
      *
-     * @param map     of id to Message objects
-     * @param message to be added to map
+     * @param messageByIdMap     of id to Message objects
+     * @param message to be added to messageByIdMap
      */
-    private static void addMessageWithIdCheck(final Map<Long, Message> map, final Message message)
+    private static void addMessageWithIdCheck(final Map<Long, Message> messageByIdMap, final Message message)
     {
-        if (map.get(Long.valueOf(message.getId())) != null)
+        if (messageByIdMap.get(Long.valueOf(message.getId())) != null)
         {
             throw new IllegalArgumentException("SBE message template id already exists: " + message.getId());
         }
 
-        map.put(Long.valueOf(message.getId()), message);
+        messageByIdMap.put(Long.valueOf(message.getId()), message);
     }
 
     /**
-     * Helper function that throws an exception when the attribute is not set
+     * Helper function that throws an exception when the attribute is not set.
      *
-     * @param node     that should have the attribute
+     * @param elementNode     that should have the attribute
      * @param attrName that is to be looked up
      * @return value of the attribute
      * @throws IllegalArgumentException if the attribute is not present
      */
-    public static String getXmlAttributeValue(final Node node, final String attrName)
+    public static String getAttributeValue(final Node elementNode, final String attrName)
     {
-        Node n = node.getAttributes().getNamedItem(attrName);
+        Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
 
-        if (n == null || n.getNodeValue().equals(""))
+        if (attrNode == null || "".equals(attrNode.getNodeValue()))
         {
             throw new IllegalArgumentException("Element attribute is not present or is empty: " + attrName);
         }
 
-        return n.getNodeValue();
+        return attrNode.getNodeValue();
     }
 
     /**
-     * Helper function that uses a default value when value not set
+     * Helper function that uses a default value when value not set.
      *
-     * @param node     that should have the attribute
+     * @param elementNode that should have the attribute
      * @param attrName that is to be looked up
      * @param defValue String to return if not set
      * @return value of the attribute or defValue
      */
-    public static String getXmlAttributeValue(final Node node, final String attrName, final String defValue)
+    public static String getAttributeValue(final Node elementNode, final String attrName, final String defValue)
     {
-        Node n = node.getAttributes().getNamedItem(attrName);
+        Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
 
-        if (n == null)
+        if (attrNode == null)
         {
             return defValue;
         }
 
-        return n.getNodeValue();
+        return attrNode.getNodeValue();
     }
 
     /**
      * Helper function that hides the null return from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}
      *
-     * @param node     that could be null
+     * @param elementNode     that could be null
      * @param attrName that is to be looked up
      * @return null or value of the attribute
      */
-    public static String getXmlAttributeValueOrNull(final Node node, final String attrName)
+    public static String getAttributeValueOrNull(final Node elementNode, final String attrName)
     {
-        Node n = node.getAttributes().getNamedItem(attrName);
+        Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
 
-        if (n == null)
+        if (attrNode == null)
         {
             return null;
         }
 
-        return n.getNodeValue();
+        return attrNode.getNodeValue();
     }
 
     /**
      * Helper function to convert a schema byteOrder into a {@link ByteOrder}
      *
-     * @param order specified as a FIX SBE string
+     * @param byteOrder specified as a FIX SBE string
      * @return ByteOrder representation
      */
-    public static ByteOrder lookupByteOrder(final String order)
+    public static ByteOrder lookupByteOrder(final String byteOrder)
     {
-        switch (order)
+        switch (byteOrder)
         {
             case "littleEndian":
                 return ByteOrder.LITTLE_ENDIAN;
@@ -312,26 +308,17 @@ public class XmlSchemaParser
         }
     }
 
-    /**
-     * NodeFunction to be applied to Node objects
-     */
     private interface NodeFunction
     {
         void execute(final Node node) throws XPathExpressionException;
     }
 
-    /**
-     * Add compositeType (if any) to Types Map
-     *
-     * @param list of Nodes to which function should be applied.
-     * @param func to execute for each node
-     */
-    private static void forEach(final NodeList list, final NodeFunction func)
+    private static void forEach(final NodeList nodeList, final NodeFunction func)
         throws Exception
     {
-        for (int i = 0, size = list.getLength(); i < size; i++)
+        for (int i = 0, size = nodeList.getLength(); i < size; i++)
         {
-            func.execute(list.item(i));
+            func.execute(nodeList.item(i));
         }
     }
 }

@@ -54,13 +54,13 @@ public class EnumType extends Type
          * - encodingType (required) - must be either 'char' or 'int8' according to spec
          * - nullValue (optional with presence=optional)
          */
-        encodingType = Primitive.lookup(XmlSchemaParser.getXmlAttributeValue(node, "encodingType"));
+        encodingType = Primitive.lookup(XmlSchemaParser.getAttributeValue(node, "encodingType"));
         if (encodingType != Primitive.CHAR && encodingType != Primitive.UINT8)
         {
             throw new IllegalArgumentException("unknown encodingType " + encodingType);
         }
 
-        String nullValueStr = XmlSchemaParser.getXmlAttributeValueOrNull(node, "nullValue");
+        String nullValueStr = XmlSchemaParser.getAttributeValueOrNull(node, "nullValue");
         if (nullValueStr != null)
         {
             // nullValue is mutually exclusive with presence=required or constant
@@ -159,8 +159,8 @@ public class EnumType extends Type
              * value: the value of the validValue
              */
             this.encodingType = encodingType;
-            name = XmlSchemaParser.getXmlAttributeValue(node, "name");
-            description = XmlSchemaParser.getXmlAttributeValueOrNull(node, "description");
+            name = XmlSchemaParser.getAttributeValue(node, "name");
+            description = XmlSchemaParser.getAttributeValueOrNull(node, "description");
             value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());
         }
 

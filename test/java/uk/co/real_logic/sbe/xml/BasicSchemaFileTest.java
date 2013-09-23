@@ -20,7 +20,7 @@ import org.junit.Test;
 
 import java.io.InputStream;
 
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parseXmlAndGenerateMessageSchema;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class BasicSchemaFileTest
 {
@@ -47,20 +47,20 @@ public class BasicSchemaFileTest
     public void shouldHandleBasicFile()
         throws Exception
     {
-        parseXmlAndGenerateMessageSchema(getLocalResource("BasicSchemaFileTest.xml"));
+        parse(getLocalResource("BasicSchemaFileTest.xml"));
     }
 
     @Test
     public void shouldHandleBasicFileWithGroup()
         throws Exception
     {
-        parseXmlAndGenerateMessageSchema(getLocalResource("BasicGroupSchemaFileTest.xml"));
+        parse(getLocalResource("BasicGroupSchemaFileTest.xml"));
     }
 
     @Test
     public void shouldHandleBasicFileWithVariableLengthData()
         throws Exception
     {
-        parseXmlAndGenerateMessageSchema(getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
+        parse(getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
     }
 }

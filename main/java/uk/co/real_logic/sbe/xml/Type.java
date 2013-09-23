@@ -41,11 +41,11 @@ public class Type
      */
     public Type(final Node node, final TypeOfType type)
     {
-        name = getXmlAttributeValue(node, "name");
+        name = getAttributeValue(node, "name");
         // The schema should set default, so "presence" should always be available, but let's set a default anyway
-        presence = Presence.lookup(getXmlAttributeValue(node, "presence", "required"));
-        description = getXmlAttributeValueOrNull(node, "description");
-        fixUsage = FixUsage.lookup(getXmlAttributeValueOrNull(node, "fixUsage"));
+        presence = Presence.lookup(getAttributeValue(node, "presence", "required"));
+        description = getAttributeValueOrNull(node, "description");
+        fixUsage = FixUsage.lookup(getAttributeValueOrNull(node, "fixUsage"));
         this.type = type;
     }
 

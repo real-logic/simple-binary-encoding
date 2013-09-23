@@ -40,7 +40,7 @@ public class IrGenerator
     {
         addStartOrEndNode(msg, IrNode.Flag.MESSAGE_START);
 
-        addAllFields(msg.getFieldList());
+        addAllFields(msg.getFields());
 
         addStartOrEndNode(msg, IrNode.Flag.MESSAGE_END);
 

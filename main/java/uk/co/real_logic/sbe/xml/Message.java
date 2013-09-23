@@ -45,10 +45,10 @@ public class Message
     /**
      * Construct a new message from XML Schema.
      *
-     * @param node     from the XML Schema Parsing
-     * @param typesMap holding type information for message
+     * @param messageNode   from the XML Schema Parsing
+     * @param typeByNameMap holding type information for message
      */
-    public Message(final Node node, final Map<String, Type> typesMap)
+    public Message(final Node messageNode, final Map<String, Type> typeByNameMap)
         throws XPathExpressionException, IllegalArgumentException
     {
         /*
@@ -62,16 +62,16 @@ public class Message
          * group
          * - name (required) - unique within message? field for num entries must precede it!
          */
-        id = Long.parseLong(getXmlAttributeValue(node, "id"));                        // required
-        name = getXmlAttributeValue(node, "name");                                    // required
-        description = getXmlAttributeValueOrNull(node, "description");                // optional
-        blockLength = Long.parseLong(getXmlAttributeValue(node, "blockLength", "0")); // 0 means not set
-        fixMsgType = getXmlAttributeValueOrNull(node, "fixMsgType");                  // optional
+        id = Long.parseLong(getAttributeValue(messageNode, "id"));                        // required
+        name = getAttributeValue(messageNode, "name");                                    // required
+        description = getAttributeValueOrNull(messageNode, "description");                // optional
+        blockLength = Long.parseLong(getAttributeValue(messageNode, "blockLength", "0")); // 0 means not set
+        fixMsgType = getAttributeValueOrNull(messageNode, "fixMsgType");                  // optional
 
-        fieldList = parseXmlFieldsAndGroups(node, typesMap);
+        fieldList = parseFieldsAndGroups(messageNode, typeByNameMap);
     }
 
-    private static List<Field> parseXmlFieldsAndGroups(final Node node, final Map<String, Type> typesMap)
+    private static List<Field> parseFieldsAndGroups(final Node node, final Map<String, Type> typeByNameMap)
         throws XPathExpressionException, IllegalArgumentException
     {
         XPath xPath = XPathFactory.newInstance().newXPath();
@@ -93,7 +93,7 @@ public class Message
                  */
 
                 /* use the Field constructor that is for group (not field) */
-                f = new Field(list.item(i), getXmlAttributeValue(list.item(i), "name"));
+                f = new Field(list.item(i), getAttributeValue(list.item(i), "name"));
 
                 Field entryCountField = entryCountFieldMap.get(f.getName());
 
@@ -105,15 +105,15 @@ public class Message
                 f.setEntryCountField(entryCountField);
                 entryCountFieldMap.remove(f.getName()); // remove field so that it can't be reused as this level
 
-                f.setGroupFieldList(parseXmlFieldsAndGroups(list.item(i), typesMap)); // recursive call
+                f.setGroupFieldList(parseFieldsAndGroups(list.item(i), typeByNameMap)); // recursive call
             }
             else if (list.item(i).getNodeName().equals("field"))
             {
                 /* use the Field constructor that is for field (not group) */
                 f = new Field(list.item(i),
-                              getXmlAttributeValue(list.item(i), "name"),
-                              Integer.parseInt(getXmlAttributeValue(list.item(i), "id")),
-                              lookupType(typesMap, getXmlAttributeValue(list.item(i), "type")));
+                              getAttributeValue(list.item(i), "name"),
+                              Integer.parseInt(getAttributeValue(list.item(i), "id")),
+                              lookupType(typeByNameMap, getAttributeValue(list.item(i), "type")));
 
                 /* save field for matching up with group if this is an entry count field */
                 if (f.getGroupName() != null)
@@ -131,9 +131,9 @@ public class Message
             {
                 /* use the Field constructor that is for field (even though this is a data) */
                 f = new Field(list.item(i),
-                              getXmlAttributeValue(list.item(i), "name"),
-                              Integer.parseInt(getXmlAttributeValue(list.item(i), "id")),
-                              lookupType(typesMap, getXmlAttributeValue(list.item(i), "type")));
+                              getAttributeValue(list.item(i), "name"),
+                              Integer.parseInt(getAttributeValue(list.item(i), "id")),
+                              lookupType(typeByNameMap, getAttributeValue(list.item(i), "type")));
 
                 /* match up with length field */
                 Integer lengthFieldRefId = new Integer(f.getId());
@@ -160,17 +160,16 @@ public class Message
     /**
      * static method to encapsulate exception for them type does not exist.
      */
-    private static Type lookupType(final Map<String, Type> map, final String name)
+    private static Type lookupType(final Map<String, Type> typeByNameMap, final String name)
         throws IllegalArgumentException
     {
-        Type t = map.get(name);
-
-        if (t == null)
+        Type type = typeByNameMap.get(name);
+        if (type == null)
         {
-            throw new IllegalArgumentException("type does not exist for name: " + name);
+            throw new IllegalArgumentException("Type does not exist for name: " + name);
         }
 
-        return t;
+        return type;
     }
 
     /**
@@ -208,7 +207,7 @@ public class Message
      *
      * @return {@link java.util.List} of the Field objects in this Message
      */
-    public List<Field> getFieldList()
+    public List<Field> getFields()
     {
         return fieldList;
     }
@@ -245,14 +244,14 @@ public class Message
         public Field(final Node node, final String name, final int id, final Type type)
         {
             this.name = name;
-            this.description = XmlSchemaParser.getXmlAttributeValueOrNull(node, "description");
-            this.groupName = XmlSchemaParser.getXmlAttributeValueOrNull(node, "groupName");
+            this.description = XmlSchemaParser.getAttributeValueOrNull(node, "description");
+            this.groupName = XmlSchemaParser.getAttributeValueOrNull(node, "groupName");
             this.id = id;
             this.type = type;
-            this.offset = Long.parseLong(getXmlAttributeValue(node, "offset", "0"));
-            this.fixUsage = FixUsage.lookup(XmlSchemaParser.getXmlAttributeValueOrNull(node, "fixUsage"));
-            this.presence = Presence.lookup(XmlSchemaParser.getXmlAttributeValueOrNull(node, "presence"));
-            this.refId = Integer.parseInt(getXmlAttributeValue(node, "refId", INVALID_ID_STRING));
+            this.offset = Long.parseLong(getAttributeValue(node, "offset", "0"));
+            this.fixUsage = FixUsage.lookup(XmlSchemaParser.getAttributeValueOrNull(node, "fixUsage"));
+            this.presence = Presence.lookup(XmlSchemaParser.getAttributeValueOrNull(node, "presence"));
+            this.refId = Integer.parseInt(getAttributeValue(node, "refId", INVALID_ID_STRING));
             this.blockLength = 0;
             this.groupFieldList = null;   // has no meaning if not group
             this.entryCountField = null;  // has no meaning if not group
@@ -275,7 +274,7 @@ public class Message
         public Field(final Node node, final String name)
         {
             this.name = name;
-            this.description = XmlSchemaParser.getXmlAttributeValueOrNull(node, "description");
+            this.description = XmlSchemaParser.getAttributeValueOrNull(node, "description");
             this.groupName = null;
             this.id = INVALID_ID;
             this.type = null;
@@ -283,7 +282,7 @@ public class Message
             this.fixUsage = null;
             this.presence = null;
             this.refId = INVALID_ID;
-            this.blockLength = Long.parseLong(getXmlAttributeValue(node, "blockLength", "0"));
+            this.blockLength = Long.parseLong(getAttributeValue(node, "blockLength", "0"));
             this.groupFieldList = null;    // for now. Set later.
             this.entryCountField = null;   // for now. Set later.
             this.lengthField = null;       // has no meaning for group.

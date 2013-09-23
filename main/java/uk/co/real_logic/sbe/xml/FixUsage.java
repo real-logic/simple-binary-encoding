@@ -17,8 +17,8 @@
 package uk.co.real_logic.sbe.xml;
 
 /**
- * fixUsage
- * <p/>
+ * FixUsage
+ * <p>
  * int
  * Length
  * TagNum
@@ -53,7 +53,7 @@ package uk.co.real_logic.sbe.xml;
  * XMLData
  * Language
  *
- * fixUsage must be specified in the <type> or <field> specification
+ * fixUsage must be specified in the &lt;type&gt; or &lt;field&gt; specification
  * - if in the type, then field inherits the specification
  * - if in the type and in the field, then field should override?
  * - if not in the type, then field must specify it
