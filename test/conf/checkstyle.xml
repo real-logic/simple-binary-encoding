@@ -44,6 +44,11 @@
             <property name="ignorePattern" value="^[ \t]*\*.*@.*$"/>
         </module>
 
+        <module name="MethodLength">
+            <property name="tokens" value="METHOD_DEF"/>
+            <property name="max" value="100"/>
+        </module>
+
         <module name="EmptyForInitializerPad"/>
 
         <module name="MethodParamPad"/>
@@ -58,6 +63,8 @@
             <property name="tokens" value="PLUS, ASSIGN"/>
             <property name="option" value="eol"/>
         </module>
+
+        <module name="NeedBraces"/>
 
         <module name="ParenPad"/>
 
