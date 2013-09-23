@@ -33,16 +33,16 @@ import java.util.Map;
  *
  * decimal types can use mantissa and exponent portions as min/max/null.
  *
- *              Length  Exponent     Min                Max              Null
- * decimal      9       -128 to 127  
- *  int64 mantissa                   -2^63 + 1          2^64(2^63 - 1)   -2^63
- *  int8 exponent                    10^127 to 10^-128  10^127
- * decimal64    8       -128 to 127                     
- *  int64 mantissa                   -2^63 + 1          2^64(2^63 - 1)   -2^63
- *  constant exponent                10^127 to 10^-128  10^127
- * decimal32    4       -128 to 127
- *  int32 mantissa                   -2^32 + 1          2^32(2^31 - 1)   -2^31
- *  constant exponent                10^-127            10^127
+ *                      Length  Exponent     Min                Max              Null
+ * decimal              9       -128 to 127
+ *  int64 mantissa                           -2^63 + 1          2^64(2^63 - 1)   -2^63
+ *  int8 exponent               10^127 to 10^-128  10^127
+ * decimal64            8       -128 to 127
+ *  int64 mantissa                          -2^63 + 1          2^64(2^63 - 1)   -2^63
+ *  constant exponent           10^127 to 10^-128  10^127
+ * decimal32            4       -128 to 127
+ *  int32 mantissa                          -2^32 + 1          2^32(2^31 - 1)   -2^31
+ *  constant exponent           10^-127            10^127
  */
 public class CompositeType extends Type
 {

@@ -129,7 +129,7 @@ public class Type
     }
 
     /**
-     * 
+     *
      */
     public enum TypeOfType
     {

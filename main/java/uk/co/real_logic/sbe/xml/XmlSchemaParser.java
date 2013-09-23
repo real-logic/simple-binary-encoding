@@ -24,6 +24,7 @@ import uk.co.real_logic.sbe.Primitive;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.InputStream;
 import java.nio.ByteOrder;
@@ -35,12 +36,12 @@ import java.util.Map;
  */
 public class XmlSchemaParser
 {
-    private static final String typeXPathExpr = "/messageSchema/types/type";
-    private static final String compositeXPathExpr = "/messageSchema/types/composite";
-    private static final String enumXPathExpr = "/messageSchema/types/enum";
-    private static final String setXPathExpr = "/messageSchema/types/set";
-    private static final String messageXPathExpr = "/messageSchema/message";
-    private static final String messageSchemaXPathExpr = "/messageSchema";
+    private static final String TYPE_XPATH_EXPR = "/messageSchema/types/type";
+    private static final String COMPOSITE_XPATH_EXPR = "/messageSchema/types/composite";
+    private static final String ENUM_XPATH_EXPR = "/messageSchema/types/enum";
+    private static final String SET_XPATH_EXPR = "/messageSchema/types/set";
+    private static final String MESSAGE_XPATH_EXPR = "/messageSchema/message";
+    private static final String MESSAGE_SCHEMA_XPATH_EXPR = "/messageSchema";
 
     /**
      * Take an input stream and parse it generating map of template ID to Message objects, types, and schema
@@ -69,7 +70,7 @@ public class XmlSchemaParser
         Map<Long, Message> messageMap = populateMessageMap(document, xPath, typeMap);
 
         /* grab messageSchema attributes and save maps*/
-        final Node node = (Node)xPath.compile(messageSchemaXPathExpr).evaluate(document, XPathConstants.NODE);
+        final Node node = (Node)xPath.compile(MESSAGE_SCHEMA_XPATH_EXPR).evaluate(document, XPathConstants.NODE);
         MessageSchema schema = new MessageSchema(node, typeMap, messageMap);
 
         // TODO: run additional checks and validation on Messages in Message Map
@@ -82,10 +83,9 @@ public class XmlSchemaParser
      * - IR is platform, schema, and language independent. It is abstract layout & metadata only.
      * - Message is FIX/SBE XML Schema specific.
      */
-    
-    /* TODO: check for messageHeader type and use it for the main header */
-    /* TODO: Message needs to hold (in addition to fields): schemaPackage, schemaDescription, schemaVersion, schemaByteOrder, messageHeader */
-    
+    // TODO: check for messageHeader type and use it for the main header
+    // TODO: Message needs to hold (in addition to fields): schemaPackage, schemaDescription, schemaVersion, schemaByteOrder, messageHeader
+
     /*
      * TODO: need a message object to hold sequenced fields. Fields point back to Types. Traversing the fields generates IrNodes
      * - instead of List<IrNode>, need a container, IrContainer
@@ -134,37 +134,37 @@ public class XmlSchemaParser
         typesMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, null, Primitive.UINT32, 1, false));
         typesMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, null, Primitive.UINT64, 1, false));
 
-        forEach((NodeList)xPath.compile(typeXPathExpr).evaluate(document, XPathConstants.NODESET),
-                new Function()
+        forEach((NodeList)xPath.compile(TYPE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
+                new NodeFunction()
                 {
-                    public void execute(final Node node) throws Exception
+                    public void execute(final Node node) throws XPathExpressionException
                     {
                         addTypeWithNameCheck(typesMap, new EncodedDataType(node));
                     }
                 });
-        
-        forEach((NodeList)xPath.compile(compositeXPathExpr).evaluate(document, XPathConstants.NODESET),
-                new Function()
+
+        forEach((NodeList)xPath.compile(COMPOSITE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
+                new NodeFunction()
                 {
-                    public void execute(final Node node) throws Exception
+                    public void execute(final Node node) throws XPathExpressionException
                     {
                         addTypeWithNameCheck(typesMap, new CompositeType(node));
                     }
                 });
 
-        forEach((NodeList)xPath.compile(enumXPathExpr).evaluate(document, XPathConstants.NODESET),
-                new Function()
+        forEach((NodeList)xPath.compile(ENUM_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
+                new NodeFunction()
                 {
-                    public void execute(final Node node) throws Exception
+                    public void execute(final Node node) throws XPathExpressionException
                     {
                         addTypeWithNameCheck(typesMap, new EnumType(node));
                     }
                 });
 
-        forEach((NodeList)xPath.compile(setXPathExpr).evaluate(document, XPathConstants.NODESET),
-                new Function()
+        forEach((NodeList)xPath.compile(SET_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
+                new NodeFunction()
                 {
-                    public void execute(final Node node) throws Exception
+                    public void execute(final Node node) throws XPathExpressionException
                     {
                         addTypeWithNameCheck(typesMap, new SetType(node));
                     }
@@ -204,10 +204,10 @@ public class XmlSchemaParser
     {
         final Map<Long, Message> map = new HashMap<Long, Message>();
 
-        forEach((NodeList)xPath.compile(messageXPathExpr).evaluate(document, XPathConstants.NODESET),
-                new Function()
+        forEach((NodeList)xPath.compile(MESSAGE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
+                new NodeFunction()
                 {
-                    public void execute(final Node node) throws Exception
+                    public void execute(final Node node) throws XPathExpressionException
                     {
                         addMessageWithIdCheck(map, new Message(node, typesMap));
                     }
@@ -222,7 +222,7 @@ public class XmlSchemaParser
      * @param map     of id to Message objects
      * @param message to be added to map
      */
-    private static void addMessageWithIdCheck(Map<Long, Message> map, Message message)
+    private static void addMessageWithIdCheck(final Map<Long, Message> map, final Message message)
     {
         if (map.get(Long.valueOf(message.getId())) != null)
         {
@@ -313,25 +313,25 @@ public class XmlSchemaParser
     }
 
     /**
-     * Function to be applied to Node objects
+     * NodeFunction to be applied to Node objects
      */
-    private interface Function
+    private interface NodeFunction
     {
-        public void execute(final Node node) throws Exception;
+        void execute(final Node node) throws XPathExpressionException;
     }
 
     /**
      * Add compositeType (if any) to Types Map
      *
-     * @param list     of Nodes
-     * @param function object to execute for each node
+     * @param list of Nodes to which function should be applied.
+     * @param func to execute for each node
      */
-    private static void forEach(final NodeList list, final Function function)
+    private static void forEach(final NodeList list, final NodeFunction func)
         throws Exception
     {
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            function.execute(list.item(i));
+            func.execute(list.item(i));
         }
     }
 }

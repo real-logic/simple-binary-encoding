@@ -120,7 +120,7 @@ public enum FixUsage
      */
     public static FixUsage lookup(final String value)
     {
-	    if (value == null)
+        if (value == null)
         {
             return null;
         }

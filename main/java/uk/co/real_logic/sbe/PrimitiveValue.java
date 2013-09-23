@@ -19,16 +19,16 @@ package uk.co.real_logic.sbe;
 /**
  * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
  * <p/>
- * Primitive type	Null        Min          Max
- * char             0           0x20         0x7E
- * int8	        -128        -127         127
- * uint8	        255         0            254
- * int16	        -32768      -32767       32767
- * uint16	        65535       0            65534
- * int32	        2^31        -2^31 + 1    2^31 - 1
- * uint32	        2^32 - 1    0            2^32 - 2
- * int64	        2^63        -2^63 + 1    2^63 - 1
- * uint64	        2^64 - 1    0            2^64 - 2
+ * Primitive type  Null        Min          Max
+ * char            0           0x20         0x7E
+ * int8            -128        -127         127
+ * uint8           255         0            254
+ * int16           -32768      -32767       32767
+ * uint16          65535       0            65534
+ * int32           2^31        -2^31 + 1    2^31 - 1
+ * uint32          2^32 - 1    0            2^32 - 2
+ * int64           2^63        -2^63 + 1    2^63 - 1
+ * uint64          2^64 - 1    0            2^64 - 2
  */
 public class PrimitiveValue
 {

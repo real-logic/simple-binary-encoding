@@ -31,9 +31,7 @@ import java.util.Set;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
-/**
- * SBE setType
- */
+/** SBE setType */
 public class SetType extends Type
 {
     private final Primitive encodingType;
@@ -50,9 +48,9 @@ public class SetType extends Type
     {
         super(node, TypeOfType.SET); // set the common schema attributes
 
-        /**
+        /*
          * grab attributes from schema
-         * - encodingType (required) - must be either uint8, uint16, uint32, or uint64 
+         * - encodingType (required) - must be either uint8, uint16, uint32, or uint64
          */
         encodingType = Primitive.lookup(getXmlAttributeValue(node, "encodingType"));
         if (encodingType != Primitive.UINT8 && encodingType != Primitive.UINT16 &&
@@ -109,9 +107,7 @@ public class SetType extends Type
         return nameMap.entrySet();
     }
 
-    /**
-     * Class to hold valid values for EnumType
-     */
+    /** Class to hold valid values for EnumType */
     public static class Choice
     {
         private final String name;

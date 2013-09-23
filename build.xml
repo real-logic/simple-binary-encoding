@@ -15,6 +15,11 @@
     <property name="dir.main.resources" location="main/resources"/>
     <property name="dir.test.resources" location="test/resources"/>
 
+    <property name="dir.reports.checkstyle" location="target/reports/checkstyle"/>
+    <property name="checkstyle.lib" location="test/lib/checkstyle-5.6-all.jar"/>
+    <property name="checkstyle.config.file" location="test/conf/checkstyle.xml"/>
+    <property name="checkstyle.output.file" location="${dir.reports.checkstyle}/results.xml"/>
+
     <path id="test.classpath">
         <pathelement path="${dir.main.build}"/>
         <pathelement path="${dir.test.build}"/>
@@ -24,6 +29,8 @@
         </fileset>
     </path>
 
+    <taskdef resource="checkstyletask.properties" classpath="${checkstyle.lib}"/>
+
     <target name="init">
         <tstamp/>
         <mkdir dir="${dir.main.build}"/>
@@ -31,6 +38,19 @@
         <mkdir dir="${dir.dist}"/>
         <mkdir dir="${dir.reports}"/>
         <mkdir dir="${dir.reports.unit}"/>
+        <mkdir dir="${dir.reports.checkstyle}"/>
+    </target>
+
+    <target name="checkstyle" depends="init">
+        <checkstyle config="${checkstyle.config.file}"
+                    failOnViolation="true"
+                    maxWarnings="0"
+                    maxErrors="0">
+            <fileset dir="${dir.main.src}">
+                <include name="**/*.java"/>
+            </fileset>
+            <formatter type="xml" tofile="${checkstyle.output.file}"/>
+        </checkstyle>
     </target>
 
     <target name="clean" description="Delete all existing output">
@@ -76,5 +96,5 @@
         </jar>
     </target>
 
-    <target name="all" depends="clean, build, test, dist"/>
+    <target name="all" depends="clean, checkstyle, build, test, dist"/>
 </project>

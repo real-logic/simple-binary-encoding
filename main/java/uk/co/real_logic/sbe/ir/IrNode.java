@@ -23,7 +23,7 @@ import java.nio.ByteOrder;
 /**
  * Class to encapsulate an atom of data. This Intermediate Representation (IR)
  * is language, schema, platform independent.
- * <p>
+ * <p/>
  * Processing and optimization could be run over a list of IrNodes to perform various functions
  * - ordering of fields based on size
  * - padding of fields in order to provide expansion room
@@ -46,10 +46,16 @@ public class IrNode
 
     /**
      * Construct an {@link IrNode} by providing values for all fields.
+     *
+     * @param primitiveType representing this node.
+     * @param size          of the node in bytes.
+     * @param offset        within the {@link uk.co.real_logic.sbe.xml.Message}.
+     * @param metadata      for the {@link uk.co.real_logic.sbe.xml.Message}.
+     * @param byteOrder     for the encoding.
      */
-    public IrNode(final Primitive primitiveType, 
-                  final int size, 
-                  final int offset, 
+    public IrNode(final Primitive primitiveType,
+                  final int size,
+                  final int offset,
                   final Metadata metadata,
                   final ByteOrder byteOrder)
     {
@@ -112,9 +118,7 @@ public class IrNode
         NONE
     }
 
-    /**
-     * Metadata describing an {@link IrNode}
-     */
+    /** Metadata describing an {@link IrNode} */
     public static class Metadata
     {
         /** Invalid ID value */
@@ -145,9 +149,9 @@ public class IrNode
          * GROUP_START has xRefIrId to count FIELD_START
          *
          * GROUP_START - point to field id that holds count
-         * GROUP_END - 
+         * GROUP_END -
          */
-        
+
         public Metadata(final String name,
                         final long id,
                         final long irId,

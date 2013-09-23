@@ -109,7 +109,7 @@ public class Message
             }
             else if (list.item(i).getNodeName().equals("field"))
             {
-        		/* use the Field constructor that is for field (not group) */
+                /* use the Field constructor that is for field (not group) */
                 f = new Field(list.item(i),
                               getXmlAttributeValue(list.item(i), "name"),
                               Integer.parseInt(getXmlAttributeValue(list.item(i), "id")),
@@ -129,7 +129,7 @@ public class Message
             }
             else if (list.item(i).getNodeName().equals("data"))
             {
-        		/* use the Field constructor that is for field (even though this is a data) */
+                /* use the Field constructor that is for field (even though this is a data) */
                 f = new Field(list.item(i),
                               getXmlAttributeValue(list.item(i), "name"),
                               Integer.parseInt(getXmlAttributeValue(list.item(i), "id")),

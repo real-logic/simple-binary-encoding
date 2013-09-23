@@ -52,7 +52,7 @@ public class IrGenerator
         byteOrder = schema.getByteOrder();
         Type type = schema.getMessageHeader();
 
-	    /* short circuit conditionals would be nice... oh well */
+        // short circuit conditionals would be nice... oh well
         if (type == null)
         {
             throw new IllegalArgumentException("Message header not defined for messageSchema");
@@ -72,25 +72,16 @@ public class IrGenerator
         return irIdCursor++;
     }
 
-    /**
-     * The Message version
-     */
     private void addStartOrEndNode(final Message msg, final IrNode.Flag flag)
     {
         irNodeList.add(new IrNode(new IrNode.Metadata(msg.getName(), msg.getId(), generateIrId(), flag)));
     }
 
-    /**
-     * The Type version
-     */
     private void addStartOrEndNode(final Type type, final IrNode.Flag flag)
     {
         irNodeList.add(new IrNode(new IrNode.Metadata(type.getName(), IrNode.Metadata.INVALID_ID, generateIrId(), flag)));
     }
 
-    /**
-     * The Field version
-     */
     private void addStartOrEndNode(final Message.Field field, final IrNode.Flag flag)
     {
         irNodeList.add(new IrNode(new IrNode.Metadata(field.getName(), field.getId(), generateIrId(), flag)));
@@ -104,7 +95,7 @@ public class IrGenerator
             {
                 // TODO: group item START/END, MD, etc. Tying back to count field, etc.
 
-		        /* add all the fields in the group */
+                // add all the fields in the group
                 addAllFields(field.getGroupFieldList());
             }
             else if (field.getType() instanceof EncodedDataType)

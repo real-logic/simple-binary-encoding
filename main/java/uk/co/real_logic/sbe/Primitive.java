@@ -19,16 +19,16 @@ package uk.co.real_logic.sbe;
 /**
  * primitiveTypes
  * <p/>
- * Primitive type	Description	                        Length (octets)
+ * Primitive type    Description                            Length (octets)
  * char             character                               1
- * int8	            Signed byte	                            1
- * uint8	        Unsigned byte / single-byte character	1
- * int16	        16-bit signed integer	                2
- * uint16	        16-bit unsigned integer	                2
- * int32	        32-bit signed integer	                4
- * uint32	        32-bit unsigned integer	                4
- * int64	        64-bit signed integer	                8
- * uint64	        64-bit unsigned integer	                8
+ * int8                Signed byte                                1
+ * uint8            Unsigned byte / single-byte character    1
+ * int16            16-bit signed integer                    2
+ * uint16            16-bit unsigned integer                    2
+ * int32            32-bit signed integer                    4
+ * uint32            32-bit unsigned integer                    4
+ * int64            64-bit signed integer                    8
+ * uint64            64-bit unsigned integer                    8
  */
 public enum Primitive
 {
