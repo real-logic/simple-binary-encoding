@@ -49,6 +49,10 @@
             <fileset dir="${dir.main.src}">
                 <include name="**/*.java"/>
             </fileset>
+            <fileset dir="${dir.test.src}">
+                <include name="**/*.java"/>
+            </fileset>
+            <formatter type="plain"/>
             <formatter type="xml" tofile="${checkstyle.output.file}"/>
         </checkstyle>
     </target>

@@ -59,10 +59,7 @@ public class BasicXmlIrGenerationTest
         IrGenerator irg = new IrGenerator();
 
         List<IrNode> ir = irg.generateForHeader(schema);
- 
-       /*
-        * assert the basic structure of the messageHeader IR
-        */
+
         assertThat(valueOf(ir.size()), is(valueOf(6)));
 
         /* assert all elements of node 0 */
@@ -120,10 +117,7 @@ public class BasicXmlIrGenerationTest
         IrGenerator irg = new IrGenerator();
 
         List<IrNode> ir = irg.generateForMessage(schema.getMessage(50001));
- 
-       /*
-        * assert the basic structure of the message IR
-        */
+
         assertThat(valueOf(ir.size()), is(valueOf(5)));
 
         /* assert all elements of node 0 */

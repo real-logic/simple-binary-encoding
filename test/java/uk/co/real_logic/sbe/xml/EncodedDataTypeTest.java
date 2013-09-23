@@ -306,7 +306,7 @@ public class EncodedDataTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         Assert.assertNull(map.get("testTypeFIX").getFixUsage());
-    }        
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenConstantPresenceButNoDataSpecified()
