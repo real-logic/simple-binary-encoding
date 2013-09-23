@@ -19,7 +19,7 @@ package uk.co.real_logic.sbe.xml;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveType;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -115,15 +115,15 @@ public class XmlSchemaParser
         final Map<String, Type> typeByNameMap = new HashMap<String, Type>();
 
         // Add primitiveTypes to typeByNameMap - these could be in a static XInclude that is always brought in...
-        typeByNameMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, null, Primitive.CHAR, 1, false));
-        typeByNameMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, null, Primitive.INT8, 1, false));
-        typeByNameMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, null, Primitive.INT16, 1, false));
-        typeByNameMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, null, Primitive.INT32, 1, false));
-        typeByNameMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, null, Primitive.INT64, 1, false));
-        typeByNameMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, null, Primitive.UINT8, 1, false));
-        typeByNameMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, null, Primitive.UINT16, 1, false));
-        typeByNameMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, null, Primitive.UINT32, 1, false));
-        typeByNameMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, null, Primitive.UINT64, 1, false));
+        typeByNameMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, null, PrimitiveType.CHAR, 1, false));
+        typeByNameMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, null, PrimitiveType.INT8, 1, false));
+        typeByNameMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, null, PrimitiveType.INT16, 1, false));
+        typeByNameMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, null, PrimitiveType.INT32, 1, false));
+        typeByNameMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, null, PrimitiveType.INT64, 1, false));
+        typeByNameMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, null, PrimitiveType.UINT8, 1, false));
+        typeByNameMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, null, PrimitiveType.UINT16, 1, false));
+        typeByNameMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, null, PrimitiveType.UINT32, 1, false));
+        typeByNameMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, null, PrimitiveType.UINT64, 1, false));
 
         forEach((NodeList)xPath.compile(TYPE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
                 new NodeFunction()

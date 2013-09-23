@@ -19,7 +19,7 @@ package uk.co.real_logic.sbe;
 /**
  * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
  * <p/>
- * Primitive type  Null        Min          Max
+ * PrimitiveType type  Null        Min          Max
  * char            0           0x20         0x7E
  * int8            -128        -127         127
  * uint8           255         0            254
@@ -88,13 +88,13 @@ public class PrimitiveValue
     /**
      * Parse constant value string and return constructed value
      *
-     * @param primitive that this is supposed to be
+     * @param primitiveType that this is supposed to be
      * @param value     expressed as a String
      * @throws IllegalArgumentException if parsing not known for type
      */
-    public PrimitiveValue(final Primitive primitive, final String value)
+    public PrimitiveValue(final PrimitiveType primitiveType, final String value)
     {
-        longValue = parseConstValue2Long(primitive, value);
+        longValue = parseConstValue2Long(primitiveType, value);
         representation = LONG_VALUE_REPRESENTATION;
     }
 
@@ -167,14 +167,14 @@ public class PrimitiveValue
     /**
      * Parse constant value string and return long value
      *
-     * @param primitive that this is supposed to be
+     * @param primitiveType that this is supposed to be
      * @param value     expressed as a String
      * @return long representation of the value
      * @throws IllegalArgumentException if parsing not known for type
      */
-    public static long parseConstValue2Long(final Primitive primitive, final String value)
+    public static long parseConstValue2Long(final PrimitiveType primitiveType, final String value)
     {
-        switch (primitive)
+        switch (primitiveType)
         {
             case CHAR:
                 if (value.length() > 1)
@@ -197,7 +197,7 @@ public class PrimitiveValue
                 return Long.parseLong(value);
 
             default:
-                throw new IllegalArgumentException("Do not know how to parse this primitive type for constant value");
+                throw new IllegalArgumentException("Do not know how to parse this primitiveType type for constant value");
         }
     }
 }

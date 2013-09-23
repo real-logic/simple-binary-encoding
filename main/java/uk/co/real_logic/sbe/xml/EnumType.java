@@ -18,7 +18,7 @@ package uk.co.real_logic.sbe.xml;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 
 import javax.xml.xpath.XPath;
@@ -34,7 +34,7 @@ import java.util.Set;
  */
 public class EnumType extends Type
 {
-    private final Primitive encodingType;
+    private final PrimitiveType encodingType;
     private final PrimitiveValue nullValue;
     private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new HashMap<PrimitiveValue, ValidValue>();
     private final Map<String, ValidValue> validValueByNameMap = new HashMap<String, ValidValue>();
@@ -54,8 +54,8 @@ public class EnumType extends Type
          * - encodingType (required) - must be either 'char' or 'int8' according to spec
          * - nullValue (optional with presence=optional)
          */
-        encodingType = Primitive.lookup(XmlSchemaParser.getAttributeValue(node, "encodingType"));
-        if (encodingType != Primitive.CHAR && encodingType != Primitive.UINT8)
+        encodingType = PrimitiveType.lookup(XmlSchemaParser.getAttributeValue(node, "encodingType"));
+        if (encodingType != PrimitiveType.CHAR && encodingType != PrimitiveType.UINT8)
         {
             throw new IllegalArgumentException("unknown encodingType " + encodingType);
         }
@@ -98,7 +98,7 @@ public class EnumType extends Type
         }
     }
 
-    public Primitive getEncodingType()
+    public PrimitiveType getEncodingType()
     {
         return encodingType;
     }
@@ -144,7 +144,7 @@ public class EnumType extends Type
         private final String name;
         private final String description;
         private final PrimitiveValue value;
-        private final Primitive encodingType;
+        private final PrimitiveType encodingType;
 
         /**
          * Construct a ValidValue given the XML node and the encodingType.
@@ -152,7 +152,7 @@ public class EnumType extends Type
          * @param node         that contains the validValue
          * @param encodingType for the enum
          */
-        public ValidValue(final Node node, final Primitive encodingType)
+        public ValidValue(final Node node, final PrimitiveType encodingType)
         {
             /*
              * attrs: name(required), description(optional)

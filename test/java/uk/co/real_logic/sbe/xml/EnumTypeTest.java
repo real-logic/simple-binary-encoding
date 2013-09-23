@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -80,10 +80,10 @@ public class EnumTypeTest
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("biOp");
         assertThat(e.getName(), is("biOp"));
-        assertThat(e.getEncodingType(), is(Primitive.UINT8));
+        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.getValidValueSet().size()), is(valueOf(2)));
-        assertThat(e.getValidValue("on").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "1")));
-        assertThat(e.getValidValue("off").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "0")));
+        assertThat(e.getValidValue("on").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "1")));
+        assertThat(e.getValidValue("off").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "0")));
     }
 
     @Test
@@ -101,10 +101,10 @@ public class EnumTypeTest
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("boolean");
         assertThat(e.getName(), is("boolean"));
-        assertThat(e.getEncodingType(), is(Primitive.UINT8));
+        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.getValidValueSet().size()), is(valueOf(2)));
-        assertThat(e.getValidValue("true").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "1")));
-        assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "0")));
+        assertThat(e.getValidValue("true").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "1")));
+        assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "0")));
     }
 
     @Test
@@ -123,11 +123,11 @@ public class EnumTypeTest
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("optionalBoolean");
         assertThat(e.getName(), is("optionalBoolean"));
-        assertThat(e.getEncodingType(), is(Primitive.UINT8));
+        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.getValidValueSet().size()), is(valueOf(2)));
-        assertThat(e.getValidValue("true").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "1")));
-        assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "0")));
-        assertThat(e.getNullValue(), is(new PrimitiveValue(Primitive.UINT8, nullValueStr)));
+        assertThat(e.getValidValue("true").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "1")));
+        assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "0")));
+        assertThat(e.getNullValue(), is(new PrimitiveValue(PrimitiveType.UINT8, nullValueStr)));
     }
 
     @Test
@@ -146,7 +146,7 @@ public class EnumTypeTest
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("triOp");
         assertThat(e.getName(), is("triOp"));
-        assertThat(e.getEncodingType(), is(Primitive.UINT8));
+        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
 
         int foundOn = 0, foundOff = 0, foundNotKnown = 0, count = 0;
         for (Map.Entry<String, EnumType.ValidValue> entry : e.getValidValueSet())
@@ -187,11 +187,11 @@ public class EnumTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("mixed");
-        assertThat(e.getEncodingType(), is(Primitive.CHAR));
-        assertThat(e.getValidValue("Cee").getPrimitiveValue(), is(new PrimitiveValue(Primitive.CHAR, "C")));
-        assertThat(e.getValidValue("One").getPrimitiveValue(), is(new PrimitiveValue(Primitive.CHAR, "1")));
-        assertThat(e.getValidValue("Two").getPrimitiveValue(), is(new PrimitiveValue(Primitive.CHAR, "2")));
-        assertThat(e.getValidValue("Eee").getPrimitiveValue(), is(new PrimitiveValue(Primitive.CHAR, "E")));
+        assertThat(e.getEncodingType(), is(PrimitiveType.CHAR));
+        assertThat(e.getValidValue("Cee").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.CHAR, "C")));
+        assertThat(e.getValidValue("One").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.CHAR, "1")));
+        assertThat(e.getValidValue("Two").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.CHAR, "2")));
+        assertThat(e.getValidValue("Eee").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.CHAR, "E")));
     }
 
     @Test(expected = IllegalArgumentException.class)

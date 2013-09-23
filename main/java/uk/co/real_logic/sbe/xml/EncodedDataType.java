@@ -16,7 +16,7 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 
 import org.w3c.dom.Node;
@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
  */
 public class EncodedDataType extends Type
 {
-    private final Primitive primitive;
+    private final PrimitiveType primitiveType;
     private final int length;
     private final boolean varLen;
     private final PrimitiveValue constValue;
@@ -52,11 +52,11 @@ public class EncodedDataType extends Type
          * - minValue (optional)
          * - maxValue (optional)
          */
-        this.primitive = Primitive.lookup(XmlSchemaParser.getAttributeValue(node, "primitiveType"));
+        this.primitiveType = PrimitiveType.lookup(XmlSchemaParser.getAttributeValue(node, "primitiveType"));
         this.length = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "length", "1"));
         this.varLen = Boolean.parseBoolean(XmlSchemaParser.getAttributeValue(node, "variableLength", "false"));
 
-        // handle constant presence by grabbing child node and parsing it's CDATA based on primitive (save it)
+        // handle constant presence by grabbing child node and parsing it's CDATA based on primitiveType (save it)
         if (this.getPresence() == Presence.CONSTANT)
         {
             if (node.getFirstChild() == null)
@@ -64,7 +64,7 @@ public class EncodedDataType extends Type
                 throw new IllegalArgumentException("type has declared presence \"constant\" but XML node has no data");
             }
 
-            this.constValue = new PrimitiveValue(this.primitive, node.getFirstChild().getNodeValue());
+            this.constValue = new PrimitiveValue(this.primitiveType, node.getFirstChild().getNodeValue());
         }
         else
         {
@@ -73,13 +73,13 @@ public class EncodedDataType extends Type
 
         /*
          * NullValue, MinValue, MaxValue
-         * - if the schema overrides the primitives values, then save the values here. Else, we use the Primitive min/max/null
+         * - if the schema overrides the primitives values, then save the values here. Else, we use the PrimitiveType min/max/null
          */
 
         String minValueStr = XmlSchemaParser.getAttributeValueOrNull(node, "minValue");
         if (minValueStr != null)
         {
-            this.minValue = new PrimitiveValue(this.primitive, minValueStr);
+            this.minValue = new PrimitiveValue(this.primitiveType, minValueStr);
         }
         else
         {
@@ -89,7 +89,7 @@ public class EncodedDataType extends Type
         String maxValueStr = XmlSchemaParser.getAttributeValueOrNull(node, "maxValue");
         if (maxValueStr != null)
         {
-            this.maxValue = new PrimitiveValue(this.primitive, maxValueStr);
+            this.maxValue = new PrimitiveValue(this.primitiveType, maxValueStr);
         }
         else
         {
@@ -105,11 +105,11 @@ public class EncodedDataType extends Type
                 throw new IllegalArgumentException("nullValue set, but presence is not optional");
             }
 
-            this.nullValue = new PrimitiveValue(this.primitive, nullValueStr);
+            this.nullValue = new PrimitiveValue(this.primitiveType, nullValueStr);
         }
         else
         {
-            // TODO: should we check for presence=optional and flag it? No, should default to primitive nullValue
+            // TODO: should we check for presence=optional and flag it? No, should default to primitiveType nullValue
             this.nullValue = null; /* this value is invalid unless nullValue specified for type */
         }
     }
@@ -121,7 +121,7 @@ public class EncodedDataType extends Type
      * @param presence    of the type
      * @param description of the type or null
      * @param fixUsage    of the type or null
-     * @param primitive   of the EncodedDataType
+     * @param primitiveType   of the EncodedDataType
      * @param length      of the EncodedDataType
      * @param varLen      of the EncodedDataType
      */
@@ -129,12 +129,12 @@ public class EncodedDataType extends Type
                            final Presence presence,
                            final String description,
                            final FixUsage fixUsage,
-                           final Primitive primitive,
+                           final PrimitiveType primitiveType,
                            final int length,
                            final boolean varLen)
     {
         super(name, presence, description, fixUsage, TypeOfType.ENCODEDDATA);
-        this.primitive = primitive;
+        this.primitiveType = primitiveType;
         this.length = length;
         this.varLen = varLen;
         this.constValue = null;
@@ -168,9 +168,9 @@ public class EncodedDataType extends Type
      *
      * @return primitiveType attribute of the type
      */
-    public Primitive getPrimitiveType()
+    public PrimitiveType getPrimitiveType()
     {
-        return primitive;
+        return primitiveType;
     }
 
     /**
@@ -185,7 +185,7 @@ public class EncodedDataType extends Type
             return 0;
         }
 
-        return primitive.size();
+        return primitiveType.size();
     }
 
     /**
@@ -207,13 +207,13 @@ public class EncodedDataType extends Type
     /**
      * The minValue of the type
      *
-     * @return value of the minValue primitive or type
+     * @return value of the minValue primitiveType or type
      */
     public PrimitiveValue getMinValue()
     {
         if (minValue == null)
         {
-            return primitive.minValue();
+            return primitiveType.minValue();
         }
 
         return minValue;
@@ -222,13 +222,13 @@ public class EncodedDataType extends Type
     /**
      * The maxValue of the type
      *
-     * @return value of the maxValue primitive or type
+     * @return value of the maxValue primitiveType or type
      */
     public PrimitiveValue getMaxValue()
     {
         if (maxValue == null)
         {
-            return primitive.maxValue();
+            return primitiveType.maxValue();
         }
 
         return maxValue;
@@ -237,13 +237,13 @@ public class EncodedDataType extends Type
     /**
      * The nullValue of the type
      *
-     * @return value of the nullValue primitive or type
+     * @return value of the nullValue primitiveType or type
      */
     public PrimitiveValue getNullValue()
     {
         if (nullValue == null)
         {
-            return primitive.nullValue();
+            return primitiveType.nullValue();
         }
 
         return nullValue;

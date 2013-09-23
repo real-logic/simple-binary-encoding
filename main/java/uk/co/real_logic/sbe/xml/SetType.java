@@ -18,7 +18,7 @@ package uk.co.real_logic.sbe.xml;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 
 import javax.xml.xpath.XPath;
@@ -34,7 +34,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 /** SBE setType */
 public class SetType extends Type
 {
-    private final Primitive encodingType;
+    private final PrimitiveType encodingType;
     private final Map<PrimitiveValue, Choice> choiceMap;
     private final Map<String, Choice> nameMap;
 
@@ -52,9 +52,9 @@ public class SetType extends Type
          * grab attributes from schema
          * - encodingType (required) - must be either uint8, uint16, uint32, or uint64
          */
-        encodingType = Primitive.lookup(getAttributeValue(node, "encodingType"));
-        if (encodingType != Primitive.UINT8 && encodingType != Primitive.UINT16 &&
-            encodingType != Primitive.UINT32 && encodingType != Primitive.UINT64)
+        encodingType = PrimitiveType.lookup(getAttributeValue(node, "encodingType"));
+        if (encodingType != PrimitiveType.UINT8 && encodingType != PrimitiveType.UINT16 &&
+            encodingType != PrimitiveType.UINT32 && encodingType != PrimitiveType.UINT64)
         {
             throw new IllegalArgumentException("unknown encodingType " + this.encodingType);
         }
@@ -84,7 +84,7 @@ public class SetType extends Type
         }
     }
 
-    public Primitive getEncodingType()
+    public PrimitiveType getEncodingType()
     {
         return encodingType;
     }
@@ -113,7 +113,7 @@ public class SetType extends Type
         private final String name;
         private final String description;
         private final PrimitiveValue value;
-        private final Primitive encodingType;
+        private final PrimitiveType encodingType;
 
         /**
          * Construct a Choice given the XML node and the encodingType
@@ -121,7 +121,7 @@ public class SetType extends Type
          * @param node         that contains the validValue
          * @param encodingType for the enum
          */
-        public Choice(final Node node, final Primitive encodingType)
+        public Choice(final Node node, final PrimitiveType encodingType)
         {
             this.encodingType = encodingType;
             name = getAttributeValue(node, "name");

@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -74,7 +74,7 @@ public class EncodedDataTypeTest
         assertThat(t.getName(), is("testType"));
         assertThat(t.getPresence(), is(Presence.REQUIRED));
         EncodedDataType d = (EncodedDataType)t;
-        assertThat(d.getPrimitiveType(), is(Primitive.CHAR));
+        assertThat(d.getPrimitiveType(), is(PrimitiveType.CHAR));
         assertThat(valueOf(d.getLength()), is(valueOf(1)));
         assertThat(valueOf(d.getVariableLength()), is(Boolean.FALSE));
     }
@@ -189,15 +189,15 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat(((EncodedDataType)map.get("testTypeChar")).getPrimitiveType(), is(Primitive.CHAR));
-        assertThat(((EncodedDataType)map.get("testTypeInt8")).getPrimitiveType(), is(Primitive.INT8));
-        assertThat(((EncodedDataType)map.get("testTypeInt16")).getPrimitiveType(), is(Primitive.INT16));
-        assertThat(((EncodedDataType)map.get("testTypeInt32")).getPrimitiveType(), is(Primitive.INT32));
-        assertThat(((EncodedDataType)map.get("testTypeInt64")).getPrimitiveType(), is(Primitive.INT64));
-        assertThat(((EncodedDataType)map.get("testTypeUInt8")).getPrimitiveType(), is(Primitive.UINT8));
-        assertThat(((EncodedDataType)map.get("testTypeUInt16")).getPrimitiveType(), is(Primitive.UINT16));
-        assertThat(((EncodedDataType)map.get("testTypeUInt32")).getPrimitiveType(), is(Primitive.UINT32));
-        assertThat(((EncodedDataType)map.get("testTypeUInt64")).getPrimitiveType(), is(Primitive.UINT64));
+        assertThat(((EncodedDataType)map.get("testTypeChar")).getPrimitiveType(), is(PrimitiveType.CHAR));
+        assertThat(((EncodedDataType)map.get("testTypeInt8")).getPrimitiveType(), is(PrimitiveType.INT8));
+        assertThat(((EncodedDataType)map.get("testTypeInt16")).getPrimitiveType(), is(PrimitiveType.INT16));
+        assertThat(((EncodedDataType)map.get("testTypeInt32")).getPrimitiveType(), is(PrimitiveType.INT32));
+        assertThat(((EncodedDataType)map.get("testTypeInt64")).getPrimitiveType(), is(PrimitiveType.INT64));
+        assertThat(((EncodedDataType)map.get("testTypeUInt8")).getPrimitiveType(), is(PrimitiveType.UINT8));
+        assertThat(((EncodedDataType)map.get("testTypeUInt16")).getPrimitiveType(), is(PrimitiveType.UINT16));
+        assertThat(((EncodedDataType)map.get("testTypeUInt32")).getPrimitiveType(), is(PrimitiveType.UINT32));
+        assertThat(((EncodedDataType)map.get("testTypeUInt64")).getPrimitiveType(), is(PrimitiveType.UINT64));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -330,7 +330,7 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypePresenceConst")).getConstantValue()), is(new PrimitiveValue(Primitive.CHAR, "F")));
+        assertThat((((EncodedDataType)map.get("testTypePresenceConst")).getConstantValue()), is(new PrimitiveValue(PrimitiveType.CHAR, "F")));
     }
 
     @Test
@@ -440,7 +440,7 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypeInt8MinValue")).getMinValue()), is(new PrimitiveValue(Primitive.INT8, minVal)));
+        assertThat((((EncodedDataType)map.get("testTypeInt8MinValue")).getMinValue()), is(new PrimitiveValue(PrimitiveType.INT8, minVal)));
     }
 
     @Test
@@ -454,7 +454,7 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypeInt8MaxValue")).getMaxValue()), is(new PrimitiveValue(Primitive.INT8, maxVal)));
+        assertThat((((EncodedDataType)map.get("testTypeInt8MaxValue")).getMaxValue()), is(new PrimitiveValue(PrimitiveType.INT8, maxVal)));
     }
 
     @Test
@@ -468,7 +468,7 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).getNullValue()), is(new PrimitiveValue(Primitive.INT8, nullVal)));
+        assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).getNullValue()), is(new PrimitiveValue(PrimitiveType.INT8, nullVal)));
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -79,10 +79,10 @@ public class SetTypeTest
         Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
         SetType e = (SetType)map.get("biOp");
         assertThat(e.getName(), is("biOp"));
-        assertThat(e.getEncodingType(), is(Primitive.UINT8));
+        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.getChoiceSet().size()), is(valueOf(2)));
-        assertThat(e.getChoice("Bit1").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "1")));
-        assertThat(e.getChoice("Bit0").getPrimitiveValue(), is(new PrimitiveValue(Primitive.UINT8, "0")));
+        assertThat(e.getChoice("Bit1").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "1")));
+        assertThat(e.getChoice("Bit0").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "0")));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class SetTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
         SetType e = (SetType)map.get("listed");
-        assertThat(e.getEncodingType(), is(Primitive.UINT8));
+        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
 
         int foundBit0 = 0, foundBit1 = 0, foundBit2 = 0, foundBit3 = 0, count = 0;
         for (Map.Entry<String, SetType.Choice> entry : e.getChoiceSet())

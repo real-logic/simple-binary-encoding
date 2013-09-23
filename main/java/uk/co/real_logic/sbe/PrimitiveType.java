@@ -22,7 +22,7 @@ package uk.co.real_logic.sbe;
  * <table>
  *     <thead>
  *         <tr>
- *             <th>Primitive Type</th>
+ *             <th>PrimitiveType Type</th>
  *             <th>Description</th>
  *             <th>Length (octets)</th>
  *         </tr>
@@ -76,7 +76,7 @@ package uk.co.real_logic.sbe;
  *     </tbody>
  * </table>
  */
-public enum Primitive
+public enum PrimitiveType
 {
     CHAR("char", 1, PrimitiveValue.MIN_VALUE_CHAR, PrimitiveValue.MAX_VALUE_CHAR, PrimitiveValue.NULL_VALUE_CHAR),
     INT8("int8", 1, PrimitiveValue.MIN_VALUE_INT8, PrimitiveValue.MAX_VALUE_INT8, PrimitiveValue.NULL_VALUE_INT8),
@@ -94,7 +94,7 @@ public enum Primitive
     private final PrimitiveValue maxValue;
     private final PrimitiveValue nullValue;
 
-    Primitive(final String name, final int size, final long minValue, final long maxValue, final long nullValue)
+    PrimitiveType(final String name, final int size, final long minValue, final long maxValue, final long nullValue)
     {
         this.name = name;
         this.size = size;
@@ -154,15 +154,15 @@ public enum Primitive
     }
 
     /**
-     * Lookup Primitive by String name and return Enum
+     * Lookup PrimitiveType by String name and return Enum
      *
      * @param value of primitiveType to lookup
-     * @return the {@link Primitive} matching the name
+     * @return the {@link PrimitiveType} matching the name
      * @throws IllegalArgumentException if name not found
      */
-    public static Primitive lookup(final String value)
+    public static PrimitiveType lookup(final String value)
     {
-        for (final Primitive p : values())
+        for (final PrimitiveType p : values())
         {
             if (value.equals(p.name))
             {

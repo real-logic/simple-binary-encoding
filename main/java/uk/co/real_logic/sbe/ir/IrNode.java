@@ -16,7 +16,7 @@
  */
 package uk.co.real_logic.sbe.ir;
 
-import uk.co.real_logic.sbe.Primitive;
+import uk.co.real_logic.sbe.PrimitiveType;
 
 import java.nio.ByteOrder;
 
@@ -40,7 +40,7 @@ public class IrNode
     /** Offset not computed or set */
     public static final int UNKNOWN_OFFSET = -1;
 
-    private final Primitive primitiveType;
+    private final PrimitiveType primitiveTypeType;
     private final int size;
     private final int offset;
     private final Metadata metadata;
@@ -55,13 +55,13 @@ public class IrNode
      * @param metadata      for the {@link uk.co.real_logic.sbe.xml.Message}.
      * @param byteOrder     for the encoding.
      */
-    public IrNode(final Primitive primitiveType,
+    public IrNode(final PrimitiveType primitiveType,
                   final int size,
                   final int offset,
                   final Metadata metadata,
                   final ByteOrder byteOrder)
     {
-        this.primitiveType = primitiveType;
+        this.primitiveTypeType = primitiveType;
         this.size = size;
         this.offset = offset;
         this.metadata = metadata;
@@ -75,16 +75,16 @@ public class IrNode
      */
     public IrNode(final Metadata metadata)
     {
-        this.primitiveType = null;
+        this.primitiveTypeType = null;
         this.size = 0;
         this.offset = 0;
         this.metadata = metadata;
         this.byteOrder = null;
     }
 
-    public Primitive getPrimitive()
+    public PrimitiveType getPrimitive()
     {
-        return primitiveType;
+        return primitiveTypeType;
     }
 
     public int size()
