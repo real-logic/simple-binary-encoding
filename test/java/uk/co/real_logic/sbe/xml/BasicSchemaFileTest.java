@@ -28,7 +28,7 @@ public class BasicSchemaFileTest
      * Return an InputStream suitable for XML parsing from a given filename. Will search CP.
      *
      * @param name of the XML file
-     * @return {@link java.io.InputStream} of the file
+     * @return {@link InputStream} of the file
      * @throws RuntimeException if file not found
      */
     public InputStream getLocalResource(final String name)

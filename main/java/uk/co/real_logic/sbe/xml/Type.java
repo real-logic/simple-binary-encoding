@@ -41,13 +41,6 @@ public class Type
      */
     public Type(final Node node, final TypeOfType type)
     {
-        /*
-         * Grab common field schema attributes
-         * - name (required)
-         * - presence (required by XSD to provide default)
-         * - fixUsage (optional - must be in type or message field)
-         * - description (optional)
-         */
         name = getXmlAttributeValue(node, "name");
         // The schema should set default, so "presence" should always be available, but let's set a default anyway
         presence = Presence.lookup(getXmlAttributeValue(node, "presence", "required"));

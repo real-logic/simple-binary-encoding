@@ -72,8 +72,8 @@ public class EnumTypeTest
         final String testXmlString =
             "<types>" +
             "<enum name=\"biOp\" encodingType=\"uint8\">" +
-            " <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
-            " <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
+            "    <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
+            "    <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
             "</enum>" +
             "</types>";
 
@@ -93,8 +93,8 @@ public class EnumTypeTest
         final String testXmlString =
             "<types>" +
             "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
-            " <validValue name=\"false\">0</validValue>" +
-            " <validValue name=\"true\">1</validValue>" +
+            "    <validValue name=\"false\">0</validValue>" +
+            "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
             "</types>";
 
@@ -115,8 +115,8 @@ public class EnumTypeTest
         final String testXmlString =
             "<types>" +
             "<enum name=\"optionalBoolean\" encodingType=\"uint8\" presence=\"optional\" nullValue=\"" + nullValueStr + "\" fixUsage=\"Boolean\">" +
-            " <validValue name=\"false\">0</validValue>" +
-            " <validValue name=\"true\">1</validValue>" +
+            "    <validValue name=\"false\">0</validValue>" +
+            "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
             "</types>";
 
@@ -137,9 +137,9 @@ public class EnumTypeTest
         final String testXmlString =
             "<types>" +
             "<enum name=\"triOp\" encodingType=\"uint8\">" +
-            " <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
-            " <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
-            " <validValue name=\"not-known\" description=\"switch is unknown\">2</validValue>" +
+            "    <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
+            "    <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
+            "    <validValue name=\"not-known\" description=\"switch is unknown\">2</validValue>" +
             "</enum>" +
             "</types>";
 
@@ -178,10 +178,10 @@ public class EnumTypeTest
         final String testXmlString =
             "<types>" +
             "<enum name=\"mixed\" encodingType=\"char\">" +
-            " <validValue name=\"Cee\">C</validValue>" +
-            " <validValue name=\"One\">1</validValue>" +
-            " <validValue name=\"Two\">2</validValue>" +
-            " <validValue name=\"Eee\">E</validValue>" +
+            "    <validValue name=\"Cee\">C</validValue>" +
+            "    <validValue name=\"One\">1</validValue>" +
+            "    <validValue name=\"Two\">2</validValue>" +
+            "    <validValue name=\"Eee\">E</validValue>" +
             "</enum>" +
             "</types>";
 
@@ -201,8 +201,8 @@ public class EnumTypeTest
         final String testXmlString =
             "<types>" +
             "<enum name=\"boolean\" encodingType=\"int64\" fixUsage=\"Boolean\">" +
-            " <validValue name=\"false\">0</validValue>" +
-            " <validValue name=\"true\">1</validValue>" +
+            "    <validValue name=\"false\">0</validValue>" +
+            "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
             "</types>";
 
@@ -216,9 +216,9 @@ public class EnumTypeTest
         final String testXmlString =
             "<types>" +
             "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
-            " <validValue name=\"false\">0</validValue>" +
-            " <validValue name=\"anotherFalse\">0</validValue>" +
-            " <validValue name=\"true\">1</validValue>" +
+            "    <validValue name=\"false\">0</validValue>" +
+            "    <validValue name=\"anotherFalse\">0</validValue>" +
+            "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
             "</types>";
 
@@ -232,9 +232,9 @@ public class EnumTypeTest
         final String testXmlString =
             "<types>" +
             "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
-            " <validValue name=\"false\">0</validValue>" +
-            " <validValue name=\"false\">2</validValue>" +
-            " <validValue name=\"true\">1</validValue>" +
+            "    <validValue name=\"false\">0</validValue>" +
+            "    <validValue name=\"false\">2</validValue>" +
+            "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
             "</types>";
 

@@ -108,7 +108,7 @@ public enum Primitive
     }
 
     /**
-     * Lookup name of Primitive and return enum
+     * Lookup Primitive by String name and return Enum
      *
      * @param value of primitiveType to lookup
      * @return the {@link Primitive} matching the name

@@ -107,7 +107,7 @@ public class CompositeType extends Type
     /**
      * Return list of the EncodedDataTypes that compose this composite
      *
-     * @return {@link java.util.List} that holds the types in this composite
+     * @return {@link List} that holds the types in this composite
      */
     public List<EncodedDataType> getTypeList()
     {

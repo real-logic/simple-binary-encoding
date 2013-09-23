@@ -64,8 +64,8 @@ public class CompositeTypeTest
         final String testXmlString =
             "<types>" +
             "<composite name=\"decimal\">" +
-            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "  <type name=\"exponent\" primitiveType=\"int8\"/>" +
+            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+            "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
             "</composite>" +
             "</types>";
 
@@ -84,8 +84,8 @@ public class CompositeTypeTest
         final String testXmlString =
             "<types>" +
             "<composite name=\"decimal32\">" +
-            "  <type name=\"mantissa\" primitiveType=\"int32\"/>" +
-            "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
+            "    <type name=\"mantissa\" primitiveType=\"int32\"/>" +
+            "    <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
             "</composite>" +
             "</types>";
 
@@ -106,8 +106,8 @@ public class CompositeTypeTest
         final String testXmlString =
             "<types>" +
             "<composite name=\"decimal64\">" +
-            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "  <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
+            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+            "    <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
             "</composite>" +
             "</types>";
 
@@ -128,8 +128,8 @@ public class CompositeTypeTest
         final String testXmlString =
             "<types>" +
             "<composite name=\"decimal\">" +
-            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "  <type name=\"exponent\" primitiveType=\"int8\"/>" +
+            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+            "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
             "</composite>" +
             "</types>";
 
@@ -148,8 +148,8 @@ public class CompositeTypeTest
         final String testXmlString =
             "<types>" +
             "<composite name=\"PRICENULL\" description=\"Price NULL\" fixUsage=\"Price\">" +
-            " <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" + nullValueStr + "\" primitiveType=\"int64\"/>" +
-            " <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">-7</type>" +
+            "    <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" + nullValueStr + "\" primitiveType=\"int64\"/>" +
+            "    <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">-7</type>" +
             "</composite>" +
             "</types>";
 
@@ -165,9 +165,9 @@ public class CompositeTypeTest
         final String testXmlString =
             "<types>" +
             "<composite name=\"decimal\">" +
-            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "  <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "  <type name=\"exponent\" primitiveType=\"int8\"/>" +
+            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+            "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
             "</composite>" +
             "</types>";
 

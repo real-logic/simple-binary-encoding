@@ -38,43 +38,39 @@ public class IrNode
     /** Offset not computed or set */
     public static final int UNKNOWN_OFFSET = -1;
 
-    /** how to encode field */
     private final Primitive primitiveType;
-
-    /** Size of field */
     private final int size;
-
-    /** Offset of field from start of buffer */
     private final int offset;
-
-    /** Meta Data associated with node */
-    private final MetaData metaData;
-
-    /** byteOrder of the data */
+    private final Metadata metadata;
     private final ByteOrder byteOrder;
 
     /**
-     * Construct an IrNode
+     * Construct an {@link IrNode} by providing values for all fields.
      */
     public IrNode(final Primitive primitiveType, 
                   final int size, 
                   final int offset, 
-                  final MetaData metaData,
+                  final Metadata metadata,
                   final ByteOrder byteOrder)
     {
         this.primitiveType = primitiveType;
         this.size = size;
         this.offset = offset;
-        this.metaData = metaData;
+        this.metadata = metadata;
         this.byteOrder = byteOrder;
     }
 
-    public IrNode(final MetaData metaData)
+    /**
+     * Construct a default {@link IrNode} based on {@link uk.co.real_logic.sbe.ir.IrNode.Metadata} with defaults for other fields.
+     *
+     * @param metadata for this node.
+     */
+    public IrNode(final Metadata metadata)
     {
         this.primitiveType = null;
         this.size = 0;
         this.offset = 0;
-        this.metaData = metaData;
+        this.metadata = metadata;
         this.byteOrder = null;
     }
 
@@ -93,9 +89,9 @@ public class IrNode
         return offset;
     }
 
-    public MetaData getMetaData()
+    public Metadata getMetadata()
     {
-        return metaData;
+        return metadata;
     }
 
     public ByteOrder getByteOrder()
@@ -117,10 +113,11 @@ public class IrNode
     }
 
     /**
-     * class to encapsulate IrNode metadata
+     * Metadata describing an {@link IrNode}
      */
-    public static class MetaData
+    public static class Metadata
     {
+        /** Invalid ID value */
         public static final long INVALID_ID = Long.MAX_VALUE;
 
         private final String name;
@@ -151,7 +148,7 @@ public class IrNode
          * GROUP_END - 
          */
         
-        public MetaData(final String name,
+        public Metadata(final String name,
                         final long id,
                         final long irId,
                         final Flag flag)

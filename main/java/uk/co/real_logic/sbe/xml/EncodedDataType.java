@@ -71,7 +71,7 @@ public class EncodedDataType extends Type
             this.constValue = null; /* this value is invalid unless presence is constant */
         }
 
-        /**
+        /*
          * NullValue, MinValue, MaxValue
          * - if the schema overrides the primitives values, then save the values here. Else, we use the Primitive min/max/null
          */

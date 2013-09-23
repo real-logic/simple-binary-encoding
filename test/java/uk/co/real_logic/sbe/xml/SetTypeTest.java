@@ -71,8 +71,8 @@ public class SetTypeTest
         final String testXmlString =
             "<types>" +
             "<set name=\"biOp\" encodingType=\"uint8\">" +
-            " <choice name=\"Bit0\" description=\"Bit 0\">0</choice>" +
-            " <choice name=\"Bit1\" description=\"Bit 1\">1</choice>" +
+            "    <choice name=\"Bit0\" description=\"Bit 0\">0</choice>" +
+            "    <choice name=\"Bit1\" description=\"Bit 1\">1</choice>" +
             "</set>" +
             "</types>";
 
@@ -92,10 +92,10 @@ public class SetTypeTest
         final String testXmlString =
             "<types>" +
             "<set name=\"listed\" encodingType=\"uint8\">" +
-            " <choice name=\"Bit0\">0</choice>" +
-            " <choice name=\"Bit1\">1</choice>" +
-            " <choice name=\"Bit2\">2</choice>" +
-            " <choice name=\"Bit3\">3</choice>" +
+            "    <choice name=\"Bit0\">0</choice>" +
+            "    <choice name=\"Bit1\">1</choice>" +
+            "    <choice name=\"Bit2\">2</choice>" +
+            "    <choice name=\"Bit3\">3</choice>" +
             "</set>" +
             "</types>";
 
@@ -138,8 +138,8 @@ public class SetTypeTest
         final String testXmlString =
             "<types>" +
             "<set name=\"biOp\" encodingType=\"char\">" +
-            " <choice name=\"Bit0\">0</choice>" +
-            " <choice name=\"Bit1\">1</choice>" +
+            "    <choice name=\"Bit0\">0</choice>" +
+            "    <choice name=\"Bit1\">1</choice>" +
             "</set>" +
             "</types>";
 
@@ -153,8 +153,8 @@ public class SetTypeTest
         final String testXmlString =
             "<types>" +
             "<set name=\"biOp\" encodingType=\"uint8\">" +
-            " <choice name=\"Bit0\">0</choice>" +
-            " <choice name=\"AnotherBit0\">0</choice>" +
+            "    <choice name=\"Bit0\">0</choice>" +
+            "    <choice name=\"AnotherBit0\">0</choice>" +
             "</set>" +
             "</types>";
 
@@ -168,8 +168,8 @@ public class SetTypeTest
         final String testXmlString =
             "<types>" +
             "<set name=\"biOp\" encodingType=\"uint8\">" +
-            " <choice name=\"Bit0\">0</choice>" +
-            " <choice name=\"Bit0\">1</choice>" +
+            "    <choice name=\"Bit0\">0</choice>" +
+            "    <choice name=\"Bit0\">1</choice>" +
             "</set>" +
             "</types>";
 
@@ -183,8 +183,8 @@ public class SetTypeTest
         final String testXmlString =
             "<types>" +
             "<set name=\"biOp\" encodingType=\"uint8\">" +
-            " <choice name=\"Bit0\">0</choice>" +
-            " <choice name=\"Bit100\">100</choice>" +
+            "    <choice name=\"Bit0\">0</choice>" +
+            "    <choice name=\"Bit100\">100</choice>" +
             "</set>" +
             "</types>";
 

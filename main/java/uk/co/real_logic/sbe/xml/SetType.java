@@ -101,7 +101,7 @@ public class SetType extends Type
         return nameMap.get(name);
     }
 
-    /**
+    /*
      * TODO: can iterate like (Map.Entry<String, Choice> entry : EnumType.getChoiceSet()) with this
      */
     public Set<Map.Entry<String, Choice>> getChoiceSet()
@@ -127,21 +127,15 @@ public class SetType extends Type
          */
         public Choice(final Node node, final Primitive encodingType)
         {
-            /**
-             * attrs: name(required), description(optional)
-             * value: the value of the Choice
-             */
             this.encodingType = encodingType;
             name = getXmlAttributeValue(node, "name");
             description = getXmlAttributeValueOrNull(node, "description");
             value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());
 
-            /**
-             * choice values are bit positions (0, 1, 2, 3, 4, etc.) from LSB to MSB
-             */
+            // choice values are bit positions (0, 1, 2, 3, 4, etc.) from LSB to MSB
             if (value.longValue() >= (encodingType.size() * 8))
             {
-                throw new IllegalArgumentException("choice value out of bounds: " + this.value.longValue());
+                throw new IllegalArgumentException("Choice value out of bounds: " + this.value.longValue());
             }
         }
 
