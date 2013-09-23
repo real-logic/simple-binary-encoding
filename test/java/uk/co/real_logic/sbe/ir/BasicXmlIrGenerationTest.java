@@ -72,7 +72,7 @@ public class BasicXmlIrGenerationTest
         /* assert all elements of node 1 */
         assertThat(ir.get(1).getMetadata().getFlag(), is(IrNode.Flag.NONE));
         assertThat(ir.get(1).getMetadata().getName(), is("blockLength"));
-        assertThat(ir.get(1).getPrimitive(), is(PrimitiveType.UINT16));
+        assertThat(ir.get(1).getPrimitiveType(), is(PrimitiveType.UINT16));
         assertThat(valueOf(ir.get(1).getMetadata().getId()), is(valueOf(IrNode.Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(1).size()), is(valueOf(2)));
         assertThat(valueOf(ir.get(1).getOffset()), is(valueOf(0)));
@@ -80,7 +80,7 @@ public class BasicXmlIrGenerationTest
         /* assert all elements of node 2 */
         assertThat(ir.get(2).getMetadata().getFlag(), is(IrNode.Flag.NONE));
         assertThat(ir.get(2).getMetadata().getName(), is("templateId"));
-        assertThat(ir.get(2).getPrimitive(), is(PrimitiveType.UINT16));
+        assertThat(ir.get(2).getPrimitiveType(), is(PrimitiveType.UINT16));
         assertThat(valueOf(ir.get(2).getMetadata().getId()), is(valueOf(IrNode.Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(2).size()), is(valueOf(2)));
         assertThat(valueOf(ir.get(2).getOffset()), is(valueOf(2)));
@@ -88,7 +88,7 @@ public class BasicXmlIrGenerationTest
         /* assert all elements of node 3 */
         assertThat(ir.get(3).getMetadata().getFlag(), is(IrNode.Flag.NONE));
         assertThat(ir.get(3).getMetadata().getName(), is("version"));
-        assertThat(ir.get(3).getPrimitive(), is(PrimitiveType.UINT8));
+        assertThat(ir.get(3).getPrimitiveType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(ir.get(3).getMetadata().getId()), is(valueOf(IrNode.Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(3).size()), is(valueOf(1)));
         assertThat(valueOf(ir.get(3).getOffset()), is(valueOf(4)));
@@ -96,7 +96,7 @@ public class BasicXmlIrGenerationTest
         /* assert all elements of node 4 */
         assertThat(ir.get(4).getMetadata().getFlag(), is(IrNode.Flag.NONE));
         assertThat(ir.get(4).getMetadata().getName(), is("reserved"));
-        assertThat(ir.get(4).getPrimitive(), is(PrimitiveType.UINT8));
+        assertThat(ir.get(4).getPrimitiveType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(ir.get(4).getMetadata().getId()), is(valueOf(IrNode.Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(4).size()), is(valueOf(1)));
         assertThat(valueOf(ir.get(4).getOffset()), is(valueOf(5)));
@@ -137,7 +137,7 @@ public class BasicXmlIrGenerationTest
         /* assert all elements of node 2 */
         assertThat(ir.get(2).getMetadata().getFlag(), is(IrNode.Flag.NONE));
         assertThat(ir.get(2).getMetadata().getName(), is("uint32"));
-        assertThat(ir.get(2).getPrimitive(), is(PrimitiveType.UINT32));
+        assertThat(ir.get(2).getPrimitiveType(), is(PrimitiveType.UINT32));
         assertThat(valueOf(ir.get(2).getMetadata().getId()), is(valueOf(IrNode.Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(2).size()), is(valueOf(4)));
         assertThat(valueOf(ir.get(2).getOffset()), is(valueOf(0)));
