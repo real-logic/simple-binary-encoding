@@ -161,7 +161,7 @@ public class PrimitiveValue
      */
     public int hashCode()
     {
-        return (int)(longValue ^ (longValue>>> 32));
+        return (int)(longValue ^ (longValue >>> 32));
     }
 
     /**
