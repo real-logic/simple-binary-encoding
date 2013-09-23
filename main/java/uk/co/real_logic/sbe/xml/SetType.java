@@ -131,7 +131,7 @@ public class SetType extends Type
             // choice values are bit positions (0, 1, 2, 3, 4, etc.) from LSB to MSB
             if (value.longValue() >= (encodingType.size() * 8))
             {
-                throw new IllegalArgumentException("Choice value out of bounds: " + this.value.longValue());
+                throw new IllegalArgumentException("Choice value out of bounds: " + value.longValue());
             }
         }
 
