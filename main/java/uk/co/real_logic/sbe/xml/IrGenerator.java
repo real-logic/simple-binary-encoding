@@ -123,7 +123,7 @@ public class IrGenerator
         {
             builder.setFixUsage(field.getFixUsage().getName());
         }
-        else if (field.getType().getFixUsage() != null)
+        else if (field.getType() != null && field.getType().getFixUsage() != null)
         {
             builder.setFixUsage(field.getType().getFixUsage().getName());
         }

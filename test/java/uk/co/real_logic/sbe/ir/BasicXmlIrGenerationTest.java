@@ -216,6 +216,30 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(7).getOffset()), is(valueOf(0)));
     }
 
+    @Test
+    public void shouldGenerateCorrectIrForMessageWithRepeatingGroup()
+        throws Exception
+    {
+        MessageSchema schema = parse(getLocalResource("BasicGroupSchemaFileTest.xml"));
+        IrGenerator irg = new IrGenerator();
+
+        List<IrNode> ir = irg.generateForMessage(schema.getMessage(1));
+
+        /* assert the NoEntries node has the right IrId and xRefIrId, etc. */
+        assertThat(ir.get(4).getMetadata().getFlag(), is(IrNode.Flag.FIELD_START));
+        assertThat(ir.get(4).getMetadata().getName(), is("NoEntries"));
+        assertThat(valueOf(ir.get(4).getMetadata().getId()), is(valueOf(2L)));
+        assertThat(valueOf(ir.get(4).getMetadata().getIrId()), is(valueOf(1L)));
+        assertThat(valueOf(ir.get(4).getMetadata().getXRefIrId()), is(valueOf(2L)));
+        assertThat(ir.get(4).getMetadata().getFixUsage(), is("NumInGroup"));
+
+        /* assert the group node has the right IrId and xRefIrId, etc. */
+        assertThat(ir.get(7).getMetadata().getFlag(), is(IrNode.Flag.GROUP_START));
+        assertThat(ir.get(7).getMetadata().getName(), is("Entries"));
+        assertThat(valueOf(ir.get(7).getMetadata().getIrId()), is(valueOf(2L)));
+        assertThat(valueOf(ir.get(7).getMetadata().getXRefIrId()), is(valueOf(1L)));
+    }
+
     private static InputStream getLocalResource(final String name)
     {
         InputStream in = BasicXmlIrGenerationTest.class.getClassLoader().getResourceAsStream(name);
