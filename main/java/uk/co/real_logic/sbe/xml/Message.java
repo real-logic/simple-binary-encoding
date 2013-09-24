@@ -223,6 +223,14 @@ public class Message
     }
 
     /**
+     * The fixMsgType of the message (if set) or null
+     */
+    public String getFixMsgType()
+    {
+        return fixMsgType;
+    }
+
+    /**
      * Return the list of fields in the message
      *
      * @return {@link java.util.List} of the Field objects in this Message
@@ -414,6 +422,11 @@ public class Message
         public int getXRefIrId()
         {
             return xRefIrId;
+        }
+
+        public FixUsage getFixUsage()
+        {
+            return fixUsage;
         }
     }
 }

@@ -241,119 +241,26 @@ public class IrNode
         private final PrimitiveValue nullValue;
         private final PrimitiveValue constValue;
         private final String description;
+        private final String fixUsage;
 
         /**
-         * Default constructor that is used for START/END nodes.
+         * Constructor that uses a builder
          *
-         * @param name        of the type, field, message, etc.
-         * @param id          of the type, field, message, etc.
-         * @param irId        of the IrNode.
-         * @param xRefIrId    of the IrNode this node cross references to.
-         * @param flag        representing the flag for the metadata of the IrNode.
-         * @param description representing the type, field, message, etc.
+         * @param builder to use to build the metadata
          */
-        public Metadata(final String name,
-                        final long id,
-                        final long irId,
-                        final long xRefIrId,
-                        final Flag flag,
-                        final String description)
+        public Metadata(final Builder builder)
         {
-            this.name = name;
-            this.id = id;
-            this.irId = irId;
-            this.xRefIrId = xRefIrId;
-            this.flag = flag;
-            minValue = null;
-            maxValue = null;
-            nullValue = null;
-            constValue = null;
-            this.description = description;
-        }
-
-        /**
-         * Constructor that is used for {@link uk.co.real_logic.sbe.xml.Presence#REQUIRED} encoding nodes.
-         *
-         * @param name     of the type.
-         * @param minValue of the type or null.
-         * @param maxValue of the type or null.
-         */
-        public Metadata(final String name, final PrimitiveValue minValue, final PrimitiveValue maxValue)
-        {
-            this.name = name;
-            id = INVALID_ID;
-            irId = INVALID_ID;
-            xRefIrId = INVALID_ID;
-            flag = IrNode.Flag.NONE;
-            this.minValue = minValue;
-            this.maxValue = maxValue;
-            nullValue = null;
-            constValue = null;
-            description = null;
-        }
-
-        /**
-         * Constructor that is used for {@link uk.co.real_logic.sbe.xml.Presence#OPTIONAL} encoding nodes.
-         *
-         * @param name       of the type.
-         * @param minValue   of the type or null.
-         * @param maxValue   of the type or null.
-         * @param nullValue  of the type.
-         */
-        public Metadata(final String name, final PrimitiveValue minValue, final PrimitiveValue maxValue, final PrimitiveValue nullValue)
-        {
-            this.name = name;
-            id = INVALID_ID;
-            irId = INVALID_ID;
-            xRefIrId = INVALID_ID;
-            flag = IrNode.Flag.NONE;
-            this.minValue = minValue;
-            this.maxValue = maxValue;
-            this.nullValue = nullValue;
-            constValue = null;
-            description = null;
-        }
-
-        /**
-         * Constructor that is used for {@link uk.co.real_logic.sbe.xml.Presence#CONSTANT} encoding nodes.
-         *
-         * @param name       of the type.
-         * @param constValue of the type.
-         */
-        public Metadata(final String name, final PrimitiveValue constValue)
-        {
-            this.name = name;
-            id = INVALID_ID;
-            irId = INVALID_ID;
-            xRefIrId = INVALID_ID;
-            flag = IrNode.Flag.NONE;
-            minValue = null;
-            maxValue = null;
-            nullValue = null;
-            this.constValue = constValue;
-            description = null;
-        }
-
-        /**
-         * Constructor that is used for enum ValidValue entries as well as set choice entries
-         *
-         * @param name        of the validValue or choice
-         * @param description of the validValue of choice
-         * @param value       of the validValue or choice
-         * @param flag        of this value for Enum vs. Set determination
-         */
-        public Metadata(final String name, final String description, final PrimitiveValue value, final IrNode.Flag flag)
-        {
-            this.name = name;
-            id = INVALID_ID;
-            irId = INVALID_ID;
-            xRefIrId = INVALID_ID;
-            this.flag = flag;
-            minValue = null;
-            maxValue = null;
-            nullValue = null;
-            constValue = value; // we overload constValue to hold this
-            this.description = description;
+            name = builder.name;
+            id = builder.id;
+            irId = builder.irId;
+            xRefIrId = builder.xRefIrId;
+            flag = builder.flag;
+            minValue = builder.minValue;
+            maxValue = builder.maxValue;
+            nullValue = builder.nullValue;
+            constValue = builder.constValue;
+            description = builder.description;
+            fixUsage = builder.fixUsage;
         }
 
         /**
@@ -434,6 +341,89 @@ public class IrNode
         public String getDescription()
         {
             return description;
+        }
+
+        /**
+         * Builder to make setting {@link IrNode.Metadata} easier to create.
+         */
+        public static class Builder
+        {
+            private String name;
+            private long id;
+            private long irId;
+            private long xRefIrId;
+            private Flag flag;
+            private PrimitiveValue minValue;
+            private PrimitiveValue maxValue;
+            private PrimitiveValue nullValue;
+            private PrimitiveValue constValue;
+            private String description;
+            private String fixUsage;
+
+            public Builder(final String name)
+            {
+                this.name = name;
+                id = Metadata.INVALID_ID;
+                irId = Metadata.INVALID_ID;
+                xRefIrId = Metadata.INVALID_ID;
+                this.flag = Flag.NONE;
+                minValue = null;
+                maxValue = null;
+                nullValue = null;
+                constValue = null;
+                description = null;
+                fixUsage = null;
+            }
+
+            public void setId(final long id)
+            {
+                this.id = id;
+            }
+
+            public void setIrId(final long irId)
+            {
+                this.irId = irId;
+            }
+
+            public void setXRefIrId(final long xRefIrId)
+            {
+                this.xRefIrId = xRefIrId;
+            }
+
+            public void setFlag(final Flag flag)
+            {
+                this.flag = flag;
+            }
+
+            public void setMinValue(final PrimitiveValue minValue)
+            {
+                this.minValue = minValue;
+            }
+
+            public void setMaxValue(final PrimitiveValue maxValue)
+            {
+                this.maxValue = maxValue;
+            }
+
+            public void setNullValue(final PrimitiveValue nullValue)
+            {
+                this.nullValue = nullValue;
+            }
+
+            public void setConstValue(final PrimitiveValue constValue)
+            {
+                this.constValue = constValue;
+            }
+
+            public void setDescription(final String description)
+            {
+                this.description = description;
+            }
+
+            public void setFixUsage(final String fixUsage)
+            {
+                this.fixUsage = fixUsage;
+            }
         }
     }
 }
