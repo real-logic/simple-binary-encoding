@@ -32,25 +32,6 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 public class BasicXmlIrGenerationTest
 {
-    /**
-     * Return an InputStream suitable for XML parsing from a given filename. Will search CP.
-     *
-     * @param name of the XML file
-     * @return {@link java.io.InputStream} of the file
-     * @throws RuntimeException if file not found
-     */
-    public InputStream getLocalResource(final String name)
-    {
-        InputStream in = this.getClass().getClassLoader().getResourceAsStream(name);
-
-        if (in == null)
-        {
-            throw new RuntimeException("could not find " + name);
-        }
-
-        return in;
-    }
-
     @Test
     public void shouldGenerateCorrectIrForMessageHeader()
         throws Exception
@@ -155,5 +136,17 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(4).getMetadata().getId()), is(valueOf(50001L)));
         assertThat(valueOf(ir.get(4).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(4).getOffset()), is(valueOf(0)));
+    }
+
+    private static InputStream getLocalResource(final String name)
+    {
+        InputStream in = BasicXmlIrGenerationTest.class.getClassLoader().getResourceAsStream(name);
+
+        if (in == null)
+        {
+            throw new RuntimeException("could not find " + name);
+        }
+
+        return in;
     }
 }
