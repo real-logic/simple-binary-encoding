@@ -23,7 +23,6 @@ import uk.co.real_logic.sbe.ir.IrNode;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Class to hold all the state while generating the {@link IrNode} list.
@@ -213,9 +212,9 @@ public class IrGenerator
         irNodeList.add(new IrNode(encodingType, encodingType.size(), currentOffset, byteOrder, md));
 
         /* loop over values and add each as an IrNode */
-        for (final Map.Entry<String, SetType.Choice> entry : type.getChoiceSet())
+        for (final SetType.Choice choice : type.getChoices())
         {
-            add(entry.getValue());
+            add(choice);
         }
 
         addStartOrEndNode(type, IrNode.Flag.SET_END);

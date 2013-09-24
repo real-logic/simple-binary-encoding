@@ -25,11 +25,12 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
 /** SBE setType */
 public class SetType extends Type
@@ -96,12 +97,9 @@ public class SetType extends Type
         return choiceByNameMap.get(name);
     }
 
-    /*
-     * TODO: can iterate like (Map.Entry<String, Choice> entry : EnumType.getChoiceSet()) with this
-     */
-    public Set<Map.Entry<String, Choice>> getChoiceSet()
+    public Collection<Choice> getChoices()
     {
-        return choiceByNameMap.entrySet();
+        return choiceByNameMap.values();
     }
 
     /** Class to hold valid values for EnumType */

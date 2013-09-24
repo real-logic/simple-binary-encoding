@@ -54,13 +54,14 @@ public class SetTypeTest
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-        Map<String, Type> map = new HashMap<String, Type>();
+        Map<String, Type> map = new HashMap<>();
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             Type t = new SetType(list.item(i));
             map.put(t.getName(), t);
         }
+
         return map;
     }
 
@@ -80,7 +81,7 @@ public class SetTypeTest
         SetType e = (SetType)map.get("biOp");
         assertThat(e.getName(), is("biOp"));
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.getChoiceSet().size()), is(valueOf(2)));
+        assertThat(valueOf(e.getChoices().size()), is(valueOf(2)));
         assertThat(e.getChoice("Bit1").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "1")));
         assertThat(e.getChoice("Bit0").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "0")));
     }
@@ -104,26 +105,27 @@ public class SetTypeTest
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
 
         int foundBit0 = 0, foundBit1 = 0, foundBit2 = 0, foundBit3 = 0, count = 0;
-        for (Map.Entry<String, SetType.Choice> entry : e.getChoiceSet())
+        for (final SetType.Choice choice : e.getChoices())
         {
-            if (entry.getKey().equals("Bit0"))
+            if (choice.getName().equals("Bit0"))
             {
                 foundBit0++;
             }
-            else if (entry.getKey().equals("Bit1"))
+            else if (choice.getName().equals("Bit1"))
             {
                 foundBit1++;
             }
-            else if (entry.getKey().equals("Bit2"))
+            else if (choice.getName().equals("Bit2"))
             {
                 foundBit2++;
             }
-            else if (entry.getKey().equals("Bit3"))
+            else if (choice.getName().equals("Bit3"))
             {
                 foundBit3++;
             }
             count++;
         }
+
         assertThat(valueOf(count), is(valueOf(4)));
         assertThat(valueOf(foundBit0), is(valueOf(1)));
         assertThat(valueOf(foundBit1), is(valueOf(1)));
