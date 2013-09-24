@@ -112,6 +112,7 @@ public class BasicXmlIrGenerationTest
         assertThat(ir.get(1).getMetadata().getFlag(), is(IrNode.Flag.FIELD_START));
         assertThat(ir.get(1).getMetadata().getName(), is("Tag40001"));
         assertThat(valueOf(ir.get(1).getMetadata().getId()), is(valueOf(40001L)));
+        assertThat(ir.get(1).getMetadata().getFixUsage(), is("int"));
         assertThat(valueOf(ir.get(1).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(1).getOffset()), is(valueOf(0)));
 

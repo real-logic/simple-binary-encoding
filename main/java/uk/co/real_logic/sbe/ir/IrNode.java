@@ -344,6 +344,14 @@ public class IrNode
         }
 
         /**
+         * Return the fixUsage value for the node or null it not set.
+         */
+        public String getFixUsage()
+        {
+            return fixUsage;
+        }
+
+        /**
          * Builder to make setting {@link IrNode.Metadata} easier to create.
          */
         public static class Builder

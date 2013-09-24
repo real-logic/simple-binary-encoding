@@ -278,7 +278,7 @@ public class IrGenerator
         }
         else if (type.getPresence() == Presence.CONSTANT)
         {
-            builder.setConstValue(type.getConstantValue());
+            builder.setConstValue(type.getConstValue());
         }
 
         irNodeList.add(new IrNode(type.getPrimitiveType(), type.size(), currentOffset, byteOrder, new IrNode.Metadata(builder)));

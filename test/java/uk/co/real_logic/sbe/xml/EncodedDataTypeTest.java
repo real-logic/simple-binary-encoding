@@ -330,7 +330,7 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypePresenceConst")).getConstantValue()), is(new PrimitiveValue(PrimitiveType.CHAR, "F")));
+        assertThat((((EncodedDataType)map.get("testTypePresenceConst")).getConstValue()), is(new PrimitiveValue(PrimitiveType.CHAR, "F")));
     }
 
     @Test

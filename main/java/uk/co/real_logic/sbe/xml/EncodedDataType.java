@@ -16,6 +16,7 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import uk.co.real_logic.sbe.ir.IrNode;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 
@@ -178,9 +179,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The size (in octets) of the primitiveType
+     * The size (in octets) of the encoding
      *
-     * @return size of the primitiveType
+     * @return size of the encoding
      */
     public int size()
     {
@@ -189,7 +190,12 @@ public class EncodedDataType extends Type
             return 0;
         }
 
-        return primitiveType.size();
+        if (varLen)
+        {
+            return IrNode.VARIABLE_SIZE;
+        }
+
+        return (primitiveType.size() * length);
     }
 
     /**
@@ -197,7 +203,7 @@ public class EncodedDataType extends Type
      *
      * @return value of the constant for this type
      */
-    public PrimitiveValue getConstantValue()
+    public PrimitiveValue getConstValue()
         throws IllegalArgumentException
     {
         if (getPresence() != Presence.CONSTANT)

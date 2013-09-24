@@ -95,7 +95,7 @@ public class CompositeTypeTest
         assertThat(decimal32.getType("mantissa").getPrimitiveType(), is(PrimitiveType.INT32));
         assertThat(decimal32.getType("exponent").getPrimitiveType(), is(PrimitiveType.INT8));
         assertThat(decimal32.getType("exponent").getPresence(), is(Presence.CONSTANT));
-        assertThat((decimal32.getType("exponent")).getConstantValue(), is(new PrimitiveValue(PrimitiveType.INT8, "-2")));
+        assertThat((decimal32.getType("exponent")).getConstValue(), is(new PrimitiveValue(PrimitiveType.INT8, "-2")));
         assertThat(valueOf(decimal32.size()), is(valueOf(4)));
     }
 
@@ -117,7 +117,7 @@ public class CompositeTypeTest
         assertThat(decimal64.getType("mantissa").getPrimitiveType(), is(PrimitiveType.INT64));
         assertThat(decimal64.getType("exponent").getPrimitiveType(), is(PrimitiveType.INT8));
         assertThat(decimal64.getType("exponent").getPresence(), is(Presence.CONSTANT));
-        assertThat((decimal64.getType("exponent")).getConstantValue(), is(new PrimitiveValue(PrimitiveType.INT8, "-2")));
+        assertThat((decimal64.getType("exponent")).getConstValue(), is(new PrimitiveValue(PrimitiveType.INT8, "-2")));
         assertThat(valueOf(decimal64.size()), is(valueOf(8)));
     }
 
