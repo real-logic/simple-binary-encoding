@@ -123,6 +123,10 @@ public class IrGenerator
         {
             builder.setFixUsage(field.getFixUsage().getName());
         }
+        else if (field.getType().getFixUsage() != null)
+        {
+            builder.setFixUsage(field.getType().getFixUsage().getName());
+        }
 
         irNodeList.add(new IrNode(new IrNode.Metadata(builder)));
     }

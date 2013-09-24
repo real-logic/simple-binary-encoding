@@ -139,6 +139,83 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(4).getOffset()), is(valueOf(0)));
     }
 
+    @Test
+    public void shouldGenerateCorrectIrForMessageWithVariableLengthField()
+        throws Exception
+    {
+        MessageSchema schema = parse(getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
+        IrGenerator irg = new IrGenerator();
+
+        List<IrNode> ir = irg.generateForMessage(schema.getMessage(1));
+
+        assertThat(valueOf(ir.size()), is(valueOf(8)));
+
+        /* assert all elements of node 0 */
+        assertThat(ir.get(0).getMetadata().getFlag(), is(IrNode.Flag.MESSAGE_START));
+        assertThat(ir.get(0).getMetadata().getName(), is("TestMessage1"));
+        assertThat(valueOf(ir.get(0).getMetadata().getId()), is(valueOf(1L)));
+        assertThat(valueOf(ir.get(0).getMetadata().getIrId()), is(valueOf(0L)));
+        assertThat(valueOf(ir.get(0).size()), is(valueOf(0)));
+        assertThat(valueOf(ir.get(0).getOffset()), is(valueOf(0)));
+
+        /* assert all elements of node 1 */
+        assertThat(ir.get(1).getMetadata().getFlag(), is(IrNode.Flag.FIELD_START));
+        assertThat(ir.get(1).getMetadata().getName(), is("EncryptedNewPasswordLen"));
+        assertThat(valueOf(ir.get(1).getMetadata().getId()), is(valueOf(1403L)));
+        assertThat(valueOf(ir.get(1).getMetadata().getIrId()), is(valueOf(1L)));
+        assertThat(valueOf(ir.get(1).getMetadata().getXRefIrId()), is(valueOf(2L)));
+        assertThat(ir.get(1).getMetadata().getFixUsage(), is("Length"));
+        assertThat(valueOf(ir.get(1).size()), is(valueOf(0)));
+        assertThat(valueOf(ir.get(1).getOffset()), is(valueOf(0)));
+
+        /* assert all elements of node 2 */
+        assertThat(ir.get(2).getMetadata().getFlag(), is(IrNode.Flag.NONE));
+        assertThat(ir.get(2).getMetadata().getName(), is("length"));
+        assertThat(ir.get(2).getPrimitiveType(), is(PrimitiveType.UINT8));
+        assertThat(valueOf(ir.get(2).getMetadata().getId()), is(valueOf(IrNode.Metadata.INVALID_ID)));
+        assertThat(valueOf(ir.get(2).size()), is(valueOf(1)));
+        assertThat(valueOf(ir.get(2).getOffset()), is(valueOf(0)));
+
+        /* assert all elements of node 3 */
+        assertThat(ir.get(3).getMetadata().getFlag(), is(IrNode.Flag.FIELD_END));
+        assertThat(ir.get(3).getMetadata().getName(), is("EncryptedNewPasswordLen"));
+        assertThat(valueOf(ir.get(3).getMetadata().getId()), is(valueOf(1403L)));
+        assertThat(valueOf(ir.get(3).size()), is(valueOf(0)));
+        assertThat(valueOf(ir.get(3).getOffset()), is(valueOf(0)));
+
+        /* assert all elements of node 4 */
+        assertThat(ir.get(4).getMetadata().getFlag(), is(IrNode.Flag.FIELD_START));
+        assertThat(ir.get(4).getMetadata().getName(), is("EncryptedNewPassword"));
+        assertThat(valueOf(ir.get(4).getMetadata().getId()), is(valueOf(1404L)));
+        assertThat(valueOf(ir.get(4).getMetadata().getIrId()), is(valueOf(2L)));
+        assertThat(valueOf(ir.get(4).getMetadata().getXRefIrId()), is(valueOf(1L)));
+        assertThat(ir.get(4).getMetadata().getFixUsage(), is("data"));
+        assertThat(valueOf(ir.get(4).size()), is(valueOf(0)));
+        assertThat(valueOf(ir.get(4).getOffset()), is(valueOf(0)));
+
+        /* assert all elements of node 5 */
+        assertThat(ir.get(5).getMetadata().getFlag(), is(IrNode.Flag.NONE));
+        assertThat(ir.get(5).getMetadata().getName(), is("rawData"));
+        assertThat(ir.get(5).getPrimitiveType(), is(PrimitiveType.CHAR));
+        assertThat(valueOf(ir.get(5).getMetadata().getId()), is(valueOf(IrNode.Metadata.INVALID_ID)));
+        assertThat(valueOf(ir.get(5).size()), is(valueOf(-1)));
+        assertThat(valueOf(ir.get(5).getOffset()), is(valueOf(1)));
+
+        /* assert all elements of node 6 */
+        assertThat(ir.get(6).getMetadata().getFlag(), is(IrNode.Flag.FIELD_END));
+        assertThat(ir.get(6).getMetadata().getName(), is("EncryptedNewPassword"));
+        assertThat(valueOf(ir.get(6).getMetadata().getId()), is(valueOf(1404L)));
+        assertThat(valueOf(ir.get(6).size()), is(valueOf(0)));
+        assertThat(valueOf(ir.get(6).getOffset()), is(valueOf(0)));
+
+        /* assert all elements of node 7 */
+        assertThat(ir.get(7).getMetadata().getFlag(), is(IrNode.Flag.MESSAGE_END));
+        assertThat(ir.get(7).getMetadata().getName(), is("TestMessage1"));
+        assertThat(valueOf(ir.get(7).getMetadata().getId()), is(valueOf(1L)));
+        assertThat(valueOf(ir.get(7).size()), is(valueOf(0)));
+        assertThat(valueOf(ir.get(7).getOffset()), is(valueOf(0)));
+    }
+
     private static InputStream getLocalResource(final String name)
     {
         InputStream in = BasicXmlIrGenerationTest.class.getClassLoader().getResourceAsStream(name);
