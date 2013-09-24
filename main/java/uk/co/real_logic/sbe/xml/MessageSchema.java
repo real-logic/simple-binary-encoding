@@ -24,8 +24,7 @@ import java.nio.ByteOrder;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
- * Class to encapsulate the message schema attributes as well as messageHeader
- * type reference for multiple {@link Message} objects.
+ * Class to encapsulate the message schema attributes, messageHeader, and reference for multiple {@link Message} objects
  */
 public class MessageSchema
 {
@@ -50,16 +49,27 @@ public class MessageSchema
         this.messageByIdMap = messageByIdMap;
     }
 
+    /**
+     * Return the messageSchema messageHeader type or null if not defined. This should be a CompositeType.
+     */
     public Type getMessageHeader()
     {
         return typeByNameMap.get("messageHeader");
     }
 
+    /**
+     * Return a given {@link Message} object with the given id.
+     *
+     * @param id of the message to return.
+     */
     public Message getMessage(final long id)
     {
         return messageByIdMap.get(Long.valueOf(id));
     }
 
+    /**
+     * Return the byte order specified by the messageSchema
+     */
     public ByteOrder getByteOrder()
     {
         return byteOrder;

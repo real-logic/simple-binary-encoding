@@ -69,39 +69,6 @@ public class XmlSchemaParser
         return messageSchema;
     }
 
-    /*
-     * What is difference between Message and the IR?
-     * - IR is platform, schema, and language independent. It is abstract layout & metadata only.
-     * - Message is FIX/SBE XML Schema specific.
-     */
-    // TODO: check for messageHeader type and use it for the main header
-    // TODO: Message needs to hold (in addition to fields): schemaPackage, schemaDescription, schemaVersion, schemaByteOrder, messageHeader
-
-    /*
-     * TODO: need a message object to hold sequenced fields. Fields point back to Types. Traversing the fields generates IrNodes
-     * - instead of List<IrNode>, need a container, IrContainer
-     *   - IrContainer (or IrMessage?)
-     *     - is representation of a single message
-     *     - has
-     *       - List<IrNode> for fields and groups (Elements)
-     *       - package, version, description, byteOrder, messageHeader, etc.
-     *     - is representation of a single message
-     * - each Ir element needs to have its own ByteOrder (optionally) - suggested by Gil
-     * - separate functions:
-     *   - IrContainer generateIrFromMessage(message) = message has all the associated references to Types, etc.
-     *   - IrContainer optimizeForSpace(IrContainer) = generates new IrContainer with optimization
-     *   - IrContainer optimizeForDecodeSpeed(IrContainer) = generates new IrContainer with optimization
-     *   - IrContainer optimizeForEncodeSpeed(IrContainer) = generates new IrContainer with optimization
-     *   - IrContainer optimizeForOnTheFlyDecoder(IrContainer) = generates new IrContainer that uses embedded type fields for On-The-Fly optimization
-     *   - String generateFixSbeSchemaFromIr(IrContainer)
-     *   - String generateAsn1FromIr(IrContainer)
-     *   - String generateGpbFromIr(IrContainer)
-     *   - String generateThriftFromIr(IrContainer)
-     *
-     * Ultra-Meta
-     *   - IrContainer parseIrAndGenerateIr(filename) = read in serialized (with SBE) Ir and generate a new internal IrContainer
-     */
-
     /**
      * Scan XML for all types (encodedDataType, compositeType, enumType, and setType) and save in map
      *
