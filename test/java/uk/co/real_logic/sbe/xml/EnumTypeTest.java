@@ -81,7 +81,7 @@ public class EnumTypeTest
         EnumType e = (EnumType)map.get("biOp");
         assertThat(e.getName(), is("biOp"));
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.getValidValueSet().size()), is(valueOf(2)));
+        assertThat(valueOf(e.getValidValues().size()), is(valueOf(2)));
         assertThat(e.getValidValue("on").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "1")));
         assertThat(e.getValidValue("off").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "0")));
     }
@@ -102,7 +102,7 @@ public class EnumTypeTest
         EnumType e = (EnumType)map.get("boolean");
         assertThat(e.getName(), is("boolean"));
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.getValidValueSet().size()), is(valueOf(2)));
+        assertThat(valueOf(e.getValidValues().size()), is(valueOf(2)));
         assertThat(e.getValidValue("true").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "1")));
         assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "0")));
     }
@@ -124,7 +124,7 @@ public class EnumTypeTest
         EnumType e = (EnumType)map.get("optionalBoolean");
         assertThat(e.getName(), is("optionalBoolean"));
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.getValidValueSet().size()), is(valueOf(2)));
+        assertThat(valueOf(e.getValidValues().size()), is(valueOf(2)));
         assertThat(e.getValidValue("true").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "1")));
         assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "0")));
         assertThat(e.getNullValue(), is(new PrimitiveValue(PrimitiveType.UINT8, nullValueStr)));
@@ -149,17 +149,17 @@ public class EnumTypeTest
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
 
         int foundOn = 0, foundOff = 0, foundNotKnown = 0, count = 0;
-        for (Map.Entry<String, EnumType.ValidValue> entry : e.getValidValueSet())
+        for (final EnumType.ValidValue v : e.getValidValues())
         {
-            if (entry.getKey().equals("on"))
+            if (v.getName().equals("on"))
             {
                 foundOn++;
             }
-            else if (entry.getKey().equals("off"))
+            else if (v.getName().equals("off"))
             {
                 foundOff++;
             }
-            else if (entry.getKey().equals("not-known"))
+            else if (v.getName().equals("not-known"))
             {
                 foundNotKnown++;
             }

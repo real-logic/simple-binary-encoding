@@ -16,9 +16,9 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.ir.IrNode;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
+import uk.co.real_logic.sbe.ir.IrNode;
 
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -180,9 +180,9 @@ public class IrGenerator
         IrNode.Metadata md = new IrNode.Metadata(encodingType.primitiveName(), null, null, nullValue);
         irNodeList.add(new IrNode(encodingType, encodingType.size(), currentOffset, byteOrder, md));
 
-        for (Map.Entry<String, EnumType.ValidValue> entry : type.getValidValueSet())
+        for (final EnumType.ValidValue v : type.getValidValues())
         {
-            add(entry.getValue());
+            add(v);
         }
 
         addStartOrEndNode(type, IrNode.Flag.ENUM_END);
@@ -191,7 +191,7 @@ public class IrGenerator
     }
 
     /*
-     * generate IrNode for ValidValue of EnumType
+     * Generate IrNode for ValidValue of EnumType
      */
     private void add(final EnumType.ValidValue value)
     {
@@ -200,7 +200,7 @@ public class IrGenerator
     }
 
     /*
-     * generate IrNodes for bitset types
+     * Generate IrNodes for bitset types
      */
     private void add(final SetType type, final Message.Field field)
     {

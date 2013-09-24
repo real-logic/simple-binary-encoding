@@ -25,9 +25,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
@@ -126,13 +126,9 @@ public class EnumType extends Type
         return nullValue;
     }
 
-    /**
-     * Can iterate like <code>Map.Entry<String, ValidValue> entry : EnumType.getValidValueSet()</code> with this.
-     * TODO: Should this just be the values?
-     */
-    public Set<Map.Entry<String, ValidValue>> getValidValueSet()
+    public Collection<ValidValue> getValidValues()
     {
-        return validValueByNameMap.entrySet();
+        return validValueByNameMap.values();
     }
 
     /**
