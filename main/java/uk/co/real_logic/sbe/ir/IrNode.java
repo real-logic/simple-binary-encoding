@@ -264,10 +264,10 @@ public class IrNode
             this.irId = irId;
             this.xRefIrId = xRefIrId;
             this.flag = flag;
-            this.minValue = null;
-            this.maxValue = null;
-            this.nullValue = null;
-            this.constValue = null;
+            minValue = null;
+            maxValue = null;
+            nullValue = null;
+            constValue = null;
             this.description = description;
         }
 
@@ -281,15 +281,15 @@ public class IrNode
         public Metadata(final String name, final PrimitiveValue minValue, final PrimitiveValue maxValue)
         {
             this.name = name;
-            this.id = INVALID_ID;
-            this.irId = INVALID_ID;
-            this.xRefIrId = INVALID_ID;
-            this.flag = IrNode.Flag.NONE;
+            id = INVALID_ID;
+            irId = INVALID_ID;
+            xRefIrId = INVALID_ID;
+            flag = IrNode.Flag.NONE;
             this.minValue = minValue;
             this.maxValue = maxValue;
-            this.nullValue = null;
-            this.constValue = null;
-            this.description = null;
+            nullValue = null;
+            constValue = null;
+            description = null;
         }
 
         /**
@@ -303,15 +303,15 @@ public class IrNode
         public Metadata(final String name, final PrimitiveValue minValue, final PrimitiveValue maxValue, final PrimitiveValue nullValue)
         {
             this.name = name;
-            this.id = INVALID_ID;
-            this.irId = INVALID_ID;
-            this.xRefIrId = INVALID_ID;
-            this.flag = IrNode.Flag.NONE;
+            id = INVALID_ID;
+            irId = INVALID_ID;
+            xRefIrId = INVALID_ID;
+            flag = IrNode.Flag.NONE;
             this.minValue = minValue;
             this.maxValue = maxValue;
             this.nullValue = nullValue;
-            this.constValue = null;
-            this.description = null;
+            constValue = null;
+            description = null;
         }
 
         /**
@@ -323,15 +323,15 @@ public class IrNode
         public Metadata(final String name, final PrimitiveValue constValue)
         {
             this.name = name;
-            this.id = INVALID_ID;
-            this.irId = INVALID_ID;
-            this.xRefIrId = INVALID_ID;
-            this.flag = IrNode.Flag.NONE;
-            this.minValue = null;
-            this.maxValue = null;
-            this.nullValue = null;
+            id = INVALID_ID;
+            irId = INVALID_ID;
+            xRefIrId = INVALID_ID;
+            flag = IrNode.Flag.NONE;
+            minValue = null;
+            maxValue = null;
+            nullValue = null;
             this.constValue = constValue;
-            this.description = null;
+            description = null;
         }
 
         /**
@@ -345,14 +345,14 @@ public class IrNode
         public Metadata(final String name, final String description, final PrimitiveValue value, final IrNode.Flag flag)
         {
             this.name = name;
-            this.id = INVALID_ID;
-            this.irId = INVALID_ID;
-            this.xRefIrId = INVALID_ID;
+            id = INVALID_ID;
+            irId = INVALID_ID;
+            xRefIrId = INVALID_ID;
             this.flag = flag;
-            this.minValue = null;
-            this.maxValue = null;
-            this.nullValue = null;
-            this.constValue = value;         // we overload constValue to hold this
+            minValue = null;
+            maxValue = null;
+            nullValue = null;
+            constValue = value; // we overload constValue to hold this
             this.description = description;
         }
 

@@ -153,17 +153,13 @@ public class IrGenerator
     }
 
     /*
-     * The encoded field types are below.
-     */
-
-    /*
      * generate IrNodes for composite types
      */
     private void add(final CompositeType type, final Message.Field field)
     {
         addStartOrEndNode(type, IrNode.Flag.STRUCT_START);
 
-        for (EncodedDataType edt : type.getTypeList())
+        for (final EncodedDataType edt : type.getTypeList())
         {
             add(edt, field);
         }
@@ -181,9 +177,6 @@ public class IrGenerator
 
         addStartOrEndNode(type, IrNode.Flag.ENUM_START);
 
-        /*
-         * If presence is optional, then use nullValue specified. If not specified, then use encodingType null value
-         */
         if (type.getPresence() == Presence.OPTIONAL)
         {
             nullValue = type.getNullValue();
@@ -195,10 +188,8 @@ public class IrGenerator
         }
 
         IrNode.Metadata md = new IrNode.Metadata(encodingType.primitiveName(), null, null, nullValue);
-
         irNodeList.add(new IrNode(encodingType, encodingType.size(), currentOffset, byteOrder, md));
 
-        /* loop over values and add each as an IrNode */
         for (Map.Entry<String, EnumType.ValidValue> entry : type.getValidValueSet())
         {
             add(entry.getValue());
@@ -214,7 +205,8 @@ public class IrGenerator
      */
     private void add(final EnumType.ValidValue value)
     {
-        irNodeList.add(new IrNode(new IrNode.Metadata(value.getName(), value.getDescription(), value.getPrimitiveValue() , IrNode.Flag.ENUM_VALUE)));
+        irNodeList.add(new IrNode(new IrNode.Metadata(value.getName(), value.getDescription(),
+                                                      value.getPrimitiveValue() , IrNode.Flag.ENUM_VALUE)));
     }
 
     /*
@@ -246,7 +238,8 @@ public class IrGenerator
      */
     private void add(final SetType.Choice value)
     {
-        irNodeList.add(new IrNode(new IrNode.Metadata(value.getName(), value.getDescription(), value.getPrimitiveValue() , IrNode.Flag.SET_CHOICE)));
+        irNodeList.add(new IrNode(new IrNode.Metadata(value.getName(), value.getDescription(),
+                                                      value.getPrimitiveValue() , IrNode.Flag.SET_CHOICE)));
     }
 
     /*
@@ -270,10 +263,8 @@ public class IrGenerator
             md = new IrNode.Metadata(type.getName(), type.getConstantValue());
         }
 
-        /* create and add the IrNode itself */
         irNodeList.add(new IrNode(type.getPrimitiveType(), type.size(), currentOffset, byteOrder, md));
 
-        /* update the offset */
         currentOffset += type.size();
     }
 }

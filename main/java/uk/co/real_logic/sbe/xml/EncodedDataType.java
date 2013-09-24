@@ -21,6 +21,9 @@ import uk.co.real_logic.sbe.PrimitiveValue;
 
 import org.w3c.dom.Node;
 
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
+
 /**
  * SBE encodedDataType
  */
@@ -43,7 +46,7 @@ public class EncodedDataType extends Type
     {
         super(node); // set the common schema attributes
 
-        /**
+        /*
          * Grab schema attributes
          * - primitiveType (required)
          * - length (default = 1)
@@ -52,9 +55,9 @@ public class EncodedDataType extends Type
          * - minValue (optional)
          * - maxValue (optional)
          */
-        this.primitiveType = PrimitiveType.lookup(XmlSchemaParser.getAttributeValue(node, "primitiveType"));
-        this.length = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "length", "1"));
-        this.varLen = Boolean.parseBoolean(XmlSchemaParser.getAttributeValue(node, "variableLength", "false"));
+        primitiveType = PrimitiveType.lookup(getAttributeValue(node, "primitiveType"));
+        length = Integer.parseInt(getAttributeValue(node, "length", "1"));
+        varLen = Boolean.parseBoolean(getAttributeValue(node, "variableLength", "false"));
 
         // handle constant presence by grabbing child node and parsing it's CDATA based on primitiveType (save it)
         if (this.getPresence() == Presence.CONSTANT)
@@ -64,11 +67,11 @@ public class EncodedDataType extends Type
                 throw new IllegalArgumentException("type has declared presence \"constant\" but XML node has no data");
             }
 
-            this.constValue = new PrimitiveValue(this.primitiveType, node.getFirstChild().getNodeValue());
+            constValue = new PrimitiveValue(primitiveType, node.getFirstChild().getNodeValue());
         }
         else
         {
-            this.constValue = null; /* this value is invalid unless presence is constant */
+            constValue = null; /* this value is invalid unless presence is constant */
         }
 
         /*
@@ -76,41 +79,41 @@ public class EncodedDataType extends Type
          * - if the schema overrides the primitives values, then save the values here. Else, we use the PrimitiveType min/max/null
          */
 
-        String minValueStr = XmlSchemaParser.getAttributeValueOrNull(node, "minValue");
+        String minValueStr = getAttributeValueOrNull(node, "minValue");
         if (minValueStr != null)
         {
-            this.minValue = new PrimitiveValue(this.primitiveType, minValueStr);
+            minValue = new PrimitiveValue(primitiveType, minValueStr);
         }
         else
         {
-            this.minValue = null; /* this value is invalid unless minValue specified for type */
+            minValue = null; /* this value is invalid unless minValue specified for type */
         }
 
-        String maxValueStr = XmlSchemaParser.getAttributeValueOrNull(node, "maxValue");
+        String maxValueStr = getAttributeValueOrNull(node, "maxValue");
         if (maxValueStr != null)
         {
-            this.maxValue = new PrimitiveValue(this.primitiveType, maxValueStr);
+            maxValue = new PrimitiveValue(primitiveType, maxValueStr);
         }
         else
         {
-            this.maxValue = null; /* this value is invalid unless maxValue specified for type */
+            maxValue = null; /* this value is invalid unless maxValue specified for type */
         }
 
-        String nullValueStr = XmlSchemaParser.getAttributeValueOrNull(node, "nullValue");
+        String nullValueStr = getAttributeValueOrNull(node, "nullValue");
         if (nullValueStr != null)
         {
             // nullValue is mutually exclusive with presence=required or constant
-            if (this.getPresence() != Presence.OPTIONAL)
+            if (getPresence() != Presence.OPTIONAL)
             {
                 throw new IllegalArgumentException("nullValue set, but presence is not optional");
             }
 
-            this.nullValue = new PrimitiveValue(this.primitiveType, nullValueStr);
+            nullValue = new PrimitiveValue(primitiveType, nullValueStr);
         }
         else
         {
             // TODO: should we check for presence=optional and flag it? No, should default to primitiveType nullValue
-            this.nullValue = null; /* this value is invalid unless nullValue specified for type */
+            nullValue = null; /* this value is invalid unless nullValue specified for type */
         }
     }
 
@@ -134,6 +137,7 @@ public class EncodedDataType extends Type
                            final boolean varLen)
     {
         super(name, presence, description, fixUsage);
+
         this.primitiveType = primitiveType;
         this.length = length;
         this.varLen = varLen;

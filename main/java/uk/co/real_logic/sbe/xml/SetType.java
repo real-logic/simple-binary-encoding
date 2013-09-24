@@ -35,8 +35,8 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 public class SetType extends Type
 {
     private final PrimitiveType encodingType;
-    private final Map<PrimitiveValue, Choice> choiceMap = new HashMap<>();
-    private final Map<String, Choice> nameMap = new HashMap<>();
+    private final Map<PrimitiveValue, Choice> choiceByPrimitiveValueMap = new HashMap<>();
+    private final Map<String, Choice> choiceByNameMap = new HashMap<>();
 
     /**
      * Construct a new SetType from XML Schema.
@@ -56,7 +56,7 @@ public class SetType extends Type
         if (encodingType != PrimitiveType.UINT8 && encodingType != PrimitiveType.UINT16 &&
             encodingType != PrimitiveType.UINT32 && encodingType != PrimitiveType.UINT64)
         {
-            throw new IllegalArgumentException("unknown encodingType " + this.encodingType);
+            throw new IllegalArgumentException("Unknown encodingType " + encodingType);
         }
 
         XPath xPath = XPathFactory.newInstance().newXPath();
@@ -66,18 +66,18 @@ public class SetType extends Type
         {
             Choice c = new Choice(list.item(i), encodingType);
 
-            if (choiceMap.get(c.getPrimitiveValue()) != null)
+            if (choiceByPrimitiveValueMap.get(c.getPrimitiveValue()) != null)
             {
-                throw new IllegalArgumentException("choice value already exists: " + c.getPrimitiveValue());
+                throw new IllegalArgumentException("Choice value already exists: " + c.getPrimitiveValue());
             }
 
-            if (nameMap.get(c.getName()) != null)
+            if (choiceByNameMap.get(c.getName()) != null)
             {
-                throw new IllegalArgumentException("choice already exists for name: " + c.getName());
+                throw new IllegalArgumentException("Choice already exists for name: " + c.getName());
             }
 
-            choiceMap.put(c.getPrimitiveValue(), c);
-            nameMap.put(c.getName(), c);
+            choiceByPrimitiveValueMap.put(c.getPrimitiveValue(), c);
+            choiceByNameMap.put(c.getName(), c);
         }
     }
 
@@ -88,12 +88,12 @@ public class SetType extends Type
 
     public Choice getChoice(final PrimitiveValue value)
     {
-        return choiceMap.get(value);
+        return choiceByPrimitiveValueMap.get(value);
     }
 
     public Choice getChoice(final String name)
     {
-        return nameMap.get(name);
+        return choiceByNameMap.get(name);
     }
 
     /*
@@ -101,7 +101,7 @@ public class SetType extends Type
      */
     public Set<Map.Entry<String, Choice>> getChoiceSet()
     {
-        return nameMap.entrySet();
+        return choiceByNameMap.entrySet();
     }
 
     /** Class to hold valid values for EnumType */

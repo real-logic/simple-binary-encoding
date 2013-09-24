@@ -32,13 +32,13 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
  * An SBE message containing a list of {@link Message.Field} objects and SBE message attributes.
- *
+ * <p/>
  * What is difference between {@link Message} and the Intermediate Representation (IR)?
  * <ul>
- *     <li>IR is intentionally platform, schema, and language independent.</li>
- *     <li>IR is abstract layout and metadata only.</li>
- *     <li>IR is a flat representation without cycles or hierarchy.</li>
- *     <li>Message is FIX/SBE XML Schema specific.</li>
+ * <li>IR is intentionally platform, schema, and language independent.</li>
+ * <li>IR is abstract layout and metadata only.</li>
+ * <li>IR is a flat representation without cycles or hierarchy.</li>
+ * <li>Message is FIX/SBE XML Schema specific.</li>
  * </ul>
  */
 public class Message
@@ -94,89 +94,83 @@ public class Message
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            Field f = null;
+            Field field = null;
 
-            if (list.item(i).getNodeName().equals("group"))
+            final String nodeName = list.item(i).getNodeName();
+            switch (nodeName)
             {
-                /*
-                 * must search for previously parsed field that has groupName = to name (can this map be only visible on the stack?)
-                 * must exist as it had to be placed before the group.
-                 */
+                case "group":
+                    /*
+                     * must search for previously parsed field that has groupName = to name
+                     * (can this map be only visible on the stack?)
+                     * must exist as it had to be placed before the group.
+                     */
+                    field = new Field(list.item(i), getAttributeValue(list.item(i), "name"));
+                    Field entryCountField = entryCountFieldMap.get(field.getName());
 
-                /* use the Field constructor that is for group (not field) */
-                f = new Field(list.item(i), getAttributeValue(list.item(i), "name"));
+                    if (entryCountField == null)
+                    {
+                        throw new IllegalArgumentException("could not find entry count field for group: " + field.getName());
+                    }
 
-                Field entryCountField = entryCountFieldMap.get(f.getName());
+                    field.setEntryCountField(entryCountField);
+                    entryCountField.setGroupField(field);
 
-                if (entryCountField == null)
-                {
-                    throw new IllegalArgumentException("could not find entry count field for group: " + f.getName());
-                }
+                    field.setIrId(irIdCursor++);
+                    field.setXRefIrId(entryCountField.getIrId());
+                    entryCountField.setXRefIrId(field.getIrId());
 
-                /* associate the group and entry count field objects */
-                f.setEntryCountField(entryCountField);
-                entryCountField.setGroupField(f);
+                    entryCountFieldMap.remove(field.getName()); // remove field so that it can't be reused as this level
 
-                /* associate the group and entry count field IR IDs */
-                f.setIrId(irIdCursor++);
-                f.setXRefIrId(entryCountField.getIrId());
-                entryCountField.setXRefIrId(f.getIrId());
+                    field.setGroupFieldList(parseFieldsAndGroups(list.item(i), typeByNameMap)); // recursive call
+                    break;
 
-                entryCountFieldMap.remove(f.getName()); // remove field so that it can't be reused as this level
+                case "field":
+                    field = new Field(list.item(i),
+                                      getAttributeValue(list.item(i), "name"),
+                                      Integer.parseInt(getAttributeValue(list.item(i), "id")),
+                                      lookupType(typeByNameMap, getAttributeValue(list.item(i), "type")));
 
-                f.setGroupFieldList(parseFieldsAndGroups(list.item(i), typeByNameMap)); // recursive call
-            }
-            else if (list.item(i).getNodeName().equals("field"))
-            {
-                /* use the Field constructor that is for field (not group) */
-                f = new Field(list.item(i),
-                              getAttributeValue(list.item(i), "name"),
-                              Integer.parseInt(getAttributeValue(list.item(i), "id")),
-                              lookupType(typeByNameMap, getAttributeValue(list.item(i), "type")));
+                    if (field.getGroupName() != null)
+                    {
+                        entryCountFieldMap.put(field.getGroupName(), field);
+                        field.setIrId(irIdCursor++);
+                    }
 
-                /* save field for matching up with group if this is an entry count field */
-                if (f.getGroupName() != null)
-                {
-                    entryCountFieldMap.put(f.getGroupName(), f);
-                    f.setIrId(irIdCursor++);
-                }
+                    if (field.getRefId() != Field.INVALID_ID)
+                    {
+                        lengthFieldMap.put(Integer.valueOf(field.getRefId()), field);
+                        field.setIrId(irIdCursor++);
+                    }
+                    break;
 
-                /* save refId for matching up with data if this is a Length field */
-                if (f.getRefId() != Field.INVALID_ID)
-                {
-                    lengthFieldMap.put(Integer.valueOf(f.getRefId()), f);
-                    f.setIrId(irIdCursor++);
-                }
-            }
-            else if (list.item(i).getNodeName().equals("data"))
-            {
-                /* use the Field constructor that is for field (even though this is a data) */
-                f = new Field(list.item(i),
-                              getAttributeValue(list.item(i), "name"),
-                              Integer.parseInt(getAttributeValue(list.item(i), "id")),
-                              lookupType(typeByNameMap, getAttributeValue(list.item(i), "type")));
+                case "data":
+                    field = new Field(list.item(i),
+                                      getAttributeValue(list.item(i), "name"),
+                                      Integer.parseInt(getAttributeValue(list.item(i), "id")),
+                                      lookupType(typeByNameMap, getAttributeValue(list.item(i), "type")));
 
-                /* match up with length field */
-                Field lengthField = lengthFieldMap.get(Integer.valueOf(f.getId()));
+                    Field lengthField = lengthFieldMap.get(Integer.valueOf(field.getId()));
+                    if (lengthField == null)
+                    {
+                        throw new IllegalArgumentException("could not find length field for data field: " + field.getName());
+                    }
 
-                if (lengthField == null)
-                {
-                    throw new IllegalArgumentException("could not find length field for data field: " + f.getName());
-                }
+                    field.setLengthField(lengthField);
+                    lengthField.setDataField(field);
 
-                /* associate the data and length field objects */
-                f.setLengthField(lengthField);
-                lengthField.setDataField(f);
+                    field.setIrId(irIdCursor++);
+                    field.setXRefIrId(lengthField.getIrId());
+                    lengthField.setXRefIrId(field.getIrId());
 
-                /* associate the data and length field IR IDs */
-                f.setIrId(irIdCursor++);
-                f.setXRefIrId(lengthField.getIrId());
-                lengthField.setXRefIrId(f.getIrId());
+                    lengthFieldMap.remove(Integer.valueOf(field.getId())); // remove field so that it can be reused
+                    break;
 
-                lengthFieldMap.remove(Integer.valueOf(f.getId())); // remove field so that it can be reused
+                default:
+                    throw new IllegalStateException("Unknown node name: " + nodeName);
             }
 
-            fieldList.add(f);
+            fieldList.add(field);
         }
         /*
          * TODO: if the entryCountMap is not empty, then it means something didn't get matched up... warning?
@@ -185,9 +179,7 @@ public class Message
         return fieldList;
     }
 
-    /**
-     * static method to encapsulate exception for them type does not exist.
-     */
+    /** static method to encapsulate exception for them type does not exist. */
     private static Type lookupType(final Map<String, Type> typeByNameMap, final String name)
         throws IllegalArgumentException
     {
@@ -240,9 +232,7 @@ public class Message
         return fieldList;
     }
 
-    /**
-     * Class to hold field (or group) information
-     */
+    /** Class to hold field (or group) information */
     public static class Field
     {
         public static final int INVALID_ID = Integer.MAX_VALUE;  // id must only be short, so this is way out of range.
@@ -266,9 +256,7 @@ public class Message
         private int irId = INVALID_ID;      // used to identify this field by an IR ID
         private int xRefIrId = INVALID_ID;  // used to identify an associated field by an IR ID
 
-        /**
-         * The field constructor
-         */
+        /** The field constructor */
         public Field(final Node node, final String name, final int id, final Type type)
         {
             this.name = name;
@@ -288,19 +276,17 @@ public class Message
             this.dataField = null;        // will be set later
 
             // fixUsage must be present or must be on the type. If on both, they must agree.
-            if (this.fixUsage == null && this.type.getFixUsage() == null)
+            if (fixUsage == null && type.getFixUsage() == null)
             {
-                throw new IllegalArgumentException("Missing fixUsage on type and field: " + this.name);
+                throw new IllegalArgumentException("Missing fixUsage on type and field: " + name);
             }
-            else if (this.fixUsage != null && this.type.getFixUsage() != null && this.fixUsage != this.type.getFixUsage())
+            else if (fixUsage != null && type.getFixUsage() != null && fixUsage != type.getFixUsage())
             {
-                throw new IllegalArgumentException("Mismatched fixUsage on type and field: " + this.name);
+                throw new IllegalArgumentException("Mismatched fixUsage on type and field: " + name);
             }
         }
 
-        /**
-         * The group constructor
-         */
+        /** The group constructor */
         public Field(final Node node, final String name)
         {
             this.name = name;

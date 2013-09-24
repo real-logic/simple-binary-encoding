@@ -142,22 +142,22 @@ public class CompositeType extends Type
     public CompositeType(final Node node)
         throws XPathExpressionException
     {
-        super(node); // set the common schema attributes
+        super(node);
 
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile("type").evaluate(node, XPathConstants.NODESET);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            EncodedDataType t = new EncodedDataType(list.item(i));
+            EncodedDataType type = new EncodedDataType(list.item(i));
 
-            if (compositeMap.get(t.getName()) != null)
+            if (compositeMap.get(type.getName()) != null)
             {
-                throw new IllegalArgumentException("composite already has type name: " + t.getName());
+                throw new IllegalArgumentException("composite already has type name: " + type.getName());
             }
 
-            compositeList.add(t);
-            compositeMap.put(t.getName(), t);
+            compositeList.add(type);
+            compositeMap.put(type.getName(), type);
         }
     }
 

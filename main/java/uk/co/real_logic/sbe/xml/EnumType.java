@@ -29,6 +29,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
+
 /**
  * SBE enumType
  */
@@ -54,22 +57,22 @@ public class EnumType extends Type
          * - encodingType (required) - must be either 'char' or 'int8' according to spec
          * - nullValue (optional with presence=optional)
          */
-        encodingType = PrimitiveType.lookup(XmlSchemaParser.getAttributeValue(node, "encodingType"));
+        encodingType = PrimitiveType.lookup(getAttributeValue(node, "encodingType"));
         if (encodingType != PrimitiveType.CHAR && encodingType != PrimitiveType.UINT8)
         {
             throw new IllegalArgumentException("unknown encodingType " + encodingType);
         }
 
-        String nullValueStr = XmlSchemaParser.getAttributeValueOrNull(node, "nullValue");
+        String nullValueStr = getAttributeValueOrNull(node, "nullValue");
         if (nullValueStr != null)
         {
             // nullValue is mutually exclusive with presence=required or constant
-            if (this.getPresence() != Presence.OPTIONAL)
+            if (getPresence() != Presence.OPTIONAL)
             {
                 throw new IllegalArgumentException("nullValue set, but presence is not optional");
             }
 
-            nullValue = new PrimitiveValue(this.encodingType, nullValueStr);
+            nullValue = new PrimitiveValue(encodingType, nullValueStr);
         }
         else
         {
@@ -124,7 +127,8 @@ public class EnumType extends Type
     }
 
     /**
-     * can iterate like (Map.Entry<String, ValidValue> entry : EnumType.getValidValueSet()) with this
+     * Can iterate like <code>Map.Entry<String, ValidValue> entry : EnumType.getValidValueSet()</code> with this.
+     * TODO: Should this just be the values?
      */
     public Set<Map.Entry<String, ValidValue>> getValidValueSet()
     {
@@ -148,12 +152,8 @@ public class EnumType extends Type
          */
         public ValidValue(final Node node, final PrimitiveType encodingType)
         {
-            /*
-             * attrs: name(required), description(optional)
-             * value: the value of the validValue
-             */
-            name = XmlSchemaParser.getAttributeValue(node, "name");
-            description = XmlSchemaParser.getAttributeValueOrNull(node, "description");
+            name = getAttributeValue(node, "name");
+            description = getAttributeValueOrNull(node, "description");
             value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());
         }
 
