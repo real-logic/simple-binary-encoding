@@ -88,13 +88,13 @@ public class Message
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, XPathConstants.NODESET);
 
-        List<Field> fieldList = new ArrayList<Field>();
+        List<Field> fieldList = new ArrayList<>();
         Map<String, Field> entryCountFieldMap = new HashMap<>();  // used for holding entry count fields and matching up
         Map<Integer, Field> lengthFieldMap = new HashMap<>();    // used for holding length fields and matching up
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            Field field = null;
+            Field field;
 
             final String nodeName = list.item(i).getNodeName();
             switch (nodeName)
@@ -260,13 +260,13 @@ public class Message
         public Field(final Node node, final String name, final int id, final Type type)
         {
             this.name = name;
-            this.description = XmlSchemaParser.getAttributeValueOrNull(node, "description");
-            this.groupName = XmlSchemaParser.getAttributeValueOrNull(node, "groupName");
+            this.description = getAttributeValueOrNull(node, "description");
+            this.groupName = getAttributeValueOrNull(node, "groupName");
             this.id = id;
             this.type = type;
             this.offset = Long.parseLong(getAttributeValue(node, "offset", "0"));
-            this.fixUsage = FixUsage.lookup(XmlSchemaParser.getAttributeValueOrNull(node, "fixUsage"));
-            this.presence = Presence.lookup(XmlSchemaParser.getAttributeValueOrNull(node, "presence"));
+            this.fixUsage = FixUsage.lookup(getAttributeValueOrNull(node, "fixUsage"));
+            this.presence = Presence.lookup(getAttributeValueOrNull(node, "presence"));
             this.refId = Integer.parseInt(getAttributeValue(node, "refId", INVALID_ID_STRING));
             this.blockLength = 0;
             this.groupFieldList = null;   // has no meaning if not group
