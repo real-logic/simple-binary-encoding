@@ -185,11 +185,11 @@ public class IrNode
         /** flag denoting the end of a message */
         MESSAGE_END,
 
-        /** flag denoting the start of a struct (composite) */
-        STRUCT_START,
+        /** flag denoting the start of a composite */
+        COMPOSITE_START,
 
-        /** flag denoting the end of a struct (composite) */
-        STRUCT_END,
+        /** flag denoting the end of a composite */
+        COMPOSITE_END,
 
         /** flag denoting the start of a field */
         FIELD_START,

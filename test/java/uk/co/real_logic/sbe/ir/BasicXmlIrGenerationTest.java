@@ -44,7 +44,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.size()), is(valueOf(6)));
 
         /* assert all elements of node 0 */
-        assertThat(ir.get(0).getMetadata().getFlag(), is(IrNode.Flag.STRUCT_START));
+        assertThat(ir.get(0).getMetadata().getFlag(), is(IrNode.Flag.COMPOSITE_START));
         assertThat(ir.get(0).getMetadata().getName(), is("messageHeader"));
         assertThat(valueOf(ir.get(0).getMetadata().getId()), is(valueOf(IrNode.Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(0).size()), is(valueOf(0)));
@@ -83,7 +83,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(4).getOffset()), is(valueOf(5)));
 
         /* assert all elements of node 5 */
-        assertThat(ir.get(5).getMetadata().getFlag(), is(IrNode.Flag.STRUCT_END));
+        assertThat(ir.get(5).getMetadata().getFlag(), is(IrNode.Flag.COMPOSITE_END));
         assertThat(ir.get(5).getMetadata().getName(), is("messageHeader"));
         assertThat(valueOf(ir.get(5).getMetadata().getId()), is(valueOf(IrNode.Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(5).size()), is(valueOf(0)));

@@ -56,17 +56,7 @@ public class IrGenerator
     public List<IrNode> generateForHeader(final MessageSchema schema)
     {
         byteOrder = schema.getByteOrder();
-        Type type = schema.getMessageHeader();
-
-        // short circuit conditionals would be nice... oh well
-        if (type == null)
-        {
-            throw new IllegalArgumentException("Message header not defined for messageSchema");
-        }
-        else if (!(type instanceof CompositeType))
-        {
-            throw new IllegalArgumentException("Message header is not composite");
-        }
+        CompositeType type = schema.getMessageHeader();
 
         add((CompositeType)type, null);
 
@@ -157,14 +147,14 @@ public class IrGenerator
      */
     private void add(final CompositeType type, final Message.Field field)
     {
-        addStartOrEndNode(type, IrNode.Flag.STRUCT_START);
+        addStartOrEndNode(type, IrNode.Flag.COMPOSITE_START);
 
         for (final EncodedDataType edt : type.getTypeList())
         {
             add(edt, field);
         }
 
-        addStartOrEndNode(type, IrNode.Flag.STRUCT_END);
+        addStartOrEndNode(type, IrNode.Flag.COMPOSITE_END);
     }
 
     /*

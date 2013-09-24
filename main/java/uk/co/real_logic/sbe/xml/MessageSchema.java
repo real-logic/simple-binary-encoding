@@ -52,9 +52,16 @@ public class MessageSchema
     /**
      * Return the messageSchema messageHeader type or null if not defined. This should be a CompositeType.
      */
-    public Type getMessageHeader()
+    public CompositeType getMessageHeader()
     {
-        return typeByNameMap.get("messageHeader");
+        CompositeType type = ((CompositeType)typeByNameMap.get("messageHeader"));
+
+        if (type == null)
+        {
+            throw new IllegalArgumentException("Message header not defined for messageSchema");
+        }
+
+        return type;
     }
 
     /**
