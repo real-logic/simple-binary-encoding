@@ -184,7 +184,7 @@ public class PrimitiveValue
                 return Long.toString(longValue);
 
             default:
-                throw new IllegalArgumentException("unknown PrimitiveValue representation");
+                throw new IllegalArgumentException("Unknown PrimitiveValue representation");
         }
     }
 
@@ -198,10 +198,10 @@ public class PrimitiveValue
     {
         if (null != value && value instanceof PrimitiveValue)
         {
-            PrimitiveValue lhs = (PrimitiveValue)value;
+            PrimitiveValue rhs = (PrimitiveValue)value;
 
-            if (lhs.representation == this.representation &&
-                lhs.longValue == this.longValue)
+            if (representation == rhs.representation &&
+                longValue == rhs.longValue)
             {
                 return true;
             }
@@ -247,7 +247,7 @@ public class PrimitiveValue
             case UINT16:
             case UINT32:
             case UINT64:
-                /**
+                /*
                  * TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit integers...
                  */
                 return Long.parseLong(value);
