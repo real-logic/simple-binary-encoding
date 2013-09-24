@@ -58,7 +58,7 @@ public class IrGenerator
         byteOrder = schema.getByteOrder();
         CompositeType type = schema.getMessageHeader();
 
-        add((CompositeType)type, null);
+        add(type, null);
 
         return irNodeList;
     }
