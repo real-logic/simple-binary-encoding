@@ -73,6 +73,16 @@ package uk.co.real_logic.sbe;
  *             <td>Unsigned integer</td>
  *             <td>8</td>
  *         </tr>
+ *         <tr>
+ *             <td>float</td>
+ *             <td>Single precision floating point</td>
+ *             <td>4</td>
+ *         </tr>
+ *         <tr>
+ *             <td>double</td>
+ *             <td>Double precision floating point</td>
+ *             <td>8</td>
+ *         </tr>
  *     </tbody>
  * </table>
  */
@@ -86,7 +96,9 @@ public enum PrimitiveType
     UINT8("uint8", 1, PrimitiveValue.MIN_VALUE_UINT8, PrimitiveValue.MAX_VALUE_UINT8, PrimitiveValue.NULL_VALUE_UINT8),
     UINT16("uint16", 2, PrimitiveValue.MIN_VALUE_UINT16, PrimitiveValue.MAX_VALUE_UINT16, PrimitiveValue.NULL_VALUE_UINT16),
     UINT32("uint32", 4, PrimitiveValue.MIN_VALUE_UINT32, PrimitiveValue.MAX_VALUE_UINT32, PrimitiveValue.NULL_VALUE_UINT32),
-    UINT64("uint64", 8, PrimitiveValue.MIN_VALUE_UINT64, PrimitiveValue.MAX_VALUE_UINT64, PrimitiveValue.NULL_VALUE_UINT64);
+    UINT64("uint64", 8, PrimitiveValue.MIN_VALUE_UINT64, PrimitiveValue.MAX_VALUE_UINT64, PrimitiveValue.NULL_VALUE_UINT64),
+    FLOAT("float", 4),
+    DOUBLE("double", 8);
 
     private final String name;
     private final int size;
@@ -101,6 +113,15 @@ public enum PrimitiveType
         this.minValue = new PrimitiveValue(minValue);
         this.maxValue = new PrimitiveValue(maxValue);
         this.nullValue = new PrimitiveValue(nullValue);
+    }
+
+    PrimitiveType(final String name, final int size)
+    {
+        this.name = name;
+        this.size = size;
+        this.minValue = null;
+        this.maxValue = null;
+        this.nullValue = null;
     }
 
     /**
