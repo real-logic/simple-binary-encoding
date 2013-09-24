@@ -79,7 +79,7 @@ public class XmlSchemaParser
     public static Map<String, Type> findTypes(final Document document, final XPath xPath)
         throws Exception
     {
-        final Map<String, Type> typeByNameMap = new HashMap<String, Type>();
+        final Map<String, Type> typeByNameMap = new HashMap<>();
 
         // Add primitiveTypes to typeByNameMap - these could be in a static XInclude that is always brought in...
         typeByNameMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, null, PrimitiveType.CHAR, 1, false));
@@ -160,7 +160,7 @@ public class XmlSchemaParser
                                                   final Map<String, Type> typeByNameMap)
         throws Exception
     {
-        final Map<Long, Message> messageByIdMap = new HashMap<Long, Message>();
+        final Map<Long, Message> messageByIdMap = new HashMap<>();
 
         forEach((NodeList)xPath.compile(MESSAGE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
                 new NodeFunction()

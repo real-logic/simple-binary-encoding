@@ -36,8 +36,8 @@ public class EnumType extends Type
 {
     private final PrimitiveType encodingType;
     private final PrimitiveValue nullValue;
-    private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new HashMap<PrimitiveValue, ValidValue>();
-    private final Map<String, ValidValue> validValueByNameMap = new HashMap<String, ValidValue>();
+    private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new HashMap<>();
+    private final Map<String, ValidValue> validValueByNameMap = new HashMap<>();
 
     /**
      * Construct a new enumType from XML Schema.
@@ -139,7 +139,6 @@ public class EnumType extends Type
         private final String name;
         private final String description;
         private final PrimitiveValue value;
-        private final PrimitiveType encodingType;
 
         /**
          * Construct a ValidValue given the XML node and the encodingType.
@@ -153,7 +152,6 @@ public class EnumType extends Type
              * attrs: name(required), description(optional)
              * value: the value of the validValue
              */
-            this.encodingType = encodingType;
             name = XmlSchemaParser.getAttributeValue(node, "name");
             description = XmlSchemaParser.getAttributeValueOrNull(node, "description");
             value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());

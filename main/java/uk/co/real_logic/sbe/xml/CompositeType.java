@@ -131,8 +131,8 @@ import java.util.Map;
  */
 public class CompositeType extends Type
 {
-    private final List<EncodedDataType> compositeList = new ArrayList<EncodedDataType>();
-    private final Map<String, EncodedDataType> compositeMap = new HashMap<String, EncodedDataType>();
+    private final List<EncodedDataType> compositeList = new ArrayList<>();
+    private final Map<String, EncodedDataType> compositeMap = new HashMap<>();
 
     /**
      * Construct a new compositeType from XML Schema.

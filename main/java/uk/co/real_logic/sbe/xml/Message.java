@@ -89,8 +89,8 @@ public class Message
         NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, XPathConstants.NODESET);
 
         List<Field> fieldList = new ArrayList<Field>();
-        Map<String, Field> entryCountFieldMap = new HashMap<String, Field>();  // used for holding entry count fields and matching up
-        Map<Integer, Field> lengthFieldMap = new HashMap<Integer, Field>();    // used for holding length fields and matching up
+        Map<String, Field> entryCountFieldMap = new HashMap<>();  // used for holding entry count fields and matching up
+        Map<Integer, Field> lengthFieldMap = new HashMap<>();    // used for holding length fields and matching up
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {

@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public class IrGenerator
 {
-    private final List<IrNode> irNodeList = new ArrayList<IrNode>();
+    private final List<IrNode> irNodeList = new ArrayList<>();
     private int currentOffset = 0;
     private ByteOrder byteOrder;
 
@@ -231,7 +231,7 @@ public class IrGenerator
         irNodeList.add(new IrNode(encodingType, encodingType.size(), currentOffset, byteOrder, md));
 
         /* loop over values and add each as an IrNode */
-        for (Map.Entry<String, SetType.Choice> entry : type.getChoiceSet())
+        for (final Map.Entry<String, SetType.Choice> entry : type.getChoiceSet())
         {
             add(entry.getValue());
         }

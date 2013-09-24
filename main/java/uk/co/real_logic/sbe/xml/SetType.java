@@ -35,8 +35,8 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 public class SetType extends Type
 {
     private final PrimitiveType encodingType;
-    private final Map<PrimitiveValue, Choice> choiceMap;
-    private final Map<String, Choice> nameMap;
+    private final Map<PrimitiveValue, Choice> choiceMap = new HashMap<>();
+    private final Map<String, Choice> nameMap = new HashMap<>();
 
     /**
      * Construct a new SetType from XML Schema.
@@ -58,9 +58,6 @@ public class SetType extends Type
         {
             throw new IllegalArgumentException("unknown encodingType " + this.encodingType);
         }
-
-        choiceMap = new HashMap<PrimitiveValue, Choice>();
-        nameMap = new HashMap<String, Choice>();
 
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile("choice").evaluate(node, XPathConstants.NODESET);
