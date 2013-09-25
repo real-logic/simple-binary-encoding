@@ -51,7 +51,7 @@ public class Message
     private final long blockLength;
     private final List<Field> fieldList;
     private final String fixMsgType;
-    private int irIdCursor = 1;
+    private long irIdCursor = 1;
 
     /**
      * Construct a new message from XML Schema.
@@ -117,8 +117,8 @@ public class Message
                     entryCountField.setGroupField(field);
 
                     field.setIrId(irIdCursor++);
-                    field.setXRefIrId(entryCountField.getIrId());
-                    entryCountField.setXRefIrId(field.getIrId());
+                    field.setIrRefId(entryCountField.getIrId());
+                    entryCountField.setIrRefId(field.getIrId());
 
                     entryCountFieldMap.remove(field.getName()); // remove field so that it can't be reused as this level
 
@@ -167,8 +167,8 @@ public class Message
                     lengthField.setDataField(field);
 
                     field.setIrId(irIdCursor++);
-                    field.setXRefIrId(lengthField.getIrId());
-                    lengthField.setXRefIrId(field.getIrId());
+                    field.setIrRefId(lengthField.getIrId());
+                    lengthField.setIrRefId(field.getIrId());
 
                     lengthFieldMap.remove(Integer.valueOf(field.getId())); // remove field so that it can be reused
                     numDataEncountered++;
@@ -276,8 +276,8 @@ public class Message
         private Field lengthField;          // used by data fields as the length field
         private Field groupField;           // used by entry count fields as the group field
         private Field dataField;            // used by length fields as the data field
-        private int irId = INVALID_ID;      // used to identify this field by an IR ID
-        private int xRefIrId = INVALID_ID;  // used to identify an associated field by an IR ID
+        private long irId = INVALID_ID;      // used to identify this field by an IR ID
+        private long irRefId = INVALID_ID;   // used to identify an associated field by an IR ID
 
         /** The field constructor */
         public Field(final Node node, final String name, final int id, final Type type)
@@ -419,24 +419,24 @@ public class Message
             return blockLength;
         }
 
-        public void setIrId(final int id)
+        public void setIrId(final long id)
         {
             irId = id;
         }
 
-        public int getIrId()
+        public long getIrId()
         {
             return irId;
         }
 
-        public void setXRefIrId(final int id)
+        public void setIrRefId(final long id)
         {
-            xRefIrId = id;
+            irRefId = id;
         }
 
-        public int getXRefIrId()
+        public long getIrRefId()
         {
-            return xRefIrId;
+            return irRefId;
         }
 
         public FixUsage getFixUsage()
