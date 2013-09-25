@@ -16,6 +16,8 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import uk.co.real_logic.sbe.ir.Token;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -48,7 +50,7 @@ public class Message
     private final long id;
     private final String name;
     private final String description;
-    private final long blockLength;
+    private final int blockLength;
     private final List<Field> fieldList;
     private final String fixMsgType;
     private long irIdCursor = 1;
@@ -73,13 +75,16 @@ public class Message
          * group
          * - name (required) - unique within message? field for num entries must precede it!
          */
-        id = Long.parseLong(getAttributeValue(messageNode, "id"));                        // required
-        name = getAttributeValue(messageNode, "name");                                    // required
-        description = getAttributeValueOrNull(messageNode, "description");                // optional
-        blockLength = Long.parseLong(getAttributeValue(messageNode, "blockLength", "0")); // 0 means not set
-        fixMsgType = getAttributeValueOrNull(messageNode, "fixMsgType");                  // optional
+        id = Long.parseLong(getAttributeValue(messageNode, "id"));                          // required
+        name = getAttributeValue(messageNode, "name");                                      // required
+        description = getAttributeValueOrNull(messageNode, "description");                  // optional
+        blockLength = Integer.parseInt(getAttributeValue(messageNode, "blockLength", "0")); // 0 means not set
+        fixMsgType = getAttributeValueOrNull(messageNode, "fixMsgType");                    // optional
 
         fieldList = parseFieldsAndGroups(messageNode, typeByNameMap);
+
+        /* validation of offsets and blockLength */
+        validateBlockLength(blockLength, calculateAndValidateOffsets(fieldList));
     }
 
     private List<Field> parseFieldsAndGroups(final Node node, final Map<String, Type> typeByNameMap)
@@ -177,7 +182,8 @@ public class Message
                 default:
                     throw new IllegalStateException("Unknown node name: " + nodeName);
             }
-
+            // TODO: validate field before adding. If doesn't validate, don't add.
+            // TODO: validData(), validGroup(), validField() - return boolean to indicate success or not (xref, fixUsage being set, etc.)
             fieldList.add(field);
         }
         // TODO: if the entryCountMap is not empty, then it means something didn't get matched up... warning? same for lengthFieldMap
@@ -195,6 +201,78 @@ public class Message
         }
 
         return type;
+    }
+
+    /**
+     * Calculate and validate the offsets of the fields in the list. Will set the fields calculatedOffset.
+     * Will validate the blockLength of the fields encompassing &lt;message&gt; or &lt;group&gt;. Will recurse
+     * into repeated groups.
+     *
+     * @param fields to iterate over
+     * @return the total size of the list or {@link Token#VARIABLE_SIZE} if the size will vary
+     */
+    public int calculateAndValidateOffsets(List<Field> fields)
+    {
+        int currOffset = 0;
+
+        for (Field field : fields)
+        {
+            /* check if specified offset is ok or not */
+            if (field.getOffset() > 0 && field.getOffset() < currOffset)
+            {
+                throw new IllegalArgumentException("specified offset is too small for field name: " + field.getName());
+            }
+
+            /* if offset specified, then use it (since it was checked before) */
+            if (field.getOffset() > 0 && Token.VARIABLE_SIZE != currOffset)
+            {
+                currOffset = field.getOffset();  // reset current offset to the one requested by the field specifcation
+            }
+
+            /* save the fields current offset (even for <group> elements!) */
+            field.setCalculatedOffset(currOffset);
+
+            /* if this field is a <group> then recurse into it */
+            if (field.getGroupFieldList() != null)
+            {
+                int calculatedBlockLength = calculateAndValidateOffsets(field.getGroupFieldList());
+
+                /* validate the <group> blockLength, if set */
+                validateBlockLength(field.getBlockLength(), calculatedBlockLength);
+
+                /*
+                 * After a <group> element, the offset and total size will be varying
+                 * TODO: these could be DEPENDENT_SIZE such that they depend on the entry count field, etc.
+                 */
+                currOffset = Token.VARIABLE_SIZE;
+            }
+            else  // will be <field> or <data>
+            {
+                int calculatedSize = field.getType().size();
+
+                if (Token.VARIABLE_SIZE == calculatedSize || Token.VARIABLE_SIZE == currOffset)
+                {
+                    currOffset = Token.VARIABLE_SIZE;
+                }
+                else
+                {
+                    currOffset += calculatedSize;
+                }
+            }
+        }
+
+        return currOffset;
+    }
+
+    /**
+     * Helper to handle incorrect specified SBE blockLength
+     */
+    private void validateBlockLength(final long specifiedBlockLength, final long calculatedBlockLength)
+    {
+        if (0 < specifiedBlockLength && calculatedBlockLength > specifiedBlockLength)
+        {
+            throw new IllegalArgumentException("specified blockLength is too small");
+        }
     }
 
     /**
@@ -266,18 +344,19 @@ public class Message
         private final String groupName;     // optional for field/date (not present for group)
         private final int id;               // required for field/data (not present for group)
         private final Type type;            // required for field/data (not present for group)
-        private final long offset;          // optional for field/data (not present for group)
+        private final int offset;           // optional for field/data (not present for group)
         private final FixUsage fixUsage;    // optional for field/data (not present for group?)
         private final Presence presence;    // optional for field/data (not present for group)  null means not set
         private final int refId;            // optional for field (not present for group or data) INVALID_ID means not set
-        private final long blockLength;     // optional for group (not present for field/data)
+        private final int blockLength;      // optional for group (not present for field/data)
         private List<Field> groupFieldList;
         private Field entryCountField;      // used by group fields as the entry count field
         private Field lengthField;          // used by data fields as the length field
         private Field groupField;           // used by entry count fields as the group field
         private Field dataField;            // used by length fields as the data field
-        private long irId = INVALID_ID;      // used to identify this field by an IR ID
-        private long irRefId = INVALID_ID;   // used to identify an associated field by an IR ID
+        private long irId = INVALID_ID;     // used to identify this field by an IR ID
+        private long irRefId = INVALID_ID;  // used to identify an associated field by an IR ID
+        private int calculatedOffset;       // used to hold the calculated offset of this field from top level <message> or <group>
 
         /** The field constructor */
         public Field(final Node node, final String name, final int id, final Type type)
@@ -287,7 +366,7 @@ public class Message
             this.groupName = getAttributeValueOrNull(node, "groupName");
             this.id = id;
             this.type = type;
-            this.offset = Long.parseLong(getAttributeValue(node, "offset", "0"));
+            this.offset = Integer.parseInt(getAttributeValue(node, "offset", "0"));
             this.fixUsage = FixUsage.lookup(getAttributeValueOrNull(node, "fixUsage"));
             this.presence = Presence.lookup(getAttributeValueOrNull(node, "presence"));
             this.refId = Integer.parseInt(getAttributeValue(node, "refId", INVALID_ID_STRING));
@@ -297,8 +376,10 @@ public class Message
             this.lengthField = null;      // will be set later
             this.groupField = null;       // will be set later
             this.dataField = null;        // will be set later
+            this.calculatedOffset = 0;
 
             // fixUsage must be present or must be on the type. If on both, they must agree.
+            // TODO: move this to validation step
             if (fixUsage == null && type.getFixUsage() == null)
             {
                 throw new IllegalArgumentException("Missing fixUsage on type and field: " + name);
@@ -321,12 +402,13 @@ public class Message
             this.fixUsage = null;
             this.presence = null;
             this.refId = INVALID_ID;
-            this.blockLength = Long.parseLong(getAttributeValue(node, "blockLength", "0"));
+            this.blockLength = Integer.parseInt(getAttributeValue(node, "blockLength", "0"));
             this.groupFieldList = null;    // for now. Set later.
             this.entryCountField = null;   // for now. Set later.
             this.lengthField = null;       // has no meaning for group.
             this.groupField = null;        // has no meaning
             this.dataField = null;         // has no meaning
+            this.calculatedOffset = 0;
         }
 
         public void setGroupFieldList(final List<Field> list)
@@ -379,6 +461,16 @@ public class Message
             return dataField;
         }
 
+        public void setCalculatedOffset(final int offset)
+        {
+            calculatedOffset = offset;
+        }
+
+        public int getCalculatedOffset()
+        {
+            return calculatedOffset;
+        }
+
         public String getName()
         {
             return name;
@@ -409,12 +501,12 @@ public class Message
             return type;
         }
 
-        public long getOffset()
+        public int getOffset()
         {
             return offset;
         }
 
-        public long getBlockLength()
+        public int getBlockLength()
         {
             return blockLength;
         }

@@ -91,6 +91,9 @@ public class PrimitiveValue
     /** Representation of value is a Java long */
     public static final int LONG_VALUE_REPRESENTATION = 0x1;
 
+    /** Representation of value is a Java double */
+    public static final int DOUBLE_VALUE_REPRESENTATION = 0x2;
+
     public static final long MIN_VALUE_CHAR = 0x20;
     public static final long MAX_VALUE_CHAR = 0x7E;
     public static final long NULL_VALUE_CHAR = 0;
@@ -127,7 +130,16 @@ public class PrimitiveValue
     public static final long MAX_VALUE_UINT64 = Long.MAX_VALUE;  // TODO: placeholder for now (replace with BigInteger?)
     public static final long NULL_VALUE_UINT64 = Long.MIN_VALUE; // TODO: placeholder for now (replace with BigInteger?)
 
+    public static final float MIN_VALUE_FLOAT = Float.MIN_VALUE;
+    public static final float MAX_VALUE_FLOAT = Float.MAX_VALUE;
+    public static final float NULL_VALUE_FLOAT = Float.NaN;         // TODO: can NOT be used as a normal equality check
+
+    public static final double MIN_VALUE_DOUBLE = Double.MIN_VALUE;
+    public static final double MAX_VALUE_DOUBLE = Double.MAX_VALUE;
+    public static final double NULL_VALUE_DOUBLE = Double.NaN;      // TODO: can NOT be used as a normal equality check
+
     private final long longValue;
+    private final double doubleValue;
     private final int representation;
 
     /**
@@ -138,11 +150,19 @@ public class PrimitiveValue
     public PrimitiveValue(final long value)
     {
         longValue = value;
+        doubleValue = 0.0;
         representation = LONG_VALUE_REPRESENTATION;
     }
 
+    public PrimitiveValue(final double value)
+    {
+        longValue = 0;
+        doubleValue = value;
+        representation = DOUBLE_VALUE_REPRESENTATION;
+    }
+
     /**
-     * Parse constant value string and return constructed value
+     * Parse constant value string and set representation based on type
      *
      * @param primitiveType that this is supposed to be
      * @param value     expressed as a String
@@ -150,8 +170,44 @@ public class PrimitiveValue
      */
     public PrimitiveValue(final PrimitiveType primitiveType, final String value)
     {
-        longValue = parseConstValue2Long(primitiveType, value);
-        representation = LONG_VALUE_REPRESENTATION;
+        switch (primitiveType)
+        {
+            case CHAR:
+                if (value.length() > 1)
+                {
+                    throw new IllegalArgumentException("constant char value malformed");
+                }
+                longValue = value.getBytes()[0];
+                doubleValue = 0.0;
+                representation = LONG_VALUE_REPRESENTATION;
+                break;
+
+            case INT8:
+            case INT16:
+            case INT32:
+            case INT64:
+            case UINT8:
+            case UINT16:
+            case UINT32:
+            case UINT64:
+                /*
+                 * TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit integers...
+                 */
+                longValue = Long.parseLong(value);
+                doubleValue = 0.0;
+                representation = LONG_VALUE_REPRESENTATION;
+                break;
+
+            case FLOAT:
+            case DOUBLE:
+                longValue = 0;
+                doubleValue = Double.parseDouble(value);
+                representation = DOUBLE_VALUE_REPRESENTATION;
+                break;
+
+            default:
+                throw new IllegalArgumentException("Do not know how to parse this primitiveType type for constant value");
+        }
     }
 
     /**
@@ -183,19 +239,24 @@ public class PrimitiveValue
             case LONG_VALUE_REPRESENTATION:
                 return Long.toString(longValue);
 
+            case DOUBLE_VALUE_REPRESENTATION:
+                return Double.toString(doubleValue);
+
             default:
                 throw new IllegalArgumentException("Unknown PrimitiveValue representation");
         }
     }
 
     /**
-     * Determine if two values are equivalent
+     * Determine if two values are equivalent.
+     * TODO: does not work for NaN for float and double.
      *
      * @param value to compare this value with
      * @return equivalence of values
      */
     public boolean equals(final Object value)
     {
+        /* should only be used for long value representation at the moment */
         if (null != value && value instanceof PrimitiveValue)
         {
             PrimitiveValue rhs = (PrimitiveValue)value;
@@ -217,43 +278,11 @@ public class PrimitiveValue
      */
     public int hashCode()
     {
-        return (int)(longValue ^ (longValue >>> 32));
-    }
-
-    /**
-     * Parse constant value string and return long value
-     *
-     * @param primitiveType that this is supposed to be
-     * @param value     expressed as a String
-     * @return long representation of the value
-     * @throws IllegalArgumentException if parsing not known for type
-     */
-    public static long parseConstValue2Long(final PrimitiveType primitiveType, final String value)
-    {
-        switch (primitiveType)
+        if (representation != LONG_VALUE_REPRESENTATION)
         {
-            case CHAR:
-                if (value.length() > 1)
-                {
-                    throw new IllegalArgumentException("constant char value malformed");
-                }
-                return value.getBytes()[0];
-
-            case INT8:
-            case INT16:
-            case INT32:
-            case INT64:
-            case UINT8:
-            case UINT16:
-            case UINT32:
-            case UINT64:
-                /*
-                 * TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit integers...
-                 */
-                return Long.parseLong(value);
-
-            default:
-                throw new IllegalArgumentException("Do not know how to parse this primitiveType type for constant value");
+            throw new IllegalArgumentException("PrimitiveValue is not a long representation");
         }
+
+        return (int)(longValue ^ (longValue >>> 32));
     }
 }

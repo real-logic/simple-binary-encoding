@@ -97,8 +97,8 @@ public enum PrimitiveType
     UINT16("uint16", 2, PrimitiveValue.MIN_VALUE_UINT16, PrimitiveValue.MAX_VALUE_UINT16, PrimitiveValue.NULL_VALUE_UINT16),
     UINT32("uint32", 4, PrimitiveValue.MIN_VALUE_UINT32, PrimitiveValue.MAX_VALUE_UINT32, PrimitiveValue.NULL_VALUE_UINT32),
     UINT64("uint64", 8, PrimitiveValue.MIN_VALUE_UINT64, PrimitiveValue.MAX_VALUE_UINT64, PrimitiveValue.NULL_VALUE_UINT64),
-    FLOAT("float", 4),
-    DOUBLE("double", 8);
+    FLOAT("float", 4, PrimitiveValue.MIN_VALUE_FLOAT, PrimitiveValue.MAX_VALUE_FLOAT, PrimitiveValue.NULL_VALUE_FLOAT),
+    DOUBLE("double", 8, PrimitiveValue.MIN_VALUE_DOUBLE, PrimitiveValue.MAX_VALUE_DOUBLE, PrimitiveValue.NULL_VALUE_DOUBLE);
 
     private final String name;
     private final int size;
@@ -115,13 +115,13 @@ public enum PrimitiveType
         this.nullValue = new PrimitiveValue(nullValue);
     }
 
-    PrimitiveType(final String name, final int size)
+    PrimitiveType(final String name, final int size, final double minValue, final double maxValue, final double nullValue)
     {
         this.name = name;
         this.size = size;
-        this.minValue = null;
-        this.maxValue = null;
-        this.nullValue = null;
+        this.minValue = new PrimitiveValue(minValue);
+        this.maxValue = new PrimitiveValue(maxValue);
+        this.nullValue = new PrimitiveValue(nullValue);
     }
 
     /**
