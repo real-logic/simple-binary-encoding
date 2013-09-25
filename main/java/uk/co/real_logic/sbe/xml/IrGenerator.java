@@ -17,7 +17,6 @@
 package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.ir.IrNode;
 
 import java.nio.ByteOrder;
@@ -66,11 +65,11 @@ public class IrGenerator
     {
         IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(msg.getName());
 
-        builder.setId(msg.getId());
-        builder.setIrId(0);
-        builder.setFlag(flag);
-        builder.setFixUsage(msg.getFixMsgType());
-        builder.setDescription(msg.getDescription());
+        builder.id(msg.getId());
+        builder.irId(0);
+        builder.flag(flag);
+        builder.fixUsage(msg.getFixMsgType());
+        builder.description(msg.getDescription());
         irNodeList.add(new IrNode(new IrNode.Metadata(builder)));
     }
 
@@ -78,14 +77,14 @@ public class IrGenerator
     {
         IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(type.getName());
 
-        builder.setFlag(flag);
+        builder.flag(flag);
 
         if (type.getFixUsage() != null)
         {
-            builder.setFixUsage(type.getFixUsage().getName());
+            builder.fixUsage(type.getFixUsage().getName());
         }
 
-        builder.setDescription(type.getDescription());
+        builder.description(type.getDescription());
         irNodeList.add(new IrNode(new IrNode.Metadata(builder)));
     }
 
@@ -96,36 +95,36 @@ public class IrGenerator
         if (field.getEntryCountField() != null)
         {
             /* a group field */
-            builder.setXRefIrId(field.getEntryCountField().getIrId());
+            builder.sRefIrId(field.getEntryCountField().getIrId());
         }
         else if (field.getLengthField() != null)
         {
             /* a data field */
-            builder.setXRefIrId(field.getLengthField().getIrId());
+            builder.sRefIrId(field.getLengthField().getIrId());
         }
         else if (field.getGroupField() != null)
         {
             /* an entry count field for a group field */
-            builder.setXRefIrId(field.getGroupField().getIrId());
+            builder.sRefIrId(field.getGroupField().getIrId());
         }
         else if (field.getDataField() != null)
         {
             /* a length field for a data field */
-            builder.setXRefIrId(field.getDataField().getIrId());
+            builder.sRefIrId(field.getDataField().getIrId());
         }
 
-        builder.setId(field.getId());
-        builder.setIrId(field.getIrId());
-        builder.setFlag(flag);
-        builder.setDescription(field.getDescription());
+        builder.id(field.getId());
+        builder.irId(field.getIrId());
+        builder.flag(flag);
+        builder.description(field.getDescription());
 
         if (field.getFixUsage() != null)
         {
-            builder.setFixUsage(field.getFixUsage().getName());
+            builder.fixUsage(field.getFixUsage().getName());
         }
         else if (field.getType() != null && field.getType().getFixUsage() != null)
         {
-            builder.setFixUsage(field.getType().getFixUsage().getName());
+            builder.fixUsage(field.getType().getFixUsage().getName());
         }
 
         irNodeList.add(new IrNode(new IrNode.Metadata(builder)));
@@ -189,7 +188,6 @@ public class IrGenerator
      */
     private void add(final EnumType type, final Message.Field field)
     {
-        PrimitiveValue nullValue = null;
         PrimitiveType encodingType = type.getEncodingType();
         IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(encodingType.primitiveName());
 
@@ -197,7 +195,7 @@ public class IrGenerator
 
         if (type.getPresence() == Presence.OPTIONAL)
         {
-            builder.setNullValue(encodingType.nullValue());
+            builder.nullValue(encodingType.nullValue());
         }
 
         irNodeList.add(new IrNode(encodingType, encodingType.size(), currentOffset, byteOrder, new IrNode.Metadata(builder)));
@@ -219,9 +217,10 @@ public class IrGenerator
     {
         IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(value.getName());
 
-        builder.setFlag(IrNode.Flag.ENUM_VALUE);
-        builder.setConstValue(value.getPrimitiveValue());
-        builder.setDescription(value.getDescription());
+        builder.flag(IrNode.Flag.ENUM_VALUE);
+        builder.constValue(value.getPrimitiveValue());
+        builder.description(value.getDescription());
+
         irNodeList.add(new IrNode(new IrNode.Metadata(builder)));
     }
 
@@ -237,7 +236,6 @@ public class IrGenerator
 
         irNodeList.add(new IrNode(encodingType, encodingType.size(), currentOffset, byteOrder, new IrNode.Metadata(builder)));
 
-        /* loop over values and add each as an IrNode */
         for (final SetType.Choice choice : type.getChoices())
         {
             add(choice);
@@ -255,9 +253,10 @@ public class IrGenerator
     {
         IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(value.getName());
 
-        builder.setFlag(IrNode.Flag.SET_CHOICE);
-        builder.setConstValue(value.getPrimitiveValue());
-        builder.setDescription(value.getDescription());
+        builder.flag(IrNode.Flag.SET_CHOICE);
+        builder.constValue(value.getPrimitiveValue());
+        builder.description(value.getDescription());
+
         irNodeList.add(new IrNode(new IrNode.Metadata(builder)));
     }
 
@@ -268,21 +267,22 @@ public class IrGenerator
     {
         IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(type.getName());
 
-        // this might work better as a switch case
-        if (type.getPresence() == Presence.REQUIRED)
+        switch (type.getPresence())
         {
-            builder.setMinValue(type.getMinValue());
-            builder.setMaxValue(type.getMaxValue());
-        }
-        else if (type.getPresence() == Presence.OPTIONAL)
-        {
-            builder.setMinValue(type.getMinValue());
-            builder.setMaxValue(type.getMaxValue());
-            builder.setNullValue(type.getNullValue());
-        }
-        else if (type.getPresence() == Presence.CONSTANT)
-        {
-            builder.setConstValue(type.getConstValue());
+            case REQUIRED:
+                builder.minValue(type.getMinValue());
+                builder.maxValue(type.getMaxValue());
+                break;
+
+            case OPTIONAL:
+                builder.minValue(type.getMinValue());
+                builder.maxValue(type.getMaxValue());
+                builder.nullValue(type.getNullValue());
+                break;
+
+            case CONSTANT:
+                builder.constValue(type.getConstValue());
+                break;
         }
 
         irNodeList.add(new IrNode(type.getPrimitiveType(), type.size(), currentOffset, byteOrder, new IrNode.Metadata(builder)));

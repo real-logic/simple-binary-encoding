@@ -108,7 +108,6 @@ public class SetType extends Type
         private final String name;
         private final String description;
         private final PrimitiveValue value;
-        private final PrimitiveType encodingType;
 
         /**
          * Construct a Choice given the XML node and the encodingType
@@ -118,7 +117,6 @@ public class SetType extends Type
          */
         public Choice(final Node node, final PrimitiveType encodingType)
         {
-            this.encodingType = encodingType;
             name = getAttributeValue(node, "name");
             description = getAttributeValueOrNull(node, "description");
             value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());

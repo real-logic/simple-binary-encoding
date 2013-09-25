@@ -245,6 +245,16 @@ public class Message
         return fieldList;
     }
 
+    /**
+     * Return the size of the {@link Message} in bytes including any padding.
+     *
+     * @return the size of the {@link Message} in bytes including any padding.
+     */
+    public long getBlockLength()
+    {
+        return blockLength;
+    }
+
     /** Class to hold field (or group) information */
     public static class Field
     {

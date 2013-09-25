@@ -32,26 +32,20 @@
         <type name="timestamp" primitiveType="Int64" timeUnit="nanosecond" fixUsage="UTCTimestamp"/>
     </types>
 
-    <sbe:message name="MDOE" id="1"
-                 description="Order Entry Data for Book Reconstruction and MD generation">
-        <field type="Boolean" name="EoE"
-               description="End of Event Indicator"/>
+    <sbe:message name="MDOE" id="1" description="Order Entry Data for Book Reconstruction and MD generation">
+        <field type="Boolean" name="EoE" description="End of Event Indicator"/>
         <field type="Status" name="Status"/>
-        <field type="Int64" name="BookQty"
-               description="Book Quantity"/>
+        <field type="Int64" name="BookQty" description="Book Quantity"/>
         <field type="Int64" name="SecurityID"/>
         <field type="Int64" name="OrderID"/>
         <field type="decimal32" name="BookPrice"/>
         <field type="Side" name="Side"/>
         <field type="decimal32" name="FillPrice"/>
-        <field type="Int64" name="FillQty"
-               description="Fill Quantity"/>
+        <field type="Int64" name="FillQty" description="Fill Quantity"/>
         <field type="Int64" name="TradeID"/>
-        <field type="Int32" name="NumRealOrd" offset="0"
-               description="Number of Real Orders(Cons Fill)"/>
+        <field type="Int32" name="NumRealOrd" offset="0" description="Number of Real Orders(Cons Fill)"/>
         <field type="Boolean" name="Aggressor" offset="0"/>
         <field type="timestamp" name="EngineStart"/>
-        <field type="timestamp" name="EoETime"
-               description="The nanosecond end time of the event"/>
+        <field type="timestamp" name="EoETime" description="The nanosecond end time of the event"/>
     </sbe:message>
 </sbe:messageSchema>

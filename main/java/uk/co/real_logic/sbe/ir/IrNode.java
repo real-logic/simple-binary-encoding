@@ -383,52 +383,52 @@ public class IrNode
                 fixUsage = null;
             }
 
-            public void setId(final long id)
+            public void id(final long id)
             {
                 this.id = id;
             }
 
-            public void setIrId(final long irId)
+            public void irId(final long irId)
             {
                 this.irId = irId;
             }
 
-            public void setXRefIrId(final long xRefIrId)
+            public void sRefIrId(final long xRefIrId)
             {
                 this.xRefIrId = xRefIrId;
             }
 
-            public void setFlag(final Flag flag)
+            public void flag(final Flag flag)
             {
                 this.flag = flag;
             }
 
-            public void setMinValue(final PrimitiveValue minValue)
+            public void minValue(final PrimitiveValue minValue)
             {
                 this.minValue = minValue;
             }
 
-            public void setMaxValue(final PrimitiveValue maxValue)
+            public void maxValue(final PrimitiveValue maxValue)
             {
                 this.maxValue = maxValue;
             }
 
-            public void setNullValue(final PrimitiveValue nullValue)
+            public void nullValue(final PrimitiveValue nullValue)
             {
                 this.nullValue = nullValue;
             }
 
-            public void setConstValue(final PrimitiveValue constValue)
+            public void constValue(final PrimitiveValue constValue)
             {
                 this.constValue = constValue;
             }
 
-            public void setDescription(final String description)
+            public void description(final String description)
             {
                 this.description = description;
             }
 
-            public void setFixUsage(final String fixUsage)
+            public void fixUsage(final String fixUsage)
             {
                 this.fixUsage = fixUsage;
             }
