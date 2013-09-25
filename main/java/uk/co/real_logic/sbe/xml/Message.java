@@ -68,7 +68,7 @@ public class Message
          *
          * field
          * - name (required) - unique within message?
-         * - id (required) - unique within message?
+         * - schemaId (required) - unique within message?
          *
          * group
          * - name (required) - unique within message? field for num entries must precede it!
@@ -198,9 +198,9 @@ public class Message
     }
 
     /**
-     * Return the template id of the message
+     * Return the template schemaId of the message
      *
-     * @return id of the message
+     * @return schemaId of the message
      */
     public long getId()
     {
@@ -258,7 +258,7 @@ public class Message
     /** Class to hold field (or group) information */
     public static class Field
     {
-        public static final int INVALID_ID = Integer.MAX_VALUE;  // id must only be short, so this is way out of range.
+        public static final int INVALID_ID = Integer.MAX_VALUE;  // schemaId must only be short, so this is way out of range.
         public static final String INVALID_ID_STRING = Integer.toString(INVALID_ID);
 
         private final String name;          // required for field/data & group

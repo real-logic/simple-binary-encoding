@@ -66,8 +66,8 @@ public class IrGenerator
     {
         Metadata.Builder builder = new Metadata.Builder(msg.getName());
 
-        builder.id(msg.getId());
-        builder.irId(0);
+        builder.schemaId(msg.getId());
+        builder.id(0);
         builder.flag(signal);
         builder.fixUsage(msg.getFixMsgType());
         builder.description(msg.getDescription());
@@ -95,23 +95,23 @@ public class IrGenerator
 
         if (field.getEntryCountField() != null)
         {
-            builder.sRefIrId(field.getEntryCountField().getIrId());
+            builder.refId(field.getEntryCountField().getIrId());
         }
         else if (field.getLengthField() != null)
         {
-            builder.sRefIrId(field.getLengthField().getIrId());
+            builder.refId(field.getLengthField().getIrId());
         }
         else if (field.getGroupField() != null)
         {
-            builder.sRefIrId(field.getGroupField().getIrId());
+            builder.refId(field.getGroupField().getIrId());
         }
         else if (field.getDataField() != null)
         {
-            builder.sRefIrId(field.getDataField().getIrId());
+            builder.refId(field.getDataField().getIrId());
         }
 
-        builder.id(field.getId());
-        builder.irId(field.getIrId());
+        builder.schemaId(field.getId());
+        builder.id(field.getIrId());
         builder.flag(signal);
         builder.description(field.getDescription());
 

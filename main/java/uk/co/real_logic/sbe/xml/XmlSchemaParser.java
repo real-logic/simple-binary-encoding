@@ -153,7 +153,7 @@ public class XmlSchemaParser
      * @param document for the XML parsing
      * @param xPath    for XPath expression reuse
      * @param typeByNameMap to use for Type objects
-     * @return {@link java.util.Map} of id to Message
+     * @return {@link java.util.Map} of schemaId to Message
      */
     public static Map<Long, Message> findMessages(final Document document,
                                                   final XPath xPath,
@@ -175,9 +175,9 @@ public class XmlSchemaParser
     }
 
     /**
-     * Helper function to add a Message to a messageByIdMap based on id. Checks to make sure id does not exist.
+     * Helper function to add a Message to a messageByIdMap based on schemaId. Checks to make sure schemaId does not exist.
      *
-     * @param messageByIdMap     of id to Message objects
+     * @param messageByIdMap     of schemaId to Message objects
      * @param message to be added to messageByIdMap
      */
     private static void addMessageWithIdCheck(final Map<Long, Message> messageByIdMap, final Message message)

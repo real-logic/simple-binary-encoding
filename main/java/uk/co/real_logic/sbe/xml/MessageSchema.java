@@ -65,7 +65,7 @@ public class MessageSchema
     }
 
     /**
-     * Return a given {@link Message} object with the given id.
+     * Return a given {@link Message} object with the given schemaId.
      *
      * @param id of the message to return.
      */

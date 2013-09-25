@@ -26,9 +26,9 @@ public class Metadata
     public static final long INVALID_ID = Long.MAX_VALUE;
 
     private final String name;
+    private final long schemaId;
     private final long id;
-    private final long irId;
-    private final long xRefIrId;
+    private final long refId;
     private final Token.Signal signal;
     private final PrimitiveValue minValue;
     private final PrimitiveValue maxValue;
@@ -45,9 +45,9 @@ public class Metadata
     public Metadata(final Builder builder)
     {
         name = builder.name;
+        schemaId = builder.schemaId;
         id = builder.id;
-        irId = builder.irId;
-        xRefIrId = builder.xRefIrId;
+        refId = builder.refId;
         signal = builder.signal;
         minValue = builder.minValue;
         maxValue = builder.maxValue;
@@ -72,29 +72,29 @@ public class Metadata
      *
      * @return ID of the token assigned by the specification
      */
+    public long getSchemaId()
+    {
+        return schemaId;
+    }
+
+    /**
+     * Return the ID of the token.
+     *
+     * @return the ID of the token.
+     */
     public long getId()
     {
         return id;
     }
 
     /**
-     * Return the IR ID of the token.
+     * Return the cross reference ID of the token.
      *
-     * @return the IR ID of the token.
+     * @return the cross reference ID of the token.
      */
-    public long getIrId()
+    public long getRefId()
     {
-        return irId;
-    }
-
-    /**
-     * Return the cross reference IR ID of the token.
-     *
-     * @return the cross reference IR ID of the token.
-     */
-    public long getXRefIrId()
-    {
-        return xRefIrId;
+        return refId;
     }
 
     /**
@@ -171,9 +171,9 @@ public class Metadata
     public static class Builder
     {
         private String name;
+        private long schemaId;
         private long id;
-        private long irId;
-        private long xRefIrId;
+        private long refId;
         private Token.Signal signal;
         private PrimitiveValue minValue;
         private PrimitiveValue maxValue;
@@ -185,9 +185,9 @@ public class Metadata
         public Builder(final String name)
         {
             this.name = name;
+            schemaId = Metadata.INVALID_ID;
             id = Metadata.INVALID_ID;
-            irId = Metadata.INVALID_ID;
-            xRefIrId = Metadata.INVALID_ID;
+            refId = Metadata.INVALID_ID;
             this.signal = Token.Signal.NONE;
             minValue = null;
             maxValue = null;
@@ -197,19 +197,19 @@ public class Metadata
             fixUsage = null;
         }
 
+        public void schemaId(final long schemaId)
+        {
+            this.schemaId = schemaId;
+        }
+
         public void id(final long id)
         {
             this.id = id;
         }
 
-        public void irId(final long irId)
+        public void refId(final long refId)
         {
-            this.irId = irId;
-        }
-
-        public void sRefIrId(final long xRefIrId)
-        {
-            this.xRefIrId = xRefIrId;
+            this.refId = refId;
         }
 
         public void flag(final Token.Signal signal)

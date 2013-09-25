@@ -55,8 +55,8 @@ import java.nio.ByteOrder;
  *<p>
  * An example encoding of a message header might be like this.
  * <ul>
- *     <li>Token 0 - Signal = MESSAGE_START, id = 100</li>
- *     <li>Token 1 - Signal = FIELD_START, id = 25</li>
+ *     <li>Token 0 - Signal = MESSAGE_START, schemaId = 100</li>
+ *     <li>Token 1 - Signal = FIELD_START, schemaId = 25</li>
  *     <li>Token 2 - Signal = NONE, PrimitiveType = uint32, size = 4, offset = 0</li>
  *     <li>Token 3 - Signal = FIELD_END</li>
  *     <li>Token 4 - Signal = MESSAGE_END</li>
@@ -64,7 +64,7 @@ import java.nio.ByteOrder;
  *<p>
  * Specific nodes have IR IDs. These IDs are used to cross reference entities that have a relationship. Such as
  * length fields for variable length data elements, and entry count fields for repeating groups.
- * {@link Metadata#getIrId()} can be used to return the nodes IR ID. While {@link Metadata#getXRefIrId()} can
+ * {@link Metadata#getId()} can be used to return the nodes IR ID. While {@link Metadata#getRefId()} can
  * be used to return the nodes cross reference IR ID. Cross referencing is always two-way.
  */
 public class Token
