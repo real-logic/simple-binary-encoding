@@ -87,6 +87,7 @@ public class Message
     {
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, XPathConstants.NODESET);
+        int numGroupEncountered = 0, numDataEncountered = 0;
 
         List<Field> fieldList = new ArrayList<>();
         Map<String, Field> entryCountFieldMap = new HashMap<>();  // used for holding entry count fields and matching up
@@ -100,17 +101,16 @@ public class Message
             switch (nodeName)
             {
                 case "group":
-                    /*
-                     * must search for previously parsed field that has groupName = to name
-                     * (can this map be only visible on the stack?)
-                     * must exist as it had to be placed before the group.
-                     */
                     field = new Field(list.item(i), getAttributeValue(list.item(i), "name"));
                     Field entryCountField = entryCountFieldMap.get(field.getName());
 
                     if (entryCountField == null)
                     {
                         throw new IllegalArgumentException("could not find entry count field for group: " + field.getName());
+                    }
+                    else if (numDataEncountered > 0)
+                    {
+                        throw new IllegalArgumentException("group specified after data specified");
                     }
 
                     field.setEntryCountField(entryCountField);
@@ -123,6 +123,8 @@ public class Message
                     entryCountFieldMap.remove(field.getName()); // remove field so that it can't be reused as this level
 
                     field.setGroupFieldList(parseFieldsAndGroups(list.item(i), typeByNameMap)); // recursive call
+
+                    numGroupEncountered++;
                     break;
 
                 case "field":
@@ -141,6 +143,11 @@ public class Message
                     {
                         lengthFieldMap.put(Integer.valueOf(field.getRefId()), field);
                         field.setIrId(irIdCursor++);
+                    }
+
+                    if (numGroupEncountered > 0 || numDataEncountered > 0)
+                    {
+                        throw new IllegalArgumentException("field specified after group or data specified");
                     }
                     break;
 
@@ -164,6 +171,7 @@ public class Message
                     lengthField.setXRefIrId(field.getIrId());
 
                     lengthFieldMap.remove(Integer.valueOf(field.getId())); // remove field so that it can be reused
+                    numDataEncountered++;
                     break;
 
                 default:
@@ -172,10 +180,7 @@ public class Message
 
             fieldList.add(field);
         }
-        /*
-         * TODO: if the entryCountMap is not empty, then it means something didn't get matched up... warning?
-         * TODO: same for lengthFieldMap
-         */
+        // TODO: if the entryCountMap is not empty, then it means something didn't get matched up... warning? same for lengthFieldMap
         return fieldList;
     }
 
