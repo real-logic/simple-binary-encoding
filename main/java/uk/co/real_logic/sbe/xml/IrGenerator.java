@@ -17,14 +17,15 @@
 package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.ir.IrNode;
+import uk.co.real_logic.sbe.ir.Token;
+import uk.co.real_logic.sbe.ir.Metadata;
 
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class to hold all the state while generating the {@link IrNode} list.
+ * Class to hold all the state while generating the {@link uk.co.real_logic.sbe.ir.Token} list.
  * <p/>
  * Usage:
  * <code>
@@ -36,48 +37,48 @@ import java.util.List;
  */
 public class IrGenerator
 {
-    private final List<IrNode> irNodeList = new ArrayList<>();
+    private final List<Token> tokenList = new ArrayList<>();
     private int currentOffset = 0;
     private ByteOrder byteOrder;
 
-    public List<IrNode> generateForMessage(final Message msg)
+    public List<Token> generateForMessage(final Message msg)
     {
-        addStartOrEndNode(msg, IrNode.Flag.MESSAGE_START);
+        addStartOrEndNode(msg, Token.Signal.MESSAGE_START);
 
         addAllFields(msg.getFields());
 
-        addStartOrEndNode(msg, IrNode.Flag.MESSAGE_END);
+        addStartOrEndNode(msg, Token.Signal.MESSAGE_END);
 
-        return irNodeList;
+        return tokenList;
     }
 
-    public List<IrNode> generateForHeader(final MessageSchema schema)
+    public List<Token> generateForHeader(final MessageSchema schema)
     {
         byteOrder = schema.getByteOrder();
         CompositeType type = schema.getMessageHeader();
 
         add(type, null);
 
-        return irNodeList;
+        return tokenList;
     }
 
-    private void addStartOrEndNode(final Message msg, final IrNode.Flag flag)
+    private void addStartOrEndNode(final Message msg, final Token.Signal signal)
     {
-        IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(msg.getName());
+        Metadata.Builder builder = new Metadata.Builder(msg.getName());
 
         builder.id(msg.getId());
         builder.irId(0);
-        builder.flag(flag);
+        builder.flag(signal);
         builder.fixUsage(msg.getFixMsgType());
         builder.description(msg.getDescription());
-        irNodeList.add(new IrNode(new IrNode.Metadata(builder)));
+        tokenList.add(new Token(new Metadata(builder)));
     }
 
-    private void addStartOrEndNode(final Type type, final IrNode.Flag flag)
+    private void addStartOrEndNode(final Type type, final Token.Signal signal)
     {
-        IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(type.getName());
+        Metadata.Builder builder = new Metadata.Builder(type.getName());
 
-        builder.flag(flag);
+        builder.flag(signal);
 
         if (type.getFixUsage() != null)
         {
@@ -85,37 +86,33 @@ public class IrGenerator
         }
 
         builder.description(type.getDescription());
-        irNodeList.add(new IrNode(new IrNode.Metadata(builder)));
+        tokenList.add(new Token(new Metadata(builder)));
     }
 
-    private void addStartOrEndNode(final Message.Field field, final IrNode.Flag flag)
+    private void addStartOrEndNode(final Message.Field field, final Token.Signal signal)
     {
-        IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(field.getName());
+        Metadata.Builder builder = new Metadata.Builder(field.getName());
 
         if (field.getEntryCountField() != null)
         {
-            /* a group field */
             builder.sRefIrId(field.getEntryCountField().getIrId());
         }
         else if (field.getLengthField() != null)
         {
-            /* a data field */
             builder.sRefIrId(field.getLengthField().getIrId());
         }
         else if (field.getGroupField() != null)
         {
-            /* an entry count field for a group field */
             builder.sRefIrId(field.getGroupField().getIrId());
         }
         else if (field.getDataField() != null)
         {
-            /* a length field for a data field */
             builder.sRefIrId(field.getDataField().getIrId());
         }
 
         builder.id(field.getId());
         builder.irId(field.getIrId());
-        builder.flag(flag);
+        builder.flag(signal);
         builder.description(field.getDescription());
 
         if (field.getFixUsage() != null)
@@ -127,7 +124,7 @@ public class IrGenerator
             builder.fixUsage(field.getType().getFixUsage().getName());
         }
 
-        irNodeList.add(new IrNode(new IrNode.Metadata(builder)));
+        tokenList.add(new Token(new Metadata(builder)));
     }
 
     private void addAllFields(final List<Message.Field> fieldList)
@@ -136,136 +133,117 @@ public class IrGenerator
         {
             if (field.getType() == null)
             {
-                addStartOrEndNode(field, IrNode.Flag.GROUP_START);
-                // add all the fields in the group
+                addStartOrEndNode(field, Token.Signal.GROUP_START);
                 addAllFields(field.getGroupFieldList());
-                addStartOrEndNode(field, IrNode.Flag.GROUP_END);
+                addStartOrEndNode(field, Token.Signal.GROUP_END);
             }
             else if (field.getType() instanceof EncodedDataType)
             {
-                addStartOrEndNode(field, IrNode.Flag.FIELD_START);
+                addStartOrEndNode(field, Token.Signal.FIELD_START);
                 add((EncodedDataType)field.getType(), field);
-                addStartOrEndNode(field, IrNode.Flag.FIELD_END);
+                addStartOrEndNode(field, Token.Signal.FIELD_END);
             }
             else if (field.getType() instanceof CompositeType)
             {
-                addStartOrEndNode(field, IrNode.Flag.FIELD_START);
+                addStartOrEndNode(field, Token.Signal.FIELD_START);
                 add((CompositeType)field.getType(), field);
-                addStartOrEndNode(field, IrNode.Flag.FIELD_END);
+                addStartOrEndNode(field, Token.Signal.FIELD_END);
             }
             else if (field.getType() instanceof EnumType)
             {
-                addStartOrEndNode(field, IrNode.Flag.FIELD_START);
+                addStartOrEndNode(field, Token.Signal.FIELD_START);
                 add((EnumType)field.getType(), field);
-                addStartOrEndNode(field, IrNode.Flag.FIELD_END);
+                addStartOrEndNode(field, Token.Signal.FIELD_END);
             }
             else if (field.getType() instanceof SetType)
             {
-                addStartOrEndNode(field, IrNode.Flag.FIELD_START);
+                addStartOrEndNode(field, Token.Signal.FIELD_START);
                 add((SetType)field.getType(), field);
-                addStartOrEndNode(field, IrNode.Flag.FIELD_END);
+                addStartOrEndNode(field, Token.Signal.FIELD_END);
             }
         }
     }
 
-    /*
-     * generate IrNodes for composite types
-     */
     private void add(final CompositeType type, final Message.Field field)
     {
-        addStartOrEndNode(type, IrNode.Flag.COMPOSITE_START);
+        addStartOrEndNode(type, Token.Signal.COMPOSITE_START);
 
         for (final EncodedDataType edt : type.getTypeList())
         {
             add(edt, field);
         }
 
-        addStartOrEndNode(type, IrNode.Flag.COMPOSITE_END);
+        addStartOrEndNode(type, Token.Signal.COMPOSITE_END);
     }
 
-    /*
-     * generate IrNodes for enumerated types
-     */
     private void add(final EnumType type, final Message.Field field)
     {
         PrimitiveType encodingType = type.getEncodingType();
-        IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(encodingType.primitiveName());
+        Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
 
-        addStartOrEndNode(type, IrNode.Flag.ENUM_START);
+        addStartOrEndNode(type, Token.Signal.ENUM_START);
 
         if (type.getPresence() == Presence.OPTIONAL)
         {
             builder.nullValue(encodingType.nullValue());
         }
 
-        irNodeList.add(new IrNode(encodingType, encodingType.size(), currentOffset, byteOrder, new IrNode.Metadata(builder)));
+        tokenList.add(new Token(encodingType, encodingType.size(), currentOffset, byteOrder, new Metadata(builder)));
 
         for (final EnumType.ValidValue v : type.getValidValues())
         {
             add(v);
         }
 
-        addStartOrEndNode(type, IrNode.Flag.ENUM_END);
+        addStartOrEndNode(type, Token.Signal.ENUM_END);
 
         currentOffset += encodingType.size();
     }
 
-    /*
-     * Generate IrNode for ValidValue of EnumType
-     */
     private void add(final EnumType.ValidValue value)
     {
-        IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(value.getName());
+        Metadata.Builder builder = new Metadata.Builder(value.getName());
 
-        builder.flag(IrNode.Flag.ENUM_VALUE);
+        builder.flag(Token.Signal.ENUM_VALUE);
         builder.constValue(value.getPrimitiveValue());
         builder.description(value.getDescription());
 
-        irNodeList.add(new IrNode(new IrNode.Metadata(builder)));
+        tokenList.add(new Token(new Metadata(builder)));
     }
 
-    /*
-     * Generate IrNodes for bitset types
-     */
     private void add(final SetType type, final Message.Field field)
     {
         PrimitiveType encodingType = type.getEncodingType();
-        IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(encodingType.primitiveName());
+        Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
 
-        addStartOrEndNode(type, IrNode.Flag.SET_START);
+        addStartOrEndNode(type, Token.Signal.SET_START);
 
-        irNodeList.add(new IrNode(encodingType, encodingType.size(), currentOffset, byteOrder, new IrNode.Metadata(builder)));
+        tokenList.add(new Token(encodingType, encodingType.size(), currentOffset, byteOrder, new Metadata(builder)));
 
         for (final SetType.Choice choice : type.getChoices())
         {
             add(choice);
         }
 
-        addStartOrEndNode(type, IrNode.Flag.SET_END);
+        addStartOrEndNode(type, Token.Signal.SET_END);
 
         currentOffset += encodingType.size();
     }
 
-    /*
-     * generate IrNode for Choice of SetType
-     */
     private void add(final SetType.Choice value)
     {
-        IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(value.getName());
+        Metadata.Builder builder = new Metadata.Builder(value.getName());
 
-        builder.flag(IrNode.Flag.SET_CHOICE);
+        builder.flag(Token.Signal.SET_CHOICE);
         builder.constValue(value.getPrimitiveValue());
         builder.description(value.getDescription());
 
-        irNodeList.add(new IrNode(new IrNode.Metadata(builder)));
+        tokenList.add(new Token(new Metadata(builder)));
     }
 
-    /*
-     * generate IrNode for encoded types
-     */
     private void add(final EncodedDataType type, final Message.Field field)
     {
-        IrNode.Metadata.Builder builder = new IrNode.Metadata.Builder(type.getName());
+        Metadata.Builder builder = new Metadata.Builder(type.getName());
 
         switch (type.getPresence())
         {
@@ -285,7 +263,7 @@ public class IrGenerator
                 break;
         }
 
-        irNodeList.add(new IrNode(type.getPrimitiveType(), type.size(), currentOffset, byteOrder, new IrNode.Metadata(builder)));
+        tokenList.add(new Token(type.getPrimitiveType(), type.size(), currentOffset, byteOrder, new Metadata(builder)));
 
         currentOffset += type.size();
     }

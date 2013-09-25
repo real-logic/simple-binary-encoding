@@ -16,7 +16,7 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.ir.IrNode;
+import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 
@@ -192,7 +192,7 @@ public class EncodedDataType extends Type
 
         if (varLen)
         {
-            return IrNode.VARIABLE_SIZE;
+            return Token.VARIABLE_SIZE;
         }
 
         return (primitiveType.size() * length);
