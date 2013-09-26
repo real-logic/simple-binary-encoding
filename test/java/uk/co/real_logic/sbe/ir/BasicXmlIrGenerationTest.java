@@ -21,6 +21,8 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -240,15 +242,8 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(7).getMetadata().getRefId()), is(valueOf(1L)));
     }
 
-    private static InputStream getLocalResource(final String name)
+    private static InputStream getLocalResource(final String name) throws FileNotFoundException
     {
-        InputStream in = BasicXmlIrGenerationTest.class.getClassLoader().getResourceAsStream(name);
-
-        if (in == null)
-        {
-            throw new RuntimeException("could not find " + name);
-        }
-
-        return in;
+        return new FileInputStream("test/resources/" + name);
     }
 }
