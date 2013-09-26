@@ -182,7 +182,7 @@ public class PrimitiveValue
             case CHAR:
                 if (value.length() > 1)
                 {
-                    throw new IllegalArgumentException("Constant char value malformed");
+                    throw new IllegalArgumentException("Constant char value malformed: " + value);
                 }
                 return new PrimitiveValue((long)value.getBytes()[0]);
 
