@@ -113,9 +113,9 @@
 
     <target name="dist" depends="build, javadoc" description="Generate the distribution">
         <jar destfile="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar">
-	    <manifest>
-	        <attribute name="Main-Class" value="uk.co.real_logic.sbe.SbeTool"/>
-	    </manifest>
+            <manifest>
+                <attribute name="Main-Class" value="uk.co.real_logic.sbe.SbeTool"/>
+            </manifest>
             <fileset dir="${dir.main.build}"/>
         </jar>
         <jar destfile="${dir.dist}/${module.name}-api-${build.version}-${DSTAMP}.jar">
