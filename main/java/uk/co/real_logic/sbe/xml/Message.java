@@ -531,5 +531,29 @@ public class Message
         {
             return fixUsage;
         }
+
+        public String toString()
+        {
+            return "Field{" +
+                "name=" + name +
+                ", description=" + description +
+                ", groupName=" + groupName +
+                ", id=" + id +
+                ", type=" + type +
+                ", offset=" + offset +
+                ", fixUsage=" + fixUsage +
+                ", presence=" + presence +
+                ", refId=" + refId +
+                ", blockLength=" + blockLength +
+                ", groupFieldList=" + groupFieldList +
+                ", entryCountField=" + entryCountField +
+                ", lengthField=" + lengthField +
+                ", groupField=" + groupField +
+                ", dataField=" + dataField +
+                ", irId=" + irId +
+                ", irRefId =" + irRefId +
+                ", calculatedOffset=" + calculatedOffset +
+                '}';
+        }
     }
 }

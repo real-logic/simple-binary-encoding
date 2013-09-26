@@ -16,9 +16,13 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import java.util.List;
+
 import org.junit.Test;
 import uk.co.real_logic.sbe.TestUtil;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class BasicSchemaFileTest
@@ -42,5 +46,18 @@ public class BasicSchemaFileTest
         throws Exception
     {
         parse(TestUtil.getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
+    }
+
+    @Test
+    public void shouldHandleBasicAllTypes()
+        throws Exception
+    {
+        MessageSchema schema = parse(TestUtil.getLocalResource("BasicTypesSchemaFileTest.xml"));
+        List<Message.Field> fields = schema.getMessage(1).getFields();
+        assertThat(fields.get(0).getName(), is("header"));
+        assertThat(fields.get(1).getName(), is("EDTField"));
+        assertThat(fields.get(2).getName(), is("ENUMField"));
+        assertThat(fields.get(3).getName(), is("SETField"));
+        assertThat(fields.get(4).getName(), is("int64Field"));
     }
 }

@@ -100,6 +100,16 @@ public class EnumType extends Type
         return encodingType;
     }
 
+    /**
+     * The size (in octets) of the encodingType
+     *
+     * @return size of the encodingType
+     */
+    public int size()
+    {
+        return encodingType.size();
+    }
+
     public ValidValue getValidValue(final PrimitiveValue value)
     {
         return validValueByPrimitiveValueMap.get(value);
