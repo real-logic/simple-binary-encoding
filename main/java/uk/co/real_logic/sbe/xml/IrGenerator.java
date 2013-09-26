@@ -38,7 +38,6 @@ import java.util.List;
 public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
-    private int currentOffset = 0;
     private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
 
     public List<Token> generateForMessage(final MessageSchema schema, final long messageId)
@@ -50,7 +49,6 @@ public class IrGenerator
         }
 
         tokenList.clear();
-        currentOffset = 0;
         byteOrder = schema.getByteOrder();
 
         addMessageSignal(msg, Token.Signal.BEGIN_MESSAGE);
@@ -65,11 +63,10 @@ public class IrGenerator
     public List<Token> generateForHeader(final MessageSchema schema)
     {
         tokenList.clear();
-        currentOffset = 0;
 
         byteOrder = schema.getByteOrder();
         CompositeType type = schema.getMessageHeader();
-        add(type);
+        add(type, 0);
 
         return tokenList;
     }
@@ -137,19 +134,19 @@ public class IrGenerator
 
                 if (type instanceof EncodedDataType)
                 {
-                    add((EncodedDataType)type);
+                    add((EncodedDataType)type, field.getCalculatedOffset());
                 }
                 else if (type instanceof CompositeType)
                 {
-                    add((CompositeType)type);
+                    add((CompositeType)type, field.getCalculatedOffset());
                 }
                 else if (type instanceof EnumType)
                 {
-                    add((EnumType)type);
+                    add((EnumType)type, field.getCalculatedOffset());
                 }
                 else if (type instanceof SetType)
                 {
-                    add((SetType)type);
+                    add((SetType)type, field.getCalculatedOffset());
                 }
                 else
                 {
@@ -161,19 +158,23 @@ public class IrGenerator
         }
     }
 
-    private void add(final CompositeType type)
+    private void add(final CompositeType type, final int currOffset)
     {
+        int offset = currOffset;
+
         addTypeSignal(type, Token.Signal.BEGIN_COMPOSITE);
 
         for (final EncodedDataType edt : type.getTypeList())
         {
-            add(edt);
+            add(edt, offset);
+
+            offset += edt.size(); // bump offset for next type in list
         }
 
         addTypeSignal(type, Token.Signal.END_COMPOSITE);
     }
 
-    private void add(final EnumType type)
+    private void add(final EnumType type, final int offset)
     {
         PrimitiveType encodingType = type.getEncodingType();
         Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
@@ -185,7 +186,7 @@ public class IrGenerator
             builder.nullValue(encodingType.nullValue());
         }
 
-        tokenList.add(new Token(encodingType, encodingType.size(), currentOffset, byteOrder, builder.build()));
+        tokenList.add(new Token(encodingType, encodingType.size(), offset, byteOrder, builder.build()));
 
         for (final EnumType.ValidValue v : type.getValidValues())
         {
@@ -193,8 +194,6 @@ public class IrGenerator
         }
 
         addTypeSignal(type, Token.Signal.END_ENUM);
-
-        currentOffset += encodingType.size();
     }
 
     private void add(final EnumType.ValidValue value)
@@ -207,14 +206,14 @@ public class IrGenerator
         tokenList.add(new Token(builder.build()));
     }
 
-    private void add(final SetType type)
+    private void add(final SetType type, final int offset)
     {
         PrimitiveType encodingType = type.getEncodingType();
         Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
 
         addTypeSignal(type, Token.Signal.BEGIN_SET);
 
-        tokenList.add(new Token(encodingType, encodingType.size(), currentOffset, byteOrder, builder.build()));
+        tokenList.add(new Token(encodingType, encodingType.size(), offset, byteOrder, builder.build()));
 
         for (final SetType.Choice choice : type.getChoices())
         {
@@ -222,8 +221,6 @@ public class IrGenerator
         }
 
         addTypeSignal(type, Token.Signal.END_SET);
-
-        currentOffset += encodingType.size();
     }
 
     private void add(final SetType.Choice value)
@@ -236,7 +233,7 @@ public class IrGenerator
         tokenList.add(new Token(builder.build()));
     }
 
-    private void add(final EncodedDataType type)
+    private void add(final EncodedDataType type, final int offset)
     {
         Metadata.Builder builder = new Metadata.Builder(type.getName());
 
@@ -258,8 +255,6 @@ public class IrGenerator
                 break;
         }
 
-        tokenList.add(new Token(type.getPrimitiveType(), type.size(), currentOffset, byteOrder, builder.build()));
-
-        currentOffset += type.size();
+        tokenList.add(new Token(type.getPrimitiveType(), type.size(), offset, byteOrder, builder.build()));
     }
 }
