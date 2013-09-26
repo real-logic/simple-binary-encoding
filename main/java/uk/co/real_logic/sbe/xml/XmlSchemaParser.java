@@ -21,11 +21,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import uk.co.real_logic.sbe.PrimitiveType;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.HashMap;
@@ -55,7 +58,16 @@ public class XmlSchemaParser
     public static MessageSchema parse(final InputStream in)
         throws Exception
     {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+        String xsdFilename = System.getProperty("sbe.validate.xsd");
+        if (xsdFilename != null)
+        {
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            factory.setSchema(schemaFactory.newSchema(new File(xsdFilename)));
+        }
+
+        Document document = factory.newDocumentBuilder().parse(in);
         XPath xPath = XPathFactory.newInstance().newXPath();
 
         Map<String, Type> typeByNameMap = findTypes(document, xPath);
