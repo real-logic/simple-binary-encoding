@@ -18,19 +18,17 @@ package uk.co.real_logic.sbe.ir;
 
 import org.junit.Test;
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.List;
 
 import static java.lang.Integer.valueOf;
 import static java.lang.Long.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class BasicXmlIrGenerationTest
 {
@@ -38,7 +36,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageHeader()
         throws Exception
     {
-        MessageSchema schema = parse(getLocalResource("BasicSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
 
         List<Token> ir = irg.generateForHeader(schema);
@@ -96,7 +94,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForBasicMessage()
         throws Exception
     {
-        MessageSchema schema = parse(getLocalResource("BasicSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
 
         List<Token> ir = irg.generateForMessage(schema.getMessage(50001));
@@ -145,7 +143,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageWithVariableLengthField()
         throws Exception
     {
-        MessageSchema schema = parse(getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
 
         List<Token> ir = irg.generateForMessage(schema.getMessage(1));
@@ -222,7 +220,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageWithRepeatingGroup()
         throws Exception
     {
-        MessageSchema schema = parse(getLocalResource("BasicGroupSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("BasicGroupSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
 
         List<Token> ir = irg.generateForMessage(schema.getMessage(1));
@@ -240,10 +238,5 @@ public class BasicXmlIrGenerationTest
         assertThat(ir.get(7).getMetadata().getName(), is("Entries"));
         assertThat(valueOf(ir.get(7).getMetadata().getId()), is(valueOf(2L)));
         assertThat(valueOf(ir.get(7).getMetadata().getRefId()), is(valueOf(1L)));
-    }
-
-    private static InputStream getLocalResource(final String name) throws FileNotFoundException
-    {
-        return new FileInputStream("test/resources/" + name);
     }
 }

@@ -17,50 +17,30 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.junit.Test;
-
-import java.io.InputStream;
+import uk.co.real_logic.sbe.TestUtil;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class BasicSchemaFileTest
 {
-    /**
-     * Return an InputStream suitable for XML parsing from a given filename. Will search CP.
-     *
-     * @param name of the XML file
-     * @return {@link InputStream} of the file
-     * @throws RuntimeException if file not found
-     */
-    public InputStream getLocalResource(final String name)
-    {
-        InputStream in = getClass().getClassLoader().getResourceAsStream(name);
-
-        if (in == null)
-        {
-            throw new RuntimeException("Could not find " + name);
-        }
-
-        return in;
-    }
-
     @Test
     public void shouldHandleBasicFile()
         throws Exception
     {
-        parse(getLocalResource("BasicSchemaFileTest.xml"));
+        parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
     }
 
     @Test
     public void shouldHandleBasicFileWithGroup()
         throws Exception
     {
-        parse(getLocalResource("BasicGroupSchemaFileTest.xml"));
+        parse(TestUtil.getLocalResource("BasicGroupSchemaFileTest.xml"));
     }
 
     @Test
     public void shouldHandleBasicFileWithVariableLengthData()
         throws Exception
     {
-        parse(getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
+        parse(TestUtil.getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
     }
 }

@@ -23,7 +23,7 @@ import uk.co.real_logic.sbe.PrimitiveValue;
 public class Metadata
 {
     /** Invalid ID value. */
-    public static final long INVALID_ID = Long.MAX_VALUE;
+    public static final long INVALID_ID = -1;
 
     private final String name;
     private final long schemaId;
