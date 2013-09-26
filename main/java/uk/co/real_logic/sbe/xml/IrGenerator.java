@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class to hold all the state while generating the {@link uk.co.real_logic.sbe.ir.Token} list.
- * <p/>
+ * Class to hold all the state while generating the {@link Token} list.
+ * <p>
  * Usage:
  * <code>
  *     <pre>
