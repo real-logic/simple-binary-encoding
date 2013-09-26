@@ -77,7 +77,7 @@ public class IrGenerator
         builder.flag(signal);
         builder.fixUsage(msg.getFixMsgType());
         builder.description(msg.getDescription());
-        tokenList.add(new Token(new Metadata(builder)));
+        tokenList.add(new Token(builder.build()));
     }
 
     private void addTypeSignal(final Type type, final Token.Signal signal)
@@ -92,7 +92,7 @@ public class IrGenerator
         }
 
         builder.description(type.getDescription());
-        tokenList.add(new Token(new Metadata(builder)));
+        tokenList.add(new Token(builder.build()));
     }
 
     private void addFieldSignal(final Message.Field field, final Token.Signal signal)
@@ -130,7 +130,7 @@ public class IrGenerator
             builder.fixUsage(field.getType().getFixUsage().getName());
         }
 
-        tokenList.add(new Token(new Metadata(builder)));
+        tokenList.add(new Token(builder.build()));
     }
 
     private void addAllFields(final List<Message.Field> fieldList)
@@ -199,7 +199,7 @@ public class IrGenerator
             builder.nullValue(encodingType.nullValue());
         }
 
-        tokenList.add(new Token(encodingType, encodingType.size(), currentOffset, byteOrder, new Metadata(builder)));
+        tokenList.add(new Token(encodingType, encodingType.size(), currentOffset, byteOrder, builder.build()));
 
         for (final EnumType.ValidValue v : type.getValidValues())
         {
@@ -219,7 +219,7 @@ public class IrGenerator
         builder.constValue(value.getPrimitiveValue());
         builder.description(value.getDescription());
 
-        tokenList.add(new Token(new Metadata(builder)));
+        tokenList.add(new Token(builder.build()));
     }
 
     private void add(final SetType type)
@@ -229,7 +229,7 @@ public class IrGenerator
 
         addTypeSignal(type, Token.Signal.SET_START);
 
-        tokenList.add(new Token(encodingType, encodingType.size(), currentOffset, byteOrder, new Metadata(builder)));
+        tokenList.add(new Token(encodingType, encodingType.size(), currentOffset, byteOrder, builder.build()));
 
         for (final SetType.Choice choice : type.getChoices())
         {
@@ -249,7 +249,7 @@ public class IrGenerator
         builder.constValue(value.getPrimitiveValue());
         builder.description(value.getDescription());
 
-        tokenList.add(new Token(new Metadata(builder)));
+        tokenList.add(new Token(builder.build()));
     }
 
     private void add(final EncodedDataType type)
@@ -274,7 +274,7 @@ public class IrGenerator
                 break;
         }
 
-        tokenList.add(new Token(type.getPrimitiveType(), type.size(), currentOffset, byteOrder, new Metadata(builder)));
+        tokenList.add(new Token(type.getPrimitiveType(), type.size(), currentOffset, byteOrder, builder.build()));
 
         currentOffset += type.size();
     }

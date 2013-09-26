@@ -50,15 +50,15 @@ public class MessageSchema
     }
 
     /**
-     * @return the messageSchema messageHeader type or null if not defined. This should be a CompositeType.
+     * @return the Schema messageHeader type or null if not defined. This should be a {@link CompositeType}.
      */
     public CompositeType getMessageHeader()
     {
-        CompositeType type = ((CompositeType)typeByNameMap.get("messageHeader"));
+        CompositeType type = (CompositeType)typeByNameMap.get("messageHeader");
 
         if (type == null)
         {
-            throw new IllegalArgumentException("Message header not defined for messageSchema");
+            throw new IllegalStateException("Message header not defined for schema");
         }
 
         return type;

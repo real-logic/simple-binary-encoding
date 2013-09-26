@@ -37,24 +37,29 @@ public class Metadata
     private final String description;
     private final String fixUsage;
 
-    /**
-     * Constructor that uses used from a builder
-     *
-     * @param builder to use to build the metadata
-     */
-    public Metadata(final Builder builder)
+    public Metadata(final String name,
+                    final long schemaId,
+                    final long id,
+                    final long refId,
+                    final Token.Signal signal,
+                    final PrimitiveValue minValue,
+                    final PrimitiveValue maxValue,
+                    final PrimitiveValue nullValue,
+                    final PrimitiveValue constValue,
+                    final String description,
+                    final String fixUsage)
     {
-        name = builder.name;
-        schemaId = builder.schemaId;
-        id = builder.id;
-        refId = builder.refId;
-        signal = builder.signal;
-        minValue = builder.minValue;
-        maxValue = builder.maxValue;
-        nullValue = builder.nullValue;
-        constValue = builder.constValue;
-        description = builder.description;
-        fixUsage = builder.fixUsage;
+        this.name = name;
+        this.schemaId = schemaId;
+        this.id = id;
+        this.refId = refId;
+        this.signal = signal;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.nullValue = nullValue;
+        this.constValue = constValue;
+        this.description = description;
+        this.fixUsage = fixUsage;
     }
 
     /**
@@ -166,7 +171,7 @@ public class Metadata
     }
 
     /**
-     * Builder to make setting {@link Metadata} easier to create.
+     * Builder to make {@link Metadata} easier to create.
      */
     public static class Builder
     {
@@ -245,6 +250,11 @@ public class Metadata
         public void fixUsage(final String fixUsage)
         {
             this.fixUsage = fixUsage;
+        }
+
+        public Metadata build()
+        {
+            return new Metadata(name, schemaId, id, refId, signal, minValue, maxValue, nullValue, constValue, description, fixUsage);
         }
     }
 }
