@@ -45,17 +45,8 @@ public class EncodedDataType extends Type
      */
     public EncodedDataType(final Node node)
     {
-        super(node); // set the common schema attributes
+        super(node);
 
-        /*
-         * Grab schema attributes
-         * - primitiveType (required)
-         * - length (default = 1)
-         * - variableLength (default = false)
-         * - nullValue (optional)
-         * - minValue (optional)
-         * - maxValue (optional)
-         */
         primitiveType = PrimitiveType.lookup(getAttributeValue(node, "primitiveType"));
         length = Integer.parseInt(getAttributeValue(node, "length", "1"));
         varLen = Boolean.parseBoolean(getAttributeValue(node, "variableLength", "false"));
@@ -68,48 +59,42 @@ public class EncodedDataType extends Type
                 throw new IllegalArgumentException("type has declared presence \"constant\" but XML node has no data");
             }
 
-            constValue = new PrimitiveValue(primitiveType, node.getFirstChild().getNodeValue());
+            constValue = PrimitiveValue.parse(primitiveType, node.getFirstChild().getNodeValue());
         }
         else
         {
-            constValue = null; /* this value is invalid unless presence is constant */
+            constValue = null;
         }
-
-        /*
-         * NullValue, MinValue, MaxValue
-         * - if the schema overrides the primitives values, then save the values here. Else, we use the PrimitiveType min/max/null
-         */
 
         String minValueStr = getAttributeValueOrNull(node, "minValue");
         if (minValueStr != null)
         {
-            minValue = new PrimitiveValue(primitiveType, minValueStr);
+            minValue = PrimitiveValue.parse(primitiveType, minValueStr);
         }
         else
         {
-            minValue = null; /* this value is invalid unless minValue specified for type */
+            minValue = null;
         }
 
         String maxValueStr = getAttributeValueOrNull(node, "maxValue");
         if (maxValueStr != null)
         {
-            maxValue = new PrimitiveValue(primitiveType, maxValueStr);
+            maxValue = PrimitiveValue.parse(primitiveType, maxValueStr);
         }
         else
         {
-            maxValue = null; /* this value is invalid unless maxValue specified for type */
+            maxValue = null;
         }
 
         String nullValueStr = getAttributeValueOrNull(node, "nullValue");
         if (nullValueStr != null)
         {
-            // nullValue is mutually exclusive with presence=required or constant
             if (getPresence() != Presence.OPTIONAL)
             {
                 throw new IllegalArgumentException("nullValue set, but presence is not optional");
             }
 
-            nullValue = new PrimitiveValue(primitiveType, nullValueStr);
+            nullValue = PrimitiveValue.parse(primitiveType, nullValueStr);
         }
         else
         {

@@ -16,6 +16,8 @@
  */
 package uk.co.real_logic.sbe;
 
+import static java.lang.Double.doubleToLongBits;
+
 /**
  * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
  * <p/>
@@ -88,11 +90,11 @@ package uk.co.real_logic.sbe;
  */
 public class PrimitiveValue
 {
-    /** Representation of value is a Java long */
-    public static final int LONG_VALUE_REPRESENTATION = 0x1;
-
-    /** Representation of value is a Java double */
-    public static final int DOUBLE_VALUE_REPRESENTATION = 0x2;
+    public enum Representation
+    {
+        LONG,
+        DOUBLE
+    }
 
     public static final long MIN_VALUE_CHAR = 0x20;
     public static final long MAX_VALUE_CHAR = 0x7E;
@@ -138,27 +140,31 @@ public class PrimitiveValue
     public static final double MAX_VALUE_DOUBLE = Double.MAX_VALUE;
     public static final double NULL_VALUE_DOUBLE = Double.NaN;      // TODO: can NOT be used as a normal equality check
 
+    private final Representation representation;
     private final long longValue;
     private final double doubleValue;
-    private final int representation;
 
     /**
-     * Construct and fill in value as a long
+     * Construct and fill in value as a long.
      *
      * @param value in long format
      */
     public PrimitiveValue(final long value)
     {
+        representation = Representation.LONG;
         longValue = value;
         doubleValue = 0.0;
-        representation = LONG_VALUE_REPRESENTATION;
     }
 
+    /**
+     * Construct and fill in value as a double.
+     * @param value in double format
+     */
     public PrimitiveValue(final double value)
     {
+        representation = Representation.DOUBLE;
         longValue = 0;
         doubleValue = value;
-        representation = DOUBLE_VALUE_REPRESENTATION;
     }
 
     /**
@@ -166,9 +172,10 @@ public class PrimitiveValue
      *
      * @param primitiveType that this is supposed to be
      * @param value     expressed as a String
+     * @return a new {@link PrimitiveValue} for the value.
      * @throws IllegalArgumentException if parsing not known for type
      */
-    public PrimitiveValue(final PrimitiveType primitiveType, final String value)
+    public static PrimitiveValue parse(final PrimitiveType primitiveType, final String value)
     {
         switch (primitiveType)
         {
@@ -177,10 +184,7 @@ public class PrimitiveValue
                 {
                     throw new IllegalArgumentException("constant char value malformed");
                 }
-                longValue = value.getBytes()[0];
-                doubleValue = 0.0;
-                representation = LONG_VALUE_REPRESENTATION;
-                break;
+                return new PrimitiveValue((long)value.getBytes()[0]);
 
             case INT8:
             case INT16:
@@ -190,20 +194,12 @@ public class PrimitiveValue
             case UINT16:
             case UINT32:
             case UINT64:
-                /*
-                 * TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit integers...
-                 */
-                longValue = Long.parseLong(value);
-                doubleValue = 0.0;
-                representation = LONG_VALUE_REPRESENTATION;
-                break;
+                // TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit integers...
+                return new PrimitiveValue(Long.parseLong(value));
 
             case FLOAT:
             case DOUBLE:
-                longValue = 0;
-                doubleValue = Double.parseDouble(value);
-                representation = DOUBLE_VALUE_REPRESENTATION;
-                break;
+                return new PrimitiveValue(Double.parseDouble(value));
 
             default:
                 throw new IllegalArgumentException("Do not know how to parse this primitiveType type for constant value");
@@ -218,7 +214,7 @@ public class PrimitiveValue
      */
     public long longValue()
     {
-        if (representation != LONG_VALUE_REPRESENTATION)
+        if (representation != Representation.LONG)
         {
             throw new IllegalArgumentException("PrimitiveValue is not a long representation");
         }
@@ -236,35 +232,47 @@ public class PrimitiveValue
     {
         switch (representation)
         {
-            case LONG_VALUE_REPRESENTATION:
+            case LONG:
                 return Long.toString(longValue);
 
-            case DOUBLE_VALUE_REPRESENTATION:
+            case DOUBLE:
                 return Double.toString(doubleValue);
 
             default:
-                throw new IllegalArgumentException("Unknown PrimitiveValue representation");
+                throw new IllegalStateException("Unsupported Representation: " + representation);
         }
     }
 
     /**
      * Determine if two values are equivalent.
-     * TODO: does not work for NaN for float and double.
      *
      * @param value to compare this value with
      * @return equivalence of values
      */
     public boolean equals(final Object value)
     {
-        /* should only be used for long value representation at the moment */
         if (null != value && value instanceof PrimitiveValue)
         {
             PrimitiveValue rhs = (PrimitiveValue)value;
 
-            if (representation == rhs.representation &&
-                longValue == rhs.longValue)
+            if (representation == rhs.representation)
             {
-                return true;
+                switch (representation)
+                {
+                    case LONG:
+                        if (longValue == rhs.longValue)
+                        {
+                            return true;
+                        }
+                        break;
+
+                    case DOUBLE:
+                        if (doubleToLongBits(doubleValue) == doubleToLongBits(rhs.doubleValue))
+                        {
+                            return true;
+                        }
+                        break;
+                }
             }
         }
 
@@ -278,11 +286,8 @@ public class PrimitiveValue
      */
     public int hashCode()
     {
-        if (representation != LONG_VALUE_REPRESENTATION)
-        {
-            throw new IllegalArgumentException("PrimitiveValue is not a long representation");
-        }
+        final long bits = (representation == Representation.DOUBLE) ? doubleToLongBits(doubleValue) : longValue;
 
-        return (int)(longValue ^ (longValue >>> 32));
+        return (int)(bits ^ (bits >>> 32));
     }
 }

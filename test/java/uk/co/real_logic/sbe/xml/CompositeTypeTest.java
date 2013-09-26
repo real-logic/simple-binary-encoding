@@ -46,7 +46,7 @@ public class CompositeTypeTest
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-        Map<String, Type> map = new HashMap<String, Type>();
+        Map<String, Type> map = new HashMap<>();
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
@@ -95,7 +95,7 @@ public class CompositeTypeTest
         assertThat(decimal32.getType("mantissa").getPrimitiveType(), is(PrimitiveType.INT32));
         assertThat(decimal32.getType("exponent").getPrimitiveType(), is(PrimitiveType.INT8));
         assertThat(decimal32.getType("exponent").getPresence(), is(Presence.CONSTANT));
-        assertThat((decimal32.getType("exponent")).getConstValue(), is(new PrimitiveValue(PrimitiveType.INT8, "-2")));
+        assertThat((decimal32.getType("exponent")).getConstValue(), is(PrimitiveValue.parse(PrimitiveType.INT8, "-2")));
         assertThat(valueOf(decimal32.size()), is(valueOf(4)));
     }
 
@@ -117,7 +117,7 @@ public class CompositeTypeTest
         assertThat(decimal64.getType("mantissa").getPrimitiveType(), is(PrimitiveType.INT64));
         assertThat(decimal64.getType("exponent").getPrimitiveType(), is(PrimitiveType.INT8));
         assertThat(decimal64.getType("exponent").getPresence(), is(Presence.CONSTANT));
-        assertThat((decimal64.getType("exponent")).getConstValue(), is(new PrimitiveValue(PrimitiveType.INT8, "-2")));
+        assertThat((decimal64.getType("exponent")).getConstValue(), is(PrimitiveValue.parse(PrimitiveType.INT8, "-2")));
         assertThat(valueOf(decimal64.size()), is(valueOf(8)));
     }
 
@@ -155,7 +155,7 @@ public class CompositeTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         CompositeType c = (CompositeType)map.get("PRICENULL");
-        assertThat((c.getType("mantissa")).getNullValue(), is(new PrimitiveValue(PrimitiveType.INT64, nullValStr)));
+        assertThat((c.getType("mantissa")).getNullValue(), is(PrimitiveValue.parse(PrimitiveType.INT64, nullValStr)));
     }
 
     @Test(expected = IllegalArgumentException.class)

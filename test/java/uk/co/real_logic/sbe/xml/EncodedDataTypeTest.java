@@ -22,7 +22,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.PrimitiveValue;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,6 +38,7 @@ import static java.lang.Boolean.valueOf;
 import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static uk.co.real_logic.sbe.PrimitiveValue.parse;
 
 public class EncodedDataTypeTest
 {
@@ -48,7 +48,7 @@ public class EncodedDataTypeTest
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-        Map<String, Type> map = new HashMap<String, Type>();
+        Map<String, Type> map = new HashMap<>();
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
@@ -330,7 +330,7 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypePresenceConst")).getConstValue()), is(new PrimitiveValue(PrimitiveType.CHAR, "F")));
+        assertThat((((EncodedDataType)map.get("testTypePresenceConst")).getConstValue()), is(parse(PrimitiveType.CHAR, "F")));
     }
 
     @Test
@@ -383,7 +383,7 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypeInt8MinValue")).getMinValue()), is(new PrimitiveValue(PrimitiveType.INT8, minVal)));
+        assertThat((((EncodedDataType)map.get("testTypeInt8MinValue")).getMinValue()), is(parse(PrimitiveType.INT8, minVal)));
     }
 
     @Test
@@ -397,7 +397,7 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypeInt8MaxValue")).getMaxValue()), is(new PrimitiveValue(PrimitiveType.INT8, maxVal)));
+        assertThat((((EncodedDataType)map.get("testTypeInt8MaxValue")).getMaxValue()), is(parse(PrimitiveType.INT8, maxVal)));
     }
 
     @Test
@@ -412,7 +412,7 @@ public class EncodedDataTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).getNullValue()),
-                   is(new PrimitiveValue(PrimitiveType.INT8, nullVal)));
+                   is(parse(PrimitiveType.INT8, nullVal)));
     }
 
     @Test(expected = IllegalArgumentException.class)

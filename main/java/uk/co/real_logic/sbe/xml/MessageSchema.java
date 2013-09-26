@@ -50,7 +50,7 @@ public class MessageSchema
     }
 
     /**
-     * Return the messageSchema messageHeader type or null if not defined. This should be a CompositeType.
+     * @return the messageSchema messageHeader type or null if not defined. This should be a CompositeType.
      */
     public CompositeType getMessageHeader()
     {
@@ -64,14 +64,35 @@ public class MessageSchema
         return type;
     }
 
+    public String getPackage()
+    {
+        return pkg;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public long getVersion()
+    {
+        return version;
+    }
+
+    public String getFixVersion()
+    {
+        return fixVersion;
+    }
+
     /**
      * Return a given {@link Message} object with the given schemaId.
      *
-     * @param id of the message to return.
+     * @param schemaId of the message to return.
+     * @return a given {@link Message} for the schemaId.
      */
-    public Message getMessage(final long id)
+    public Message getMessage(final long schemaId)
     {
-        return messageByIdMap.get(Long.valueOf(id));
+        return messageByIdMap.get(Long.valueOf(schemaId));
     }
 
     /**
@@ -81,6 +102,4 @@ public class MessageSchema
     {
         return byteOrder;
     }
-
-
 }

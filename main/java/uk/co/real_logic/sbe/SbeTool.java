@@ -17,19 +17,19 @@
 package uk.co.real_logic.sbe;
 
 import uk.co.real_logic.sbe.xml.MessageSchema;
+import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
-
 /**
- * The main function for SBE parser, validator, and code generator
+ * A tool for running the SBE parser, validator, and code generator
  *<p>
  * Usage:
  * <code>
  *  <pre>
- *  $ java -cp sbe.jar uk.co.real_logic.sbe.SbeMain filename.xml
- *  $ java -cp sbe.jar -Doption=value uk.co.real_logic.sbe.SbeMain filename.xml
+ *  $ java -cp sbe.jar uk.co.real_logic.sbe.SbeTool &lt;filename.xml&gt;
+ *  $ java -cp sbe.jar -Doption=value uk.co.real_logic.sbe.SbeTool &lt;filename.xml&gt;
  *  </pre>
  * </code>
  *<p>
@@ -40,26 +40,19 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
  *  <li><code>sbe.generate</code>: Generate or not</li>
  * </ul>
  */
-public class SbeMain
+public class SbeTool
 {
-    public static void main(String[] args)
+    public static void main(final String[] args) throws Exception
     {
-        try
+        if (args.length < 1)
         {
-            if (args.length > 1)
-            {
-                System.err.println("Usage: SbeMain filenames");
-            }
-
-            for (String filename : args)
-            {
-                MessageSchema schema = parse(new FileInputStream(filename));
-
-            }
+            System.err.format("Usage: %s <filenames>\n", SbeTool.class.getName());
         }
-        catch (Exception e)
+
+        for (final String filename : args)
         {
-            e.printStackTrace();
+            MessageSchema schema = XmlSchemaParser.parse(new BufferedInputStream(new FileInputStream(filename)));
+
         }
     }
 }

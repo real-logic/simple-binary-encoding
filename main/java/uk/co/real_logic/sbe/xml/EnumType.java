@@ -50,13 +50,8 @@ public class EnumType extends Type
     public EnumType(final Node node)
         throws XPathExpressionException, IllegalArgumentException
     {
-        super(node); // set the common schema attributes
+        super(node);
 
-        /*
-         * grab attributes from schema
-         * - encodingType (required) - must be either 'char' or 'int8' according to spec
-         * - nullValue (optional with presence=optional)
-         */
         encodingType = PrimitiveType.lookup(getAttributeValue(node, "encodingType"));
         if (encodingType != PrimitiveType.CHAR && encodingType != PrimitiveType.UINT8)
         {
@@ -66,13 +61,12 @@ public class EnumType extends Type
         String nullValueStr = getAttributeValueOrNull(node, "nullValue");
         if (nullValueStr != null)
         {
-            // nullValue is mutually exclusive with presence=required or constant
             if (getPresence() != Presence.OPTIONAL)
             {
                 throw new IllegalArgumentException("nullValue set, but presence is not optional");
             }
 
-            nullValue = new PrimitiveValue(encodingType, nullValueStr);
+            nullValue = PrimitiveValue.parse(encodingType, nullValueStr);
         }
         else
         {
@@ -150,7 +144,7 @@ public class EnumType extends Type
         {
             name = getAttributeValue(node, "name");
             description = getAttributeValueOrNull(node, "description");
-            value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());
+            value = PrimitiveValue.parse(encodingType, node.getFirstChild().getNodeValue());
         }
 
         public PrimitiveValue getPrimitiveValue()

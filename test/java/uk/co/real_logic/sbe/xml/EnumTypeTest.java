@@ -54,7 +54,7 @@ public class EnumTypeTest
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-        Map<String, Type> map = new HashMap<String, Type>();
+        Map<String, Type> map = new HashMap<>();
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
@@ -82,8 +82,8 @@ public class EnumTypeTest
         assertThat(e.getName(), is("biOp"));
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.getValidValues().size()), is(valueOf(2)));
-        assertThat(e.getValidValue("on").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "1")));
-        assertThat(e.getValidValue("off").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "0")));
+        assertThat(e.getValidValue("on").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.UINT8, "1")));
+        assertThat(e.getValidValue("off").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.UINT8, "0")));
     }
 
     @Test
@@ -103,8 +103,8 @@ public class EnumTypeTest
         assertThat(e.getName(), is("boolean"));
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.getValidValues().size()), is(valueOf(2)));
-        assertThat(e.getValidValue("true").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "1")));
-        assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "0")));
+        assertThat(e.getValidValue("true").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.UINT8, "1")));
+        assertThat(e.getValidValue("false").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.UINT8, "0")));
     }
 
     @Test
@@ -125,9 +125,9 @@ public class EnumTypeTest
         assertThat(e.getName(), is("optionalBoolean"));
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.getValidValues().size()), is(valueOf(2)));
-        assertThat(e.getValidValue("true").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "1")));
-        assertThat(e.getValidValue("false").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.UINT8, "0")));
-        assertThat(e.getNullValue(), is(new PrimitiveValue(PrimitiveType.UINT8, nullValueStr)));
+        assertThat(e.getValidValue("true").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.UINT8, "1")));
+        assertThat(e.getValidValue("false").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.UINT8, "0")));
+        assertThat(e.getNullValue(), is(PrimitiveValue.parse(PrimitiveType.UINT8, nullValueStr)));
     }
 
     @Test
@@ -188,10 +188,10 @@ public class EnumTypeTest
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("mixed");
         assertThat(e.getEncodingType(), is(PrimitiveType.CHAR));
-        assertThat(e.getValidValue("Cee").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.CHAR, "C")));
-        assertThat(e.getValidValue("One").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.CHAR, "1")));
-        assertThat(e.getValidValue("Two").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.CHAR, "2")));
-        assertThat(e.getValidValue("Eee").getPrimitiveValue(), is(new PrimitiveValue(PrimitiveType.CHAR, "E")));
+        assertThat(e.getValidValue("Cee").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.CHAR, "C")));
+        assertThat(e.getValidValue("One").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.CHAR, "1")));
+        assertThat(e.getValidValue("Two").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.CHAR, "2")));
+        assertThat(e.getValidValue("Eee").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.CHAR, "E")));
     }
 
     @Test(expected = IllegalArgumentException.class)

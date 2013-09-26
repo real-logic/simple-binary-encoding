@@ -83,7 +83,6 @@ public class Message
 
         fieldList = parseFieldsAndGroups(messageNode, typeByNameMap);
 
-        /* validation of offsets and blockLength */
         validateBlockLength(blockLength, calculateAndValidateOffsets(fieldList));
     }
 
@@ -190,19 +189,6 @@ public class Message
         return fieldList;
     }
 
-    /** static method to encapsulate exception for them type does not exist. */
-    private static Type lookupType(final Map<String, Type> typeByNameMap, final String name)
-        throws IllegalArgumentException
-    {
-        Type type = typeByNameMap.get(name);
-        if (type == null)
-        {
-            throw new IllegalArgumentException("Type does not exist for name: " + name);
-        }
-
-        return type;
-    }
-
     /**
      * Calculate and validate the offsets of the fields in the list. Will set the fields calculatedOffset.
      * Will validate the blockLength of the fields encompassing &lt;message&gt; or &lt;group&gt;. Will recurse
@@ -265,17 +251,6 @@ public class Message
     }
 
     /**
-     * Helper to handle incorrect specified SBE blockLength
-     */
-    private void validateBlockLength(final long specifiedBlockLength, final long calculatedBlockLength)
-    {
-        if (0 < specifiedBlockLength && calculatedBlockLength > specifiedBlockLength)
-        {
-            throw new IllegalArgumentException("specified blockLength is too small");
-        }
-    }
-
-    /**
      * Return the template schemaId of the message
      *
      * @return schemaId of the message
@@ -333,7 +308,28 @@ public class Message
         return blockLength;
     }
 
-    /** Class to hold field (or group) information */
+    private static Type lookupType(final Map<String, Type> typeByNameMap, final String name)
+        throws IllegalArgumentException
+    {
+        Type type = typeByNameMap.get(name);
+        if (type == null)
+        {
+            throw new IllegalArgumentException("Type does not exist for name: " + name);
+        }
+
+        return type;
+    }
+
+    private void validateBlockLength(final long specifiedBlockLength, final long calculatedBlockLength)
+    {
+        if (0 < specifiedBlockLength && calculatedBlockLength > specifiedBlockLength)
+        {
+            throw new IllegalArgumentException("specified blockLength is too small");
+        }
+    }
+
+
+    /** Holder for Field (or Group) information */
     public static class Field
     {
         public static final int INVALID_ID = Integer.MAX_VALUE;  // schemaId must only be short, so this is way out of range.

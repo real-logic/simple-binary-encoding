@@ -47,12 +47,8 @@ public class SetType extends Type
     public SetType(final Node node)
         throws XPathExpressionException, IllegalArgumentException
     {
-        super(node); // set the common schema attributes
+        super(node);
 
-        /*
-         * grab attributes from schema
-         * - encodingType (required) - must be either uint8, uint16, uint32, or uint64
-         */
         encodingType = PrimitiveType.lookup(getAttributeValue(node, "encodingType"));
         if (encodingType != PrimitiveType.UINT8 && encodingType != PrimitiveType.UINT16 &&
             encodingType != PrimitiveType.UINT32 && encodingType != PrimitiveType.UINT64)
@@ -102,7 +98,7 @@ public class SetType extends Type
         return choiceByNameMap.values();
     }
 
-    /** Class to hold valid values for EnumType */
+    /** Holder for valid values for EnumType */
     public static class Choice
     {
         private final String name;
@@ -119,7 +115,7 @@ public class SetType extends Type
         {
             name = getAttributeValue(node, "name");
             description = getAttributeValueOrNull(node, "description");
-            value = new PrimitiveValue(encodingType, node.getFirstChild().getNodeValue());
+            value = PrimitiveValue.parse(encodingType, node.getFirstChild().getNodeValue());
 
             // choice values are bit positions (0, 1, 2, 3, 4, etc.) from LSB to MSB
             if (value.longValue() >= (encodingType.size() * 8))
