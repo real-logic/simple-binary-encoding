@@ -81,7 +81,6 @@ public class IrGenerator
         builder.schemaId(msg.getId());
         builder.id(0);
         builder.flag(signal);
-        builder.description(msg.getDescription());
         tokenList.add(new Token(builder.build()));
     }
 
@@ -90,7 +89,6 @@ public class IrGenerator
         Metadata.Builder builder = new Metadata.Builder(type.getName());
 
         builder.flag(signal);
-        builder.description(type.getDescription());
         tokenList.add(new Token(builder.build()));
     }
 
@@ -118,7 +116,6 @@ public class IrGenerator
         builder.schemaId(field.getId());
         builder.id(field.getIrId());
         builder.flag(signal);
-        builder.description(field.getDescription());
         tokenList.add(new Token(builder.build()));
     }
 
@@ -206,7 +203,6 @@ public class IrGenerator
 
         builder.flag(Token.Signal.VALID_VALUE);
         builder.constValue(value.getPrimitiveValue());
-        builder.description(value.getDescription());
 
         tokenList.add(new Token(builder.build()));
     }
@@ -236,7 +232,6 @@ public class IrGenerator
 
         builder.flag(Token.Signal.CHOICE);
         builder.constValue(value.getPrimitiveValue());
-        builder.description(value.getDescription());
 
         tokenList.add(new Token(builder.build()));
     }

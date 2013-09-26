@@ -34,7 +34,6 @@ public class Metadata
     private final PrimitiveValue maxValue;
     private final PrimitiveValue nullValue;
     private final PrimitiveValue constValue;
-    private final String description;
 
     public Metadata(final String name,
                     final long schemaId,
@@ -44,8 +43,7 @@ public class Metadata
                     final PrimitiveValue minValue,
                     final PrimitiveValue maxValue,
                     final PrimitiveValue nullValue,
-                    final PrimitiveValue constValue,
-                    final String description)
+                    final PrimitiveValue constValue)
     {
         this.name = name;
         this.schemaId = schemaId;
@@ -56,7 +54,6 @@ public class Metadata
         this.maxValue = maxValue;
         this.nullValue = nullValue;
         this.constValue = constValue;
-        this.description = description;
     }
 
     /**
@@ -149,16 +146,6 @@ public class Metadata
         return constValue;
     }
 
-    /**
-     * Return the description for the token or null if not set.
-     *
-     * @return the description for the token or null if not set.
-     */
-    public String getDescription()
-    {
-        return description;
-    }
-
     public String toString()
     {
         return "Metadata{" +
@@ -171,7 +158,6 @@ public class Metadata
             ", maxValue=" + maxValue +
             ", nullValue=" + nullValue +
             ", constValue=" + constValue +
-            ", description='" + description + '\'' +
             '}';
     }
 
@@ -189,7 +175,6 @@ public class Metadata
         private PrimitiveValue maxValue;
         private PrimitiveValue nullValue;
         private PrimitiveValue constValue;
-        private String description;
 
         public Builder(final String name)
         {
@@ -202,7 +187,6 @@ public class Metadata
             maxValue = null;
             nullValue = null;
             constValue = null;
-            description = null;
         }
 
         public void schemaId(final long schemaId)
@@ -245,14 +229,9 @@ public class Metadata
             this.constValue = constValue;
         }
 
-        public void description(final String description)
-        {
-            this.description = description;
-        }
-
         public Metadata build()
         {
-            return new Metadata(name, schemaId, id, refId, signal, minValue, maxValue, nullValue, constValue, description);
+            return new Metadata(name, schemaId, id, refId, signal, minValue, maxValue, nullValue, constValue);
         }
     }
 }
