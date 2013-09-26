@@ -22,6 +22,7 @@ import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 
+import java.nio.ByteOrder;
 import java.util.List;
 
 import static java.lang.Integer.valueOf;
@@ -57,6 +58,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(1).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(1).size()), is(valueOf(2)));
         assertThat(valueOf(ir.get(1).getOffset()), is(valueOf(0)));
+        assertThat(ir.get(1).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 2 */
         assertThat(ir.get(2).getMetadata().getSignal(), is(Token.Signal.ENCODING));
@@ -65,6 +67,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(2).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(2).size()), is(valueOf(2)));
         assertThat(valueOf(ir.get(2).getOffset()), is(valueOf(2)));
+        assertThat(ir.get(2).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 3 */
         assertThat(ir.get(3).getMetadata().getSignal(), is(Token.Signal.ENCODING));
@@ -73,6 +76,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(3).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(3).size()), is(valueOf(1)));
         assertThat(valueOf(ir.get(3).getOffset()), is(valueOf(4)));
+        assertThat(ir.get(3).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 4 */
         assertThat(ir.get(4).getMetadata().getSignal(), is(Token.Signal.ENCODING));
@@ -81,6 +85,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(4).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(4).size()), is(valueOf(1)));
         assertThat(valueOf(ir.get(4).getOffset()), is(valueOf(5)));
+        assertThat(ir.get(4).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 5 */
         assertThat(ir.get(5).getMetadata().getSignal(), is(Token.Signal.END_COMPOSITE));
@@ -122,6 +127,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(2).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(2).size()), is(valueOf(4)));
         assertThat(valueOf(ir.get(2).getOffset()), is(valueOf(0)));
+        assertThat(ir.get(2).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 3 */
         assertThat(ir.get(3).getMetadata().getSignal(), is(Token.Signal.END_FIELD));
@@ -173,6 +179,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(2).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(2).size()), is(valueOf(1)));
         assertThat(valueOf(ir.get(2).getOffset()), is(valueOf(0)));
+        assertThat(ir.get(2).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 3 */
         assertThat(ir.get(3).getMetadata().getSignal(), is(Token.Signal.END_FIELD));
@@ -197,6 +204,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(5).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(5).size()), is(valueOf(-1)));
         assertThat(valueOf(ir.get(5).getOffset()), is(valueOf(1)));
+        assertThat(ir.get(5).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 6 */
         assertThat(ir.get(6).getMetadata().getSignal(), is(Token.Signal.END_FIELD));
