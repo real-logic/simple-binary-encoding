@@ -55,11 +55,11 @@ import java.nio.ByteOrder;
  *<p>
  * An example encoding of a message header might be like this.
  * <ul>
- *     <li>Token 0 - Signal = MESSAGE_START, schemaId = 100</li>
- *     <li>Token 1 - Signal = FIELD_START, schemaId = 25</li>
- *     <li>Token 2 - Signal = NONE, PrimitiveType = uint32, size = 4, offset = 0</li>
- *     <li>Token 3 - Signal = FIELD_END</li>
- *     <li>Token 4 - Signal = MESSAGE_END</li>
+ *     <li>Token 0 - Signal = BEGIN_MESSAGE, schemaId = 100</li>
+ *     <li>Token 1 - Signal = BEGIN_FIELD, schemaId = 25</li>
+ *     <li>Token 2 - Signal = ENCODING, PrimitiveType = uint32, size = 4, offset = 0</li>
+ *     <li>Token 3 - Signal = END_FIELD</li>
+ *     <li>Token 4 - Signal = END_MESSAGE</li>
  * </ul>
  *<p>
  * Specific nodes have IR IDs. These IDs are used to cross reference entities that have a relationship. Such as
@@ -173,54 +173,54 @@ public class Token
     }
 
     /**
-     * Signal the {@link Token} purpose. These signals start/end various entities such as
+     * Signal the {@link Token} role within a stream of tokens. These signals begin/end various entities such as
      * fields, composites, messages, repeating groups, enumerations, bitsets, etc.
      */
     public enum Signal
     {
-        /** Denotes the start of a message */
-        MESSAGE_START,
+        /** Denotes the beginning of a message */
+        BEGIN_MESSAGE,
 
         /** Denotes the end of a message */
-        MESSAGE_END,
+        END_MESSAGE,
 
-        /** Denotes the start of a composite */
-        COMPOSITE_START,
+        /** Denotes the beginning of a composite */
+        BEGIN_COMPOSITE,
 
         /** Denotes the end of a composite */
-        COMPOSITE_END,
+        END_COMPOSITE,
 
-        /** Denotes the start of a field */
-        FIELD_START,
+        /** Denotes the beginning of a field */
+        BEGIN_FIELD,
 
         /** Denotes the end of a field */
-        FIELD_END,
+        END_FIELD,
 
-        /** Denotes the start of a repeating group */
-        GROUP_START,
+        /** Denotes the beginning of a repeating group */
+        BEGIN_GROUP,
 
         /** Denotes the end of a repeating group */
-        GROUP_END,
+        END_GROUP,
 
-        /** Denotes the start of an enumeration */
-        ENUM_START,
+        /** Denotes the beginning of an enumeration */
+        BEGIN_ENUM,
 
         /** Denotes a value of an enumeration */
-        ENUM_VALUE,
+        VALID_VALUE,
 
         /** Denotes the end of an enumeration */
-        ENUM_END,
+        END_ENUM,
 
-        /** Denotes the start of a bitset */
-        SET_START,
+        /** Denotes the beginning of a bitset */
+        BEGIN_SET,
 
         /** Denotes a bit value (choice) of a bitset */
-        SET_CHOICE,
+        CHOICE,
 
         /** Denotes the end of a bitset */
-        SET_END,
+        END_SET,
 
-        /** Denotes the {@link Token} is a basic encoding node */
-        NONE
+        /** Denotes the {@link Token} is an encoding */
+        ENCODING
     }
 }

@@ -46,14 +46,14 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.size()), is(valueOf(6)));
 
         /* assert all elements of node 0 */
-        assertThat(ir.get(0).getMetadata().getSignal(), is(Token.Signal.COMPOSITE_START));
+        assertThat(ir.get(0).getMetadata().getSignal(), is(Token.Signal.BEGIN_COMPOSITE));
         assertThat(ir.get(0).getMetadata().getName(), is("messageHeader"));
         assertThat(valueOf(ir.get(0).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(0).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(0).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 1 */
-        assertThat(ir.get(1).getMetadata().getSignal(), is(Token.Signal.NONE));
+        assertThat(ir.get(1).getMetadata().getSignal(), is(Token.Signal.ENCODING));
         assertThat(ir.get(1).getMetadata().getName(), is("blockLength"));
         assertThat(ir.get(1).getPrimitiveType(), is(PrimitiveType.UINT16));
         assertThat(valueOf(ir.get(1).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
@@ -61,7 +61,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(1).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 2 */
-        assertThat(ir.get(2).getMetadata().getSignal(), is(Token.Signal.NONE));
+        assertThat(ir.get(2).getMetadata().getSignal(), is(Token.Signal.ENCODING));
         assertThat(ir.get(2).getMetadata().getName(), is("templateId"));
         assertThat(ir.get(2).getPrimitiveType(), is(PrimitiveType.UINT16));
         assertThat(valueOf(ir.get(2).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
@@ -69,7 +69,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(2).getOffset()), is(valueOf(2)));
 
         /* assert all elements of node 3 */
-        assertThat(ir.get(3).getMetadata().getSignal(), is(Token.Signal.NONE));
+        assertThat(ir.get(3).getMetadata().getSignal(), is(Token.Signal.ENCODING));
         assertThat(ir.get(3).getMetadata().getName(), is("version"));
         assertThat(ir.get(3).getPrimitiveType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(ir.get(3).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
@@ -77,7 +77,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(3).getOffset()), is(valueOf(4)));
 
         /* assert all elements of node 4 */
-        assertThat(ir.get(4).getMetadata().getSignal(), is(Token.Signal.NONE));
+        assertThat(ir.get(4).getMetadata().getSignal(), is(Token.Signal.ENCODING));
         assertThat(ir.get(4).getMetadata().getName(), is("reserved"));
         assertThat(ir.get(4).getPrimitiveType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(ir.get(4).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
@@ -85,7 +85,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(4).getOffset()), is(valueOf(5)));
 
         /* assert all elements of node 5 */
-        assertThat(ir.get(5).getMetadata().getSignal(), is(Token.Signal.COMPOSITE_END));
+        assertThat(ir.get(5).getMetadata().getSignal(), is(Token.Signal.END_COMPOSITE));
         assertThat(ir.get(5).getMetadata().getName(), is("messageHeader"));
         assertThat(valueOf(ir.get(5).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
         assertThat(valueOf(ir.get(5).size()), is(valueOf(0)));
@@ -104,14 +104,14 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.size()), is(valueOf(5)));
 
         /* assert all elements of node 0 */
-        assertThat(ir.get(0).getMetadata().getSignal(), is(Token.Signal.MESSAGE_START));
+        assertThat(ir.get(0).getMetadata().getSignal(), is(Token.Signal.BEGIN_MESSAGE));
         assertThat(ir.get(0).getMetadata().getName(), is("TestMessage50001"));
         assertThat(valueOf(ir.get(0).getMetadata().getSchemaId()), is(valueOf(50001L)));
         assertThat(valueOf(ir.get(0).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(0).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 1 */
-        assertThat(ir.get(1).getMetadata().getSignal(), is(Token.Signal.FIELD_START));
+        assertThat(ir.get(1).getMetadata().getSignal(), is(Token.Signal.BEGIN_FIELD));
         assertThat(ir.get(1).getMetadata().getName(), is("Tag40001"));
         assertThat(valueOf(ir.get(1).getMetadata().getSchemaId()), is(valueOf(40001L)));
         assertThat(ir.get(1).getMetadata().getFixUsage(), is("int"));
@@ -119,7 +119,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(1).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 2 */
-        assertThat(ir.get(2).getMetadata().getSignal(), is(Token.Signal.NONE));
+        assertThat(ir.get(2).getMetadata().getSignal(), is(Token.Signal.ENCODING));
         assertThat(ir.get(2).getMetadata().getName(), is("uint32"));
         assertThat(ir.get(2).getPrimitiveType(), is(PrimitiveType.UINT32));
         assertThat(valueOf(ir.get(2).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
@@ -127,14 +127,14 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(2).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 3 */
-        assertThat(ir.get(3).getMetadata().getSignal(), is(Token.Signal.FIELD_END));
+        assertThat(ir.get(3).getMetadata().getSignal(), is(Token.Signal.END_FIELD));
         assertThat(ir.get(3).getMetadata().getName(), is("Tag40001"));
         assertThat(valueOf(ir.get(3).getMetadata().getSchemaId()), is(valueOf(40001L)));
         assertThat(valueOf(ir.get(3).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(3).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 4 */
-        assertThat(ir.get(4).getMetadata().getSignal(), is(Token.Signal.MESSAGE_END));
+        assertThat(ir.get(4).getMetadata().getSignal(), is(Token.Signal.END_MESSAGE));
         assertThat(ir.get(4).getMetadata().getName(), is("TestMessage50001"));
         assertThat(valueOf(ir.get(4).getMetadata().getSchemaId()), is(valueOf(50001L)));
         assertThat(valueOf(ir.get(4).size()), is(valueOf(0)));
@@ -153,7 +153,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.size()), is(valueOf(8)));
 
         /* assert all elements of node 0 */
-        assertThat(ir.get(0).getMetadata().getSignal(), is(Token.Signal.MESSAGE_START));
+        assertThat(ir.get(0).getMetadata().getSignal(), is(Token.Signal.BEGIN_MESSAGE));
         assertThat(ir.get(0).getMetadata().getName(), is("TestMessage1"));
         assertThat(valueOf(ir.get(0).getMetadata().getSchemaId()), is(valueOf(1L)));
         assertThat(valueOf(ir.get(0).getMetadata().getId()), is(valueOf(0L)));
@@ -161,7 +161,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(0).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 1 */
-        assertThat(ir.get(1).getMetadata().getSignal(), is(Token.Signal.FIELD_START));
+        assertThat(ir.get(1).getMetadata().getSignal(), is(Token.Signal.BEGIN_FIELD));
         assertThat(ir.get(1).getMetadata().getName(), is("EncryptedNewPasswordLen"));
         assertThat(valueOf(ir.get(1).getMetadata().getSchemaId()), is(valueOf(1403L)));
         assertThat(valueOf(ir.get(1).getMetadata().getId()), is(valueOf(1L)));
@@ -171,7 +171,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(1).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 2 */
-        assertThat(ir.get(2).getMetadata().getSignal(), is(Token.Signal.NONE));
+        assertThat(ir.get(2).getMetadata().getSignal(), is(Token.Signal.ENCODING));
         assertThat(ir.get(2).getMetadata().getName(), is("length"));
         assertThat(ir.get(2).getPrimitiveType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(ir.get(2).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
@@ -179,14 +179,14 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(2).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 3 */
-        assertThat(ir.get(3).getMetadata().getSignal(), is(Token.Signal.FIELD_END));
+        assertThat(ir.get(3).getMetadata().getSignal(), is(Token.Signal.END_FIELD));
         assertThat(ir.get(3).getMetadata().getName(), is("EncryptedNewPasswordLen"));
         assertThat(valueOf(ir.get(3).getMetadata().getSchemaId()), is(valueOf(1403L)));
         assertThat(valueOf(ir.get(3).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(3).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 4 */
-        assertThat(ir.get(4).getMetadata().getSignal(), is(Token.Signal.FIELD_START));
+        assertThat(ir.get(4).getMetadata().getSignal(), is(Token.Signal.BEGIN_FIELD));
         assertThat(ir.get(4).getMetadata().getName(), is("EncryptedNewPassword"));
         assertThat(valueOf(ir.get(4).getMetadata().getSchemaId()), is(valueOf(1404L)));
         assertThat(valueOf(ir.get(4).getMetadata().getId()), is(valueOf(2L)));
@@ -196,7 +196,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(4).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 5 */
-        assertThat(ir.get(5).getMetadata().getSignal(), is(Token.Signal.NONE));
+        assertThat(ir.get(5).getMetadata().getSignal(), is(Token.Signal.ENCODING));
         assertThat(ir.get(5).getMetadata().getName(), is("rawData"));
         assertThat(ir.get(5).getPrimitiveType(), is(PrimitiveType.CHAR));
         assertThat(valueOf(ir.get(5).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
@@ -204,14 +204,14 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(5).getOffset()), is(valueOf(1)));
 
         /* assert all elements of node 6 */
-        assertThat(ir.get(6).getMetadata().getSignal(), is(Token.Signal.FIELD_END));
+        assertThat(ir.get(6).getMetadata().getSignal(), is(Token.Signal.END_FIELD));
         assertThat(ir.get(6).getMetadata().getName(), is("EncryptedNewPassword"));
         assertThat(valueOf(ir.get(6).getMetadata().getSchemaId()), is(valueOf(1404L)));
         assertThat(valueOf(ir.get(6).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(6).getOffset()), is(valueOf(0)));
 
         /* assert all elements of node 7 */
-        assertThat(ir.get(7).getMetadata().getSignal(), is(Token.Signal.MESSAGE_END));
+        assertThat(ir.get(7).getMetadata().getSignal(), is(Token.Signal.END_MESSAGE));
         assertThat(ir.get(7).getMetadata().getName(), is("TestMessage1"));
         assertThat(valueOf(ir.get(7).getMetadata().getSchemaId()), is(valueOf(1L)));
         assertThat(valueOf(ir.get(7).size()), is(valueOf(0)));
@@ -228,7 +228,7 @@ public class BasicXmlIrGenerationTest
         List<Token> ir = irg.generateForMessage(schema.getMessage(1));
 
         /* assert the NoEntries node has the right IrId and xRefIrId, etc. */
-        assertThat(ir.get(4).getMetadata().getSignal(), is(Token.Signal.FIELD_START));
+        assertThat(ir.get(4).getMetadata().getSignal(), is(Token.Signal.BEGIN_FIELD));
         assertThat(ir.get(4).getMetadata().getName(), is("NoEntries"));
         assertThat(valueOf(ir.get(4).getMetadata().getSchemaId()), is(valueOf(2L)));
         assertThat(valueOf(ir.get(4).getMetadata().getId()), is(valueOf(1L)));
@@ -236,7 +236,7 @@ public class BasicXmlIrGenerationTest
         assertThat(ir.get(4).getMetadata().getFixUsage(), is("NumInGroup"));
 
         /* assert the group node has the right IrId and xRefIrId, etc. */
-        assertThat(ir.get(7).getMetadata().getSignal(), is(Token.Signal.GROUP_START));
+        assertThat(ir.get(7).getMetadata().getSignal(), is(Token.Signal.BEGIN_GROUP));
         assertThat(ir.get(7).getMetadata().getName(), is("Entries"));
         assertThat(valueOf(ir.get(7).getMetadata().getId()), is(valueOf(2L)));
         assertThat(valueOf(ir.get(7).getMetadata().getRefId()), is(valueOf(1L)));

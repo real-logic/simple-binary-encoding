@@ -47,11 +47,11 @@ public class IrGenerator
         currentOffset = 0;
         byteOrder = ByteOrder.LITTLE_ENDIAN;
 
-        addMessageSignal(msg, Token.Signal.MESSAGE_START);
+        addMessageSignal(msg, Token.Signal.BEGIN_MESSAGE);
 
         addAllFields(msg.getFields());
 
-        addMessageSignal(msg, Token.Signal.MESSAGE_END);
+        addMessageSignal(msg, Token.Signal.END_MESSAGE);
 
         return tokenList;
     }
@@ -141,13 +141,13 @@ public class IrGenerator
 
             if (type == null)
             {
-                addFieldSignal(field, Token.Signal.GROUP_START);
+                addFieldSignal(field, Token.Signal.BEGIN_GROUP);
                 addAllFields(field.getGroupFieldList());
-                addFieldSignal(field, Token.Signal.GROUP_END);
+                addFieldSignal(field, Token.Signal.END_GROUP);
             }
             else
             {
-                addFieldSignal(field, Token.Signal.FIELD_START);
+                addFieldSignal(field, Token.Signal.BEGIN_FIELD);
 
                 if (type instanceof EncodedDataType)
                 {
@@ -170,21 +170,21 @@ public class IrGenerator
                     throw new IllegalStateException("Unknown type: " + type);
                 }
 
-                addFieldSignal(field, Token.Signal.FIELD_END);
+                addFieldSignal(field, Token.Signal.END_FIELD);
             }
         }
     }
 
     private void add(final CompositeType type)
     {
-        addTypeSignal(type, Token.Signal.COMPOSITE_START);
+        addTypeSignal(type, Token.Signal.BEGIN_COMPOSITE);
 
         for (final EncodedDataType edt : type.getTypeList())
         {
             add(edt);
         }
 
-        addTypeSignal(type, Token.Signal.COMPOSITE_END);
+        addTypeSignal(type, Token.Signal.END_COMPOSITE);
     }
 
     private void add(final EnumType type)
@@ -192,7 +192,7 @@ public class IrGenerator
         PrimitiveType encodingType = type.getEncodingType();
         Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
 
-        addTypeSignal(type, Token.Signal.ENUM_START);
+        addTypeSignal(type, Token.Signal.BEGIN_ENUM);
 
         if (type.getPresence() == Presence.OPTIONAL)
         {
@@ -206,7 +206,7 @@ public class IrGenerator
             add(v);
         }
 
-        addTypeSignal(type, Token.Signal.ENUM_END);
+        addTypeSignal(type, Token.Signal.END_ENUM);
 
         currentOffset += encodingType.size();
     }
@@ -215,7 +215,7 @@ public class IrGenerator
     {
         Metadata.Builder builder = new Metadata.Builder(value.getName());
 
-        builder.flag(Token.Signal.ENUM_VALUE);
+        builder.flag(Token.Signal.VALID_VALUE);
         builder.constValue(value.getPrimitiveValue());
         builder.description(value.getDescription());
 
@@ -227,7 +227,7 @@ public class IrGenerator
         PrimitiveType encodingType = type.getEncodingType();
         Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
 
-        addTypeSignal(type, Token.Signal.SET_START);
+        addTypeSignal(type, Token.Signal.BEGIN_SET);
 
         tokenList.add(new Token(encodingType, encodingType.size(), currentOffset, byteOrder, builder.build()));
 
@@ -236,7 +236,7 @@ public class IrGenerator
             add(choice);
         }
 
-        addTypeSignal(type, Token.Signal.SET_END);
+        addTypeSignal(type, Token.Signal.END_SET);
 
         currentOffset += encodingType.size();
     }
@@ -245,7 +245,7 @@ public class IrGenerator
     {
         Metadata.Builder builder = new Metadata.Builder(value.getName());
 
-        builder.flag(Token.Signal.SET_CHOICE);
+        builder.flag(Token.Signal.CHOICE);
         builder.constValue(value.getPrimitiveValue());
         builder.description(value.getDescription());
 

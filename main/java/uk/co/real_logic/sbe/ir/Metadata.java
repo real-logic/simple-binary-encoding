@@ -193,7 +193,7 @@ public class Metadata
             schemaId = Metadata.INVALID_ID;
             id = Metadata.INVALID_ID;
             refId = Metadata.INVALID_ID;
-            this.signal = Token.Signal.NONE;
+            signal = Token.Signal.ENCODING;
             minValue = null;
             maxValue = null;
             nullValue = null;
