@@ -172,6 +172,17 @@ public class Token
         return byteOrder;
     }
 
+    public String toString()
+    {
+        return "Token{" +
+            "primitiveType=" + primitiveType +
+            ", size=" + size +
+            ", offset=" + offset +
+            ", byteOrder=" + byteOrder +
+            ", metadata=" + metadata +
+            '}';
+    }
+
     /**
      * Signal the {@link Token} role within a stream of tokens. These signals begin/end various entities such as
      * fields, composites, messages, repeating groups, enumerations, bitsets, etc.

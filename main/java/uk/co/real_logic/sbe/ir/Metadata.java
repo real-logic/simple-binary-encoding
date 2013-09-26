@@ -170,6 +170,23 @@ public class Metadata
         return fixUsage;
     }
 
+    public String toString()
+    {
+        return "Metadata{" +
+            "name='" + name + '\'' +
+            ", schemaId=" + schemaId +
+            ", id=" + id +
+            ", refId=" + refId +
+            ", signal=" + signal +
+            ", minValue=" + minValue +
+            ", maxValue=" + maxValue +
+            ", nullValue=" + nullValue +
+            ", constValue=" + constValue +
+            ", description='" + description + '\'' +
+            ", fixUsage='" + fixUsage + '\'' +
+            '}';
+    }
+
     /**
      * Builder to make {@link Metadata} easier to create.
      */
