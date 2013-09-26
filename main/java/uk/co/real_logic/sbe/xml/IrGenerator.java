@@ -41,11 +41,17 @@ public class IrGenerator
     private int currentOffset = 0;
     private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
 
-    public List<Token> generateForMessage(final Message msg)
+    public List<Token> generateForMessage(final MessageSchema schema, final long messageId)
     {
+        final Message msg = schema.getMessage(messageId);
+        if (null == msg)
+        {
+            throw new IllegalArgumentException("No message for id=" + messageId);
+        }
+
         tokenList.clear();
         currentOffset = 0;
-        byteOrder = ByteOrder.LITTLE_ENDIAN;
+        byteOrder = schema.getByteOrder();
 
         addMessageSignal(msg, Token.Signal.BEGIN_MESSAGE);
 

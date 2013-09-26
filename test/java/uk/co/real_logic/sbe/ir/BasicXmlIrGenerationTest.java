@@ -97,7 +97,7 @@ public class BasicXmlIrGenerationTest
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
 
-        List<Token> ir = irg.generateForMessage(schema.getMessage(50001));
+        List<Token> ir = irg.generateForMessage(schema, 50001);
 
         assertThat(valueOf(ir.size()), is(valueOf(5)));
 
@@ -146,7 +146,7 @@ public class BasicXmlIrGenerationTest
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
 
-        List<Token> ir = irg.generateForMessage(schema.getMessage(1));
+        List<Token> ir = irg.generateForMessage(schema, 1);
 
         assertThat(valueOf(ir.size()), is(valueOf(8)));
 
@@ -223,7 +223,7 @@ public class BasicXmlIrGenerationTest
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicGroupSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
 
-        List<Token> ir = irg.generateForMessage(schema.getMessage(1));
+        List<Token> ir = irg.generateForMessage(schema, 1);
 
         /* assert the NoEntries node has the right IrId and xRefIrId, etc. */
         assertThat(ir.get(4).getMetadata().getSignal(), is(Token.Signal.BEGIN_FIELD));
