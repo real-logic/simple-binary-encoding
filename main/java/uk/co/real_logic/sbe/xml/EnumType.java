@@ -66,7 +66,7 @@ public class EnumType extends Type
                 throw new IllegalArgumentException("nullValue set, but presence is not optional");
             }
 
-            nullValue = PrimitiveValue.parse(encodingType, nullValueStr);
+            nullValue = PrimitiveValue.parse(nullValueStr, encodingType);
         }
         else
         {
@@ -144,7 +144,7 @@ public class EnumType extends Type
         {
             name = getAttributeValue(node, "name");
             description = getAttributeValueOrNull(node, "description");
-            value = PrimitiveValue.parse(encodingType, node.getFirstChild().getNodeValue());
+            value = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), encodingType);
         }
 
         public PrimitiveValue getPrimitiveValue()

@@ -82,8 +82,8 @@ public class SetTypeTest
         assertThat(e.getName(), is("biOp"));
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.getChoices().size()), is(valueOf(2)));
-        assertThat(e.getChoice("Bit1").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.UINT8, "1")));
-        assertThat(e.getChoice("Bit0").getPrimitiveValue(), is(PrimitiveValue.parse(PrimitiveType.UINT8, "0")));
+        assertThat(e.getChoice("Bit1").getPrimitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
+        assertThat(e.getChoice("Bit0").getPrimitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
     }
 
     @Test

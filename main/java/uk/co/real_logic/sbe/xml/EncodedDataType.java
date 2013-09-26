@@ -59,7 +59,7 @@ public class EncodedDataType extends Type
                 throw new IllegalArgumentException("type has declared presence \"constant\" but XML node has no data");
             }
 
-            constValue = PrimitiveValue.parse(primitiveType, node.getFirstChild().getNodeValue());
+            constValue = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), primitiveType);
         }
         else
         {
@@ -69,7 +69,7 @@ public class EncodedDataType extends Type
         String minValueStr = getAttributeValueOrNull(node, "minValue");
         if (minValueStr != null)
         {
-            minValue = PrimitiveValue.parse(primitiveType, minValueStr);
+            minValue = PrimitiveValue.parse(minValueStr, primitiveType);
         }
         else
         {
@@ -79,7 +79,7 @@ public class EncodedDataType extends Type
         String maxValueStr = getAttributeValueOrNull(node, "maxValue");
         if (maxValueStr != null)
         {
-            maxValue = PrimitiveValue.parse(primitiveType, maxValueStr);
+            maxValue = PrimitiveValue.parse(maxValueStr, primitiveType);
         }
         else
         {
@@ -94,7 +94,7 @@ public class EncodedDataType extends Type
                 throw new IllegalArgumentException("nullValue set, but presence is not optional");
             }
 
-            nullValue = PrimitiveValue.parse(primitiveType, nullValueStr);
+            nullValue = PrimitiveValue.parse(nullValueStr, primitiveType);
         }
         else
         {

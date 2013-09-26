@@ -115,7 +115,7 @@ public class SetType extends Type
         {
             name = getAttributeValue(node, "name");
             description = getAttributeValueOrNull(node, "description");
-            value = PrimitiveValue.parse(encodingType, node.getFirstChild().getNodeValue());
+            value = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), encodingType);
 
             // choice values are bit positions (0, 1, 2, 3, 4, etc.) from LSB to MSB
             if (value.longValue() >= (encodingType.size() * 8))

@@ -170,12 +170,13 @@ public class PrimitiveValue
     /**
      * Parse constant value string and set representation based on type
      *
-     * @param primitiveType that this is supposed to be
+     *
      * @param value     expressed as a String
+     * @param primitiveType that this is supposed to be
      * @return a new {@link PrimitiveValue} for the value.
      * @throws IllegalArgumentException if parsing not known for type
      */
-    public static PrimitiveValue parse(final PrimitiveType primitiveType, final String value)
+    public static PrimitiveValue parse(final String value, final PrimitiveType primitiveType)
     {
         switch (primitiveType)
         {
