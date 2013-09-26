@@ -43,11 +43,11 @@ public class IrGenerator
 
     public List<Token> generateForMessage(final Message msg)
     {
-        addStartOrEndNode(msg, Token.Signal.MESSAGE_START);
+        addMessageSignal(msg, Token.Signal.MESSAGE_START);
 
         addAllFields(msg.getFields());
 
-        addStartOrEndNode(msg, Token.Signal.MESSAGE_END);
+        addMessageSignal(msg, Token.Signal.MESSAGE_END);
 
         return tokenList;
     }
@@ -56,13 +56,12 @@ public class IrGenerator
     {
         byteOrder = schema.getByteOrder();
         CompositeType type = schema.getMessageHeader();
-
-        add(type, null);
+        add(type);
 
         return tokenList;
     }
 
-    private void addStartOrEndNode(final Message msg, final Token.Signal signal)
+    private void addMessageSignal(final Message msg, final Token.Signal signal)
     {
         Metadata.Builder builder = new Metadata.Builder(msg.getName());
 
@@ -74,7 +73,7 @@ public class IrGenerator
         tokenList.add(new Token(new Metadata(builder)));
     }
 
-    private void addStartOrEndNode(final Type type, final Token.Signal signal)
+    private void addTypeSignal(final Type type, final Token.Signal signal)
     {
         Metadata.Builder builder = new Metadata.Builder(type.getName());
 
@@ -89,7 +88,7 @@ public class IrGenerator
         tokenList.add(new Token(new Metadata(builder)));
     }
 
-    private void addStartOrEndNode(final Message.Field field, final Token.Signal signal)
+    private void addFieldSignal(final Message.Field field, final Token.Signal signal)
     {
         Metadata.Builder builder = new Metadata.Builder(field.getName());
 
@@ -131,57 +130,62 @@ public class IrGenerator
     {
         for (final Message.Field field : fieldList)
         {
-            if (field.getType() == null)
+            final Type type = field.getType();
+
+            if (type == null)
             {
-                addStartOrEndNode(field, Token.Signal.GROUP_START);
+                addFieldSignal(field, Token.Signal.GROUP_START);
                 addAllFields(field.getGroupFieldList());
-                addStartOrEndNode(field, Token.Signal.GROUP_END);
+                addFieldSignal(field, Token.Signal.GROUP_END);
             }
-            else if (field.getType() instanceof EncodedDataType)
+            else
             {
-                addStartOrEndNode(field, Token.Signal.FIELD_START);
-                add((EncodedDataType)field.getType(), field);
-                addStartOrEndNode(field, Token.Signal.FIELD_END);
-            }
-            else if (field.getType() instanceof CompositeType)
-            {
-                addStartOrEndNode(field, Token.Signal.FIELD_START);
-                add((CompositeType)field.getType(), field);
-                addStartOrEndNode(field, Token.Signal.FIELD_END);
-            }
-            else if (field.getType() instanceof EnumType)
-            {
-                addStartOrEndNode(field, Token.Signal.FIELD_START);
-                add((EnumType)field.getType(), field);
-                addStartOrEndNode(field, Token.Signal.FIELD_END);
-            }
-            else if (field.getType() instanceof SetType)
-            {
-                addStartOrEndNode(field, Token.Signal.FIELD_START);
-                add((SetType)field.getType(), field);
-                addStartOrEndNode(field, Token.Signal.FIELD_END);
+                addFieldSignal(field, Token.Signal.FIELD_START);
+
+                if (type instanceof EncodedDataType)
+                {
+                    add((EncodedDataType)type);
+                }
+                else if (type instanceof CompositeType)
+                {
+                    add((CompositeType)type);
+                }
+                else if (type instanceof EnumType)
+                {
+                    add((EnumType)type);
+                }
+                else if (type instanceof SetType)
+                {
+                    add((SetType)type);
+                }
+                else
+                {
+                    throw new IllegalStateException("Unknown type: " + type);
+                }
+
+                addFieldSignal(field, Token.Signal.FIELD_END);
             }
         }
     }
 
-    private void add(final CompositeType type, final Message.Field field)
+    private void add(final CompositeType type)
     {
-        addStartOrEndNode(type, Token.Signal.COMPOSITE_START);
+        addTypeSignal(type, Token.Signal.COMPOSITE_START);
 
         for (final EncodedDataType edt : type.getTypeList())
         {
-            add(edt, field);
+            add(edt);
         }
 
-        addStartOrEndNode(type, Token.Signal.COMPOSITE_END);
+        addTypeSignal(type, Token.Signal.COMPOSITE_END);
     }
 
-    private void add(final EnumType type, final Message.Field field)
+    private void add(final EnumType type)
     {
         PrimitiveType encodingType = type.getEncodingType();
         Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
 
-        addStartOrEndNode(type, Token.Signal.ENUM_START);
+        addTypeSignal(type, Token.Signal.ENUM_START);
 
         if (type.getPresence() == Presence.OPTIONAL)
         {
@@ -195,7 +199,7 @@ public class IrGenerator
             add(v);
         }
 
-        addStartOrEndNode(type, Token.Signal.ENUM_END);
+        addTypeSignal(type, Token.Signal.ENUM_END);
 
         currentOffset += encodingType.size();
     }
@@ -211,12 +215,12 @@ public class IrGenerator
         tokenList.add(new Token(new Metadata(builder)));
     }
 
-    private void add(final SetType type, final Message.Field field)
+    private void add(final SetType type)
     {
         PrimitiveType encodingType = type.getEncodingType();
         Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
 
-        addStartOrEndNode(type, Token.Signal.SET_START);
+        addTypeSignal(type, Token.Signal.SET_START);
 
         tokenList.add(new Token(encodingType, encodingType.size(), currentOffset, byteOrder, new Metadata(builder)));
 
@@ -225,7 +229,7 @@ public class IrGenerator
             add(choice);
         }
 
-        addStartOrEndNode(type, Token.Signal.SET_END);
+        addTypeSignal(type, Token.Signal.SET_END);
 
         currentOffset += encodingType.size();
     }
@@ -241,7 +245,7 @@ public class IrGenerator
         tokenList.add(new Token(new Metadata(builder)));
     }
 
-    private void add(final EncodedDataType type, final Message.Field field)
+    private void add(final EncodedDataType type)
     {
         Metadata.Builder builder = new Metadata.Builder(type.getName());
 
