@@ -170,11 +170,10 @@ public class PrimitiveValue
     /**
      * Parse constant value string and set representation based on type
      *
-     *
      * @param value     expressed as a String
      * @param primitiveType that this is supposed to be
      * @return a new {@link PrimitiveValue} for the value.
-     * @throws IllegalArgumentException if parsing not known for type
+     * @throws IllegalArgumentException if parsing malformed type
      */
     public static PrimitiveValue parse(final String value, final PrimitiveType primitiveType)
     {
@@ -183,7 +182,7 @@ public class PrimitiveValue
             case CHAR:
                 if (value.length() > 1)
                 {
-                    throw new IllegalArgumentException("constant char value malformed");
+                    throw new IllegalArgumentException("Constant char value malformed");
                 }
                 return new PrimitiveValue((long)value.getBytes()[0]);
 
@@ -203,7 +202,7 @@ public class PrimitiveValue
                 return new PrimitiveValue(Double.parseDouble(value));
 
             default:
-                throw new IllegalArgumentException("Do not know how to parse this primitiveType type for constant value");
+                throw new IllegalArgumentException("Unknown PrimitiveType: " + primitiveType);
         }
     }
 
