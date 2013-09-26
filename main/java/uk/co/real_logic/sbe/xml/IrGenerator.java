@@ -39,10 +39,14 @@ public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
     private int currentOffset = 0;
-    private ByteOrder byteOrder;
+    private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
 
     public List<Token> generateForMessage(final Message msg)
     {
+        tokenList.clear();
+        currentOffset = 0;
+        byteOrder = ByteOrder.LITTLE_ENDIAN;
+
         addMessageSignal(msg, Token.Signal.MESSAGE_START);
 
         addAllFields(msg.getFields());
@@ -54,6 +58,9 @@ public class IrGenerator
 
     public List<Token> generateForHeader(final MessageSchema schema)
     {
+        tokenList.clear();
+        currentOffset = 0;
+
         byteOrder = schema.getByteOrder();
         CompositeType type = schema.getMessageHeader();
         add(type);
