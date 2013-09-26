@@ -210,23 +210,38 @@ public class PrimitiveValue
      * Return long value for this PrimitiveValue
      *
      * @return value expressed as a long
-     * @throws IllegalArgumentException if not a long value representation
+     * @throws IllegalStateException if not a long value representation
      */
     public long longValue()
     {
         if (representation != Representation.LONG)
         {
-            throw new IllegalArgumentException("PrimitiveValue is not a long representation");
+            throw new IllegalStateException("PrimitiveValue is not a long representation");
         }
 
         return longValue;
     }
 
     /**
-     * Return string representation of this object
+     * Return double value for this PrimitiveValue.
+     *
+     * @return value expressed as a double
+     * @throws IllegalStateException if not a double value representation
+     */
+    public double doubleValue()
+    {
+        if (representation != Representation.DOUBLE)
+        {
+            throw new IllegalStateException("PrimitiveValue is not a double representation");
+        }
+
+        return doubleValue;
+    }
+
+    /**
+     * Return String representation of this object
      *
      * @return String representing object value
-     * @throws IllegalArgumentException if unknown representation
      */
     public String toString()
     {
