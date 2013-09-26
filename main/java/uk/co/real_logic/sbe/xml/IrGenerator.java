@@ -81,7 +81,6 @@ public class IrGenerator
         builder.schemaId(msg.getId());
         builder.id(0);
         builder.flag(signal);
-        builder.fixUsage(msg.getFixMsgType());
         builder.description(msg.getDescription());
         tokenList.add(new Token(builder.build()));
     }
@@ -91,12 +90,6 @@ public class IrGenerator
         Metadata.Builder builder = new Metadata.Builder(type.getName());
 
         builder.flag(signal);
-
-        if (type.getFixUsage() != null)
-        {
-            builder.fixUsage(type.getFixUsage().getName());
-        }
-
         builder.description(type.getDescription());
         tokenList.add(new Token(builder.build()));
     }
@@ -126,16 +119,6 @@ public class IrGenerator
         builder.id(field.getIrId());
         builder.flag(signal);
         builder.description(field.getDescription());
-
-        if (field.getFixUsage() != null)
-        {
-            builder.fixUsage(field.getFixUsage().getName());
-        }
-        else if (field.getType() != null && field.getType().getFixUsage() != null)
-        {
-            builder.fixUsage(field.getType().getFixUsage().getName());
-        }
-
         tokenList.add(new Token(builder.build()));
     }
 

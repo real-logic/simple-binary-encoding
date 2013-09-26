@@ -280,19 +280,7 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat(map.get("testTypeFIX").getFixUsage(), is(FixUsage.CHAR));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenUnknownFixUsageSpecified()
-        throws Exception
-    {
-        final String testXmlString =
-            "<types>" +
-            "    <type name=\"testTypeUnknown\" primitiveType=\"char\" fixUsage=\"XXXX\"/>" +
-            "</types>";
-
-        parseTestXmlWithMap("/types/type", testXmlString);
+        assertThat(map.get("testTypeFIX").getFixUsage(), is(fixUsage));
     }
 
     @Test

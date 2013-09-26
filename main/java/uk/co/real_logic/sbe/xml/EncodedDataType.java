@@ -117,7 +117,7 @@ public class EncodedDataType extends Type
     public EncodedDataType(final String name,
                            final Presence presence,
                            final String description,
-                           final FixUsage fixUsage,
+                           final String fixUsage,
                            final PrimitiveType primitiveType,
                            final int length,
                            final boolean varLen)

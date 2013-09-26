@@ -35,7 +35,6 @@ public class Metadata
     private final PrimitiveValue nullValue;
     private final PrimitiveValue constValue;
     private final String description;
-    private final String fixUsage;
 
     public Metadata(final String name,
                     final long schemaId,
@@ -46,8 +45,7 @@ public class Metadata
                     final PrimitiveValue maxValue,
                     final PrimitiveValue nullValue,
                     final PrimitiveValue constValue,
-                    final String description,
-                    final String fixUsage)
+                    final String description)
     {
         this.name = name;
         this.schemaId = schemaId;
@@ -59,7 +57,6 @@ public class Metadata
         this.nullValue = nullValue;
         this.constValue = constValue;
         this.description = description;
-        this.fixUsage = fixUsage;
     }
 
     /**
@@ -162,14 +159,6 @@ public class Metadata
         return description;
     }
 
-    /**
-     * Return the fixUsage value for the node or null it not set.
-     */
-    public String getFixUsage()
-    {
-        return fixUsage;
-    }
-
     public String toString()
     {
         return "Metadata{" +
@@ -183,7 +172,6 @@ public class Metadata
             ", nullValue=" + nullValue +
             ", constValue=" + constValue +
             ", description='" + description + '\'' +
-            ", fixUsage='" + fixUsage + '\'' +
             '}';
     }
 
@@ -202,7 +190,6 @@ public class Metadata
         private PrimitiveValue nullValue;
         private PrimitiveValue constValue;
         private String description;
-        private String fixUsage;
 
         public Builder(final String name)
         {
@@ -216,7 +203,6 @@ public class Metadata
             nullValue = null;
             constValue = null;
             description = null;
-            fixUsage = null;
         }
 
         public void schemaId(final long schemaId)
@@ -264,14 +250,9 @@ public class Metadata
             this.description = description;
         }
 
-        public void fixUsage(final String fixUsage)
-        {
-            this.fixUsage = fixUsage;
-        }
-
         public Metadata build()
         {
-            return new Metadata(name, schemaId, id, refId, signal, minValue, maxValue, nullValue, constValue, description, fixUsage);
+            return new Metadata(name, schemaId, id, refId, signal, minValue, maxValue, nullValue, constValue, description);
         }
     }
 }

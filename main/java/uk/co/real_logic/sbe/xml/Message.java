@@ -341,7 +341,7 @@ public class Message
         private final int id;               // required for field/data (not present for group)
         private final Type type;            // required for field/data (not present for group)
         private final int offset;           // optional for field/data (not present for group)
-        private final FixUsage fixUsage;    // optional for field/data (not present for group?)
+        private final String fixUsage;      // optional for field/data (not present for group?)
         private final Presence presence;    // optional for field/data (not present for group)  null means not set
         private final int refId;            // optional for field (not present for group or data) INVALID_ID means not set
         private final int blockLength;      // optional for group (not present for field/data)
@@ -363,7 +363,7 @@ public class Message
             this.id = id;
             this.type = type;
             this.offset = Integer.parseInt(getAttributeValue(node, "offset", "0"));
-            this.fixUsage = FixUsage.lookup(getAttributeValueOrNull(node, "fixUsage"));
+            this.fixUsage = getAttributeValueOrNull(node, "fixUsage");
             this.presence = Presence.lookup(getAttributeValueOrNull(node, "presence"));
             this.refId = Integer.parseInt(getAttributeValue(node, "refId", INVALID_ID_STRING));
             this.blockLength = 0;
@@ -380,7 +380,7 @@ public class Message
             {
                 throw new IllegalArgumentException("Missing fixUsage on type and field: " + name);
             }
-            else if (fixUsage != null && type.getFixUsage() != null && fixUsage != type.getFixUsage())
+            else if (fixUsage != null && type.getFixUsage() != null && !fixUsage.equals(type.getFixUsage()))
             {
                 throw new IllegalArgumentException("Mismatched fixUsage on type and field: " + name);
             }
@@ -527,7 +527,7 @@ public class Message
             return irRefId;
         }
 
-        public FixUsage getFixUsage()
+        public String getFixUsage()
         {
             return fixUsage;
         }

@@ -31,7 +31,7 @@ public class Type
     private final String name;
     private final Presence presence;
     private final String description;
-    private final FixUsage fixUsage;
+    private final String fixUsage;
 
     /**
      * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
@@ -44,7 +44,7 @@ public class Type
         // The schema should set default, so "presence" should always be available, but let's set a default anyway
         presence = Presence.lookup(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
-        fixUsage = FixUsage.lookup(getAttributeValueOrNull(node, "fixUsage"));
+        fixUsage = getAttributeValueOrNull(node, "fixUsage");
     }
 
     /**
@@ -58,7 +58,7 @@ public class Type
     public Type(final String name,
                 final Presence presence,
                 final String description,
-                final FixUsage fixUsage)
+                final String fixUsage)
     {
         this.name = name;
         this.presence = presence;
@@ -111,9 +111,9 @@ public class Type
     /**
      * The fixUsage of the Type
      *
-     * @return {@link FixUsage} of the Type if set or null if not set
+     * @return fixUsage of the Type if set or null if not set
      */
-    public FixUsage getFixUsage()
+    public String getFixUsage()
     {
         return fixUsage;
     }

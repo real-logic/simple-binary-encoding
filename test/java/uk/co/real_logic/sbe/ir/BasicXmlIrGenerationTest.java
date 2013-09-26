@@ -112,7 +112,6 @@ public class BasicXmlIrGenerationTest
         assertThat(ir.get(1).getMetadata().getSignal(), is(Token.Signal.BEGIN_FIELD));
         assertThat(ir.get(1).getMetadata().getName(), is("Tag40001"));
         assertThat(valueOf(ir.get(1).getMetadata().getSchemaId()), is(valueOf(40001L)));
-        assertThat(ir.get(1).getMetadata().getFixUsage(), is("int"));
         assertThat(valueOf(ir.get(1).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(1).getOffset()), is(valueOf(0)));
 
@@ -164,7 +163,6 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(1).getMetadata().getSchemaId()), is(valueOf(1403L)));
         assertThat(valueOf(ir.get(1).getMetadata().getId()), is(valueOf(1L)));
         assertThat(valueOf(ir.get(1).getMetadata().getRefId()), is(valueOf(2L)));
-        assertThat(ir.get(1).getMetadata().getFixUsage(), is("Length"));
         assertThat(valueOf(ir.get(1).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(1).getOffset()), is(valueOf(0)));
 
@@ -189,7 +187,6 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(4).getMetadata().getSchemaId()), is(valueOf(1404L)));
         assertThat(valueOf(ir.get(4).getMetadata().getId()), is(valueOf(2L)));
         assertThat(valueOf(ir.get(4).getMetadata().getRefId()), is(valueOf(1L)));
-        assertThat(ir.get(4).getMetadata().getFixUsage(), is("data"));
         assertThat(valueOf(ir.get(4).size()), is(valueOf(0)));
         assertThat(valueOf(ir.get(4).getOffset()), is(valueOf(0)));
 
@@ -231,7 +228,6 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(ir.get(4).getMetadata().getSchemaId()), is(valueOf(2L)));
         assertThat(valueOf(ir.get(4).getMetadata().getId()), is(valueOf(1L)));
         assertThat(valueOf(ir.get(4).getMetadata().getRefId()), is(valueOf(2L)));
-        assertThat(ir.get(4).getMetadata().getFixUsage(), is("NumInGroup"));
 
         /* assert the group node has the right IrId and xRefIrId, etc. */
         assertThat(ir.get(7).getMetadata().getSignal(), is(Token.Signal.BEGIN_GROUP));
