@@ -301,7 +301,7 @@ public class PrimitiveValue
      */
     public int hashCode()
     {
-        final long bits = (representation == Representation.DOUBLE) ? doubleToLongBits(doubleValue) : longValue;
+        final long bits = (representation == Representation.LONG) ? longValue : doubleToLongBits(doubleValue);
 
         return (int)(bits ^ (bits >>> 32));
     }
