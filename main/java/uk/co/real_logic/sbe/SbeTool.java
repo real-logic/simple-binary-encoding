@@ -28,8 +28,8 @@ import java.io.FileInputStream;
  * Usage:
  * <code>
  *  <pre>
- *  $ java -cp sbe.jar uk.co.real_logic.sbe.SbeTool &lt;filename.xml&gt;
- *  $ java -cp sbe.jar -Doption=value uk.co.real_logic.sbe.SbeTool &lt;filename.xml&gt;
+ *  $ java -jar sbe.jar &lt;filename.xml&gt;
+ *  $ java -jar sbe.jar -Doption=value &lt;filename.xml&gt;
  *  </pre>
  * </code>
  *<p>
