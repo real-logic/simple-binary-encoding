@@ -164,11 +164,32 @@ public class ErrorHandlerTest
         {
             parse(TestUtil.getLocalResource("ErrorHandlerTypesDupTest.xml"));
         }
+        catch (IllegalArgumentException shouldHaveOnly1Warning)
+        {
+            assertThat(shouldHaveOnly1Warning.getMessage(), is("had 1 warnings"));
+
+            throw shouldHaveOnly1Warning;
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldExitAfterMessageWhenDupMessageIdsDefined()
+        throws Exception
+    {
+        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "false");
+        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
+        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "true");
+
+        try
+        {
+            parse(TestUtil.getLocalResource("ErrorHandlerDupMessageTest.xml"));
+        }
         catch (IllegalArgumentException shouldHaveOnly1Error)
         {
-            assertThat(shouldHaveOnly1Error.getMessage(), is("had 1 warnings"));
+            assertThat(shouldHaveOnly1Error.getMessage(), is("had 1 errors"));
 
             throw shouldHaveOnly1Error;
         }
     }
+
 }
