@@ -124,7 +124,7 @@ public class XmlSchemaParser
                 {
                     public void execute(final Node node) throws XPathExpressionException
                     {
-                        addTypeWithNameCheck(typeByNameMap, new EncodedDataType(node));
+                        addTypeWithNameCheck(typeByNameMap, new EncodedDataType(node), node);
                     }
                 });
 
@@ -133,7 +133,7 @@ public class XmlSchemaParser
                 {
                     public void execute(final Node node) throws XPathExpressionException
                     {
-                        addTypeWithNameCheck(typeByNameMap, new CompositeType(node));
+                        addTypeWithNameCheck(typeByNameMap, new CompositeType(node), node);
                     }
                 });
 
@@ -142,7 +142,7 @@ public class XmlSchemaParser
                 {
                     public void execute(final Node node) throws XPathExpressionException
                     {
-                        addTypeWithNameCheck(typeByNameMap, new EnumType(node));
+                        addTypeWithNameCheck(typeByNameMap, new EnumType(node), node);
                     }
                 });
 
@@ -151,7 +151,7 @@ public class XmlSchemaParser
                 {
                     public void execute(final Node node) throws XPathExpressionException
                     {
-                        addTypeWithNameCheck(typeByNameMap, new SetType(node));
+                        addTypeWithNameCheck(typeByNameMap, new SetType(node), node);
                     }
                 });
 
@@ -163,12 +163,13 @@ public class XmlSchemaParser
      *
      * @param typeByNameMap  of names to Type objects
      * @param type to be added to typeByNameMap
+     * @param node for the type
      */
-    private static void addTypeWithNameCheck(final Map<String, Type> typeByNameMap, final Type type)
+    private static void addTypeWithNameCheck(final Map<String, Type> typeByNameMap, final Type type, final Node node)
     {
         if (typeByNameMap.get(type.getName()) != null)
         {
-            throw new IllegalArgumentException("SBE type already exists: " + type.getName());
+            handleWarning(node, "type already exists for name: " + type.getName());
         }
 
         typeByNameMap.put(type.getName(), type);
@@ -194,7 +195,7 @@ public class XmlSchemaParser
                 {
                     public void execute(final Node node) throws XPathExpressionException
                     {
-                        addMessageWithIdCheck(messageByIdMap, new Message(node, typeByNameMap));
+                        addMessageWithIdCheck(messageByIdMap, new Message(node, typeByNameMap), node);
                     }
                 });
 
@@ -206,12 +207,13 @@ public class XmlSchemaParser
      *
      * @param messageByIdMap     of schemaId to Message objects
      * @param message to be added to messageByIdMap
+     * @param node for the message
      */
-    private static void addMessageWithIdCheck(final Map<Long, Message> messageByIdMap, final Message message)
+    private static void addMessageWithIdCheck(final Map<Long, Message> messageByIdMap, final Message message, final Node node)
     {
         if (messageByIdMap.get(Long.valueOf(message.getId())) != null)
         {
-            throw new IllegalArgumentException("SBE message template id already exists: " + message.getId());
+            handleError(node, "message template id already exists: " + message.getId());
         }
 
         messageByIdMap.put(Long.valueOf(message.getId()), message);

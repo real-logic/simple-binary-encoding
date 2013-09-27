@@ -120,6 +120,7 @@ public class ErrorHandlerTest
         Map<String, Type> map = new HashMap<>();
         System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "false");
         System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
+        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "false");
         ErrorHandler handler = new ErrorHandler();
 
         parseTestXmlAddToMap(map, "/types/composite", testXmlString, handler);
@@ -135,7 +136,9 @@ public class ErrorHandlerTest
     public void shouldExitAfterTypes()
         throws Exception
     {
+        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "false");
         System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
+        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "false");
 
         try
         {
@@ -146,6 +149,26 @@ public class ErrorHandlerTest
             assertThat(shouldHaveOnly2Errors.getMessage(), is("had 2 errors"));
 
             throw shouldHaveOnly2Errors;
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldExitAfterTypesWhenDupTypesDefined()
+        throws Exception
+    {
+        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "false");
+        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
+        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "true");
+
+        try
+        {
+            parse(TestUtil.getLocalResource("ErrorHandlerTypesDupTest.xml"));
+        }
+        catch (IllegalArgumentException shouldHaveOnly1Error)
+        {
+            assertThat(shouldHaveOnly1Error.getMessage(), is("had 1 warnings"));
+
+            throw shouldHaveOnly1Error;
         }
     }
 }

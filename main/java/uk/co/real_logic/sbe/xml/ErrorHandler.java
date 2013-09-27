@@ -51,7 +51,7 @@ public class ErrorHandler
 
         if (!suppressOut)
         {
-            out.println(msg);
+            out.println("ERROR: " + msg);
         }
 
         if (throwOnErr)
@@ -66,7 +66,7 @@ public class ErrorHandler
 
         if (!suppressOut)
         {
-            out.println(msg);
+            out.println("WARNING: " + msg);
         }
 
         if (warningsFatal && throwOnErr)
@@ -77,10 +77,13 @@ public class ErrorHandler
 
     public void checkIfShouldExit()
     {
-        // TODO: this could be thresholded by property. It could also exit on warnings as well. And could not simply send an Exception
         if (errors > 0)
         {
             throw new IllegalArgumentException("had " + errors + " errors");
+        }
+        else if (warnings > 0 && warningsFatal)
+        {
+            throw new IllegalArgumentException("had " + warnings + " warnings");
         }
     }
 
@@ -92,5 +95,17 @@ public class ErrorHandler
     public int getWarnings()
     {
         return warnings;
+    }
+
+    public String toString()
+    {
+        return "ErrorHandler{" +
+            "out=" + out +
+            ", throwOnErr=" + throwOnErr +
+            ", suppressOut=" + suppressOut +
+            ", warningsFatal=" + warningsFatal +
+            ", errors=" + errors +
+            ", warnings=" + warnings +
+            '}';
     }
 }
