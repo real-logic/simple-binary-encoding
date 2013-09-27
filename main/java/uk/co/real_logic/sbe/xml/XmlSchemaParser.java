@@ -74,9 +74,7 @@ public class XmlSchemaParser
         Document document = factory.newDocumentBuilder().parse(in);
         XPath xPath = XPathFactory.newInstance().newXPath();
 
-        /*
-         * saving the error handling state in the XML DOM tree.
-         */
+        /* saving the error handling state in the XML DOM tree. */
         ErrorHandler errorHandler = new ErrorHandler();
         document.setUserData(XML_ERROR_HANDLER_KEY, errorHandler, null);
 

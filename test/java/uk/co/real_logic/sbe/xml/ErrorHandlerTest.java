@@ -17,6 +17,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.SbeTool;
+import uk.co.real_logic.sbe.TestUtil;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -37,6 +38,7 @@ import java.util.Map;
 import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class ErrorHandlerTest
 {
@@ -79,7 +81,7 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldNotExitOn()
+    public void shouldNotExitOnTypeErrorsAndWarnings()
         throws Exception
     {
         final String testXmlString =
@@ -129,4 +131,21 @@ public class ErrorHandlerTest
         assertThat(valueOf(handler.getWarnings()), is(valueOf(5)));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldExitAfterTypes()
+        throws Exception
+    {
+        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
+
+        try
+        {
+            parse(TestUtil.getLocalResource("ErrorHandlerTypesTest.xml"));
+        }
+        catch (IllegalArgumentException shouldHaveOnly2Errors)
+        {
+            assertThat(shouldHaveOnly2Errors.getMessage(), is("had 2 errors"));
+
+            throw shouldHaveOnly2Errors;
+        }
+    }
 }
