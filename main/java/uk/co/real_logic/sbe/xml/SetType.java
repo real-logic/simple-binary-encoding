@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
@@ -53,7 +54,7 @@ public class SetType extends Type
         if (encodingType != PrimitiveType.UINT8 && encodingType != PrimitiveType.UINT16 &&
             encodingType != PrimitiveType.UINT32 && encodingType != PrimitiveType.UINT64)
         {
-            throw new IllegalArgumentException("Unknown encodingType " + encodingType);
+            throw new IllegalArgumentException("Illegal encodingType " + encodingType);
         }
 
         XPath xPath = XPathFactory.newInstance().newXPath();
@@ -65,12 +66,12 @@ public class SetType extends Type
 
             if (choiceByPrimitiveValueMap.get(c.getPrimitiveValue()) != null)
             {
-                throw new IllegalArgumentException("Choice value already exists: " + c.getPrimitiveValue());
+                handleWarning(node, "Choice value already exists: " + c.getPrimitiveValue());
             }
 
             if (choiceByNameMap.get(c.getName()) != null)
             {
-                throw new IllegalArgumentException("Choice already exists for name: " + c.getName());
+                handleWarning(node, "Choice already exists for name: " + c.getName());
             }
 
             choiceByPrimitiveValueMap.put(c.getPrimitiveValue(), c);

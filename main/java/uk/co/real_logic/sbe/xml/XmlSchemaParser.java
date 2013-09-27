@@ -16,6 +16,8 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import uk.co.real_logic.sbe.SbeTool;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -40,6 +42,8 @@ import java.util.Map;
  */
 public class XmlSchemaParser
 {
+    public static final String XML_ERROR_HANDLER_KEY = "SBEErrorHandler";
+
     private static final String TYPE_XPATH_EXPR = "/messageSchema/types/type";
     private static final String COMPOSITE_XPATH_EXPR = "/messageSchema/types/composite";
     private static final String ENUM_XPATH_EXPR = "/messageSchema/types/enum";
@@ -60,7 +64,7 @@ public class XmlSchemaParser
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-        String xsdFilename = System.getProperty("sbe.validate.xsd");
+        String xsdFilename = System.getProperty(SbeTool.SBE_VALIDATE_XSD);
         if (xsdFilename != null)
         {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -70,11 +74,24 @@ public class XmlSchemaParser
         Document document = factory.newDocumentBuilder().parse(in);
         XPath xPath = XPathFactory.newInstance().newXPath();
 
+        /*
+         * saving the error handling state in the XML DOM tree.
+         */
+        ErrorHandler errorHandler = new ErrorHandler();
+        document.setUserData(XML_ERROR_HANDLER_KEY, errorHandler, null);
+
         Map<String, Type> typeByNameMap = findTypes(document, xPath);
+
+        errorHandler.checkIfShouldExit();
+
         Map<Long, Message> messageByIdMap = findMessages(document, xPath, typeByNameMap);
+
+        errorHandler.checkIfShouldExit();
 
         final Node schemaNode = (Node)xPath.compile(MESSAGE_SCHEMA_XPATH_EXPR).evaluate(document, XPathConstants.NODE);
         MessageSchema messageSchema = new MessageSchema(schemaNode, typeByNameMap, messageByIdMap);
+
+        errorHandler.checkIfShouldExit();
 
         // TODO: run additional checks and validation on Messages in Message Map
 
@@ -200,6 +217,34 @@ public class XmlSchemaParser
         }
 
         messageByIdMap.put(Long.valueOf(message.getId()), message);
+    }
+
+    public static void handleError(final Node node, final String msg)
+    {
+        ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
+
+        if (handler == null)
+        {
+            throw new IllegalArgumentException(msg);
+        }
+        else
+        {
+            handler.error(msg);
+        }
+    }
+
+    public static void handleWarning(final Node node, final String msg)
+    {
+        ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
+
+        if (handler == null)
+        {
+            throw new IllegalArgumentException("WARNING: " + msg);
+        }
+        else
+        {
+            handler.warning(msg);
+        }
     }
 
     /**

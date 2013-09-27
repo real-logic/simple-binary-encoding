@@ -22,6 +22,8 @@ import uk.co.real_logic.sbe.PrimitiveValue;
 
 import org.w3c.dom.Node;
 
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleError;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
@@ -56,10 +58,13 @@ public class EncodedDataType extends Type
         {
             if (node.getFirstChild() == null)
             {
-                throw new IllegalArgumentException("type has declared presence \"constant\" but XML node has no data");
+                handleError(node, "type has declared presence \"constant\" but XML node has no data");
+                constValue = null;
             }
-
-            constValue = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), primitiveType);
+            else
+            {
+                constValue = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), primitiveType);
+            }
         }
         else
         {
@@ -91,7 +96,7 @@ public class EncodedDataType extends Type
         {
             if (getPresence() != Presence.OPTIONAL)
             {
-                throw new IllegalArgumentException("nullValue set, but presence is not optional");
+                handleWarning(node, "nullValue set, but presence is not optional");
             }
 
             nullValue = PrimitiveValue.parse(nullValueStr, primitiveType);

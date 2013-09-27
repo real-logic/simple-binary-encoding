@@ -41,7 +41,6 @@ public class Type
     public Type(final Node node)
     {
         name = getAttributeValue(node, "name");
-        // The schema should set default, so "presence" should always be available, but let's set a default anyway
         presence = Presence.lookup(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
         fixUsage = getAttributeValueOrNull(node, "fixUsage");

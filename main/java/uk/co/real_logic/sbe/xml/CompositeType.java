@@ -153,11 +153,13 @@ public class CompositeType extends Type
 
             if (compositeMap.get(type.getName()) != null)
             {
-                throw new IllegalArgumentException("composite already has type name: " + type.getName());
+                XmlSchemaParser.handleError(node, "composite already has type name: " + type.getName());
             }
-
-            compositeList.add(type);
-            compositeMap.put(type.getName(), type);
+            else
+            {
+                compositeList.add(type);
+                compositeMap.put(type.getName(), type);
+            }
         }
     }
 

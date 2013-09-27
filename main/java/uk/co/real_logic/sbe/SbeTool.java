@@ -42,6 +42,18 @@ import java.io.FileInputStream;
  */
 public class SbeTool
 {
+    /** system property to control throwing exceptions on all errors */
+    public static final String SBE_VALIDATE_EXCEPTION = "sbe.validate.exception";
+
+    /** system property to hold XSD to validate XML spsecification against */
+    public static final String SBE_VALIDATE_XSD = "sbe.validate.xsd";
+
+    /** system property to control suppressing output on all errors and warnings */
+    public static final String SBE_VALIDATE_OUTPUT_SUPPRESS = "sbe.validate.output.suppress";
+
+    /** system property to control whether to consider warnings fatal and treat them as errors */
+    public static final String SBE_VALIDATE_WARNINGS_FATAL = "sbe.validate.warnings.fatal";
+
     public static void main(final String[] args) throws Exception
     {
         if (args.length < 1)

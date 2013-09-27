@@ -16,8 +16,11 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import uk.co.real_logic.sbe.SbeTool;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -49,6 +52,10 @@ public class EncodedDataTypeTest
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
         Map<String, Type> map = new HashMap<>();
+
+        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "true");
+        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
+        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, new ErrorHandler(), null);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
@@ -403,7 +410,7 @@ public class EncodedDataTypeTest
                    is(parse(nullVal, PrimitiveType.INT8)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Ignore("changed to warning") @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenNullValueWithPresenceRequired()
         throws Exception
     {
@@ -415,13 +422,13 @@ public class EncodedDataTypeTest
         parseTestXmlWithMap("/types/type", testXmlString);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Ignore("changed to warning") @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenNullValueWithPresenceConstant()
         throws Exception
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testType\" primitiveType=\"int8\" presence=\"constant\" nullValue=\"10\"/>" +
+            "    <type name=\"testType\" primitiveType=\"int8\" presence=\"constant\" nullValue=\"10\">0</type>" +
             "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);

@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleError;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
@@ -55,7 +57,7 @@ public class EnumType extends Type
         encodingType = PrimitiveType.lookup(getAttributeValue(node, "encodingType"));
         if (encodingType != PrimitiveType.CHAR && encodingType != PrimitiveType.UINT8)
         {
-            throw new IllegalArgumentException("unknown encodingType " + encodingType);
+            throw new IllegalArgumentException("illegal encodingType " + encodingType);
         }
 
         String nullValueStr = getAttributeValueOrNull(node, "nullValue");
@@ -63,10 +65,13 @@ public class EnumType extends Type
         {
             if (getPresence() != Presence.OPTIONAL)
             {
-                throw new IllegalArgumentException("nullValue set, but presence is not optional");
+                handleError(node, "nullValue set, but presence is not optional");
+                nullValue = null;
             }
-
-            nullValue = PrimitiveValue.parse(nullValueStr, encodingType);
+            else
+            {
+                nullValue = PrimitiveValue.parse(nullValueStr, encodingType);
+            }
         }
         else
         {
@@ -82,12 +87,12 @@ public class EnumType extends Type
 
             if (validValueByPrimitiveValueMap.get(v.getPrimitiveValue()) != null)
             {
-                throw new IllegalArgumentException("validValue already exists for value: " + v.getPrimitiveValue());
+                handleWarning(node, "validValue already exists for value: " + v.getPrimitiveValue());
             }
 
             if (validValueByNameMap.get(v.getName()) != null)
             {
-                throw new IllegalArgumentException("validValue already exists for name: " + v.getName());
+                handleWarning(node, "validValue already exists for name: " + v.getName());
             }
 
             validValueByPrimitiveValueMap.put(v.getPrimitiveValue(), v);
