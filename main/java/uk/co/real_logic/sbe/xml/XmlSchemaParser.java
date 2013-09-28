@@ -219,31 +219,48 @@ public class XmlSchemaParser
         messageByIdMap.put(Long.valueOf(message.getId()), message);
     }
 
+    private static String formatLocationInfo(final Node node)
+    {
+        Node parentNode = node.getParentNode();
+
+        return "at " +
+            "<" + parentNode.getNodeName() +
+            (getAttributeValueOrNull(parentNode, "name") == null ? ">" : (" name=\"" + getAttributeValueOrNull(parentNode, "name") + "\"> ")) +
+            "<" + node.getNodeName() +
+            (getAttributeValueOrNull(node, "name") == null ? ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
+    }
+
+    /**
+     * Handle an error condition as consequence of parsing.
+     */
     public static void handleError(final Node node, final String msg)
     {
         ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
 
         if (handler == null)
         {
-            throw new IllegalArgumentException(msg);
+            throw new IllegalArgumentException("ERROR: " + formatLocationInfo(node) + msg);
         }
         else
         {
-            handler.error(msg);
+            handler.error(formatLocationInfo(node) + msg);
         }
     }
 
+    /**
+     * Handle a warning condition as a consequence of parsing.
+     */
     public static void handleWarning(final Node node, final String msg)
     {
         ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
 
         if (handler == null)
         {
-            throw new IllegalArgumentException("WARNING: " + msg);
+            throw new IllegalArgumentException("WARNING: " + formatLocationInfo(node) + msg);
         }
         else
         {
-            handler.warning(msg);
+            handler.warning(formatLocationInfo(node) + msg);
         }
     }
 
