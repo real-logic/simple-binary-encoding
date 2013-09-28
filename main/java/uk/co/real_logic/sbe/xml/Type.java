@@ -23,7 +23,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 /**
  * An SBE type. One of encodedDataType, compositeType, enumType, or setType per the SBE spec.
  */
-public class Type
+public abstract class Type
 {
     /** Default presence attribute for Types */
     public static final String DEFAULT_PRESENCE = "required";
@@ -92,10 +92,7 @@ public class Type
      *
      * @return size of the type in octets
      */
-    public int size()
-    {
-        return 0;
-    }
+    public abstract int size();
 
     /**
      * The description of the Type (if set) or null
