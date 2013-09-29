@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   package="SBE tests"
+                   fixVersion="5.2"
+                   description="Unit Test"
+                   byteOrder="littleEndian"
+                   xsi:schemaLocation="http://www.fixprotocol.org/ns/simple/1.0/SimpleBinary1-0.xsd">
+    <types>
+        <type name="NamedCharType" primitiveType="char" fixUsage="char"/>
+        <type name="CharTypeNoFixUsage" primitiveType="char"/>
+        <type name="RawData" primitiveType="uint8" variableLength="true" fixUsage="data"/>
+    </types>
+
+    <!-- blockLength too small for start of group -->    
+    <sbe:message name="Message 1" id="1" blockLength="2">
+        <!-- mismatched fixUsage -->
+        <field name="mismatched fixUsage" id="1" type="NamedCharType" fixUsage="int"/>
+
+        <!-- field has no fixUsage -->
+        <field name="no field fixUsage" id="2" type="NamedCharType"/>
+
+        <!-- field has fixUsage, type does not -->
+        <field name="no type fixUsage" id="3" type="CharTypeNoFixUsage"/>
+
+        <!-- unknown type for field -->
+        <field name="unknown type" id="4" type="XXXX"/>
+
+        <!-- field offset too small -->
+        <field name="offset too small" id="5" type="uint8" offset="1" fixUsage="int"/>
+
+        <!-- no matching entry count field and blockLength too small -->
+        <group name="group 1" blockLength="3">
+            <field name="just a name" id="10" type="uint64" fixUsage="int"/>
+        </group>
+
+        <!-- variable length field without length field -->
+        <data name="has no length field" id="100" type="RawData"/>
+
+        <!-- field declared after group -->
+        <field name="field misordered" id="20" type="uint32" fixUsage="int"/>
+
+    </sbe:message>
+</sbe:messageSchema>

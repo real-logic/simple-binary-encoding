@@ -192,4 +192,29 @@ public class ErrorHandlerTest
         }
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldExitAfterMessage()
+        throws Exception
+    {
+        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "false");
+        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
+        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "true");
+
+        try
+        {
+            parse(TestUtil.getLocalResource("ErrorHandlerMessageTest.xml"));
+        }
+        catch (IllegalArgumentException shouldHaveOnly1Error)
+        {
+            assertThat(shouldHaveOnly1Error.getMessage(), is("had 8 errors"));
+
+            throw shouldHaveOnly1Error;
+        }
+    }
+
+    /*
+     * TODO:
+     * left over entry count and length field (warning)
+     * dup field id? (not currently tracked)
+     */
 }

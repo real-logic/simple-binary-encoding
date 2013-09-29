@@ -83,7 +83,7 @@ public class Message
 
         fieldList = parseFieldsAndGroups(messageNode, typeByNameMap);
 
-        validateBlockLength(blockLength, calculateAndValidateOffsets(fieldList));
+        validateBlockLength(messageNode, blockLength, calculateAndValidateOffsets(messageNode, fieldList));
     }
 
     private List<Field> parseFieldsAndGroups(final Node node, final Map<String, Type> typeByNameMap)
@@ -100,42 +100,51 @@ public class Message
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             Field field;
+            Type fieldType;
 
             final String nodeName = list.item(i).getNodeName();
             switch (nodeName)
             {
                 case "group":
-                    field = new Field(list.item(i), getAttributeValue(list.item(i), "name"));
-                    Field entryCountField = entryCountFieldMap.get(field.getName());
-
-                    if (entryCountField == null)
+                    if (numDataEncountered > 0)
                     {
-                        throw new IllegalArgumentException("could not find entry count field for group: " + field.getName());
-                    }
-                    else if (numDataEncountered > 0)
-                    {
-                        throw new IllegalArgumentException("group specified after data specified");
+                        handleError(node, "group specified after data specified");
                     }
 
-                    field.setEntryCountField(entryCountField);
-                    entryCountField.setGroupField(field);
-
-                    field.setIrId(irIdCursor++);
-                    field.setIrRefId(entryCountField.getIrId());
-                    entryCountField.setIrRefId(field.getIrId());
-
-                    entryCountFieldMap.remove(field.getName()); // remove field so that it can't be reused as this level
-
+                    field = parseGroupNode(list.item(i), entryCountFieldMap);
                     field.setGroupFieldList(parseFieldsAndGroups(list.item(i), typeByNameMap)); // recursive call
 
                     numGroupEncountered++;
                     break;
 
+                case "data":
+                    fieldType = typeByNameMap.get(getAttributeValue(list.item(i), "type"));
+                    if (fieldType == null)
+                    {
+                        handleError(list.item(i), "could not find type");
+                    }
+
+                    field = parseDataNode(list.item(i), lengthFieldMap, fieldType);
+
+                    numDataEncountered++;
+                    break;
+
                 case "field":
+                    if (numGroupEncountered > 0 || numDataEncountered > 0)
+                    {
+                        handleError(node, "field specified after group or data specified");
+                    }
+
+                    fieldType = typeByNameMap.get(getAttributeValue(list.item(i), "type"));
+                    if (fieldType == null)
+                    {
+                        handleError(list.item(i), "could not find type");
+                    }
+
                     field = new Field(list.item(i),
                                       getAttributeValue(list.item(i), "name"),
                                       Integer.parseInt(getAttributeValue(list.item(i), "id")),
-                                      lookupType(typeByNameMap, getAttributeValue(list.item(i), "type")));
+                                      fieldType);
 
                     if (field.getGroupName() != null)
                     {
@@ -148,45 +157,80 @@ public class Message
                         lengthFieldMap.put(Integer.valueOf(field.getRefId()), field);
                         field.setIrId(irIdCursor++);
                     }
-
-                    if (numGroupEncountered > 0 || numDataEncountered > 0)
-                    {
-                        throw new IllegalArgumentException("field specified after group or data specified");
-                    }
-                    break;
-
-                case "data":
-                    field = new Field(list.item(i),
-                                      getAttributeValue(list.item(i), "name"),
-                                      Integer.parseInt(getAttributeValue(list.item(i), "id")),
-                                      lookupType(typeByNameMap, getAttributeValue(list.item(i), "type")));
-
-                    Field lengthField = lengthFieldMap.get(Integer.valueOf(field.getId()));
-                    if (lengthField == null)
-                    {
-                        throw new IllegalArgumentException("could not find length field for data field: " + field.getName());
-                    }
-
-                    field.setLengthField(lengthField);
-                    lengthField.setDataField(field);
-
-                    field.setIrId(irIdCursor++);
-                    field.setIrRefId(lengthField.getIrId());
-                    lengthField.setIrRefId(field.getIrId());
-
-                    lengthFieldMap.remove(Integer.valueOf(field.getId())); // remove field so that it can be reused
-                    numDataEncountered++;
                     break;
 
                 default:
                     throw new IllegalStateException("Unknown node name: " + nodeName);
             }
-            // TODO: validate field before adding. If doesn't validate, don't add.
-            // TODO: validData(), validGroup(), validField() - return boolean to indicate success or not (xref, fixUsage being set, etc.)
             fieldList.add(field);
         }
-        // TODO: if the entryCountMap is not empty, then it means something didn't get matched up... warning? same for lengthFieldMap
+
+        if (entryCountFieldMap.size() > 0)
+        {
+            handleWarning(node, "entry count field or fields not matched");
+        }
+        if (lengthFieldMap.size() > 0)
+        {
+            handleWarning(node, "length field or fields not matched");
+        }
+
         return fieldList;
+    }
+
+    /**
+     * parse and handle creating a Field that represents a repeating group
+     */
+    private Field parseGroupNode(final Node node, Map<String, Field> entryCountFieldMap)
+    {
+        Field field = new Field(node, getAttributeValue(node, "name"));
+        Field entryCountField = entryCountFieldMap.get(field.getName());
+
+        if (entryCountField == null)
+        {
+            handleError(node, "could not find entry count field for group: " + field.getName());
+        }
+        else
+        {
+            field.setEntryCountField(entryCountField);
+            entryCountField.setGroupField(field);
+
+            field.setIrId(irIdCursor++);
+            field.setIrRefId(entryCountField.getIrId());
+            entryCountField.setIrRefId(field.getIrId());
+
+            entryCountFieldMap.remove(field.getName()); // remove field so that it can't be reused as this level
+        }
+        return field;
+    }
+
+    /**
+     * parse and handle creating a Field that represents a variable length field
+     */
+    private Field parseDataNode(final Node node, Map<Integer, Field> lengthFieldMap, Type type)
+    {
+        Field field = new Field(node,
+                                getAttributeValue(node, "name"),
+                                Integer.parseInt(getAttributeValue(node, "id")),
+                                type);
+
+        Field lengthField = lengthFieldMap.get(Integer.valueOf(field.getId()));
+
+        if (lengthField == null)
+        {
+            handleError(node, "could not find length field for data field: " + field.getName());
+        }
+        else
+        {
+            field.setLengthField(lengthField);
+            lengthField.setDataField(field);
+
+            field.setIrId(irIdCursor++);
+            field.setIrRefId(lengthField.getIrId());
+            lengthField.setIrRefId(field.getIrId());
+
+            lengthFieldMap.remove(Integer.valueOf(field.getId())); // remove field so that it can be reused
+        }
+        return field;
     }
 
     /**
@@ -197,7 +241,7 @@ public class Message
      * @param fields to iterate over
      * @return the total size of the list or {@link Token#VARIABLE_SIZE} if the size will vary
      */
-    public int calculateAndValidateOffsets(List<Field> fields)
+    public int calculateAndValidateOffsets(final Node node, List<Field> fields)
     {
         int currOffset = 0;
 
@@ -206,7 +250,7 @@ public class Message
             /* check if specified offset is ok or not */
             if (field.getOffset() > 0 && field.getOffset() < currOffset)
             {
-                throw new IllegalArgumentException("specified offset is too small for field name: " + field.getName());
+                handleError(node, "specified offset is too small for field name: " + field.getName());
             }
 
             /* if offset specified, then use it (since it was checked before) */
@@ -221,10 +265,10 @@ public class Message
             /* if this field is a <group> then recurse into it */
             if (field.getGroupFieldList() != null)
             {
-                int calculatedBlockLength = calculateAndValidateOffsets(field.getGroupFieldList());
+                int calculatedBlockLength = calculateAndValidateOffsets(node, field.getGroupFieldList());
 
                 /* validate the <group> blockLength, if set */
-                validateBlockLength(field.getBlockLength(), calculatedBlockLength);
+                validateBlockLength(node, field.getBlockLength(), calculatedBlockLength);
 
                 /*
                  * After a <group> element, the offset and total size will be varying
@@ -232,7 +276,7 @@ public class Message
                  */
                 currOffset = Token.VARIABLE_SIZE;
             }
-            else  // will be <field> or <data>
+            else if (field.getType() != null) // will be <field> or <data>
             {
                 int calculatedSize = field.getType().size();
 
@@ -308,26 +352,17 @@ public class Message
         return blockLength;
     }
 
-    private static Type lookupType(final Map<String, Type> typeByNameMap, final String name)
-        throws IllegalArgumentException
-    {
-        Type type = typeByNameMap.get(name);
-        if (type == null)
-        {
-            throw new IllegalArgumentException("Type does not exist for name: " + name);
-        }
-
-        return type;
-    }
-
-    private void validateBlockLength(final long specifiedBlockLength, final long calculatedBlockLength)
+    private void validateBlockLength(final Node node, final long specifiedBlockLength, final long calculatedBlockLength)
     {
         if (0 < specifiedBlockLength && calculatedBlockLength > specifiedBlockLength)
         {
-            throw new IllegalArgumentException("specified blockLength is too small");
+            handleError(node, "specified blockLength is too small");
         }
     }
 
+    /*
+     * TODO: probably should break this class out into its own main class
+     */
 
     /** Holder for Field (or Group) information */
     public static class Field
@@ -374,15 +409,17 @@ public class Message
             this.dataField = null;        // will be set later
             this.calculatedOffset = 0;
 
-            // fixUsage must be present or must be on the type. If on both, they must agree.
-            // TODO: move this to validation step
-            if (fixUsage == null && type.getFixUsage() == null)
+            if (type != null)
             {
-                throw new IllegalArgumentException("Missing fixUsage on type and field: " + name);
-            }
-            else if (fixUsage != null && type.getFixUsage() != null && !fixUsage.equals(type.getFixUsage()))
-            {
-                throw new IllegalArgumentException("Mismatched fixUsage on type and field: " + name);
+                // fixUsage must be present or must be on the type. If on both, they must agree.
+                if (fixUsage == null && type.getFixUsage() == null)
+                {
+                    handleError(node, "Missing fixUsage on type and field: " + name);
+                }
+                else if (fixUsage != null && type.getFixUsage() != null && !fixUsage.equals(type.getFixUsage()))
+                {
+                    handleError(node, "Mismatched fixUsage on type and field: " + name);
+                }
             }
         }
 
