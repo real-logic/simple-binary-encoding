@@ -16,7 +16,7 @@
             <type name="reserved" primitiveType="uint8"/>
         </composite>
     </types>
-    <sbe:message name="TestMessage1" id="1" description="TestMessage" blockLength="16">
+    <sbe:message name="TestMessage1" id="1" description="TestMessage">
         <field type="length" name="EncryptedNewPasswordLen" id="1403" refId="1404"/>
         <data type="rawData" name="EncryptedNewPassword" id="1404"/>
     </sbe:message>

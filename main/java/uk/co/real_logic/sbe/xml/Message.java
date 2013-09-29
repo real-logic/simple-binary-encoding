@@ -53,6 +53,7 @@ public class Message
     private final int blockLength;
     private final List<Field> fieldList;
     private final String fixMsgType;
+    private final int calculatedBlockLength;
     private long irIdCursor = 1;
 
     /**
@@ -83,7 +84,9 @@ public class Message
 
         fieldList = parseFieldsAndGroups(messageNode, typeByNameMap);
 
-        validateBlockLength(messageNode, blockLength, calculateAndValidateOffsets(messageNode, fieldList));
+        calculatedBlockLength = calculateAndValidateOffsets(messageNode, fieldList, blockLength);
+
+        validateBlockLength(messageNode, blockLength, calculatedBlockLength);
     }
 
     private List<Field> parseFieldsAndGroups(final Node node, final Map<String, Type> typeByNameMap)
@@ -112,7 +115,7 @@ public class Message
                     }
 
                     field = parseGroupNode(list.item(i), entryCountFieldMap);
-                    field.setGroupFieldList(parseFieldsAndGroups(list.item(i), typeByNameMap)); // recursive call
+                    field.setGroupFields(parseFieldsAndGroups(list.item(i), typeByNameMap)); // recursive call
 
                     numGroupEncountered++;
                     break;
@@ -239,9 +242,10 @@ public class Message
      * into repeated groups.
      *
      * @param fields to iterate over
+     * @param blockLength of the surrounding element or 0 for not set
      * @return the total size of the list or {@link Token#VARIABLE_SIZE} if the size will vary
      */
-    public int calculateAndValidateOffsets(final Node node, List<Field> fields)
+    public int calculateAndValidateOffsets(final Node node, List<Field> fields, int blockLength)
     {
         int currOffset = 0;
 
@@ -253,22 +257,43 @@ public class Message
                 handleError(node, "specified offset is too small for field name: " + field.getName());
             }
 
-            /* if offset specified, then use it (since it was checked before) */
-            if (field.getOffset() > 0 && Token.VARIABLE_SIZE != currOffset)
+            if (Token.VARIABLE_SIZE != currOffset)
             {
-                currOffset = field.getOffset();  // reset current offset to the one requested by the field specifcation
+                /* if offset specified, then use it (since it was checked before) */
+                if (field.getOffset() > 0)
+                {
+                    currOffset = field.getOffset();  // reset current offset to the one requested by the field specification
+                }
+                else if (field.getType() == null && blockLength > 0)
+                {
+                    currOffset = blockLength;        // reset current offset to the blockLength specified
+                }
+                else if (field.getLengthField() != null && blockLength > 0)
+                {
+                    currOffset = blockLength;        // reset current offset to the blockLength specified
+                }
             }
 
             /* save the fields current offset (even for <group> elements!) */
             field.setCalculatedOffset(currOffset);
 
             /* if this field is a <group> then recurse into it */
-            if (field.getGroupFieldList() != null)
+            if (field.getGroupFields() != null)
             {
-                int calculatedBlockLength = calculateAndValidateOffsets(node, field.getGroupFieldList());
+                /* 0 blockLength as group blockLength is different */
+                int calculatedBlockLength = calculateAndValidateOffsets(node, field.getGroupFields(), 0);
 
                 /* validate the <group> blockLength, if set */
                 validateBlockLength(node, field.getBlockLength(), calculatedBlockLength);
+
+                if (field.getBlockLength() > calculatedBlockLength)
+                {
+                    field.setCalculatedBlockLength(field.getBlockLength());
+                }
+                else
+                {
+                    field.setCalculatedBlockLength(calculatedBlockLength);
+                }
 
                 /*
                  * After a <group> element, the offset and total size will be varying
@@ -349,7 +374,7 @@ public class Message
      */
     public long getBlockLength()
     {
-        return blockLength;
+        return (blockLength > calculatedBlockLength ? blockLength : calculatedBlockLength);
     }
 
     private void validateBlockLength(final Node node, final long specifiedBlockLength, final long calculatedBlockLength)
@@ -388,6 +413,7 @@ public class Message
         private long irId = INVALID_ID;     // used to identify this field by an IR ID
         private long irRefId = INVALID_ID;  // used to identify an associated field by an IR ID
         private int calculatedOffset;       // used to hold the calculated offset of this field from top level <message> or <group>
+        private int calculatedBlockLength;  // used to hold the calculated block length of this group
 
         /** The field constructor */
         public Field(final Node node, final String name, final int id, final Type type)
@@ -408,6 +434,7 @@ public class Message
             this.groupField = null;       // will be set later
             this.dataField = null;        // will be set later
             this.calculatedOffset = 0;
+            this.calculatedBlockLength = 0;
 
             if (type != null)
             {
@@ -442,14 +469,15 @@ public class Message
             this.groupField = null;        // has no meaning
             this.dataField = null;         // has no meaning
             this.calculatedOffset = 0;
+            this.calculatedBlockLength = 0;
         }
 
-        public void setGroupFieldList(final List<Field> list)
+        public void setGroupFields(final List<Field> list)
         {
             groupFieldList = list;
         }
 
-        public List<Field> getGroupFieldList()
+        public List<Field> getGroupFields()
         {
             return groupFieldList;
         }
@@ -542,6 +570,16 @@ public class Message
         public int getBlockLength()
         {
             return blockLength;
+        }
+
+        public void setCalculatedBlockLength(int length)
+        {
+            calculatedBlockLength = length;
+        }
+
+        public int getCalculatedBlockLength()
+        {
+            return calculatedBlockLength;
         }
 
         public void setIrId(final long id)

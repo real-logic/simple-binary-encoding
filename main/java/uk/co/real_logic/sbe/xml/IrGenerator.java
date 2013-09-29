@@ -125,7 +125,7 @@ public class IrGenerator
             if (type == null)
             {
                 addFieldSignal(field, Token.Signal.BEGIN_GROUP);
-                addAllFields(field.getGroupFieldList());
+                addAllFields(field.getGroupFields());
                 addFieldSignal(field, Token.Signal.END_GROUP);
             }
             else

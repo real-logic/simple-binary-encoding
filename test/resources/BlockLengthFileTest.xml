@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   package="SBE tests"
+                   fixVersion="5.2"
+                   description="Unit Test"
+                   byteOrder="littleEndian"
+                   xsi:schemaLocation="http://www.fixprotocol.org/ns/simple/1.0/SimpleBinary1-0.xsd">
+    <types>
+        <composite name="messageHeader" description="Template ID and length of message root" fixUsage="Length">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint8"/>
+            <type name="reserved" primitiveType="uint8"/>
+        </composite>
+        <composite name="groupSize" fixUsage="NumInGroup">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint8"/>
+        </composite>
+        <type name="rawData" primitiveType="char" fixUsage="data" variableLength="true"/>
+        <type name="length" primitiveType="uint8" fixUsage="Length" maxValue="200"/>
+    </types>
+
+    <!-- no blockLength set for message nor group -->
+    <sbe:message name="Message1" id="1">
+        <field name="header" id="41" type="messageHeader"/>
+        <field name="Group Dimensions" id="1" type="groupSize" groupName="Group"/>
+        <group name="Group">
+            <field name="F1" id="10" type="uint32" fixUsage="int"/>
+            <field name="F2" id="11" type="uint64" fixUsage="int"/>
+        </group>
+    </sbe:message>
+
+    <!-- blockLength set for message -->
+    <sbe:message name="Message2" id="2" blockLength="64">
+        <field name="header" id="41" type="messageHeader"/>
+        <field name="Group Dimensions" id="1" type="groupSize" groupName="Group"/>
+        <group name="Group">
+            <field name="F1" id="10" type="uint32" fixUsage="int"/>
+            <field name="F2" id="11" type="uint64" fixUsage="int"/>
+        </group>
+    </sbe:message>
+
+    <!-- blockLength set for group -->
+    <sbe:message name="Message3" id="3" blockLength="64">
+        <field name="header" id="41" type="messageHeader"/>
+        <field name="Group Dimensions" id="1" type="groupSize" groupName="Group"/>
+        <group name="Group" blockLength="16">
+            <field name="F1" id="10" type="uint32" fixUsage="int"/>
+            <field name="F2" id="11" type="uint64" fixUsage="int"/>
+        </group>
+    </sbe:message>
+
+    <!-- blockLength set for message with data -->
+    <sbe:message name="Message4" id="4" blockLength="64">
+        <field name="header" id="41" type="messageHeader"/>
+        <field type="length" name="EncryptedNewPasswordLen" id="1403" refId="1404"/>
+        <data type="rawData" name="EncryptedNewPassword" id="1404"/>
+    </sbe:message>
+</sbe:messageSchema>
