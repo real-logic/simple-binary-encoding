@@ -204,11 +204,11 @@ public class ErrorHandlerTest
         {
             parse(TestUtil.getLocalResource("ErrorHandlerMessageTest.xml"));
         }
-        catch (IllegalArgumentException shouldHaveOnly1Error)
+        catch (IllegalArgumentException shouldHaveOnly8Errors)
         {
-            assertThat(shouldHaveOnly1Error.getMessage(), is("had 8 errors"));
+            assertThat(shouldHaveOnly8Errors.getMessage(), is("had 8 errors"));
 
-            throw shouldHaveOnly1Error;
+            throw shouldHaveOnly8Errors;
         }
     }
 
