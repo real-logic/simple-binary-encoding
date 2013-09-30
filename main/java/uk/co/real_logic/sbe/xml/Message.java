@@ -33,7 +33,7 @@ import java.util.Map;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
- * An SBE message containing a list of {@link Message.Field} objects and SBE message attributes.
+ * An SBE message containing a list of {@link Field} objects and SBE message attributes.
  * <p/>
  * What is difference between {@link Message} and the Intermediate Representation (IR)?
  * <ul>
@@ -136,10 +136,7 @@ public class Message
                         handleError(list.item(i), "could not find type");
                     }
 
-                    field = new Field(list.item(i),
-                                      getAttributeValue(list.item(i), "name"),
-                                      Integer.parseInt(getAttributeValue(list.item(i), "id")),
-                                      fieldType);
+                    field = parseFieldNode(list.item(i), fieldType);
 
                     if (field.getGroupName() != null)
                     {
@@ -177,7 +174,15 @@ public class Message
      */
     private Field parseGroupNode(final Node node, Map<String, Field> entryCountFieldMap)
     {
-        Field field = new Field(node, getAttributeValue(node, "name"));
+        Field.Builder builder = new Field.Builder(getAttributeValue(node, "name"));
+
+        builder.description(getAttributeValueOrNull(node, "description"));
+        builder.id(Integer.parseInt(getAttributeValue(node, "id", Field.INVALID_ID_STRING)));
+        builder.blockLength(Integer.parseInt(getAttributeValue(node, "blockLength", "0")));
+        builder.dimensionType(XmlSchemaParser.getAttributeValue(node, "dimensionType", "groupSizeEncoding"));
+
+        Field field = builder.build();
+
         Field entryCountField = entryCountFieldMap.get(field.getName());
 
         if (entryCountField == null)
@@ -203,10 +208,17 @@ public class Message
      */
     private Field parseDataNode(final Node node, Map<Integer, Field> lengthFieldMap, Type type)
     {
-        Field field = new Field(node,
-                                getAttributeValue(node, "name"),
-                                Integer.parseInt(getAttributeValue(node, "id")),
-                                type);
+        Field.Builder builder = new Field.Builder(getAttributeValue(node, "name"));
+
+        builder.description(getAttributeValueOrNull(node, "description"));
+        builder.id(Integer.parseInt(getAttributeValue(node, "id")));
+        builder.type(type);
+        builder.offset(Integer.parseInt(getAttributeValue(node, "offset", "0")));
+        builder.semanticType(getMultiNamedAttributeValueOrNull(node, new String[] {"semanticType", "fixUsage"}));
+        builder.presence(Presence.lookup(getAttributeValueOrNull(node, "presence")));
+
+        Field field = builder.build();
+        field.validate(node);
 
         Field lengthField = lengthFieldMap.get(Integer.valueOf(field.getId()));
 
@@ -225,6 +237,28 @@ public class Message
 
             lengthFieldMap.remove(Integer.valueOf(field.getId())); // remove field so that it can be reused
         }
+        return field;
+    }
+
+    /**
+     * parse and handle creating a Field that represents a field
+     */
+    private Field parseFieldNode(final Node node, Type type)
+    {
+        Field.Builder builder = new Field.Builder(getAttributeValue(node, "name"));
+
+        builder.description(getAttributeValueOrNull(node, "description"));
+        builder.groupName(getAttributeValueOrNull(node, "groupName"));
+        builder.id(Integer.parseInt(getAttributeValue(node, "id")));
+        builder.type(type);
+        builder.offset(Integer.parseInt(getAttributeValue(node, "offset", "0")));
+        builder.semanticType(getMultiNamedAttributeValueOrNull(node, new String[] {"semanticType", "fixUsage"}));
+        builder.presence(Presence.lookup(getAttributeValueOrNull(node, "presence")));
+        builder.refId(Integer.parseInt(getAttributeValue(node, "refId", Field.INVALID_ID_STRING)));
+
+        Field field = builder.build();
+        field.validate(node);
+
         return field;
     }
 

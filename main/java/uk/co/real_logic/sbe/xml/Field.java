@@ -41,7 +41,7 @@ public class Field
     private final int refId;            // optional for field (not present for group or data) INVALID_ID means not set
     private final int blockLength;      // optional for group (not present for field/data)
     private final String dimensionType; // required for group (not present for field/data) - has default
-    private List<Field> groupFieldList;
+    private List<Field> groupFieldList; // used by group fields as the list of child fields in the group
     private Field entryCountField;      // used by group fields as the entry count field
     private Field lengthField;          // used by data fields as the length field
     private Field groupField;           // used by entry count fields as the group field
@@ -51,28 +51,41 @@ public class Field
     private int calculatedOffset;       // used to hold the calculated offset of this field from top level <message> or <group>
     private int calculatedBlockLength;  // used to hold the calculated block length of this group
 
-    /** The field constructor */
-    public Field(final Node node, final String name, final int id, final Type type)
+    /** Builder constructor */
+    public Field(final String name,
+                 final String description,
+                 final String groupName,
+                 final int id,
+                 final Type type,
+                 final int offset,
+                 final String semanticType,
+                 final Presence presence,
+                 final int refId,
+                 final int blockLength,
+                 final String dimensionType)
     {
         this.name = name;
-        this.description = getAttributeValueOrNull(node, "description");
-        this.groupName = getAttributeValueOrNull(node, "groupName");
+        this.description = description;
+        this.groupName = groupName;
         this.id = id;
         this.type = type;
-        this.offset = Integer.parseInt(getAttributeValue(node, "offset", "0"));
-        this.semanticType = getMultiNamedAttributeValueOrNull(node, new String[] {"semanticType", "fixUsage"});
-        this.presence = Presence.lookup(getAttributeValueOrNull(node, "presence"));
-        this.refId = Integer.parseInt(getAttributeValue(node, "refId", INVALID_ID_STRING));
-        this.blockLength = 0;
-        this.dimensionType = null;
-        this.groupFieldList = null;   // has no meaning if not group
-        this.entryCountField = null;  // has no meaning if not group
-        this.lengthField = null;      // will be set later
-        this.groupField = null;       // will be set later
-        this.dataField = null;        // will be set later
+        this.offset = offset;
+        this.semanticType = semanticType;
+        this.presence = presence;
+        this.refId = refId;
+        this.blockLength = blockLength;
+        this.dimensionType = dimensionType;
+        this.groupFieldList = null;
+        this.entryCountField = null;
+        this.lengthField = null;
+        this.groupField = null;
+        this.dataField = null;
         this.calculatedOffset = 0;
         this.calculatedBlockLength = 0;
+    }
 
+    public void validate(final Node node)
+    {
         if (type != null)
         {
             // fixUsage must be present or must be on the type. If on both, they must agree.
@@ -85,29 +98,6 @@ public class Field
                 handleError(node, "Mismatched semanticType/fixUsage on type and field: " + name);
             }
         }
-    }
-
-    /** The group constructor */
-    public Field(final Node node, final String name)
-    {
-        this.name = name;
-        this.description = XmlSchemaParser.getAttributeValueOrNull(node, "description");
-        this.groupName = null;
-        this.id = Integer.parseInt(getAttributeValue(node, "id", INVALID_ID_STRING));
-        this.type = null;
-        this.offset = 0;
-        this.semanticType = null;
-        this.presence = null;
-        this.refId = INVALID_ID;
-        this.blockLength = Integer.parseInt(getAttributeValue(node, "blockLength", "0"));
-        this.dimensionType = XmlSchemaParser.getAttributeValue(node, "dimensionType", "groupSizeEncoding");
-        this.groupFieldList = null;    // for now. Set later.
-        this.entryCountField = null;   // for now. Set later.
-        this.lengthField = null;       // has no meaning for group.
-        this.groupField = null;        // has no meaning
-        this.dataField = null;         // has no meaning
-        this.calculatedOffset = 0;
-        this.calculatedBlockLength = 0;
     }
 
     public void setGroupFields(final List<Field> list)
@@ -272,5 +262,90 @@ public class Field
             ", irRefId =" + irRefId +
             ", calculatedOffset=" + calculatedOffset +
             '}';
+    }
+
+    public static class Builder
+    {
+        private final String name;
+        private String description;
+        private String groupName;
+        private int id;
+        private Type type;
+        private int offset;
+        private String semanticType;
+        private Presence presence;
+        private int refId;
+        private int blockLength;
+        private String dimensionType;
+
+        public Builder(final String name)
+        {
+            this.name = name;
+            description = null;
+            groupName = null;
+            id = INVALID_ID;
+            type = null;
+            offset = 0;
+            semanticType = null;
+            presence = null;
+            refId = INVALID_ID;
+            blockLength = 0;
+            dimensionType = null;
+        }
+
+        public void description(final String description)
+        {
+            this.description = description;
+        }
+
+        public void groupName(final String groupName)
+        {
+            this.groupName = groupName;
+        }
+
+        public void id(final int id)
+        {
+            this.id = id;
+        }
+
+        public void type(final Type type)
+        {
+            this.type = type;
+        }
+
+        public void offset(final int offset)
+        {
+            this.offset = offset;
+        }
+
+        public void semanticType(final String semanticType)
+        {
+            this.semanticType = semanticType;
+        }
+
+        public void presence(final Presence presence)
+        {
+            this.presence = presence;
+        }
+
+        public void refId(final int refId)
+        {
+            this.refId = refId;
+        }
+
+        public void blockLength(final int blockLength)
+        {
+            this.blockLength = blockLength;
+        }
+
+        public void dimensionType(final String dimensionType)
+        {
+            this.dimensionType = dimensionType;
+        }
+
+        public Field build()
+        {
+            return new Field(name, description, groupName, id, type, offset, semanticType, presence, refId, blockLength, dimensionType);
+        }
     }
 }
