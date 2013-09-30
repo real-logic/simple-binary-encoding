@@ -31,7 +31,7 @@ public class MessageSchema
     private final String pkg;                         // package (optional?)
     private final String description;                 // description (optional)
     private final long version;                       // version (optional - default is 0)
-    private final String fixVersion;                  // fixVersion (optional)
+    private final String semanticVersion;             // semanticVersion (optional)
     private final ByteOrder byteOrder;                // byteOrder (optional - default is littleEndian)
     private final Map<String, Type> typeByNameMap;
     private final Map<Long, Message> messageByIdMap;
@@ -43,7 +43,7 @@ public class MessageSchema
         this.pkg = getAttributeValue(schemaNode, "package");
         this.description = getAttributeValueOrNull(schemaNode, "description");
         this.version = Long.parseLong(getAttributeValue(schemaNode, "version", "0"));  // default version is 0
-        this.fixVersion = getAttributeValueOrNull(schemaNode, "fixVersion");
+        this.semanticVersion = getMultiNamedAttributeValueOrNull(schemaNode, new String[] {"semanticVersion", "fixVersion"});
         this.byteOrder = lookupByteOrder(getAttributeValue(schemaNode, "byteOrder", "littleEndian"));
         this.typeByNameMap = typeByNameMap;
         this.messageByIdMap = messageByIdMap;
@@ -79,9 +79,9 @@ public class MessageSchema
         return version;
     }
 
-    public String getFixVersion()
+    public String getSemanticVersion()
     {
-        return fixVersion;
+        return semanticVersion;
     }
 
     /**

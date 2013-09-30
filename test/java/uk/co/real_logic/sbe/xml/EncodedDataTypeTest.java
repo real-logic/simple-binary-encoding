@@ -275,30 +275,30 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnCorrectFixUsageForType()
+    public void shouldReturnCorrectSemanticTypeForType()
         throws Exception
     {
-        final String fixUsage = "char";
+        final String semanticType = "char";
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeFIX\" primitiveType=\"char\" fixUsage=\"" + fixUsage + "\"/>" +
+            "    <type name=\"testType\" primitiveType=\"char\" semanticType=\"" + semanticType + "\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat(map.get("testTypeFIX").getFixUsage(), is(fixUsage));
+        assertThat(map.get("testType").getSemanticType(), is(semanticType));
     }
 
     @Test
-    public void shouldReturnFixUsageNOTSETWhenNotSpecified()
+    public void shouldReturnNullWhenSemanticTypeNotSpecified()
         throws Exception
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeFIX\" primitiveType=\"char\"/>" +
+            "    <type name=\"testType\" primitiveType=\"char\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        Assert.assertNull(map.get("testTypeFIX").getFixUsage());
+        Assert.assertNull(map.get("testType").getSemanticType());
     }
 
     @Test(expected = IllegalArgumentException.class)

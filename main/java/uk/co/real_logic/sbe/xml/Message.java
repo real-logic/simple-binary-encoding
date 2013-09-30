@@ -52,7 +52,8 @@ public class Message
     private final String description;
     private final int blockLength;
     private final List<Field> fieldList;
-    private final String fixMsgType;
+    private final String semanticType;
+    private final String headerType;
     private final int calculatedBlockLength;
     private long irIdCursor = 1;
 
@@ -65,22 +66,13 @@ public class Message
     public Message(final Node messageNode, final Map<String, Type> typeByNameMap)
         throws XPathExpressionException, IllegalArgumentException
     {
-        /*
-         * message
-         * - name (required) - unique?
-         *
-         * field
-         * - name (required) - unique within message?
-         * - schemaId (required) - unique within message?
-         *
-         * group
-         * - name (required) - unique within message? field for num entries must precede it!
-         */
         id = Long.parseLong(getAttributeValue(messageNode, "id"));                          // required
         name = getAttributeValue(messageNode, "name");                                      // required
         description = getAttributeValueOrNull(messageNode, "description");                  // optional
         blockLength = Integer.parseInt(getAttributeValue(messageNode, "blockLength", "0")); // 0 means not set
-        fixMsgType = getAttributeValueOrNull(messageNode, "fixMsgType");                    // optional
+        semanticType = getMultiNamedAttributeValueOrNull(messageNode,
+                                                         new String[] {"semanticType", "fixMsgType"});  // optional
+        headerType = getAttributeValue(messageNode, "headerType", "messageHeader");         // has default
 
         fieldList = parseFieldsAndGroups(messageNode, typeByNameMap);
 
@@ -245,7 +237,7 @@ public class Message
      * @param blockLength of the surrounding element or 0 for not set
      * @return the total size of the list or {@link Token#VARIABLE_SIZE} if the size will vary
      */
-    public int calculateAndValidateOffsets(final Node node, List<Field> fields, int blockLength)
+    public int calculateAndValidateOffsets(final Node node, List<Field> fields, final int blockLength)
     {
         int currOffset = 0;
 
@@ -264,7 +256,7 @@ public class Message
                 {
                     currOffset = field.getOffset();  // reset current offset to the one requested by the field specification
                 }
-                else if (field.getType() == null && blockLength > 0)
+                else if (field.getEntryCountField() != null && blockLength > 0)
                 {
                     currOffset = blockLength;        // reset current offset to the blockLength specified
                 }
@@ -350,11 +342,11 @@ public class Message
     }
 
     /**
-     * The fixMsgType of the message (if set) or null
+     * The semanticType of the message (if set) or null
      */
-    public String getFixMsgType()
+    public String getSemanticType()
     {
-        return fixMsgType;
+        return semanticType;
     }
 
     /**
@@ -375,6 +367,14 @@ public class Message
     public long getBlockLength()
     {
         return (blockLength > calculatedBlockLength ? blockLength : calculatedBlockLength);
+    }
+
+    /**
+     * Return the {@link String} representing the {@link Type} for the header of this message
+     */
+    public String getHeaderType()
+    {
+        return headerType;
     }
 
     private void validateBlockLength(final Node node, final long specifiedBlockLength, final long calculatedBlockLength)
@@ -401,10 +401,11 @@ public class Message
         private final int id;               // required for field/data (not present for group)
         private final Type type;            // required for field/data (not present for group)
         private final int offset;           // optional for field/data (not present for group)
-        private final String fixUsage;      // optional for field/data (not present for group?)
+        private final String semanticType;  // optional for field/data (not present for group?)
         private final Presence presence;    // optional for field/data (not present for group)  null means not set
         private final int refId;            // optional for field (not present for group or data) INVALID_ID means not set
         private final int blockLength;      // optional for group (not present for field/data)
+        private final String dimensionType; // required for group (not present for field/data) - has default
         private List<Field> groupFieldList;
         private Field entryCountField;      // used by group fields as the entry count field
         private Field lengthField;          // used by data fields as the length field
@@ -424,10 +425,11 @@ public class Message
             this.id = id;
             this.type = type;
             this.offset = Integer.parseInt(getAttributeValue(node, "offset", "0"));
-            this.fixUsage = getAttributeValueOrNull(node, "fixUsage");
+            this.semanticType = getMultiNamedAttributeValueOrNull(node, new String[] {"semanticType", "fixUsage"});
             this.presence = Presence.lookup(getAttributeValueOrNull(node, "presence"));
             this.refId = Integer.parseInt(getAttributeValue(node, "refId", INVALID_ID_STRING));
             this.blockLength = 0;
+            this.dimensionType = null;
             this.groupFieldList = null;   // has no meaning if not group
             this.entryCountField = null;  // has no meaning if not group
             this.lengthField = null;      // will be set later
@@ -439,13 +441,13 @@ public class Message
             if (type != null)
             {
                 // fixUsage must be present or must be on the type. If on both, they must agree.
-                if (fixUsage == null && type.getFixUsage() == null)
+                if (semanticType == null && type.getSemanticType() == null)
                 {
-                    handleError(node, "Missing fixUsage on type and field: " + name);
+                    handleError(node, "Missing semanticType/fixUsage on type and field: " + name);
                 }
-                else if (fixUsage != null && type.getFixUsage() != null && !fixUsage.equals(type.getFixUsage()))
+                else if (semanticType != null && type.getSemanticType() != null && !semanticType.equals(type.getSemanticType()))
                 {
-                    handleError(node, "Mismatched fixUsage on type and field: " + name);
+                    handleError(node, "Mismatched semanticType/fixUsage on type and field: " + name);
                 }
             }
         }
@@ -456,13 +458,14 @@ public class Message
             this.name = name;
             this.description = XmlSchemaParser.getAttributeValueOrNull(node, "description");
             this.groupName = null;
-            this.id = INVALID_ID;
+            this.id = Integer.parseInt(getAttributeValue(node, "id", INVALID_ID_STRING));
             this.type = null;
             this.offset = 0;
-            this.fixUsage = null;
+            this.semanticType = null;
             this.presence = null;
             this.refId = INVALID_ID;
             this.blockLength = Integer.parseInt(getAttributeValue(node, "blockLength", "0"));
+            this.dimensionType = XmlSchemaParser.getAttributeValue(node, "dimensionType", "groupSizeEncoding");
             this.groupFieldList = null;    // for now. Set later.
             this.entryCountField = null;   // for now. Set later.
             this.lengthField = null;       // has no meaning for group.
@@ -602,9 +605,14 @@ public class Message
             return irRefId;
         }
 
-        public String getFixUsage()
+        public String getSemanticType()
         {
-            return fixUsage;
+            return semanticType;
+        }
+
+        public String getDimensionType()
+        {
+            return dimensionType;
         }
 
         public String toString()
@@ -616,7 +624,7 @@ public class Message
                 ", id=" + id +
                 ", type=" + type +
                 ", offset=" + offset +
-                ", fixUsage=" + fixUsage +
+                ", semanticType=" + semanticType +
                 ", presence=" + presence +
                 ", refId=" + refId +
                 ", blockLength=" + blockLength +

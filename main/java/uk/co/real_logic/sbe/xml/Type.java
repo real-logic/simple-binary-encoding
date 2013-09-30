@@ -31,7 +31,7 @@ public abstract class Type
     private final String name;
     private final Presence presence;
     private final String description;
-    private final String fixUsage;
+    private final String semanticType;
 
     /**
      * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
@@ -43,7 +43,7 @@ public abstract class Type
         name = getAttributeValue(node, "name");
         presence = Presence.lookup(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
-        fixUsage = getAttributeValueOrNull(node, "fixUsage");
+        semanticType = getMultiNamedAttributeValueOrNull(node, new String[]{"semanticType", "fixUsage"});
     }
 
     /**
@@ -52,17 +52,17 @@ public abstract class Type
      * @param name of the type
      * @param presence of the type
      * @param description of the type or null
-     * @param fixUsage of the type or null
+     * @param semanticType of the type or null
      */
     public Type(final String name,
                 final Presence presence,
                 final String description,
-                final String fixUsage)
+                final String semanticType)
     {
         this.name = name;
         this.presence = presence;
         this.description = description;
-        this.fixUsage = fixUsage;
+        this.semanticType = semanticType;
     }
 
     /**
@@ -105,12 +105,12 @@ public abstract class Type
     }
 
     /**
-     * The fixUsage of the Type
+     * The semanticType of the Type
      *
-     * @return fixUsage of the Type if set or null if not set
+     * @return semanticType of the Type if set or null if not set
      */
-    public String getFixUsage()
+    public String getSemanticType()
     {
-        return fixUsage;
+        return semanticType;
     }
 }

@@ -324,6 +324,27 @@ public class XmlSchemaParser
     }
 
     /**
+     * Helper function that uses multiple attribute names, e.g. aliases, from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}
+     *
+     * @param elementNode to look under
+     * @param attrNames that are aliases for one another in priority order
+     * @return null or value of the attribute
+     */
+    public static String getMultiNamedAttributeValueOrNull(final Node elementNode, final String[] attrNames)
+    {
+        for (String attrName : attrNames)
+        {
+            Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
+
+            if (attrNode != null)
+            {
+                return attrNode.getNodeValue();
+            }
+        }
+        return null;
+    }
+
+    /**
      * Helper function to convert a schema byteOrder into a {@link ByteOrder}
      *
      * @param byteOrder specified as a FIX SBE string
