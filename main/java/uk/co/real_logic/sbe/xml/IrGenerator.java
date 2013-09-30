@@ -89,7 +89,7 @@ public class IrGenerator
         tokenList.add(new Token(builder.build()));
     }
 
-    private void addFieldSignal(final Message.Field field, final Token.Signal signal)
+    private void addFieldSignal(final Field field, final Token.Signal signal)
     {
         Metadata.Builder builder = new Metadata.Builder(field.getName());
 
@@ -116,9 +116,9 @@ public class IrGenerator
         tokenList.add(new Token(builder.build()));
     }
 
-    private void addAllFields(final List<Message.Field> fieldList)
+    private void addAllFields(final List<Field> fieldList)
     {
-        for (final Message.Field field : fieldList)
+        for (final Field field : fieldList)
         {
             final Type type = field.getType();
 
