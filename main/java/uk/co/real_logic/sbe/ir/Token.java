@@ -69,6 +69,58 @@ import java.nio.ByteOrder;
  */
 public class Token
 {
+    /**
+     * Signal the {@link Token} role within a stream of tokens. These signals begin/end various entities such as
+     * fields, composites, messages, repeating groups, enumerations, bitsets, etc.
+     */
+    public enum Signal
+    {
+        /** Denotes the beginning of a message */
+        BEGIN_MESSAGE,
+
+        /** Denotes the end of a message */
+        END_MESSAGE,
+
+        /** Denotes the beginning of a composite */
+        BEGIN_COMPOSITE,
+
+        /** Denotes the end of a composite */
+        END_COMPOSITE,
+
+        /** Denotes the beginning of a field */
+        BEGIN_FIELD,
+
+        /** Denotes the end of a field */
+        END_FIELD,
+
+        /** Denotes the beginning of a repeating group */
+        BEGIN_GROUP,
+
+        /** Denotes the end of a repeating group */
+        END_GROUP,
+
+        /** Denotes the beginning of an enumeration */
+        BEGIN_ENUM,
+
+        /** Denotes a value of an enumeration */
+        VALID_VALUE,
+
+        /** Denotes the end of an enumeration */
+        END_ENUM,
+
+        /** Denotes the beginning of a bitset */
+        BEGIN_SET,
+
+        /** Denotes a bit value (choice) of a bitset */
+        CHOICE,
+
+        /** Denotes the end of a bitset */
+        END_SET,
+
+        /** Denotes the {@link Token} is an encoding */
+        ENCODING
+    }
+
     /** Size not determined */
     public static final int VARIABLE_SIZE = -1;
 
@@ -181,57 +233,5 @@ public class Token
             ", byteOrder=" + byteOrder +
             ", metadata=" + metadata +
             '}';
-    }
-
-    /**
-     * Signal the {@link Token} role within a stream of tokens. These signals begin/end various entities such as
-     * fields, composites, messages, repeating groups, enumerations, bitsets, etc.
-     */
-    public enum Signal
-    {
-        /** Denotes the beginning of a message */
-        BEGIN_MESSAGE,
-
-        /** Denotes the end of a message */
-        END_MESSAGE,
-
-        /** Denotes the beginning of a composite */
-        BEGIN_COMPOSITE,
-
-        /** Denotes the end of a composite */
-        END_COMPOSITE,
-
-        /** Denotes the beginning of a field */
-        BEGIN_FIELD,
-
-        /** Denotes the end of a field */
-        END_FIELD,
-
-        /** Denotes the beginning of a repeating group */
-        BEGIN_GROUP,
-
-        /** Denotes the end of a repeating group */
-        END_GROUP,
-
-        /** Denotes the beginning of an enumeration */
-        BEGIN_ENUM,
-
-        /** Denotes a value of an enumeration */
-        VALID_VALUE,
-
-        /** Denotes the end of an enumeration */
-        END_ENUM,
-
-        /** Denotes the beginning of a bitset */
-        BEGIN_SET,
-
-        /** Denotes a bit value (choice) of a bitset */
-        CHOICE,
-
-        /** Denotes the end of a bitset */
-        END_SET,
-
-        /** Denotes the {@link Token} is an encoding */
-        ENCODING
     }
 }
