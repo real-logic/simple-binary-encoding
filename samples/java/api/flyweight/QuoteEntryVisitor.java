@@ -15,68 +15,64 @@
  */
 package api.flyweight;
 
-import api.Side;
+import api.SecurityType;
 
-import java.nio.ByteBuffer;
-
-public class NewOrderSingleFlyweight
+public class QuoteEntryVisitor
 {
-    public void resetForEncode(final ByteBuffer buffer)
+    public void addGroup()
     {
     }
 
-    public void putClOrderId(final String value)
+    public void putId(final int id)
     {
     }
 
-    public void putSymbolId(final long value)
+    public void putSymbol(final String symbol)
     {
     }
 
-    public void putSide(final Side side)
+    public void putSecurityType(final SecurityType securityType)
     {
     }
 
-    public void putOrderQty(final int value)
+    public void putTransactTime(final long timestamp)
     {
     }
 
-    public void putPrice(final double value)
+    public void putBidPx(final double value)
     {
     }
 
-    public void putTransactTime(final long value)
+    public void putBidSize(final int value)
     {
     }
 
-    public boolean isValid()
+    public void putOfferPx(final double value)
     {
-        return true;
     }
 
-    public String getClOrderId()
+    public void putOfferSize(final int value)
+    {
+    }
+
+    public boolean next()
+    {
+        return false;
+    }
+
+    public long getId()
+    {
+        return 0;
+    }
+
+    public String getSymbol()
     {
         return null;
     }
 
-    public long getSymbolId()
-    {
-        return 0;
-    }
-
-    public Side getSide()
+    public SecurityType getSecurityType()
     {
         return null;
-    }
-
-    public long getOrderQty()
-    {
-        return 0;
-    }
-
-    public double getPrice()
-    {
-        return 0;
     }
 
     public long getTransactTime()
@@ -84,7 +80,23 @@ public class NewOrderSingleFlyweight
         return 0;
     }
 
-    public void resetForDecode(final ByteBuffer buffer)
+    public double getBidPx()
     {
+        return 0;
+    }
+
+    public long getBidSize()
+    {
+        return 0;
+    }
+
+    public double getOfferPrice()
+    {
+        return 0;
+    }
+
+    public long getOfferSize()
+    {
+        return 0;
     }
 }

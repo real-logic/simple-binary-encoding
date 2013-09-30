@@ -15,38 +15,33 @@
  */
 package api.flyweight;
 
-import api.Side;
+import api.fluent.CtiCode;
 
 import java.nio.ByteBuffer;
 
-public class NewOrderSingleFlyweight
+public class MassQuoteVisitor
 {
+    private QuoteSetVisitor quoteSetVisitor = new QuoteSetVisitor();
+
     public void resetForEncode(final ByteBuffer buffer)
     {
     }
 
-    public void putClOrderId(final String value)
+    public void resetForDecode(final ByteBuffer buffer)
     {
     }
 
-    public void putSymbolId(final long value)
+    public void putQuoteId(final String quoteId)
     {
     }
 
-    public void putSide(final Side side)
+    public void putCtiCode(final CtiCode code)
     {
     }
 
-    public void putOrderQty(final int value)
+    public QuoteSetVisitor getQuoteSetVisitor()
     {
-    }
-
-    public void putPrice(final double value)
-    {
-    }
-
-    public void putTransactTime(final long value)
-    {
+        return quoteSetVisitor;
     }
 
     public boolean isValid()
@@ -54,37 +49,13 @@ public class NewOrderSingleFlyweight
         return true;
     }
 
-    public String getClOrderId()
+    public String getQuoteId()
     {
         return null;
     }
 
-    public long getSymbolId()
-    {
-        return 0;
-    }
-
-    public Side getSide()
+    public CtiCode getCtiCode()
     {
         return null;
-    }
-
-    public long getOrderQty()
-    {
-        return 0;
-    }
-
-    public double getPrice()
-    {
-        return 0;
-    }
-
-    public long getTransactTime()
-    {
-        return 0;
-    }
-
-    public void resetForDecode(final ByteBuffer buffer)
-    {
     }
 }

@@ -32,7 +32,7 @@ public class FluentDomStyleExample
     public void simpleEncode()
     {
         buffer.clear();
-        final NewOrderSingle newOrderSingle = new NewOrderSingle();
+        NewOrderSingle newOrderSingle = new NewOrderSingle();
 
         newOrderSingle.clOrderId("123")
             .symbolId(567L)
@@ -53,7 +53,7 @@ public class FluentDomStyleExample
 
         buffer.flip();
 
-        final NewOrderSingle newOrderSingle = new NewOrderSingle();
+        NewOrderSingle newOrderSingle = new NewOrderSingle();
         newOrderSingle.decode(buffer); // will throw runtime exception if validation fails
 
         String clientOrderId = newOrderSingle.clOrderId();
@@ -67,8 +67,8 @@ public class FluentDomStyleExample
     public void nestedGroupEncode()
     {
         buffer.clear();
-        final MassQuote massQuote = new MassQuote();
-        final long timestamp = System.currentTimeMillis();
+        MassQuote massQuote = new MassQuote();
+        long timestamp = System.currentTimeMillis();
 
         massQuote.quoteId("1234")
             .ctiCode(CtiCode.HOUSE)
@@ -124,26 +124,26 @@ public class FluentDomStyleExample
 
         buffer.flip();
 
-        final MassQuote massQuote = new MassQuote();
+        MassQuote massQuote = new MassQuote();
         massQuote.decode(buffer); // will throw runtime exception if validation fails
 
-        final String quoteId = massQuote.quoteId();
-        final CtiCode ctiCode = massQuote.ctiCode();
+        String quoteId = massQuote.quoteId();
+        CtiCode ctiCode = massQuote.ctiCode();
 
         for (final QuoteSet quoteSet : massQuote.quoteSets())
         {
-            final String underLyingSecurity = quoteSet.underlyingSecurity();
+            String underLyingSecurity = quoteSet.underlyingSecurity();
 
             for (final QuoteEntry quoteEntry : quoteSet.quoteEntries())
             {
-                final long id = quoteEntry.id();
-                final String symbol = quoteEntry.symbol();
-                final SecurityType securityType = quoteEntry.securityType();
-                final long timestamp = quoteEntry.transactTime();
-                final double bidPrice = quoteEntry.bidPx();
-                final long bidSize = quoteEntry.bidSize();
-                final double offerPrice = quoteEntry.offerPrice();
-                final long offerSize = quoteEntry.offerSize();
+                long id = quoteEntry.id();
+                String symbol = quoteEntry.symbol();
+                SecurityType securityType = quoteEntry.securityType();
+                long timestamp = quoteEntry.transactTime();
+                double bidPrice = quoteEntry.bidPx();
+                long bidSize = quoteEntry.bidSize();
+                double offerPrice = quoteEntry.offerPrice();
+                long offerSize = quoteEntry.offerSize();
             }
         }
     }

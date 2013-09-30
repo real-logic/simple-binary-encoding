@@ -15,8 +15,10 @@
  */
 package api.flyweight;
 
+import api.SecurityType;
 import api.Side;
 import api.Transport;
+import api.fluent.CtiCode;
 
 import java.nio.ByteBuffer;
 
@@ -28,20 +30,21 @@ public class FlyweightStyleExample
 
     private final Transport transport = new Transport();
 
+    // Can be reused to avoid garbage
+    private final NewOrderSingleFlyweight newOrderSingleFlyweight = new NewOrderSingleFlyweight();
+    private final MassQuoteVisitor massQuoteVisitor = new MassQuoteVisitor();
+
     public void simpleEncode()
     {
-        // Can be reused to avoid garbage
-        final NewOrderSingleFlyweight newOrderSingleFlyweight = new NewOrderSingleFlyweight();
-        newOrderSingleFlyweight.setBuffer(buffer);
+        newOrderSingleFlyweight.resetForEncode(buffer);
 
+        // If field is called out of order and a mandatory field is missed then an exception will be thrown
         newOrderSingleFlyweight.putClOrderId("123");
         newOrderSingleFlyweight.putSymbolId(567L);
         newOrderSingleFlyweight.putSide(Side.BUY);
         newOrderSingleFlyweight.putOrderQty(1);
         newOrderSingleFlyweight.putPrice(3.2);
         newOrderSingleFlyweight.putTransactTime(System.currentTimeMillis());
-
-        newOrderSingleFlyweight.validate(); // throws exception if invalid
 
         buffer.flip();
         transport.send(buffer);
@@ -52,12 +55,12 @@ public class FlyweightStyleExample
         buffer.clear();
         transport.receive(buffer);
 
-        buffer.flip();
+        newOrderSingleFlyweight.resetForDecode(buffer);
 
-        final NewOrderSingleFlyweight newOrderSingleFlyweight = new NewOrderSingleFlyweight();
-        newOrderSingleFlyweight.setBuffer(buffer);
-
-        newOrderSingleFlyweight.validate(); // throws exception if invalid
+        if (!newOrderSingleFlyweight.isValid()) // should validation just throw an exception?
+        {
+            throw new IllegalStateException("Message is screwed up");
+        }
 
         String clientOrderId = newOrderSingleFlyweight.getClOrderId();
         long symbolId = newOrderSingleFlyweight.getSymbolId();
@@ -65,5 +68,98 @@ public class FlyweightStyleExample
         long orderQty = newOrderSingleFlyweight.getOrderQty();
         double price = newOrderSingleFlyweight.getPrice();
         long transactTime = newOrderSingleFlyweight.getTransactTime();
+    }
+
+    public void nestedGroupEncode()
+    {
+        massQuoteVisitor.resetForEncode(buffer);
+        final long timestamp = System.currentTimeMillis();
+
+        massQuoteVisitor.putQuoteId("1234");
+        massQuoteVisitor.putCtiCode(CtiCode.HOUSE);
+
+        massQuoteVisitor.getQuoteSetVisitor().addGroup(); // Create a new group in the message
+        massQuoteVisitor.getQuoteSetVisitor().putUnderlyingSecurity("ESH0");
+
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().addGroup();
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putId(1);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSymbol("ABC1");
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSecurityType(SecurityType.OPT);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putTransactTime(timestamp);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidPx(3.1);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidSize(10);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferPx(3.2);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferSize(10);
+
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().addGroup();
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putId(2);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSymbol("ABC2");
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSecurityType(SecurityType.OPT);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putTransactTime(timestamp);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidPx(3.1);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidSize(10);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferPx(3.2);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferSize(10);
+
+        massQuoteVisitor.getQuoteSetVisitor().addGroup(); // Create a new group in the message
+        massQuoteVisitor.getQuoteSetVisitor().putUnderlyingSecurity("EAB0");
+
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().addGroup();
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putId(3);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSymbol("ABC1");
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSecurityType(SecurityType.OPT);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putTransactTime(timestamp);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidPx(3.1);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidSize(10);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferPx(3.2);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferSize(10);
+
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().addGroup();
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putId(4);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSymbol("ABC2");
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSecurityType(SecurityType.OPT);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putTransactTime(timestamp);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidPx(3.1);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidSize(10);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferPx(3.2);
+        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferSize(10);
+
+        buffer.flip();
+        transport.send(buffer);
+    }
+
+    public void nestedGroupDecode()
+    {
+        buffer.clear();
+        transport.receive(buffer);
+
+        massQuoteVisitor.resetForDecode(buffer);
+
+        if (!massQuoteVisitor.isValid()) // should validation just throw an exception?
+        {
+            throw new IllegalStateException("Message is screwed up");
+        }
+
+        String quoteId = massQuoteVisitor.getQuoteId();
+        CtiCode ctiCode = massQuoteVisitor.getCtiCode();
+
+        QuoteSetVisitor quoteSetVisitor = massQuoteVisitor.getQuoteSetVisitor();
+        while (quoteSetVisitor.next())
+        {
+            String underlyingSecurity = quoteSetVisitor.getUnderlyingSecurity();
+
+            QuoteEntryVisitor quoteEntryVisitor = quoteSetVisitor.getQuoteEntryVisitor();
+            while (quoteEntryVisitor.next())
+            {
+                long id = quoteEntryVisitor.getId();
+                String symbol = quoteEntryVisitor.getSymbol();
+                SecurityType securityType = quoteEntryVisitor.getSecurityType();
+                long timestamp = quoteEntryVisitor.getTransactTime();
+                double bidPrice = quoteEntryVisitor.getBidPx();
+                long bidSize = quoteEntryVisitor.getBidSize();
+                double offerPrice = quoteEntryVisitor.getOfferPrice();
+                long offerSize = quoteEntryVisitor.getOfferSize();
+            }
+        }
     }
 }
