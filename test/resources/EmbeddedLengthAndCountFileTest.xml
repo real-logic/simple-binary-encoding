@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   package="SBE tests"
+                   semanticVersion="5.2"
+                   description="Unit Test"
+                   byteOrder="littleEndian"
+                   xsi:schemaLocation="http://www.fixprotocol.org/ns/simple/1.0/SimpleBinary1-0.xsd">
+    <types>
+        <composite name="messageHeader" description="Template ID and length of message root" semanticType="Length">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint8"/>
+            <type name="reserved" primitiveType="uint8"/>
+        </composite>
+        <composite name="varDataEncoding" semanticType="Length">
+            <type name="length" primitiveType="uint8" semanticType="Length"/>
+            <type name="varData" primitiveType="char" semanticType="data"/>
+        </composite>
+        <composite name="groupSizeEncoding" description="Repeating group dimensions">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint8" semanticType="NumInGroup"/>
+        </composite>
+        <type name="string14" primitiveType="char" length="14" semanticType="string"/>
+    </types>
+
+    <sbe:message name="Message1" id="1">
+        <field name="Tag1" id="1" type="uint32" semanticType="int"/>
+        <!-- group with id which is embedded dimension field -->
+        <group name="ListOrdGrp" id="73" description="Repeating group containing orders">
+            <field type="string14" name="ClOrdID" id="11" description="Must be unique, by customer, for the day"/>
+        </group>
+    </sbe:message>
+
+    <sbe:message name="Message2" id="2">
+        <field name="Tag1" id="1" type="uint32" semanticType="int"/>
+        <!-- variable length encoding with embedded length in composite -->
+        <data type="varDataEncoding" name="EncryptedPassword" id="1402"/>
+    </sbe:message>
+</sbe:messageSchema>

@@ -55,6 +55,7 @@ public class Message
     private final String semanticType;
     private final String headerType;
     private final int calculatedBlockLength;
+    private final Map<String, Type> typeByNameMap;
     private long irIdCursor = 1;
 
     /**
@@ -73,15 +74,16 @@ public class Message
         semanticType = getMultiNamedAttributeValueOrNull(messageNode,
                                                          new String[] {"semanticType", "fixMsgType"});  // optional
         headerType = getAttributeValue(messageNode, "headerType", "messageHeader");         // has default
+        this.typeByNameMap = typeByNameMap;
 
-        fieldList = parseFieldsAndGroups(messageNode, typeByNameMap);
+        fieldList = parseFieldsAndGroups(messageNode);
 
         calculatedBlockLength = calculateAndValidateOffsets(messageNode, fieldList, blockLength);
 
         validateBlockLength(messageNode, blockLength, calculatedBlockLength);
     }
 
-    private List<Field> parseFieldsAndGroups(final Node node, final Map<String, Type> typeByNameMap)
+    private List<Field> parseFieldsAndGroups(final Node node)
         throws XPathExpressionException, IllegalArgumentException
     {
         XPath xPath = XPathFactory.newInstance().newXPath();
@@ -107,7 +109,14 @@ public class Message
                     }
 
                     field = parseGroupNode(list.item(i), entryCountFieldMap);
-                    field.setGroupFields(parseFieldsAndGroups(list.item(i), typeByNameMap)); // recursive call
+
+                    /* if we have a dangling dimension Field, then add it here to fieldList. */
+                    if (field.getId() != Field.INVALID_ID)
+                    {
+                        fieldList.add(field.getEntryCountField());
+                    }
+
+                    field.setGroupFields(parseFieldsAndGroups(list.item(i))); // recursive call
 
                     numGroupEncountered++;
                     break;
@@ -185,12 +194,9 @@ public class Message
 
         Field entryCountField = entryCountFieldMap.get(field.getName());
 
-        if (entryCountField == null)
+        if (entryCountField != null)                   /* separate field for entry count/dimensions */
         {
-            handleError(node, "could not find entry count field for group: " + field.getName());
-        }
-        else
-        {
+            /* wire up the cross references */
             field.setEntryCountField(entryCountField);
             entryCountField.setGroupField(field);
 
@@ -198,7 +204,33 @@ public class Message
             field.setIrRefId(entryCountField.getIrId());
             entryCountField.setIrRefId(field.getIrId());
 
-            entryCountFieldMap.remove(field.getName()); // remove field so that it can't be reused as this level
+            entryCountFieldMap.remove(field.getName()); // remove field so that it can't be reused at this level
+        }
+        else if (field.getId() != Field.INVALID_ID)    /* built-in field for entry count/dimensions */
+        {
+            /* group has id set. Which signifies an embedded dimension set */
+            Field.Builder entryCountFieldBuilder = new Field.Builder(new String("dimension" + field.getId()));
+
+            entryCountFieldBuilder.id(field.getId());
+
+            Type type = typeByNameMap.get(field.getDimensionType());
+            if (type == null)
+            {
+                handleError(node, "could not find dimensionType: " + field.getDimensionType());
+            }
+            entryCountFieldBuilder.type(type);
+
+            entryCountField = entryCountFieldBuilder.build();
+            field.setEntryCountField(entryCountField);
+            entryCountField.setGroupField(field);
+
+            field.setIrId(irIdCursor++);
+            field.setIrRefId(entryCountField.getIrId());
+            entryCountField.setIrRefId(field.getIrId());
+        }
+        else
+        {
+            handleError(node, "could not find entry count field for group: " + field.getName());
         }
         return field;
     }
@@ -222,11 +254,7 @@ public class Message
 
         Field lengthField = lengthFieldMap.get(Integer.valueOf(field.getId()));
 
-        if (lengthField == null)
-        {
-            handleError(node, "could not find length field for data field: " + field.getName());
-        }
-        else
+        if (lengthField != null)                    /* separate explicit field for length */
         {
             field.setLengthField(lengthField);
             lengthField.setDataField(field);
@@ -236,6 +264,14 @@ public class Message
             lengthField.setIrRefId(field.getIrId());
 
             lengthFieldMap.remove(Integer.valueOf(field.getId())); // remove field so that it can be reused
+        }
+        else if (type instanceof CompositeType)     /* embedded length in composite */
+        {
+            /* encoded types inside for "length" and "varData". We just let them go on and generate IR as normal. */
+        }
+        else
+        {
+            handleError(node, "could not find length field for data field: " + field.getName());
         }
         return field;
     }
