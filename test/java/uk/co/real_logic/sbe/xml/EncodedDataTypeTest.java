@@ -16,15 +16,13 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.SbeTool;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.SbeTool;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -408,29 +406,5 @@ public class EncodedDataTypeTest
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).getNullValue()),
                    is(parse(nullVal, PrimitiveType.INT8)));
-    }
-
-    @Ignore("changed to warning") @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenNullValueWithPresenceRequired()
-        throws Exception
-    {
-        final String testXmlString =
-            "<types>" +
-            "    <type name=\"testType\" primitiveType=\"int8\" presence=\"required\" nullValue=\"10\"/>" +
-            "</types>";
-
-        parseTestXmlWithMap("/types/type", testXmlString);
-    }
-
-    @Ignore("changed to warning") @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenNullValueWithPresenceConstant()
-        throws Exception
-    {
-        final String testXmlString =
-            "<types>" +
-            "    <type name=\"testType\" primitiveType=\"int8\" presence=\"constant\" nullValue=\"10\">0</type>" +
-            "</types>";
-
-        parseTestXmlWithMap("/types/type", testXmlString);
     }
 }
