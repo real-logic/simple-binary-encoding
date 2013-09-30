@@ -34,7 +34,8 @@ public class FluentDomStyleExample
         buffer.clear();
         NewOrderSingle newOrderSingle = new NewOrderSingle();
 
-        newOrderSingle.clOrderId("123")
+        newOrderSingle
+            .clOrderId("123")
             .symbolId(567L)
             .side(Side.BUY)
             .orderQty(1)
@@ -70,12 +71,15 @@ public class FluentDomStyleExample
         MassQuote massQuote = new MassQuote();
         long timestamp = System.currentTimeMillis();
 
-        massQuote.quoteId("1234")
+        massQuote
+            .quoteId("1234")
             .ctiCode(CtiCode.HOUSE)
             .quoteSets(
-                new QuoteSet().underlyingSecurity("ESH0")
+                new QuoteSet()
+                    .underlyingSecurity("ESH0")
                     .quoteEntries(
-                        new QuoteEntry().id(1)
+                        new QuoteEntry()
+                            .id(1)
                             .symbol("ABC1")
                             .securityType(SecurityType.OPT)
                             .transactTime(timestamp)
@@ -83,7 +87,8 @@ public class FluentDomStyleExample
                             .bidSize(10)
                             .offerPx(3.2)
                             .offerSize(10),
-                        new QuoteEntry().id(2)
+                        new QuoteEntry()
+                            .id(2)
                             .symbol("ABC2")
                             .securityType(SecurityType.OPT)
                             .transactTime(timestamp)
@@ -92,9 +97,11 @@ public class FluentDomStyleExample
                             .offerPx(3.2)
                             .offerSize(10)
                     ),
-                new QuoteSet().underlyingSecurity("EAB0")
+                new QuoteSet()
+                    .underlyingSecurity("EAB0")
                     .quoteEntries(
-                        new QuoteEntry().id(3)
+                        new QuoteEntry()
+                            .id(3)
                             .symbol("ABC1")
                             .securityType(SecurityType.OPT)
                             .transactTime(timestamp)
@@ -102,7 +109,8 @@ public class FluentDomStyleExample
                             .bidSize(10)
                             .offerPx(3.2)
                             .offerSize(10),
-                        new QuoteEntry().id(4)
+                        new QuoteEntry()
+                            .id(4)
                             .symbol("ABC2")
                             .securityType(SecurityType.OPT)
                             .transactTime(timestamp)
