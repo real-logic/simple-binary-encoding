@@ -17,6 +17,7 @@
 package uk.co.real_logic.sbe.ir;
 
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.util.Verify;
 
 import java.nio.ByteOrder;
 
@@ -148,16 +149,15 @@ public class Token
                  final ByteOrder byteOrder,
                  final Metadata metadata)
     {
+        Verify.notNull(primitiveType, "primitiveType");
+        Verify.notNull(byteOrder, "byteOrder");
+        Verify.notNull(metadata, "metadata");
+
         this.primitiveType = primitiveType;
         this.size = size;
         this.offset = offset;
         this.byteOrder = byteOrder;
         this.metadata = metadata;
-
-        if (metadata == null)
-        {
-            throw new RuntimeException("metadata of Token must not be null");
-        }
     }
 
     /**
@@ -167,16 +167,13 @@ public class Token
      */
     public Token(final Metadata metadata)
     {
+        Verify.notNull(metadata, "metadata");
+
         this.primitiveType = null;
         this.size = 0;
         this.offset = 0;
         this.byteOrder = null;
         this.metadata = metadata;
-
-        if (metadata == null)
-        {
-            throw new RuntimeException("metadata of Token must not be null");
-        }
     }
 
     /**

@@ -16,6 +16,7 @@
 package uk.co.real_logic.sbe.ir;
 
 import uk.co.real_logic.sbe.PrimitiveValue;
+import uk.co.real_logic.sbe.util.Verify;
 
 /**
  * Metadata describing an {@link Token}
@@ -45,6 +46,8 @@ public class Metadata
                     final PrimitiveValue nullValue,
                     final PrimitiveValue constValue)
     {
+        Verify.notNull(name, "name");
+
         this.name = name;
         this.schemaId = schemaId;
         this.id = id;
