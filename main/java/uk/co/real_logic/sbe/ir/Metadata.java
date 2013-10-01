@@ -30,7 +30,6 @@ public class Metadata
     private final long schemaId;
     private final long id;
     private final long refId;
-    private final Signal signal;
     private final PrimitiveValue minValue;
     private final PrimitiveValue maxValue;
     private final PrimitiveValue nullValue;
@@ -40,7 +39,6 @@ public class Metadata
                     final long schemaId,
                     final long id,
                     final long refId,
-                    final Signal signal,
                     final PrimitiveValue minValue,
                     final PrimitiveValue maxValue,
                     final PrimitiveValue nullValue,
@@ -52,7 +50,6 @@ public class Metadata
         this.schemaId = schemaId;
         this.id = id;
         this.refId = refId;
-        this.signal = signal;
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.nullValue = nullValue;
@@ -97,16 +94,6 @@ public class Metadata
     public long getRefId()
     {
         return refId;
-    }
-
-    /**
-     * The Signal the token is raising.
-     *
-     * @return the Signal the token is raising.
-     */
-    public Signal getSignal()
-    {
-        return signal;
     }
 
     /**
@@ -156,7 +143,6 @@ public class Metadata
             ", schemaId=" + schemaId +
             ", id=" + id +
             ", refId=" + refId +
-            ", signal=" + signal +
             ", minValue=" + minValue +
             ", maxValue=" + maxValue +
             ", nullValue=" + nullValue +
@@ -173,7 +159,6 @@ public class Metadata
         private long schemaId;
         private long id;
         private long refId;
-        private Signal signal;
         private PrimitiveValue minValue;
         private PrimitiveValue maxValue;
         private PrimitiveValue nullValue;
@@ -185,7 +170,6 @@ public class Metadata
             schemaId = Metadata.INVALID_ID;
             id = Metadata.INVALID_ID;
             refId = Metadata.INVALID_ID;
-            signal = Signal.ENCODING;
             minValue = null;
             maxValue = null;
             nullValue = null;
@@ -207,12 +191,6 @@ public class Metadata
         public Builder refId(final long refId)
         {
             this.refId = refId;
-            return this;
-        }
-
-        public Builder flag(final Signal signal)
-        {
-            this.signal = signal;
             return this;
         }
 
@@ -242,7 +220,7 @@ public class Metadata
 
         public Metadata build()
         {
-            return new Metadata(name, schemaId, id, refId, signal, minValue, maxValue, nullValue, constValue);
+            return new Metadata(name, schemaId, id, refId, minValue, maxValue, nullValue, constValue);
         }
     }
 }

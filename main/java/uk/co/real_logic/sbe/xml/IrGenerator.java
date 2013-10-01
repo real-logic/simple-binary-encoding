@@ -82,17 +82,17 @@ public class IrGenerator
 
     private void addMessageSignal(final Message msg, final Signal signal)
     {
-        tokenList.add(new Token(new Metadata.Builder(msg.getName())
+        tokenList.add(new Token(signal,
+                                new Metadata.Builder(msg.getName())
                                 .schemaId(msg.getId())
                                 .id(0)
-                                .flag(signal)
                                 .build()));
     }
 
     private void addTypeSignal(final Type type, final Signal signal)
     {
-        tokenList.add(new Token(new Metadata.Builder(type.getName())
-                                .flag(signal)
+        tokenList.add(new Token(signal,
+                                new Metadata.Builder(type.getName())
                                 .build()));
     }
 
@@ -117,11 +117,9 @@ public class IrGenerator
             builder.refId(field.getDataField().getIrId());
         }
 
-        builder.schemaId(field.getId())
-            .id(field.getIrId())
-            .flag(signal);
+        builder.schemaId(field.getId()).id(field.getIrId());
 
-        tokenList.add(new Token(builder.build()));
+        tokenList.add(new Token(signal, builder.build()));
     }
 
     private void addAllFields(final List<Field> fieldList)
@@ -194,7 +192,7 @@ public class IrGenerator
             builder.nullValue(encodingType.nullValue());
         }
 
-        tokenList.add(new Token(encodingType, encodingType.size(), offset, byteOrder, builder.build()));
+        tokenList.add(new Token(Signal.ENCODING, encodingType, encodingType.size(), offset, byteOrder, builder.build()));
 
         for (final EnumType.ValidValue v : type.getValidValues())
         {
@@ -206,8 +204,8 @@ public class IrGenerator
 
     private void add(final EnumType.ValidValue value)
     {
-        tokenList.add(new Token(new Metadata.Builder(value.getName())
-                                .flag(Signal.VALID_VALUE)
+        tokenList.add(new Token(Signal.VALID_VALUE,
+                                new Metadata.Builder(value.getName())
                                 .constValue(value.getPrimitiveValue())
                                 .build()));
     }
@@ -219,7 +217,7 @@ public class IrGenerator
 
         addTypeSignal(type, Signal.BEGIN_SET);
 
-        tokenList.add(new Token(encodingType, encodingType.size(), offset, byteOrder, builder.build()));
+        tokenList.add(new Token(Signal.ENCODING, encodingType, encodingType.size(), offset, byteOrder, builder.build()));
 
         for (final SetType.Choice choice : type.getChoices())
         {
@@ -231,8 +229,8 @@ public class IrGenerator
 
     private void add(final SetType.Choice value)
     {
-        tokenList.add(new Token(new Metadata.Builder(value.getName())
-                                .flag(Signal.CHOICE)
+        tokenList.add(new Token(Signal.CHOICE,
+                                new Metadata.Builder(value.getName())
                                 .constValue(value.getPrimitiveValue())
                                 .build()));
     }
@@ -259,6 +257,6 @@ public class IrGenerator
                 break;
         }
 
-        tokenList.add(new Token(type.getPrimitiveType(), type.size(), offset, byteOrder, builder.build()));
+        tokenList.add(new Token(Signal.ENCODING, type.getPrimitiveType(), type.size(), offset, byteOrder, builder.build()));
     }
 }

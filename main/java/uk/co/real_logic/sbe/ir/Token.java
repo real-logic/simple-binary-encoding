@@ -75,6 +75,7 @@ public class Token
     /** Offset not computed or set */
     public static final int UNKNOWN_OFFSET = -1;
 
+    private final Signal signal;
     private final PrimitiveType primitiveType;
     private final int size;
     private final int offset;
@@ -84,22 +85,26 @@ public class Token
     /**
      * Construct an {@link Token} by providing values for all fields.
      *
+     * @param signal        for the token role
      * @param primitiveType representing this node or null.
      * @param size          of the node in bytes.
      * @param offset        within the {@link uk.co.real_logic.sbe.xml.Message}.
      * @param byteOrder     for the encoding.
      * @param metadata      for the {@link uk.co.real_logic.sbe.xml.Message}.
      */
-    public Token(final PrimitiveType primitiveType,
+    public Token(final Signal signal,
+                 final PrimitiveType primitiveType,
                  final int size,
                  final int offset,
                  final ByteOrder byteOrder,
                  final Metadata metadata)
     {
+        Verify.notNull(signal, "signal");
         Verify.notNull(primitiveType, "primitiveType");
         Verify.notNull(byteOrder, "byteOrder");
         Verify.notNull(metadata, "metadata");
 
+        this.signal = signal;
         this.primitiveType = primitiveType;
         this.size = size;
         this.offset = offset;
@@ -112,15 +117,27 @@ public class Token
      *
      * @param metadata for this node.
      */
-    public Token(final Metadata metadata)
+    public Token(final Signal signal, final Metadata metadata)
     {
+        Verify.notNull(signal, "signal");
         Verify.notNull(metadata, "metadata");
 
+        this.signal = signal;
         this.primitiveType = null;
         this.size = 0;
         this.offset = 0;
         this.byteOrder = null;
         this.metadata = metadata;
+    }
+
+    /**
+     * Signal the role of this token.
+     *
+     * @return the {@link Signal} for the token.
+     */
+    public Signal getSignal()
+    {
+        return signal;
     }
 
     /**
@@ -171,7 +188,8 @@ public class Token
     public String toString()
     {
         return "Token{" +
-            "primitiveType=" + primitiveType +
+            "signal=" + signal +
+            ", primitiveType=" + primitiveType +
             ", size=" + size +
             ", offset=" + offset +
             ", byteOrder=" + byteOrder +
