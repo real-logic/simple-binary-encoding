@@ -78,7 +78,9 @@ public class Message
 
         fieldList = parseFieldsAndGroups(messageNode);
 
-        calculatedBlockLength = calculateAndValidateOffsets(messageNode, fieldList, blockLength);
+        calculateAndValidateOffsets(messageNode, fieldList, blockLength);
+
+        calculatedBlockLength = calculateMessageBlockLength();
 
         validateBlockLength(messageNode, blockLength, calculatedBlockLength);
     }
@@ -380,6 +382,40 @@ public class Message
     }
 
     /**
+     * Calculate and return the blockLength for a message. Which is the length until the first
+     * variable length field or repeating group. This must be run after the offsets are calculated.
+     *
+     * @return calculated blockLength for the message
+     */
+    private int calculateMessageBlockLength()
+    {
+        int currLength = 0;
+
+        for (final Field field : fieldList)
+        {
+            /* if this field is a <group> then we are done and can return the offset of the group */
+            if (field.getGroupFields() != null)
+            {
+                return field.getCalculatedOffset();
+            }
+            else if (field.getType() != null) // will be <field> or <data>
+            {
+                int calculatedSize = field.getType().size();
+
+                /* random size field */
+                if (Token.VARIABLE_SIZE == calculatedSize)
+                {
+                    return currLength;
+                }
+
+                currLength = field.getCalculatedOffset() + calculatedSize;
+            }
+        }
+
+        return currLength;
+    }
+
+    /**
      * Return the template schemaId of the message
      *
      * @return schemaId of the message
@@ -432,7 +468,7 @@ public class Message
      *
      * @return the size of the {@link Message} in bytes including any padding.
      */
-    public long getBlockLength()
+    public int getBlockLength()
     {
         return (blockLength > calculatedBlockLength ? blockLength : calculatedBlockLength);
     }

@@ -23,6 +23,7 @@ import org.junit.Assert;
 import uk.co.real_logic.sbe.TestUtil;
 
 import static java.lang.Integer.valueOf;
+import static java.lang.Long.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
@@ -73,7 +74,9 @@ public class OffsetFileTest
         throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BlockLengthFileTest.xml"));
-        List<Field> fields = schema.getMessage(1).getFields();
+        Message msg = schema.getMessage(1);
+        assertThat(valueOf(msg.getBlockLength()), is(valueOf(9)));
+        List<Field> fields = msg.getFields();
         assertThat(valueOf(fields.get(0).getCalculatedOffset()), is(valueOf(0)));
         assertThat(valueOf(fields.get(0).getType().size()), is(valueOf(6)));
         assertThat(valueOf(fields.get(1).getCalculatedOffset()), is(valueOf(6)));
