@@ -183,14 +183,12 @@ public class Message
      */
     private Field parseGroupNode(final Node node, Map<String, Field> entryCountFieldMap)
     {
-        Field.Builder builder = new Field.Builder(getAttributeValue(node, "name"));
-
-        builder.description(getAttributeValueOrNull(node, "description"));
-        builder.id(Integer.parseInt(getAttributeValue(node, "id", Field.INVALID_ID_STRING)));
-        builder.blockLength(Integer.parseInt(getAttributeValue(node, "blockLength", "0")));
-        builder.dimensionType(XmlSchemaParser.getAttributeValue(node, "dimensionType", "groupSizeEncoding"));
-
-        Field field = builder.build();
+        Field field = new Field.Builder(getAttributeValue(node, "name"))
+            .description(getAttributeValueOrNull(node, "description"))
+            .id(Integer.parseInt(getAttributeValue(node, "id", Field.INVALID_ID_STRING)))
+            .blockLength(Integer.parseInt(getAttributeValue(node, "blockLength", "0")))
+            .dimensionType(XmlSchemaParser.getAttributeValue(node, "dimensionType", "groupSizeEncoding"))
+            .build();
 
         Field entryCountField = entryCountFieldMap.get(field.getName());
 
@@ -221,6 +219,7 @@ public class Message
             entryCountFieldBuilder.type(type);
 
             entryCountField = entryCountFieldBuilder.build();
+
             field.setEntryCountField(entryCountField);
             entryCountField.setGroupField(field);
 
@@ -241,16 +240,15 @@ public class Message
      */
     private Field parseDataNode(final Node node, Map<Integer, Field> lengthFieldMap, Type type)
     {
-        Field.Builder builder = new Field.Builder(getAttributeValue(node, "name"));
+        Field field = new Field.Builder(getAttributeValue(node, "name"))
+            .description(getAttributeValueOrNull(node, "description"))
+            .id(Integer.parseInt(getAttributeValue(node, "id")))
+            .type(type)
+            .offset(Integer.parseInt(getAttributeValue(node, "offset", "0")))
+            .semanticType(getMultiNamedAttributeValueOrNull(node, new String[] {"semanticType", "fixUsage"}))
+            .presence(Presence.lookup(getAttributeValueOrNull(node, "presence")))
+            .build();
 
-        builder.description(getAttributeValueOrNull(node, "description"));
-        builder.id(Integer.parseInt(getAttributeValue(node, "id")));
-        builder.type(type);
-        builder.offset(Integer.parseInt(getAttributeValue(node, "offset", "0")));
-        builder.semanticType(getMultiNamedAttributeValueOrNull(node, new String[] {"semanticType", "fixUsage"}));
-        builder.presence(Presence.lookup(getAttributeValueOrNull(node, "presence")));
-
-        Field field = builder.build();
         field.validate(node);
 
         Field lengthField = lengthFieldMap.get(Integer.valueOf(field.getId()));
@@ -282,18 +280,17 @@ public class Message
      */
     private Field parseFieldNode(final Node node, Type type)
     {
-        Field.Builder builder = new Field.Builder(getAttributeValue(node, "name"));
+        Field field = new Field.Builder(getAttributeValue(node, "name"))
+            .description(getAttributeValueOrNull(node, "description"))
+            .groupName(getAttributeValueOrNull(node, "groupName"))
+            .id(Integer.parseInt(getAttributeValue(node, "id")))
+            .type(type)
+            .offset(Integer.parseInt(getAttributeValue(node, "offset", "0")))
+            .semanticType(getMultiNamedAttributeValueOrNull(node, new String[] {"semanticType", "fixUsage"}))
+            .presence(Presence.lookup(getAttributeValueOrNull(node, "presence")))
+            .refId(Integer.parseInt(getAttributeValue(node, "refId", Field.INVALID_ID_STRING)))
+            .build();
 
-        builder.description(getAttributeValueOrNull(node, "description"));
-        builder.groupName(getAttributeValueOrNull(node, "groupName"));
-        builder.id(Integer.parseInt(getAttributeValue(node, "id")));
-        builder.type(type);
-        builder.offset(Integer.parseInt(getAttributeValue(node, "offset", "0")));
-        builder.semanticType(getMultiNamedAttributeValueOrNull(node, new String[] {"semanticType", "fixUsage"}));
-        builder.presence(Presence.lookup(getAttributeValueOrNull(node, "presence")));
-        builder.refId(Integer.parseInt(getAttributeValue(node, "refId", Field.INVALID_ID_STRING)));
-
-        Field field = builder.build();
         field.validate(node);
 
         return field;

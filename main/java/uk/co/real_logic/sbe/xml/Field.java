@@ -293,54 +293,64 @@ public class Field
             dimensionType = null;
         }
 
-        public void description(final String description)
+        public Builder description(final String description)
         {
             this.description = description;
+            return this;
         }
 
-        public void groupName(final String groupName)
+        public Builder groupName(final String groupName)
         {
             this.groupName = groupName;
+            return this;
         }
 
-        public void id(final int id)
+        public Builder id(final int id)
         {
             this.id = id;
+            return this;
         }
 
-        public void type(final Type type)
+        public Builder type(final Type type)
         {
             this.type = type;
+            return this;
         }
 
-        public void offset(final int offset)
+        public Builder offset(final int offset)
         {
             this.offset = offset;
+            return this;
         }
 
-        public void semanticType(final String semanticType)
+        public Builder semanticType(final String semanticType)
         {
             this.semanticType = semanticType;
+            return this;
         }
 
-        public void presence(final Presence presence)
+        public Builder presence(final Presence presence)
         {
             this.presence = presence;
+            return this;
         }
 
-        public void refId(final int refId)
+        public Builder refId(final int refId)
         {
             this.refId = refId;
+            return this;
         }
 
-        public void blockLength(final int blockLength)
+        public Builder blockLength(final int blockLength)
         {
             this.blockLength = blockLength;
+            return this;
         }
 
-        public void dimensionType(final String dimensionType)
+        public Builder dimensionType(final String dimensionType)
         {
             this.dimensionType = dimensionType;
+            return this;
         }
 
         public Field build()
