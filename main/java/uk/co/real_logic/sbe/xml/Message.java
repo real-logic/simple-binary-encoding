@@ -224,6 +224,7 @@ public class Message
             field.setEntryCountField(entryCountField);
             entryCountField.setGroupField(field);
 
+            entryCountField.setIrId(irIdCursor++);
             field.setIrId(irIdCursor++);
             field.setIrRefId(entryCountField.getIrId());
             entryCountField.setIrRefId(field.getIrId());

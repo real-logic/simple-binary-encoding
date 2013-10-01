@@ -235,12 +235,66 @@ public class BasicXmlIrGenerationTest
         assertThat(ir.get(4).getMetadata().getName(), is("NoEntries"));
         assertThat(valueOf(ir.get(4).getMetadata().getSchemaId()), is(valueOf(2L)));
         assertThat(valueOf(ir.get(4).getMetadata().getId()), is(valueOf(1L)));
-        assertThat(valueOf(ir.get(4).getMetadata().getRefId()), is(valueOf(2L)));
+        assertThat(valueOf(ir.get(4).getMetadata().getRefId()), is(valueOf(ir.get(7).getMetadata().getId())));
+        //assertThat(valueOf(ir.get(4).getMetadata().getRefId()), is(valueOf(2L)));
 
         /* assert the group node has the right IrId and xRefIrId, etc. */
         assertThat(ir.get(7).getMetadata().getSignal(), is(Token.Signal.BEGIN_GROUP));
         assertThat(ir.get(7).getMetadata().getName(), is("Entries"));
         assertThat(valueOf(ir.get(7).getMetadata().getId()), is(valueOf(2L)));
-        assertThat(valueOf(ir.get(7).getMetadata().getRefId()), is(valueOf(1L)));
+        assertThat(valueOf(ir.get(7).getMetadata().getRefId()), is(valueOf(ir.get(4).getMetadata().getId())));
+        //assertThat(valueOf(ir.get(7).getMetadata().getRefId()), is(valueOf(1L)));
+    }
+
+    @Test
+    public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensions()
+        throws Exception
+    {
+        MessageSchema schema = parse(TestUtil.getLocalResource("EmbeddedLengthAndCountFileTest.xml"));
+        IrGenerator irg = new IrGenerator();
+        /* msg, field, enc, field end, field, comp, enc, enc, comp end, field end, group */
+        int dimensionsIdx = 4;
+        int groupIdx = 10;
+
+        List<Token> ir = irg.generateForMessage(schema, 1);
+
+        /* assert the dimensions node has the right IrId and xRefIrId, etc. */
+        assertThat(ir.get(dimensionsIdx).getMetadata().getSignal(), is(Token.Signal.BEGIN_FIELD));
+        assertThat(valueOf(ir.get(dimensionsIdx).getMetadata().getSchemaId()), is(valueOf(73L)));
+        assertThat(valueOf(ir.get(dimensionsIdx).getMetadata().getId()), is(valueOf(1L)));
+        assertThat(valueOf(ir.get(dimensionsIdx).getMetadata().getRefId()), is(valueOf(ir.get(groupIdx).getMetadata().getId())));
+
+        /* assert the group node has the right IrId and xRefIrId, etc. */
+        assertThat(ir.get(groupIdx).getMetadata().getSignal(), is(Token.Signal.BEGIN_GROUP));
+        assertThat(ir.get(groupIdx).getMetadata().getName(), is("ListOrdGrp"));
+        assertThat(valueOf(ir.get(groupIdx).getMetadata().getId()), is(valueOf(2L)));
+        assertThat(valueOf(ir.get(groupIdx).getMetadata().getRefId()), is(valueOf(ir.get(dimensionsIdx).getMetadata().getId())));
+    }
+
+    @Test
+    public void shouldGenerateCorrectIrForMessageWithVariableLengthFieldWithEmbeddedLength()
+        throws Exception
+    {
+        MessageSchema schema = parse(TestUtil.getLocalResource("EmbeddedLengthAndCountFileTest.xml"));
+        IrGenerator irg = new IrGenerator();
+        /* msg, field, enc, field end, field, comp, enc, enc, comp end, field end */
+        int lengthFieldIdx = 4;
+        int lengthEncIdx = 6;
+        int dataEncIdx = 7;
+
+        List<Token> ir = irg.generateForMessage(schema, 2);
+
+        /* assert the varDataEncoding field node is formed correctly */
+        assertThat(ir.get(lengthFieldIdx).getMetadata().getSignal(), is(Token.Signal.BEGIN_FIELD));
+        assertThat(ir.get(lengthFieldIdx).getMetadata().getName(), is("EncryptedPassword"));
+        assertThat(valueOf(ir.get(lengthFieldIdx).getMetadata().getSchemaId()), is(valueOf(1402L)));
+
+        /* assert the length node has correct values */
+        assertThat(ir.get(lengthEncIdx).getMetadata().getSignal(), is(Token.Signal.ENCODING));
+        assertThat(ir.get(lengthEncIdx).getPrimitiveType(), is(PrimitiveType.UINT8));
+
+        /* assert the group node has the right IrId and xRefIrId, etc. */
+        assertThat(ir.get(dataEncIdx).getMetadata().getSignal(), is(Token.Signal.ENCODING));
+        assertThat(ir.get(dataEncIdx).getPrimitiveType(), is(PrimitiveType.CHAR));
     }
 }
