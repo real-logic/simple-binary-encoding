@@ -17,50 +17,59 @@
 package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.ir.Token;
+import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.ir.Metadata;
+import uk.co.real_logic.sbe.ir.Signal;
+import uk.co.real_logic.sbe.ir.Token;
 
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class to hold all the state while generating the {@link Token} list.
- * <p>
- * Usage:
- * <code>
- *     <pre>
- *    irg = new IrGenerator();
- *    list = irg.generateForMessage(message);
- *     </pre>
- * </code>
+ * Class to hold all the state while generating the {@link IntermediateRepresentation}.
  */
 public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
     private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
 
-    public List<Token> generateForMessage(final MessageSchema schema, final long messageId)
+    /**
+     * Generate a complete {@link IntermediateRepresentation} for a given schema.
+     *
+     * @param schema from which the {@link IntermediateRepresentation} should be generated.
+     * @return complete {@link IntermediateRepresentation} for a given schema.
+     */
+    public IntermediateRepresentation generate(final MessageSchema schema)
     {
-        final Message msg = schema.getMessage(messageId);
-        if (null == msg)
+        final IntermediateRepresentation ir = new IntermediateRepresentation(generateForHeader(schema));
+
+        for (final Message message : schema.getMessages())
         {
-            throw new IllegalArgumentException("No message for id=" + messageId);
+            final long msgId = message.getId();
+            ir.addMessage(msgId, generateForMessage(schema, msgId));
         }
 
+        return ir;
+    }
+
+    private List<Token> generateForMessage(final MessageSchema schema, final long messageId)
+    {
         tokenList.clear();
         byteOrder = schema.getByteOrder();
 
-        addMessageSignal(msg, Token.Signal.BEGIN_MESSAGE);
+        final Message msg = schema.getMessage(messageId);
+
+        addMessageSignal(msg, Signal.BEGIN_MESSAGE);
 
         addAllFields(msg.getFields());
 
-        addMessageSignal(msg, Token.Signal.END_MESSAGE);
+        addMessageSignal(msg, Signal.END_MESSAGE);
 
         return tokenList;
     }
 
-    public List<Token> generateForHeader(final MessageSchema schema)
+    private List<Token> generateForHeader(final MessageSchema schema)
     {
         tokenList.clear();
 
@@ -71,7 +80,7 @@ public class IrGenerator
         return tokenList;
     }
 
-    private void addMessageSignal(final Message msg, final Token.Signal signal)
+    private void addMessageSignal(final Message msg, final Signal signal)
     {
         tokenList.add(new Token(new Metadata.Builder(msg.getName())
                                 .schemaId(msg.getId())
@@ -80,14 +89,14 @@ public class IrGenerator
                                 .build()));
     }
 
-    private void addTypeSignal(final Type type, final Token.Signal signal)
+    private void addTypeSignal(final Type type, final Signal signal)
     {
         tokenList.add(new Token(new Metadata.Builder(type.getName())
                                 .flag(signal)
                                 .build()));
     }
 
-    private void addFieldSignal(final Field field, final Token.Signal signal)
+    private void addFieldSignal(final Field field, final Signal signal)
     {
         Metadata.Builder builder = new Metadata.Builder(field.getName());
 
@@ -123,13 +132,13 @@ public class IrGenerator
 
             if (type == null)
             {
-                addFieldSignal(field, Token.Signal.BEGIN_GROUP);
+                addFieldSignal(field, Signal.BEGIN_GROUP);
                 addAllFields(field.getGroupFields());
-                addFieldSignal(field, Token.Signal.END_GROUP);
+                addFieldSignal(field, Signal.END_GROUP);
             }
             else
             {
-                addFieldSignal(field, Token.Signal.BEGIN_FIELD);
+                addFieldSignal(field, Signal.BEGIN_FIELD);
 
                 if (type instanceof EncodedDataType)
                 {
@@ -152,7 +161,7 @@ public class IrGenerator
                     throw new IllegalStateException("Unknown type: " + type);
                 }
 
-                addFieldSignal(field, Token.Signal.END_FIELD);
+                addFieldSignal(field, Signal.END_FIELD);
             }
         }
     }
@@ -161,7 +170,7 @@ public class IrGenerator
     {
         int offset = currOffset;
 
-        addTypeSignal(type, Token.Signal.BEGIN_COMPOSITE);
+        addTypeSignal(type, Signal.BEGIN_COMPOSITE);
 
         for (final EncodedDataType edt : type.getTypeList())
         {
@@ -170,7 +179,7 @@ public class IrGenerator
             offset += edt.size(); // bump offset for next type in list
         }
 
-        addTypeSignal(type, Token.Signal.END_COMPOSITE);
+        addTypeSignal(type, Signal.END_COMPOSITE);
     }
 
     private void add(final EnumType type, final int offset)
@@ -178,7 +187,7 @@ public class IrGenerator
         PrimitiveType encodingType = type.getEncodingType();
         Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
 
-        addTypeSignal(type, Token.Signal.BEGIN_ENUM);
+        addTypeSignal(type, Signal.BEGIN_ENUM);
 
         if (type.getPresence() == Presence.OPTIONAL)
         {
@@ -192,13 +201,13 @@ public class IrGenerator
             add(v);
         }
 
-        addTypeSignal(type, Token.Signal.END_ENUM);
+        addTypeSignal(type, Signal.END_ENUM);
     }
 
     private void add(final EnumType.ValidValue value)
     {
         tokenList.add(new Token(new Metadata.Builder(value.getName())
-                                .flag(Token.Signal.VALID_VALUE)
+                                .flag(Signal.VALID_VALUE)
                                 .constValue(value.getPrimitiveValue())
                                 .build()));
     }
@@ -208,7 +217,7 @@ public class IrGenerator
         PrimitiveType encodingType = type.getEncodingType();
         Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
 
-        addTypeSignal(type, Token.Signal.BEGIN_SET);
+        addTypeSignal(type, Signal.BEGIN_SET);
 
         tokenList.add(new Token(encodingType, encodingType.size(), offset, byteOrder, builder.build()));
 
@@ -217,13 +226,13 @@ public class IrGenerator
             add(choice);
         }
 
-        addTypeSignal(type, Token.Signal.END_SET);
+        addTypeSignal(type, Signal.END_SET);
     }
 
     private void add(final SetType.Choice value)
     {
         tokenList.add(new Token(new Metadata.Builder(value.getName())
-                                .flag(Token.Signal.CHOICE)
+                                .flag(Signal.CHOICE)
                                 .constValue(value.getPrimitiveValue())
                                 .build()));
     }

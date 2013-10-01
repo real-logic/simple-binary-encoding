@@ -17,9 +17,11 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.w3c.dom.Node;
+import uk.co.real_logic.sbe.util.Verify;
 
-import java.util.Map;
 import java.nio.ByteOrder;
+import java.util.Collection;
+import java.util.Map;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
@@ -28,6 +30,8 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
  */
 public class MessageSchema
 {
+    private static final String MESSAGE_HEADER_KEY = "messageHeader";
+
     private final String pkg;                         // package (optional?)
     private final String description;                 // description (optional)
     private final long version;                       // version (optional - default is 0)
@@ -40,10 +44,12 @@ public class MessageSchema
                          final Map<String, Type> typeByNameMap,
                          final Map<Long, Message> messageByIdMap)
     {
+        Verify.present(typeByNameMap, MESSAGE_HEADER_KEY, "Message header");
+
         this.pkg = getAttributeValue(schemaNode, "package");
         this.description = getAttributeValueOrNull(schemaNode, "description");
         this.version = Long.parseLong(getAttributeValue(schemaNode, "version", "0"));  // default version is 0
-        this.semanticVersion = getMultiNamedAttributeValueOrNull(schemaNode, new String[] {"semanticVersion", "fixVersion"});
+        this.semanticVersion = getMultiNamedAttributeValueOrNull(schemaNode, new String[]{"semanticVersion", "fixVersion"});
         this.byteOrder = lookupByteOrder(getAttributeValue(schemaNode, "byteOrder", "littleEndian"));
         this.typeByNameMap = typeByNameMap;
         this.messageByIdMap = messageByIdMap;
@@ -54,14 +60,7 @@ public class MessageSchema
      */
     public CompositeType getMessageHeader()
     {
-        CompositeType type = (CompositeType)typeByNameMap.get("messageHeader");
-
-        if (type == null)
-        {
-            throw new IllegalStateException("Message header not defined for schema");
-        }
-
-        return type;
+        return (CompositeType)typeByNameMap.get(MESSAGE_HEADER_KEY);
     }
 
     public String getPackage()
@@ -93,6 +92,16 @@ public class MessageSchema
     public Message getMessage(final long schemaId)
     {
         return messageByIdMap.get(Long.valueOf(schemaId));
+    }
+
+    /**
+     * Get the {@link Collection} of {@link Message}s for this Schema.
+     *
+     * @return the {@link Collection} of {@link Message}s for this Schema.
+     */
+    public Collection<Message> getMessages()
+    {
+        return messageByIdMap.values();
     }
 
     /**
