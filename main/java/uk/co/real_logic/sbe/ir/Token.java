@@ -141,6 +141,8 @@ public class Token
     }
 
     /**
+     * Get the {@link PrimitiveType} of this field.
+     *
      * @return the primitive type of this node. This value is only relevant for nodes that are encodings.
      */
     public PrimitiveType getPrimitiveType()
@@ -149,6 +151,8 @@ public class Token
     }
 
     /**
+     * The size of this token in bytes.
+     *
      * @return the size of this node. A value of 0 means the node has no size when encoded. A value of
      *        {@link Token#VARIABLE_SIZE} means this node represents a variable length field.
      */
@@ -158,7 +162,9 @@ public class Token
     }
 
     /**
-     * @return the offset of this node. A value of 0 means the node has no relevant offset. A value of
+     * The offset for this token in the message.
+     *
+     * @return the offset of this Token. A value of 0 means the node has no relevant offset. A value of
      *         {@link Token#UNKNOWN_OFFSET} means this nodes true offset is dependent on variable length
      *         fields ahead of it in the encoding.
      */
@@ -179,6 +185,8 @@ public class Token
 
     /**
      * Return the byte order of this field.
+     *
+     * @return the byte order for this field.
      */
     public ByteOrder getByteOrder()
     {
