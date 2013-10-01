@@ -192,44 +192,52 @@ public class Metadata
             constValue = null;
         }
 
-        public void schemaId(final long schemaId)
+        public Builder schemaId(final long schemaId)
         {
             this.schemaId = schemaId;
+            return this;
         }
 
-        public void id(final long id)
+        public Builder id(final long id)
         {
             this.id = id;
+            return this;
         }
 
-        public void refId(final long refId)
+        public Builder refId(final long refId)
         {
             this.refId = refId;
+            return this;
         }
 
-        public void flag(final Token.Signal signal)
+        public Builder flag(final Token.Signal signal)
         {
             this.signal = signal;
+            return this;
         }
 
-        public void minValue(final PrimitiveValue minValue)
+        public Builder minValue(final PrimitiveValue minValue)
         {
             this.minValue = minValue;
+            return this;
         }
 
-        public void maxValue(final PrimitiveValue maxValue)
+        public Builder maxValue(final PrimitiveValue maxValue)
         {
             this.maxValue = maxValue;
+            return this;
         }
 
-        public void nullValue(final PrimitiveValue nullValue)
+        public Builder nullValue(final PrimitiveValue nullValue)
         {
             this.nullValue = nullValue;
+            return this;
         }
 
-        public void constValue(final PrimitiveValue constValue)
+        public Builder constValue(final PrimitiveValue constValue)
         {
             this.constValue = constValue;
+            return this;
         }
 
         public Metadata build()
