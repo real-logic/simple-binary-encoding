@@ -45,7 +45,7 @@ public class SbeTool
     /** system property to control throwing exceptions on all errors */
     public static final String SBE_VALIDATE_EXCEPTION = "sbe.validate.exception";
 
-    /** system property to hold XSD to validate XML spsecification against */
+    /** system property to hold XSD to validate XML specification against */
     public static final String SBE_VALIDATE_XSD = "sbe.validate.xsd";
 
     /** system property to control suppressing output on all errors and warnings */

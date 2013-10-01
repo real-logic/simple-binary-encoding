@@ -66,7 +66,7 @@ public class SetType extends Type
 
             if (choiceByPrimitiveValueMap.get(c.getPrimitiveValue()) != null)
             {
-                handleWarning(node, "Choice value already exists: " + c.getPrimitiveValue());
+                handleWarning(node, "Choice value already defined: " + c.getPrimitiveValue());
             }
 
             if (choiceByNameMap.get(c.getName()) != null)

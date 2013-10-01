@@ -72,7 +72,7 @@ public class Message
         description = getAttributeValueOrNull(messageNode, "description");                  // optional
         blockLength = Integer.parseInt(getAttributeValue(messageNode, "blockLength", "0")); // 0 means not set
         semanticType = getMultiNamedAttributeValueOrNull(messageNode,
-                                                         new String[] {"semanticType", "fixMsgType"});  // optional
+                                                         new String[]{"semanticType", "fixMsgType"});  // optional
         headerType = getAttributeValue(messageNode, "headerType", "messageHeader");         // has default
         this.typeByNameMap = typeByNameMap;
 
@@ -181,7 +181,7 @@ public class Message
     /**
      * parse and handle creating a Field that represents a repeating group
      */
-    private Field parseGroupNode(final Node node, Map<String, Field> entryCountFieldMap)
+    private Field parseGroupNode(final Node node, final Map<String, Field> entryCountFieldMap)
     {
         Field field = new Field.Builder(getAttributeValue(node, "name"))
             .description(getAttributeValueOrNull(node, "description"))
@@ -207,7 +207,7 @@ public class Message
         else if (field.getId() != Field.INVALID_ID)    /* built-in field for entry count/dimensions */
         {
             /* group has id set. Which signifies an embedded dimension set */
-            Field.Builder entryCountFieldBuilder = new Field.Builder(new String("dimension" + field.getId()));
+            Field.Builder entryCountFieldBuilder = new Field.Builder("dimension" + field.getId());
 
             entryCountFieldBuilder.id(field.getId());
 
@@ -238,7 +238,7 @@ public class Message
     /**
      * parse and handle creating a Field that represents a variable length field
      */
-    private Field parseDataNode(final Node node, Map<Integer, Field> lengthFieldMap, Type type)
+    private Field parseDataNode(final Node node, final Map<Integer, Field> lengthFieldMap, final Type type)
     {
         Field field = new Field.Builder(getAttributeValue(node, "name"))
             .description(getAttributeValueOrNull(node, "description"))
@@ -253,7 +253,7 @@ public class Message
 
         Field lengthField = lengthFieldMap.get(Integer.valueOf(field.getId()));
 
-        if (lengthField != null)                    /* separate explicit field for length */
+        if (lengthField != null) /* separate explicit field for length */
         {
             field.setLengthField(lengthField);
             lengthField.setDataField(field);
@@ -264,7 +264,7 @@ public class Message
 
             lengthFieldMap.remove(Integer.valueOf(field.getId())); // remove field so that it can be reused
         }
-        else if (type instanceof CompositeType)     /* embedded length in composite */
+        else if (type instanceof CompositeType) /* embedded length in composite */
         {
             /* encoded types inside for "length" and "varData". We just let them go on and generate IR as normal. */
         }
@@ -278,7 +278,7 @@ public class Message
     /**
      * parse and handle creating a Field that represents a field
      */
-    private Field parseFieldNode(final Node node, Type type)
+    private Field parseFieldNode(final Node node, final Type type)
     {
         Field field = new Field.Builder(getAttributeValue(node, "name"))
             .description(getAttributeValueOrNull(node, "description"))
@@ -305,11 +305,11 @@ public class Message
      * @param blockLength of the surrounding element or 0 for not set
      * @return the total size of the list or {@link Token#VARIABLE_SIZE} if the size will vary
      */
-    public int calculateAndValidateOffsets(final Node node, List<Field> fields, final int blockLength)
+    public int calculateAndValidateOffsets(final Node node, final List<Field> fields, final int blockLength)
     {
         int currOffset = 0;
 
-        for (Field field : fields)
+        for (final Field field : fields)
         {
             /* check if specified offset is ok or not */
             if (field.getOffset() > 0 && field.getOffset() < currOffset)

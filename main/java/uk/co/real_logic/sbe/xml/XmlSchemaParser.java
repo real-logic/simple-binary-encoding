@@ -161,9 +161,9 @@ public class XmlSchemaParser
     /**
      * Helper function to add a Type to a typeByNameMap based on name. Checks to make sure name does not exist.
      *
-     * @param typeByNameMap  of names to Type objects
-     * @param type to be added to typeByNameMap
-     * @param node for the type
+     * @param typeByNameMap of names to Type objects
+     * @param type          to be added to typeByNameMap
+     * @param node          for the type
      */
     private static void addTypeWithNameCheck(final Map<String, Type> typeByNameMap, final Type type, final Node node)
     {
@@ -178,8 +178,8 @@ public class XmlSchemaParser
     /**
      * Scan XML for all message definitions and save in map
      *
-     * @param document for the XML parsing
-     * @param xPath    for XPath expression reuse
+     * @param document      for the XML parsing
+     * @param xPath         for XPath expression reuse
      * @param typeByNameMap to use for Type objects
      * @return {@link java.util.Map} of schemaId to Message
      */
@@ -205,9 +205,9 @@ public class XmlSchemaParser
     /**
      * Helper function to add a Message to a messageByIdMap based on schemaId. Checks to make sure schemaId does not exist.
      *
-     * @param messageByIdMap     of schemaId to Message objects
-     * @param message to be added to messageByIdMap
-     * @param node for the message
+     * @param messageByIdMap of schemaId to Message objects
+     * @param message        to be added to messageByIdMap
+     * @param node           for the message
      */
     private static void addMessageWithIdCheck(final Map<Long, Message> messageByIdMap, final Message message, final Node node)
     {
@@ -230,9 +230,7 @@ public class XmlSchemaParser
             (getAttributeValueOrNull(node, "name") == null ? ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
     }
 
-    /**
-     * Handle an error condition as consequence of parsing.
-     */
+    /** Handle an error condition as consequence of parsing. */
     public static void handleError(final Node node, final String msg)
     {
         ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
@@ -247,9 +245,7 @@ public class XmlSchemaParser
         }
     }
 
-    /**
-     * Handle a warning condition as a consequence of parsing.
-     */
+    /** Handle a warning condition as a consequence of parsing. */
     public static void handleWarning(final Node node, final String msg)
     {
         ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
@@ -267,8 +263,8 @@ public class XmlSchemaParser
     /**
      * Helper function that throws an exception when the attribute is not set.
      *
-     * @param elementNode     that should have the attribute
-     * @param attrName that is to be looked up
+     * @param elementNode that should have the attribute
+     * @param attrName    that is to be looked up
      * @return value of the attribute
      * @throws IllegalArgumentException if the attribute is not present
      */
@@ -288,8 +284,8 @@ public class XmlSchemaParser
      * Helper function that uses a default value when value not set.
      *
      * @param elementNode that should have the attribute
-     * @param attrName that is to be looked up
-     * @param defValue String to return if not set
+     * @param attrName    that is to be looked up
+     * @param defValue    String to return if not set
      * @return value of the attribute or defValue
      */
     public static String getAttributeValue(final Node elementNode, final String attrName, final String defValue)
@@ -307,8 +303,8 @@ public class XmlSchemaParser
     /**
      * Helper function that hides the null return from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}
      *
-     * @param elementNode     that could be null
-     * @param attrName that is to be looked up
+     * @param elementNode that could be null
+     * @param attrName    that is to be looked up
      * @return null or value of the attribute
      */
     public static String getAttributeValueOrNull(final Node elementNode, final String attrName)
@@ -327,12 +323,12 @@ public class XmlSchemaParser
      * Helper function that uses multiple attribute names, e.g. aliases, from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}
      *
      * @param elementNode to look under
-     * @param attrNames that are aliases for one another in priority order
+     * @param attrNames   that are aliases for one another in priority order
      * @return null or value of the attribute
      */
     public static String getMultiNamedAttributeValueOrNull(final Node elementNode, final String[] attrNames)
     {
-        for (String attrName : attrNames)
+        for (final String attrName : attrNames)
         {
             Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
 
@@ -341,6 +337,7 @@ public class XmlSchemaParser
                 return attrNode.getNodeValue();
             }
         }
+
         return null;
     }
 

@@ -88,7 +88,7 @@ public class Field
     {
         if (type != null)
         {
-            // fixUsage must be present or must be on the type. If on both, they must agree.
+            // must be present or must be on the type. If on both, they must agree.
             if (semanticType == null && type.getSemanticType() == null)
             {
                 handleError(node, "Missing semanticType/fixUsage on type and field: " + name);
