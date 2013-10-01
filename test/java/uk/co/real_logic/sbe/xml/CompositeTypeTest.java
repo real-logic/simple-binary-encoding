@@ -42,27 +42,6 @@ import static org.junit.Assert.assertThat;
 
 public class CompositeTypeTest
 {
-    private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
-        throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
-    {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-        Map<String, Type> map = new HashMap<>();
-
-        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
-        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, new ErrorHandler(), null);
-
-        for (int i = 0, size = list.getLength(); i < size; i++)
-        {
-            Type t = new CompositeType(list.item(i));
-            map.put(t.getName(), t);
-        }
-
-        return map;
-    }
-
     @Test
     public void shouldHandleDecimalCompositeType()
         throws Exception
@@ -178,5 +157,26 @@ public class CompositeTypeTest
             "</types>";
 
         parseTestXmlWithMap("/types/composite", testXmlString);
+    }
+
+    private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
+        throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
+    {
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
+        Map<String, Type> map = new HashMap<>();
+
+        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "true");
+        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
+        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, new ErrorHandler(), null);
+
+        for (int i = 0, size = list.getLength(); i < size; i++)
+        {
+            Type t = new CompositeType(list.item(i));
+            map.put(t.getName(), t);
+        }
+
+        return map;
     }
 }

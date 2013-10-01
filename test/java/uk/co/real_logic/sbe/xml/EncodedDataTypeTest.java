@@ -43,27 +43,6 @@ import static uk.co.real_logic.sbe.PrimitiveValue.parse;
 
 public class EncodedDataTypeTest
 {
-    private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
-        throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
-    {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-        Map<String, Type> map = new HashMap<>();
-
-        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
-        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, new ErrorHandler(), null);
-
-        for (int i = 0, size = list.getLength(); i < size; i++)
-        {
-            Type t = new EncodedDataType(list.item(i));
-            map.put(t.getName(), t);
-        }
-
-        return map;
-    }
-
     @Test
     public void shouldHandleSettingAllAttributes()
         throws Exception
@@ -406,5 +385,26 @@ public class EncodedDataTypeTest
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).getNullValue()),
                    is(parse(nullVal, PrimitiveType.INT8)));
+    }
+
+    private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
+        throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
+    {
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
+        Map<String, Type> map = new HashMap<>();
+
+        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "true");
+        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
+        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, new ErrorHandler(), null);
+
+        for (int i = 0, size = list.getLength(); i < size; i++)
+        {
+            Type t = new EncodedDataType(list.item(i));
+            map.put(t.getName(), t);
+        }
+
+        return map;
     }
 }

@@ -42,44 +42,6 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class ErrorHandlerTest
 {
-
-    private static void parseTestXmlAddToMap(Map<String, Type> map, final String xPathExpr, final String xml, ErrorHandler handler)
-        throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
-    {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-
-        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, handler, null);
-
-        for (int i = 0, size = list.getLength(); i < size; i++)
-        {
-            Type t = null;
-
-            if (xPathExpr.endsWith("enum"))
-            {
-                t = new EnumType(list.item(i));
-            }
-            else if (xPathExpr.endsWith("set"))
-            {
-                t = new SetType(list.item(i));
-            }
-            else if (xPathExpr.endsWith("type"))
-            {
-                t = new EncodedDataType(list.item(i));
-            }
-            else if (xPathExpr.endsWith("composite"))
-            {
-                t = new CompositeType(list.item(i));
-            }
-
-            if (t != null)
-            {
-                map.put(t.getName(), t);
-            }
-        }
-    }
-
     @Test
     public void shouldNotExitOnTypeErrorsAndWarnings()
         throws Exception
@@ -217,4 +179,44 @@ public class ErrorHandlerTest
      * left over entry count and length field (warning)
      * dup field id? (not currently tracked)
      */
+
+    private static void parseTestXmlAddToMap(final Map<String, Type> map,
+                                             final String xPathExpr,
+                                             final String xml,
+                                             final ErrorHandler handler)
+        throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
+    {
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
+
+        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, handler, null);
+
+        for (int i = 0, size = list.getLength(); i < size; i++)
+        {
+            Type t = null;
+
+            if (xPathExpr.endsWith("enum"))
+            {
+                t = new EnumType(list.item(i));
+            }
+            else if (xPathExpr.endsWith("set"))
+            {
+                t = new SetType(list.item(i));
+            }
+            else if (xPathExpr.endsWith("type"))
+            {
+                t = new EncodedDataType(list.item(i));
+            }
+            else if (xPathExpr.endsWith("composite"))
+            {
+                t = new CompositeType(list.item(i));
+            }
+
+            if (t != null)
+            {
+                map.put(t.getName(), t);
+            }
+        }
+    }
 }

@@ -42,36 +42,6 @@ import static org.junit.Assert.assertThat;
 
 public class SetTypeTest
 {
-
-    /**
-     * Grab type nodes, parse them, and populate map for those types.
-     *
-     * @param xPathExpr for type nodes in XML
-     * @param xml       string to parse
-     * @return map of name to SetType nodes
-     */
-    private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
-        throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
-    {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-        Map<String, Type> map = new HashMap<>();
-
-        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "true");
-        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, new ErrorHandler(), null);
-
-        for (int i = 0, size = list.getLength(); i < size; i++)
-        {
-            Type t = new SetType(list.item(i));
-            map.put(t.getName(), t);
-        }
-
-        return map;
-    }
-
     @Test
     public void shouldHandleBinarySetType()
         throws Exception
@@ -198,5 +168,27 @@ public class SetTypeTest
             "</types>";
 
         parseTestXmlWithMap("/types/set", testXmlString);
+    }
+
+    private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
+        throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
+    {
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
+        Map<String, Type> map = new HashMap<>();
+
+        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "true");
+        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
+        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "true");
+        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, new ErrorHandler(), null);
+
+        for (int i = 0, size = list.getLength(); i < size; i++)
+        {
+            Type t = new SetType(list.item(i));
+            map.put(t.getName(), t);
+        }
+
+        return map;
     }
 }
