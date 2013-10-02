@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messageSchema package="uk.co.real_logic.sbe.samples"
+               description="SBE IR Serialization"
+               byteOrder="littleEndian">
+    <!--
+        IR serialization
+    -->
+
+    <types>
+        <composite name="messageHeader" description="Template ID and length of message root" semanticType="Length">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint8"/>
+            <type name="reserved" primitiveType="uint8"/>
+        </composite>
+        <composite name="groupSize" semanticType="NumInGroup">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint8"/>
+        </composite>
+        <enum name="PrimitiveType" encodingType="uint8">
+            <validValue name="char">1</validValue>
+            <validValue name="int8">2</validValue>
+            <validValue name="int16">3</validValue>
+            <validValue name="int32">4</validValue>
+            <validValue name="int64">5</validValue>
+            <validValue name="uint8">6</validValue>
+            <validValue name="uint16">7</validValue>
+            <validValue name="uint32">8</validValue>
+            <validValue name="uint64">9</validValue>
+        </enum>
+        <enum name="Signal" encodingType="uint8">
+            <validValue name="BEGIN_MESSAGE">1</validValue>
+            <validValue name="END_MESSAGE">2</validValue>
+            <validValue name="BEGIN_COMPOSITE">3</validValue>
+            <validValue name="END_COMPOSITE">4</validValue>
+            <validValue name="BEGIN_FIELD">5</validValue>
+            <validValue name="END_FIELD">6</validValue>
+            <validValue name="BEGIN_GROUP">7</validValue>
+            <validValue name="END_GROUP">8</validValue>
+            <validValue name="BEGIN_ENUM">9</validValue>
+            <validValue name="VALID_VALUE">10</validValue>
+            <validValue name="END_ENUM">11</validValue>
+            <validValue name="BEGIN_SET">12</validValue>
+            <validValue name="CHOICE">13</validValue>
+            <validValue name="END_SET">14</validValue>
+            <validValue name="ENCODING">15</validValue>
+        </enum>
+        <enum name="ByteOrder" encodingType="uint8">
+            <validValue name="LITTLE_ENDIAN">0</validValue>
+            <validValue name="BIG_ENDIAN">1</validValue>
+        </enum>
+    </types>
+
+    <message name="SbeMessageIR" id="1" description="serialized IR representing an SBE message" blockLength="8">
+        <field name="NoTokens" id="1" type="groupSize" groupName="TokenList"/>
+        <group name="TokenList">
+            <field name="Offset" id="2" type="uint32" semanticType="int"/>
+            <field name="Size" id="3" type="uint32" semanticType="int"/>
+            <field name="Signal" id="4" type="Signal" semanticType="int"/>
+            <field name="PrimitiveType" id="5" type="PrimitiveType" semanticType="int"/>
+            <field name="ByteOrder" id="7" type="ByteOrder" semanticType="int"/>
+            <field name="SchemaID" id="6" type="uint16" semanticType="int"/>
+        </group>
+    </message>
+</messageSchema>
