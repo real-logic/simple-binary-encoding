@@ -14,17 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package api;
+package otf_api;
 
-public class Data
+public class Group
 {
-    public int id()
+    public boolean isStart()
     {
-        return 0;
+        return true;
     }
 
-    public String toString()
+    public boolean isEnd()
     {
-        return "";
+        return false;
     }
 }

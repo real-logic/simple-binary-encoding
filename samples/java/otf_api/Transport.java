@@ -1,4 +1,3 @@
-/* -*- mode: java; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil -*- */
 /*
  * Copyright 2013 Real Logic Ltd.
  *
@@ -14,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package api;
+package otf_api;
 
-public class Group
+import java.nio.ByteBuffer;
+
+public class Transport
 {
-    public boolean isStart()
+    public void send(final ByteBuffer buffer)
     {
-        return true;
     }
 
-    public boolean isEnd()
+    public void receive(final ByteBuffer buffer)
     {
-        return false;
     }
 }
