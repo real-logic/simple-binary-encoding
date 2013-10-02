@@ -42,7 +42,8 @@ public class IrGenerator
      */
     public IntermediateRepresentation generate(final MessageSchema schema)
     {
-        final IntermediateRepresentation ir = new IntermediateRepresentation(generateForHeader(schema));
+        final IntermediateRepresentation ir =
+            new IntermediateRepresentation(schema.getPackage(), generateForHeader(schema));
 
         for (final Message message : schema.getMessages())
         {

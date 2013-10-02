@@ -25,17 +25,21 @@ import java.util.*;
  */
 public class IntermediateRepresentation
 {
+    private final String packageName;
     private final List<Token> headerTokens;
     private final Map<Long, List<Token>> messagesByIdMap = new HashMap<>();
 
     /**
      * Create a new IR container taking a defensive copy of the header {@link Token}s passed.
+     * @param packageName that should be applied to generated code.
      * @param headerTokens representing the message header.
      */
-    public IntermediateRepresentation(final List<Token> headerTokens)
+    public IntermediateRepresentation(final String packageName, final List<Token> headerTokens)
     {
+        Verify.notNull(packageName, "packageName");
         Verify.notNull(headerTokens, "headerTokens");
 
+        this.packageName = packageName;
         this.headerTokens = Collections.unmodifiableList(new ArrayList<>(headerTokens));
     }
 
@@ -71,5 +75,15 @@ public class IntermediateRepresentation
     public List<Token> getMessage(final long messageId)
     {
         return messagesByIdMap.get(Long.valueOf(messageId));
+    }
+
+    /**
+     * Get the package name to be used for generated code.
+     *
+     * @return the package name to be used for generated code.
+     */
+    public String getPackageName()
+    {
+        return packageName;
     }
 }
