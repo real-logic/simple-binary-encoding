@@ -169,7 +169,7 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The size (in octets) of the encoding
+     * The size (in octets) of the encoding as length of the primitiveType times its count.
      *
      * @return size of the encoding
      */
@@ -198,7 +198,7 @@ public class EncodedDataType extends Type
     {
         if (getPresence() != Presence.CONSTANT)
         {
-            throw new IllegalArgumentException("type is not of constant presence");
+            throw new IllegalStateException("type is not of constant presence");
         }
 
         return constValue;
