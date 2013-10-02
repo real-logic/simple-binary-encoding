@@ -257,7 +257,7 @@ public class DirectBufferTest
         final byte[] testBytes = "Hello World".getBytes();
         final ByteBuffer srcBuffer = ByteBuffer.wrap(testBytes);
 
-        view.putBytes(INDEX, srcBuffer);
+        view.putBytes(INDEX, srcBuffer, testBytes.length);
 
         final byte[] buffer = new byte[testBytes.length];
         final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();

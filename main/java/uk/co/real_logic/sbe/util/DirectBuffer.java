@@ -114,7 +114,7 @@ public class DirectBuffer
      */
     public long getLong(final int index)
     {
-        checkBounds(index, SIZE_OF_LONG);
+        checkBounds(index, capacity, SIZE_OF_LONG, "LHS");
         return UNSAFE.getLong(byteArray, baseOffset + index);
     }
 
@@ -126,7 +126,7 @@ public class DirectBuffer
      */
     public void putLong(final int index, final long value)
     {
-        checkBounds(index, SIZE_OF_LONG);
+        checkBounds(index, capacity, SIZE_OF_LONG, "LHS");
         UNSAFE.putLong(byteArray, baseOffset + index, value);
     }
 
@@ -138,7 +138,7 @@ public class DirectBuffer
      */
     public int getInt(final int index)
     {
-        checkBounds(index, SIZE_OF_INT);
+        checkBounds(index, capacity, SIZE_OF_INT, "LHS");
         return UNSAFE.getInt(byteArray, baseOffset + index);
     }
 
@@ -150,7 +150,7 @@ public class DirectBuffer
      */
     public void putInt(final int index, final int value)
     {
-        checkBounds(index, SIZE_OF_INT);
+        checkBounds(index, capacity, SIZE_OF_INT, "LHS");
         UNSAFE.putInt(byteArray, baseOffset + index, value);
     }
 
@@ -162,7 +162,7 @@ public class DirectBuffer
      */
     public double getDouble(final int index)
     {
-        checkBounds(index, SIZE_OF_DOUBLE);
+        checkBounds(index, capacity, SIZE_OF_DOUBLE, "LHS");
         return UNSAFE.getDouble(byteArray, baseOffset + index);
     }
 
@@ -174,7 +174,7 @@ public class DirectBuffer
      */
     public void putDouble(final int index, final double value)
     {
-        checkBounds(index, SIZE_OF_DOUBLE);
+        checkBounds(index, capacity, SIZE_OF_DOUBLE, "LHS");
         UNSAFE.putDouble(byteArray, baseOffset + index, value);
     }
 
@@ -186,7 +186,7 @@ public class DirectBuffer
      */
     public float getFloat(final int index)
     {
-        checkBounds(index, SIZE_OF_FLOAT);
+        checkBounds(index, capacity, SIZE_OF_FLOAT, "LHS");
         return UNSAFE.getFloat(byteArray, baseOffset + index);
     }
 
@@ -198,7 +198,7 @@ public class DirectBuffer
      */
     public void putFloat(final int index, final float value)
     {
-        checkBounds(index, SIZE_OF_FLOAT);
+        checkBounds(index, capacity, SIZE_OF_FLOAT, "LHS");
         UNSAFE.putFloat(byteArray, baseOffset + index, value);
     }
 
@@ -210,7 +210,7 @@ public class DirectBuffer
      */
     public short getShort(final int index)
     {
-        checkBounds(index, SIZE_OF_SHORT);
+        checkBounds(index, capacity, SIZE_OF_SHORT, "LHS");
         return UNSAFE.getShort(byteArray, baseOffset + index);
     }
 
@@ -222,7 +222,7 @@ public class DirectBuffer
      */
     public void putShort(final int index, final short value)
     {
-        checkBounds(index, SIZE_OF_SHORT);
+        checkBounds(index, capacity, SIZE_OF_SHORT, "LHS");
         UNSAFE.putShort(byteArray, baseOffset + index, value);
     }
 
@@ -234,7 +234,7 @@ public class DirectBuffer
      */
     public byte getByte(final int index)
     {
-        checkBounds(index, SIZE_OF_BYTE);
+        checkBounds(index, capacity, SIZE_OF_BYTE, "LHS");
         return UNSAFE.getByte(byteArray, baseOffset + index);
     }
 
@@ -246,7 +246,7 @@ public class DirectBuffer
      */
     public void putByte(final int index, final byte value)
     {
-        checkBounds(index, SIZE_OF_BYTE);
+        checkBounds(index, capacity, SIZE_OF_BYTE, "LHS");
         UNSAFE.putByte(byteArray, baseOffset + index, value);
     }
 
@@ -269,11 +269,16 @@ public class DirectBuffer
      * @param dst    into which the bytes will be copied.
      * @param offset in the supplied buffer to start the copy
      * @param length of the supplied buffer to use.
+     * @return count of bytes copied.
      */
-    public void getBytes(final int index, final byte[] dst, final int offset, final int length)
+    public int getBytes(final int index, final byte[] dst, final int offset, final int length)
     {
-        byteBuffer.clear().position(index);
-        byteBuffer.get(dst, offset, length);
+        final int count = Math.min(length, capacity - index);
+        checkBounds(index, capacity, count, "LHS");
+        checkBounds(offset, dst.length, count, "RHS");
+        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + offset, count);
+
+        return count;
     }
 
     /**
@@ -282,11 +287,36 @@ public class DirectBuffer
      * @param index     in the underlying buffer to start from.
      * @param dstBuffer into which the bytes will be copied.
      * @param length    of the supplied buffer to use.
+     * @return count of bytes copied.
      */
-    public void getBytes(final int index, final ByteBuffer dstBuffer, final int length)
+    public int getBytes(final int index, final ByteBuffer dstBuffer, final int length)
     {
         byteBuffer.clear().limit(index + length).position(index);
         dstBuffer.put(byteBuffer);
+
+        int count = Math.min(dstBuffer.remaining(), capacity - index);
+        count = Math.min(count, length);
+
+        checkBounds(index, capacity, count, "LHS");
+
+        final int dstOffset = dstBuffer.position();
+        final byte[] dstByteArray;
+        final long dstBaseOffset;
+        if (dstBuffer.hasArray())
+        {
+            dstByteArray = dstBuffer.array();
+            dstBaseOffset = BYTE_ARRAY_OFFSET;
+        }
+        else
+        {
+            dstByteArray = null;
+            dstBaseOffset = ((sun.nio.ch.DirectBuffer)dstBuffer).address();
+        }
+
+        UNSAFE.copyMemory(byteArray, baseOffset + index, dstByteArray, dstBaseOffset + dstOffset, count);
+        dstBuffer.position(dstBuffer.position() + count);
+
+        return count;
     }
 
     /**
@@ -294,10 +324,11 @@ public class DirectBuffer
      *
      * @param index in the underlying buffer to start from.
      * @param src   to be copied to the underlying buffer.
+     * @return count of bytes copied.
      */
-    public void putBytes(final int index, final byte[] src)
+    public int putBytes(final int index, final byte[] src)
     {
-        putBytes(index, src, 0, src.length);
+        return putBytes(index, src, 0, src.length);
     }
 
     /**
@@ -307,11 +338,16 @@ public class DirectBuffer
      * @param src    to be copied to the underlying buffer.
      * @param offset in the supplied buffer to begin the copy.
      * @param length of the supplied buffer to copy.
+     * @return count of bytes copied.
      */
-    public void putBytes(final int index, final byte[] src, final int offset, final int length)
+    public int putBytes(final int index, final byte[] src, final int offset, final int length)
     {
-        byteBuffer.clear().position(index);
-        byteBuffer.put(src, offset, length);
+        final int count = Math.min(length, capacity - index);
+        checkBounds(index, capacity, count, "LHS");
+        checkBounds(offset, src.length, count, "RHS");
+        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + offset, byteArray, baseOffset + index,  count);
+
+        return count;
     }
 
     /**
@@ -320,23 +356,46 @@ public class DirectBuffer
      *
      * @param index     in the underlying buffer to start from.
      * @param srcBuffer to copy the bytes from.
+     * @return count of bytes copied.
      */
-    public void putBytes(final int index, final ByteBuffer srcBuffer)
+    public int putBytes(final int index, final ByteBuffer srcBuffer, final int length)
     {
-        byteBuffer.clear().position(index);
-        byteBuffer.put(srcBuffer);
+        int count = Math.min(srcBuffer.remaining(), capacity - index);
+        count = Math.min(count, length);
+
+        checkBounds(index, capacity, count, "LHS");
+
+        final int srcOffset = srcBuffer.position();
+        final byte[] srcByteArray;
+        final long srcBaseOffset;
+        if (srcBuffer.hasArray())
+        {
+            srcByteArray = srcBuffer.array();
+            srcBaseOffset = BYTE_ARRAY_OFFSET;
+        }
+        else
+        {
+            srcByteArray = null;
+            srcBaseOffset = ((sun.nio.ch.DirectBuffer)srcBuffer).address();
+        }
+
+        UNSAFE.copyMemory(srcByteArray, srcBaseOffset + srcOffset, byteArray, baseOffset + index,  count);
+        srcBuffer.position(srcBuffer.position() + count);
+
+        return count;
     }
 
-    private void checkBounds(final int index, final int size)
+    private void checkBounds(final int index, final int capacity, final int size, final String endpoint)
     {
         if (BOUNDS_CHECK)
         {
             if (index < 0 || (index + size) > capacity)
             {
-                final String msg = String.format("Index %d out of bounds 0-%d for type of size %d",
+                final String msg = String.format("Index %d out of bounds 0-%d for type of size %d at %s",
                                                  Integer.valueOf(index),
                                                  Integer.valueOf((capacity - 1)),
-                                                 Integer.valueOf(size));
+                                                 Integer.valueOf(size),
+                                                 endpoint);
 
                 throw new IndexOutOfBoundsException(msg);
             }
