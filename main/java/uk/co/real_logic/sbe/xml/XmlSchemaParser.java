@@ -63,6 +63,8 @@ public class XmlSchemaParser
         throws Exception
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setXIncludeAware(true);
+        factory.setNamespaceAware(true);
 
         String xsdFilename = System.getProperty(SbeTool.SBE_VALIDATE_XSD);
         if (xsdFilename != null)

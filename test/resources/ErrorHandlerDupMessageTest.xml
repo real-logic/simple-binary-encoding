@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   package="SBE tests"
-                   fixVersion="5.2"
-                   description="Unit Test"
-                   byteOrder="littleEndian"
-                   xsi:schemaLocation="http://www.fixprotocol.org/ns/simple/1.0/SimpleBinary1-0.xsd">
+<messageSchema package="SBE tests"
+               semanticVersion="5.2"
+               description="Unit Test"
+               byteOrder="littleEndian">
     <types>
         <type name="TypeToTest" primitiveType="char"/>
     </types>
-    <sbe:message name="Message1" id="1">
+    <message name="Message1" id="1">
         <field name="field" id="10" type="TypeToTest" fixUsage="int"/>
-    </sbe:message>
+    </message>
     <!-- id is repeated in this message -->
-    <sbe:message name="AnotherMessageWithId1" id="1">
+    <message name="AnotherMessageWithId1" id="1">
         <field name="field" id="10" type="TypeToTest" fixUsage="int"/>
-    </sbe:message>
-</sbe:messageSchema>
+    </message>
+</messageSchema>

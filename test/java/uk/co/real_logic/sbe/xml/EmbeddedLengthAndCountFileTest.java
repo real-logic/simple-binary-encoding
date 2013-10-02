@@ -16,11 +16,11 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import java.util.List;
-
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 import uk.co.real_logic.sbe.TestUtil;
+
+import java.util.List;
 
 import static java.lang.Integer.valueOf;
 import static java.lang.Long.valueOf;
@@ -36,13 +36,12 @@ public class EmbeddedLengthAndCountFileTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("EmbeddedLengthAndCountFileTest.xml"));
         List<Field> fields = schema.getMessage(1).getFields();
-        List<Field> groupFields = null;
 
         assertThat(valueOf(fields.get(1).getId()), is(valueOf(73)));
         assertThat(fields.get(2).getName(), is("ListOrdGrp"));
         assertThat(valueOf(fields.get(1).getIrRefId()), is(valueOf(fields.get(2).getIrId())));
         assertThat(valueOf(fields.get(2).getIrRefId()), is(valueOf(fields.get(1).getIrId())));
-        groupFields = fields.get(2).getGroupFields();
+        List<Field> groupFields = fields.get(2).getGroupFields();
         Assert.assertNotNull(groupFields);
     }
 

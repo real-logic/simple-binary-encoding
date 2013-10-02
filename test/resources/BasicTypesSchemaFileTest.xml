@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   package="SBE tests"
-                   fixVersion="5.2"
-                   description="Unit Test"
-                   byteOrder="littleEndian"
-                   xsi:schemaLocation="http://www.fixprotocol.org/ns/simple/1.0/SimpleBinary1-0.xsd">
+<messageSchema package="SBE tests"
+               semanticVersion="5.2"
+               description="Unit Test"
+               byteOrder="littleEndian">
     <types>
         <composite name="messageHeader" description="Template ID and length of message root" fixUsage="Length">
             <type name="blockLength" primitiveType="uint16"/>
@@ -24,18 +21,18 @@
             <choice name="Bit26">26</choice>
         </set>
     </types>
-    <sbe:message name="Message1" id="1">
+    <message name="Message1" id="1">
         <field name="header" id="41" type="messageHeader"/>
         <field name="EDTField" id="42" type="EDT"/>
         <field name="ENUMField" id="43" type="ENUM"/>
         <field name="SETField" id="44" type="SET"/>
         <field name="int64Field" id="45" type="int64" fixUsage="int"/>
-    </sbe:message>
-    <sbe:message name="Message1WithOffsets" id="2">
+    </message>
+    <message name="Message1WithOffsets" id="2">
         <field name="header" id="41" type="messageHeader" offset="0"/>
         <field name="EDTField" id="42" type="EDT" offset="8"/>
         <field name="ENUMField" id="43" type="ENUM" offset="32"/>
         <field name="SETField" id="44" type="SET" offset="128"/>
         <field name="int64Field" id="45" type="int64" offset="136" fixUsage="int"/>
-    </sbe:message>
-</sbe:messageSchema>
+    </message>
+</messageSchema>

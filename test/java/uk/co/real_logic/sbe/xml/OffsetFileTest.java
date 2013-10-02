@@ -16,14 +16,13 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import java.util.List;
-
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 import uk.co.real_logic.sbe.TestUtil;
 
+import java.util.List;
+
 import static java.lang.Integer.valueOf;
-import static java.lang.Long.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
