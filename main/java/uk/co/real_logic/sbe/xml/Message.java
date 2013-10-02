@@ -99,36 +99,24 @@ public class Message
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             Field field;
-            Type fieldType;
 
             final String nodeName = list.item(i).getNodeName();
             switch (nodeName)
             {
                 case "group":
-                {
                     if (numDataEncountered > 0)
                     {
                         handleError(node, "group specified after data specified");
                     }
 
-                    field = parseGroupNode(list.item(i), entryCountFieldMap);
-
-                    /* if we have a dangling dimension Field, then add it here to fieldList. */
-                    if (field.getId() != Field.INVALID_ID)
-                    {
-                        fieldList.add(field.getEntryCountField());
-                    }
-
-                    field.setGroupFields(parseFieldsAndGroups(list.item(i))); // recursive call
+                    field = parseGroupField(list, fieldList, entryCountFieldMap, i);
 
                     numGroupEncountered++;
                     break;
-                }
 
                 case "data":
-                {
                     final String typeName = getAttributeValue(list.item(i), "type");
-                    fieldType = typeByNameMap.get(typeName);
+                    final Type fieldType = typeByNameMap.get(typeName);
                     if (fieldType == null)
                     {
                         handleError(list.item(i), "could not find type: " + typeName);
@@ -138,37 +126,15 @@ public class Message
 
                     numDataEncountered++;
                     break;
-                }
 
                 case "field":
-                {
                     if (numGroupEncountered > 0 || numDataEncountered > 0)
                     {
                         handleError(node, "field specified after group or data specified");
                     }
 
-                    final String typeName = getAttributeValue(list.item(i), "type");
-                    fieldType = typeByNameMap.get(typeName);
-                    if (fieldType == null)
-                    {
-                        handleError(list.item(i), "could not find type: " + typeName);
-                    }
-
-                    field = parseFieldNode(list.item(i), fieldType);
-
-                    if (field.getGroupName() != null)
-                    {
-                        entryCountFieldMap.put(field.getGroupName(), field);
-                        field.setIrId(irIdCursor++);
-                    }
-
-                    if (field.getRefId() != Field.INVALID_ID)
-                    {
-                        lengthFieldMap.put(Integer.valueOf(field.getRefId()), field);
-                        field.setIrId(irIdCursor++);
-                    }
+                    field = parseField(list, entryCountFieldMap, lengthFieldMap, i);
                     break;
-                }
 
                 default:
                     throw new IllegalStateException("Unknown node name: " + nodeName);
@@ -181,12 +147,60 @@ public class Message
         {
             handleWarning(node, "entry count field or fields not matched");
         }
+
         if (lengthFieldMap.size() > 0)
         {
             handleWarning(node, "length field or fields not matched");
         }
 
         return fieldList;
+    }
+
+    private Field parseGroupField(final NodeList nodeList,
+                                  final List<Field> fieldList,
+                                  final Map<String, Field> entryCountFieldMap,
+                                  final int nodeIndex) throws XPathExpressionException
+    {
+        final Field field = parseGroupNode(nodeList.item(nodeIndex), entryCountFieldMap);
+
+        /* if we have a dangling dimension Field, then add it here to fieldList. */
+        if (field.getId() != Field.INVALID_ID)
+        {
+            fieldList.add(field.getEntryCountField());
+        }
+
+        field.setGroupFields(parseFieldsAndGroups(nodeList.item(nodeIndex))); // recursive call
+
+        return field;
+    }
+
+    private Field parseField(final NodeList nodeList,
+                             final Map<String, Field> entryCountFieldMap,
+                             final Map<Integer, Field> lengthFieldMap,
+                             final int nodeIndex)
+    {
+        final String typeName = getAttributeValue(nodeList.item(nodeIndex), "type");
+        final Type fieldType = typeByNameMap.get(typeName);
+        if (fieldType == null)
+        {
+            handleError(nodeList.item(nodeIndex), "could not find type: " + typeName);
+        }
+
+        final Field field = parseFieldNode(nodeList.item(nodeIndex), fieldType);
+
+        if (field.getGroupName() != null)
+        {
+            entryCountFieldMap.put(field.getGroupName(), field);
+            field.setIrId(irIdCursor++);
+        }
+
+        if (field.getRefId() != Field.INVALID_ID)
+        {
+            lengthFieldMap.put(Integer.valueOf(field.getRefId()), field);
+            field.setIrId(irIdCursor++);
+        }
+
+        return field;
     }
 
     /**
