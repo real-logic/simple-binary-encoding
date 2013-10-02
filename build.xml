@@ -67,6 +67,7 @@
     <target name="build" depends="init" description="Build the main source">
         <javac srcdir="${dir.main.src}" destdir="${dir.main.build}" includeAntRuntime="false" debug="true">
             <compilerarg value="-Xlint:unchecked"/>
+            <compilerarg value="-XDignore.symbol.file"/>
         </javac>
     </target>
 
@@ -75,6 +76,7 @@
             <javac srcdir="${dir.test.src}" destdir="${dir.test.build}" includeAntRuntime="false" debug="true">
                 <classpath refid="test.classpath"/>
                 <compilerarg value="-Xlint:unchecked"/>
+                <compilerarg value="-XDignore.symbol.file"/>
             </javac>
             <junit printsummary="withOutAndErr" errorProperty="test.failed" failureProperty="test.failed">
                 <sysproperty key="results.dir" value="${dir.reports.unit}"/>
