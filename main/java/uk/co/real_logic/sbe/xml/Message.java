@@ -105,6 +105,7 @@ public class Message
             switch (nodeName)
             {
                 case "group":
+                {
                     if (numDataEncountered > 0)
                     {
                         handleError(node, "group specified after data specified");
@@ -122,29 +123,35 @@ public class Message
 
                     numGroupEncountered++;
                     break;
+                }
 
                 case "data":
-                    fieldType = typeByNameMap.get(getAttributeValue(list.item(i), "type"));
+                {
+                    final String typeName = getAttributeValue(list.item(i), "type");
+                    fieldType = typeByNameMap.get(typeName);
                     if (fieldType == null)
                     {
-                        handleError(list.item(i), "could not find type");
+                        handleError(list.item(i), "could not find type: " + typeName);
                     }
 
                     field = parseDataNode(list.item(i), lengthFieldMap, fieldType);
 
                     numDataEncountered++;
                     break;
+                }
 
                 case "field":
+                {
                     if (numGroupEncountered > 0 || numDataEncountered > 0)
                     {
                         handleError(node, "field specified after group or data specified");
                     }
 
-                    fieldType = typeByNameMap.get(getAttributeValue(list.item(i), "type"));
+                    final String typeName = getAttributeValue(list.item(i), "type");
+                    fieldType = typeByNameMap.get(typeName);
                     if (fieldType == null)
                     {
-                        handleError(list.item(i), "could not find type");
+                        handleError(list.item(i), "could not find type: " + typeName);
                     }
 
                     field = parseFieldNode(list.item(i), fieldType);
@@ -161,10 +168,12 @@ public class Message
                         field.setIrId(irIdCursor++);
                     }
                     break;
+                }
 
                 default:
                     throw new IllegalStateException("Unknown node name: " + nodeName);
             }
+
             fieldList.add(field);
         }
 
