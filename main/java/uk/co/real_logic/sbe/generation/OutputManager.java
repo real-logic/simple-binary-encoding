@@ -30,5 +30,5 @@ public interface OutputManager
      * @param name of the given output.
      * @return A {@link Writer} to which the code generation should be output.
      */
-    Writer newOutput(final String name) throws IOException;
+    Writer createOutput(final String name) throws IOException;
 }

@@ -60,7 +60,7 @@ public class PackageOutputManager implements OutputManager
      * @param name the name of the Java class.
      * @return a {@link Writer} to which the source code should be written.
      */
-    public Writer newOutput(final String name) throws IOException
+    public Writer createOutput(final String name) throws IOException
     {
         final File targetFile = new File(outputDir, name + ".java");
         return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetFile), "UTF-8"));
