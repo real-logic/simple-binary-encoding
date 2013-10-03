@@ -18,13 +18,11 @@ package uk.co.real_logic.sbe.generation.java;
 import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.util.Verify;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 
 /**
  * {@link OutputManager} for managing the creation of Java source files as the target of code generation.
+ * The character encoding for the {@link Writer} is UTF-8.
  */
 public class PackageOutputManager implements OutputManager
 {
@@ -56,13 +54,14 @@ public class PackageOutputManager implements OutputManager
     /**
      * Create a new output which will be a Java source file in the given package.
      * <p>
-     * The {@link Writer} should be close once the caller has finished with it.
+     * The {@link Writer} should be close once the caller has finished with it. The Writer is
+     * buffer for efficient IO operations.
      *
      * @param name the name of the Java class.
      * @return a {@link Writer} to which the source code should be written.
      */
     public Writer newOutput(final String name) throws IOException
     {
-        return new FileWriter(new File(outputDir, name + ".java"));
+        return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outputDir, name + ".java")), "UTF-8"));
     }
 }
