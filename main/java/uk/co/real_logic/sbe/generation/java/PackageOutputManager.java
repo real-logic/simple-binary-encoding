@@ -62,6 +62,7 @@ public class PackageOutputManager implements OutputManager
      */
     public Writer newOutput(final String name) throws IOException
     {
-        return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outputDir, name + ".java")), "UTF-8"));
+        final File targetFile = new File(outputDir, name + ".java");
+        return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetFile), "UTF-8"));
     }
 }

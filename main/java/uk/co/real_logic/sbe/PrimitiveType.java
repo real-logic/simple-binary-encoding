@@ -184,7 +184,7 @@ public enum PrimitiveType
      */
     public static PrimitiveType lookup(final String value)
     {
-        for (final PrimitiveType p : Singleton.values)
+        for (final PrimitiveType p : Singleton.VALUES)
         {
             if (value.equals(p.name))
             {
@@ -201,6 +201,6 @@ public enum PrimitiveType
      */
     static class Singleton
     {
-        public static final PrimitiveType[] values = PrimitiveType.values();
+        public static final PrimitiveType[] VALUES = PrimitiveType.values();
     }
 }
