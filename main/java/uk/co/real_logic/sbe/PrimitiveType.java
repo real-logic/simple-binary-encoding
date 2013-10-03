@@ -17,7 +17,8 @@
 package uk.co.real_logic.sbe;
 
 /**
- * primitiveTypes
+ * Primitive types from which all other types are composed.
+ *
  * <p/>
  * <table>
  *     <thead>
@@ -183,7 +184,7 @@ public enum PrimitiveType
      */
     public static PrimitiveType lookup(final String value)
     {
-        for (final PrimitiveType p : values())
+        for (final PrimitiveType p : Singleton.values)
         {
             if (value.equals(p.name))
             {
@@ -192,5 +193,14 @@ public enum PrimitiveType
         }
 
         throw new IllegalArgumentException("No PrimitiveType for value: " + value);
+    }
+
+    /**
+     * Used to hold a reference to the values array without having it defensively copied
+     * on every call to {@link PrimitiveType#values()}
+     */
+    static class Singleton
+    {
+        public static final PrimitiveType[] values = PrimitiveType.values();
     }
 }
