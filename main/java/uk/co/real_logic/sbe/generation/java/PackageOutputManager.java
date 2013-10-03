@@ -54,7 +54,7 @@ public class PackageOutputManager implements OutputManager
     /**
      * Create a new output which will be a Java source file in the given package.
      * <p>
-     * The {@link Writer} should be close once the caller has finished with it. The Writer is
+     * The {@link Writer} should be closed once the caller has finished with it. The Writer is
      * buffer for efficient IO operations.
      *
      * @param name the name of the Java class.
