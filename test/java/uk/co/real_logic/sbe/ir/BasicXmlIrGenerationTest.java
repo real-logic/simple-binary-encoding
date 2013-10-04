@@ -158,65 +158,50 @@ public class BasicXmlIrGenerationTest
 
         assertThat(valueOf(tokens.size()), is(valueOf(8)));
 
-        /* assert all elements of node 0 */
         assertThat(tokens.get(0).getSignal(), is(Signal.BEGIN_MESSAGE));
         assertThat(tokens.get(0).getMetadata().getName(), is("TestMessage1"));
         assertThat(valueOf(tokens.get(0).getMetadata().getSchemaId()), is(valueOf(1L)));
-        assertThat(valueOf(tokens.get(0).getMetadata().getId()), is(valueOf(0L)));
         assertThat(valueOf(tokens.get(0).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(0).getOffset()), is(valueOf(0)));
 
-        /* assert all elements of node 1 */
         assertThat(tokens.get(1).getSignal(), is(Signal.BEGIN_FIELD));
-        assertThat(tokens.get(1).getMetadata().getName(), is("EncryptedNewPasswordLen"));
-        assertThat(valueOf(tokens.get(1).getMetadata().getSchemaId()), is(valueOf(1403L)));
-        assertThat(valueOf(tokens.get(1).getMetadata().getId()), is(valueOf(1L)));
-        assertThat(valueOf(tokens.get(1).getMetadata().getRefId()), is(valueOf(2L)));
+        assertThat(tokens.get(1).getMetadata().getName(), is("EncryptedNewPassword"));
+        assertThat(valueOf(tokens.get(1).getMetadata().getSchemaId()), is(valueOf(1404L)));
         assertThat(valueOf(tokens.get(1).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(1).getOffset()), is(valueOf(0)));
 
-        /* assert all elements of node 2 */
-        assertThat(tokens.get(2).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(2).getMetadata().getName(), is("length"));
-        assertThat(tokens.get(2).getPrimitiveType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(tokens.get(2).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
-        assertThat(valueOf(tokens.get(2).size()), is(valueOf(1)));
+        assertThat(tokens.get(2).getSignal(), is(Signal.BEGIN_COMPOSITE));
+        assertThat(tokens.get(2).getMetadata().getName(), is("varDataEncoding"));
+        assertThat(valueOf(tokens.get(2).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(2).getOffset()), is(valueOf(0)));
-        assertThat(tokens.get(2).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
-        /* assert all elements of node 3 */
-        assertThat(tokens.get(3).getSignal(), is(Signal.END_FIELD));
-        assertThat(tokens.get(3).getMetadata().getName(), is("EncryptedNewPasswordLen"));
-        assertThat(valueOf(tokens.get(3).getMetadata().getSchemaId()), is(valueOf(1403L)));
-        assertThat(valueOf(tokens.get(3).size()), is(valueOf(0)));
+        assertThat(tokens.get(3).getSignal(), is(Signal.ENCODING));
+        assertThat(tokens.get(3).getMetadata().getName(), is("length"));
+        assertThat(tokens.get(3).getPrimitiveType(), is(PrimitiveType.UINT8));
+        assertThat(valueOf(tokens.get(3).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
+        assertThat(valueOf(tokens.get(3).size()), is(valueOf(1)));
         assertThat(valueOf(tokens.get(3).getOffset()), is(valueOf(0)));
+        assertThat(tokens.get(3).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
-        /* assert all elements of node 4 */
-        assertThat(tokens.get(4).getSignal(), is(Signal.BEGIN_FIELD));
-        assertThat(tokens.get(4).getMetadata().getName(), is("EncryptedNewPassword"));
-        assertThat(valueOf(tokens.get(4).getMetadata().getSchemaId()), is(valueOf(1404L)));
-        assertThat(valueOf(tokens.get(4).getMetadata().getId()), is(valueOf(2L)));
-        assertThat(valueOf(tokens.get(4).getMetadata().getRefId()), is(valueOf(1L)));
-        assertThat(valueOf(tokens.get(4).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(4).getOffset()), is(valueOf(0)));
+        assertThat(tokens.get(4).getSignal(), is(Signal.ENCODING));
+        assertThat(tokens.get(4).getMetadata().getName(), is("varData"));
+        assertThat(tokens.get(4).getPrimitiveType(), is(PrimitiveType.CHAR));
+        assertThat(valueOf(tokens.get(4).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
+        assertThat(valueOf(tokens.get(4).size()), is(valueOf(-1)));
+        assertThat(valueOf(tokens.get(4).getOffset()), is(valueOf(1)));
+        assertThat(tokens.get(4).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
-        /* assert all elements of node 5 */
-        assertThat(tokens.get(5).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(5).getMetadata().getName(), is("rawData"));
-        assertThat(tokens.get(5).getPrimitiveType(), is(PrimitiveType.CHAR));
-        assertThat(valueOf(tokens.get(5).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
-        assertThat(valueOf(tokens.get(5).size()), is(valueOf(-1)));
-        assertThat(valueOf(tokens.get(5).getOffset()), is(valueOf(1)));
-        assertThat(tokens.get(5).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(tokens.get(5).getSignal(), is(Signal.END_COMPOSITE));
+        assertThat(tokens.get(5).getMetadata().getName(), is("varDataEncoding"));
+        assertThat(valueOf(tokens.get(5).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(5).getOffset()), is(valueOf(0)));
 
-        /* assert all elements of node 6 */
         assertThat(tokens.get(6).getSignal(), is(Signal.END_FIELD));
         assertThat(tokens.get(6).getMetadata().getName(), is("EncryptedNewPassword"));
         assertThat(valueOf(tokens.get(6).getMetadata().getSchemaId()), is(valueOf(1404L)));
         assertThat(valueOf(tokens.get(6).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(6).getOffset()), is(valueOf(0)));
 
-        /* assert all elements of node 7 */
         assertThat(tokens.get(7).getSignal(), is(Signal.END_MESSAGE));
         assertThat(tokens.get(7).getMetadata().getName(), is("TestMessage1"));
         assertThat(valueOf(tokens.get(7).getMetadata().getSchemaId()), is(valueOf(1L)));
@@ -225,55 +210,61 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMessageWithRepeatingGroup()
+    public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimentions()
         throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicGroupSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
         IntermediateRepresentation ir = irg.generate(schema);
+        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, ... */
+        int groupIdx = 4;
+        int dimensionsCompIdx = 5;
+        int dimensionsBlEncIdx = 6;
+        int dimensionsNigEncIdx = 7;
 
         List<Token> tokens = ir.getMessage(1);
 
-        /* assert the NoEntries node has the right IrId and xRefIrId, etc. */
-        assertThat(tokens.get(4).getSignal(), is(Signal.BEGIN_FIELD));
-        assertThat(tokens.get(4).getMetadata().getName(), is("NoEntries"));
-        assertThat(valueOf(tokens.get(4).getMetadata().getSchemaId()), is(valueOf(2L)));
-        assertThat(valueOf(tokens.get(4).getMetadata().getId()), is(valueOf(1L)));
-        assertThat(valueOf(tokens.get(4).getMetadata().getRefId()), is(valueOf(tokens.get(7).getMetadata().getId())));
-        //assertThat(valueOf(tokens.get(4).getMetadata().getRefId()), is(valueOf(2L)));
+        /* assert on the group token */
+        assertThat(tokens.get(groupIdx).getSignal(), is(Signal.BEGIN_GROUP));
+        assertThat(tokens.get(groupIdx).getMetadata().getName(), is("Entries"));
+        assertThat(valueOf(tokens.get(groupIdx).getMetadata().getSchemaId()), is(valueOf(2L)));
 
-        /* assert the group node has the right IrId and xRefIrId, etc. */
-        assertThat(tokens.get(7).getSignal(), is(Signal.BEGIN_GROUP));
-        assertThat(tokens.get(7).getMetadata().getName(), is("Entries"));
-        assertThat(valueOf(tokens.get(7).getMetadata().getId()), is(valueOf(2L)));
-        assertThat(valueOf(tokens.get(7).getMetadata().getRefId()), is(valueOf(tokens.get(4).getMetadata().getId())));
-        //assertThat(valueOf(tokens.get(7).getMetadata().getRefId()), is(valueOf(1L)));
+        /* assert on the comp token for dimensions */
+        assertThat(tokens.get(dimensionsCompIdx).getSignal(), is(Signal.BEGIN_COMPOSITE));
+        assertThat(tokens.get(dimensionsCompIdx).getMetadata().getName(), is("groupSizeEncoding"));
+
+        /* assert on the enc token for dimensions blockLength */
+        assertThat(tokens.get(dimensionsBlEncIdx).getSignal(), is(Signal.ENCODING));
+        assertThat(tokens.get(dimensionsBlEncIdx).getMetadata().getName(), is("blockLength"));
+
+        /* assert on the enc token for dimensions numInGroup */
+        assertThat(tokens.get(dimensionsNigEncIdx).getSignal(), is(Signal.ENCODING));
+        assertThat(tokens.get(dimensionsNigEncIdx).getMetadata().getName(), is("numInGroup"));
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensions()
+    public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensionsDefaultDimensionType()
         throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("EmbeddedLengthAndCountFileTest.xml"));
         IrGenerator irg = new IrGenerator();
         IntermediateRepresentation ir = irg.generate(schema);
-        /* msg, field, enc, field end, field, comp, enc, enc, comp end, field end, group */
-        int dimensionsIdx = 4;
-        int groupIdx = 10;
+        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, 9=field, ... */
+        int groupIdx = 4;
+        int dimensionsCompIdx = 5;
+        int fieldInGroupIdx = 9;
 
         List<Token> tokens = ir.getMessage(1);
 
-        /* assert the dimensions node has the right IrId and xRefIrId, etc. */
-        assertThat(tokens.get(dimensionsIdx).getSignal(), is(Signal.BEGIN_FIELD));
-        assertThat(valueOf(tokens.get(dimensionsIdx).getMetadata().getSchemaId()), is(valueOf(73L)));
-        assertThat(valueOf(tokens.get(dimensionsIdx).getMetadata().getId()), is(valueOf(1L)));
-        assertThat(valueOf(tokens.get(dimensionsIdx).getMetadata().getRefId()), is(valueOf(tokens.get(groupIdx).getMetadata().getId())));
-
-        /* assert the group node has the right IrId and xRefIrId, etc. */
         assertThat(tokens.get(groupIdx).getSignal(), is(Signal.BEGIN_GROUP));
         assertThat(tokens.get(groupIdx).getMetadata().getName(), is("ListOrdGrp"));
-        assertThat(valueOf(tokens.get(groupIdx).getMetadata().getId()), is(valueOf(2L)));
-        assertThat(valueOf(tokens.get(groupIdx).getMetadata().getRefId()), is(valueOf(tokens.get(dimensionsIdx).getMetadata().getId())));
+        assertThat(valueOf(tokens.get(groupIdx).getMetadata().getSchemaId()), is(valueOf(73L)));
+
+        assertThat(tokens.get(dimensionsCompIdx).getSignal(), is(Signal.BEGIN_COMPOSITE));
+        assertThat(tokens.get(dimensionsCompIdx).getMetadata().getName(), is("groupSizeEncoding"));
+
+        assertThat(tokens.get(fieldInGroupIdx).getSignal(), is(Signal.BEGIN_FIELD));
+        assertThat(tokens.get(fieldInGroupIdx).getMetadata().getName(), is("ClOrdID"));
     }
 
     @Test
@@ -283,7 +274,7 @@ public class BasicXmlIrGenerationTest
         MessageSchema schema = parse(TestUtil.getLocalResource("EmbeddedLengthAndCountFileTest.xml"));
         IrGenerator irg = new IrGenerator();
         IntermediateRepresentation ir = irg.generate(schema);
-        /* msg, field, enc, field end, field, comp, enc, enc, comp end, field end */
+        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=field, 5=comp, 6=enc, 7=enc, 8=compend, 9=fieldend */
         int lengthFieldIdx = 4;
         int lengthEncIdx = 6;
         int dataEncIdx = 7;

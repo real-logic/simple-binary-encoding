@@ -86,7 +86,6 @@ public class IrGenerator
         tokenList.add(new Token(signal,
                                 new Metadata.Builder(msg.getName())
                                 .schemaId(msg.getId())
-                                .id(0)
                                 .build()));
     }
 
@@ -101,24 +100,7 @@ public class IrGenerator
     {
         Metadata.Builder builder = new Metadata.Builder(field.getName());
 
-        if (field.getEntryCountField() != null)
-        {
-            builder.refId(field.getEntryCountField().getIrId());
-        }
-        else if (field.getLengthField() != null)
-        {
-            builder.refId(field.getLengthField().getIrId());
-        }
-        else if (field.getGroupField() != null)
-        {
-            builder.refId(field.getGroupField().getIrId());
-        }
-        else if (field.getDataField() != null)
-        {
-            builder.refId(field.getDataField().getIrId());
-        }
-
-        builder.schemaId(field.getId()).id(field.getIrId());
+        builder.schemaId(field.getId());
 
         tokenList.add(new Token(signal, builder.build()));
     }
@@ -132,6 +114,7 @@ public class IrGenerator
             if (type == null)
             {
                 addFieldSignal(field, Signal.BEGIN_GROUP);
+                add(field.getDimensionType(), 0);
                 addAllFields(field.getGroupFields());
                 addFieldSignal(field, Signal.END_GROUP);
             }

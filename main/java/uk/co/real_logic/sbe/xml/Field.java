@@ -30,26 +30,19 @@ public class Field
     public static final int INVALID_ID = Integer.MAX_VALUE;  // schemaId must only be short, so this is way out of range.
     public static final String INVALID_ID_STRING = Integer.toString(INVALID_ID);
 
-    private final String name;          // required for field/data & group
-    private final String description;   // optional for field/data & group
-    private final String groupName;     // optional for field/date (not present for group)
-    private final int id;               // required for field/data (not present for group)
-    private final Type type;            // required for field/data (not present for group)
-    private final int offset;           // optional for field/data (not present for group)
-    private final String semanticType;  // optional for field/data (not present for group?)
-    private final Presence presence;    // optional for field/data (not present for group)  null means not set
-    private final int refId;            // optional for field (not present for group or data) INVALID_ID means not set
-    private final int blockLength;      // optional for group (not present for field/data)
-    private final String dimensionType; // required for group (not present for field/data) - has default
-    private List<Field> groupFieldList; // used by group fields as the list of child fields in the group
-    private Field entryCountField;      // used by group fields as the entry count field
-    private Field lengthField;          // used by data fields as the length field
-    private Field groupField;           // used by entry count fields as the group field
-    private Field dataField;            // used by length fields as the data field
-    private long irId = INVALID_ID;     // used to identify this field by an IR ID
-    private long irRefId = INVALID_ID;  // used to identify an associated field by an IR ID
-    private int calculatedOffset;       // used to hold the calculated offset of this field from top level <message> or <group>
-    private int calculatedBlockLength;  // used to hold the calculated block length of this group
+    private final String name;                 // required for field/data & group
+    private final String description;          // optional for field/data & group
+    private final int id;                      // required for field/data (not present for group)
+    private final Type type;                   // required for field/data (not present for group)
+    private final int offset;                  // optional for field/data (not present for group)
+    private final String semanticType;         // optional for field/data (not present for group?)
+    private final Presence presence;           // optional for field/data (not present for group)  null means not set
+    private final int blockLength;             // optional for group (not present for field/data)
+    private final CompositeType dimensionType; // required for group (not present for field/data)
+    private final boolean variableLength;      // true for data (false for field/group)
+    private List<Field> groupFieldList;        // used by group fields as the list of child fields in the group
+    private int calculatedOffset;              // used to hold the calculated offset of this field from top level <message> or <group>
+    private int calculatedBlockLength;         // used to hold the calculated block length of this group
 
     /** Builder constructor */
     public Field(final String name,
@@ -60,26 +53,21 @@ public class Field
                  final int offset,
                  final String semanticType,
                  final Presence presence,
-                 final int refId,
                  final int blockLength,
-                 final String dimensionType)
+                 final CompositeType dimensionType,
+                 final boolean variableLength)
     {
         this.name = name;
         this.description = description;
-        this.groupName = groupName;
         this.id = id;
         this.type = type;
         this.offset = offset;
         this.semanticType = semanticType;
         this.presence = presence;
-        this.refId = refId;
         this.blockLength = blockLength;
         this.dimensionType = dimensionType;
+        this.variableLength = variableLength;
         this.groupFieldList = null;
-        this.entryCountField = null;
-        this.lengthField = null;
-        this.groupField = null;
-        this.dataField = null;
         this.calculatedOffset = 0;
         this.calculatedBlockLength = 0;
     }
@@ -110,46 +98,6 @@ public class Field
         return groupFieldList;
     }
 
-    public void setEntryCountField(final Field field)
-    {
-        entryCountField = field;
-    }
-
-    public Field getEntryCountField()
-    {
-        return entryCountField;
-    }
-
-    public void setLengthField(final Field field)
-    {
-        lengthField = field;
-    }
-
-    public Field getLengthField()
-    {
-        return lengthField;
-    }
-
-    public void setGroupField(final Field field)
-    {
-        groupField = field;
-    }
-
-    public Field getGroupField()
-    {
-        return groupField;
-    }
-
-    public void setDataField(final Field field)
-    {
-        dataField = field;
-    }
-
-    public Field getDataField()
-    {
-        return dataField;
-    }
-
     public void setCalculatedOffset(final int offset)
     {
         calculatedOffset = offset;
@@ -170,19 +118,9 @@ public class Field
         return description;
     }
 
-    public String getGroupName()
-    {
-        return groupName;
-    }
-
     public int getId()
     {
         return id;
-    }
-
-    public int getRefId()
-    {
-        return refId;
     }
 
     public Type getType()
@@ -210,34 +148,19 @@ public class Field
         return calculatedBlockLength;
     }
 
-    public void setIrId(final long id)
-    {
-        irId = id;
-    }
-
-    public long getIrId()
-    {
-        return irId;
-    }
-
-    public void setIrRefId(final long id)
-    {
-        irRefId = id;
-    }
-
-    public long getIrRefId()
-    {
-        return irRefId;
-    }
-
     public String getSemanticType()
     {
         return semanticType;
     }
 
-    public String getDimensionType()
+    public CompositeType getDimensionType()
     {
         return dimensionType;
+    }
+
+    public boolean getVariableLength()
+    {
+        return variableLength;
     }
 
     public String toString()
@@ -245,21 +168,13 @@ public class Field
         return "Field{" +
             "name=" + name +
             ", description=" + description +
-            ", groupName=" + groupName +
             ", id=" + id +
             ", type=" + type +
             ", offset=" + offset +
             ", semanticType=" + semanticType +
             ", presence=" + presence +
-            ", refId=" + refId +
             ", blockLength=" + blockLength +
             ", groupFieldList=" + groupFieldList +
-            ", entryCountField=" + entryCountField +
-            ", lengthField=" + lengthField +
-            ", groupField=" + groupField +
-            ", dataField=" + dataField +
-            ", irId=" + irId +
-            ", irRefId =" + irRefId +
             ", calculatedOffset=" + calculatedOffset +
             '}';
     }
@@ -276,32 +191,26 @@ public class Field
         private Presence presence;
         private int refId;
         private int blockLength;
-        private String dimensionType;
+        private CompositeType dimensionType;
+        private boolean variableLength;
 
         public Builder(final String name)
         {
             this.name = name;
             description = null;
-            groupName = null;
             id = INVALID_ID;
             type = null;
             offset = 0;
             semanticType = null;
             presence = null;
-            refId = INVALID_ID;
             blockLength = 0;
             dimensionType = null;
+            variableLength = false;
         }
 
         public Builder description(final String description)
         {
             this.description = description;
-            return this;
-        }
-
-        public Builder groupName(final String groupName)
-        {
-            this.groupName = groupName;
             return this;
         }
 
@@ -335,27 +244,28 @@ public class Field
             return this;
         }
 
-        public Builder refId(final int refId)
-        {
-            this.refId = refId;
-            return this;
-        }
-
         public Builder blockLength(final int blockLength)
         {
             this.blockLength = blockLength;
             return this;
         }
 
-        public Builder dimensionType(final String dimensionType)
+        public Builder dimensionType(final CompositeType dimensionType)
         {
             this.dimensionType = dimensionType;
             return this;
         }
 
+        public Builder variableLength(final boolean variableLength)
+        {
+            this.variableLength = variableLength;
+            return this;
+        }
+
         public Field build()
         {
-            return new Field(name, description, groupName, id, type, offset, semanticType, presence, refId, blockLength, dimensionType);
+            return new Field(name, description, groupName, id, type, offset,
+                             semanticType, presence, blockLength, dimensionType, variableLength);
         }
     }
 }

@@ -62,10 +62,6 @@ import java.nio.ByteOrder;
  *     <li>Token 4 - Signal = END_MESSAGE</li>
  * </ul>
  * <p>
- * Specific nodes have IR IDs. These IDs are used to cross reference entities that have a relationship. Such as
- * length fields for variable length data elements, and entry count fields for repeating groups.
- * {@link Metadata#getId()} can be used to return the nodes IR ID. While {@link Metadata#getRefId()} can
- * be used to return the nodes cross reference IR ID. Cross referencing is always two-way.
  */
 public class Token
 {

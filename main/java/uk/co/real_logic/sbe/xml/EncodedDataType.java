@@ -34,11 +34,11 @@ public class EncodedDataType extends Type
 {
     private final PrimitiveType primitiveType;
     private final int length;
-    private final boolean varLen;
     private final PrimitiveValue constValue;
     private final PrimitiveValue minValue;
     private final PrimitiveValue maxValue;
     private final PrimitiveValue nullValue;
+    private boolean varLen;
 
     /**
      * Construct a new encodedDataType from XML Schema.
@@ -156,6 +156,11 @@ public class EncodedDataType extends Type
     public boolean getVariableLength()
     {
         return varLen;
+    }
+
+    public void setVariableLength(final boolean variableLength)
+    {
+        this.varLen = variableLength;
     }
 
     /**

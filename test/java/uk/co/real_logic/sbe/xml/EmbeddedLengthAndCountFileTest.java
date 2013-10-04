@@ -37,11 +37,10 @@ public class EmbeddedLengthAndCountFileTest
         MessageSchema schema = parse(TestUtil.getLocalResource("EmbeddedLengthAndCountFileTest.xml"));
         List<Field> fields = schema.getMessage(1).getFields();
 
+        assertThat(fields.get(1).getName(), is("ListOrdGrp"));
         assertThat(valueOf(fields.get(1).getId()), is(valueOf(73)));
-        assertThat(fields.get(2).getName(), is("ListOrdGrp"));
-        assertThat(valueOf(fields.get(1).getIrRefId()), is(valueOf(fields.get(2).getIrId())));
-        assertThat(valueOf(fields.get(2).getIrRefId()), is(valueOf(fields.get(1).getIrId())));
-        List<Field> groupFields = fields.get(2).getGroupFields();
+        Assert.assertNotNull(fields.get(1).getDimensionType());
+        List<Field> groupFields = fields.get(1).getGroupFields();
         Assert.assertNotNull(groupFields);
     }
 

@@ -28,8 +28,6 @@ public class Metadata
 
     private final String name;
     private final long schemaId;
-    private final long id;
-    private final long refId;
     private final PrimitiveValue minValue;
     private final PrimitiveValue maxValue;
     private final PrimitiveValue nullValue;
@@ -37,8 +35,6 @@ public class Metadata
 
     public Metadata(final String name,
                     final long schemaId,
-                    final long id,
-                    final long refId,
                     final PrimitiveValue minValue,
                     final PrimitiveValue maxValue,
                     final PrimitiveValue nullValue,
@@ -48,8 +44,6 @@ public class Metadata
 
         this.name = name;
         this.schemaId = schemaId;
-        this.id = id;
-        this.refId = refId;
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.nullValue = nullValue;
@@ -74,26 +68,6 @@ public class Metadata
     public long getSchemaId()
     {
         return schemaId;
-    }
-
-    /**
-     * Return the ID of the token.
-     *
-     * @return the ID of the token.
-     */
-    public long getId()
-    {
-        return id;
-    }
-
-    /**
-     * Return the cross reference ID of the token.
-     *
-     * @return the cross reference ID of the token.
-     */
-    public long getRefId()
-    {
-        return refId;
     }
 
     /**
@@ -141,8 +115,6 @@ public class Metadata
         return "Metadata{" +
             "name='" + name + '\'' +
             ", schemaId=" + schemaId +
-            ", id=" + id +
-            ", refId=" + refId +
             ", minValue=" + minValue +
             ", maxValue=" + maxValue +
             ", nullValue=" + nullValue +
@@ -157,8 +129,6 @@ public class Metadata
     {
         private String name;
         private long schemaId;
-        private long id;
-        private long refId;
         private PrimitiveValue minValue;
         private PrimitiveValue maxValue;
         private PrimitiveValue nullValue;
@@ -168,8 +138,6 @@ public class Metadata
         {
             this.name = name;
             schemaId = Metadata.INVALID_ID;
-            id = Metadata.INVALID_ID;
-            refId = Metadata.INVALID_ID;
             minValue = null;
             maxValue = null;
             nullValue = null;
@@ -179,18 +147,6 @@ public class Metadata
         public Builder schemaId(final long schemaId)
         {
             this.schemaId = schemaId;
-            return this;
-        }
-
-        public Builder id(final long id)
-        {
-            this.id = id;
-            return this;
-        }
-
-        public Builder refId(final long refId)
-        {
-            this.refId = refId;
             return this;
         }
 
@@ -220,7 +176,7 @@ public class Metadata
 
         public Metadata build()
         {
-            return new Metadata(name, schemaId, id, refId, minValue, maxValue, nullValue, constValue);
+            return new Metadata(name, schemaId, minValue, maxValue, nullValue, constValue);
         }
     }
 }

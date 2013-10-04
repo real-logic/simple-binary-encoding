@@ -14,15 +14,16 @@
             <type name="blockLength" primitiveType="uint16"/>
             <type name="numInGroup" primitiveType="uint8"/>
         </composite>
-        <type name="rawData" primitiveType="char" fixUsage="data" variableLength="true"/>
-        <type name="length" primitiveType="uint8" fixUsage="Length" maxValue="200"/>
+        <composite name="varDataEncoding">
+            <type name="length" primitiveType="uint8"/>
+            <type name="varData" primitiveType="char"/>
+        </composite>
     </types>
 
     <!-- no blockLength set for message nor group -->
     <message name="Message1" id="1">
         <field name="header" id="41" type="messageHeader"/>
-        <field name="Group Dimensions" id="1" type="groupSize" groupName="Group"/>
-        <group name="Group">
+        <group name="Group" id="42" dimensionType="groupSize">
             <field name="F1" id="10" type="uint32" fixUsage="int"/>
             <field name="F2" id="11" type="uint64" fixUsage="int"/>
         </group>
@@ -31,8 +32,7 @@
     <!-- blockLength set for message -->
     <message name="Message2" id="2" blockLength="64">
         <field name="header" id="41" type="messageHeader"/>
-        <field name="Group Dimensions" id="1" type="groupSize" groupName="Group"/>
-        <group name="Group">
+        <group name="Group" id="42" dimensionType="groupSize">
             <field name="F1" id="10" type="uint32" fixUsage="int"/>
             <field name="F2" id="11" type="uint64" fixUsage="int"/>
         </group>
@@ -41,8 +41,7 @@
     <!-- blockLength set for group -->
     <message name="Message3" id="3" blockLength="64">
         <field name="header" id="41" type="messageHeader"/>
-        <field name="Group Dimensions" id="1" type="groupSize" groupName="Group"/>
-        <group name="Group" blockLength="16">
+        <group name="Group" id="42" dimensionType="groupSize" blockLength="16">
             <field name="F1" id="10" type="uint32" fixUsage="int"/>
             <field name="F2" id="11" type="uint64" fixUsage="int"/>
         </group>
@@ -51,7 +50,6 @@
     <!-- blockLength set for message with data -->
     <message name="Message4" id="4" blockLength="64">
         <field name="header" id="41" type="messageHeader"/>
-        <field type="length" name="EncryptedNewPasswordLen" id="1403" refId="1404"/>
-        <data type="rawData" name="EncryptedNewPassword" id="1404"/>
+        <data type="varDataEncoding" name="EncryptedNewPassword" id="1404" fixUsage="data"/>
     </message>
 </messageSchema>

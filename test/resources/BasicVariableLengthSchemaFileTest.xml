@@ -4,17 +4,18 @@
                description="Unit Test"
                byteOrder="littleEndian">
     <types>
-        <type name="rawData" primitiveType="char" fixUsage="data" variableLength="true"/>
-        <type name="length" primitiveType="uint8" fixUsage="Length" maxValue="200"/>
         <composite name="messageHeader" description="Template ID and length of message root" fixUsage="Length">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>
+        <composite name="varDataEncoding" semanticType="Length">
+            <type name="length" primitiveType="uint8" semanticType="Length"/>
+            <type name="varData" primitiveType="char" semanticType="data"/>
+        </composite>
     </types>
     <message name="TestMessage1" id="1" description="TestMessage">
-        <field type="length" name="EncryptedNewPasswordLen" id="1403" refId="1404"/>
-        <data type="rawData" name="EncryptedNewPassword" id="1404"/>
+        <data type="varDataEncoding" name="EncryptedNewPassword" id="1404"/>
     </message>
 </messageSchema>

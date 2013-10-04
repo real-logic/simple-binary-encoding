@@ -11,11 +11,14 @@
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>
+        <composite name="groupSizeEncoding" description="Repeating group dimensions">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint8" semanticType="NumInGroup"/>
+        </composite>
     </types>
     <message name="TestMessage1" id="1" description="TestMessage" blockLength="16">
         <field name="Tag1" id="1" type="uint32" fixUsage="int"/>
-        <field name="NoEntries" id="2" type="uint8" groupName="Entries" fixUsage="NumInGroup"/>
-        <group name="Entries">
+        <group name="Entries" id="2" dimensionType="groupSizeEncoding">
             <field name="TagGroup1" id="3" type="Symbol"/>
             <field name="TagGroup2" id="4" type="int64" fixUsage="int"/>
         </group>

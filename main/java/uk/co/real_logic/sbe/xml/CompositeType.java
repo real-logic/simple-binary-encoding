@@ -16,6 +16,8 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import uk.co.real_logic.sbe.ir.Token;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -185,6 +187,11 @@ public class CompositeType extends Type
 
         for (final EncodedDataType t : compositeList)
         {
+            if (t.getVariableLength())
+            {
+                return Token.VARIABLE_SIZE;
+            }
+
             size += t.size();
         }
 
@@ -199,5 +206,16 @@ public class CompositeType extends Type
     public List<EncodedDataType> getTypeList()
     {
         return compositeList;
+    }
+
+    public void makeDataFieldCompositeType()
+    {
+        for (final EncodedDataType edt : compositeList)
+        {
+            if ("varData".equals(edt.getName()))
+            {
+                edt.setVariableLength(true);
+            }
+        }
     }
 }

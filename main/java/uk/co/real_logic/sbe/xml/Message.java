@@ -26,7 +26,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +55,6 @@ public class Message
     private final String headerType;
     private final int calculatedBlockLength;
     private final Map<String, Type> typeByNameMap;
-    private long irIdCursor = 1;
 
     /**
      * Construct a new message from XML Schema.
@@ -93,8 +91,6 @@ public class Message
         int numGroupEncountered = 0, numDataEncountered = 0;
 
         List<Field> fieldList = new ArrayList<>();
-        Map<String, Field> entryCountFieldMap = new HashMap<>();  // used for holding entry count fields and matching up
-        Map<Integer, Field> lengthFieldMap = new HashMap<>();    // used for holding length fields and matching up
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
@@ -109,20 +105,13 @@ public class Message
                         handleError(node, "group specified after data specified");
                     }
 
-                    field = parseGroupField(list, fieldList, entryCountFieldMap, i);
+                    field = parseGroupField(list, i);
 
                     numGroupEncountered++;
                     break;
 
                 case "data":
-                    final String typeName = getAttributeValue(list.item(i), "type");
-                    final Type fieldType = typeByNameMap.get(typeName);
-                    if (fieldType == null)
-                    {
-                        handleError(list.item(i), "could not find type: " + typeName);
-                    }
-
-                    field = parseDataNode(list.item(i), lengthFieldMap, fieldType);
+                    field = parseDataField(list, i);
 
                     numDataEncountered++;
                     break;
@@ -133,7 +122,7 @@ public class Message
                         handleError(node, "field specified after group or data specified");
                     }
 
-                    field = parseField(list, entryCountFieldMap, lengthFieldMap, i);
+                    field = parseField(list, i);
                     break;
 
                 default:
@@ -143,31 +132,30 @@ public class Message
             fieldList.add(field);
         }
 
-        if (entryCountFieldMap.size() > 0)
-        {
-            handleWarning(node, "entry count field or fields not matched");
-        }
-
-        if (lengthFieldMap.size() > 0)
-        {
-            handleWarning(node, "length field or fields not matched");
-        }
-
         return fieldList;
     }
 
     private Field parseGroupField(final NodeList nodeList,
-                                  final List<Field> fieldList,
-                                  final Map<String, Field> entryCountFieldMap,
                                   final int nodeIndex) throws XPathExpressionException
     {
-        final Field field = parseGroupNode(nodeList.item(nodeIndex), entryCountFieldMap);
-
-        /* if we have a dangling dimension Field, then add it here to fieldList. */
-        if (field.getId() != Field.INVALID_ID)
+        final String dimensionTypeName = getAttributeValue(nodeList.item(nodeIndex), "dimensionType", "groupSizeEncoding");
+        final Type dimensionType = typeByNameMap.get(dimensionTypeName);
+        if (dimensionType == null)
         {
-            fieldList.add(field.getEntryCountField());
+            handleError(nodeList.item(nodeIndex), "could not find dimensionType: " + dimensionTypeName);
         }
+        else if (!(dimensionType instanceof CompositeType))
+        {
+            handleError(nodeList.item(nodeIndex), "dimenstionType is not composite type: " + dimensionTypeName);
+        }
+        // TODO: well formedness check on dimensionType
+
+        final Field field = new Field.Builder(getAttributeValue(nodeList.item(nodeIndex), "name"))
+            .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
+            .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
+            .blockLength(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "blockLength", "0")))
+            .dimensionType((CompositeType)dimensionType)
+            .build();
 
         field.setGroupFields(parseFieldsAndGroups(nodeList.item(nodeIndex))); // recursive call
 
@@ -175,8 +163,6 @@ public class Message
     }
 
     private Field parseField(final NodeList nodeList,
-                             final Map<String, Field> entryCountFieldMap,
-                             final Map<Integer, Field> lengthFieldMap,
                              final int nodeIndex)
     {
         final String typeName = getAttributeValue(nodeList.item(nodeIndex), "type");
@@ -186,137 +172,51 @@ public class Message
             handleError(nodeList.item(nodeIndex), "could not find type: " + typeName);
         }
 
-        final Field field = parseFieldNode(nodeList.item(nodeIndex), fieldType);
+        Field field = new Field.Builder(getAttributeValue(nodeList.item(nodeIndex), "name"))
+            .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
+            .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
+            .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
+            .semanticType(getMultiNamedAttributeValueOrNull(nodeList.item(nodeIndex), new String[] {"semanticType", "fixUsage"}))
+            .presence(Presence.lookup(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
+            .type(fieldType)
+            .build();
 
-        if (field.getGroupName() != null)
-        {
-            entryCountFieldMap.put(field.getGroupName(), field);
-            field.setIrId(irIdCursor++);
-        }
-
-        if (field.getRefId() != Field.INVALID_ID)
-        {
-            lengthFieldMap.put(Integer.valueOf(field.getRefId()), field);
-            field.setIrId(irIdCursor++);
-        }
+        field.validate(nodeList.item(nodeIndex));
 
         return field;
     }
 
-    /**
-     * parse and handle creating a Field that represents a repeating group
-     */
-    private Field parseGroupNode(final Node node, final Map<String, Field> entryCountFieldMap)
+    private Field parseDataField(final NodeList nodeList,
+                                 final int nodeIndex)
     {
-        Field field = new Field.Builder(getAttributeValue(node, "name"))
-            .description(getAttributeValueOrNull(node, "description"))
-            .id(Integer.parseInt(getAttributeValue(node, "id", Field.INVALID_ID_STRING)))
-            .blockLength(Integer.parseInt(getAttributeValue(node, "blockLength", "0")))
-            .dimensionType(XmlSchemaParser.getAttributeValue(node, "dimensionType", "groupSizeEncoding"))
-            .build();
-
-        Field entryCountField = entryCountFieldMap.get(field.getName());
-
-        if (entryCountField != null)                   /* separate field for entry count/dimensions */
+        final String typeName = getAttributeValue(nodeList.item(nodeIndex), "type");
+        final Type fieldType = typeByNameMap.get(typeName);
+        if (fieldType == null)
         {
-            /* wire up the cross references */
-            field.setEntryCountField(entryCountField);
-            entryCountField.setGroupField(field);
-
-            field.setIrId(irIdCursor++);
-            field.setIrRefId(entryCountField.getIrId());
-            entryCountField.setIrRefId(field.getIrId());
-
-            entryCountFieldMap.remove(field.getName()); // remove field so that it can't be reused at this level
+            handleError(nodeList.item(nodeIndex), "could not find type: " + typeName);
         }
-        else if (field.getId() != Field.INVALID_ID)    /* built-in field for entry count/dimensions */
+        else if (!(fieldType instanceof CompositeType))
         {
-            /* group has id set. Which signifies an embedded dimension set */
-            Field.Builder entryCountFieldBuilder = new Field.Builder("dimension" + field.getId());
-
-            entryCountFieldBuilder.id(field.getId());
-
-            Type type = typeByNameMap.get(field.getDimensionType());
-            if (type == null)
-            {
-                handleError(node, "could not find dimensionType: " + field.getDimensionType());
-            }
-            entryCountFieldBuilder.type(type);
-
-            entryCountField = entryCountFieldBuilder.build();
-
-            field.setEntryCountField(entryCountField);
-            entryCountField.setGroupField(field);
-
-            entryCountField.setIrId(irIdCursor++);
-            field.setIrId(irIdCursor++);
-            field.setIrRefId(entryCountField.getIrId());
-            entryCountField.setIrRefId(field.getIrId());
+            handleError(nodeList.item(nodeIndex), "data type is not composite type: " + typeName);
         }
         else
         {
-            handleError(node, "could not find entry count field for group: " + field.getName());
+            ((CompositeType)fieldType).makeDataFieldCompositeType();
         }
-        return field;
-    }
 
-    /**
-     * parse and handle creating a Field that represents a variable length field
-     */
-    private Field parseDataNode(final Node node, final Map<Integer, Field> lengthFieldMap, final Type type)
-    {
-        Field field = new Field.Builder(getAttributeValue(node, "name"))
-            .description(getAttributeValueOrNull(node, "description"))
-            .id(Integer.parseInt(getAttributeValue(node, "id")))
-            .type(type)
-            .offset(Integer.parseInt(getAttributeValue(node, "offset", "0")))
-            .semanticType(getMultiNamedAttributeValueOrNull(node, new String[] {"semanticType", "fixUsage"}))
-            .presence(Presence.lookup(getAttributeValueOrNull(node, "presence")))
+        // TODO: well formedness check on fieldType
+
+        final Field field = new Field.Builder(getAttributeValue(nodeList.item(nodeIndex), "name"))
+            .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
+            .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
+            .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
+            .semanticType(getMultiNamedAttributeValueOrNull(nodeList.item(nodeIndex), new String[] {"semanticType", "fixUsage"}))
+            .presence(Presence.lookup(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
+            .type(fieldType)
+            .variableLength(true)
             .build();
 
-        field.validate(node);
-
-        Field lengthField = lengthFieldMap.get(Integer.valueOf(field.getId()));
-
-        if (lengthField != null) /* separate explicit field for length */
-        {
-            field.setLengthField(lengthField);
-            lengthField.setDataField(field);
-
-            field.setIrId(irIdCursor++);
-            field.setIrRefId(lengthField.getIrId());
-            lengthField.setIrRefId(field.getIrId());
-
-            lengthFieldMap.remove(Integer.valueOf(field.getId())); // remove field so that it can be reused
-        }
-        else if (type instanceof CompositeType) /* embedded length in composite */
-        {
-            /* encoded types inside for "length" and "varData". We just let them go on and generate IR as normal. */
-        }
-        else
-        {
-            handleError(node, "could not find length field for data field: " + field.getName());
-        }
-        return field;
-    }
-
-    /**
-     * parse and handle creating a Field that represents a field
-     */
-    private Field parseFieldNode(final Node node, final Type type)
-    {
-        Field field = new Field.Builder(getAttributeValue(node, "name"))
-            .description(getAttributeValueOrNull(node, "description"))
-            .groupName(getAttributeValueOrNull(node, "groupName"))
-            .id(Integer.parseInt(getAttributeValue(node, "id")))
-            .type(type)
-            .offset(Integer.parseInt(getAttributeValue(node, "offset", "0")))
-            .semanticType(getMultiNamedAttributeValueOrNull(node, new String[] {"semanticType", "fixUsage"}))
-            .presence(Presence.lookup(getAttributeValueOrNull(node, "presence")))
-            .refId(Integer.parseInt(getAttributeValue(node, "refId", Field.INVALID_ID_STRING)))
-            .build();
-
-        field.validate(node);
+        field.validate(nodeList.item(nodeIndex));
 
         return field;
     }
@@ -349,11 +249,11 @@ public class Message
                 {
                     currOffset = field.getOffset();  // reset current offset to the one requested by the field specification
                 }
-                else if (field.getEntryCountField() != null && blockLength > 0)
+                else if (field.getDimensionType() != null && blockLength > 0)
                 {
                     currOffset = blockLength;        // reset current offset to the blockLength specified
                 }
-                else if (field.getLengthField() != null && blockLength > 0)
+                else if (field.getVariableLength() && blockLength > 0)
                 {
                     currOffset = blockLength;        // reset current offset to the blockLength specified
                 }
