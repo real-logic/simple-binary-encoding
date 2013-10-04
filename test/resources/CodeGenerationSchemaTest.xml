@@ -17,6 +17,6 @@
         </enum>
     </types>
     <message name="Car" id="1" description="Description of a Car">
-        <field name="Tag1" id="1" type="color"/>
+        <field name="bodyColor" id="1" type="color"/>
     </message>
 </messageSchema>

@@ -61,13 +61,38 @@ public class JavaGenerator implements CodeGenerator
 
     public void generateTypeStubs() throws IOException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        for (final List<Token> tokens : ir.types())
+        {
+            switch (tokens.get(0).signal())
+            {
+                case BEGIN_COMPOSITE:
+                    break;
+
+                case BEGIN_ENUM:
+                    generateEnum(tokens);
+                    break;
+
+                case BEGIN_SET:
+                    break;
+            }
+        }
     }
 
     public void generateMessageStubs() throws IOException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    private void generateEnum(final List<Token> tokens) throws IOException
+    {
+        final String enumName = JavaUtil.toUpperFirstChar(tokens.get(0).name());
+
+        try (final Writer out = outputManager.createOutput(enumName))
+        {
+
+        }
+    }
+
 
     private static void generateFileHeader(final Writer out, final String packageName)
         throws IOException
