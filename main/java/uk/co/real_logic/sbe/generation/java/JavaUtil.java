@@ -59,7 +59,17 @@ public class JavaUtil
     public static String toUpperFirstChar(final String str)
     {
         return Character.toUpperCase(str.charAt(0)) + str.substring(1);
+    }
 
+    /**
+     * Lowercase the first character of a given String.
+     *
+     * @param str to have the first character upper cased.
+     * @return a new String with the first character in uppercase.
+     */
+    public static String toLowerFirstChar(final String str)
+    {
+        return Character.toLowerCase(str.charAt(0)) + str.substring(1);
     }
 
     /**
