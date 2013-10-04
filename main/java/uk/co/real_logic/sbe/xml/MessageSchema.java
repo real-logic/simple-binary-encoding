@@ -53,6 +53,8 @@ public class MessageSchema
         this.byteOrder = lookupByteOrder(getAttributeValue(schemaNode, "byteOrder", "littleEndian"));
         this.typeByNameMap = typeByNameMap;
         this.messageByIdMap = messageByIdMap;
+
+        ((CompositeType)typeByNameMap.get(MESSAGE_HEADER_KEY)).checkForWellFormedMessageHeader(schemaNode);
     }
 
     /**

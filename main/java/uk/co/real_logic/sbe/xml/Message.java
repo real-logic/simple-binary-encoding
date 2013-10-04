@@ -148,7 +148,10 @@ public class Message
         {
             handleError(nodeList.item(nodeIndex), "dimenstionType is not composite type: " + dimensionTypeName);
         }
-        // TODO: well formedness check on dimensionType
+        else
+        {
+            ((CompositeType)dimensionType).checkForWellFormedGroupSizeEncoding(nodeList.item(nodeIndex));
+        }
 
         final Field field = new Field.Builder(getAttributeValue(nodeList.item(nodeIndex), "name"))
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
@@ -201,10 +204,9 @@ public class Message
         }
         else
         {
+            ((CompositeType)fieldType).checkForWellFormedVariableLengthDataEncoding(nodeList.item(nodeIndex));
             ((CompositeType)fieldType).makeDataFieldCompositeType();
         }
-
-        // TODO: well formedness check on fieldType
 
         final Field field = new Field.Builder(getAttributeValue(nodeList.item(nodeIndex), "name"))
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))

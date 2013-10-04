@@ -208,14 +208,75 @@ public class CompositeType extends Type
         return compositeList;
     }
 
+    /**
+     * Make this composite type, if it has a varData member, variable length
+     * by making the EncodedDataType with the name "varData" be variable length.
+     */
     public void makeDataFieldCompositeType()
     {
-        for (final EncodedDataType edt : compositeList)
+        EncodedDataType edt = compositeMap.get("varData");
+
+        if (edt != null)
         {
-            if ("varData".equals(edt.getName()))
-            {
-                edt.setVariableLength(true);
-            }
+            edt.setVariableLength(true);
+        }
+    }
+
+    /**
+     * Check the composite for being a well formed group size encoding. This means
+     * that there are the fields "blockLength" and "numInGroup" present.
+     *
+     * @param node of the XML for this composite
+     */
+    public void checkForWellFormedGroupSizeEncoding(final Node node)
+    {
+        if (compositeMap.get("blockLength") == null)
+        {
+            XmlSchemaParser.handleError(node, "composite for group size encoding must have \"blockLength\"");
+        }
+        if (compositeMap.get("numInGroup") == null)
+        {
+            XmlSchemaParser.handleError(node, "composite for group size encoding must have \"numInGroup\"");
+        }
+    }
+
+    /**
+     * Check the composite for being a well formed variable length data encoding. This means
+     * that there are the fields "length" and "varData" present.
+     *
+     * @param node of the XML for this composite
+     */
+    public void checkForWellFormedVariableLengthDataEncoding(final Node node)
+    {
+        if (compositeMap.get("length") == null)
+        {
+            XmlSchemaParser.handleError(node, "composite for variable length data encoding must have \"length\"");
+        }
+        if (compositeMap.get("varData") == null)
+        {
+            XmlSchemaParser.handleError(node, "composite for variable length data encoding must have \"varData\"");
+        }
+    }
+
+    /**
+     * Check the composite for being a well formed message header encoding. This means
+     * that there are the fields "blockLength", "templateId" and "version" present.
+     *
+     * @param node of the XML for this composite
+     */
+    public void checkForWellFormedMessageHeader(final Node node)
+    {
+        if (compositeMap.get("blockLength") == null)
+        {
+            XmlSchemaParser.handleError(node, "composite for message header must have \"blockLength\"");
+        }
+        if (compositeMap.get("templateId") == null)
+        {
+            XmlSchemaParser.handleError(node, "composite for message header must have \"templateId\"");
+        }
+        if (compositeMap.get("version") == null)
+        {
+            XmlSchemaParser.handleError(node, "composite for message header must have \"version\"");
         }
     }
 }
