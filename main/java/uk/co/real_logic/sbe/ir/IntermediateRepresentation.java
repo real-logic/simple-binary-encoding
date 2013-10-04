@@ -93,6 +93,16 @@ public class IntermediateRepresentation
     }
 
     /**
+     * Get the {@link Collection} of types in for this schema.
+     *
+     * @return the {@link Collection} of types in for this schema.
+     */
+    public Collection<List<Token>> types()
+    {
+        return typesByNameMap.values();
+    }
+
+    /**
      * Get the package name to be used for generated code.
      *
      * @return the package name to be used for generated code.

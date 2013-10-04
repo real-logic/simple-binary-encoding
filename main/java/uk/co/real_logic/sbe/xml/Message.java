@@ -69,8 +69,7 @@ public class Message
         name = getAttributeValue(messageNode, "name");                                      // required
         description = getAttributeValueOrNull(messageNode, "description");                  // optional
         blockLength = Integer.parseInt(getAttributeValue(messageNode, "blockLength", "0")); // 0 means not set
-        semanticType = getMultiNamedAttributeValueOrNull(messageNode,
-                                                         new String[]{"semanticType", "fixMsgType"});  // optional
+        semanticType = getAttributeValueOrNull(messageNode, "semanticType");                // optional
         headerType = getAttributeValue(messageNode, "headerType", "messageHeader");         // has default
         this.typeByNameMap = typeByNameMap;
 
@@ -179,7 +178,7 @@ public class Message
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
-            .semanticType(getMultiNamedAttributeValueOrNull(nodeList.item(nodeIndex), new String[] {"semanticType", "fixUsage"}))
+            .semanticType(getAttributeValueOrNull(nodeList.item(nodeIndex), "semanticType"))
             .presence(Presence.lookup(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
             .type(fieldType)
             .build();

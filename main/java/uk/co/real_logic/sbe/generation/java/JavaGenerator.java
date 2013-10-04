@@ -48,12 +48,12 @@ public class JavaGenerator implements CodeGenerator
     {
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_VISITOR))
         {
-            outputFileHeader(out, ir.getPackageName());
-            outputClassDeclaration(out, MESSAGE_HEADER_VISITOR);
-            outputBufferConfig(out);
+            generateFileHeader(out, ir.getPackageName());
+            generateClassDeclaration(out, MESSAGE_HEADER_VISITOR);
+            generateBufferConfig(out);
 
             final List<Token> tokens = ir.getHeader();
-            outputPrimitiveEncodings(out, tokens.subList(1, tokens.size() - 1));
+            generatePrimitiveEncodings(out, tokens.subList(1, tokens.size() - 1));
 
             out.append('}');
         }
@@ -61,7 +61,21 @@ public class JavaGenerator implements CodeGenerator
 
     public void generateTypeStubs() throws IOException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        for (final List<Token> tokens : ir.types())
+        {
+            switch (tokens.get(0).signal())
+            {
+                case BEGIN_COMPOSITE:
+                    break;
+
+                case BEGIN_ENUM:
+                    generateEnum(tokens);
+                    break;
+
+                case BEGIN_SET:
+                    break;
+            }
+        }
     }
 
     public void generateMessageStubs() throws IOException
@@ -69,7 +83,18 @@ public class JavaGenerator implements CodeGenerator
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    private static void outputFileHeader(final Writer out, final String packageName)
+    private void generateEnum(final List<Token> tokens) throws IOException
+    {
+        final String enumName = JavaUtil.toUpperFirstChar(tokens.get(0).name());
+
+        try (final Writer out = outputManager.createOutput(enumName))
+        {
+
+        }
+    }
+
+
+    private static void generateFileHeader(final Writer out, final String packageName)
         throws IOException
     {
         final String str = String.format(
@@ -78,16 +103,17 @@ public class JavaGenerator implements CodeGenerator
             "import uk.co.real_logic.sbe.generation.java.*;\n\n",
             packageName
         );
+
         out.append(str);
     }
 
-    private static void outputClassDeclaration(final Writer out, final String className)
+    private static void generateClassDeclaration(final Writer out, final String className)
         throws IOException
     {
         out.append("public class ").append(className).append("\n{\n");
     }
 
-    private void outputPrimitiveEncodings(final Writer out, final List<Token> tokens)
+    private void generatePrimitiveEncodings(final Writer out, final List<Token> tokens)
         throws IOException
     {
         for (final Token token : tokens)
@@ -123,7 +149,7 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private void outputBufferConfig(final Writer out) throws IOException
+    private void generateBufferConfig(final Writer out) throws IOException
     {
         out.append("    private DirectBuffer buffer;\n");
         out.append("    private int offset;\n\n");

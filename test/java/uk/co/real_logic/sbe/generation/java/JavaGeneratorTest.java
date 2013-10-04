@@ -25,14 +25,17 @@ import uk.co.real_logic.sbe.xml.MessageSchema;
 
 import java.io.StringWriter;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class JavaGeneratorTest
 {
+    private final StringWriter stringWriter = new StringWriter();
     private final OutputManager outputManager = mock(OutputManager.class);
     private IntermediateRepresentation ir;
+
 
     @Before
     public void setUp() throws Exception
@@ -46,12 +49,23 @@ public class JavaGeneratorTest
     @Test
     public void shouldGenerateMessageHeaderStub() throws Exception
     {
-        final StringWriter stringWriter = new StringWriter();
         when(outputManager.createOutput(JavaGenerator.MESSAGE_HEADER_VISITOR)).thenReturn(stringWriter);
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
 
         javaGenerator.generateMessageHeaderStub();
+
+        System.out.println("stringWriter = " + stringWriter);
+    }
+    @Test
+    public void shouldGenerateTypeStubs() throws Exception
+    {
+        final StringWriter stringWriter = new StringWriter();
+        when(outputManager.createOutput(anyString())).thenReturn(stringWriter);
+
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
+
+        javaGenerator.generateTypeStubs();
 
         System.out.println("stringWriter = " + stringWriter);
     }
