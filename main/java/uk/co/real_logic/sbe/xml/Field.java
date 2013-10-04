@@ -79,11 +79,11 @@ public class Field
             // must be present or must be on the type. If on both, they must agree.
             if (semanticType == null && type.getSemanticType() == null)
             {
-                handleError(node, "Missing semanticType/fixUsage on type and field: " + name);
+                handleError(node, "Missing semanticType on type and field: " + name);
             }
             else if (semanticType != null && type.getSemanticType() != null && !semanticType.equals(type.getSemanticType()))
             {
-                handleError(node, "Mismatched semanticType/fixUsage on type and field: " + name);
+                handleError(node, "Mismatched semanticType on type and field: " + name);
             }
         }
     }
@@ -189,7 +189,6 @@ public class Field
         private int offset;
         private String semanticType;
         private Presence presence;
-        private int refId;
         private int blockLength;
         private CompositeType dimensionType;
         private boolean variableLength;
