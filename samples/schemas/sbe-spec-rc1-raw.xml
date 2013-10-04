@@ -1,15 +1,15 @@
 <message name="UserRequest" id="4" description="Demonstrates raw data usage">
-    <field name="UserRequestId" id="923" type="string14" fixUsage="String"/>
-    <field name="UserRequestType" id="924" type="uint8" fixUsage="int"/>
-    <field name="UserName" id="553" type="string14" fixUsage="String"/>
-    <field name="Password" id="554" type="string14" fixUsage="String"/>
-    <field name="NewPassword" id="925" type="string14" fixUsage="String"/>
+    <field name="UserRequestId" id="923" type="string14" semanticType="String"/>
+    <field name="UserRequestType" id="924" type="uint8" semanticType="int"/>
+    <field name="UserName" id="553" type="string14" semanticType="String"/>
+    <field name="Password" id="554" type="string14" semanticType="String"/>
+    <field name="NewPassword" id="925" type="string14" semanticType="String"/>
     <field name="EncryptedPasswordMethod" id="1400" type="uint8" description="This should be an enum but values undefined."
-           fixUsage="int"/>
-    <field name="EncryptedPasswordLen" id="1401" type="uint8" fixUsage="Length"/>
-    <field name="EncryptedNewPasswordLen" id="1403" type="uint8" fixUsage="Length"/>
-    <field name="RawDataLength" id="95" type="uint8" fixUsage="Length"/>
-    <data name="EncryptedPassword" id="1402" type="rawData" fixUsage="data"/>
-    <data name="EncryptedNewPassword" id="1404" type="rawData" fixUsage="data"/>
-    <data name="RawData" id="96" type="rawData" fixUsage="data"/>
+           semanticType="int"/>
+    <field name="EncryptedPasswordLen" id="1401" type="uint8" semanticType="Length"/>
+    <field name="EncryptedNewPasswordLen" id="1403" type="uint8" semanticType="Length"/>
+    <field name="RawDataLength" id="95" type="uint8" semanticType="Length"/>
+    <data name="EncryptedPassword" id="1402" type="rawData" semanticType="data"/>
+    <data name="EncryptedNewPassword" id="1404" type="rawData" semanticType="data"/>
+    <data name="RawData" id="96" type="rawData" semanticType="data"/>
 </message>

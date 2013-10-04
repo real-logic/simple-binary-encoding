@@ -8,8 +8,8 @@
 
     <types>
         <!-- Simple field types -->
-        <type name="Boolean" primitiveTypeType="Boolean" fixUsage="Boolean"/>
-        <type name="Int64" primitiveTypeType="Int64" fixUsage="int"/>
+        <type name="Boolean" primitiveTypeType="Boolean" semanticType="Boolean"/>
+        <type name="Int64" primitiveTypeType="Int64" semanticType="int"/>
         <enum name="Status" encodingType="charEnum">
             <validValue name="Reject" description="Order Rejection">8</validValue>
             <validValue name="Create" description="Order Creation">0</validValue>
@@ -20,7 +20,7 @@
             <validValue name="TradeCancel" description="">H</validValue>
             <validValue name="TradeModify" description="">G</validValue>
         </enum>
-        <composite name="decimal32" fixUsage="Price">
+        <composite name="decimal32" semanticType="Price">
             <type name="mantissa" primitiveType="int32"/>
             <type name="exponent" primitiveType="int8" presence="constant">-4</type>
         </composite>
@@ -28,8 +28,8 @@
             <validValue name="Buy" description="Buy">1</validValue>
             <validValue name="Sell" description="Sell">2</validValue>
         </enum>
-        <type name="Int32" primitiveType="Int32" fixUsage="int"/>
-        <type name="timestamp" primitiveType="Int64" timeUnit="nanosecond" fixUsage="UTCTimestamp"/>
+        <type name="Int32" primitiveType="Int32" semanticType="int"/>
+        <type name="timestamp" primitiveType="Int64" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
     </types>
 
     <sbe:message name="MDOE" id="1" description="Order Entry Data for Book Reconstruction and MD generation">

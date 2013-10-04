@@ -4,8 +4,8 @@
                description="Unit Test"
                byteOrder="littleEndian">
     <types>
-        <type name="Symbol" description="Symbol" length="20" primitiveType="char" fixUsage="char"/>
-        <composite name="messageHeader" description="Template ID and length of message root" fixUsage="Length">
+        <type name="Symbol" description="Symbol" length="20" primitiveType="char" semanticType="char"/>
+        <composite name="messageHeader" description="Template ID and length of message root" semanticType="Length">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint8"/>
@@ -13,6 +13,6 @@
         </composite>
     </types>
     <message name="TestMessage50001" id="50001" description="TestMessage" blockLength="16">
-        <field name="Tag40001" id="40001" type="uint32" fixUsage="int"/>
+        <field name="Tag40001" id="40001" type="uint32" semanticType="int"/>
     </message>
 </messageSchema>

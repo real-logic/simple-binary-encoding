@@ -4,13 +4,13 @@
                description="Unit Test"
                byteOrder="littleEndian">
     <types>
-        <enum name="NullBoolean" encodingType="uint8" nullValue="255" fixUsage="Boolean">
+        <enum name="NullBoolean" encodingType="uint8" nullValue="255" semanticType="Boolean">
             <validValue name="false">0</validValue>
             <validValue name="true">1</validValue>
         </enum>
         <type name="ConstButNoValue" primitiveType="char" presence="constant"></type>
     </types>
     <message name="Message1" id="1">
-        <field name="word!" id="10" type="uint32" fixUsage="int"/>
+        <field name="word!" id="10" type="uint32" semanticType="int"/>
     </message>
 </messageSchema>

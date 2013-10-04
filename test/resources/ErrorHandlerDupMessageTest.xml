@@ -7,10 +7,10 @@
         <type name="TypeToTest" primitiveType="char"/>
     </types>
     <message name="Message1" id="1">
-        <field name="field" id="10" type="TypeToTest" fixUsage="int"/>
+        <field name="field" id="10" type="TypeToTest" semanticType="int"/>
     </message>
     <!-- id is repeated in this message -->
     <message name="AnotherMessageWithId1" id="1">
-        <field name="field" id="10" type="TypeToTest" fixUsage="int"/>
+        <field name="field" id="10" type="TypeToTest" semanticType="int"/>
     </message>
 </messageSchema>

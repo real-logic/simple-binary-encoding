@@ -1,12 +1,12 @@
 <message name="ListOrder" id="2" description="Simplified NewOrderList. Demonstrates repeating group">
-    <field name="ListID" id="66" type="string14" fixUsage="String"/>
-    <field name="BidType" id="394" type="uint8" fixUsage="int"/>
-    <field name="NoOrders" id="73" type="uint8" groupName="ListOrdGrp" fixUsage="NumInGroup"/>
+    <field name="ListID" id="66" type="string14" semanticType="String"/>
+    <field name="BidType" id="394" type="uint8" semanticType="int"/>
+    <field name="NoOrders" id="73" type="uint8" groupName="ListOrdGrp" semanticType="NumInGroup"/>
     <group name="ListOrdGrp">
-        <field name="ClOrdID" id="11" type="string14" fixUsage="String"/>
-        <field name="ListSeqNo" id="67" type="uint32" fixUsage="int"/>
-        <field name="Symbol" id="55" type="string8" fixUsage="String"/>
-        <field name="Side" id="54" type="char" fixUsage="char"/>
-        <field name="OrderQty" id="38" type="intQty32" fixUsage="Qty"/>
+        <field name="ClOrdID" id="11" type="string14" semanticType="String"/>
+        <field name="ListSeqNo" id="67" type="uint32" semanticType="int"/>
+        <field name="Symbol" id="55" type="string8" semanticType="String"/>
+        <field name="Side" id="54" type="char" semanticType="char"/>
+        <field name="OrderQty" id="38" type="intQty32" semanticType="Qty"/>
     </group>
 </message>

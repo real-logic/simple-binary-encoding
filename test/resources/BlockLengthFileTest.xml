@@ -4,13 +4,13 @@
                description="Unit Test"
                byteOrder="littleEndian">
     <types>
-        <composite name="messageHeader" description="Template ID and length of message root" fixUsage="Length">
+        <composite name="messageHeader" description="Template ID and length of message root" semanticType="Length">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>
-        <composite name="groupSize" fixUsage="NumInGroup">
+        <composite name="groupSize" semanticType="NumInGroup">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="numInGroup" primitiveType="uint8"/>
         </composite>
@@ -24,8 +24,8 @@
     <message name="Message1" id="1">
         <field name="header" id="41" type="messageHeader"/>
         <group name="Group" id="42" dimensionType="groupSize">
-            <field name="F1" id="10" type="uint32" fixUsage="int"/>
-            <field name="F2" id="11" type="uint64" fixUsage="int"/>
+            <field name="F1" id="10" type="uint32" semanticType="int"/>
+            <field name="F2" id="11" type="uint64" semanticType="int"/>
         </group>
     </message>
 
@@ -33,8 +33,8 @@
     <message name="Message2" id="2" blockLength="64">
         <field name="header" id="41" type="messageHeader"/>
         <group name="Group" id="42" dimensionType="groupSize">
-            <field name="F1" id="10" type="uint32" fixUsage="int"/>
-            <field name="F2" id="11" type="uint64" fixUsage="int"/>
+            <field name="F1" id="10" type="uint32" semanticType="int"/>
+            <field name="F2" id="11" type="uint64" semanticType="int"/>
         </group>
     </message>
 
@@ -42,14 +42,14 @@
     <message name="Message3" id="3" blockLength="64">
         <field name="header" id="41" type="messageHeader"/>
         <group name="Group" id="42" dimensionType="groupSize" blockLength="16">
-            <field name="F1" id="10" type="uint32" fixUsage="int"/>
-            <field name="F2" id="11" type="uint64" fixUsage="int"/>
+            <field name="F1" id="10" type="uint32" semanticType="int"/>
+            <field name="F2" id="11" type="uint64" semanticType="int"/>
         </group>
     </message>
 
     <!-- blockLength set for message with data -->
     <message name="Message4" id="4" blockLength="64">
         <field name="header" id="41" type="messageHeader"/>
-        <data type="varDataEncoding" name="EncryptedNewPassword" id="1404" fixUsage="data"/>
+        <data type="varDataEncoding" name="EncryptedNewPassword" id="1404" semanticType="data"/>
     </message>
 </messageSchema>

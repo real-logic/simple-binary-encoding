@@ -29,7 +29,7 @@
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>
-        <composite name="intQty32" fixUsage="Qty">
+        <composite name="intQty32" semanticType="Qty">
             <type name="mantissa" primitiveType="int32"/>
             <type name="exponent" primitiveType="int8" presence="constant">0</type>
         </composite>

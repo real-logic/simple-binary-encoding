@@ -9,6 +9,6 @@
         <type name="TypeToTest" primitiveType="uint8"/>
     </types>
     <message name="Message1" id="1">
-        <field name="field" id="10" type="TypeToTest" fixUsage="int"/>
+        <field name="field" id="10" type="TypeToTest" semanticType="int"/>
     </message>
 </messageSchema>
