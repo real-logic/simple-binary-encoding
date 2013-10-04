@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.util;
+package uk.co.real_logic.sbe.generation.java;
 
 import sun.misc.Unsafe;
+import uk.co.real_logic.sbe.util.BitUtil;
+import uk.co.real_logic.sbe.util.Verify;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

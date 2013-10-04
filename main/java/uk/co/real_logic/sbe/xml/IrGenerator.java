@@ -17,8 +17,8 @@
 package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.ir.Constraints;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
-import uk.co.real_logic.sbe.ir.Metadata;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class to hold all the state while generating the {@link IntermediateRepresentation}.
+ * Class to hold the state while generating the {@link IntermediateRepresentation}.
  */
 public class IrGenerator
 {
@@ -83,26 +83,17 @@ public class IrGenerator
 
     private void addMessageSignal(final Message msg, final Signal signal)
     {
-        tokenList.add(new Token(signal,
-                                new Metadata.Builder(msg.getName())
-                                .schemaId(msg.getId())
-                                .build()));
+        tokenList.add(new Token(signal, msg.getName(), msg.getId()));
     }
 
     private void addTypeSignal(final Type type, final Signal signal)
     {
-        tokenList.add(new Token(signal,
-                                new Metadata.Builder(type.getName())
-                                .build()));
+        tokenList.add(new Token(signal, type.getName(), Token.INVALID_ID));
     }
 
     private void addFieldSignal(final Field field, final Signal signal)
     {
-        Metadata.Builder builder = new Metadata.Builder(field.getName());
-
-        builder.schemaId(field.getId());
-
-        tokenList.add(new Token(signal, builder.build()));
+        tokenList.add(new Token(signal, field.getName(), field.getId()));
     }
 
     private void addAllFields(final List<Field> fieldList)
@@ -158,7 +149,7 @@ public class IrGenerator
         {
             add(edt, offset);
 
-            offset += edt.size(); // bump offset for next type in list
+            offset += edt.size();
         }
 
         addTypeSignal(type, Signal.END_COMPOSITE);
@@ -167,7 +158,7 @@ public class IrGenerator
     private void add(final EnumType type, final int offset)
     {
         PrimitiveType encodingType = type.getEncodingType();
-        Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
+        Constraints.Builder builder = new Constraints.Builder();
 
         addTypeSignal(type, Signal.BEGIN_ENUM);
 
@@ -176,7 +167,14 @@ public class IrGenerator
             builder.nullValue(encodingType.nullValue());
         }
 
-        tokenList.add(new Token(Signal.ENCODING, encodingType, encodingType.size(), offset, byteOrder, builder.build()));
+        tokenList.add(new Token(Signal.ENCODING,
+                                encodingType.primitiveName(),
+                                Token.INVALID_ID,
+                                encodingType,
+                                encodingType.size(),
+                                offset,
+                                byteOrder,
+                                builder.build()));
 
         for (final EnumType.ValidValue v : type.getValidValues())
         {
@@ -189,7 +187,9 @@ public class IrGenerator
     private void add(final EnumType.ValidValue value)
     {
         tokenList.add(new Token(Signal.VALID_VALUE,
-                                new Metadata.Builder(value.getName())
+                                value.getName(),
+                                Token.INVALID_ID,
+                                new Constraints.Builder()
                                 .constValue(value.getPrimitiveValue())
                                 .build()));
     }
@@ -197,11 +197,17 @@ public class IrGenerator
     private void add(final SetType type, final int offset)
     {
         PrimitiveType encodingType = type.getEncodingType();
-        Metadata.Builder builder = new Metadata.Builder(encodingType.primitiveName());
 
         addTypeSignal(type, Signal.BEGIN_SET);
 
-        tokenList.add(new Token(Signal.ENCODING, encodingType, encodingType.size(), offset, byteOrder, builder.build()));
+        tokenList.add(new Token(Signal.ENCODING,
+                                encodingType.primitiveName(),
+                                Token.INVALID_ID,
+                                encodingType,
+                                encodingType.size(),
+                                offset,
+                                byteOrder,
+                                new Constraints()));
 
         for (final SetType.Choice choice : type.getChoices())
         {
@@ -214,14 +220,16 @@ public class IrGenerator
     private void add(final SetType.Choice value)
     {
         tokenList.add(new Token(Signal.CHOICE,
-                                new Metadata.Builder(value.getName())
+                                value.getName(),
+                                Token.INVALID_ID,
+                                new Constraints.Builder()
                                 .constValue(value.getPrimitiveValue())
                                 .build()));
     }
 
     private void add(final EncodedDataType type, final int offset)
     {
-        Metadata.Builder builder = new Metadata.Builder(type.getName());
+        Constraints.Builder builder = new Constraints.Builder();
 
         switch (type.getPresence())
         {
@@ -241,6 +249,13 @@ public class IrGenerator
                 break;
         }
 
-        tokenList.add(new Token(Signal.ENCODING, type.getPrimitiveType(), type.size(), offset, byteOrder, builder.build()));
+        tokenList.add(new Token(Signal.ENCODING,
+                                type.getName(),
+                                Token.INVALID_ID,
+                                type.getPrimitiveType(),
+                                type.size(),
+                                offset,
+                                byteOrder,
+                                builder.build()));
     }
 }

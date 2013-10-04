@@ -28,9 +28,11 @@ public class IntermediateRepresentation
     private final String packageName;
     private final List<Token> headerTokens;
     private final Map<Long, List<Token>> messagesByIdMap = new HashMap<>();
+    private final Map<String, List<Token>> typesByNameMap = new HashMap<>();
 
     /**
      * Create a new IR container taking a defensive copy of the header {@link Token}s passed.
+     *
      * @param packageName that should be applied to generated code.
      * @param headerTokens representing the message header.
      */
@@ -63,6 +65,8 @@ public class IntermediateRepresentation
     {
         Verify.notNull(messageTokens, "messageTokens");
 
+        captureTypes(messageTokens);
+
         messagesByIdMap.put(Long.valueOf(messageId), Collections.unmodifiableList(new ArrayList<>(messageTokens)));
     }
 
@@ -70,11 +74,22 @@ public class IntermediateRepresentation
      * Get the message for a given identifier.
      *
      * @param messageId to lookup.
-     * @return the List of {@link Token}s representing the message or null if the id does not exist.
+     * @return the List of {@link Token}s representing the message or null if the id is not found.
      */
     public List<Token> getMessage(final long messageId)
     {
         return messagesByIdMap.get(Long.valueOf(messageId));
+    }
+
+    /**
+     * Get the type representation for a given type name.
+     *
+     * @param name of type to lookup.
+     * @return the List of {@link Token}s representing the type or null if the name is not found.
+     */
+    public List<Token> getType(final String name)
+    {
+        return typesByNameMap.get(name);
     }
 
     /**
@@ -85,5 +100,44 @@ public class IntermediateRepresentation
     public String getPackageName()
     {
         return packageName;
+    }
+
+    private void captureTypes(final List<Token> tokens)
+    {
+        for (int i = 0, size = tokens.size(); i < size; i++)
+        {
+            switch (tokens.get(i).signal())
+            {
+                case BEGIN_COMPOSITE:
+                    i = captureType(tokens, i, Signal.END_COMPOSITE);
+                    break;
+
+                case BEGIN_ENUM:
+                    i = captureType(tokens, i, Signal.END_ENUM);
+                    break;
+
+                case BEGIN_SET:
+                    i = captureType(tokens, i, Signal.END_SET);
+                    break;
+            }
+        }
+    }
+
+    private int captureType(final List<Token> tokens, int index, final Signal endSignal)
+    {
+        final List<Token> typeTokens = new ArrayList<>();
+
+        Token token = tokens.get(index);
+        typeTokens.add(token);
+        do
+        {
+            token = tokens.get(++index);
+            typeTokens.add(token);
+        }
+        while (endSignal != token.signal());
+
+        typesByNameMap.put(tokens.get(0).name(), Collections.unmodifiableList(typeTokens));
+
+        return index;
     }
 }

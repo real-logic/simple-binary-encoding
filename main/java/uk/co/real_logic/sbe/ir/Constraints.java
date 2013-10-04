@@ -16,34 +16,30 @@
 package uk.co.real_logic.sbe.ir;
 
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.util.Verify;
 
 /**
- * Metadata describing an {@link Token}
+ * Constraints describing an {@link Token}
  */
-public class Metadata
+public class Constraints
 {
-    /** Invalid ID value. */
-    public static final long INVALID_ID = -1;
-
-    private final String name;
-    private final long schemaId;
     private final PrimitiveValue minValue;
     private final PrimitiveValue maxValue;
     private final PrimitiveValue nullValue;
     private final PrimitiveValue constValue;
 
-    public Metadata(final String name,
-                    final long schemaId,
-                    final PrimitiveValue minValue,
-                    final PrimitiveValue maxValue,
-                    final PrimitiveValue nullValue,
-                    final PrimitiveValue constValue)
+    public Constraints()
     {
-        Verify.notNull(name, "name");
+        minValue = null;
+        maxValue = null;
+        nullValue = null;
+        constValue = null;
+    }
 
-        this.name = name;
-        this.schemaId = schemaId;
+    public Constraints(final PrimitiveValue minValue,
+                       final PrimitiveValue maxValue,
+                       final PrimitiveValue nullValue,
+                       final PrimitiveValue constValue)
+    {
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.nullValue = nullValue;
@@ -51,31 +47,11 @@ public class Metadata
     }
 
     /**
-     * Return the name of the token
-     *
-     * @return name of the token
-     */
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * Return the ID of the token assigned by the specification
-     *
-     * @return ID of the token assigned by the specification
-     */
-    public long getSchemaId()
-    {
-        return schemaId;
-    }
-
-    /**
      * Return the minValue for the token or null if not set.
      *
      * @return the minValue for the token or null if not set.
      */
-    public PrimitiveValue getMinValue()
+    public PrimitiveValue minValue()
     {
         return minValue;
     }
@@ -85,7 +61,7 @@ public class Metadata
      *
      * @return the maxValue for the token or null if not set.
      */
-    public PrimitiveValue getMaxValue()
+    public PrimitiveValue maxValue()
     {
         return maxValue;
     }
@@ -95,7 +71,7 @@ public class Metadata
      *
      * @return the nullValue for the token or null if not set.
      */
-    public PrimitiveValue getNullValue()
+    public PrimitiveValue nullValue()
     {
         return nullValue;
     }
@@ -105,17 +81,15 @@ public class Metadata
      *
      * @return the constant value for the token or null if not set.
      */
-    public PrimitiveValue getConstValue()
+    public PrimitiveValue constValue()
     {
         return constValue;
     }
 
     public String toString()
     {
-        return "Metadata{" +
-            "name='" + name + '\'' +
-            ", schemaId=" + schemaId +
-            ", minValue=" + minValue +
+        return "Constraints{" +
+            "minValue=" + minValue +
             ", maxValue=" + maxValue +
             ", nullValue=" + nullValue +
             ", constValue=" + constValue +
@@ -123,31 +97,21 @@ public class Metadata
     }
 
     /**
-     * Builder to make {@link Metadata} easier to create.
+     * Builder to make {@link Constraints} easier to create.
      */
     public static class Builder
     {
-        private String name;
-        private long schemaId;
         private PrimitiveValue minValue;
         private PrimitiveValue maxValue;
         private PrimitiveValue nullValue;
         private PrimitiveValue constValue;
 
-        public Builder(final String name)
+        public Builder()
         {
-            this.name = name;
-            schemaId = Metadata.INVALID_ID;
             minValue = null;
             maxValue = null;
             nullValue = null;
             constValue = null;
-        }
-
-        public Builder schemaId(final long schemaId)
-        {
-            this.schemaId = schemaId;
-            return this;
         }
 
         public Builder minValue(final PrimitiveValue minValue)
@@ -174,9 +138,9 @@ public class Metadata
             return this;
         }
 
-        public Metadata build()
+        public Constraints build()
         {
-            return new Metadata(name, schemaId, minValue, maxValue, nullValue, constValue);
+            return new Constraints(minValue, maxValue, nullValue, constValue);
         }
     }
 }

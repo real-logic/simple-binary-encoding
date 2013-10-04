@@ -46,54 +46,54 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(tokens.size()), is(valueOf(6)));
 
         /* assert all elements of node 0 */
-        assertThat(tokens.get(0).getSignal(), is(Signal.BEGIN_COMPOSITE));
-        assertThat(tokens.get(0).getMetadata().getName(), is("messageHeader"));
-        assertThat(valueOf(tokens.get(0).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
+        assertThat(tokens.get(0).signal(), is(Signal.BEGIN_COMPOSITE));
+        assertThat(tokens.get(0).name(), is("messageHeader"));
+        assertThat(valueOf(tokens.get(0).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(0).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(0).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(0).offset()), is(valueOf(0)));
 
         /* assert all elements of node 1 */
-        assertThat(tokens.get(1).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(1).getMetadata().getName(), is("blockLength"));
-        assertThat(tokens.get(1).getPrimitiveType(), is(PrimitiveType.UINT16));
-        assertThat(valueOf(tokens.get(1).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
+        assertThat(tokens.get(1).signal(), is(Signal.ENCODING));
+        assertThat(tokens.get(1).name(), is("blockLength"));
+        assertThat(tokens.get(1).primitiveType(), is(PrimitiveType.UINT16));
+        assertThat(valueOf(tokens.get(1).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(1).size()), is(valueOf(2)));
-        assertThat(valueOf(tokens.get(1).getOffset()), is(valueOf(0)));
-        assertThat(tokens.get(1).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(valueOf(tokens.get(1).offset()), is(valueOf(0)));
+        assertThat(tokens.get(1).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 2 */
-        assertThat(tokens.get(2).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(2).getMetadata().getName(), is("templateId"));
-        assertThat(tokens.get(2).getPrimitiveType(), is(PrimitiveType.UINT16));
-        assertThat(valueOf(tokens.get(2).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
+        assertThat(tokens.get(2).signal(), is(Signal.ENCODING));
+        assertThat(tokens.get(2).name(), is("templateId"));
+        assertThat(tokens.get(2).primitiveType(), is(PrimitiveType.UINT16));
+        assertThat(valueOf(tokens.get(2).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(2).size()), is(valueOf(2)));
-        assertThat(valueOf(tokens.get(2).getOffset()), is(valueOf(2)));
-        assertThat(tokens.get(2).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(valueOf(tokens.get(2).offset()), is(valueOf(2)));
+        assertThat(tokens.get(2).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 3 */
-        assertThat(tokens.get(3).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(3).getMetadata().getName(), is("version"));
-        assertThat(tokens.get(3).getPrimitiveType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(tokens.get(3).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
+        assertThat(tokens.get(3).signal(), is(Signal.ENCODING));
+        assertThat(tokens.get(3).name(), is("version"));
+        assertThat(tokens.get(3).primitiveType(), is(PrimitiveType.UINT8));
+        assertThat(valueOf(tokens.get(3).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(3).size()), is(valueOf(1)));
-        assertThat(valueOf(tokens.get(3).getOffset()), is(valueOf(4)));
-        assertThat(tokens.get(3).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(valueOf(tokens.get(3).offset()), is(valueOf(4)));
+        assertThat(tokens.get(3).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 4 */
-        assertThat(tokens.get(4).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(4).getMetadata().getName(), is("reserved"));
-        assertThat(tokens.get(4).getPrimitiveType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(tokens.get(4).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
+        assertThat(tokens.get(4).signal(), is(Signal.ENCODING));
+        assertThat(tokens.get(4).name(), is("reserved"));
+        assertThat(tokens.get(4).primitiveType(), is(PrimitiveType.UINT8));
+        assertThat(valueOf(tokens.get(4).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(4).size()), is(valueOf(1)));
-        assertThat(valueOf(tokens.get(4).getOffset()), is(valueOf(5)));
-        assertThat(tokens.get(4).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(valueOf(tokens.get(4).offset()), is(valueOf(5)));
+        assertThat(tokens.get(4).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 5 */
-        assertThat(tokens.get(5).getSignal(), is(Signal.END_COMPOSITE));
-        assertThat(tokens.get(5).getMetadata().getName(), is("messageHeader"));
-        assertThat(valueOf(tokens.get(5).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
+        assertThat(tokens.get(5).signal(), is(Signal.END_COMPOSITE));
+        assertThat(tokens.get(5).name(), is("messageHeader"));
+        assertThat(valueOf(tokens.get(5).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(5).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(5).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(5).offset()), is(valueOf(0)));
     }
 
     @Test
@@ -109,41 +109,41 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(tokens.size()), is(valueOf(5)));
 
         /* assert all elements of node 0 */
-        assertThat(tokens.get(0).getSignal(), is(Signal.BEGIN_MESSAGE));
-        assertThat(tokens.get(0).getMetadata().getName(), is("TestMessage50001"));
-        assertThat(valueOf(tokens.get(0).getMetadata().getSchemaId()), is(valueOf(50001L)));
+        assertThat(tokens.get(0).signal(), is(Signal.BEGIN_MESSAGE));
+        assertThat(tokens.get(0).name(), is("TestMessage50001"));
+        assertThat(valueOf(tokens.get(0).schemaId()), is(valueOf(50001L)));
         assertThat(valueOf(tokens.get(0).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(0).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(0).offset()), is(valueOf(0)));
 
         /* assert all elements of node 1 */
-        assertThat(tokens.get(1).getSignal(), is(Signal.BEGIN_FIELD));
-        assertThat(tokens.get(1).getMetadata().getName(), is("Tag40001"));
-        assertThat(valueOf(tokens.get(1).getMetadata().getSchemaId()), is(valueOf(40001L)));
+        assertThat(tokens.get(1).signal(), is(Signal.BEGIN_FIELD));
+        assertThat(tokens.get(1).name(), is("Tag40001"));
+        assertThat(valueOf(tokens.get(1).schemaId()), is(valueOf(40001L)));
         assertThat(valueOf(tokens.get(1).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(1).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(1).offset()), is(valueOf(0)));
 
         /* assert all elements of node 2 */
-        assertThat(tokens.get(2).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(2).getMetadata().getName(), is("uint32"));
-        assertThat(tokens.get(2).getPrimitiveType(), is(PrimitiveType.UINT32));
-        assertThat(valueOf(tokens.get(2).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
+        assertThat(tokens.get(2).signal(), is(Signal.ENCODING));
+        assertThat(tokens.get(2).name(), is("uint32"));
+        assertThat(tokens.get(2).primitiveType(), is(PrimitiveType.UINT32));
+        assertThat(valueOf(tokens.get(2).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(2).size()), is(valueOf(4)));
-        assertThat(valueOf(tokens.get(2).getOffset()), is(valueOf(0)));
-        assertThat(tokens.get(2).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(valueOf(tokens.get(2).offset()), is(valueOf(0)));
+        assertThat(tokens.get(2).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 3 */
-        assertThat(tokens.get(3).getSignal(), is(Signal.END_FIELD));
-        assertThat(tokens.get(3).getMetadata().getName(), is("Tag40001"));
-        assertThat(valueOf(tokens.get(3).getMetadata().getSchemaId()), is(valueOf(40001L)));
+        assertThat(tokens.get(3).signal(), is(Signal.END_FIELD));
+        assertThat(tokens.get(3).name(), is("Tag40001"));
+        assertThat(valueOf(tokens.get(3).schemaId()), is(valueOf(40001L)));
         assertThat(valueOf(tokens.get(3).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(3).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(3).offset()), is(valueOf(0)));
 
         /* assert all elements of node 4 */
-        assertThat(tokens.get(4).getSignal(), is(Signal.END_MESSAGE));
-        assertThat(tokens.get(4).getMetadata().getName(), is("TestMessage50001"));
-        assertThat(valueOf(tokens.get(4).getMetadata().getSchemaId()), is(valueOf(50001L)));
+        assertThat(tokens.get(4).signal(), is(Signal.END_MESSAGE));
+        assertThat(tokens.get(4).name(), is("TestMessage50001"));
+        assertThat(valueOf(tokens.get(4).schemaId()), is(valueOf(50001L)));
         assertThat(valueOf(tokens.get(4).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(4).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(4).offset()), is(valueOf(0)));
     }
 
     @Test
@@ -158,55 +158,55 @@ public class BasicXmlIrGenerationTest
 
         assertThat(valueOf(tokens.size()), is(valueOf(8)));
 
-        assertThat(tokens.get(0).getSignal(), is(Signal.BEGIN_MESSAGE));
-        assertThat(tokens.get(0).getMetadata().getName(), is("TestMessage1"));
-        assertThat(valueOf(tokens.get(0).getMetadata().getSchemaId()), is(valueOf(1L)));
+        assertThat(tokens.get(0).signal(), is(Signal.BEGIN_MESSAGE));
+        assertThat(tokens.get(0).name(), is("TestMessage1"));
+        assertThat(valueOf(tokens.get(0).schemaId()), is(valueOf(1L)));
         assertThat(valueOf(tokens.get(0).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(0).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(0).offset()), is(valueOf(0)));
 
-        assertThat(tokens.get(1).getSignal(), is(Signal.BEGIN_FIELD));
-        assertThat(tokens.get(1).getMetadata().getName(), is("EncryptedNewPassword"));
-        assertThat(valueOf(tokens.get(1).getMetadata().getSchemaId()), is(valueOf(1404L)));
+        assertThat(tokens.get(1).signal(), is(Signal.BEGIN_FIELD));
+        assertThat(tokens.get(1).name(), is("encryptedNewPassword"));
+        assertThat(valueOf(tokens.get(1).schemaId()), is(valueOf(1404L)));
         assertThat(valueOf(tokens.get(1).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(1).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(1).offset()), is(valueOf(0)));
 
-        assertThat(tokens.get(2).getSignal(), is(Signal.BEGIN_COMPOSITE));
-        assertThat(tokens.get(2).getMetadata().getName(), is("varDataEncoding"));
+        assertThat(tokens.get(2).signal(), is(Signal.BEGIN_COMPOSITE));
+        assertThat(tokens.get(2).name(), is("varDataEncoding"));
         assertThat(valueOf(tokens.get(2).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(2).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(2).offset()), is(valueOf(0)));
 
-        assertThat(tokens.get(3).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(3).getMetadata().getName(), is("length"));
-        assertThat(tokens.get(3).getPrimitiveType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(tokens.get(3).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
+        assertThat(tokens.get(3).signal(), is(Signal.ENCODING));
+        assertThat(tokens.get(3).name(), is("length"));
+        assertThat(tokens.get(3).primitiveType(), is(PrimitiveType.UINT8));
+        assertThat(valueOf(tokens.get(3).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(3).size()), is(valueOf(1)));
-        assertThat(valueOf(tokens.get(3).getOffset()), is(valueOf(0)));
-        assertThat(tokens.get(3).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(valueOf(tokens.get(3).offset()), is(valueOf(0)));
+        assertThat(tokens.get(3).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
-        assertThat(tokens.get(4).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(4).getMetadata().getName(), is("varData"));
-        assertThat(tokens.get(4).getPrimitiveType(), is(PrimitiveType.CHAR));
-        assertThat(valueOf(tokens.get(4).getMetadata().getSchemaId()), is(valueOf(Metadata.INVALID_ID)));
+        assertThat(tokens.get(4).signal(), is(Signal.ENCODING));
+        assertThat(tokens.get(4).name(), is("varData"));
+        assertThat(tokens.get(4).primitiveType(), is(PrimitiveType.CHAR));
+        assertThat(valueOf(tokens.get(4).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(4).size()), is(valueOf(-1)));
-        assertThat(valueOf(tokens.get(4).getOffset()), is(valueOf(1)));
-        assertThat(tokens.get(4).getByteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(valueOf(tokens.get(4).offset()), is(valueOf(1)));
+        assertThat(tokens.get(4).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
-        assertThat(tokens.get(5).getSignal(), is(Signal.END_COMPOSITE));
-        assertThat(tokens.get(5).getMetadata().getName(), is("varDataEncoding"));
+        assertThat(tokens.get(5).signal(), is(Signal.END_COMPOSITE));
+        assertThat(tokens.get(5).name(), is("varDataEncoding"));
         assertThat(valueOf(tokens.get(5).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(5).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(5).offset()), is(valueOf(0)));
 
-        assertThat(tokens.get(6).getSignal(), is(Signal.END_FIELD));
-        assertThat(tokens.get(6).getMetadata().getName(), is("EncryptedNewPassword"));
-        assertThat(valueOf(tokens.get(6).getMetadata().getSchemaId()), is(valueOf(1404L)));
+        assertThat(tokens.get(6).signal(), is(Signal.END_FIELD));
+        assertThat(tokens.get(6).name(), is("encryptedNewPassword"));
+        assertThat(valueOf(tokens.get(6).schemaId()), is(valueOf(1404L)));
         assertThat(valueOf(tokens.get(6).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(6).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(6).offset()), is(valueOf(0)));
 
-        assertThat(tokens.get(7).getSignal(), is(Signal.END_MESSAGE));
-        assertThat(tokens.get(7).getMetadata().getName(), is("TestMessage1"));
-        assertThat(valueOf(tokens.get(7).getMetadata().getSchemaId()), is(valueOf(1L)));
+        assertThat(tokens.get(7).signal(), is(Signal.END_MESSAGE));
+        assertThat(tokens.get(7).name(), is("TestMessage1"));
+        assertThat(valueOf(tokens.get(7).schemaId()), is(valueOf(1L)));
         assertThat(valueOf(tokens.get(7).size()), is(valueOf(0)));
-        assertThat(valueOf(tokens.get(7).getOffset()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(7).offset()), is(valueOf(0)));
     }
 
     @Test
@@ -225,21 +225,21 @@ public class BasicXmlIrGenerationTest
         List<Token> tokens = ir.getMessage(1);
 
         /* assert on the group token */
-        assertThat(tokens.get(groupIdx).getSignal(), is(Signal.BEGIN_GROUP));
-        assertThat(tokens.get(groupIdx).getMetadata().getName(), is("Entries"));
-        assertThat(valueOf(tokens.get(groupIdx).getMetadata().getSchemaId()), is(valueOf(2L)));
+        assertThat(tokens.get(groupIdx).signal(), is(Signal.BEGIN_GROUP));
+        assertThat(tokens.get(groupIdx).name(), is("Entries"));
+        assertThat(valueOf(tokens.get(groupIdx).schemaId()), is(valueOf(2L)));
 
         /* assert on the comp token for dimensions */
-        assertThat(tokens.get(dimensionsCompIdx).getSignal(), is(Signal.BEGIN_COMPOSITE));
-        assertThat(tokens.get(dimensionsCompIdx).getMetadata().getName(), is("groupSizeEncoding"));
+        assertThat(tokens.get(dimensionsCompIdx).signal(), is(Signal.BEGIN_COMPOSITE));
+        assertThat(tokens.get(dimensionsCompIdx).name(), is("groupSizeEncoding"));
 
         /* assert on the enc token for dimensions blockLength */
-        assertThat(tokens.get(dimensionsBlEncIdx).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(dimensionsBlEncIdx).getMetadata().getName(), is("blockLength"));
+        assertThat(tokens.get(dimensionsBlEncIdx).signal(), is(Signal.ENCODING));
+        assertThat(tokens.get(dimensionsBlEncIdx).name(), is("blockLength"));
 
         /* assert on the enc token for dimensions numInGroup */
-        assertThat(tokens.get(dimensionsNigEncIdx).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(dimensionsNigEncIdx).getMetadata().getName(), is("numInGroup"));
+        assertThat(tokens.get(dimensionsNigEncIdx).signal(), is(Signal.ENCODING));
+        assertThat(tokens.get(dimensionsNigEncIdx).name(), is("numInGroup"));
     }
 
     @Test
@@ -256,15 +256,15 @@ public class BasicXmlIrGenerationTest
 
         List<Token> tokens = ir.getMessage(1);
 
-        assertThat(tokens.get(groupIdx).getSignal(), is(Signal.BEGIN_GROUP));
-        assertThat(tokens.get(groupIdx).getMetadata().getName(), is("ListOrdGrp"));
-        assertThat(valueOf(tokens.get(groupIdx).getMetadata().getSchemaId()), is(valueOf(73L)));
+        assertThat(tokens.get(groupIdx).signal(), is(Signal.BEGIN_GROUP));
+        assertThat(tokens.get(groupIdx).name(), is("ListOrdGrp"));
+        assertThat(valueOf(tokens.get(groupIdx).schemaId()), is(valueOf(73L)));
 
-        assertThat(tokens.get(dimensionsCompIdx).getSignal(), is(Signal.BEGIN_COMPOSITE));
-        assertThat(tokens.get(dimensionsCompIdx).getMetadata().getName(), is("groupSizeEncoding"));
+        assertThat(tokens.get(dimensionsCompIdx).signal(), is(Signal.BEGIN_COMPOSITE));
+        assertThat(tokens.get(dimensionsCompIdx).name(), is("groupSizeEncoding"));
 
-        assertThat(tokens.get(fieldInGroupIdx).getSignal(), is(Signal.BEGIN_FIELD));
-        assertThat(tokens.get(fieldInGroupIdx).getMetadata().getName(), is("ClOrdID"));
+        assertThat(tokens.get(fieldInGroupIdx).signal(), is(Signal.BEGIN_FIELD));
+        assertThat(tokens.get(fieldInGroupIdx).name(), is("ClOrdID"));
     }
 
     @Test
@@ -282,16 +282,16 @@ public class BasicXmlIrGenerationTest
         List<Token> tokens = ir.getMessage(2);
 
         /* assert the varDataEncoding field node is formed correctly */
-        assertThat(tokens.get(lengthFieldIdx).getSignal(), is(Signal.BEGIN_FIELD));
-        assertThat(tokens.get(lengthFieldIdx).getMetadata().getName(), is("EncryptedPassword"));
-        assertThat(valueOf(tokens.get(lengthFieldIdx).getMetadata().getSchemaId()), is(valueOf(1402L)));
+        assertThat(tokens.get(lengthFieldIdx).signal(), is(Signal.BEGIN_FIELD));
+        assertThat(tokens.get(lengthFieldIdx).name(), is("EncryptedPassword"));
+        assertThat(valueOf(tokens.get(lengthFieldIdx).schemaId()), is(valueOf(1402L)));
 
         /* assert the length node has correct values */
-        assertThat(tokens.get(lengthEncIdx).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(lengthEncIdx).getPrimitiveType(), is(PrimitiveType.UINT8));
+        assertThat(tokens.get(lengthEncIdx).signal(), is(Signal.ENCODING));
+        assertThat(tokens.get(lengthEncIdx).primitiveType(), is(PrimitiveType.UINT8));
 
         /* assert the group node has the right IrId and xRefIrId, etc. */
-        assertThat(tokens.get(dataEncIdx).getSignal(), is(Signal.ENCODING));
-        assertThat(tokens.get(dataEncIdx).getPrimitiveType(), is(PrimitiveType.CHAR));
+        assertThat(tokens.get(dataEncIdx).signal(), is(Signal.ENCODING));
+        assertThat(tokens.get(dataEncIdx).primitiveType(), is(PrimitiveType.CHAR));
     }
 }

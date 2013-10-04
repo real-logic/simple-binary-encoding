@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<messageSchema package="SBE tests"
+<messageSchema package="code.generation.test"
                semanticVersion="5.2"
                description="Unit Test"
                byteOrder="littleEndian">
@@ -10,12 +10,5 @@
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>
-        <composite name="varDataEncoding" semanticType="Length">
-            <type name="length" primitiveType="uint8" semanticType="Length"/>
-            <type name="varData" primitiveType="char" semanticType="data"/>
-        </composite>
     </types>
-    <message name="TestMessage1" id="1" description="TestMessage">
-        <data type="varDataEncoding" name="encryptedNewPassword" id="1404"/>
-    </message>
 </messageSchema>

@@ -16,8 +16,8 @@
 package uk.co.real_logic.sbe.ir;
 
 /**
- * Signal the {@link uk.co.real_logic.sbe.ir.Token} role within a stream of tokens. These signals begin/end various entities such as
- * fields, composites, messages, repeating groups, enumerations, bitsets, etc.
+ * Signal the {@link uk.co.real_logic.sbe.ir.Token} role within a stream of tokens. These signals begin/end various entities
+ * such as fields, composites, messages, repeating groups, enumerations, bitsets, etc.
  */
 public enum Signal
 {

@@ -37,7 +37,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
  * What is difference between {@link Message} and the Intermediate Representation (IR)?
  * <ul>
  * <li>IR is intentionally platform, schema, and language independent.</li>
- * <li>IR is abstract layout and metadata only.</li>
+ * <li>IR is abstract layout and constraints only.</li>
  * <li>IR is a flat representation without cycles or hierarchy.</li>
  * <li>Message is FIX/SBE XML Schema specific.</li>
  * </ul>
@@ -210,7 +210,7 @@ public class Message
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
-            .semanticType(getMultiNamedAttributeValueOrNull(nodeList.item(nodeIndex), new String[] {"semanticType", "fixUsage"}))
+            .semanticType(getAttributeValueOrNull(nodeList.item(nodeIndex), "semanticType"))
             .presence(Presence.lookup(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
             .type(fieldType)
             .variableLength(true)

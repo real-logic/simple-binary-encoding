@@ -47,10 +47,10 @@ import java.nio.ByteOrder;
  * <p>
  * The entire IR of an entity is a {@link java.util.List} of {@link Token} objects. The order of this list is
  * very important. Encoding of fields is done by nodes pointing to specific encoding {@link PrimitiveType}
- * objects. Each encoding node contains size, offset, byte order, and {@link Metadata}. Entities relevant
+ * objects. Each encoding node contains size, offset, byte order, and {@link Constraints}. Entities relevant
  * to the encoding such as fields, messages, repeating groups, etc. are encapsulated in the list as nodes
  * themselves. Although, they will in most cases never be serialized. The boundaries of these entities
- * are delimited by BEGIN and END {@link Signal} values in the node {@link Metadata}.
+ * are delimited by BEGIN and END {@link Signal} values in the node {@link Constraints}.
  * A list structure like this allows for each concatenation of encodings as well as easy traversal.
  * <p>
  * An example encoding of a message header might be like this.
@@ -65,6 +65,9 @@ import java.nio.ByteOrder;
  */
 public class Token
 {
+    /** Invalid ID value. */
+    public static final long INVALID_ID = -1;
+
     /** Size not determined */
     public static final int VARIABLE_SIZE = -1;
 
@@ -72,11 +75,13 @@ public class Token
     public static final int UNKNOWN_OFFSET = -1;
 
     private final Signal signal;
+    private final String name;
+    private final long schemaId;
     private final PrimitiveType primitiveType;
     private final int size;
     private final int offset;
     private final ByteOrder byteOrder;
-    private final Metadata metadata;
+    private final Constraints constraints;
 
     /**
      * Construct an {@link Token} by providing values for all fields.
@@ -86,44 +91,64 @@ public class Token
      * @param size          of the node in bytes.
      * @param offset        within the {@link uk.co.real_logic.sbe.xml.Message}.
      * @param byteOrder     for the encoding.
-     * @param metadata      for the {@link uk.co.real_logic.sbe.xml.Message}.
+     * @param constraints      for the {@link uk.co.real_logic.sbe.xml.Message}.
      */
     public Token(final Signal signal,
+                 final String name,
+                 final long schemaId,
                  final PrimitiveType primitiveType,
                  final int size,
                  final int offset,
                  final ByteOrder byteOrder,
-                 final Metadata metadata)
+                 final Constraints constraints)
     {
         Verify.notNull(signal, "signal");
+        Verify.notNull(name, "name");
         Verify.notNull(primitiveType, "primitiveType");
         Verify.notNull(byteOrder, "byteOrder");
-        Verify.notNull(metadata, "metadata");
+        Verify.notNull(constraints, "constraints");
 
         this.signal = signal;
+        this.name = name;
+        this.schemaId = schemaId;
         this.primitiveType = primitiveType;
         this.size = size;
         this.offset = offset;
         this.byteOrder = byteOrder;
-        this.metadata = metadata;
+        this.constraints = constraints;
     }
-
     /**
-     * Construct a default {@link Token} based on {@link Metadata} with defaults for other fields.
-     *
-     * @param metadata for this node.
+     * Construct a default {@link Token} based on {@link Constraints} with defaults for other fields.
      */
-    public Token(final Signal signal, final Metadata metadata)
+    public Token(final Signal signal, final String name, final long schemaId, final Constraints constraints)
     {
+        Verify.notNull(name, "name");
         Verify.notNull(signal, "signal");
-        Verify.notNull(metadata, "metadata");
+        Verify.notNull(constraints, "constraints");
 
         this.signal = signal;
+        this.name = name;
+        this.schemaId = schemaId;
         this.primitiveType = null;
         this.size = 0;
         this.offset = 0;
         this.byteOrder = null;
-        this.metadata = metadata;
+        this.constraints = constraints;
+    }
+
+    public Token(final Signal signal, final String name, final long schemaId)
+    {
+        Verify.notNull(name, "name");
+        Verify.notNull(signal, "signal");
+
+        this.signal = signal;
+        this.name = name;
+        this.schemaId = schemaId;
+        this.primitiveType = null;
+        this.size = 0;
+        this.offset = 0;
+        this.byteOrder = null;
+        this.constraints = new Constraints();
     }
 
     /**
@@ -131,9 +156,29 @@ public class Token
      *
      * @return the {@link Signal} for the token.
      */
-    public Signal getSignal()
+    public Signal signal()
     {
         return signal;
+    }
+
+    /**
+     * Return the name of the token
+     *
+     * @return name of the token
+     */
+    public String name()
+    {
+        return name;
+    }
+
+    /**
+     * Return the ID of the token assigned by the specification
+     *
+     * @return ID of the token assigned by the specification
+     */
+    public long schemaId()
+    {
+        return schemaId;
     }
 
     /**
@@ -141,7 +186,7 @@ public class Token
      *
      * @return the primitive type of this node. This value is only relevant for nodes that are encodings.
      */
-    public PrimitiveType getPrimitiveType()
+    public PrimitiveType primitiveType()
     {
         return primitiveType;
     }
@@ -164,19 +209,19 @@ public class Token
      *         {@link Token#UNKNOWN_OFFSET} means this nodes true offset is dependent on variable length
      *         fields ahead of it in the encoding.
      */
-    public int getOffset()
+    public int offset()
     {
         return offset;
     }
 
     /**
-     * Return the {@link Metadata} of the {@link Token}.
+     * Return the {@link Constraints} of the {@link Token}.
      *
-     * @return metadata of the {@link Token}
+     * @return constraints of the {@link Token}
      */
-    public Metadata getMetadata()
+    public Constraints constraints()
     {
-        return metadata;
+        return constraints;
     }
 
     /**
@@ -184,7 +229,7 @@ public class Token
      *
      * @return the byte order for this field.
      */
-    public ByteOrder getByteOrder()
+    public ByteOrder byteOrder()
     {
         return byteOrder;
     }
@@ -193,11 +238,13 @@ public class Token
     {
         return "Token{" +
             "signal=" + signal +
+            ", name='" + name + '\'' +
+            ", schemaId=" + schemaId +
             ", primitiveType=" + primitiveType +
             ", size=" + size +
             ", offset=" + offset +
             ", byteOrder=" + byteOrder +
-            ", metadata=" + metadata +
+            ", constraints=" + constraints +
             '}';
     }
 }
