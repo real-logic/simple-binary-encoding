@@ -160,14 +160,12 @@ public class IrGenerator
         PrimitiveType encodingType = type.getEncodingType();
         Constraints.Builder builder = new Constraints.Builder();
 
-        addTypeSignal(type, Signal.BEGIN_ENUM);
-
         if (type.getPresence() == Presence.OPTIONAL)
         {
             builder.nullValue(encodingType.nullValue());
         }
 
-        tokenList.add(new Token(Signal.ENCODING,
+        tokenList.add(new Token(Signal.BEGIN_ENUM,
                                 encodingType.primitiveName(),
                                 Token.INVALID_ID,
                                 encodingType,
@@ -181,7 +179,14 @@ public class IrGenerator
             add(v);
         }
 
-        addTypeSignal(type, Signal.END_ENUM);
+        tokenList.add(new Token(Signal.END_ENUM,
+                                encodingType.primitiveName(),
+                                Token.INVALID_ID,
+                                encodingType,
+                                encodingType.size(),
+                                offset,
+                                byteOrder,
+                                builder.build()));
     }
 
     private void add(final EnumType.ValidValue value)
@@ -198,9 +203,7 @@ public class IrGenerator
     {
         PrimitiveType encodingType = type.getEncodingType();
 
-        addTypeSignal(type, Signal.BEGIN_SET);
-
-        tokenList.add(new Token(Signal.ENCODING,
+        tokenList.add(new Token(Signal.BEGIN_SET,
                                 encodingType.primitiveName(),
                                 Token.INVALID_ID,
                                 encodingType,
@@ -214,7 +217,14 @@ public class IrGenerator
             add(choice);
         }
 
-        addTypeSignal(type, Signal.END_SET);
+        tokenList.add(new Token(Signal.END_SET,
+                                encodingType.primitiveName(),
+                                Token.INVALID_ID,
+                                encodingType,
+                                encodingType.size(),
+                                offset,
+                                byteOrder,
+                                new Constraints()));
     }
 
     private void add(final SetType.Choice value)
