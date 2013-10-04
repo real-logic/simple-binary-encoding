@@ -22,6 +22,17 @@
 
     <property name="dir.docs" value="target/docs"/>
 
+    <property name="cpptasks.lib" location="main/lib/cpptasks-1.0b5.jar"/>
+    <property name="dir.main.cpp.src" location="main/cpp"/>
+    <property name="dir.main.cpp.build" location="target/main/cpp/obj"/>
+    <property name="dir.gtest.src" location="test/cpp/gtest"/>
+    <property name="dir.gtest.include" location="test/cpp/gtest/include"/>
+    <property name="dir.gtest.build" location="target/test/cpp/gtest/obj"/>
+    <property name="dir.test.cpp.src" location="test/cpp"/>
+    <property name="lib.gtest.name" location="gtest"/>
+    <property name="lib.gtest.path" location="target/test/cpp"/>
+    <property name="exec.test.cpp" location="target/test/cpp/gtest-runner"/>
+
     <path id="test.classpath">
         <pathelement path="${dir.main.build}"/>
         <pathelement path="${dir.test.build}"/>
@@ -32,6 +43,8 @@
     </path>
 
     <taskdef resource="checkstyletask.properties" classpath="${checkstyle.lib}"/>
+    <taskdef resource="cpptasks.tasks" classpath="${cpptasks.lib}"/>
+    <taskdef resource="cpptasks.types" classpath="${cpptasks.lib}"/>
 
     <target name="init">
         <tstamp/>
@@ -42,6 +55,8 @@
         <mkdir dir="${dir.reports}"/>
         <mkdir dir="${dir.reports.unit}"/>
         <mkdir dir="${dir.reports.checkstyle}"/>
+        <mkdir dir="${dir.main.cpp.build}"/>
+        <mkdir dir="${dir.gtest.build}"/>
     </target>
 
     <target name="checkstyle" depends="init">
@@ -129,4 +144,46 @@
     </target>
 
     <target name="all" depends="clean, checkstyle, build, test, javadoc, dist"/>
+
+    <!-- C++ related targets -->
+
+    <target name="cpp:compile" depends="clean, init">
+        <cc outtype="static"
+            subsystem="console"
+            objdir="${dir.main.cpp.build}">
+            <fileset dir="${dir.main.cpp.src}" includes="**/*.cpp"/>
+        </cc>
+    </target>
+
+    <target name="cpp:test" depends="cpp:compile">
+        <sequential>
+            <!-- gtest compile -->
+            <cc outtype="static"
+                subsystem="console"
+                multithreaded="true"
+                exceptions="true"
+                objdir="${dir.gtest.build}">
+                <includepath path="${dir.gtest.include}"/>
+                <includepath path="${dir.gtest.src}"/>
+                <fileset dir="${dir.gtest.src}">
+                    <include name="src/gtest-all.cc"/>
+                    <include name="src/gtest_main.cc"/>
+                </fileset>
+            </cc>
+            <!-- all tests are placed in the main runner -->
+            <cc outtype="executable"
+                subsystem="console"
+                outfile="${exec.test.cpp}">
+                <includepath path="${dir.gtest.include}"/>
+                <includepath path="${dir.main.cpp.src}"/>
+                <fileset dir="${dir.main.cpp.build}" includes="*.o"/>
+                <fileset dir="${dir.gtest.build}" includes="*.o"/>
+                <fileset dir="${dir.test.cpp.src}" includes="**/*Test.cpp"/>
+                <libset libs="stdc++"/>
+            </cc>
+            <exec executable="${exec.test.cpp}" failonerror="true">
+                <arg value="--gtest_color=no"/>
+            </exec>
+        </sequential>
+    </target>
 </project>
