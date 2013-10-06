@@ -146,7 +146,7 @@ public class IntermediateRepresentation
         }
         while (endSignal != token.signal());
 
-        typesByNameMap.put(tokens.get(0).name(), Collections.unmodifiableList(typeTokens));
+        typesByNameMap.put(tokens.get(index).name(), Collections.unmodifiableList(typeTokens));
 
         return index;
     }

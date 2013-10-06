@@ -55,7 +55,7 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> tokens = ir.getHeader();
             generatePrimitiveEncodings(out, tokens.subList(1, tokens.size() - 1));
 
-            out.append('}');
+            out.append("}\n");
         }
     }
 
@@ -92,8 +92,24 @@ public class JavaGenerator implements CodeGenerator
             generateFileHeader(out, ir.getPackageName());
             generateEnumDeclaration(out, enumName);
 
-            out.append('}');
+            generateEnumValues(out, tokens.subList(1, tokens.size() - 1));
+
+            out.append("}\n");
         }
+    }
+
+    private void generateEnumValues(final Writer out, final List<Token> tokens) throws IOException
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        for (final Token token : tokens)
+        {
+            sb.append("    ").append(token.name()).append('(').append(token.constraints().constValue()).append("),\n");
+        }
+
+        sb.setLength(sb.length() - 2);
+
+        out.append(sb);
     }
 
     private static void generateFileHeader(final Writer out, final String packageName)
@@ -101,7 +117,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final String str = String.format(
             "/* Generated class message */\n" +
-            "package %s;\n" +
+            "package %s;\n\n" +
             "import uk.co.real_logic.sbe.generation.java.*;\n\n",
             packageName
         );

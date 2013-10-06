@@ -176,7 +176,7 @@ public class IrGenerator
 
         for (final EnumType.ValidValue v : type.getValidValues())
         {
-            add(v);
+            add(v, encodingType);
         }
 
         tokenList.add(new Token(Signal.END_ENUM,
@@ -189,11 +189,15 @@ public class IrGenerator
                                 builder.build()));
     }
 
-    private void add(final EnumType.ValidValue value)
+    private void add(final EnumType.ValidValue value, final PrimitiveType encodingType)
     {
         tokenList.add(new Token(Signal.VALID_VALUE,
                                 value.getName(),
                                 Token.INVALID_ID,
+                                encodingType,
+                                0,
+                                0,
+                                byteOrder,
                                 new Constraints.Builder()
                                 .constValue(value.getPrimitiveValue())
                                 .build()));

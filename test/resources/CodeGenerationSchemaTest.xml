@@ -22,7 +22,7 @@
         </enum>
     </types>
     <message name="Car" id="1" description="Description of a Car">
-        <field name="bodyColor" id="1" type="colorType"/>
+        <field name="color" id="1" type="colorType"/>
         <field name="code" id="2" type="modelType"/>
     </message>
 </messageSchema>
