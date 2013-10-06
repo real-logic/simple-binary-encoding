@@ -114,7 +114,7 @@ public class EncodedDataType extends Type
      * @param name        of the type
      * @param presence    of the type
      * @param description of the type or null
-     * @param fixUsage    of the type or null
+     * @param semanticType    of the type or null
      * @param primitiveType   of the EncodedDataType
      * @param length      of the EncodedDataType
      * @param varLen      of the EncodedDataType
@@ -122,12 +122,12 @@ public class EncodedDataType extends Type
     public EncodedDataType(final String name,
                            final Presence presence,
                            final String description,
-                           final String fixUsage,
+                           final String semanticType,
                            final PrimitiveType primitiveType,
                            final int length,
                            final boolean varLen)
     {
-        super(name, presence, description, fixUsage);
+        super(name, presence, description, semanticType);
 
         this.primitiveType = primitiveType;
         this.length = length;

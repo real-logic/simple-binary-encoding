@@ -69,7 +69,7 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
+            "<enum name=\"boolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
             "    <validValue name=\"false\">0</validValue>" +
             "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
@@ -91,7 +91,8 @@ public class EnumTypeTest
         final String nullValueStr = "255";
         final String testXmlString =
             "<types>" +
-            "<enum name=\"optionalBoolean\" encodingType=\"uint8\" presence=\"optional\" nullValue=\"" + nullValueStr + "\" fixUsage=\"Boolean\">" +
+            "<enum name=\"optionalBoolean\" encodingType=\"uint8\" presence=\"optional\"" +
+            "      nullValue=\"" + nullValueStr + "\" semanticType=\"Boolean\">" +
             "    <validValue name=\"false\">0</validValue>" +
             "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
@@ -177,7 +178,7 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"boolean\" encodingType=\"int64\" fixUsage=\"Boolean\">" +
+            "<enum name=\"boolean\" encodingType=\"int64\" semanticType=\"Boolean\">" +
             "    <validValue name=\"false\">0</validValue>" +
             "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
@@ -192,7 +193,7 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
+            "<enum name=\"boolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
             "    <validValue name=\"false\">0</validValue>" +
             "    <validValue name=\"anotherFalse\">0</validValue>" +
             "    <validValue name=\"true\">1</validValue>" +
@@ -208,7 +209,7 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"boolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
+            "<enum name=\"boolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
             "    <validValue name=\"false\">0</validValue>" +
             "    <validValue name=\"false\">2</validValue>" +
             "    <validValue name=\"true\">1</validValue>" +

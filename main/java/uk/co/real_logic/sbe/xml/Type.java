@@ -43,7 +43,7 @@ public abstract class Type
         name = getAttributeValue(node, "name");
         presence = Presence.lookup(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
-        semanticType = getMultiNamedAttributeValueOrNull(node, new String[]{"semanticType", "fixUsage"});
+        semanticType = getAttributeValueOrNull(node, "semanticType");
     }
 
     /**

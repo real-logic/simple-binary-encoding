@@ -89,10 +89,12 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
+            generateFileHeader(out, ir.getPackageName());
+            generateEnumDeclaration(out, enumName);
 
+            out.append('}');
         }
     }
-
 
     private static void generateFileHeader(final Writer out, final String packageName)
         throws IOException
@@ -111,6 +113,13 @@ public class JavaGenerator implements CodeGenerator
         throws IOException
     {
         out.append("public class ").append(className).append("\n{\n");
+    }
+
+
+    private static void generateEnumDeclaration(final Writer out, final String name)
+        throws IOException
+    {
+        out.append("public enum ").append(name).append("\n{\n");
     }
 
     private void generatePrimitiveEncodings(final Writer out, final List<Token> tokens)

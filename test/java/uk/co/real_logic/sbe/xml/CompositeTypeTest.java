@@ -132,7 +132,7 @@ public class CompositeTypeTest
         final String nullValStr = "9223372036854775807";
         final String testXmlString =
             "<types>" +
-            "<composite name=\"PRICENULL\" description=\"Price NULL\" fixUsage=\"Price\">" +
+            "<composite name=\"PRICENULL\" description=\"Price NULL\" semanticType=\"Price\">" +
             "    <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" + nullValStr + "\" primitiveType=\"int64\"/>" +
             "    <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">-7</type>" +
             "</composite>" +

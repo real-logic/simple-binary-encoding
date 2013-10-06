@@ -166,7 +166,7 @@ public class IrGenerator
         }
 
         tokenList.add(new Token(Signal.BEGIN_ENUM,
-                                encodingType.primitiveName(),
+                                type.getName(),
                                 Token.INVALID_ID,
                                 encodingType,
                                 encodingType.size(),
@@ -180,7 +180,7 @@ public class IrGenerator
         }
 
         tokenList.add(new Token(Signal.END_ENUM,
-                                encodingType.primitiveName(),
+                                type.getName(),
                                 Token.INVALID_ID,
                                 encodingType,
                                 encodingType.size(),
@@ -204,7 +204,7 @@ public class IrGenerator
         PrimitiveType encodingType = type.getEncodingType();
 
         tokenList.add(new Token(Signal.BEGIN_SET,
-                                encodingType.primitiveName(),
+                                type.getName(),
                                 Token.INVALID_ID,
                                 encodingType,
                                 encodingType.size(),
@@ -218,7 +218,7 @@ public class IrGenerator
         }
 
         tokenList.add(new Token(Signal.END_SET,
-                                encodingType.primitiveName(),
+                                type.getName(),
                                 Token.INVALID_ID,
                                 encodingType,
                                 encodingType.size(),

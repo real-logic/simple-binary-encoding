@@ -48,16 +48,16 @@ public class ErrorHandlerTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"NullBoolean\" encodingType=\"uint8\" nullValue=\"255\" fixUsage=\"Boolean\">" +
+            "<enum name=\"NullBoolean\" encodingType=\"uint8\" nullValue=\"255\" semanticType=\"Boolean\">" +
             "    <validValue name=\"false\">0</validValue>" +
             "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
-            "<enum name=\"DupNameBoolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
+            "<enum name=\"DupNameBoolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
             "    <validValue name=\"false\">0</validValue>" +
             "    <validValue name=\"anotherFalse\">0</validValue>" +
             "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
-            "<enum name=\"DupValBoolean\" encodingType=\"uint8\" fixUsage=\"Boolean\">" +
+            "<enum name=\"DupValBoolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
             "    <validValue name=\"false\">0</validValue>" +
             "    <validValue name=\"false\">2</validValue>" +
             "    <validValue name=\"true\">1</validValue>" +

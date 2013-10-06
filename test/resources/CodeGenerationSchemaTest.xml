@@ -10,13 +10,19 @@
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>
-        <enum name="color" encodingType="uint8" semanticType="Color">
+        <enum name="colorType" encodingType="uint8" semanticType="Color">
             <validValue name="red">0</validValue>
             <validValue name="green">1</validValue>
             <validValue name="blue">2</validValue>
         </enum>
+        <enum name="modelType" encodingType="char" semanticType="Model">
+            <validValue name="A">A</validValue>
+            <validValue name="B">B</validValue>
+            <validValue name="C">C</validValue>
+        </enum>
     </types>
     <message name="Car" id="1" description="Description of a Car">
-        <field name="bodyColor" id="1" type="color"/>
+        <field name="bodyColor" id="1" type="colorType"/>
+        <field name="code" id="2" type="modelType"/>
     </message>
 </messageSchema>

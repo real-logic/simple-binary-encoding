@@ -145,7 +145,7 @@ public class Message
         }
         else if (!(dimensionType instanceof CompositeType))
         {
-            handleError(nodeList.item(nodeIndex), "dimenstionType is not composite type: " + dimensionTypeName);
+            handleError(nodeList.item(nodeIndex), "dimensionType is not composite type: " + dimensionTypeName);
         }
         else
         {
@@ -317,7 +317,6 @@ public class Message
 
         for (final Field field : fieldList)
         {
-            /* if this field is a <group> then we are done and can return the offset of the group */
             if (field.getGroupFields() != null)
             {
                 return field.getCalculatedOffset();
@@ -326,7 +325,6 @@ public class Message
             {
                 int calculatedSize = field.getType().size();
 
-                /* random size field */
                 if (Token.VARIABLE_SIZE == calculatedSize)
                 {
                     return currLength;
