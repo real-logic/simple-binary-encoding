@@ -60,9 +60,7 @@ public class IrGenerator
         final Message msg = schema.getMessage(messageId);
 
         addMessageSignal(msg, Signal.BEGIN_MESSAGE);
-
         addAllFields(msg.getFields());
-
         addMessageSignal(msg, Signal.END_MESSAGE);
 
         return tokenList;
@@ -73,8 +71,7 @@ public class IrGenerator
         tokenList.clear();
 
         byteOrder = schema.getByteOrder();
-        CompositeType type = schema.getMessageHeader();
-        add(type, 0);
+        add(schema.getMessageHeader(), 0);
 
         return tokenList;
     }
@@ -163,7 +160,6 @@ public class IrGenerator
         for (final EncodedDataType edt : type.getTypeList())
         {
             add(edt, offset);
-
             offset += edt.size();
         }
 
@@ -191,9 +187,9 @@ public class IrGenerator
 
         tokenList.add(builder.build());
 
-        for (final EnumType.ValidValue v : type.getValidValues())
+        for (final EnumType.ValidValue validValue : type.getValidValues())
         {
-            add(v, encodingType);
+            add(validValue, encodingType);
         }
 
         builder.signal(Signal.END_ENUM);
