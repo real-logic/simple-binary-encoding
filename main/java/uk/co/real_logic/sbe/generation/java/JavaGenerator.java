@@ -109,8 +109,8 @@ public class JavaGenerator implements CodeGenerator
             if (token.signal() == Signal.CHOICE)
             {
                 final String choiceName = token.name();
-                final String methodTypePrefix = token.primitiveType().primitiveName();
-                final String choiceVal = token.options().constVal().toString();
+                final String typePrefix = token.primitiveType().primitiveName();
+                final String choiceBitPosition = token.options().constVal().toString();
 
                 final String str = String.format(
                     "\n" +
@@ -123,11 +123,11 @@ public class JavaGenerator implements CodeGenerator
                     "        CodecUtil.%sPutChoice(buffer, offset, %s, value);\n" +
                     "    }\n",
                     choiceName,
-                    methodTypePrefix,
-                    choiceVal,
+                    typePrefix,
+                    choiceBitPosition,
                     choiceName,
-                    methodTypePrefix,
-                    choiceVal
+                    typePrefix,
+                    choiceBitPosition
                 );
 
                 out.append(str);
@@ -239,7 +239,7 @@ public class JavaGenerator implements CodeGenerator
             if (token.signal() == Signal.ENCODING)
             {
                 final String javaTypeName = javaTypeName(token.primitiveType());
-                final String methodTypePrefix = token.primitiveType().primitiveName();
+                final String typePrefix = token.primitiveType().primitiveName();
                 final String propertyName = token.name();
                 final Integer offset = Integer.valueOf(token.offset());
 
@@ -255,11 +255,11 @@ public class JavaGenerator implements CodeGenerator
                      "    }\n",
                      javaTypeName,
                      propertyName,
-                     methodTypePrefix,
+                     typePrefix,
                      offset,
                      propertyName,
                      javaTypeName,
-                     methodTypePrefix,
+                     typePrefix,
                      offset
                 );
 
