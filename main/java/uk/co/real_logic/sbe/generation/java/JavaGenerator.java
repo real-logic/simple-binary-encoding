@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
+import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
+
 public class JavaGenerator implements CodeGenerator
 {
     /** Class name to be used for visitor pattern that accesses the message header. */
@@ -93,6 +95,9 @@ public class JavaGenerator implements CodeGenerator
             generateEnumDeclaration(out, enumName);
 
             generateEnumValues(out, tokens.subList(1, tokens.size() - 1));
+            generateEnumBody(out, tokens.get(0), enumName);
+
+            generateEnumLookupMethod(out, tokens.subList(1, tokens.size() - 1), enumName);
 
             out.append("}\n");
         }
@@ -104,12 +109,50 @@ public class JavaGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            sb.append("    ").append(token.name()).append('(').append(token.constraints().constValue()).append("),\n");
+            sb.append("    ").append(token.name()).append('(').append(token.settings().constVal()).append("),\n");
         }
 
         sb.setLength(sb.length() - 2);
+        sb.append(";\n\n");
 
         out.append(sb);
+    }
+
+    private void generateEnumBody(final Writer out, final Token token, final String enumName) throws IOException
+    {
+        final String javaEncodingType = javaTypeFor(token.primitiveType());
+
+        out.append("    private final ").append(javaEncodingType).append(" value;\n\n")
+           .append("    ").append(enumName).append("(final ").append(javaEncodingType).append(" value)\n")
+           .append("    {\n")
+           .append("        this.value = value;\n")
+           .append("    }\n\n")
+           .append("    public ").append(javaEncodingType).append(" value()\n")
+           .append("    {\n")
+           .append("        return value;\n")
+           .append("    }\n\n");
+    }
+
+    private void generateEnumLookupMethod(final Writer out, final List<Token> tokens, final String enumName)
+        throws IOException
+    {
+        final String javaEncodingType = javaTypeFor(tokens.get(0).primitiveType());
+
+        out.append("    public ").append(enumName).append(" lookup(final ").append(javaEncodingType).append(" value)\n")
+           .append("    {\n")
+           .append("        switch (value)\n")
+           .append("        {\n");
+
+        for (final Token token : tokens)
+        {
+            final String constVal = token.settings().constVal().toString();
+            out.append("            case ").append(constVal).append(": return ").append(token.name()).append(";\n");
+        }
+
+        out.append("        }\n\n")
+           .append("        throw new IllegalArgumentException(\"Unknown value: \" + value);\n")
+           .append("    }\n");
+
     }
 
     private static void generateFileHeader(final Writer out, final String packageName)
@@ -117,8 +160,8 @@ public class JavaGenerator implements CodeGenerator
     {
         final String str = String.format(
             "/* Generated class message */\n" +
-            "package %s;\n\n" +
-            "import uk.co.real_logic.sbe.generation.java.*;\n\n",
+                "package %s;\n\n" +
+                "import uk.co.real_logic.sbe.generation.java.*;\n\n",
             packageName
         );
 
@@ -145,28 +188,29 @@ public class JavaGenerator implements CodeGenerator
         {
             if (token.signal() == Signal.ENCODING)
             {
-                final String typeName = JavaUtil.javaTypeFor(token.primitiveType());
+                final String typeName = javaTypeFor(token.primitiveType());
                 final String methodPrefix = token.primitiveType().primitiveName();
                 final String propertyName = token.name();
                 final Integer offset = Integer.valueOf(token.offset());
 
-                final String str = String.format("\n" +
-                    "    public %s %s()\n" +
-                    "    {\n" +
-                    "        return JavaUtil.%sGet(buffer, offset + %d);\n" +
-                    "    }\n\n" +
-                    "    public void %s(final %s value)\n" +
-                    "    {\n" +
-                    "        JavaUtil.%sPut(buffer, offset + %d, value);\n" +
-                    "    }\n",
-                    typeName,
-                    propertyName,
-                    methodPrefix,
-                    offset,
-                    propertyName,
-                    typeName,
-                    methodPrefix,
-                    offset
+                final String str = String.format(
+                     "\n" +
+                     "    public %s %s()\n" +
+                     "    {\n" +
+                     "        return JavaUtil.%sGet(buffer, offset + %d);\n" +
+                     "    }\n\n" +
+                     "    public void %s(final %s value)\n" +
+                     "    {\n" +
+                     "        JavaUtil.%sPut(buffer, offset + %d, value);\n" +
+                     "    }\n",
+                     typeName,
+                     propertyName,
+                     methodPrefix,
+                     offset,
+                     propertyName,
+                     typeName,
+                     methodPrefix,
+                     offset
                 );
 
                 out.append(str);
@@ -176,12 +220,12 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateBufferConfig(final Writer out) throws IOException
     {
-        out.append("    private DirectBuffer buffer;\n");
-        out.append("    private int offset;\n\n");
-        out.append("    public void reset(final DirectBuffer buffer, final int offset)\n");
-        out.append("    {\n");
-        out.append("        this.buffer = buffer;\n");
-        out.append("        this.offset = offset;\n");
-        out.append("    }\n");
+        out.append("    private DirectBuffer buffer;\n")
+           .append("    private int offset;\n\n")
+           .append("    public void reset(final DirectBuffer buffer, final int offset)\n")
+           .append("    {\n")
+           .append("        this.buffer = buffer;\n")
+           .append("        this.offset = offset;\n")
+           .append("    }\n");
     }
 }

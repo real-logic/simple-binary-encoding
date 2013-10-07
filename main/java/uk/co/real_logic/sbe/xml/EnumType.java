@@ -60,12 +60,12 @@ public class EnumType extends Type
             throw new IllegalArgumentException("illegal encodingType " + encodingType);
         }
 
-        String nullValueStr = getAttributeValueOrNull(node, "nullValue");
+        String nullValueStr = getAttributeValueOrNull(node, "nullVal");
         if (nullValueStr != null)
         {
             if (getPresence() != Presence.OPTIONAL)
             {
-                handleError(node, "nullValue set, but presence is not optional");
+                handleError(node, "nullVal set, but presence is not optional");
                 nullValue = null;
             }
             else
@@ -126,9 +126,9 @@ public class EnumType extends Type
     }
 
     /**
-     * The nullValue of the type
+     * The nullVal of the type
      *
-     * @return value of the nullValue
+     * @return value of the nullVal
      */
     public PrimitiveValue getNullValue()
     {

@@ -47,10 +47,10 @@ import java.nio.ByteOrder;
  * <p>
  * The entire IR of an entity is a {@link java.util.List} of {@link Token} objects. The order of this list is
  * very important. Encoding of fields is done by nodes pointing to specific encoding {@link PrimitiveType}
- * objects. Each encoding node contains size, offset, byte order, and {@link Constraints}. Entities relevant
+ * objects. Each encoding node contains size, offset, byte order, and {@link Settings}. Entities relevant
  * to the encoding such as fields, messages, repeating groups, etc. are encapsulated in the list as nodes
  * themselves. Although, they will in most cases never be serialized. The boundaries of these entities
- * are delimited by BEGIN and END {@link Signal} values in the node {@link Constraints}.
+ * are delimited by BEGIN and END {@link Signal} values in the node {@link Settings}.
  * A list structure like this allows for each concatenation of encodings as well as easy traversal.
  * <p>
  * An example encoding of a message header might be like this.
@@ -81,7 +81,7 @@ public class Token
     private final int size;
     private final int offset;
     private final ByteOrder byteOrder;
-    private final Constraints constraints;
+    private final Settings settings;
 
     /**
      * Construct an {@link Token} by providing values for all fields.
@@ -91,7 +91,7 @@ public class Token
      * @param size          of the node in bytes.
      * @param offset        within the {@link uk.co.real_logic.sbe.xml.Message}.
      * @param byteOrder     for the encoding.
-     * @param constraints      for the {@link uk.co.real_logic.sbe.xml.Message}.
+     * @param settings      for the {@link uk.co.real_logic.sbe.xml.Message}.
      */
     public Token(final Signal signal,
                  final String name,
@@ -100,13 +100,13 @@ public class Token
                  final int size,
                  final int offset,
                  final ByteOrder byteOrder,
-                 final Constraints constraints)
+                 final Settings settings)
     {
         Verify.notNull(signal, "signal");
         Verify.notNull(name, "name");
         Verify.notNull(primitiveType, "primitiveType");
         Verify.notNull(byteOrder, "byteOrder");
-        Verify.notNull(constraints, "constraints");
+        Verify.notNull(settings, "settings");
 
         this.signal = signal;
         this.name = name;
@@ -115,16 +115,16 @@ public class Token
         this.size = size;
         this.offset = offset;
         this.byteOrder = byteOrder;
-        this.constraints = constraints;
+        this.settings = settings;
     }
     /**
-     * Construct a default {@link Token} based on {@link Constraints} with defaults for other fields.
+     * Construct a default {@link Token} based on {@link Settings} with defaults for other fields.
      */
-    public Token(final Signal signal, final String name, final long schemaId, final Constraints constraints)
+    public Token(final Signal signal, final String name, final long schemaId, final Settings settings)
     {
         Verify.notNull(name, "name");
         Verify.notNull(signal, "signal");
-        Verify.notNull(constraints, "constraints");
+        Verify.notNull(settings, "settings");
 
         this.signal = signal;
         this.name = name;
@@ -133,7 +133,7 @@ public class Token
         this.size = 0;
         this.offset = 0;
         this.byteOrder = null;
-        this.constraints = constraints;
+        this.settings = settings;
     }
 
     public Token(final Signal signal, final String name, final long schemaId)
@@ -148,7 +148,7 @@ public class Token
         this.size = 0;
         this.offset = 0;
         this.byteOrder = null;
-        this.constraints = new Constraints();
+        this.settings = new Settings();
     }
 
     /**
@@ -215,13 +215,13 @@ public class Token
     }
 
     /**
-     * Return the {@link Constraints} of the {@link Token}.
+     * Return the {@link Settings} of the {@link Token}.
      *
-     * @return constraints of the {@link Token}
+     * @return settings of the {@link Token}
      */
-    public Constraints constraints()
+    public Settings settings()
     {
-        return constraints;
+        return settings;
     }
 
     /**
@@ -244,7 +244,7 @@ public class Token
             ", size=" + size +
             ", offset=" + offset +
             ", byteOrder=" + byteOrder +
-            ", constraints=" + constraints +
+            ", settings=" + settings +
             '}';
     }
 }

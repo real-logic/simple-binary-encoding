@@ -57,7 +57,7 @@ public class XmlSchemaParser
      * Exceptions are passed back up for any problems.
      *
      * @param in stream from which schema is read.
-     * @return {@link MessageSchema} constraints for the schema.
+     * @return {@link MessageSchema} settings for the schema.
      */
     public static MessageSchema parse(final InputStream in)
         throws Exception
@@ -319,28 +319,6 @@ public class XmlSchemaParser
         }
 
         return attrNode.getNodeValue();
-    }
-
-    /**
-     * Helper function that uses multiple attribute names, e.g. aliases, from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}
-     *
-     * @param elementNode to look under
-     * @param attrNames   that are aliases for one another in priority order
-     * @return null or value of the attribute
-     */
-    public static String getMultiNamedAttributeValueOrNull(final Node elementNode, final String[] attrNames)
-    {
-        for (final String attrName : attrNames)
-        {
-            Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
-
-            if (attrNode != null)
-            {
-                return attrNode.getNodeValue();
-            }
-        }
-
-        return null;
     }
 
     /**

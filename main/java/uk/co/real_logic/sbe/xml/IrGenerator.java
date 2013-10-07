@@ -17,7 +17,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.ir.Constraints;
+import uk.co.real_logic.sbe.ir.Settings;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
@@ -158,11 +158,11 @@ public class IrGenerator
     private void add(final EnumType type, final int offset)
     {
         PrimitiveType encodingType = type.getEncodingType();
-        Constraints.Builder builder = new Constraints.Builder();
+        Settings.Builder builder = new Settings.Builder();
 
         if (type.getPresence() == Presence.OPTIONAL)
         {
-            builder.nullValue(encodingType.nullValue());
+            builder.nullVal(encodingType.nullVal());
         }
 
         tokenList.add(new Token(Signal.BEGIN_ENUM,
@@ -198,8 +198,8 @@ public class IrGenerator
                                 0,
                                 0,
                                 byteOrder,
-                                new Constraints.Builder()
-                                .constValue(value.getPrimitiveValue())
+                                new Settings.Builder()
+                                .constVal(value.getPrimitiveValue())
                                 .build()));
     }
 
@@ -214,7 +214,7 @@ public class IrGenerator
                                 encodingType.size(),
                                 offset,
                                 byteOrder,
-                                new Constraints()));
+                                new Settings()));
 
         for (final SetType.Choice choice : type.getChoices())
         {
@@ -228,7 +228,7 @@ public class IrGenerator
                                 encodingType.size(),
                                 offset,
                                 byteOrder,
-                                new Constraints()));
+                                new Settings()));
     }
 
     private void add(final SetType.Choice value)
@@ -236,30 +236,30 @@ public class IrGenerator
         tokenList.add(new Token(Signal.CHOICE,
                                 value.getName(),
                                 Token.INVALID_ID,
-                                new Constraints.Builder()
-                                .constValue(value.getPrimitiveValue())
+                                new Settings.Builder()
+                                .constVal(value.getPrimitiveValue())
                                 .build()));
     }
 
     private void add(final EncodedDataType type, final int offset)
     {
-        Constraints.Builder builder = new Constraints.Builder();
+        Settings.Builder builder = new Settings.Builder();
 
         switch (type.getPresence())
         {
             case REQUIRED:
-                builder.minValue(type.getMinValue())
-                    .maxValue(type.getMaxValue());
+                builder.minVal(type.getMinValue())
+                    .maxVal(type.getMaxValue());
                 break;
 
             case OPTIONAL:
-                builder.minValue(type.getMinValue())
-                    .maxValue(type.getMaxValue())
-                    .nullValue(type.getNullValue());
+                builder.minVal(type.getMinValue())
+                    .maxVal(type.getMaxValue())
+                    .nullVal(type.getNullValue());
                 break;
 
             case CONSTANT:
-                builder.constValue(type.getConstValue());
+                builder.constVal(type.getConstValue());
                 break;
         }
 

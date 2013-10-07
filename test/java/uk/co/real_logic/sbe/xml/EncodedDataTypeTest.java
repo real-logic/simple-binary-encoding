@@ -351,7 +351,7 @@ public class EncodedDataTypeTest
         final String minVal = "10";
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeInt8MinValue\" primitiveType=\"int8\" minValue=\"" + minVal + "\"/>" +
+            "    <type name=\"testTypeInt8MinValue\" primitiveType=\"int8\" minVal=\"" + minVal + "\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -365,7 +365,7 @@ public class EncodedDataTypeTest
         final String maxVal = "10";
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeInt8MaxValue\" primitiveType=\"int8\" maxValue=\"" + maxVal + "\"/>" +
+            "    <type name=\"testTypeInt8MaxValue\" primitiveType=\"int8\" maxVal=\"" + maxVal + "\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -379,7 +379,7 @@ public class EncodedDataTypeTest
         final String nullVal = "10";
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeInt8NullValue\" primitiveType=\"int8\" presence=\"optional\" nullValue=\"" + nullVal + "\"/>" +
+            "    <type name=\"testTypeInt8NullValue\" primitiveType=\"int8\" presence=\"optional\" nullVal=\"" + nullVal + "\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);

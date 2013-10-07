@@ -103,26 +103,26 @@ public enum PrimitiveType
 
     private final String name;
     private final int size;
-    private final PrimitiveValue minValue;
-    private final PrimitiveValue maxValue;
-    private final PrimitiveValue nullValue;
+    private final PrimitiveValue minVal;
+    private final PrimitiveValue maxVal;
+    private final PrimitiveValue nullVal;
 
-    PrimitiveType(final String name, final int size, final long minValue, final long maxValue, final long nullValue)
+    PrimitiveType(final String name, final int size, final long minVal, final long maxVal, final long nullVal)
     {
         this.name = name;
         this.size = size;
-        this.minValue = new PrimitiveValue(minValue);
-        this.maxValue = new PrimitiveValue(maxValue);
-        this.nullValue = new PrimitiveValue(nullValue);
+        this.minVal = new PrimitiveValue(minVal);
+        this.maxVal = new PrimitiveValue(maxVal);
+        this.nullVal = new PrimitiveValue(nullVal);
     }
 
-    PrimitiveType(final String name, final int size, final double minValue, final double maxValue, final double nullValue)
+    PrimitiveType(final String name, final int size, final double minVal, final double maxVal, final double nullVal)
     {
         this.name = name;
         this.size = size;
-        this.minValue = new PrimitiveValue(minValue);
-        this.maxValue = new PrimitiveValue(maxValue);
-        this.nullValue = new PrimitiveValue(nullValue);
+        this.minVal = new PrimitiveValue(minVal);
+        this.maxVal = new PrimitiveValue(maxVal);
+        this.nullVal = new PrimitiveValue(nullVal);
     }
 
     /**
@@ -146,33 +146,33 @@ public enum PrimitiveType
     }
 
     /**
-     * The minValue of the primitive type
+     * The minVal of the primitive type
      *
-     * @return default minValue of the primitive type
+     * @return default minVal of the primitive type
      */
-    public PrimitiveValue minValue()
+    public PrimitiveValue minVal()
     {
-        return minValue;
+        return minVal;
     }
 
     /**
-     * The maxValue of the primitive type
+     * The maxVal of the primitive type
      *
-     * @return default maxValue of the primitive type
+     * @return default maxVal of the primitive type
      */
-    public PrimitiveValue maxValue()
+    public PrimitiveValue maxVal()
     {
-        return maxValue;
+        return maxVal;
     }
 
     /**
-     * The nullValue of the primitive type
+     * The nullVal of the primitive type
      *
-     * @return default nullValue of the primitive type
+     * @return default nullVal of the primitive type
      */
-    public PrimitiveValue nullValue()
+    public PrimitiveValue nullVal()
     {
-        return nullValue;
+        return nullVal;
     }
 
     /**

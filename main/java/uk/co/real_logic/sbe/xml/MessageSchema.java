@@ -49,7 +49,7 @@ public class MessageSchema
         this.pkg = getAttributeValue(schemaNode, "package");
         this.description = getAttributeValueOrNull(schemaNode, "description");
         this.version = Long.parseLong(getAttributeValue(schemaNode, "version", "0"));  // default version is 0
-        this.semanticVersion = getMultiNamedAttributeValueOrNull(schemaNode, new String[]{"semanticVersion", "fixVersion"});
+        this.semanticVersion = getAttributeValueOrNull(schemaNode, "semanticVersion");
         this.byteOrder = lookupByteOrder(getAttributeValue(schemaNode, "byteOrder", "littleEndian"));
         this.typeByNameMap = typeByNameMap;
         this.messageByIdMap = messageByIdMap;

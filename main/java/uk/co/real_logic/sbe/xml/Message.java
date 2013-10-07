@@ -37,7 +37,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
  * What is difference between {@link Message} and the Intermediate Representation (IR)?
  * <ul>
  * <li>IR is intentionally platform, schema, and language independent.</li>
- * <li>IR is abstract layout and constraints only.</li>
+ * <li>IR is abstract layout and settings only.</li>
  * <li>IR is a flat representation without cycles or hierarchy.</li>
  * <li>Message is FIX/SBE XML Schema specific.</li>
  * </ul>
@@ -188,8 +188,7 @@ public class Message
         return field;
     }
 
-    private Field parseDataField(final NodeList nodeList,
-                                 final int nodeIndex)
+    private Field parseDataField(final NodeList nodeList, final int nodeIndex)
     {
         final String typeName = getAttributeValue(nodeList.item(nodeIndex), "type");
         final Type fieldType = typeByNameMap.get(typeName);
@@ -237,10 +236,9 @@ public class Message
 
         for (final Field field : fields)
         {
-            /* check if specified offset is ok or not */
             if (field.getOffset() > 0 && field.getOffset() < currOffset)
             {
-                handleError(node, "specified offset is too small for field name: " + field.getName());
+                handleError(node, "Specified offset is too small for field name: " + field.getName());
             }
 
             if (Token.VARIABLE_SIZE != currOffset)

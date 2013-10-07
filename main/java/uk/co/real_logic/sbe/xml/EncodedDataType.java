@@ -71,7 +71,7 @@ public class EncodedDataType extends Type
             constValue = null;
         }
 
-        String minValueStr = getAttributeValueOrNull(node, "minValue");
+        String minValueStr = getAttributeValueOrNull(node, "minVal");
         if (minValueStr != null)
         {
             minValue = PrimitiveValue.parse(minValueStr, primitiveType);
@@ -81,7 +81,7 @@ public class EncodedDataType extends Type
             minValue = null;
         }
 
-        String maxValueStr = getAttributeValueOrNull(node, "maxValue");
+        String maxValueStr = getAttributeValueOrNull(node, "maxVal");
         if (maxValueStr != null)
         {
             maxValue = PrimitiveValue.parse(maxValueStr, primitiveType);
@@ -91,20 +91,20 @@ public class EncodedDataType extends Type
             maxValue = null;
         }
 
-        String nullValueStr = getAttributeValueOrNull(node, "nullValue");
+        String nullValueStr = getAttributeValueOrNull(node, "nullVal");
         if (nullValueStr != null)
         {
             if (getPresence() != Presence.OPTIONAL)
             {
-                handleWarning(node, "nullValue set, but presence is not optional");
+                handleWarning(node, "nullVal set, but presence is not optional");
             }
 
             nullValue = PrimitiveValue.parse(nullValueStr, primitiveType);
         }
         else
         {
-            // TODO: should we check for presence=optional and flag it? No, should default to primitiveType nullValue
-            nullValue = null; // this value is invalid unless nullValue specified for type
+            // TODO: should we check for presence=optional and flag it? No, should default to primitiveType nullVal
+            nullValue = null; // this value is invalid unless nullVal specified for type
         }
     }
 
@@ -210,9 +210,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The minValue of the type
+     * The minVal of the type
      *
-     * @return value of the minValue
+     * @return value of the minVal
      */
     public PrimitiveValue getMinValue()
     {
@@ -220,9 +220,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The maxValue of the type
+     * The maxVal of the type
      *
-     * @return value of the maxValue
+     * @return value of the maxVal
      */
     public PrimitiveValue getMaxValue()
     {
@@ -230,9 +230,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The nullValue of the type
+     * The nullVal of the type
      *
-     * @return value of the nullValue primitiveType or type
+     * @return value of the nullVal primitiveType or type
      */
     public PrimitiveValue getNullValue()
     {

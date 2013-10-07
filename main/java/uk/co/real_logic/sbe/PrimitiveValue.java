@@ -19,7 +19,7 @@ package uk.co.real_logic.sbe;
 import static java.lang.Double.doubleToLongBits;
 
 /**
- * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
+ * Class used to encapsulate values for primitives. Used for nullVal, minVal, maxVal, and constants
  * <p/>
  * <table>
  *     <thead>

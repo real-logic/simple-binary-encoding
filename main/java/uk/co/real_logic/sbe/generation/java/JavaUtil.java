@@ -31,7 +31,7 @@ public class JavaUtil
         typeNameByPrimitiveTypeMap.put(PrimitiveType.INT16, "short");
         typeNameByPrimitiveTypeMap.put(PrimitiveType.INT32, "int");
         typeNameByPrimitiveTypeMap.put(PrimitiveType.INT64, "long");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT8, "int");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT8, "short");
         typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT16, "int");
         typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT32, "long");
         typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT64, "long");
