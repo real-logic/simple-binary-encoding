@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.generation.OutputManager;
+import uk.co.real_logic.sbe.generation.java.util.CharSequenceJavaFileObject;
+import uk.co.real_logic.sbe.generation.java.util.ClassFileManager;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
