@@ -19,16 +19,13 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.generation.OutputManager;
-import uk.co.real_logic.sbe.generation.java.util.CharSequenceJavaFileObject;
-import uk.co.real_logic.sbe.generation.java.util.ClassFileManager;
+import uk.co.real_logic.sbe.generation.java.util.CompilerUtil;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 
-import javax.tools.*;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -76,7 +73,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = compileCode(fqClassName);
+        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
         assertNotNull(clazz);
 
         final Method method = clazz.getDeclaredMethod("lookup", short.class);
@@ -97,42 +94,12 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = compileCode(fqClassName);
+        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
         assertNotNull(clazz);
 
         final Method method = clazz.getDeclaredMethod("lookup", byte.class);
         final Object result = method.invoke(null, Byte.valueOf((byte)'B'));
 
         assertThat(result.toString(), is("B"));
-    }
-
-    private Class<?> compileCode(final String className) throws Exception
-    {
-        final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        final JavaFileManager fileManager = new ClassFileManager<>(compiler.getStandardFileManager(null, null, null));
-
-        final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-
-        final JavaCompiler.CompilationTask task =
-            compiler.getTask(null, fileManager, diagnostics, null, null,
-                             Arrays.asList(new CharSequenceJavaFileObject(className, stringWriter.toString())));
-
-        if (!task.call().booleanValue())
-        {
-            for (final Diagnostic diagnostic : diagnostics.getDiagnostics())
-            {
-                System.out.println(diagnostic.getCode());
-                System.out.println(diagnostic.getKind());
-                System.out.println(diagnostic.getPosition());
-                System.out.println(diagnostic.getStartPosition());
-                System.out.println(diagnostic.getEndPosition());
-                System.out.println(diagnostic.getSource());
-                System.out.println(diagnostic.getMessage(null));
-            }
-
-            return null;
-        }
-
-        return fileManager.getClassLoader(null).loadClass(className);
     }
 }
