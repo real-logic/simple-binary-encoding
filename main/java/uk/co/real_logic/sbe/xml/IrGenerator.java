@@ -87,16 +87,6 @@ public class IrGenerator
         tokenList.add(token);
     }
 
-    private void addTypeSignal(final Type type, final Signal signal)
-    {
-        Token token = new Token.Builder()
-            .signal(signal)
-            .name(type.getName())
-            .build();
-
-        tokenList.add(token);
-    }
-
     private void addFieldSignal(final Field field, final Signal signal)
     {
         Token token = new Token.Builder()
@@ -153,17 +143,20 @@ public class IrGenerator
 
     private void add(final CompositeType type, final int currOffset)
     {
+        Token.Builder builder = new Token.Builder()
+            .signal(Signal.BEGIN_COMPOSITE)
+            .name(type.getName());
+
+        tokenList.add(builder.build());
+
         int offset = currOffset;
-
-        addTypeSignal(type, Signal.BEGIN_COMPOSITE);
-
         for (final EncodedDataType edt : type.getTypeList())
         {
             add(edt, offset);
             offset += edt.size();
         }
 
-        addTypeSignal(type, Signal.END_COMPOSITE);
+        tokenList.add(builder.signal(Signal.END_COMPOSITE).build());
     }
 
     private void add(final EnumType type, final int offset)
@@ -227,7 +220,7 @@ public class IrGenerator
 
         for (final SetType.Choice choice : type.getChoices())
         {
-            add(choice);
+            add(choice, encodingType);
         }
 
         builder.signal(Signal.END_SET);
@@ -235,11 +228,12 @@ public class IrGenerator
         tokenList.add(builder.build());
     }
 
-    private void add(final SetType.Choice value)
+    private void add(final SetType.Choice value, final PrimitiveType encodingType)
     {
         Token token = new Token.Builder()
             .signal(Signal.CHOICE)
             .name(value.getName())
+            .primitiveType(encodingType)
             .options(new Options.Builder()
                          .constVal(value.getPrimitiveValue())
                          .build())

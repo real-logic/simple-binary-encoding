@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
+import static uk.co.real_logic.sbe.generation.java.JavaLangUtil.*;
 
 public class JavaGenerator implements CodeGenerator
 {
@@ -52,7 +52,7 @@ public class JavaGenerator implements CodeGenerator
         {
             generateFileHeader(out, ir.getPackageName());
             generateClassDeclaration(out, MESSAGE_HEADER_VISITOR);
-            generateBufferConfig(out);
+            generateBufferCode(out);
 
             final List<Token> tokens = ir.getHeader();
             generatePrimitiveEncodings(out, tokens.subList(1, tokens.size() - 1));
@@ -75,6 +75,7 @@ public class JavaGenerator implements CodeGenerator
                     break;
 
                 case BEGIN_SET:
+                    generateChoiceSet(tokens);
                     break;
             }
         }
@@ -82,12 +83,61 @@ public class JavaGenerator implements CodeGenerator
 
     public void generateMessageStubs() throws IOException
     {
-        //To change body of implemented methods use File | Options | File Templates.
+        // TODO
+    }
+
+    private void generateChoiceSet(final List<Token> tokens) throws IOException
+    {
+        final String bitSetName = toUpperFirstChar(tokens.get(0).name());
+
+        try (final Writer out = outputManager.createOutput(bitSetName))
+        {
+            generateFileHeader(out, ir.getPackageName());
+            generateClassDeclaration(out, bitSetName);
+            generateBufferCode(out);
+
+            generateChoices(out, tokens.subList(1, tokens.size() - 1));
+
+            out.append("}\n");
+        }
+    }
+
+    private void generateChoices(final Writer out, final List<Token> tokens) throws IOException
+    {
+        for (final Token token : tokens)
+        {
+            if (token.signal() == Signal.CHOICE)
+            {
+                final String choiceName = token.name();
+                final String methodTypePrefix = token.primitiveType().primitiveName();
+                final String choiceVal = token.options().constVal().toString();
+
+                final String str = String.format(
+                    "\n" +
+                    "    public boolean %s()\n" +
+                    "    {\n" +
+                    "        return CodecUtil.%sGetChoice(buffer, offset, %s);\n" +
+                    "    }\n\n" +
+                    "    public void %s(final boolean value)\n" +
+                    "    {\n" +
+                    "        CodecUtil.%sPutChoice(buffer, offset, %s, value);\n" +
+                    "    }\n",
+                    choiceName,
+                    methodTypePrefix,
+                    choiceVal,
+                    choiceName,
+                    methodTypePrefix,
+                    choiceVal
+                );
+
+                out.append(str);
+            }
+        }
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
     {
-        final String enumName = JavaUtil.toUpperFirstChar(tokens.get(0).name());
+        final String enumName = toUpperFirstChar(tokens.get(0).name());
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
@@ -120,7 +170,7 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateEnumBody(final Writer out, final Token token, final String enumName) throws IOException
     {
-        final String javaEncodingType = javaTypeFor(token.primitiveType());
+        final String javaEncodingType = javaTypeName(token.primitiveType());
 
         out.append("    private final ").append(javaEncodingType).append(" value;\n\n")
            .append("    ").append(enumName).append("(final ").append(javaEncodingType).append(" value)\n")
@@ -136,7 +186,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateEnumLookupMethod(final Writer out, final List<Token> tokens, final String enumName)
         throws IOException
     {
-        final String javaEncodingType = javaTypeFor(tokens.get(0).primitiveType());
+        final String javaEncodingType = javaTypeName(tokens.get(0).primitiveType());
 
         out.append("    public ").append(enumName).append(" lookup(final ").append(javaEncodingType).append(" value)\n")
            .append("    {\n")
@@ -188,8 +238,8 @@ public class JavaGenerator implements CodeGenerator
         {
             if (token.signal() == Signal.ENCODING)
             {
-                final String typeName = javaTypeFor(token.primitiveType());
-                final String methodPrefix = token.primitiveType().primitiveName();
+                final String javaTypeName = javaTypeName(token.primitiveType());
+                final String methodTypePrefix = token.primitiveType().primitiveName();
                 final String propertyName = token.name();
                 final Integer offset = Integer.valueOf(token.offset());
 
@@ -197,19 +247,19 @@ public class JavaGenerator implements CodeGenerator
                      "\n" +
                      "    public %s %s()\n" +
                      "    {\n" +
-                     "        return JavaUtil.%sGet(buffer, offset + %d);\n" +
+                     "        return CodecUtil.%sGet(buffer, offset + %d);\n" +
                      "    }\n\n" +
                      "    public void %s(final %s value)\n" +
                      "    {\n" +
-                     "        JavaUtil.%sPut(buffer, offset + %d, value);\n" +
+                     "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
                      "    }\n",
-                     typeName,
+                     javaTypeName,
                      propertyName,
-                     methodPrefix,
+                     methodTypePrefix,
                      offset,
                      propertyName,
-                     typeName,
-                     methodPrefix,
+                     javaTypeName,
+                     methodTypePrefix,
                      offset
                 );
 
@@ -218,7 +268,7 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private void generateBufferConfig(final Writer out) throws IOException
+    private void generateBufferCode(final Writer out) throws IOException
     {
         out.append("    private DirectBuffer buffer;\n")
            .append("    private int offset;\n\n")

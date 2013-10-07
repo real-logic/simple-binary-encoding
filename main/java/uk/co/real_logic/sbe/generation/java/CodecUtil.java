@@ -15,63 +15,8 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import uk.co.real_logic.sbe.PrimitiveType;
-
-import java.util.EnumMap;
-import java.util.Map;
-
-public class JavaUtil
+public class CodecUtil
 {
-    private static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
-
-    static
-    {
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.CHAR, "byte");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT8, "byte");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT16, "short");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT32, "int");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT64, "long");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT8, "short");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT16, "int");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT32, "long");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT64, "long");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.FLOAT, "float");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.DOUBLE, "double");
-    }
-
-    /**
-     * Map the name of a {@link PrimitiveType} to a Java primitive type name.
-     *
-     * @param primitiveType to map.
-     * @return the name of the Java primitive that most closely maps.
-     */
-    public static String javaTypeFor(final PrimitiveType primitiveType)
-    {
-        return typeNameByPrimitiveTypeMap.get(primitiveType);
-    }
-
-    /**
-     * Uppercase the first character of a given String.
-     *
-     * @param str to have the first character upper cased.
-     * @return a new String with the first character in uppercase.
-     */
-    public static String toUpperFirstChar(final String str)
-    {
-        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
-    }
-
-    /**
-     * Lowercase the first character of a given String.
-     *
-     * @param str to have the first character upper cased.
-     * @return a new String with the first character in uppercase.
-     */
-    public static String toLowerFirstChar(final String str)
-    {
-        return Character.toLowerCase(str.charAt(0)) + str.substring(1);
-    }
-
     /**
      * Put a character to a {@link DirectBuffer} at the given index.
      *
@@ -364,5 +309,117 @@ public class JavaUtil
     public static double doubleGet(final DirectBuffer buffer, final int index)
     {
         return buffer.getDouble(index);
+    }
+
+    /**
+     * Is a bit set at a given index.
+     *
+     * @param buffer to read from.
+     * @param index of the beginning byte
+     * @param bitIndex bit index to read
+     * @return true if the bit is set otherwise false.
+     */
+    public static boolean uint8GetChoice(final DirectBuffer buffer, final int index, final int bitIndex)
+    {
+        return 0 != (buffer.getByte(index) | (1 << bitIndex));
+    }
+
+    /**
+     * Set a bit on or off at a given index.
+     *
+     * @param buffer to write the bit too.
+     * @param index of the beginning byte.
+     * @param bitIndex bit index to set.
+     * @param switchOn true sets bit to 1 and false sets it to 0.
+     */
+    public static void uint8PutChoice(final DirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn)
+    {
+        byte bits = buffer.getByte(index);
+        bits = (byte)(0xFF & (switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex)));
+        buffer.putByte(index, bits);
+    }
+
+    /**
+     * Is a bit set at a given index.
+     *
+     * @param buffer to read from.
+     * @param index of the beginning byte
+     * @param bitIndex bit index to read
+     * @return true if the bit is set otherwise false.
+     */
+    public static boolean uint16GetChoice(final DirectBuffer buffer, final int index, final int bitIndex)
+    {
+        return 0 != (buffer.getShort(index) | (1 << bitIndex));
+    }
+
+    /**
+     * Set a bit on or off at a given index.
+     *
+     * @param buffer to write the bit too.
+     * @param index of the beginning byte.
+     * @param bitIndex bit index to set.
+     * @param switchOn true sets bit to 1 and false sets it to 0.
+     */
+    public static void uint16PutChoice(final DirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn)
+    {
+        short bits = buffer.getShort(index);
+        bits = (short)(0xFFFF & (switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex)));
+        buffer.putShort(index, bits);
+    }
+
+    /**
+     * Is a bit set at a given index.
+     *
+     * @param buffer to read from.
+     * @param index of the beginning byte
+     * @param bitIndex bit index to read
+     * @return true if the bit is set otherwise false.
+     */
+    public static boolean uint32GetChoice(final DirectBuffer buffer, final int index, final int bitIndex)
+    {
+        return 0 != (buffer.getInt(index) | (1 << bitIndex));
+    }
+
+    /**
+     * Set a bit on or off at a given index.
+     *
+     * @param buffer to write the bit too.
+     * @param index of the beginning byte.
+     * @param bitIndex bit index to set.
+     * @param switchOn true sets bit to 1 and false sets it to 0.
+     */
+    public static void uint32PutChoice(final DirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn)
+    {
+        int bits = buffer.getInt(index);
+        bits = switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex);
+        buffer.putInt(index, bits);
+    }
+
+    /**
+     * Is a bit set at a given index.
+     *
+     * @param buffer to read from.
+     * @param index of the beginning byte
+     * @param bitIndex bit index to read
+     * @return true if the bit is set otherwise false.
+     */
+    public static boolean uint64GetChoice(final DirectBuffer buffer, final int index, final int bitIndex)
+    {
+        return 0 != (buffer.getLong(index) | (1L << bitIndex));
+    }
+
+    /**
+     * Set a bit on or off at a given index.
+     *
+     * @param buffer to write the bit too.
+     * @param index of the beginning byte.
+     * @param bitIndex bit index to set.
+     * @param switchOn true sets bit to 1 and false sets it to 0.
+     */
+    public static void uint64PutChoice(final DirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn)
+    {
+        long bits = buffer.getLong(index);
+        bits = switchOn ? bits | (1L << bitIndex) : bits & ~(1L << bitIndex);
+        buffer.putLong(index, bits);
     }
 }

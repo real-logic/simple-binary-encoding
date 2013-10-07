@@ -19,9 +19,15 @@
             <validValue name="B">B</validValue>
             <validValue name="C">C</validValue>
         </enum>
+        <set name="optionalExtras" encodingType="uint8" semanticType="Extras">
+            <choice name="sunRoof">0</choice>
+            <choice name="sportsPack">1</choice>
+            <choice name="cruiseControl">2</choice>
+        </set>
     </types>
     <message name="Car" id="1" description="Description of a Car">
         <field name="available" id="1" type="Boolean"/>
         <field name="code" id="2" type="modelType"/>
+        <field name="extras" id="3" type="optionalExtras"/>
     </message>
 </messageSchema>
