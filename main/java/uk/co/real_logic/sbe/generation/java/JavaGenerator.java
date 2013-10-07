@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
@@ -159,7 +160,11 @@ public class JavaGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            sb.append("    ").append(token.name()).append('(').append(token.options().constVal()).append("),\n");
+            final String castType = javaTypeName(token.primitiveType());
+            final PrimitiveValue val = token.options().constVal();
+            sb.append("    ")
+              .append(token.name())
+              .append("((").append(castType).append(")").append(val).append("),\n");
         }
 
         sb.setLength(sb.length() - 2);
@@ -188,7 +193,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final String javaEncodingType = javaTypeName(tokens.get(0).primitiveType());
 
-        out.append("    public ").append(enumName).append(" lookup(final ").append(javaEncodingType).append(" value)\n")
+        out.append("    public static ").append(enumName).append(" lookup(final ").append(javaEncodingType).append(" value)\n")
            .append("    {\n")
            .append("        switch (value)\n")
            .append("        {\n");
