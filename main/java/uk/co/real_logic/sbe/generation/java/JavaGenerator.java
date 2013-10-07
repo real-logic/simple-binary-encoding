@@ -82,7 +82,7 @@ public class JavaGenerator implements CodeGenerator
 
     public void generateMessageStubs() throws IOException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //To change body of implemented methods use File | Options | File Templates.
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
@@ -109,7 +109,7 @@ public class JavaGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            sb.append("    ").append(token.name()).append('(').append(token.settings().constVal()).append("),\n");
+            sb.append("    ").append(token.name()).append('(').append(token.options().constVal()).append("),\n");
         }
 
         sb.setLength(sb.length() - 2);
@@ -145,7 +145,7 @@ public class JavaGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            final String constVal = token.settings().constVal().toString();
+            final String constVal = token.options().constVal().toString();
             out.append("            case ").append(constVal).append(": return ").append(token.name()).append(";\n");
         }
 

@@ -57,7 +57,7 @@ public class XmlSchemaParser
      * Exceptions are passed back up for any problems.
      *
      * @param in stream from which schema is read.
-     * @return {@link MessageSchema} settings for the schema.
+     * @return {@link MessageSchema} options for the schema.
      */
     public static MessageSchema parse(final InputStream in)
         throws Exception

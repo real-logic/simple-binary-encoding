@@ -17,7 +17,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.ir.Settings;
+import uk.co.real_logic.sbe.ir.Options;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
@@ -26,9 +26,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class to hold the state while generating the {@link IntermediateRepresentation}.
- */
+/** Class to hold the state while generating the {@link IntermediateRepresentation}. */
 public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
@@ -83,17 +81,34 @@ public class IrGenerator
 
     private void addMessageSignal(final Message msg, final Signal signal)
     {
-        tokenList.add(new Token(signal, msg.getName(), msg.getId()));
+        Token token = new Token.Builder()
+            .signal(signal)
+            .name(msg.getName())
+            .schemaId(msg.getId())
+            .build();
+
+        tokenList.add(token);
     }
 
     private void addTypeSignal(final Type type, final Signal signal)
     {
-        tokenList.add(new Token(signal, type.getName(), Token.INVALID_ID));
+        Token token = new Token.Builder()
+            .signal(signal)
+            .name(type.getName())
+            .build();
+
+        tokenList.add(token);
     }
 
     private void addFieldSignal(final Field field, final Signal signal)
     {
-        tokenList.add(new Token(signal, field.getName(), field.getId()));
+        Token token = new Token.Builder()
+            .signal(signal)
+            .name(field.getName())
+            .schemaId(field.getId())
+            .build();
+
+        tokenList.add(token);
     }
 
     private void addAllFields(final List<Field> fieldList)
@@ -158,118 +173,117 @@ public class IrGenerator
     private void add(final EnumType type, final int offset)
     {
         PrimitiveType encodingType = type.getEncodingType();
-        Settings.Builder builder = new Settings.Builder();
+        Options.Builder optsBuilder = new Options.Builder();
 
         if (type.getPresence() == Presence.OPTIONAL)
         {
-            builder.nullVal(encodingType.nullVal());
+            optsBuilder.nullVal(encodingType.nullVal());
         }
 
-        tokenList.add(new Token(Signal.BEGIN_ENUM,
-                                type.getName(),
-                                Token.INVALID_ID,
-                                encodingType,
-                                encodingType.size(),
-                                offset,
-                                byteOrder,
-                                builder.build()));
+        Token.Builder builder = new Token.Builder()
+            .signal(Signal.BEGIN_ENUM)
+            .name(type.getName())
+            .primitiveType(encodingType)
+            .size(encodingType.size())
+            .offset(offset)
+            .byteOrder(byteOrder)
+            .options(optsBuilder.build());
+
+        tokenList.add(builder.build());
 
         for (final EnumType.ValidValue v : type.getValidValues())
         {
             add(v, encodingType);
         }
 
-        tokenList.add(new Token(Signal.END_ENUM,
-                                type.getName(),
-                                Token.INVALID_ID,
-                                encodingType,
-                                encodingType.size(),
-                                offset,
-                                byteOrder,
-                                builder.build()));
+        builder.signal(Signal.END_ENUM);
+
+        tokenList.add(builder.build());
     }
 
     private void add(final EnumType.ValidValue value, final PrimitiveType encodingType)
     {
-        tokenList.add(new Token(Signal.VALID_VALUE,
-                                value.getName(),
-                                Token.INVALID_ID,
-                                encodingType,
-                                0,
-                                0,
-                                byteOrder,
-                                new Settings.Builder()
-                                .constVal(value.getPrimitiveValue())
-                                .build()));
+        Token.Builder builder = new Token.Builder()
+            .signal(Signal.VALID_VALUE)
+            .name(value.getName())
+            .primitiveType(encodingType)
+            .byteOrder(byteOrder)
+            .options(new Options.Builder()
+                         .constVal(value.getPrimitiveValue())
+                         .build());
+
+        tokenList.add(builder.build());
     }
 
     private void add(final SetType type, final int offset)
     {
         PrimitiveType encodingType = type.getEncodingType();
 
-        tokenList.add(new Token(Signal.BEGIN_SET,
-                                type.getName(),
-                                Token.INVALID_ID,
-                                encodingType,
-                                encodingType.size(),
-                                offset,
-                                byteOrder,
-                                new Settings()));
+        Token.Builder builder = new Token.Builder()
+            .signal(Signal.BEGIN_SET)
+            .name(type.getName())
+            .primitiveType(encodingType)
+            .size(encodingType.size())
+            .offset(offset)
+            .byteOrder(byteOrder);
+
+        tokenList.add(builder.build());
 
         for (final SetType.Choice choice : type.getChoices())
         {
             add(choice);
         }
 
-        tokenList.add(new Token(Signal.END_SET,
-                                type.getName(),
-                                Token.INVALID_ID,
-                                encodingType,
-                                encodingType.size(),
-                                offset,
-                                byteOrder,
-                                new Settings()));
+        builder.signal(Signal.END_SET);
+
+        tokenList.add(builder.build());
     }
 
     private void add(final SetType.Choice value)
     {
-        tokenList.add(new Token(Signal.CHOICE,
-                                value.getName(),
-                                Token.INVALID_ID,
-                                new Settings.Builder()
-                                .constVal(value.getPrimitiveValue())
-                                .build()));
+        Token token = new Token.Builder()
+            .signal(Signal.CHOICE)
+            .name(value.getName())
+            .options(new Options.Builder()
+                         .constVal(value.getPrimitiveValue())
+                         .build())
+            .build();
+
+        tokenList.add(token);
     }
 
     private void add(final EncodedDataType type, final int offset)
     {
-        Settings.Builder builder = new Settings.Builder();
+        Options.Builder optsBuilder = new Options.Builder();
 
         switch (type.getPresence())
         {
             case REQUIRED:
-                builder.minVal(type.getMinValue())
-                    .maxVal(type.getMaxValue());
+                optsBuilder.minVal(type.getMinValue())
+                           .maxVal(type.getMaxValue());
                 break;
 
             case OPTIONAL:
-                builder.minVal(type.getMinValue())
-                    .maxVal(type.getMaxValue())
-                    .nullVal(type.getNullValue());
+                optsBuilder.minVal(type.getMinValue())
+                           .maxVal(type.getMaxValue())
+                           .nullVal(type.getNullValue());
                 break;
 
             case CONSTANT:
-                builder.constVal(type.getConstValue());
+                optsBuilder.constVal(type.getConstValue());
                 break;
         }
 
-        tokenList.add(new Token(Signal.ENCODING,
-                                type.getName(),
-                                Token.INVALID_ID,
-                                type.getPrimitiveType(),
-                                type.size(),
-                                offset,
-                                byteOrder,
-                                builder.build()));
+        Token token = new Token.Builder()
+            .signal(Signal.ENCODING)
+            .name(type.getName())
+            .primitiveType(type.getPrimitiveType())
+            .size(type.size())
+            .offset(offset)
+            .byteOrder(byteOrder)
+            .options(optsBuilder.build())
+            .build();
+
+        tokenList.add(token);
     }
 }

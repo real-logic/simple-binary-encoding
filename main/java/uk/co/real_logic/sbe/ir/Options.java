@@ -18,16 +18,16 @@ package uk.co.real_logic.sbe.ir;
 import uk.co.real_logic.sbe.PrimitiveValue;
 
 /**
- * Settings describing an {@link Token}
+ * Optional settings that can be associated with {@link Token}s.
  */
-public class Settings
+public class Options
 {
     private final PrimitiveValue minVal;
     private final PrimitiveValue maxVal;
     private final PrimitiveValue nullVal;
     private final PrimitiveValue constVal;
 
-    public Settings()
+    public Options()
     {
         minVal = null;
         maxVal = null;
@@ -35,10 +35,10 @@ public class Settings
         constVal = null;
     }
 
-    public Settings(final PrimitiveValue minVal,
-                    final PrimitiveValue maxVal,
-                    final PrimitiveValue nullVal,
-                    final PrimitiveValue constVal)
+    public Options(final PrimitiveValue minVal,
+                   final PrimitiveValue maxVal,
+                   final PrimitiveValue nullVal,
+                   final PrimitiveValue constVal)
     {
         this.minVal = minVal;
         this.maxVal = maxVal;
@@ -47,7 +47,7 @@ public class Settings
     }
 
     /**
-     * Return the minVal for the token or null if not set.
+     * The min value for the token or null if not set.
      *
      * @return the minVal for the token or null if not set.
      */
@@ -57,7 +57,7 @@ public class Settings
     }
 
     /**
-     * Return the maxVal for the token or null if not set.
+     * The max value for the token or null if not set.
      *
      * @return the maxVal for the token or null if not set.
      */
@@ -67,7 +67,7 @@ public class Settings
     }
 
     /**
-     * Return the nullVal for the token or null if not set.
+     * The null value for the token or null if not set.
      *
      * @return the nullVal for the token or null if not set.
      */
@@ -77,7 +77,7 @@ public class Settings
     }
 
     /**
-     * Return the constant value for the token or null if not set.
+     * The constant value for the token or null if not set.
      *
      * @return the constant value for the token or null if not set.
      */
@@ -88,7 +88,7 @@ public class Settings
 
     public String toString()
     {
-        return "Settings{" +
+        return "Options{" +
             "minVal=" + minVal +
             ", maxVal=" + maxVal +
             ", nullVal=" + nullVal +
@@ -97,7 +97,7 @@ public class Settings
     }
 
     /**
-     * Builder to make {@link Settings} easier to create.
+     * Builder to make {@link Options} easier to create.
      */
     public static class Builder
     {
@@ -138,9 +138,9 @@ public class Settings
             return this;
         }
 
-        public Settings build()
+        public Options build()
         {
-            return new Settings(minVal, maxVal, nullVal, constVal);
+            return new Options(minVal, maxVal, nullVal, constVal);
         }
     }
 }
