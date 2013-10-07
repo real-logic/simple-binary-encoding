@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Utilities for mapping between IR and the Java language.
  */
-public class JavaLangUtil
+public class JavaUtil
 {
     static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
 

@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.generation.java.JavaLangUtil.*;
+import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 
 public class JavaGenerator implements CodeGenerator
 {
