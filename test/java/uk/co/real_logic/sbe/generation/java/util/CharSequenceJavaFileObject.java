@@ -20,29 +20,16 @@ import java.net.URI;
 
 public class CharSequenceJavaFileObject extends SimpleJavaFileObject
 {
-    /** CharSequence representing the source code to be compiled */
-    private final CharSequence content;
+    private final CharSequence sourceCode;
 
-    /**
-     * This constructor will store the source code in the
-     * internal "content" variable and register it as a
-     * source code, using a URI containing the class full name
-     *
-     * @param className name of the public class in the source code
-     * @param content   source code to compile
-     */
-    public CharSequenceJavaFileObject(final String className, final CharSequence content)
+    public CharSequenceJavaFileObject(final String className, final CharSequence sourcCode)
     {
         super(URI.create("string:///" + className.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
-        this.content = content;
+        this.sourceCode = sourcCode;
     }
 
-    /**
-     * Answers the CharSequence to be compiled. It will give
-     * the source code stored in variable "content"
-     */
     public CharSequence getCharContent(boolean ignoreEncodingErrors)
     {
-        return content;
+        return sourceCode;
     }
 }

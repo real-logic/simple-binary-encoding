@@ -21,28 +21,13 @@ import java.security.SecureClassLoader;
 
 public class ClassFileManager<M extends JavaFileManager> extends ForwardingJavaFileManager<M>
 {
-    /**
-     * Instance of JavaClassObject that will store the
-     * compiled bytecode of our class
-     */
-    private JavaClassObject classObject;
+    private JavaClassObject javaClassObject;
 
-    /**
-     * Will initialize the manager with the specified
-     * standard java file manager
-     */
     public ClassFileManager(final M standardManager)
     {
         super(standardManager);
     }
 
-    /**
-     * Will be used by us to get the class loader for our
-     * compiled class. It creates an anonymous class
-     * extending the SecureClassLoader which uses the
-     * byte code created by the compiler and stored in
-     * the JavaClassObject, and returns the Class for it
-     */
     public ClassLoader getClassLoader(final Location location)
     {
         return new SecureClassLoader()
@@ -50,23 +35,20 @@ public class ClassFileManager<M extends JavaFileManager> extends ForwardingJavaF
             protected Class<?> findClass(String name)
                 throws ClassNotFoundException
             {
-                final byte[] buffer = classObject.getBytes();
-                return super.defineClass(name, classObject.getBytes(), 0, buffer.length);
+                final byte[] buffer = javaClassObject.getBytes();
+                return super.defineClass(name, buffer, 0, buffer.length);
             }
         };
     }
 
-    /**
-     * Gives the compiler an instance of the JavaClassObject
-     * so that the compiler can write the byte code into it.
-     */
     public JavaFileObject getJavaFileForOutput(final Location location,
                                                final String className,
                                                final JavaFileObject.Kind kind,
                                                final FileObject sibling)
         throws IOException
     {
-        classObject = new JavaClassObject(className, kind);
-        return classObject;
+        javaClassObject = new JavaClassObject(className, kind);
+
+        return javaClassObject;
     }
 }
