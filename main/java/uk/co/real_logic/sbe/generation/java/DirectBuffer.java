@@ -91,7 +91,7 @@ public class DirectBuffer
      *
      * @return the capacity of the underlying buffer in bytes.
      */
-    public int getCapacity()
+    public int capacity()
     {
         return capacity;
     }

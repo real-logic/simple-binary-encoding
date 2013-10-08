@@ -59,7 +59,7 @@ public class DirectBufferTest
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldCheckUpperBound(final DirectBuffer view)
     {
-        view.putInt(view.getCapacity() - 1, INT_VALUE);
+        view.putInt(view.capacity() - 1, INT_VALUE);
     }
 
     @Theory
