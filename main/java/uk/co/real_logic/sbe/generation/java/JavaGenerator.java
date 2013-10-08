@@ -15,7 +15,6 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
@@ -27,7 +26,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
+import static uk.co.real_logic.sbe.generation.java.JavaUtil.javaTypeName;
+import static uk.co.real_logic.sbe.generation.java.JavaUtil.toUpperFirstChar;
 
 public class JavaGenerator implements CodeGenerator
 {
@@ -160,11 +160,8 @@ public class JavaGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            final String castType = javaTypeName(token.primitiveType());
-            final PrimitiveValue val = token.options().constVal();
-            sb.append("    ")
-              .append(token.name())
-              .append("((").append(castType).append(")").append(val).append("),\n");
+            final String constVal = generateLiteralVal(token);
+            sb.append("    ").append(token.name()).append('(').append(constVal).append("),\n");
         }
 
         sb.setLength(sb.length() - 2);
@@ -281,5 +278,38 @@ public class JavaGenerator implements CodeGenerator
            .append("        this.buffer = buffer;\n")
            .append("        this.offset = offset;\n")
            .append("    }\n");
+    }
+
+    private String generateLiteralVal(final Token token)
+    {
+        String literalValue = "";
+
+        final String castType = javaTypeName(token.primitiveType());
+        switch (token.primitiveType())
+        {
+            case CHAR:
+            case UINT8:
+            case UINT16:
+            case INT8:
+            case INT16:
+                literalValue =  "(" + castType +")" + token.options().constVal();
+                break;
+
+            case UINT32:
+            case INT32:
+            case FLOAT:
+                literalValue = token.options().constVal().toString();
+                break;
+
+            case UINT64:
+            case INT64:
+                literalValue = token.options().constVal() + "L";
+                break;
+
+            case DOUBLE:
+                literalValue = token.options().constVal() + "d";
+        }
+
+        return literalValue;
     }
 }
