@@ -321,7 +321,7 @@ public class CodecUtil
      */
     public static boolean uint8GetChoice(final DirectBuffer buffer, final int index, final int bitIndex)
     {
-        return 0 != (buffer.getByte(index) | (1 << bitIndex));
+        return 0 != (buffer.getByte(index) & (1 << bitIndex));
     }
 
     /**
@@ -349,7 +349,7 @@ public class CodecUtil
      */
     public static boolean uint16GetChoice(final DirectBuffer buffer, final int index, final int bitIndex)
     {
-        return 0 != (buffer.getShort(index) | (1 << bitIndex));
+        return 0 != (buffer.getShort(index) & (1 << bitIndex));
     }
 
     /**
@@ -377,7 +377,7 @@ public class CodecUtil
      */
     public static boolean uint32GetChoice(final DirectBuffer buffer, final int index, final int bitIndex)
     {
-        return 0 != (buffer.getInt(index) | (1 << bitIndex));
+        return 0 != (buffer.getInt(index) & (1 << bitIndex));
     }
 
     /**
@@ -405,7 +405,7 @@ public class CodecUtil
      */
     public static boolean uint64GetChoice(final DirectBuffer buffer, final int index, final int bitIndex)
     {
-        return 0 != (buffer.getLong(index) | (1L << bitIndex));
+        return 0 != (buffer.getLong(index) & (1L << bitIndex));
     }
 
     /**

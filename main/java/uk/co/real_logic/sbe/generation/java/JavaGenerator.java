@@ -226,9 +226,8 @@ public class JavaGenerator implements CodeGenerator
     private static void generateClassDeclaration(final Writer out, final String className)
         throws IOException
     {
-        out.append("public class ").append(className).append("\n{\n");
+        out.append("public class ").append(className).append(" implements DirectBufferFlyweight").append("\n{\n");
     }
-
 
     private static void generateEnumDeclaration(final Writer out, final String name)
         throws IOException
