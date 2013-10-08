@@ -31,7 +31,7 @@ import static uk.co.real_logic.sbe.util.BitUtil.SIZE_OF_BYTE;
 @RunWith(Theories.class)
 public class DirectBufferTest
 {
-    private static final int BUFFER_SIZE = 1024;
+    private static final int BUFFER_SIZE = 4096;
     private static final int INDEX = 8;
 
     private static final byte BYTE_VALUE = 1;

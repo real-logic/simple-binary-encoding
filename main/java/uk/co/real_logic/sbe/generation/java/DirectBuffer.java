@@ -34,7 +34,7 @@ public class DirectBuffer
     public static final String BOUNDS_CHECK_PROPERTY = "atomic.buffer.bounds.check";
 
     /** Should access to the backing array be bounds checked or not */
-    public static final boolean BOUNDS_CHECK = "TRUE".equalsIgnoreCase(System.getProperty(BOUNDS_CHECK_PROPERTY, "FALSE"));
+    public static final boolean BOUNDS_CHECK = "TRUE".equalsIgnoreCase(System.getProperty(BOUNDS_CHECK_PROPERTY, "TRUE"));
 
     private static final Unsafe UNSAFE = BitUtil.getUnsafe();
     private static final long BYTE_ARRAY_OFFSET = UNSAFE.arrayBaseOffset(byte[].class);

@@ -160,7 +160,7 @@ public class JavaGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            final String constVal = generateLiteralVal(token);
+            final String constVal = generateLiteral(token);
             sb.append("    ").append(token.name()).append('(').append(constVal).append("),\n");
         }
 
@@ -280,9 +280,9 @@ public class JavaGenerator implements CodeGenerator
            .append("    }\n");
     }
 
-    private String generateLiteralVal(final Token token)
+    private String generateLiteral(final Token token)
     {
-        String literalValue = "";
+        String literal = "";
 
         final String castType = javaTypeName(token.primitiveType());
         switch (token.primitiveType())
@@ -292,24 +292,24 @@ public class JavaGenerator implements CodeGenerator
             case UINT16:
             case INT8:
             case INT16:
-                literalValue =  "(" + castType +")" + token.options().constVal();
+                literal =  "(" + castType +")" + token.options().constVal();
                 break;
 
             case UINT32:
             case INT32:
             case FLOAT:
-                literalValue = token.options().constVal().toString();
+                literal = token.options().constVal().toString();
                 break;
 
             case UINT64:
             case INT64:
-                literalValue = token.options().constVal() + "L";
+                literal = token.options().constVal() + "L";
                 break;
 
             case DOUBLE:
-                literalValue = token.options().constVal() + "d";
+                literal = token.options().constVal() + "d";
         }
 
-        return literalValue;
+        return literal;
     }
 }

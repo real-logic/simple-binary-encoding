@@ -4,6 +4,7 @@
                description="Unit Test"
                byteOrder="littleEndian">
     <types>
+        <type name="modelYearType" primitiveType="uint16" semanticType="ModelYear"/>
         <composite name="messageHeader" description="Template ID and length of message root" semanticType="Length">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
@@ -26,8 +27,9 @@
         </set>
     </types>
     <message name="Car" id="1" description="Description of a Car">
-        <field name="available" id="1" type="boolean"/>
-        <field name="code" id="2" type="modelType"/>
-        <field name="extras" id="3" type="optionalExtras"/>
+        <field name="modelYear" id="1" type="modelYearType"/>
+        <field name="available" id="2" type="boolean"/>
+        <field name="code" id="3" type="modelType"/>
+        <field name="extras" id="4" type="optionalExtras"/>
     </message>
 </messageSchema>
