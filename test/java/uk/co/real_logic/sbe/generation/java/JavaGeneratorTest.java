@@ -185,7 +185,6 @@ public class JavaGeneratorTest
         verify(mockBuffer).putByte(numCylindersOffset, (byte)numCylinders);
     }
 
-/* TODO
     @Test
     public void shouldGenerateBasicMessage() throws Exception
     {
@@ -198,9 +197,8 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
         javaGenerator.generateMessageStubs();
 
-        System.out.println(stringWriter);
+        //System.out.println(stringWriter);
         final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
         assertNotNull(clazz);
     }
-*/
 }

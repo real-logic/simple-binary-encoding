@@ -272,40 +272,50 @@ public class JavaGenerator implements CodeGenerator
         {
             if (token.signal() == Signal.ENCODING)
             {
-                final String javaTypeName = javaTypeName(token.primitiveType());
-                final String typePrefix = token.primitiveType().primitiveName();
-                final String propertyName = token.name();
-                final Integer offset = Integer.valueOf(token.offset());
-                final PrimitiveValue constVal = token.options().constVal();
-
-                if (null == constVal)
-                {
-                    generatePrimitiveEncoding(out, javaTypeName, typePrefix, propertyName, offset);
-                }
-                else
-                {
-                    out.append(String.format(
-                        "\n" +
-                        "    public %s %s()\n" +
-                        "    {\n" +
-                        "        return %s;\n" +
-                        "    }\n",
-                        javaTypeName,
-                        propertyName,
-                        generateLiteral(token)
-                    ));
-                }
+                generatePrimitiveEncoding(out, token);
             }
         }
     }
 
-    private void generatePrimitiveEncoding(final Writer out,
-                                           final String javaTypeName,
-                                           final String typePrefix,
-                                           final String propertyName,
-                                           final Integer offset) throws IOException
+    private void generatePrimitiveEncoding(final Writer out, final Token token) throws IOException
     {
-        out.append(String.format(
+        final PrimitiveValue constVal = token.options().constVal();
+        if (null == constVal)
+        {
+            generatePrimitiveEncodingMethods(out, token);
+        }
+        else
+        {
+            generateConstEncodingMethod(out, token);
+        }
+    }
+
+    private void generateConstEncodingMethod(final Writer out, final Token token) throws IOException
+    {
+        final String javaTypeName = javaTypeName(token.primitiveType());
+        final String propertyName = token.name();
+        final String str = String.format(
+            "\n" +
+            "    public %s %s()\n" +
+            "    {\n" +
+            "        return %s;\n" +
+            "    }\n",
+            javaTypeName,
+            propertyName,
+            generateLiteral(token)
+        );
+
+        out.append(str);
+    }
+
+    private void generatePrimitiveEncodingMethods(final Writer out, final Token token) throws IOException
+    {
+        final String javaTypeName = javaTypeName(token.primitiveType());
+        final String typePrefix = token.primitiveType().primitiveName();
+        final String propertyName = token.name();
+        final Integer offset = Integer.valueOf(token.offset());
+
+        final String str = String.format(
             "\n" +
             "    public %s %s()\n" +
             "    {\n" +
@@ -323,7 +333,9 @@ public class JavaGenerator implements CodeGenerator
             javaTypeName,
             typePrefix,
             offset
-        ));
+        );
+
+        out.append(str);
     }
 
     private void generateFixedFlyweightCode(final Writer out) throws IOException
