@@ -60,7 +60,7 @@ public class JavaGeneratorTest
         final int templateIdOffset = 2;
         final Short templateId = Short.valueOf((short)7);
         final Integer blockLength = Integer.valueOf(32);
-        final String fqClassName = ir.getPackageName() + "." + MESSAGE_HEADER_VISITOR;
+        final String fqClassName = ir.packageName() + "." + MESSAGE_HEADER_VISITOR;
 
         when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
         when(mockOutputManager.createOutput(MESSAGE_HEADER_VISITOR)).thenReturn(stringWriter);
@@ -72,7 +72,7 @@ public class JavaGeneratorTest
         final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
         assertNotNull(clazz);
 
-        final DirectBufferFlyweight flyweight = (DirectBufferFlyweight)clazz.newInstance();
+        final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
         flyweight.reset(mockBuffer, bufferOffset);
 
         final Integer result = (Integer)clazz.getDeclaredMethod("templateId").invoke(flyweight);
@@ -87,7 +87,7 @@ public class JavaGeneratorTest
     public void shouldGenerateUint8EnumStub() throws Exception
     {
         final String className = "Boolean";
-        final String fqClassName = ir.getPackageName() + "." + className;
+        final String fqClassName = ir.packageName() + "." + className;
 
         when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
         when(mockOutputManager.createOutput(className)).thenReturn(stringWriter);
@@ -107,7 +107,7 @@ public class JavaGeneratorTest
     public void shouldGenerateCharEnumStub() throws Exception
     {
         final String className = "ModelType";
-        final String fqClassName = ir.getPackageName() + "." + className;
+        final String fqClassName = ir.packageName() + "." + className;
 
         when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
         when(mockOutputManager.createOutput(className)).thenReturn(stringWriter);
@@ -129,7 +129,7 @@ public class JavaGeneratorTest
         final int bufferOffset = 8;
         final Byte bitset = Byte.valueOf((byte)0b0000_0100);
         final String className = "OptionalExtras";
-        final String fqClassName = ir.getPackageName() + "." + className;
+        final String fqClassName = ir.packageName() + "." + className;
 
         when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
         when(mockOutputManager.createOutput(className)).thenReturn(stringWriter);
@@ -141,11 +141,66 @@ public class JavaGeneratorTest
         final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
         assertNotNull(clazz);
 
-        final DirectBufferFlyweight flyweight = (DirectBufferFlyweight)clazz.newInstance();
+        final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
         flyweight.reset(mockBuffer, bufferOffset);
 
         final Object result = clazz.getDeclaredMethod("cruiseControl").invoke(flyweight);
 
         assertThat((Boolean)result, is(Boolean.TRUE));
     }
+
+    @Test
+    public void shouldGenerateCompositeStub() throws Exception
+    {
+        final int bufferOffset = 64;
+        final int capacityFieldOffset = bufferOffset + 21;
+        final int numCylindersOffset = bufferOffset + 23;
+        final int expectedEngineCapacity = 2000;
+        final int expectedMaxRpm = 9000;
+        final String className = "EngineType";
+        final String fqClassName = ir.packageName() + "." + className;
+
+        when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
+        when(mockOutputManager.createOutput(className)).thenReturn(stringWriter);
+        when(Short.valueOf(mockBuffer.getShort(capacityFieldOffset))).thenReturn(Short.valueOf((short)expectedEngineCapacity));
+
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
+        javaGenerator.generateTypeStubs();
+
+        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
+        assertNotNull(clazz);
+
+        final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
+        flyweight.reset(mockBuffer, bufferOffset);
+
+        final Integer capacityResult = (Integer)clazz.getDeclaredMethod("capacity").invoke(flyweight);
+        assertThat(capacityResult, is(Integer.valueOf(expectedEngineCapacity)));
+
+        final Integer maxRpmResult = (Integer)clazz.getDeclaredMethod("maxRpm").invoke(flyweight);
+        assertThat(maxRpmResult, is(Integer.valueOf(expectedMaxRpm)));
+
+        final short numCylinders = (short)4;
+        clazz.getDeclaredMethod("numCylinders", short.class).invoke(flyweight, Short.valueOf(numCylinders));
+
+        verify(mockBuffer).putByte(numCylindersOffset, (byte)numCylinders);
+    }
+
+/* TODO
+    @Test
+    public void shouldGenerateBasicMessage() throws Exception
+    {
+        final String className = "BasicCar";
+        final String fqClassName = ir.packageName() + "." + className;
+
+        when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
+        when(mockOutputManager.createOutput(className)).thenReturn(stringWriter);
+
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
+        javaGenerator.generateMessageStubs();
+
+        System.out.println(stringWriter);
+        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
+        assertNotNull(clazz);
+    }
+*/
 }

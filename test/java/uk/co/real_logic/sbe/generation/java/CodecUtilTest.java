@@ -17,10 +17,10 @@ package uk.co.real_logic.sbe.generation.java;
 
 import org.junit.Test;
 
-import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class CodecUtilTest
 {

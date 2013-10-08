@@ -21,7 +21,7 @@ import java.net.URI;
 public class CharSequenceJavaFileObject extends SimpleJavaFileObject
 {
     /** CharSequence representing the source code to be compiled */
-    private CharSequence content;
+    private final CharSequence content;
 
     /**
      * This constructor will store the source code in the

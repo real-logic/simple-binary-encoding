@@ -25,7 +25,7 @@ public class ClassFileManager<M extends JavaFileManager> extends ForwardingJavaF
      * Instance of JavaClassObject that will store the
      * compiled bytecode of our class
      */
-    private JavaClassObject jclassObject;
+    private JavaClassObject classObject;
 
     /**
      * Will initialize the manager with the specified
@@ -50,8 +50,8 @@ public class ClassFileManager<M extends JavaFileManager> extends ForwardingJavaF
             protected Class<?> findClass(String name)
                 throws ClassNotFoundException
             {
-                byte[] b = jclassObject.getBytes();
-                return super.defineClass(name, jclassObject.getBytes(), 0, b.length);
+                final byte[] buffer = classObject.getBytes();
+                return super.defineClass(name, classObject.getBytes(), 0, buffer.length);
             }
         };
     }
@@ -66,7 +66,7 @@ public class ClassFileManager<M extends JavaFileManager> extends ForwardingJavaF
                                                final FileObject sibling)
         throws IOException
     {
-        jclassObject = new JavaClassObject(className, kind);
-        return jclassObject;
+        classObject = new JavaClassObject(className, kind);
+        return classObject;
     }
 }

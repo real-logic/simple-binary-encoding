@@ -41,7 +41,7 @@ public class BasicXmlIrGenerationTest
         IrGenerator irg = new IrGenerator();
 
         IntermediateRepresentation ir = irg.generate(schema);
-        List<Token> tokens = ir.getHeader();
+        List<Token> tokens = ir.header();
 
         assertThat(valueOf(tokens.size()), is(valueOf(6)));
 
@@ -104,7 +104,7 @@ public class BasicXmlIrGenerationTest
         IrGenerator irg = new IrGenerator();
         IntermediateRepresentation ir = irg.generate(schema);
 
-        List<Token> tokens = ir.getMessage(50001);
+        List<Token> tokens = ir.message(50001);
 
         assertThat(valueOf(tokens.size()), is(valueOf(5)));
 
@@ -154,7 +154,7 @@ public class BasicXmlIrGenerationTest
         IrGenerator irg = new IrGenerator();
         IntermediateRepresentation ir = irg.generate(schema);
 
-        List<Token> tokens = ir.getMessage(1);
+        List<Token> tokens = ir.message(1);
 
         assertThat(valueOf(tokens.size()), is(valueOf(8)));
 
@@ -222,7 +222,7 @@ public class BasicXmlIrGenerationTest
         int dimensionsBlEncIdx = 6;
         int dimensionsNigEncIdx = 7;
 
-        List<Token> tokens = ir.getMessage(1);
+        List<Token> tokens = ir.message(1);
 
         /* assert on the group token */
         assertThat(tokens.get(groupIdx).signal(), is(Signal.BEGIN_GROUP));
@@ -254,7 +254,7 @@ public class BasicXmlIrGenerationTest
         int dimensionsCompIdx = 5;
         int fieldInGroupIdx = 9;
 
-        List<Token> tokens = ir.getMessage(1);
+        List<Token> tokens = ir.message(1);
 
         assertThat(tokens.get(groupIdx).signal(), is(Signal.BEGIN_GROUP));
         assertThat(tokens.get(groupIdx).name(), is("ListOrdGrp"));
@@ -279,7 +279,7 @@ public class BasicXmlIrGenerationTest
         int lengthEncIdx = 6;
         int dataEncIdx = 7;
 
-        List<Token> tokens = ir.getMessage(2);
+        List<Token> tokens = ir.message(2);
 
         /* assert the varDataEncoding field node is formed correctly */
         assertThat(tokens.get(lengthFieldIdx).signal(), is(Signal.BEGIN_FIELD));

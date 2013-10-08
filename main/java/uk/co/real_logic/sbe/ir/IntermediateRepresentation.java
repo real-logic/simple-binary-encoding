@@ -50,7 +50,7 @@ public class IntermediateRepresentation
      *
      * @return the {@link List} of {@link Token}s representing the message header.
      */
-    public List<Token> getHeader()
+    public List<Token> header()
     {
         return headerTokens;
     }
@@ -76,7 +76,7 @@ public class IntermediateRepresentation
      * @param messageId to lookup.
      * @return the List of {@link Token}s representing the message or null if the id is not found.
      */
-    public List<Token> getMessage(final long messageId)
+    public List<Token> message(final long messageId)
     {
         return messagesByIdMap.get(Long.valueOf(messageId));
     }
@@ -87,7 +87,7 @@ public class IntermediateRepresentation
      * @param name of type to lookup.
      * @return the List of {@link Token}s representing the type or null if the name is not found.
      */
-    public List<Token> getType(final String name)
+    public List<Token> type(final String name)
     {
         return typesByNameMap.get(name);
     }
@@ -103,11 +103,21 @@ public class IntermediateRepresentation
     }
 
     /**
+     * The {@link Collection} of messages in this schema.
+     *
+     * @return the {@link Collection} of messages in this schema.
+     */
+    public Collection<List<Token>> messages()
+    {
+        return messagesByIdMap.values();
+    }
+
+    /**
      * Get the package name to be used for generated code.
      *
      * @return the package name to be used for generated code.
      */
-    public String getPackageName()
+    public String packageName()
     {
         return packageName;
     }

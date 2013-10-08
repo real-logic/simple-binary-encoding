@@ -29,7 +29,7 @@ public class JavaClassObject extends SimpleJavaFileObject
      * byte array out of it
      * and put it in the memory as an instance of our class.
      */
-    protected final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
     /**
      * Registers the compiled class object under URI

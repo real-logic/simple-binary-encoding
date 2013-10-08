@@ -16,9 +16,9 @@
 package uk.co.real_logic.sbe.generation.java;
 
 /**
- * Interface for setting locating a flyweight over a {@link DirectBuffer}.
+ * Interface for locating a fixed length flyweight over a {@link DirectBuffer}.
  */
-public interface DirectBufferFlyweight
+public interface FixedFlyweight
 {
     /**
      * Reset this flyweight to window over the buffer from a given offset.

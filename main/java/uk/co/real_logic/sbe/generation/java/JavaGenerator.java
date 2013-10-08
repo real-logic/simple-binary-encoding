@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
@@ -51,11 +52,11 @@ public class JavaGenerator implements CodeGenerator
     {
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_VISITOR))
         {
-            generateFileHeader(out, ir.getPackageName());
-            generateClassDeclaration(out, MESSAGE_HEADER_VISITOR);
-            generateBufferCode(out);
+            generateFileHeader(out, ir.packageName());
+            generateClassDeclaration(out, MESSAGE_HEADER_VISITOR, FixedFlyweight.class.getSimpleName());
+            generateFixedFlyweightCode(out);
 
-            final List<Token> tokens = ir.getHeader();
+            final List<Token> tokens = ir.header();
             generatePrimitiveEncodings(out, tokens.subList(1, tokens.size() - 1));
 
             out.append("}\n");
@@ -68,9 +69,6 @@ public class JavaGenerator implements CodeGenerator
         {
             switch (tokens.get(0).signal())
             {
-                case BEGIN_COMPOSITE:
-                    break;
-
                 case BEGIN_ENUM:
                     generateEnum(tokens);
                     break;
@@ -78,13 +76,29 @@ public class JavaGenerator implements CodeGenerator
                 case BEGIN_SET:
                     generateChoiceSet(tokens);
                     break;
+
+                case BEGIN_COMPOSITE:
+                    generateComposite(tokens);
+                    break;
             }
         }
     }
 
     public void generateMessageStubs() throws IOException
     {
-        // TODO
+        for (final List<Token> tokens : ir.messages())
+        {
+            final String className = toUpperFirstChar(tokens.get(0).name());
+
+            try (final Writer out = outputManager.createOutput(className))
+            {
+                generateFileHeader(out, ir.packageName());
+                generateClassDeclaration(out, className, MessageFlyweight.class.getSimpleName());
+                generateMessageFlyweightCode(out);
+
+                out.append("}\n");
+            }
+        }
     }
 
     private void generateChoiceSet(final List<Token> tokens) throws IOException
@@ -93,11 +107,45 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
-            generateFileHeader(out, ir.getPackageName());
-            generateClassDeclaration(out, bitSetName);
-            generateBufferCode(out);
+            generateFileHeader(out, ir.packageName());
+            generateClassDeclaration(out, bitSetName, FixedFlyweight.class.getSimpleName());
+            generateFixedFlyweightCode(out);
 
             generateChoices(out, tokens.subList(1, tokens.size() - 1));
+
+            out.append("}\n");
+        }
+    }
+
+    private void generateEnum(final List<Token> tokens) throws IOException
+    {
+        final String enumName = toUpperFirstChar(tokens.get(0).name());
+
+        try (final Writer out = outputManager.createOutput(enumName))
+        {
+            generateFileHeader(out, ir.packageName());
+            generateEnumDeclaration(out, enumName);
+
+            generateEnumValues(out, tokens.subList(1, tokens.size() - 1));
+            generateEnumBody(out, tokens.get(0), enumName);
+
+            generateEnumLookupMethod(out, tokens.subList(1, tokens.size() - 1), enumName);
+
+            out.append("}\n");
+        }
+    }
+
+    private void generateComposite(final List<Token> tokens) throws IOException
+    {
+        final String compositeName = toUpperFirstChar(tokens.get(0).name());
+
+        try (final Writer out = outputManager.createOutput(compositeName))
+        {
+            generateFileHeader(out, ir.packageName());
+            generateClassDeclaration(out, compositeName, FixedFlyweight.class.getSimpleName());
+            generateFixedFlyweightCode(out);
+
+            generatePrimitiveEncodings(out, tokens.subList(1, tokens.size() - 1));
 
             out.append("}\n");
         }
@@ -133,24 +181,6 @@ public class JavaGenerator implements CodeGenerator
 
                 out.append(str);
             }
-        }
-    }
-
-    private void generateEnum(final List<Token> tokens) throws IOException
-    {
-        final String enumName = toUpperFirstChar(tokens.get(0).name());
-
-        try (final Writer out = outputManager.createOutput(enumName))
-        {
-            generateFileHeader(out, ir.getPackageName());
-            generateEnumDeclaration(out, enumName);
-
-            generateEnumValues(out, tokens.subList(1, tokens.size() - 1));
-            generateEnumBody(out, tokens.get(0), enumName);
-
-            generateEnumLookupMethod(out, tokens.subList(1, tokens.size() - 1), enumName);
-
-            out.append("}\n");
         }
     }
 
@@ -212,18 +242,21 @@ public class JavaGenerator implements CodeGenerator
     {
         final String str = String.format(
             "/* Generated class message */\n" +
-                "package %s;\n\n" +
-                "import uk.co.real_logic.sbe.generation.java.*;\n\n",
+            "package %s;\n\n" +
+            "import uk.co.real_logic.sbe.generation.java.*;\n\n",
             packageName
         );
 
         out.append(str);
     }
 
-    private static void generateClassDeclaration(final Writer out, final String className)
+    private static void generateClassDeclaration(final Writer out,
+                                                 final String className,
+                                                 final String implementsName)
         throws IOException
     {
-        out.append("public class ").append(className).append(" implements DirectBufferFlyweight").append("\n{\n");
+        out.append("public class ").append(className)
+           .append(" implements ").append(implementsName).append("\n{\n");
     }
 
     private static void generateEnumDeclaration(final Writer out, final String name)
@@ -243,37 +276,78 @@ public class JavaGenerator implements CodeGenerator
                 final String typePrefix = token.primitiveType().primitiveName();
                 final String propertyName = token.name();
                 final Integer offset = Integer.valueOf(token.offset());
+                final PrimitiveValue constVal = token.options().constVal();
 
-                final String str = String.format(
-                     "\n" +
-                     "    public %s %s()\n" +
-                     "    {\n" +
-                     "        return CodecUtil.%sGet(buffer, offset + %d);\n" +
-                     "    }\n\n" +
-                     "    public void %s(final %s value)\n" +
-                     "    {\n" +
-                     "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
-                     "    }\n",
-                     javaTypeName,
-                     propertyName,
-                     typePrefix,
-                     offset,
-                     propertyName,
-                     javaTypeName,
-                     typePrefix,
-                     offset
-                );
-
-                out.append(str);
+                if (null == constVal)
+                {
+                    generatePrimitiveEncoding(out, javaTypeName, typePrefix, propertyName, offset);
+                }
+                else
+                {
+                    out.append(String.format(
+                        "\n" +
+                        "    public %s %s()\n" +
+                        "    {\n" +
+                        "        return %s;\n" +
+                        "    }\n",
+                        javaTypeName,
+                        propertyName,
+                        generateLiteral(token)
+                    ));
+                }
             }
         }
     }
 
-    private void generateBufferCode(final Writer out) throws IOException
+    private void generatePrimitiveEncoding(final Writer out,
+                                           final String javaTypeName,
+                                           final String typePrefix,
+                                           final String propertyName,
+                                           final Integer offset) throws IOException
+    {
+        out.append(String.format(
+            "\n" +
+            "    public %s %s()\n" +
+            "    {\n" +
+            "        return CodecUtil.%sGet(buffer, offset + %d);\n" +
+            "    }\n\n" +
+            "    public void %s(final %s value)\n" +
+            "    {\n" +
+            "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
+            "    }\n",
+            javaTypeName,
+            propertyName,
+            typePrefix,
+            offset,
+            propertyName,
+            javaTypeName,
+            typePrefix,
+            offset
+        ));
+    }
+
+    private void generateFixedFlyweightCode(final Writer out) throws IOException
     {
         out.append("    private DirectBuffer buffer;\n")
            .append("    private int offset;\n\n")
            .append("    public void reset(final DirectBuffer buffer, final int offset)\n")
+           .append("    {\n")
+           .append("        this.buffer = buffer;\n")
+           .append("        this.offset = offset;\n")
+           .append("    }\n");
+    }
+
+
+    private void generateMessageFlyweightCode(final Writer out) throws IOException
+    {
+        out.append("    private DirectBuffer buffer;\n")
+           .append("    private int offset;\n\n")
+           .append("    public void resetForDecode(final DirectBuffer buffer, final int offset)\n")
+           .append("    {\n")
+           .append("        this.buffer = buffer;\n")
+           .append("        this.offset = offset;\n")
+           .append("    }\n\n")
+           .append("    public void resetForEncode(final DirectBuffer buffer, final int offset)\n")
            .append("    {\n")
            .append("        this.buffer = buffer;\n")
            .append("        this.offset = offset;\n")
@@ -292,7 +366,7 @@ public class JavaGenerator implements CodeGenerator
             case UINT16:
             case INT8:
             case INT16:
-                literal =  "(" + castType +")" + token.options().constVal();
+                literal = "(" + castType + ")" + token.options().constVal();
                 break;
 
             case UINT32:
