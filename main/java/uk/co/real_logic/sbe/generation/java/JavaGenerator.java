@@ -96,6 +96,7 @@ public class JavaGenerator implements CodeGenerator
                 generateClassDeclaration(out, className, MessageFlyweight.class.getSimpleName());
                 generateMessageFlyweightCode(out);
 
+
                 out.append("}\n");
             }
         }
@@ -402,12 +403,12 @@ public class JavaGenerator implements CodeGenerator
     {
         out.append("    private DirectBuffer buffer;\n")
            .append("    private int offset;\n\n")
-           .append("    public void resetForDecode(final DirectBuffer buffer, final int offset)\n")
+           .append("    public void resetForEncode(final DirectBuffer buffer, final int offset)\n")
            .append("    {\n")
            .append("        this.buffer = buffer;\n")
            .append("        this.offset = offset;\n")
            .append("    }\n\n")
-           .append("    public void resetForEncode(final DirectBuffer buffer, final int offset)\n")
+           .append("    public void resetForDecode(final DirectBuffer buffer, final int offset)\n")
            .append("    {\n")
            .append("        this.buffer = buffer;\n")
            .append("        this.offset = offset;\n")
