@@ -161,7 +161,7 @@ public class JavaGenerator implements CodeGenerator
                 final String typePrefix = token.primitiveType().primitiveName();
                 final String choiceBitPosition = token.options().constVal().toString();
 
-                final String str = String.format(
+                out.append(String.format(
                     "\n" +
                     "    public boolean %s()\n" +
                     "    {\n" +
@@ -177,9 +177,7 @@ public class JavaGenerator implements CodeGenerator
                     choiceName,
                     typePrefix,
                     choiceBitPosition
-                );
-
-                out.append(str);
+                ));
             }
         }
     }
@@ -240,14 +238,12 @@ public class JavaGenerator implements CodeGenerator
     private static void generateFileHeader(final Writer out, final String packageName)
         throws IOException
     {
-        final String str = String.format(
+        out.append(String.format(
             "/* Generated class message */\n" +
             "package %s;\n\n" +
             "import uk.co.real_logic.sbe.generation.java.*;\n\n",
             packageName
-        );
-
-        out.append(str);
+        ));
     }
 
     private static void generateClassDeclaration(final Writer out,
