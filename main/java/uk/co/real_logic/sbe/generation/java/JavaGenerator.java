@@ -290,11 +290,95 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
+    private void generatePrimitiveEncodingMethods(final Writer out, final Token token) throws IOException
+    {
+        final String javaTypeName = javaTypeName(token.primitiveType());
+        final String typePrefix = token.primitiveType().primitiveName();
+        final String propertyName = token.name();
+        final Integer offset = Integer.valueOf(token.offset());
+
+        final int arraySize = token.size() / token.primitiveType().size();
+        if (arraySize == 1)
+        {
+            out.append(String.format(
+                "\n" +
+                "    public %s %s()\n" +
+                "    {\n" +
+                "        return CodecUtil.%sGet(buffer, offset + %d);\n" +
+                "    }\n\n",
+                javaTypeName,
+                propertyName,
+                typePrefix,
+                offset
+            ));
+
+            out.append(String.format(
+                "    public void %s(final %s value)\n" +
+                "    {\n" +
+                "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
+                "    }\n",
+                propertyName,
+                javaTypeName,
+                typePrefix,
+                offset
+            ));
+        }
+        else if (arraySize > 1)
+        {
+            out.append(String.format(
+                "\n" +
+                "    public int %sLength()\n" +
+                "    {\n" +
+                "        return %d;\n" +
+                "    }\n\n",
+                propertyName,
+                Integer.valueOf(arraySize)
+            ));
+
+            out.append(String.format(
+                "    public %s %s(final int index)\n" +
+                "    {\n" +
+                "        if (index < 0 || index > %d)\n" +
+                "        {\n" +
+                "            throw new IllegalArgumentException(\"index out of range: \" + %d);\n" +
+                "        }\n\n" +
+                "        return CodecUtil.%sGet(buffer, this.offset + %d + (index * %d));\n" +
+                "    }\n\n",
+                javaTypeName,
+                propertyName,
+                Integer.valueOf(arraySize),
+                Integer.valueOf(arraySize),
+                typePrefix,
+                offset,
+                Integer.valueOf(token.primitiveType().size())
+            ));
+
+            out.append(String.format(
+                "    public void %s(final int index, final %s value)\n" +
+                "    {\n" +
+                "        if (index < 0 || index > %d)\n" +
+                "        {\n" +
+                "            throw new IllegalArgumentException(\"index out of range: \" + %d);\n" +
+                "        }\n\n" +
+                "        CodecUtil.%sPut(buffer, this.offset + %d + (index * %d), value);\n" +
+                "    }\n",
+                propertyName,
+                javaTypeName,
+                Integer.valueOf(arraySize),
+                Integer.valueOf(arraySize),
+                typePrefix,
+                offset,
+                Integer.valueOf(token.primitiveType().size())
+            ));
+        }
+    }
+
     private void generateConstEncodingMethod(final Writer out, final Token token) throws IOException
     {
         final String javaTypeName = javaTypeName(token.primitiveType());
         final String propertyName = token.name();
-        final String str = String.format(
+
+        out.append(String.format(
             "\n" +
             "    public %s %s()\n" +
             "    {\n" +
@@ -303,39 +387,7 @@ public class JavaGenerator implements CodeGenerator
             javaTypeName,
             propertyName,
             generateLiteral(token)
-        );
-
-        out.append(str);
-    }
-
-    private void generatePrimitiveEncodingMethods(final Writer out, final Token token) throws IOException
-    {
-        final String javaTypeName = javaTypeName(token.primitiveType());
-        final String typePrefix = token.primitiveType().primitiveName();
-        final String propertyName = token.name();
-        final Integer offset = Integer.valueOf(token.offset());
-
-        final String str = String.format(
-            "\n" +
-            "    public %s %s()\n" +
-            "    {\n" +
-            "        return CodecUtil.%sGet(buffer, offset + %d);\n" +
-            "    }\n\n" +
-            "    public void %s(final %s value)\n" +
-            "    {\n" +
-            "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
-            "    }\n",
-            javaTypeName,
-            propertyName,
-            typePrefix,
-            offset,
-            propertyName,
-            javaTypeName,
-            typePrefix,
-            offset
-        );
-
-        out.append(str);
+        ));
     }
 
     private void generateFixedFlyweightCode(final Writer out) throws IOException
