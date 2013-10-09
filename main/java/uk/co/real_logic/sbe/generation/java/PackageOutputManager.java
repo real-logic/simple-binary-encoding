@@ -39,7 +39,8 @@ public class PackageOutputManager implements OutputManager
         Verify.notNull(baseDirectoryName, "baseDirectoryName");
         Verify.notNull(packageName, "packageName");
 
-        final String dirName = baseDirectoryName + packageName.replace('.', File.separatorChar);
+        final String dirName = (baseDirectoryName.endsWith("" + File.separatorChar) ? baseDirectoryName : baseDirectoryName + File.separatorChar) +
+                               packageName.replace('.', File.separatorChar);
 
         outputDir = new File(dirName);
         if (!outputDir.exists())
