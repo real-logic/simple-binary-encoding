@@ -17,7 +17,7 @@ package api.flyweight;
 
 import api.SecurityType;
 
-public class QuoteEntryVisitor
+public class QuoteEntryFlyweight
 {
     public void addGroup()
     {

@@ -31,20 +31,20 @@ public class FlyweightStyleExample
     private final Transport transport = new Transport();
 
     // Can be reused to avoid garbage
-    private final NewOrderSingleFlyweight newOrderSingleFlyweight = new NewOrderSingleFlyweight();
-    private final MassQuoteVisitor massQuoteVisitor = new MassQuoteVisitor();
+    private final NewOrderSingleFlyweight newOrderSingle = new NewOrderSingleFlyweight();
+    private final MassQuoteFlyweight massQuote = new MassQuoteFlyweight();
 
     public void simpleEncode()
     {
-        newOrderSingleFlyweight.resetForEncode(buffer);
+        newOrderSingle.resetForEncode(buffer);
 
         // If field is called out of order and a mandatory field is missed then an exception will be thrown
-        newOrderSingleFlyweight.putClOrderId("123");
-        newOrderSingleFlyweight.putSymbolId(567L);
-        newOrderSingleFlyweight.putSide(Side.BUY);
-        newOrderSingleFlyweight.putOrderQty(1);
-        newOrderSingleFlyweight.putPrice(3.2);
-        newOrderSingleFlyweight.putTransactTime(System.currentTimeMillis());
+        newOrderSingle.putClOrderId("123");
+        newOrderSingle.putSymbolId(567L);
+        newOrderSingle.putSide(Side.BUY);
+        newOrderSingle.putOrderQty(1);
+        newOrderSingle.putPrice(3.2);
+        newOrderSingle.putTransactTime(System.currentTimeMillis());
 
         buffer.flip();
         transport.send(buffer);
@@ -55,74 +55,74 @@ public class FlyweightStyleExample
         buffer.clear();
         transport.receive(buffer);
 
-        newOrderSingleFlyweight.resetForDecode(buffer);
+        newOrderSingle.resetForDecode(buffer);
 
-        if (!newOrderSingleFlyweight.isValid()) // should validation just throw an exception?
+        if (!newOrderSingle.isValid()) // should validation just throw an exception?
         {
             throw new IllegalStateException("Message is screwed up");
         }
 
-        String clientOrderId = newOrderSingleFlyweight.getClOrderId();
-        long symbolId = newOrderSingleFlyweight.getSymbolId();
-        Side side = newOrderSingleFlyweight.getSide();
-        long orderQty = newOrderSingleFlyweight.getOrderQty();
-        double price = newOrderSingleFlyweight.getPrice();
-        long transactTime = newOrderSingleFlyweight.getTransactTime();
+        String clientOrderId = newOrderSingle.getClOrderId();
+        long symbolId = newOrderSingle.getSymbolId();
+        Side side = newOrderSingle.getSide();
+        long orderQty = newOrderSingle.getOrderQty();
+        double price = newOrderSingle.getPrice();
+        long transactTime = newOrderSingle.getTransactTime();
     }
 
     public void nestedGroupEncode()
     {
-        massQuoteVisitor.resetForEncode(buffer);
+        massQuote.resetForEncode(buffer);
         final long timestamp = System.currentTimeMillis();
 
-        massQuoteVisitor.putQuoteId("1234");
-        massQuoteVisitor.putCtiCode(CtiCode.HOUSE);
+        massQuote.putQuoteId("1234");
+        massQuote.putCtiCode(CtiCode.HOUSE);
 
-        massQuoteVisitor.getQuoteSetVisitor().addGroup(); // Create a new group in the message
-        massQuoteVisitor.getQuoteSetVisitor().putUnderlyingSecurity("ESH0");
+        massQuote.getQuoteSet().addGroup(); // Create a new group in the message
+        massQuote.getQuoteSet().putUnderlyingSecurity("ESH0");
 
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().addGroup();
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putId(1);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSymbol("ABC1");
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSecurityType(SecurityType.OPT);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putTransactTime(timestamp);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidPx(3.1);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidSize(10);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferPx(3.2);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferSize(10);
+        massQuote.getQuoteSet().getQuoteEntry().addGroup();
+        massQuote.getQuoteSet().getQuoteEntry().putId(1);
+        massQuote.getQuoteSet().getQuoteEntry().putSymbol("ABC1");
+        massQuote.getQuoteSet().getQuoteEntry().putSecurityType(SecurityType.OPT);
+        massQuote.getQuoteSet().getQuoteEntry().putTransactTime(timestamp);
+        massQuote.getQuoteSet().getQuoteEntry().putBidPx(3.1);
+        massQuote.getQuoteSet().getQuoteEntry().putBidSize(10);
+        massQuote.getQuoteSet().getQuoteEntry().putOfferPx(3.2);
+        massQuote.getQuoteSet().getQuoteEntry().putOfferSize(10);
 
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().addGroup();
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putId(2);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSymbol("ABC2");
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSecurityType(SecurityType.OPT);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putTransactTime(timestamp);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidPx(3.1);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidSize(10);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferPx(3.2);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferSize(10);
+        massQuote.getQuoteSet().getQuoteEntry().addGroup();
+        massQuote.getQuoteSet().getQuoteEntry().putId(2);
+        massQuote.getQuoteSet().getQuoteEntry().putSymbol("ABC2");
+        massQuote.getQuoteSet().getQuoteEntry().putSecurityType(SecurityType.OPT);
+        massQuote.getQuoteSet().getQuoteEntry().putTransactTime(timestamp);
+        massQuote.getQuoteSet().getQuoteEntry().putBidPx(3.1);
+        massQuote.getQuoteSet().getQuoteEntry().putBidSize(10);
+        massQuote.getQuoteSet().getQuoteEntry().putOfferPx(3.2);
+        massQuote.getQuoteSet().getQuoteEntry().putOfferSize(10);
 
-        massQuoteVisitor.getQuoteSetVisitor().addGroup(); // Create a new group in the message
-        massQuoteVisitor.getQuoteSetVisitor().putUnderlyingSecurity("EAB0");
+        massQuote.getQuoteSet().addGroup(); // Create a new group in the message
+        massQuote.getQuoteSet().putUnderlyingSecurity("EAB0");
 
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().addGroup();
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putId(3);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSymbol("ABC1");
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSecurityType(SecurityType.OPT);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putTransactTime(timestamp);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidPx(3.1);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidSize(10);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferPx(3.2);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferSize(10);
+        massQuote.getQuoteSet().getQuoteEntry().addGroup();
+        massQuote.getQuoteSet().getQuoteEntry().putId(3);
+        massQuote.getQuoteSet().getQuoteEntry().putSymbol("ABC1");
+        massQuote.getQuoteSet().getQuoteEntry().putSecurityType(SecurityType.OPT);
+        massQuote.getQuoteSet().getQuoteEntry().putTransactTime(timestamp);
+        massQuote.getQuoteSet().getQuoteEntry().putBidPx(3.1);
+        massQuote.getQuoteSet().getQuoteEntry().putBidSize(10);
+        massQuote.getQuoteSet().getQuoteEntry().putOfferPx(3.2);
+        massQuote.getQuoteSet().getQuoteEntry().putOfferSize(10);
 
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().addGroup();
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putId(4);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSymbol("ABC2");
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putSecurityType(SecurityType.OPT);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putTransactTime(timestamp);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidPx(3.1);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putBidSize(10);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferPx(3.2);
-        massQuoteVisitor.getQuoteSetVisitor().getQuoteEntryVisitor().putOfferSize(10);
+        massQuote.getQuoteSet().getQuoteEntry().addGroup();
+        massQuote.getQuoteSet().getQuoteEntry().putId(4);
+        massQuote.getQuoteSet().getQuoteEntry().putSymbol("ABC2");
+        massQuote.getQuoteSet().getQuoteEntry().putSecurityType(SecurityType.OPT);
+        massQuote.getQuoteSet().getQuoteEntry().putTransactTime(timestamp);
+        massQuote.getQuoteSet().getQuoteEntry().putBidPx(3.1);
+        massQuote.getQuoteSet().getQuoteEntry().putBidSize(10);
+        massQuote.getQuoteSet().getQuoteEntry().putOfferPx(3.2);
+        massQuote.getQuoteSet().getQuoteEntry().putOfferSize(10);
 
         buffer.flip();
         transport.send(buffer);
@@ -133,32 +133,32 @@ public class FlyweightStyleExample
         buffer.clear();
         transport.receive(buffer);
 
-        massQuoteVisitor.resetForDecode(buffer);
+        massQuote.resetForDecode(buffer);
 
-        if (!massQuoteVisitor.isValid()) // should validation just throw an exception?
+        if (!massQuote.isValid()) // should validation just throw an exception?
         {
             throw new IllegalStateException("Message is screwed up");
         }
 
-        String quoteId = massQuoteVisitor.getQuoteId();
-        CtiCode ctiCode = massQuoteVisitor.getCtiCode();
+        String quoteId = massQuote.getQuoteId();
+        CtiCode ctiCode = massQuote.getCtiCode();
 
-        QuoteSetVisitor quoteSetVisitor = massQuoteVisitor.getQuoteSetVisitor();
-        while (quoteSetVisitor.next())
+        QuoteSetFlyweight quoteSet = massQuote.getQuoteSet();
+        while (quoteSet.next())
         {
-            String underlyingSecurity = quoteSetVisitor.getUnderlyingSecurity();
+            String underlyingSecurity = quoteSet.getUnderlyingSecurity();
 
-            QuoteEntryVisitor quoteEntryVisitor = quoteSetVisitor.getQuoteEntryVisitor();
-            while (quoteEntryVisitor.next())
+            QuoteEntryFlyweight quoteEntry = quoteSet.getQuoteEntry();
+            while (quoteEntry.next())
             {
-                long id = quoteEntryVisitor.getId();
-                String symbol = quoteEntryVisitor.getSymbol();
-                SecurityType securityType = quoteEntryVisitor.getSecurityType();
-                long timestamp = quoteEntryVisitor.getTransactTime();
-                double bidPrice = quoteEntryVisitor.getBidPx();
-                long bidSize = quoteEntryVisitor.getBidSize();
-                double offerPrice = quoteEntryVisitor.getOfferPrice();
-                long offerSize = quoteEntryVisitor.getOfferSize();
+                long id = quoteEntry.getId();
+                String symbol = quoteEntry.getSymbol();
+                SecurityType securityType = quoteEntry.getSecurityType();
+                long timestamp = quoteEntry.getTransactTime();
+                double bidPrice = quoteEntry.getBidPx();
+                long bidSize = quoteEntry.getBidSize();
+                double offerPrice = quoteEntry.getOfferPrice();
+                long offerSize = quoteEntry.getOfferSize();
             }
         }
     }
