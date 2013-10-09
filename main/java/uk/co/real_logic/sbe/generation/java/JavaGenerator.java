@@ -15,10 +15,10 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
+import uk.co.real_logic.sbe.ir.Presence;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.util.Verify;
@@ -276,14 +276,13 @@ public class JavaGenerator implements CodeGenerator
 
     private void generatePrimitiveEncoding(final Writer out, final Token token) throws IOException
     {
-        final PrimitiveValue constVal = token.options().constVal();
-        if (null == constVal)
+        if (Presence.CONSTANT == token.options().presence())
         {
-            generatePrimitiveEncodingMethods(out, token);
+            generateConstEncodingMethod(out, token);
         }
         else
         {
-            generateConstEncodingMethod(out, token);
+            generatePrimitiveEncodingMethods(out, token);
         }
     }
 
@@ -294,8 +293,9 @@ public class JavaGenerator implements CodeGenerator
         final String propertyName = token.name();
         final Integer offset = Integer.valueOf(token.offset());
 
-        final int arraySize = token.size() / token.primitiveType().size();
-        if (arraySize == 1)
+        final int arrayLength = token.arrayLength();
+
+        if (arrayLength == 1)
         {
             out.append(String.format(
                 "\n" +
@@ -320,7 +320,7 @@ public class JavaGenerator implements CodeGenerator
                 offset
             ));
         }
-        else if (arraySize > 1)
+        else if (arrayLength > 1)
         {
             out.append(String.format(
                 "\n" +
@@ -329,7 +329,7 @@ public class JavaGenerator implements CodeGenerator
                 "        return %d;\n" +
                 "    }\n\n",
                 propertyName,
-                Integer.valueOf(arraySize)
+                Integer.valueOf(arrayLength)
             ));
 
             out.append(String.format(
@@ -343,8 +343,8 @@ public class JavaGenerator implements CodeGenerator
                 "    }\n\n",
                 javaTypeName,
                 propertyName,
-                Integer.valueOf(arraySize),
-                Integer.valueOf(arraySize),
+                Integer.valueOf(arrayLength),
+                Integer.valueOf(arrayLength),
                 typePrefix,
                 offset,
                 Integer.valueOf(token.primitiveType().size())
@@ -361,8 +361,8 @@ public class JavaGenerator implements CodeGenerator
                 "    }\n",
                 propertyName,
                 javaTypeName,
-                Integer.valueOf(arraySize),
-                Integer.valueOf(arraySize),
+                Integer.valueOf(arrayLength),
+                Integer.valueOf(arrayLength),
                 typePrefix,
                 offset,
                 Integer.valueOf(token.primitiveType().size())

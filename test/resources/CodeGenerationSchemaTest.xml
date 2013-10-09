@@ -16,7 +16,7 @@
         </composite>
         <composite name="varDataEncoding">
             <type name="length" primitiveType="uint8" semanticType="Length"/>
-            <type name="varData" primitiveType="char" length="0" semanticType="data"/>
+            <type name="varData" primitiveType="uint8" length="0" semanticType="data"/>
         </composite>
     </types>
     <types>

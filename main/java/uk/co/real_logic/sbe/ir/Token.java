@@ -169,6 +169,21 @@ public class Token
     }
 
     /**
+     * The number of encoded primitives in this type.
+     *
+     * @return number of encoded primitives in this type.
+     */
+    public int arrayLength()
+    {
+        if (null == primitiveType || 0 == size)
+        {
+            return 0;
+        }
+
+        return size / primitiveType().size();
+    }
+
+    /**
      * The offset for this token in the message.
      *
      * @return the offset of this Token. A value of 0 means the node has no relevant offset. A value of

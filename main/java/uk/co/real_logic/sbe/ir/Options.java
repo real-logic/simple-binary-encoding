@@ -86,6 +86,26 @@ public class Options
         return constVal;
     }
 
+    /**
+     * Indicates the presence status of a field in a message.
+     *
+     * @return indicates the presence status of a field in a message.
+     */
+    public Presence presence()
+    {
+        if (null != constVal)
+        {
+            return Presence.CONSTANT;
+        }
+
+        if (null != nullVal)
+        {
+            return Presence.OPTIONAL;
+        }
+
+        return Presence.REQUIRED;
+    }
+
     public String toString()
     {
         return "Options{" +
