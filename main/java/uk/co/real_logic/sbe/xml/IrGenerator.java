@@ -17,7 +17,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.ir.Options;
+import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
@@ -26,7 +26,9 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Class to hold the state while generating the {@link IntermediateRepresentation}. */
+/**
+ * Class to hold the state while generating the {@link IntermediateRepresentation}.
+ */
 public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
@@ -162,21 +164,21 @@ public class IrGenerator
     private void add(final EnumType type, final int offset)
     {
         PrimitiveType encodingType = type.getEncodingType();
-        Options.Builder optsBuilder = new Options.Builder();
+        Encoding.Builder encodingBuilder = new Encoding.Builder()
+            .primitiveType(encodingType)
+            .byteOrder(byteOrder);
 
         if (type.getPresence() == Presence.OPTIONAL)
         {
-            optsBuilder.nullVal(encodingType.nullVal());
+            encodingBuilder.nullVal(encodingType.nullVal());
         }
 
         Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_ENUM)
             .name(type.getName())
-            .primitiveType(encodingType)
             .size(encodingType.size())
             .offset(offset)
-            .byteOrder(byteOrder)
-            .options(optsBuilder.build());
+            .encoding(encodingBuilder.build());
 
         tokenList.add(builder.build());
 
@@ -195,11 +197,11 @@ public class IrGenerator
         Token.Builder builder = new Token.Builder()
             .signal(Signal.VALID_VALUE)
             .name(value.getName())
-            .primitiveType(encodingType)
-            .byteOrder(byteOrder)
-            .options(new Options.Builder()
-                         .constVal(value.getPrimitiveValue())
-                         .build());
+            .encoding(new Encoding.Builder()
+                          .byteOrder(byteOrder)
+                          .primitiveType(encodingType)
+                          .constVal(value.getPrimitiveValue())
+                          .build());
 
         tokenList.add(builder.build());
     }
@@ -211,10 +213,11 @@ public class IrGenerator
         Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_SET)
             .name(type.getName())
-            .primitiveType(encodingType)
             .size(encodingType.size())
             .offset(offset)
-            .byteOrder(byteOrder);
+            .encoding(new Encoding.Builder()
+                          .primitiveType(encodingType)
+                          .build());
 
         tokenList.add(builder.build());
 
@@ -233,10 +236,11 @@ public class IrGenerator
         Token token = new Token.Builder()
             .signal(Signal.CHOICE)
             .name(value.getName())
-            .primitiveType(encodingType)
-            .options(new Options.Builder()
-                         .constVal(value.getPrimitiveValue())
-                         .build())
+            .encoding(new Encoding.Builder()
+                          .constVal(value.getPrimitiveValue())
+                          .byteOrder(byteOrder)
+                          .primitiveType(encodingType)
+                          .build())
             .build();
 
         tokenList.add(token);
@@ -244,34 +248,34 @@ public class IrGenerator
 
     private void add(final EncodedDataType type, final int offset)
     {
-        Options.Builder optsBuilder = new Options.Builder();
+        Encoding.Builder encodingBuilder = new Encoding.Builder()
+            .primitiveType(type.getPrimitiveType())
+            .byteOrder(byteOrder);
 
         switch (type.getPresence())
         {
             case REQUIRED:
-                optsBuilder.minVal(type.getMinValue())
-                           .maxVal(type.getMaxValue());
+                encodingBuilder.minVal(type.getMinValue())
+                    .maxVal(type.getMaxValue());
                 break;
 
             case OPTIONAL:
-                optsBuilder.minVal(type.getMinValue())
-                           .maxVal(type.getMaxValue())
-                           .nullVal(type.getNullValue());
+                encodingBuilder.minVal(type.getMinValue())
+                    .maxVal(type.getMaxValue())
+                    .nullVal(type.getNullValue());
                 break;
 
             case CONSTANT:
-                optsBuilder.constVal(type.getConstValue());
+                encodingBuilder.constVal(type.getConstValue());
                 break;
         }
 
         Token token = new Token.Builder()
             .signal(Signal.ENCODING)
             .name(type.getName())
-            .primitiveType(type.getPrimitiveType())
             .size(type.size())
             .offset(offset)
-            .byteOrder(byteOrder)
-            .options(optsBuilder.build())
+            .encoding(encodingBuilder.build())
             .build();
 
         tokenList.add(token);

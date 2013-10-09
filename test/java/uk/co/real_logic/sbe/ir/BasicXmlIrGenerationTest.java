@@ -55,38 +55,38 @@ public class BasicXmlIrGenerationTest
         /* assert all elements of node 1 */
         assertThat(tokens.get(1).signal(), is(Signal.ENCODING));
         assertThat(tokens.get(1).name(), is("blockLength"));
-        assertThat(tokens.get(1).primitiveType(), is(PrimitiveType.UINT16));
+        assertThat(tokens.get(1).encoding().primitiveType(), is(PrimitiveType.UINT16));
         assertThat(valueOf(tokens.get(1).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(1).size()), is(valueOf(2)));
         assertThat(valueOf(tokens.get(1).offset()), is(valueOf(0)));
-        assertThat(tokens.get(1).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(tokens.get(1).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 2 */
         assertThat(tokens.get(2).signal(), is(Signal.ENCODING));
         assertThat(tokens.get(2).name(), is("templateId"));
-        assertThat(tokens.get(2).primitiveType(), is(PrimitiveType.UINT16));
+        assertThat(tokens.get(2).encoding().primitiveType(), is(PrimitiveType.UINT16));
         assertThat(valueOf(tokens.get(2).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(2).size()), is(valueOf(2)));
         assertThat(valueOf(tokens.get(2).offset()), is(valueOf(2)));
-        assertThat(tokens.get(2).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(tokens.get(2).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 3 */
         assertThat(tokens.get(3).signal(), is(Signal.ENCODING));
         assertThat(tokens.get(3).name(), is("version"));
-        assertThat(tokens.get(3).primitiveType(), is(PrimitiveType.UINT8));
+        assertThat(tokens.get(3).encoding().primitiveType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(tokens.get(3).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(3).size()), is(valueOf(1)));
         assertThat(valueOf(tokens.get(3).offset()), is(valueOf(4)));
-        assertThat(tokens.get(3).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(tokens.get(3).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 4 */
         assertThat(tokens.get(4).signal(), is(Signal.ENCODING));
         assertThat(tokens.get(4).name(), is("reserved"));
-        assertThat(tokens.get(4).primitiveType(), is(PrimitiveType.UINT8));
+        assertThat(tokens.get(4).encoding().primitiveType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(tokens.get(4).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(4).size()), is(valueOf(1)));
         assertThat(valueOf(tokens.get(4).offset()), is(valueOf(5)));
-        assertThat(tokens.get(4).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(tokens.get(4).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 5 */
         assertThat(tokens.get(5).signal(), is(Signal.END_COMPOSITE));
@@ -125,11 +125,11 @@ public class BasicXmlIrGenerationTest
         /* assert all elements of node 2 */
         assertThat(tokens.get(2).signal(), is(Signal.ENCODING));
         assertThat(tokens.get(2).name(), is("uint32"));
-        assertThat(tokens.get(2).primitiveType(), is(PrimitiveType.UINT32));
+        assertThat(tokens.get(2).encoding().primitiveType(), is(PrimitiveType.UINT32));
         assertThat(valueOf(tokens.get(2).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(2).size()), is(valueOf(4)));
         assertThat(valueOf(tokens.get(2).offset()), is(valueOf(0)));
-        assertThat(tokens.get(2).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(tokens.get(2).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         /* assert all elements of node 3 */
         assertThat(tokens.get(3).signal(), is(Signal.END_FIELD));
@@ -177,19 +177,19 @@ public class BasicXmlIrGenerationTest
 
         assertThat(tokens.get(3).signal(), is(Signal.ENCODING));
         assertThat(tokens.get(3).name(), is("length"));
-        assertThat(tokens.get(3).primitiveType(), is(PrimitiveType.UINT8));
+        assertThat(tokens.get(3).encoding().primitiveType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(tokens.get(3).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(3).size()), is(valueOf(1)));
         assertThat(valueOf(tokens.get(3).offset()), is(valueOf(0)));
-        assertThat(tokens.get(3).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(tokens.get(3).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         assertThat(tokens.get(4).signal(), is(Signal.ENCODING));
         assertThat(tokens.get(4).name(), is("varData"));
-        assertThat(tokens.get(4).primitiveType(), is(PrimitiveType.CHAR));
+        assertThat(tokens.get(4).encoding().primitiveType(), is(PrimitiveType.CHAR));
         assertThat(valueOf(tokens.get(4).schemaId()), is(valueOf(Token.INVALID_ID)));
         assertThat(valueOf(tokens.get(4).size()), is(valueOf(-1)));
         assertThat(valueOf(tokens.get(4).offset()), is(valueOf(1)));
-        assertThat(tokens.get(4).byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
+        assertThat(tokens.get(4).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         assertThat(tokens.get(5).signal(), is(Signal.END_COMPOSITE));
         assertThat(tokens.get(5).name(), is("varDataEncoding"));
@@ -288,10 +288,10 @@ public class BasicXmlIrGenerationTest
 
         /* assert the length node has correct values */
         assertThat(tokens.get(lengthEncIdx).signal(), is(Signal.ENCODING));
-        assertThat(tokens.get(lengthEncIdx).primitiveType(), is(PrimitiveType.UINT8));
+        assertThat(tokens.get(lengthEncIdx).encoding().primitiveType(), is(PrimitiveType.UINT8));
 
         /* assert the group node has the right IrId and xRefIrId, etc. */
         assertThat(tokens.get(dataEncIdx).signal(), is(Signal.ENCODING));
-        assertThat(tokens.get(dataEncIdx).primitiveType(), is(PrimitiveType.CHAR));
+        assertThat(tokens.get(dataEncIdx).encoding().primitiveType(), is(PrimitiveType.CHAR));
     }
 }

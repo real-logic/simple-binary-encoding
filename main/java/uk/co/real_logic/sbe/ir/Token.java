@@ -16,10 +16,7 @@
  */
 package uk.co.real_logic.sbe.ir;
 
-import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.util.Verify;
-
-import java.nio.ByteOrder;
 
 /**
  * Class to encapsulate a token of information for the message schema stream. This Intermediate Representation (IR)
@@ -46,11 +43,11 @@ import java.nio.ByteOrder;
  * a List of IrNodes.
  * <p/>
  * The entire IR of an entity is a {@link java.util.List} of {@link Token} objects. The order of this list is
- * very important. Encoding of fields is done by nodes pointing to specific encoding {@link PrimitiveType}
- * objects. Each encoding node contains size, offset, byte order, and {@link Options}. Entities relevant
+ * very important. Encoding of fields is done by nodes pointing to specific encoding {@link uk.co.real_logic.sbe.PrimitiveType}
+ * objects. Each encoding node contains size, offset, byte order, and {@link Encoding}. Entities relevant
  * to the encoding such as fields, messages, repeating groups, etc. are encapsulated in the list as nodes
  * themselves. Although, they will in most cases never be serialized. The boundaries of these entities
- * are delimited by BEGIN and END {@link Signal} values in the node {@link Options}.
+ * are delimited by BEGIN and END {@link Signal} values in the node {@link Encoding}.
  * A list structure like this allows for each concatenation of encodings as well as easy traversal.
  * <p/>
  * An example encoding of a message header might be like this.
@@ -77,44 +74,35 @@ public class Token
     private final Signal signal;
     private final String name;
     private final long schemaId;
-    private final PrimitiveType primitiveType;
     private final int size;
     private final int offset;
-    private final ByteOrder byteOrder;
-    private final Options options;
+    private final Encoding encoding;
 
     /**
      * Construct an {@link Token} by providing values for all fields.
      *
      * @param signal        for the token role
-     * @param primitiveType representing this node or null.
      * @param size          of the node in bytes.
      * @param offset        within the {@link uk.co.real_logic.sbe.xml.Message}.
-     * @param byteOrder     for the encoding.
-     * @param options       for the {@link uk.co.real_logic.sbe.xml.Message}.
+     * @param encoding       for the {@link uk.co.real_logic.sbe.xml.Message}.
      */
     public Token(final Signal signal,
                  final String name,
                  final long schemaId,
-                 final PrimitiveType primitiveType,
                  final int size,
                  final int offset,
-                 final ByteOrder byteOrder,
-                 final Options options)
+                 final Encoding encoding)
     {
         Verify.notNull(signal, "signal");
         Verify.notNull(name, "name");
-        Verify.notNull(byteOrder, "byteOrder");
-        Verify.notNull(options, "options");
+        Verify.notNull(encoding, "encoding");
 
         this.signal = signal;
         this.name = name;
         this.schemaId = schemaId;
-        this.primitiveType = primitiveType;
         this.size = size;
         this.offset = offset;
-        this.byteOrder = byteOrder;
-        this.options = options;
+        this.encoding = encoding;
     }
 
     /**
@@ -148,16 +136,6 @@ public class Token
     }
 
     /**
-     * Get the {@link PrimitiveType} of this field.
-     *
-     * @return the primitive type of this node. This value is only relevant for nodes that are encodings.
-     */
-    public PrimitiveType primitiveType()
-    {
-        return primitiveType;
-    }
-
-    /**
      * The size of this token in bytes.
      *
      * @return the size of this node. A value of 0 means the node has no size when encoded. A value of
@@ -175,12 +153,12 @@ public class Token
      */
     public int arrayLength()
     {
-        if (null == primitiveType || 0 == size)
+        if (null == encoding.primitiveType() || 0 == size)
         {
             return 0;
         }
 
-        return size / primitiveType().size();
+        return size / encoding.primitiveType().size();
     }
 
     /**
@@ -196,23 +174,13 @@ public class Token
     }
 
     /**
-     * Return the {@link Options} of the {@link Token}.
+     * Return the {@link Encoding} of the {@link Token}.
      *
-     * @return options of the {@link Token}
+     * @return encoding of the {@link Token}
      */
-    public Options options()
+    public Encoding encoding()
     {
-        return options;
-    }
-
-    /**
-     * Return the byte order of this field.
-     *
-     * @return the byte order for this field.
-     */
-    public ByteOrder byteOrder()
-    {
-        return byteOrder;
+        return encoding;
     }
 
     public String toString()
@@ -221,11 +189,9 @@ public class Token
             "signal=" + signal +
             ", name='" + name + '\'' +
             ", schemaId=" + schemaId +
-            ", primitiveType=" + primitiveType +
             ", size=" + size +
             ", offset=" + offset +
-            ", byteOrder=" + byteOrder +
-            ", options=" + options +
+            ", encoding=" + encoding +
             '}';
     }
 
@@ -234,11 +200,9 @@ public class Token
         private Signal signal;
         private String name;
         private long schemaId = INVALID_ID;
-        private PrimitiveType primitiveType;
         private int size = 0;
         private int offset = 0;
-        private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
-        private Options options = new Options();
+        private Encoding encoding = new Encoding();
 
         public Builder signal(final Signal signal)
         {
@@ -258,12 +222,6 @@ public class Token
             return this;
         }
 
-        public Builder primitiveType(final PrimitiveType primitiveType)
-        {
-            this.primitiveType = primitiveType;
-            return this;
-        }
-
         public Builder size(final int size)
         {
             this.size = size;
@@ -276,21 +234,15 @@ public class Token
             return this;
         }
 
-        public Builder byteOrder(final ByteOrder byteOrder)
+        public Builder encoding(final Encoding encoding)
         {
-            this.byteOrder = byteOrder;
-            return this;
-        }
-
-        public Builder options(final Options options)
-        {
-            this.options = options;
+            this.encoding = encoding;
             return this;
         }
 
         public Token build()
         {
-            return new Token(signal, name, schemaId, primitiveType, size, offset, byteOrder, options);
+            return new Token(signal, name, schemaId, size, offset, encoding);
         }
     }
 }

@@ -159,8 +159,8 @@ public class JavaGenerator implements CodeGenerator
             if (token.signal() == Signal.CHOICE)
             {
                 final String choiceName = token.name();
-                final String typePrefix = token.primitiveType().primitiveName();
-                final String choiceBitPosition = token.options().constVal().toString();
+                final String typePrefix = token.encoding().primitiveType().primitiveName();
+                final String choiceBitPosition = token.encoding().constVal().toString();
 
                 out.append(String.format(
                     "\n" +
@@ -201,7 +201,7 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateEnumBody(final Writer out, final Token token, final String enumName) throws IOException
     {
-        final String javaEncodingType = javaTypeName(token.primitiveType());
+        final String javaEncodingType = javaTypeName(token.encoding().primitiveType());
 
         out.append("    private final ").append(javaEncodingType).append(" value;\n\n")
            .append("    ").append(enumName).append("(final ").append(javaEncodingType).append(" value)\n")
@@ -217,7 +217,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateEnumLookupMethod(final Writer out, final List<Token> tokens, final String enumName)
         throws IOException
     {
-        final String javaEncodingType = javaTypeName(tokens.get(0).primitiveType());
+        final String javaEncodingType = javaTypeName(tokens.get(0).encoding().primitiveType());
 
         out.append("    public static ").append(enumName).append(" lookup(final ").append(javaEncodingType).append(" value)\n")
            .append("    {\n")
@@ -226,7 +226,7 @@ public class JavaGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            final String constVal = token.options().constVal().toString();
+            final String constVal = token.encoding().constVal().toString();
             out.append("            case ").append(constVal).append(": return ").append(token.name()).append(";\n");
         }
 
@@ -276,7 +276,7 @@ public class JavaGenerator implements CodeGenerator
 
     private void generatePrimitiveEncoding(final Writer out, final Token token) throws IOException
     {
-        if (Presence.CONSTANT == token.options().presence())
+        if (Presence.CONSTANT == token.encoding().presence())
         {
             generateConstEncodingMethod(out, token);
         }
@@ -288,8 +288,8 @@ public class JavaGenerator implements CodeGenerator
 
     private void generatePrimitiveEncodingMethods(final Writer out, final Token token) throws IOException
     {
-        final String javaTypeName = javaTypeName(token.primitiveType());
-        final String typePrefix = token.primitiveType().primitiveName();
+        final String javaTypeName = javaTypeName(token.encoding().primitiveType());
+        final String typePrefix = token.encoding().primitiveType().primitiveName();
         final String propertyName = token.name();
         final Integer offset = Integer.valueOf(token.offset());
 
@@ -347,7 +347,7 @@ public class JavaGenerator implements CodeGenerator
                 Integer.valueOf(arrayLength),
                 typePrefix,
                 offset,
-                Integer.valueOf(token.primitiveType().size())
+                Integer.valueOf(token.encoding().primitiveType().size())
             ));
 
             out.append(String.format(
@@ -365,14 +365,14 @@ public class JavaGenerator implements CodeGenerator
                 Integer.valueOf(arrayLength),
                 typePrefix,
                 offset,
-                Integer.valueOf(token.primitiveType().size())
+                Integer.valueOf(token.encoding().primitiveType().size())
             ));
         }
     }
 
     private void generateConstEncodingMethod(final Writer out, final Token token) throws IOException
     {
-        final String javaTypeName = javaTypeName(token.primitiveType());
+        final String javaTypeName = javaTypeName(token.encoding().primitiveType());
         final String propertyName = token.name();
 
         out.append(String.format(
@@ -419,30 +419,30 @@ public class JavaGenerator implements CodeGenerator
     {
         String literal = "";
 
-        final String castType = javaTypeName(token.primitiveType());
-        switch (token.primitiveType())
+        final String castType = javaTypeName(token.encoding().primitiveType());
+        switch (token.encoding().primitiveType())
         {
             case CHAR:
             case UINT8:
             case UINT16:
             case INT8:
             case INT16:
-                literal = "(" + castType + ")" + token.options().constVal();
+                literal = "(" + castType + ")" + token.encoding().constVal();
                 break;
 
             case UINT32:
             case INT32:
             case FLOAT:
-                literal = token.options().constVal().toString();
+                literal = token.encoding().constVal().toString();
                 break;
 
             case UINT64:
             case INT64:
-                literal = token.options().constVal() + "L";
+                literal = token.encoding().constVal() + "L";
                 break;
 
             case DOUBLE:
-                literal = token.options().constVal() + "d";
+                literal = token.encoding().constVal() + "d";
         }
 
         return literal;

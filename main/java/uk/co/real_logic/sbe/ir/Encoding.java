@@ -15,35 +15,69 @@
  */
 package uk.co.real_logic.sbe.ir;
 
+import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
+import uk.co.real_logic.sbe.util.Verify;
+
+import java.nio.ByteOrder;
 
 /**
  * Optional settings that can be associated with {@link Token}s.
  */
-public class Options
+public class Encoding
 {
+    private final PrimitiveType primitiveType;
+    private final ByteOrder byteOrder;
     private final PrimitiveValue minVal;
     private final PrimitiveValue maxVal;
     private final PrimitiveValue nullVal;
     private final PrimitiveValue constVal;
 
-    public Options()
+    public Encoding()
     {
+        primitiveType = null;
+        byteOrder = ByteOrder.LITTLE_ENDIAN;
         minVal = null;
         maxVal = null;
         nullVal = null;
         constVal = null;
     }
 
-    public Options(final PrimitiveValue minVal,
-                   final PrimitiveValue maxVal,
-                   final PrimitiveValue nullVal,
-                   final PrimitiveValue constVal)
+    public Encoding(final PrimitiveType primitiveType,
+                    final ByteOrder byteOrder,
+                    final PrimitiveValue minVal,
+                    final PrimitiveValue maxVal,
+                    final PrimitiveValue nullVal,
+                    final PrimitiveValue constVal)
     {
+        Verify.notNull(byteOrder, "byteOrder");
+
+        this.primitiveType = primitiveType;
+        this.byteOrder = byteOrder;
         this.minVal = minVal;
         this.maxVal = maxVal;
         this.nullVal = nullVal;
         this.constVal = constVal;
+    }
+
+    /**
+     * The {@link PrimitiveType} of this encoding.
+     *
+     * @return the {@link PrimitiveType} of this encoding.
+     */
+    public PrimitiveType primitiveType()
+    {
+        return primitiveType;
+    }
+
+    /**
+     * The {@link ByteOrder} for this encoding.
+     *
+     * @return the {@link ByteOrder} for this encoding.
+     */
+    public ByteOrder byteOrder()
+    {
+        return byteOrder;
     }
 
     /**
@@ -108,7 +142,7 @@ public class Options
 
     public String toString()
     {
-        return "Options{" +
+        return "Encoding{" +
             "minVal=" + minVal +
             ", maxVal=" + maxVal +
             ", nullVal=" + nullVal +
@@ -117,10 +151,12 @@ public class Options
     }
 
     /**
-     * Builder to make {@link Options} easier to create.
+     * Builder to make {@link Encoding} easier to create.
      */
     public static class Builder
     {
+        private PrimitiveType primitiveType;
+        private ByteOrder byteOrder;
         private PrimitiveValue minVal;
         private PrimitiveValue maxVal;
         private PrimitiveValue nullVal;
@@ -128,10 +164,24 @@ public class Options
 
         public Builder()
         {
+            primitiveType = null;
+            byteOrder = ByteOrder.LITTLE_ENDIAN;
             minVal = null;
             maxVal = null;
             nullVal = null;
             constVal = null;
+        }
+
+        public Builder primitiveType(final PrimitiveType primitiveType)
+        {
+            this.primitiveType = primitiveType;
+            return this;
+        }
+
+        public Builder byteOrder(final ByteOrder byteOrder)
+        {
+            this.byteOrder = byteOrder;
+            return this;
         }
 
         public Builder minVal(final PrimitiveValue minValue)
@@ -158,9 +208,9 @@ public class Options
             return this;
         }
 
-        public Options build()
+        public Encoding build()
         {
-            return new Options(minVal, maxVal, nullVal, constVal);
+            return new Encoding(primitiveType, byteOrder, minVal, maxVal, nullVal, constVal);
         }
     }
 }

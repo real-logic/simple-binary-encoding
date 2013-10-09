@@ -37,7 +37,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
  * What is difference between {@link Message} and the Intermediate Representation (IR)?
  * <ul>
  * <li>IR is intentionally platform, schema, and language independent.</li>
- * <li>IR is abstract layout and options only.</li>
+ * <li>IR is abstract layout and encoding only.</li>
  * <li>IR is a flat representation without cycles or hierarchy.</li>
  * <li>Message is FIX/SBE XML Schema specific.</li>
  * </ul>
