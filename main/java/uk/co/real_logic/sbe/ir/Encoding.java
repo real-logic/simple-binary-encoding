@@ -26,6 +26,21 @@ import java.nio.ByteOrder;
  */
 public class Encoding
 {
+    /**
+     * Indicates the presence status of a primitive encoded field in a message.
+     */
+    public static enum Presence
+    {
+        /** The field presence is required. */
+        REQUIRED,
+
+        /** The field presence is optional. */
+        OPTIONAL,
+
+        /** The field presence is a constant. */
+        CONSTANT
+    }
+
     private final PrimitiveType primitiveType;
     private final ByteOrder byteOrder;
     private final PrimitiveValue minVal;

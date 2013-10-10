@@ -17,10 +17,7 @@ package uk.co.real_logic.sbe.generation.java;
 
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
-import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
-import uk.co.real_logic.sbe.ir.Presence;
-import uk.co.real_logic.sbe.ir.Signal;
-import uk.co.real_logic.sbe.ir.Token;
+import uk.co.real_logic.sbe.ir.*;
 import uk.co.real_logic.sbe.util.Verify;
 
 import java.io.IOException;
@@ -299,7 +296,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        if (Presence.CONSTANT == token.encoding().presence())
+        if (Encoding.Presence.CONSTANT == token.encoding().presence())
         {
             sb.append(generateConstEncodingMethod(token));
         }
@@ -426,7 +423,6 @@ public class JavaGenerator implements CodeGenerator
             "        this.offset = offset;\n" +
             "    }\n";
     }
-
 
     private CharSequence generateMessageFlyweightCode()
     {
