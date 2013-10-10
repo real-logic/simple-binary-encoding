@@ -86,6 +86,8 @@ public class Field
                 handleError(node, "Mismatched semanticType on type and field: " + name);
             }
         }
+
+        checkForValidName(node, name);
     }
 
     public void setGroupFields(final List<Field> list)

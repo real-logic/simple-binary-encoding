@@ -151,6 +151,7 @@
         <cc outtype="static"
             subsystem="console"
             objdir="${dir.main.cpp.build}">
+            <compilerarg value="-std=c++98"/>
             <fileset dir="${dir.main.cpp.src}" includes="**/*.cpp"/>
         </cc>
     </target>

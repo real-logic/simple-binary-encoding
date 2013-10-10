@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.checkForValidName;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
@@ -133,6 +134,8 @@ public class SetType extends Type
             {
                 throw new IllegalArgumentException("Choice value out of bounds: " + value.longValue());
             }
+
+            checkForValidName(node, name);
         }
 
         public PrimitiveValue getPrimitiveValue()

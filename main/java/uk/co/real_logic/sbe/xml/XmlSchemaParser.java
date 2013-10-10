@@ -17,6 +17,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.SbeTool;
+import uk.co.real_logic.sbe.util.ValidationUtil;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -174,6 +175,8 @@ public class XmlSchemaParser
             handleWarning(node, "type already exists for name: " + type.getName());
         }
 
+        checkForValidName(node, type.getName());
+
         typeByNameMap.put(type.getName(), type);
     }
 
@@ -217,6 +220,8 @@ public class XmlSchemaParser
         {
             handleError(node, "message template id already exists: " + message.getId());
         }
+
+        checkForValidName(node, message.getName());
 
         messageByIdMap.put(Long.valueOf(message.getId()), message);
     }
@@ -339,6 +344,21 @@ public class XmlSchemaParser
 
             default:
                 return ByteOrder.LITTLE_ENDIAN;
+        }
+    }
+
+    /**
+     * Check name against validity for C++ and Java naming. Warning if not valid.
+     */
+    public static void checkForValidName(final Node node, final String name)
+    {
+        if (!ValidationUtil.isSbeCppName(name))
+        {
+            handleWarning(node, "name is not valid for C++: " + name);
+        }
+        if (!ValidationUtil.isSbeJavaName(name))
+        {
+            handleWarning(node, "name is not valid for Java: " + name);
         }
     }
 

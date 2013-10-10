@@ -69,19 +69,19 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"boolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
-            "    <validValue name=\"false\">0</validValue>" +
-            "    <validValue name=\"true\">1</validValue>" +
+            "<enum name=\"Boolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
+            "    <validValue name=\"False\">0</validValue>" +
+            "    <validValue name=\"True\">1</validValue>" +
             "</enum>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
-        EnumType e = (EnumType)map.get("boolean");
-        assertThat(e.getName(), is("boolean"));
+        EnumType e = (EnumType)map.get("Boolean");
+        assertThat(e.getName(), is("Boolean"));
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.getValidValues().size()), is(valueOf(2)));
-        assertThat(e.getValidValue("true").getPrimitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
-        assertThat(e.getValidValue("false").getPrimitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
+        assertThat(e.getValidValue("True").getPrimitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
+        assertThat(e.getValidValue("False").getPrimitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
     }
 
     @Test
@@ -93,8 +93,8 @@ public class EnumTypeTest
             "<types>" +
             "<enum name=\"optionalBoolean\" encodingType=\"uint8\" presence=\"optional\"" +
             "      nullVal=\"" + nullValueStr + "\" semanticType=\"Boolean\">" +
-            "    <validValue name=\"false\">0</validValue>" +
-            "    <validValue name=\"true\">1</validValue>" +
+            "    <validValue name=\"False\">0</validValue>" +
+            "    <validValue name=\"True\">1</validValue>" +
             "</enum>" +
             "</types>";
 
@@ -103,8 +103,8 @@ public class EnumTypeTest
         assertThat(e.getName(), is("optionalBoolean"));
         assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.getValidValues().size()), is(valueOf(2)));
-        assertThat(e.getValidValue("true").getPrimitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
-        assertThat(e.getValidValue("false").getPrimitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
+        assertThat(e.getValidValue("True").getPrimitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
+        assertThat(e.getValidValue("False").getPrimitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
         assertThat(e.getNullValue(), is(PrimitiveValue.parse(nullValueStr, PrimitiveType.UINT8)));
     }
 
@@ -117,7 +117,7 @@ public class EnumTypeTest
             "<enum name=\"triOp\" encodingType=\"uint8\">" +
             "    <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
             "    <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
-            "    <validValue name=\"not-known\" description=\"switch is unknown\">2</validValue>" +
+            "    <validValue name=\"notKnown\" description=\"switch is unknown\">2</validValue>" +
             "</enum>" +
             "</types>";
 
@@ -137,7 +137,7 @@ public class EnumTypeTest
             {
                 foundOff++;
             }
-            else if (v.getName().equals("not-known"))
+            else if (v.getName().equals("notKnown"))
             {
                 foundNotKnown++;
             }

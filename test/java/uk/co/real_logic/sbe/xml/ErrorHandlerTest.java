@@ -91,7 +91,7 @@ public class ErrorHandlerTest
         parseTestXmlAddToMap(map, "/types/set", testXmlString, handler);
 
         assertThat(valueOf(handler.getErrors()), is(valueOf(3)));
-        assertThat(valueOf(handler.getWarnings()), is(valueOf(5)));
+        assertThat(valueOf(handler.getWarnings()), is(valueOf(19)));
     }
 
     @Test(expected = IllegalArgumentException.class)

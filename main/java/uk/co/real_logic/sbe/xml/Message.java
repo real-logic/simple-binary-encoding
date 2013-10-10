@@ -159,6 +159,8 @@ public class Message
             .dimensionType((CompositeType)dimensionType)
             .build();
 
+        XmlSchemaParser.checkForValidName(nodeList.item(nodeIndex), field.getName());
+
         field.setGroupFields(parseFieldsAndGroups(nodeList.item(nodeIndex))); // recursive call
 
         return field;

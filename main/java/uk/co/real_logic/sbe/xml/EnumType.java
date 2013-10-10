@@ -31,6 +31,7 @@ import java.util.Map;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleError;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.checkForValidName;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
@@ -160,6 +161,8 @@ public class EnumType extends Type
             name = getAttributeValue(node, "name");
             description = getAttributeValueOrNull(node, "description");
             value = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), encodingType);
+
+            checkForValidName(node, name);
         }
 
         public PrimitiveValue getPrimitiveValue()
