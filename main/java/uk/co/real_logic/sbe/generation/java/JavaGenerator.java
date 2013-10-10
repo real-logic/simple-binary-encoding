@@ -361,7 +361,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append(String.format(
                 "    public %s %s(final int index)\n" +
                 "    {\n" +
-                "        if (index < 0 || index > %d)\n" +
+                "        if (index < 0 || index >= %d)\n" +
                 "        {\n" +
                 "            throw new IllegalArgumentException(\"index out of range: \" + %d);\n" +
                 "        }\n\n" +
@@ -379,7 +379,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append(String.format(
                 "    public void %s(final int index, final %s value)\n" +
                 "    {\n" +
-                "        if (index < 0 || index > %d)\n" +
+                "        if (index < 0 || index >= %d)\n" +
                 "        {\n" +
                 "            throw new IllegalArgumentException(\"index out of range: \" + %d);\n" +
                 "        }\n\n" +
