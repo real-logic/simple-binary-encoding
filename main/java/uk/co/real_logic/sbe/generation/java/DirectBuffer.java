@@ -46,7 +46,7 @@ public class DirectBuffer
     private final int capacity;
 
     /**
-     * Attach a view to a byte[] for providing atomic direct access.
+     * Attach a view to a byte[] for providing direct access.
      *
      * @param byteArray to which the view is attached.
      */
@@ -61,7 +61,7 @@ public class DirectBuffer
     }
 
     /**
-     * Attach a view to a {@link ByteBuffer} for providing atomic direct access, the {@link ByteBuffer} can be
+     * Attach a view to a {@link ByteBuffer} for providing direct access, the {@link ByteBuffer} can be
      * heap based or direct.
      *
      * @param byteBuffer to which the view is attached.
