@@ -30,12 +30,6 @@ import static uk.co.real_logic.sbe.util.BitUtil.*;
  */
 public class DirectBuffer
 {
-    /** Boolean system property to control if bounds checking is applied or not */
-    public static final String BOUNDS_CHECK_PROPERTY = "atomic.buffer.bounds.check";
-
-    /** Should access to the backing array be bounds checked or not */
-    public static final boolean BOUNDS_CHECK = "TRUE".equalsIgnoreCase(System.getProperty(BOUNDS_CHECK_PROPERTY, "TRUE"));
-
     private static final Unsafe UNSAFE = BitUtil.getUnsafe();
     private static final long BYTE_ARRAY_OFFSET = UNSAFE.arrayBaseOffset(byte[].class);
 
@@ -116,7 +110,6 @@ public class DirectBuffer
      */
     public long getLong(final int index)
     {
-        checkBounds(index, capacity, SIZE_OF_LONG, "LHS");
         return UNSAFE.getLong(byteArray, baseOffset + index);
     }
 
@@ -128,8 +121,66 @@ public class DirectBuffer
      */
     public void putLong(final int index, final long value)
     {
-        checkBounds(index, capacity, SIZE_OF_LONG, "LHS");
         UNSAFE.putLong(byteArray, baseOffset + index, value);
+    }
+
+    /**
+     * Get from the underlying buffer and put them into a supplied array.
+     * This method will try to fill the supplied byte array.
+     *
+     * @param index in the underlying buffer to start from.
+     * @param dst   into which elements will be copied.
+     * @return count of bytes copied.
+     */
+    public int getLongs(final int index, final long[] dst)
+    {
+        return getLongs(index, dst, 0, dst.length);
+    }
+
+    /**
+     * Get from the underlying buffer and put them into a supplied array.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param dst    into which the elements will be copied.
+     * @param offset in the supplied array to start the copy
+     * @param length of the supplied array to use.
+     * @return count of bytes copied.
+     */
+    public int getLongs(final int index, final long[] dst, final int offset, final int length)
+    {
+        final int count = Math.min(length * SIZE_OF_LONG, capacity - index);
+        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_LONG), count);
+
+        return count;
+    }
+
+    /**
+     * Put from the supplied array into the underlying buffer.
+     *
+     * @param index in the underlying buffer to start from.
+     * @param src   from which elements will be copied.
+     * @return count of bytes copied.
+     */
+    public int putLongs(final int index, final long[] src)
+    {
+        return putLongs(index, src, 0, src.length);
+    }
+
+    /**
+     * Put from the supplied array into the underlying buffer.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param src    from which the elements will be copied.
+     * @param offset in the supplied array to start the copy
+     * @param length of the supplied array to use.
+     * @return count of bytes copied.
+     */
+    public int putLongs(final int index, final long[] src, final int offset, final int length)
+    {
+        final int count = Math.min(length * SIZE_OF_LONG, capacity - index);
+        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_LONG), byteArray, baseOffset + index, count);
+
+        return count;
     }
 
     /**
@@ -140,7 +191,6 @@ public class DirectBuffer
      */
     public int getInt(final int index)
     {
-        checkBounds(index, capacity, SIZE_OF_INT, "LHS");
         return UNSAFE.getInt(byteArray, baseOffset + index);
     }
 
@@ -152,8 +202,66 @@ public class DirectBuffer
      */
     public void putInt(final int index, final int value)
     {
-        checkBounds(index, capacity, SIZE_OF_INT, "LHS");
         UNSAFE.putInt(byteArray, baseOffset + index, value);
+    }
+
+    /**
+     * Get from the underlying buffer and put into a supplied array.
+     * This method will try to fill the supplied byte array.
+     *
+     * @param index in the underlying buffer to start from.
+     * @param dst   into which elements will be copied.
+     * @return count of bytes copied.
+     */
+    public int getInts(final int index, final int[] dst)
+    {
+        return getInts(index, dst, 0, dst.length);
+    }
+
+    /**
+     * Get from the underlying buffer and put into a supplied array.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param dst    into which the elements will be copied.
+     * @param offset in the supplied array to start the copy
+     * @param length of the supplied array to use.
+     * @return count of bytes copied.
+     */
+    public int getInts(final int index, final int[] dst, final int offset, final int length)
+    {
+        final int count = Math.min(length * SIZE_OF_INT, capacity - index);
+        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_INT), count);
+
+        return count;
+    }
+
+    /**
+     * Put from the supplied array into the underlying buffer.
+     *
+     * @param index in the underlying buffer to start from.
+     * @param src   from which elements will be copied.
+     * @return count of bytes copied.
+     */
+    public int putInts(final int index, final int[] src)
+    {
+        return putInts(index, src, 0, src.length);
+    }
+
+    /**
+     * Put from the supplied array into the underlying buffer.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param src    from which the elements will be copied.
+     * @param offset in the supplied array to start the copy
+     * @param length of the supplied array to use.
+     * @return count of bytes copied.
+     */
+    public int putInts(final int index, final int[] src, final int offset, final int length)
+    {
+        final int count = Math.min(length * SIZE_OF_INT, capacity - index);
+        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_INT), byteArray, baseOffset + index, count);
+
+        return count;
     }
 
     /**
@@ -164,7 +272,6 @@ public class DirectBuffer
      */
     public double getDouble(final int index)
     {
-        checkBounds(index, capacity, SIZE_OF_DOUBLE, "LHS");
         return UNSAFE.getDouble(byteArray, baseOffset + index);
     }
 
@@ -176,8 +283,66 @@ public class DirectBuffer
      */
     public void putDouble(final int index, final double value)
     {
-        checkBounds(index, capacity, SIZE_OF_DOUBLE, "LHS");
         UNSAFE.putDouble(byteArray, baseOffset + index, value);
+    }
+
+    /**
+     * Get from the underlying buffer and put into a supplied array.
+     * This method will try to fill the supplied byte array.
+     *
+     * @param index in the underlying buffer to start from.
+     * @param dst   into which elements will be copied.
+     * @return count of bytes copied.
+     */
+    public int getDoubles(final int index, final double[] dst)
+    {
+        return getDoubles(index, dst, 0, dst.length);
+    }
+
+    /**
+     * Get from the underlying buffer and put into a supplied array.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param dst    into which the elements will be copied.
+     * @param offset in the supplied array to start the copy
+     * @param length of the supplied array to use.
+     * @return count of bytes copied.
+     */
+    public int getDoubles(final int index, final double[] dst, final int offset, final int length)
+    {
+        final int count = Math.min(length * SIZE_OF_DOUBLE, capacity - index);
+        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_DOUBLE), count);
+
+        return count;
+    }
+
+    /**
+     * Put from the supplied array into the underlying buffer.
+     *
+     * @param index in the underlying buffer to start from.
+     * @param src   from which elements will be copied.
+     * @return count of bytes copied.
+     */
+    public int putDoubles(final int index, final double[] src)
+    {
+        return putDoubles(index, src, 0, src.length);
+    }
+
+    /**
+     * Put from the supplied array into the underlying buffer.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param src    from which the elements will be copied.
+     * @param offset in the supplied array to start the copy
+     * @param length of the supplied array to use.
+     * @return count of bytes copied.
+     */
+    public int putDoubles(final int index, final double[] src, final int offset, final int length)
+    {
+        final int count = Math.min(length * SIZE_OF_DOUBLE, capacity - index);
+        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_DOUBLE), byteArray, baseOffset + index, count);
+
+        return count;
     }
 
     /**
@@ -188,7 +353,6 @@ public class DirectBuffer
      */
     public float getFloat(final int index)
     {
-        checkBounds(index, capacity, SIZE_OF_FLOAT, "LHS");
         return UNSAFE.getFloat(byteArray, baseOffset + index);
     }
 
@@ -200,8 +364,66 @@ public class DirectBuffer
      */
     public void putFloat(final int index, final float value)
     {
-        checkBounds(index, capacity, SIZE_OF_FLOAT, "LHS");
         UNSAFE.putFloat(byteArray, baseOffset + index, value);
+    }
+
+    /**
+     * Get from the underlying buffer and put into a supplied array.
+     * This method will try to fill the supplied byte array.
+     *
+     * @param index in the underlying buffer to start from.
+     * @param dst   into which elements will be copied.
+     * @return count of bytes copied.
+     */
+    public int getFloats(final int index, final float[] dst)
+    {
+        return getFloats(index, dst, 0, dst.length);
+    }
+
+    /**
+     * Get from the underlying buffer and put into a supplied array.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param dst    into which the elements will be copied.
+     * @param offset in the supplied array to start the copy
+     * @param length of the supplied array to use.
+     * @return count of bytes copied.
+     */
+    public int getFloats(final int index, final float[] dst, final int offset, final int length)
+    {
+        final int count = Math.min(length * SIZE_OF_FLOAT, capacity - index);
+        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_FLOAT), count);
+
+        return count;
+    }
+
+    /**
+     * Put from the supplied array into the underlying buffer.
+     *
+     * @param index in the underlying buffer to start from.
+     * @param src   from which elements will be copied.
+     * @return count of bytes copied.
+     */
+    public int putFloats(final int index, final float[] src)
+    {
+        return putFloats(index, src, 0, src.length);
+    }
+
+    /**
+     * Put from the supplied array into the underlying buffer.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param src    from which the elements will be copied.
+     * @param offset in the supplied array to start the copy
+     * @param length of the supplied array to use.
+     * @return count of bytes copied.
+     */
+    public int putFloats(final int index, final float[] src, final int offset, final int length)
+    {
+        final int count = Math.min(length * SIZE_OF_FLOAT, capacity - index);
+        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_FLOAT), byteArray, baseOffset + index, count);
+
+        return count;
     }
 
     /**
@@ -212,7 +434,6 @@ public class DirectBuffer
      */
     public short getShort(final int index)
     {
-        checkBounds(index, capacity, SIZE_OF_SHORT, "LHS");
         return UNSAFE.getShort(byteArray, baseOffset + index);
     }
 
@@ -224,8 +445,66 @@ public class DirectBuffer
      */
     public void putShort(final int index, final short value)
     {
-        checkBounds(index, capacity, SIZE_OF_SHORT, "LHS");
         UNSAFE.putShort(byteArray, baseOffset + index, value);
+    }
+
+    /**
+     * Get from the underlying buffer and put into a supplied array.
+     * This method will try to fill the supplied byte array.
+     *
+     * @param index in the underlying buffer to start from.
+     * @param dst   into which elements will be copied.
+     * @return count of bytes copied.
+     */
+    public int getShorts(final int index, final short[] dst)
+    {
+        return getShorts(index, dst, 0, dst.length);
+    }
+
+    /**
+     * Get from the underlying buffer and put into a supplied array.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param dst    into which the elements will be copied.
+     * @param offset in the supplied array to start the copy
+     * @param length of the supplied array to use.
+     * @return count of bytes copied.
+     */
+    public int getShorts(final int index, final short[] dst, final int offset, final int length)
+    {
+        final int count = Math.min(length * SIZE_OF_SHORT, capacity - index);
+        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_SHORT), count);
+
+        return count;
+    }
+
+    /**
+     * Put from the supplied array into the underlying buffer.
+     *
+     * @param index in the underlying buffer to start from.
+     * @param src   from which elements will be copied.
+     * @return count of bytes copied.
+     */
+    public int putShorts(final int index, final short[] src)
+    {
+        return putShorts(index, src, 0, src.length);
+    }
+
+    /**
+     * Put from the supplied array into the underlying buffer.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param src    from which the elements will be copied.
+     * @param offset in the supplied array to start the copy
+     * @param length of the supplied array to use.
+     * @return count of bytes copied.
+     */
+    public int putShorts(final int index, final short[] src, final int offset, final int length)
+    {
+        final int count = Math.min(length * SIZE_OF_SHORT, capacity - index);
+        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_SHORT), byteArray, baseOffset + index, count);
+
+        return count;
     }
 
     /**
@@ -236,7 +515,6 @@ public class DirectBuffer
      */
     public byte getByte(final int index)
     {
-        checkBounds(index, capacity, SIZE_OF_BYTE, "LHS");
         return UNSAFE.getByte(byteArray, baseOffset + index);
     }
 
@@ -248,24 +526,24 @@ public class DirectBuffer
      */
     public void putByte(final int index, final byte value)
     {
-        checkBounds(index, capacity, SIZE_OF_BYTE, "LHS");
         UNSAFE.putByte(byteArray, baseOffset + index, value);
     }
 
     /**
-     * Get dst from the underlying buffer and put them into a supplied byte array.
+     * Get from the underlying buffer into a supplied byte array.
      * This method will try to fill the supplied byte array.
      *
      * @param index in the underlying buffer to start from.
      * @param dst   into which the dst will be copied.
+     * @return count of bytes copied.
      */
-    public void getBytes(final int index, final byte[] dst)
+    public int getBytes(final int index, final byte[] dst)
     {
-        getBytes(index, dst, 0, dst.length);
+        return getBytes(index, dst, 0, dst.length);
     }
 
     /**
-     * Get bytes from the underlying buffer and put them into a supplied byte array.
+     * Get bytes from the underlying buffer into a supplied byte array.
      *
      * @param index  in the underlying buffer to start from.
      * @param dst    into which the bytes will be copied.
@@ -276,15 +554,13 @@ public class DirectBuffer
     public int getBytes(final int index, final byte[] dst, final int offset, final int length)
     {
         final int count = Math.min(length, capacity - index);
-        checkBounds(index, capacity, count, "LHS");
-        checkBounds(offset, dst.length, count, "RHS");
         UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + offset, count);
 
         return count;
     }
 
     /**
-     * Get bytes from the underlying buffer and put them into a supplied {@link ByteBuffer}.
+     * Get from the underlying buffer into a supplied {@link ByteBuffer}.
      *
      * @param index     in the underlying buffer to start from.
      * @param dstBuffer into which the bytes will be copied.
@@ -298,8 +574,6 @@ public class DirectBuffer
 
         int count = Math.min(dstBuffer.remaining(), capacity - index);
         count = Math.min(count, length);
-
-        checkBounds(index, capacity, count, "LHS");
 
         final int dstOffset = dstBuffer.position();
         final byte[] dstByteArray;
@@ -322,7 +596,7 @@ public class DirectBuffer
     }
 
     /**
-     * Put an array of src into the underlying buffer for the view.
+     * Put an array of src into the underlying buffer.
      *
      * @param index in the underlying buffer to start from.
      * @param src   to be copied to the underlying buffer.
@@ -334,7 +608,7 @@ public class DirectBuffer
     }
 
     /**
-     * Put an array of src into the underlying buffer for the view.
+     * Put an array into the underlying buffer.
      *
      * @param index  in the underlying buffer to start from.
      * @param src    to be copied to the underlying buffer.
@@ -345,8 +619,6 @@ public class DirectBuffer
     public int putBytes(final int index, final byte[] src, final int offset, final int length)
     {
         final int count = Math.min(length, capacity - index);
-        checkBounds(index, capacity, count, "LHS");
-        checkBounds(offset, src.length, count, "RHS");
         UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + offset, byteArray, baseOffset + index,  count);
 
         return count;
@@ -364,8 +636,6 @@ public class DirectBuffer
     {
         int count = Math.min(srcBuffer.remaining(), capacity - index);
         count = Math.min(count, length);
-
-        checkBounds(index, capacity, count, "LHS");
 
         final int srcOffset = srcBuffer.position();
         final byte[] srcByteArray;
@@ -385,22 +655,5 @@ public class DirectBuffer
         srcBuffer.position(srcBuffer.position() + count);
 
         return count;
-    }
-
-    private void checkBounds(final int index, final int capacity, final int size, final String endpoint)
-    {
-        if (BOUNDS_CHECK)
-        {
-            if (index < 0 || (index + size) > capacity)
-            {
-                final String msg = String.format("Index %d out of bounds 0-%d for type of size %d at %s",
-                                                 Integer.valueOf(index),
-                                                 Integer.valueOf((capacity - 1)),
-                                                 Integer.valueOf(size),
-                                                 endpoint);
-
-                throw new IndexOutOfBoundsException(msg);
-            }
-        }
     }
 }

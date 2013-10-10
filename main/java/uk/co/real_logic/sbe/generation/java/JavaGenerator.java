@@ -458,8 +458,11 @@ public class JavaGenerator implements CodeGenerator
 
             case UINT32:
             case INT32:
-            case FLOAT:
                 literal = token.encoding().constVal().toString();
+                break;
+
+            case FLOAT:
+                literal = token.encoding().constVal() + "f";
                 break;
 
             case UINT64:

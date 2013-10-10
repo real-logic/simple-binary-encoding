@@ -15,7 +15,6 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import org.junit.Test;
 import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -41,11 +40,6 @@ public class DirectBufferTest
     private static final long LONG_VALUE = 6;
     private static final double DOUBLE_VALUE = 7.0d;
 
-    static
-    {
-        System.setProperty(DirectBuffer.BOUNDS_CHECK_PROPERTY, "TRUE");
-    }
-
     @DataPoint
     public static final DirectBuffer BYTE_ARRAY_BACKED = new DirectBuffer(new byte[BUFFER_SIZE]);
 
@@ -56,214 +50,347 @@ public class DirectBufferTest
     public static final DirectBuffer DIRECT_BYTE_BUFFER = new DirectBuffer(ByteBuffer.allocateDirect(BUFFER_SIZE));
 
     @Theory
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldCheckUpperBound(final DirectBuffer view)
+    public void shouldGetLongFromBuffer(final DirectBuffer buffer)
     {
-        view.putInt(view.capacity() - 1, INT_VALUE);
-    }
-
-    @Theory
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldCheckLowerBound(final DirectBuffer view)
-    {
-        view.putInt(-1, INT_VALUE);
-    }
-
-    @Theory
-    public void shouldGetLongFromView(final DirectBuffer view)
-    {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
 
         duplicateBuffer.putLong(INDEX, LONG_VALUE);
 
-        assertThat(Long.valueOf(view.getLong(INDEX)), is(Long.valueOf(LONG_VALUE)));
+        assertThat(Long.valueOf(buffer.getLong(INDEX)), is(Long.valueOf(LONG_VALUE)));
     }
 
     @Theory
-    public void shouldPutLongToView(final DirectBuffer view)
+    public void shouldPutLongToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
 
-        view.putLong(INDEX, LONG_VALUE);
+        buffer.putLong(INDEX, LONG_VALUE);
 
         assertThat(Long.valueOf(duplicateBuffer.getLong(INDEX)), is(Long.valueOf(LONG_VALUE)));
     }
 
     @Theory
-    public void shouldGetIntFromView(final DirectBuffer view)
+    public void shouldGetLongsFromBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        duplicateBuffer.putLong(0).putLong(1).putLong(2).putLong(3).putLong(4);
 
-        duplicateBuffer.putInt(INDEX, INT_VALUE);
+        final long[] results = new long[5];
+        buffer.getLongs(0, results);
 
-        assertThat(valueOf(view.getInt(INDEX)), is(valueOf(INT_VALUE)));
+        for (long i = 0; i < results.length; i++)
+        {
+            assertThat(Long.valueOf(results[(int)i]), is(Long.valueOf(i)));
+        }
     }
 
     @Theory
-    public void shouldPutIntToView(final DirectBuffer view)
+    public void shouldPutLongsToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final long[] expected = new long[]{0, 1, 2, 3, 4};
 
-        view.putInt(INDEX, INT_VALUE);
+        buffer.putLongs(0, expected);
+
+        for (long i = 0; i < expected.length; i++)
+        {
+            assertThat(Long.valueOf(duplicateBuffer.getLong()), is(Long.valueOf(i)));
+        }
+    }
+
+    @Theory
+    public void shouldGetIntFromBuffer(final DirectBuffer buffer)
+    {
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+
+        duplicateBuffer.putInt(INDEX, INT_VALUE);
+
+        assertThat(valueOf(buffer.getInt(INDEX)), is(valueOf(INT_VALUE)));
+    }
+
+    @Theory
+    public void shouldPutIntToBuffer(final DirectBuffer buffer)
+    {
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+
+        buffer.putInt(INDEX, INT_VALUE);
 
         assertThat(valueOf(duplicateBuffer.getInt(INDEX)), is(valueOf(INT_VALUE)));
     }
 
     @Theory
-    public void shouldGetShortFromView(final DirectBuffer view)
+    public void shouldGetIntsFromBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        duplicateBuffer.putInt(0).putInt(1).putInt(2).putInt(3).putInt(4);
 
-        duplicateBuffer.putShort(INDEX, SHORT_VALUE);
+        final int[] results = new int[5];
+        buffer.getInts(0, results);
 
-        assertThat(Short.valueOf(view.getShort(INDEX)), is(Short.valueOf(SHORT_VALUE)));
+        for (int i = 0; i < results.length; i++)
+        {
+            assertThat(Integer.valueOf(results[i]), is(Integer.valueOf(i)));
+        }
     }
 
     @Theory
-    public void shouldPutShortToView(final DirectBuffer view)
+    public void shouldPutIntsToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final int[] expected = new int[]{0, 1, 2, 3, 4};
 
-        view.putShort(INDEX, SHORT_VALUE);
+        buffer.putInts(0, expected);
+
+        for (int i = 0; i < expected.length; i++)
+        {
+            assertThat(Integer.valueOf(duplicateBuffer.getInt()), is(Integer.valueOf(i)));
+        }
+    }
+
+    @Theory
+    public void shouldGetShortFromBuffer(final DirectBuffer buffer)
+    {
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+
+        duplicateBuffer.putShort(INDEX, SHORT_VALUE);
+
+        assertThat(Short.valueOf(buffer.getShort(INDEX)), is(Short.valueOf(SHORT_VALUE)));
+    }
+
+    @Theory
+    public void shouldPutShortToBuffer(final DirectBuffer buffer)
+    {
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+
+        buffer.putShort(INDEX, SHORT_VALUE);
 
         assertThat(Short.valueOf(duplicateBuffer.getShort(INDEX)), is(Short.valueOf(SHORT_VALUE)));
     }
 
+
     @Theory
-    public void shouldGetDoubleFromView(final DirectBuffer view)
+    public void shouldGetShortsFromBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        duplicateBuffer.putShort((short)0).putShort((short)1).putShort((short)2).putShort((short)3).putShort((short)4);
 
-        duplicateBuffer.putDouble(INDEX, DOUBLE_VALUE);
+        final short[] results = new short[5];
+        buffer.getShorts(0, results);
 
-        assertThat(Double.valueOf(view.getDouble(INDEX)), is(Double.valueOf(DOUBLE_VALUE)));
+        for (int i = 0; i < results.length; i++)
+        {
+            assertThat(Short.valueOf(results[i]), is(Short.valueOf((short)i)));
+        }
     }
 
     @Theory
-    public void shouldPutDoubleToView(final DirectBuffer view)
+    public void shouldPutShortsToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final short[] expected = new short[]{0, 1, 2, 3, 4};
 
-        view.putDouble(INDEX, DOUBLE_VALUE);
+        buffer.putShorts(0, expected);
+
+        for (int i = 0; i < expected.length; i++)
+        {
+            assertThat(Short.valueOf(duplicateBuffer.getShort()), is(Short.valueOf((short)i)));
+        }
+    }
+
+    @Theory
+    public void shouldGetDoubleFromBuffer(final DirectBuffer buffer)
+    {
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+
+        duplicateBuffer.putDouble(INDEX, DOUBLE_VALUE);
+
+        assertThat(Double.valueOf(buffer.getDouble(INDEX)), is(Double.valueOf(DOUBLE_VALUE)));
+    }
+
+    @Theory
+    public void shouldPutDoubleToBuffer(final DirectBuffer buffer)
+    {
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+
+        buffer.putDouble(INDEX, DOUBLE_VALUE);
 
         assertThat(Double.valueOf(duplicateBuffer.getDouble(INDEX)), is(Double.valueOf(DOUBLE_VALUE)));
     }
 
     @Theory
-    public void shouldGetFloatFromView(final DirectBuffer view)
+    public void shouldGetDoublesFromBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        duplicateBuffer.putDouble(0).putDouble(1.0d).putDouble(2.0d).putDouble(3.0d).putDouble(4.0d);
 
-        duplicateBuffer.putFloat(INDEX, FLOAT_VALUE);
+        final double[] results = new double[5];
+        buffer.getDoubles(0, results);
 
-        assertThat(Float.valueOf(view.getFloat(INDEX)), is(Float.valueOf(FLOAT_VALUE)));
+        for (int i = 0; i < results.length; i++)
+        {
+            assertThat(Double.valueOf(results[i]), is(Double.valueOf(i)));
+        }
     }
 
     @Theory
-    public void shouldPutFloatToView(final DirectBuffer view)
+    public void shouldPutDoublesToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final double[] expected = new double[]{0, 1.0d, 2.0d, 3.0d, 4.0d};
 
-        view.putFloat(INDEX, FLOAT_VALUE);
+        buffer.putDoubles(0, expected);
+
+        for (int i = 0; i < expected.length; i++)
+        {
+            assertThat(Double.valueOf(duplicateBuffer.getDouble()), is(Double.valueOf(i)));
+        }
+    }
+
+    @Theory
+    public void shouldGetFloatFromBuffer(final DirectBuffer buffer)
+    {
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+
+        duplicateBuffer.putFloat(INDEX, FLOAT_VALUE);
+
+        assertThat(Float.valueOf(buffer.getFloat(INDEX)), is(Float.valueOf(FLOAT_VALUE)));
+    }
+
+    @Theory
+    public void shouldPutFloatToBuffer(final DirectBuffer buffer)
+    {
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+
+        buffer.putFloat(INDEX, FLOAT_VALUE);
 
         assertThat(Float.valueOf(duplicateBuffer.getFloat(INDEX)), is(Float.valueOf(FLOAT_VALUE)));
     }
 
+
     @Theory
-    public void shouldGetByteFromView(final DirectBuffer view)
+    public void shouldGetFloatsFromBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        duplicateBuffer.putFloat(0).putFloat(1.0f).putFloat(2.0f).putFloat(3.0f).putFloat(4.0f);
 
-        duplicateBuffer.put(INDEX, BYTE_VALUE);
+        final float[] results = new float[5];
+        buffer.getFloats(0, results);
 
-        assertThat(Byte.valueOf(view.getByte(INDEX)), is(Byte.valueOf(BYTE_VALUE)));
+        for (int i = 0; i < results.length; i++)
+        {
+            assertThat(Float.valueOf(results[i]), is(Float.valueOf(i)));
+        }
     }
 
     @Theory
-    public void shouldPutByteToView(final DirectBuffer view)
+    public void shouldPutFloatsToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final float[] expected = new float[]{0, 1.0f, 2.0f, 3.0f, 4.0f};
 
-        view.putByte(INDEX, BYTE_VALUE);
+        buffer.putFloats(0, expected);
+
+        for (int i = 0; i < expected.length; i++)
+        {
+            assertThat(Float.valueOf(duplicateBuffer.getFloat()), is(Float.valueOf(i)));
+        }
+    }
+
+    @Theory
+    public void shouldGetByteFromBuffer(final DirectBuffer buffer)
+    {
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+
+        duplicateBuffer.put(INDEX, BYTE_VALUE);
+
+        assertThat(Byte.valueOf(buffer.getByte(INDEX)), is(Byte.valueOf(BYTE_VALUE)));
+    }
+
+    @Theory
+    public void shouldPutByteToBuffer(final DirectBuffer buffer)
+    {
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+
+        buffer.putByte(INDEX, BYTE_VALUE);
 
         assertThat(Byte.valueOf(duplicateBuffer.get(INDEX)), is(Byte.valueOf(BYTE_VALUE)));
     }
 
     @Theory
-    public void shouldGetByteArrayFromView(final DirectBuffer view)
+    public void shouldGetByteArrayFromBuffer(final DirectBuffer buffer)
     {
         final byte[] testArray = {'H', 'e', 'l', 'l', 'o'};
 
         int i = INDEX;
         for (final byte v : testArray)
         {
-            view.putByte(i, v);
+            buffer.putByte(i, v);
             i += SIZE_OF_BYTE;
         }
 
         final byte[] result = new byte[testArray.length];
-        view.getBytes(INDEX, result);
+        buffer.getBytes(INDEX, result);
 
         assertThat(result, is(testArray));
     }
 
     @Theory
-    public void shouldGetBytesFromView(final DirectBuffer view)
+    public void shouldGetBytesFromBuffer(final DirectBuffer buffer)
     {
         final byte[] testBytes = "Hello World".getBytes();
 
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
         duplicateBuffer.position(INDEX);
         duplicateBuffer.put(testBytes);
 
-        final byte[] buffer = new byte[testBytes.length];
-        view.getBytes(INDEX, buffer);
+        final byte[] buff = new byte[testBytes.length];
+        buffer.getBytes(INDEX, buff);
 
-        assertThat(buffer, is(testBytes));
+        assertThat(buff, is(testBytes));
     }
 
     @Theory
-    public void shouldGetBytesFromViewToBuffer(final DirectBuffer view)
+    public void shouldGetBytesFromBufferToBuffer(final DirectBuffer buffer)
     {
         final byte[] testBytes = "Hello World".getBytes();
 
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
         duplicateBuffer.position(INDEX);
         duplicateBuffer.put(testBytes);
 
         final ByteBuffer dstBuffer = ByteBuffer.allocate(testBytes.length);
-        view.getBytes(INDEX, dstBuffer, testBytes.length);
+        buffer.getBytes(INDEX, dstBuffer, testBytes.length);
 
         assertThat(dstBuffer.array(), is(testBytes));
     }
 
     @Theory
-    public void shouldPutBytesToView(final DirectBuffer view)
+    public void shouldPutBytesToBuffer(final DirectBuffer buffer)
     {
         final byte[] testBytes = "Hello World".getBytes();
-        view.putBytes(INDEX, testBytes);
+        buffer.putBytes(INDEX, testBytes);
 
-        final byte[] buffer = new byte[testBytes.length];
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final byte[] buff = new byte[testBytes.length];
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
         duplicateBuffer.position(INDEX);
-        duplicateBuffer.get(buffer);
+        duplicateBuffer.get(buff);
 
-        assertThat(buffer, is(testBytes));
+        assertThat(buff, is(testBytes));
     }
 
     @Theory
-    public void shouldPutBytesToViewFromBuffer(final DirectBuffer view)
+    public void shouldPutBytesToBufferFromBuffer(final DirectBuffer buffer)
     {
         final byte[] testBytes = "Hello World".getBytes();
         final ByteBuffer srcBuffer = ByteBuffer.wrap(testBytes);
 
-        view.putBytes(INDEX, srcBuffer, testBytes.length);
+        buffer.putBytes(INDEX, srcBuffer, testBytes.length);
 
-        final byte[] buffer = new byte[testBytes.length];
-        final ByteBuffer duplicateBuffer = view.duplicateByteBuffer();
+        final byte[] buff = new byte[testBytes.length];
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
         duplicateBuffer.position(INDEX);
-        duplicateBuffer.get(buffer);
+        duplicateBuffer.get(buff);
 
-        assertThat(buffer, is(testBytes));
+        assertThat(buff, is(testBytes));
     }
 }
