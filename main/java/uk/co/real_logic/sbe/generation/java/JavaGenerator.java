@@ -33,7 +33,7 @@ import static uk.co.real_logic.sbe.generation.java.JavaUtil.toUpperFirstChar;
 public class JavaGenerator implements CodeGenerator
 {
     /** Class name to be used for visitor pattern that accesses the message header. */
-    public static final String MESSAGE_HEADER_VISITOR = "MessageHeaderVisitor";
+    public static final String MESSAGE_HEADER_VISITOR = "MessageHeader";
 
     private final IntermediateRepresentation ir;
     private final OutputManager outputManager;
@@ -52,12 +52,12 @@ public class JavaGenerator implements CodeGenerator
     {
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_VISITOR))
         {
-            generateFileHeader(out, ir.packageName());
-            generateClassDeclaration(out, MESSAGE_HEADER_VISITOR, FixedFlyweight.class.getSimpleName());
-            generateFixedFlyweightCode(out);
+            out.append(generateFileHeader(ir.packageName()));
+            out.append(generateClassDeclaration(MESSAGE_HEADER_VISITOR, FixedFlyweight.class.getSimpleName()));
+            out.append(generateFixedFlyweightCode());
 
             final List<Token> tokens = ir.header();
-            generatePrimitiveEncodings(out, tokens.subList(1, tokens.size() - 1));
+            out.append(generatePrimitiveEncodings(tokens.subList(1, tokens.size() - 1)));
 
             out.append("}\n");
         }
@@ -92,9 +92,9 @@ public class JavaGenerator implements CodeGenerator
 
             try (final Writer out = outputManager.createOutput(className))
             {
-                generateFileHeader(out, ir.packageName());
-                generateClassDeclaration(out, className, MessageFlyweight.class.getSimpleName());
-                generateMessageFlyweightCode(out);
+                out.append(generateFileHeader(ir.packageName()));
+                out.append(generateClassDeclaration(className, MessageFlyweight.class.getSimpleName()));
+                out.append(generateMessageFlyweightCode());
 
 
                 out.append("}\n");
@@ -108,11 +108,11 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
-            generateFileHeader(out, ir.packageName());
-            generateClassDeclaration(out, bitSetName, FixedFlyweight.class.getSimpleName());
-            generateFixedFlyweightCode(out);
+            out.append(generateFileHeader(ir.packageName()));
+            out.append(generateClassDeclaration(bitSetName, FixedFlyweight.class.getSimpleName()));
+            out.append(generateFixedFlyweightCode());
 
-            generateChoices(out, tokens.subList(1, tokens.size() - 1));
+            out.append(generateChoices(tokens.subList(1, tokens.size() - 1)));
 
             out.append("}\n");
         }
@@ -124,13 +124,13 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
-            generateFileHeader(out, ir.packageName());
-            generateEnumDeclaration(out, enumName);
+            out.append(generateFileHeader(ir.packageName()));
+            out.append(generateEnumDeclaration(enumName));
 
-            generateEnumValues(out, tokens.subList(1, tokens.size() - 1));
-            generateEnumBody(out, tokens.get(0), enumName);
+            out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1)));
+            out.append(generateEnumBody(tokens.get(0), enumName));
 
-            generateEnumLookupMethod(out, tokens.subList(1, tokens.size() - 1), enumName);
+            out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumName));
 
             out.append("}\n");
         }
@@ -142,18 +142,20 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(compositeName))
         {
-            generateFileHeader(out, ir.packageName());
-            generateClassDeclaration(out, compositeName, FixedFlyweight.class.getSimpleName());
-            generateFixedFlyweightCode(out);
+            out.append(generateFileHeader(ir.packageName()));
+            out.append(generateClassDeclaration(compositeName, FixedFlyweight.class.getSimpleName()));
+            out.append(generateFixedFlyweightCode());
 
-            generatePrimitiveEncodings(out, tokens.subList(1, tokens.size() - 1));
+            out.append(generatePrimitiveEncodings(tokens.subList(1, tokens.size() - 1)));
 
             out.append("}\n");
         }
     }
 
-    private void generateChoices(final Writer out, final List<Token> tokens) throws IOException
+    private CharSequence generateChoices(final List<Token> tokens)
     {
+        final StringBuilder sb = new StringBuilder();
+
         for (final Token token : tokens)
         {
             if (token.signal() == Signal.CHOICE)
@@ -162,7 +164,7 @@ public class JavaGenerator implements CodeGenerator
                 final String typePrefix = token.encoding().primitiveType().primitiveName();
                 final String choiceBitPosition = token.encoding().constVal().toString();
 
-                out.append(String.format(
+                sb.append(String.format(
                     "\n" +
                     "    public boolean %s()\n" +
                     "    {\n" +
@@ -181,113 +183,137 @@ public class JavaGenerator implements CodeGenerator
                 ));
             }
         }
+
+        return sb;
     }
 
-    private void generateEnumValues(final Writer out, final List<Token> tokens) throws IOException
+    private CharSequence generateEnumValues(final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
 
         for (final Token token : tokens)
         {
-            final String constVal = generateLiteral(token);
+            final CharSequence constVal = generateLiteral(token);
             sb.append("    ").append(token.name()).append('(').append(constVal).append("),\n");
         }
 
         sb.setLength(sb.length() - 2);
         sb.append(";\n\n");
 
-        out.append(sb);
+        return sb;
     }
 
-    private void generateEnumBody(final Writer out, final Token token, final String enumName) throws IOException
+    private CharSequence generateEnumBody(final Token token, final String enumName)
     {
         final String javaEncodingType = javaTypeName(token.encoding().primitiveType());
 
-        out.append("    private final ").append(javaEncodingType).append(" value;\n\n")
-           .append("    ").append(enumName).append("(final ").append(javaEncodingType).append(" value)\n")
-           .append("    {\n")
-           .append("        this.value = value;\n")
-           .append("    }\n\n")
-           .append("    public ").append(javaEncodingType).append(" value()\n")
-           .append("    {\n")
-           .append("        return value;\n")
-           .append("    }\n\n");
+        return String.format(
+            "    private final %s value;\n\n"+
+            "    %s(final %s value)\n" +
+            "    {\n" +
+            "        this.value = value;\n" +
+            "    }\n\n" +
+            "    public %s value()\n" +
+            "    {\n" +
+            "        return value;\n" +
+            "    }\n\n",
+            javaEncodingType,
+            enumName,
+            javaEncodingType,
+            javaEncodingType
+        );
     }
 
-    private void generateEnumLookupMethod(final Writer out, final List<Token> tokens, final String enumName)
-        throws IOException
+    private CharSequence generateEnumLookupMethod(final List<Token> tokens, final String enumName)
     {
-        final String javaEncodingType = javaTypeName(tokens.get(0).encoding().primitiveType());
+        final StringBuilder sb = new StringBuilder();
 
-        out.append("    public static ").append(enumName).append(" lookup(final ").append(javaEncodingType).append(" value)\n")
-           .append("    {\n")
-           .append("        switch (value)\n")
-           .append("        {\n");
+        sb.append(String.format(
+           "    public static %s lookup(final %s value)\n" +
+           "    {\n" +
+           "        switch(value)\n" +
+           "        {\n",
+           enumName,
+           javaTypeName(tokens.get(0).encoding().primitiveType())
+        ));
 
         for (final Token token : tokens)
         {
-            final String constVal = token.encoding().constVal().toString();
-            out.append("            case ").append(constVal).append(": return ").append(token.name()).append(";\n");
+            sb.append(String.format(
+                "            case %s: return %s;\n",
+                token.encoding().constVal().toString(),
+                token.name())
+            );
         }
 
-        out.append("        }\n\n")
-           .append("        throw new IllegalArgumentException(\"Unknown value: \" + value);\n")
-           .append("    }\n");
+        sb.append(
+            "        }\n\n" +
+            "        throw new IllegalArgumentException(\"Unknown value: \" + value);\n" +
+            "    }\n"
+        );
 
+        return sb;
     }
 
-    private static void generateFileHeader(final Writer out, final String packageName)
-        throws IOException
+    private CharSequence generateFileHeader(final String packageName)
     {
-        out.append(String.format(
+        return String.format(
             "/* Generated class message */\n" +
             "package %s;\n\n" +
             "import uk.co.real_logic.sbe.generation.java.*;\n\n",
             packageName
-        ));
+        );
     }
 
-    private static void generateClassDeclaration(final Writer out,
-                                                 final String className,
-                                                 final String implementsName)
-        throws IOException
+    private CharSequence generateClassDeclaration(final String className, final String implementsName)
     {
-        out.append("public class ").append(className)
-           .append(" implements ").append(implementsName).append("\n{\n");
+        return String.format(
+            "public class %s implements %s\n" +
+            "{\n",
+            className,
+            implementsName
+        );
     }
 
-    private static void generateEnumDeclaration(final Writer out, final String name)
-        throws IOException
+    private CharSequence generateEnumDeclaration(final String name)
     {
-        out.append("public enum ").append(name).append("\n{\n");
+        return "public enum " + name + "\n{\n";
     }
 
-    private void generatePrimitiveEncodings(final Writer out, final List<Token> tokens)
-        throws IOException
+    private CharSequence generatePrimitiveEncodings(final List<Token> tokens)
     {
+        final StringBuilder sb = new StringBuilder();
+
         for (final Token token : tokens)
         {
             if (token.signal() == Signal.ENCODING)
             {
-                generatePrimitiveEncoding(out, token);
+                sb.append(generatePrimitiveEncoding(token));
             }
         }
+
+       return sb;
     }
 
-    private void generatePrimitiveEncoding(final Writer out, final Token token) throws IOException
+    private CharSequence generatePrimitiveEncoding(final Token token)
     {
+        final StringBuilder sb = new StringBuilder();
+
         if (Presence.CONSTANT == token.encoding().presence())
         {
-            generateConstEncodingMethod(out, token);
+            sb.append(generateConstEncodingMethod(token));
         }
         else
         {
-            generatePrimitiveEncodingMethods(out, token);
+            sb.append(generatePrimitiveEncodingMethods(token));
         }
+
+        return sb;
     }
 
-    private void generatePrimitiveEncodingMethods(final Writer out, final Token token) throws IOException
+    private CharSequence generatePrimitiveEncodingMethods(final Token token)
     {
+        final StringBuilder sb = new StringBuilder();
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
         final String typePrefix = token.encoding().primitiveType().primitiveName();
         final String propertyName = token.name();
@@ -297,7 +323,7 @@ public class JavaGenerator implements CodeGenerator
 
         if (arrayLength == 1)
         {
-            out.append(String.format(
+            sb.append(String.format(
                 "\n" +
                 "    public %s %s()\n" +
                 "    {\n" +
@@ -309,7 +335,7 @@ public class JavaGenerator implements CodeGenerator
                 offset
             ));
 
-            out.append(String.format(
+            sb.append(String.format(
                 "    public void %s(final %s value)\n" +
                 "    {\n" +
                 "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
@@ -322,7 +348,7 @@ public class JavaGenerator implements CodeGenerator
         }
         else if (arrayLength > 1)
         {
-            out.append(String.format(
+            sb.append(String.format(
                 "\n" +
                 "    public int %sLength()\n" +
                 "    {\n" +
@@ -332,7 +358,7 @@ public class JavaGenerator implements CodeGenerator
                 Integer.valueOf(arrayLength)
             ));
 
-            out.append(String.format(
+            sb.append(String.format(
                 "    public %s %s(final int index)\n" +
                 "    {\n" +
                 "        if (index < 0 || index > %d)\n" +
@@ -350,7 +376,7 @@ public class JavaGenerator implements CodeGenerator
                 Integer.valueOf(token.encoding().primitiveType().size())
             ));
 
-            out.append(String.format(
+            sb.append(String.format(
                 "    public void %s(final int index, final %s value)\n" +
                 "    {\n" +
                 "        if (index < 0 || index > %d)\n" +
@@ -368,14 +394,16 @@ public class JavaGenerator implements CodeGenerator
                 Integer.valueOf(token.encoding().primitiveType().size())
             ));
         }
+
+        return sb;
     }
 
-    private void generateConstEncodingMethod(final Writer out, final Token token) throws IOException
+    private CharSequence generateConstEncodingMethod(final Token token)
     {
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
         final String propertyName = token.name();
 
-        out.append(String.format(
+        return String.format(
             "\n" +
             "    public %s %s()\n" +
             "    {\n" +
@@ -384,38 +412,40 @@ public class JavaGenerator implements CodeGenerator
             javaTypeName,
             propertyName,
             generateLiteral(token)
-        ));
+        );
     }
 
-    private void generateFixedFlyweightCode(final Writer out) throws IOException
+    private CharSequence generateFixedFlyweightCode()
     {
-        out.append("    private DirectBuffer buffer;\n")
-           .append("    private int offset;\n\n")
-           .append("    public void reset(final DirectBuffer buffer, final int offset)\n")
-           .append("    {\n")
-           .append("        this.buffer = buffer;\n")
-           .append("        this.offset = offset;\n")
-           .append("    }\n");
+        return
+            "    private DirectBuffer buffer;\n" +
+            "    private int offset;\n\n" +
+            "    public void reset(final DirectBuffer buffer, final int offset)\n" +
+            "    {\n" +
+            "        this.buffer = buffer;\n" +
+            "        this.offset = offset;\n" +
+            "    }\n";
     }
 
 
-    private void generateMessageFlyweightCode(final Writer out) throws IOException
+    private CharSequence generateMessageFlyweightCode()
     {
-        out.append("    private DirectBuffer buffer;\n")
-           .append("    private int offset;\n\n")
-           .append("    public void resetForEncode(final DirectBuffer buffer, final int offset)\n")
-           .append("    {\n")
-           .append("        this.buffer = buffer;\n")
-           .append("        this.offset = offset;\n")
-           .append("    }\n\n")
-           .append("    public void resetForDecode(final DirectBuffer buffer, final int offset)\n")
-           .append("    {\n")
-           .append("        this.buffer = buffer;\n")
-           .append("        this.offset = offset;\n")
-           .append("    }\n");
+        return
+            "    private DirectBuffer buffer;\n" +
+            "    private int offset;\n\n" +
+            "    public void resetForEncode(final DirectBuffer buffer, final int offset)\n" +
+            "    {\n" +
+            "        this.buffer = buffer;\n" +
+            "        this.offset = offset;\n" +
+            "    }\n\n" +
+            "    public void resetForDecode(final DirectBuffer buffer, final int offset)\n" +
+            "    {\n" +
+            "        this.buffer = buffer;\n" +
+            "        this.offset = offset;\n" +
+            "    }\n";
     }
 
-    private String generateLiteral(final Token token)
+    private CharSequence generateLiteral(final Token token)
     {
         String literal = "";
 
