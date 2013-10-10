@@ -26,9 +26,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class to hold the state while generating the {@link IntermediateRepresentation}.
- */
+/** Class to hold the state while generating the {@link IntermediateRepresentation}. */
 public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
@@ -256,13 +254,13 @@ public class IrGenerator
         {
             case REQUIRED:
                 encodingBuilder.minVal(type.getMinValue())
-                    .maxVal(type.getMaxValue());
+                               .maxVal(type.getMaxValue());
                 break;
 
             case OPTIONAL:
                 encodingBuilder.minVal(type.getMinValue())
-                    .maxVal(type.getMaxValue())
-                    .nullVal(type.getNullValue());
+                               .maxVal(type.getMaxValue())
+                               .nullVal(type.getNullValue());
                 break;
 
             case CONSTANT:

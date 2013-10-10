@@ -87,11 +87,6 @@ public class CodecUtil
      */
     public static void uint8Put(final DirectBuffer buffer, final int index, final short value)
     {
-        if (value < 0)
-        {
-            throw new IllegalArgumentException("Negative values are not allowed value=" + value);
-        }
-
         buffer.putByte(index, (byte)(value & 0xFF));
     }
 
@@ -101,15 +96,9 @@ public class CodecUtil
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
-     * @throws IllegalArgumentException if the number is negative
      */
     public static void uint16Put(final DirectBuffer buffer, final int index, final int value)
     {
-        if (value < 0)
-        {
-            throw new IllegalArgumentException("Negative values are not allowed value=" + value);
-        }
-
         buffer.putShort(index, (short)(value & 0xFFFF));
     }
 
@@ -119,15 +108,9 @@ public class CodecUtil
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
-     * @throws IllegalArgumentException if the number is negative
      */
     public static void uint32Put(final DirectBuffer buffer, final int index, final long value)
     {
-        if (value < 0)
-        {
-            throw new IllegalArgumentException("Negative values are not allowed value=" + value);
-        }
-
         buffer.putInt(index, (int)(value & 0xFFFFFFFFL));
     }
 
@@ -137,15 +120,9 @@ public class CodecUtil
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
-     * @throws IllegalArgumentException if the number is negative
      */
     public static void uint64Put(final DirectBuffer buffer, final int index, final long value)
     {
-        if (value < 0)
-        {
-            throw new IllegalArgumentException("Negative values are not allowed value=" + value);
-        }
-
         buffer.putLong(index, value);
     }
 
@@ -266,7 +243,7 @@ public class CodecUtil
      */
     public static long uint32Get(final DirectBuffer buffer, final int index)
     {
-        return buffer.getInt(index) & 0xFFFFFFFFL;
+        return buffer.getInt(index) & 0xFFFF_FFFFL;
     }
 
     /**
@@ -335,7 +312,7 @@ public class CodecUtil
     public static void uint8PutChoice(final DirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn)
     {
         byte bits = buffer.getByte(index);
-        bits = (byte)(0xFF & (switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex)));
+        bits = (byte)((switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex)));
         buffer.putByte(index, bits);
     }
 
@@ -363,7 +340,7 @@ public class CodecUtil
     public static void uint16PutChoice(final DirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn)
     {
         short bits = buffer.getShort(index);
-        bits = (short)(0xFFFF & (switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex)));
+        bits = (short)((switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex)));
         buffer.putShort(index, bits);
     }
 
