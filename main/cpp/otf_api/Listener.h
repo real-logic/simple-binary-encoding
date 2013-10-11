@@ -17,53 +17,17 @@
 #ifndef _LISTENER_H_
 #define _LISTENER_H_
 
+#include "otf_api/OnNext.h"
+#include "otf_api/OnError.h"
+#include "otf_api/OnCompleted.h"
+#include "otf_api/Field.h"
+#include "otf_api/Ir.h"
+
 /*
  * The SBE On-The-Fly Decoder
  */
 namespace sbe {
 namespace on_the_fly {
-
-
-/*
- * typedef int (*OnNextCallback)(const Field& field, const EventObject& This);
- * typedef int (*OnErrorCallback)(const EventError& err, const EventObject& This);
- * typedef int (*OnCompletedCallback)(const EventObject& This);
- *
- * static EventCallback EventCallback::New(const OnNextCallback *onNext = NULL,
- *                                         const EventObject *evObj = NULL)
- *
- * Listener::subscribe(EventCallback onNextCallback);
- *
- * Example:
- *  listener = new Listener();
- *  myOnNext = new MyOnNext();  -- a subclass of EventObject
- *  onNextCallback = EventCallback::New(MyOnNext::OnNextCallbackFunc, myOnNext);
- *
- *  listener.resetForDecode(data, data_len)
- *          .subscribe(onNextCallbac));
- *
- *  listener.resetForDecode(data, data_len)
- *          .subscribe(EventCallback::New(MyOnNext:OnNextCallbackFunc, myOnNext);
- *
- * static int MyOnNext::OnNextCallbackFunc(const Field& field, const EventObject& This) { This.OnNext(field); } // inlined?
- *
- * template <class T> int onNextCallback(const Field& field, const T t);
- *
- * myOnNextEventObj = new EventObject<myOnNext>();
- * .subscribe(myOnNext);
- *
- * Pure abstract classes for OnNext, OnError, OnCompleted?
- * Flyweights for semantic layer. Window over sets of encodings
- *
- * without semantic added:
- *   OnNext(const Composite& composite) where Composite is a Field
- * with semantic added:
- *   OnNext(const Decimal& decimal)
- *    where Decimal is a Composite is a Field (inheritance)
- *      OR
- *    where Decimal is a flyweight over Composite
- *
- */
 
 /*
  * class MessageHeaderDemux : OnNext
@@ -97,7 +61,7 @@ namespace on_the_fly {
  * ...
  * // per buffer of data (containing header and 1 message)
  * listener.resetForDecode(buffer, len)
- *         .demuxMessageHeaderByField("templateId", messageHeaderIrCallbackObject) // adds a standard demuxing of header and uses cb to get IR
+ *         .demuxMessageHeaderByField("templateId", messageHeaderIr, IrCallbackObject) // adds a standard demuxing of header and uses cb to get IR
  *         .subscribe(handler);
  *
  * The "trick" is to encompass header and message parse into listener. The header IR is given by the user. The message IR is determined via
@@ -108,6 +72,14 @@ namespace on_the_fly {
  *         .OnError called if IR not found for templateId (i.e. unknown ID value)
  */
 
+/**
+ * Usage:
+ * \code{cpp}
+ * Listener &listener();
+ * Ir &ir = new Ir(irBuffer, irLen);
+ * listener.resetForDecode(buffer, len).ir(&ir).subscribe(...);
+ * \endcode
+ */
 class Listener
 {
 private:
@@ -121,43 +93,75 @@ private:
     /*
      * Iterator around the serialized IR
      */
-    IntermediateRepresentation ir_;
+    const Ir *ir_;
 
     /*
      * Cached and reused Field and Group objects
      */
     Field cachedField_;
-    Group cachedGroup_;
+    //Group cachedGroup_;
 
 protected:
     /*
-     * These are protected and normally not used by applications, but useful for testing purposes
+     * These deliver methods are protected and normally not used by applications, but useful for testing purposes
      */
-    int deliver(const Field &field);
-    int deliver(const Group &group);
+    int deliver(const Field &field)
+    {
+        return ((onNext_) ? onNext_->onNext(field) : 0);
+    };
+
+    // int deliver(const Group &group)
+    // {
+    //     return ((onNext_) ? onNext_(group) : 0);
+    // };
+
+    int error(const Error &error)
+    {
+        return ((onError_) ? onError_->onError(error) : 0);
+    };
+
+    /*
+     * Called once callbacks are setup and processing of the buffer should begin. This could be overriden by 
+     * a subclass for testing purposes.
+     */
+    virtual int process(void)
+    {
+        return 0;
+    };
 
 public:
 
     /// Basic constructor
-    Listener();
+    Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL), ir_(NULL) {};
 
     /**
      * Set the IR to use for all buffers
      *
-     * @param data location of the buffer in memory containing the serialized IR
-     * @param length of the buffer
-     * @return listener object
+     * \param data location of the buffer in memory containing the serialized IR
+     * \param length of the buffer
+     * \return listener object
      */
-    Listener &intermediateRepresentation(const char *data, const int length);
+    Listener &ir(const Ir *ir)
+    {
+        ir_ = ir;
+        return *this;
+    };
 
     /**
      * Reset state and initialize for decode of the given buffer. The IR is kept constant.
      *
-     * @param data location of the buffer in memory
-     * @param length of the buffer
-     * @return listener object
+     * \param data location of the buffer in memory
+     * \param length of the buffer
+     * \return listener object
      */
     Listener &resetForDecode(const char *data, const int length);
+
+    /**
+     * 
+     */
+    Listener &dispatchMessageByHeaderField(const char *fieldName,
+                                           const Ir *headerIr,
+                                           const Ir::Callback *irCallback);
 
     /**
      * Informs listener object that groups should contain aggregates of fields instead of marking start
@@ -165,9 +169,20 @@ public:
      */
     Listener &completeGroups();
 
-    Listener &subscribe(const OnNext *onNext, 
-                        const OnError *onError = NULL,
-                        const OnCompleted *onCompleted = NULL);
+    /**
+     * 
+     */
+    Listener &subscribe(OnNext *onNext, 
+                        OnError *onError = NULL,
+                        OnCompleted *onCompleted = NULL)
+    {
+        onNext_ = onNext;
+        onError_ = onError;
+        onCompleted_ = onCompleted;
+        // now start everything off
+        process();
+        return *this;
+    };
 
 }; // class Listener
 
