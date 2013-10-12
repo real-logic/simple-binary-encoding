@@ -65,27 +65,6 @@ public:
         UINT64 = 9
     };
 
-    Ir(const char *buffer, const int len);
-
-    virtual ~Ir() {
-        delete [] buffer_;
-    };
-
-    void begin();
-    void next();
-    bool end();
-
-    /// access methods for current IR Token
-
-    uint32_t offset();
-    uint32_t size();
-    TokenSignal signal();
-    TokenByteOrder byteOrder();
-    TokenPrimitiveType primitiveType();
-    uint16_t schemaId();
-    uint8_t nameLen();
-    std::string name();
-
     /**
      * Interface for returning an IR for a given templateId value
      */
@@ -95,13 +74,42 @@ public:
         virtual Ir *irForTemplateId(const int templateId) = 0;
     };
 
+    Ir(const char *buffer, const int len);
+
+    virtual ~Ir() {
+        delete [] buffer_;
+    };
+
+    /// iterator methods for IrTokens
+
+    void begin();
+    void next();
+    bool end();
+
+    /// access methods for current IR Token
+
+    uint32_t offset() const;
+    uint32_t size() const;
+    TokenSignal signal() const;
+    TokenByteOrder byteOrder() const;
+    TokenPrimitiveType primitiveType() const;
+    uint16_t schemaId() const;
+    uint8_t nameLen() const;
+    std::string name() const;
+
 protected:
-    // TODO: used by test fitures to generate IR for tests - initial call allocates max sized buffer
-    //void addToken(offset, size, signal, byteOrder, primitiveType, schemaId, nameLen, name);
+    // TODO: used by test fixtures to generate IR for tests - initial call allocates max sized buffer
+    void addToken(uint32_t offset,
+                  uint32_t size,
+                  TokenSignal signal,
+                  TokenByteOrder byteOrder,
+                  TokenPrimitiveType primitiveType,
+                  uint16_t schemaId,
+                  std::string &name);
 
 private:
     const char *buffer_;
-    const int len_;
+    int len_;
     int cursorOffset_;
 };
 
