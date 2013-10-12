@@ -72,12 +72,55 @@ public:
     };
 };
 
+/*
+ * Could have made this a fixture, but want to use it directly.
+ */
 TEST(BasicOtfApi, shouldHandleOnNext)
 {
-    Field f;
+    Field f1, f2;
     OnNextCounter counter;
     TestListener listener;
 
-    listener.add(f).subscribe(&counter);
-    EXPECT_EQ(counter.count(), 1);
+    listener.add(f1).add(f2).subscribe(&counter);
+    EXPECT_EQ(counter.count(), 2);
 }
+
+/*
+ * Fixture around listener that also is an OnNext
+ */
+class BasicOtfTest : public testing::Test, public OnNext
+{
+protected:
+    virtual void SetUp()
+    {
+        // TODO: setup IR
+        // TODO: setup data
+        // subscribe to get it to run through the fields
+        listener_.subscribe(this);
+    };
+
+    // virtual void TearDown() {};
+
+    virtual int onNext(const Field &f)
+    {
+        // TODO: use assertions here for what should be handed back
+        return 0;
+    };
+
+    Listener listener_;
+};
+
+TEST_F(BasicOtfTest, shouldHandleMessageHeader)
+{
+
+}
+
+/*
+ * TODO: Ir object test. Internal test to make sure given binary IR generates correct values and iterates correctly.
+ * TODO: testing fixture holds serialized IR buffer
+ * TODO: messageHeader handling - basic test to grab blockLength, templateId, version, and reserved with correct values
+ * TODO: messageHeader + message dispatch - no variable length data, no groups
+ * TODO: single repeating group
+ * TODO: nested repeating group - MassQuote
+ * TODO: variable length fields
+ */

@@ -23,8 +23,8 @@ class Group
 {
 private:
 public:
-    Group();
-    virtual ~Group();
+    Group() {};
+    virtual ~Group() {};
 };
 
 } // namespace on_the_fly

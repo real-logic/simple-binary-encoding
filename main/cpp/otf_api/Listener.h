@@ -21,6 +21,7 @@
 #include "otf_api/OnError.h"
 #include "otf_api/OnCompleted.h"
 #include "otf_api/Field.h"
+#include "otf_api/Group.h"
 #include "otf_api/Ir.h"
 
 /*
@@ -99,7 +100,7 @@ private:
      * Cached and reused Field and Group objects
      */
     Field cachedField_;
-    //Group cachedGroup_;
+    Group cachedGroup_;
 
 protected:
     /*
@@ -126,6 +127,18 @@ protected:
      */
     virtual int process(void)
     {
+        /*
+         * TODO:
+         * for (ir_.begin(); !ir_.end();)
+         * {
+         *    go to ir_.offset() in buffer_
+         *    check ir_.signal() to see what this element is
+         *    check ir_.primitiveType() to see how to handle it
+         *    check ir_.byteOrder to see if we have to convert or not
+         *    set Field values
+         *    ir_.next() until we run out of current field/composite/etc.
+         * }
+         */
         return 0;
     };
 

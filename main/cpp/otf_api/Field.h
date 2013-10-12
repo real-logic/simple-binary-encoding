@@ -21,10 +21,21 @@ namespace on_the_fly {
 
 class Field
 {
-private:
 public:
+    enum Type
+    {
+        GROUP = 0,
+        COMPOSITE = 1,
+        ENCODING = 2,
+        ENUM = 3,
+        SET = 4
+    };
+
     Field() {};
     virtual ~Field() {};
+
+private:
+    Type type_;
 };
 
 } // namespace on_the_fly
