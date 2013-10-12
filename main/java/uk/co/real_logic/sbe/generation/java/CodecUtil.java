@@ -15,6 +15,8 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import static uk.co.real_logic.sbe.util.BitUtil.*;
+
 public class CodecUtil
 {
     /**
@@ -30,15 +32,43 @@ public class CodecUtil
     }
 
     /**
+     * Put an array into a {@link DirectBuffer} at the given index.
+     *
+     * @param buffer to which the value should be written.
+     * @param index from which to begin writing.
+     * @param src to be be written
+     * @param offset in the src buffer to write from
+     * @param length of the src buffer to copy.
+     */
+    public static void charsPut(final DirectBuffer buffer, final int index, final byte[] src, final int offset, final int length)
+    {
+        buffer.putBytes(index, src, offset, length);
+    }
+
+    /**
      * Put a 8-bit integer to a {@link DirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
      */
-    public static void int8Put(final DirectBuffer buffer, final int index, final byte value)
+    public static void int8sPut(final DirectBuffer buffer, final int index, final byte value)
     {
         buffer.putByte(index, value);
+    }
+
+    /**
+     * Put an array into a {@link DirectBuffer} at the given index.
+     *
+     * @param buffer to which the value should be written.
+     * @param index from which to begin writing.
+     * @param src to be be written
+     * @param offset in the src buffer to write from
+     * @param length of the src buffer to copy.
+     */
+    public static void int8sPut(final DirectBuffer buffer, final int index, final byte[] src, final int offset, final int length)
+    {
+        buffer.putBytes(index, src, offset, length);
     }
 
     /**
@@ -54,6 +84,20 @@ public class CodecUtil
     }
 
     /**
+     * Put an array into a {@link DirectBuffer} at the given index.
+     *
+     * @param buffer to which the value should be written.
+     * @param index from which to begin writing.
+     * @param src to be be written
+     * @param offset in the src buffer to write from
+     * @param length of the src buffer to copy.
+     */
+    public static void int16sPut(final DirectBuffer buffer, final int index, final short[] src, final int offset, final int length)
+    {
+        buffer.putShorts(index, src, offset, length);
+    }
+
+    /**
      * Put a 32-bit integer to a {@link DirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
@@ -63,6 +107,20 @@ public class CodecUtil
     public static void int32Put(final DirectBuffer buffer, final int index, final int value)
     {
         buffer.putInt(index, value);
+    }
+
+    /**
+     * Put an array into a {@link DirectBuffer} at the given index.
+     *
+     * @param buffer to which the value should be written.
+     * @param index from which to begin writing.
+     * @param src to be be written
+     * @param offset in the src buffer to write from
+     * @param length of the src buffer to copy.
+     */
+    public static void int32sPut(final DirectBuffer buffer, final int index, final int[] src, final int offset, final int length)
+    {
+        buffer.putInts(index, src, offset, length);
     }
 
     /**
@@ -78,6 +136,20 @@ public class CodecUtil
     }
 
     /**
+     * Put an array into a {@link DirectBuffer} at the given index.
+     *
+     * @param buffer to which the value should be written.
+     * @param index from which to begin writing.
+     * @param src to be be written
+     * @param offset in the src buffer to write from
+     * @param length of the src buffer to copy.
+     */
+    public static void int64sPut(final DirectBuffer buffer, final int index, final long[] src, final int offset, final int length)
+    {
+        buffer.putLongs(index, src, offset, length);
+    }
+
+    /**
      * Put a 8-bit signed integer to a {@link DirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
@@ -87,7 +159,24 @@ public class CodecUtil
      */
     public static void uint8Put(final DirectBuffer buffer, final int index, final short value)
     {
-        buffer.putByte(index, (byte)(value & 0xFF));
+        buffer.putByte(index, (byte)value);
+    }
+
+    /**
+     * Put an array into a {@link DirectBuffer} at the given index.
+     *
+     * @param buffer to which the value should be written.
+     * @param index from which to begin writing.
+     * @param src to be be written
+     * @param offset in the src buffer to write from
+     * @param length of the src buffer to copy.
+     */
+    public static void uint8sPut(final DirectBuffer buffer, final int index, final short[] src, final int offset, final int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            buffer.putByte(index + i, (byte)src[offset + i]);
+        }
     }
 
     /**
@@ -99,7 +188,24 @@ public class CodecUtil
      */
     public static void uint16Put(final DirectBuffer buffer, final int index, final int value)
     {
-        buffer.putShort(index, (short)(value & 0xFFFF));
+        buffer.putShort(index, (short)value);
+    }
+
+    /**
+     * Put an array into a {@link DirectBuffer} at the given index.
+     *
+     * @param buffer to which the value should be written.
+     * @param index from which to begin writing.
+     * @param src to be be written
+     * @param offset in the src buffer to write from
+     * @param length of the src buffer to copy.
+     */
+    public static void uint16sPut(final DirectBuffer buffer, final int index, final int[] src, final int offset, final int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            buffer.putShort(index + (i * SIZE_OF_SHORT), (short)src[offset + i]);
+        }
     }
 
     /**
@@ -111,7 +217,24 @@ public class CodecUtil
      */
     public static void uint32Put(final DirectBuffer buffer, final int index, final long value)
     {
-        buffer.putInt(index, (int)(value & 0xFFFFFFFFL));
+        buffer.putInt(index, (int)value);
+    }
+
+    /**
+     * Put an array into a {@link DirectBuffer} at the given index.
+     *
+     * @param buffer to which the value should be written.
+     * @param index from which to begin writing.
+     * @param src to be be written
+     * @param offset in the src buffer to write from
+     * @param length of the src buffer to copy.
+     */
+    public static void uint32sPut(final DirectBuffer buffer, final int index, final long[] src, final int offset, final int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            buffer.putInt(index + (i * SIZE_OF_INT), (int)src[offset + i]);
+        }
     }
 
     /**
@@ -127,6 +250,23 @@ public class CodecUtil
     }
 
     /**
+     * Put an array into a {@link DirectBuffer} at the given index.
+     *
+     * @param buffer to which the value should be written.
+     * @param index from which to begin writing.
+     * @param src to be be written
+     * @param offset in the src buffer to write from
+     * @param length of the src buffer to copy.
+     */
+    public static void uint64sPut(final DirectBuffer buffer, final int index, final long[] src, final int offset, final int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            buffer.putLong(index + (i * SIZE_OF_LONG), src[offset + i]);
+        }
+    }
+
+    /**
      * Put a float to a {@link DirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
@@ -136,6 +276,23 @@ public class CodecUtil
     public static void floatPut(final DirectBuffer buffer, final int index, final float value)
     {
         buffer.putFloat(index, value);
+    }
+
+    /**
+     * Put an array into a {@link DirectBuffer} at the given index.
+     *
+     * @param buffer to which the value should be written.
+     * @param index from which to begin writing.
+     * @param src to be be written
+     * @param offset in the src buffer to write from
+     * @param length of the src buffer to copy.
+     */
+    public static void floatsPut(final DirectBuffer buffer, final int index, final float[] src, final int offset, final int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            buffer.putFloat(index + (i * SIZE_OF_FLOAT), src[offset + i]);
+        }
     }
 
     /**
@@ -151,6 +308,23 @@ public class CodecUtil
     }
 
     /**
+     * Put an array into a {@link DirectBuffer} at the given index.
+     *
+     * @param buffer to which the value should be written.
+     * @param index from which to begin writing.
+     * @param src to be be written
+     * @param offset in the src buffer to write from
+     * @param length of the src buffer to copy.
+     */
+    public static void doublesPut(final DirectBuffer buffer, final int index, final double[] src, final int offset, final int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            buffer.putDouble(index + (i * SIZE_OF_DOUBLE), src[offset + i]);
+        }
+    }
+
+    /**
      * Get a char from a {@link DirectBuffer} at a given index.
      *
      * @param buffer from which the value should be read.
@@ -160,6 +334,20 @@ public class CodecUtil
     public static byte charGet(final DirectBuffer buffer, final int index)
     {
         return buffer.getByte(index);
+    }
+
+    /**
+     * Get from a {@link DirectBuffer} at a given index into an array.
+     *
+     * @param buffer from which the value should be read.
+     * @param index from which to begin reading.
+     * @param dst into which the copy will occur
+     * @param offset at which to start in the destination
+     * @param length of the array to copy
+     */
+    public static void charsGet(final DirectBuffer buffer, final int index, final byte[] dst, final int offset, final int length)
+    {
+        buffer.getBytes(index, dst, offset, length);
     }
 
     /**
@@ -175,6 +363,20 @@ public class CodecUtil
     }
 
     /**
+     * Get from a {@link DirectBuffer} at a given index into an array.
+     *
+     * @param buffer from which the value should be read.
+     * @param index from which to begin reading.
+     * @param dst into which the copy will occur
+     * @param offset at which to start in the destination
+     * @param length of the array to copy
+     */
+    public static void int8sGet(final DirectBuffer buffer, final int index, final byte[] dst, final int offset, final int length)
+    {
+        buffer.getBytes(index, dst, offset, length);
+    }
+
+    /**
      * Get a 16-bit integer from a {@link DirectBuffer} at a given index.
      *
      * @param buffer from which the value should be read.
@@ -184,6 +386,20 @@ public class CodecUtil
     public static short int16Get(final DirectBuffer buffer, final int index)
     {
         return buffer.getShort(index);
+    }
+
+    /**
+     * Get from a {@link DirectBuffer} at a given index into an array.
+     *
+     * @param buffer from which the value should be read.
+     * @param index from which to begin reading.
+     * @param dst into which the copy will occur
+     * @param offset at which to start in the destination
+     * @param length of the array to copy
+     */
+    public static void int16sGet(final DirectBuffer buffer, final int index, final short[] dst, final int offset, final int length)
+    {
+        buffer.getShorts(index, dst, offset, length);
     }
 
     /**
@@ -199,7 +415,21 @@ public class CodecUtil
     }
 
     /**
-     * Get a 74-bit integer from a {@link DirectBuffer} at a given index.
+     * Get from a {@link DirectBuffer} at a given index into an array.
+     *
+     * @param buffer from which the value should be read.
+     * @param index from which to begin reading.
+     * @param dst into which the copy will occur
+     * @param offset at which to start in the destination
+     * @param length of the array to copy
+     */
+    public static void int32sGet(final DirectBuffer buffer, final int index, final int[] dst, final int offset, final int length)
+    {
+        buffer.getInts(index, dst, offset, length);
+    }
+
+    /**
+     * Get a 64-bit integer from a {@link DirectBuffer} at a given index.
      *
      * @param buffer from which the value should be read.
      * @param index from which to begin reading.
@@ -208,6 +438,20 @@ public class CodecUtil
     public static long int64Get(final DirectBuffer buffer, final int index)
     {
         return buffer.getLong(index);
+    }
+
+    /**
+     * Get from a {@link DirectBuffer} at a given index into an array.
+     *
+     * @param buffer from which the value should be read.
+     * @param index from which to begin reading.
+     * @param dst into which the copy will occur
+     * @param offset at which to start in the destination
+     * @param length of the array to copy
+     */
+    public static void int64sGet(final DirectBuffer buffer, final int index, final long[] dst, final int offset, final int length)
+    {
+        buffer.getLongs(index, dst, offset, length);
     }
 
     /**
@@ -223,6 +467,23 @@ public class CodecUtil
     }
 
     /**
+     * Get from a {@link DirectBuffer} at a given index into an array.
+     *
+     * @param buffer from which the value should be read.
+     * @param index from which to begin reading.
+     * @param dst into which the copy will occur
+     * @param offset at which to start in the destination
+     * @param length of the array to copy
+     */
+    public static void uint8sGet(final DirectBuffer buffer, final int index, final short[] dst, final int offset, final int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            dst[offset + i] = (short)(buffer.getByte(index + i) & 0xFF);
+        }
+    }
+
+    /**
      * Get a unsigned 16-bit integer from a {@link DirectBuffer} at a given index.
      *
      * @param buffer from which the value should be read.
@@ -232,6 +493,23 @@ public class CodecUtil
     public static int uint16Get(final DirectBuffer buffer, final int index)
     {
         return buffer.getShort(index) & 0xFFFF;
+    }
+
+    /**
+     * Get from a {@link DirectBuffer} at a given index into an array.
+     *
+     * @param buffer from which the value should be read.
+     * @param index from which to begin reading.
+     * @param dst into which the copy will occur
+     * @param offset at which to start in the destination
+     * @param length of the array to copy
+     */
+    public static void uint16sGet(final DirectBuffer buffer, final int index, final int[] dst, final int offset, final int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            dst[offset + i] = (short)(buffer.getShort(index + (i * SIZE_OF_SHORT)) & 0xFFFF);
+        }
     }
 
     /**
@@ -247,6 +525,23 @@ public class CodecUtil
     }
 
     /**
+     * Get from a {@link DirectBuffer} at a given index into an array.
+     *
+     * @param buffer from which the value should be read.
+     * @param index from which to begin reading.
+     * @param dst into which the copy will occur
+     * @param offset at which to start in the destination
+     * @param length of the array to copy
+     */
+    public static void uint32sGet(final DirectBuffer buffer, final int index, final long[] dst, final int offset, final int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            dst[offset + i] = buffer.getInt(index + (i * SIZE_OF_INT)) & 0xFFFF_FFFFL;
+        }
+    }
+
+    /**
      * Get a unsigned 64-bit integer from a {@link DirectBuffer} at a given index.
      *
      * @param buffer from which the value should be read.
@@ -255,13 +550,24 @@ public class CodecUtil
      */
     public static long uint64Get(final DirectBuffer buffer, final int index)
     {
-        final long value = buffer.getLong(index);
-        if (value < 0)
-        {
-            throw new IllegalStateException("Value out of range: " + value);
-        }
+        return buffer.getLong(index);
+    }
 
-        return value;
+    /**
+     * Get from a {@link DirectBuffer} at a given index into an array.
+     *
+     * @param buffer from which the value should be read.
+     * @param index from which to begin reading.
+     * @param dst into which the copy will occur
+     * @param offset at which to start in the destination
+     * @param length of the array to copy
+     */
+    public static void uint64sGet(final DirectBuffer buffer, final int index, final long[] dst, final int offset, final int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            dst[offset + i] = buffer.getLong(index + (i * SIZE_OF_LONG));
+        }
     }
 
     /**
@@ -277,6 +583,20 @@ public class CodecUtil
     }
 
     /**
+     * Get from a {@link DirectBuffer} at a given index into an array.
+     *
+     * @param buffer from which the value should be read.
+     * @param index from which to begin reading.
+     * @param dst into which the copy will occur
+     * @param offset at which to start in the destination
+     * @param length of the array to copy
+     */
+    public static void floatsGet(final DirectBuffer buffer, final int index, final float[] dst, final int offset, final int length)
+    {
+        buffer.getFloats(index, dst, offset, length);
+    }
+
+    /**
      * Get a 64-bit double from a {@link DirectBuffer} at a given index.
      *
      * @param buffer from which the value should be read.
@@ -286,6 +606,20 @@ public class CodecUtil
     public static double doubleGet(final DirectBuffer buffer, final int index)
     {
         return buffer.getDouble(index);
+    }
+
+    /**
+     * Get from a {@link DirectBuffer} at a given index into an array.
+     *
+     * @param buffer from which the value should be read.
+     * @param index from which to begin reading.
+     * @param dst into which the copy will occur
+     * @param offset at which to start in the destination
+     * @param length of the array to copy
+     */
+    public static void doublesGet(final DirectBuffer buffer, final int index, final double[] dst, final int offset, final int length)
+    {
+        buffer.getDoubles(index, dst, offset, length);
     }
 
     /**
