@@ -28,7 +28,7 @@
             <type name="maxRpm" primitiveType="uint16" presence="constant">9000</type>
             <type name="manufacturerCode" primitiveType="char" length="3"/>
         </composite>
-        <enum name="boolean" encodingType="uint8" semanticType="Boolean">
+        <enum name="Boolean" encodingType="uint8" semanticType="Boolean">
             <validValue name="FALSE">0</validValue>
             <validValue name="TRUE">1</validValue>
         </enum>
@@ -45,7 +45,7 @@
     </types>
     <message name="BasicCar" id="1" description="Description of a basic Car">
         <field name="modelYear" id="1" type="modelYearType"/>
-        <field name="available" id="2" type="boolean"/>
+        <field name="available" id="2" type="Boolean"/>
         <field name="code" id="3" type="modelType"/>
         <field name="extras" id="4" type="optionalExtras"/>
         <field name="vehicleCode" id="5" type="vehicleCodeType"/>

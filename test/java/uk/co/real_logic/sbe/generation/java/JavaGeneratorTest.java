@@ -30,9 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_VISITOR;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
@@ -157,6 +155,8 @@ public class JavaGeneratorTest
         final int numCylindersOffset = bufferOffset + 23;
         final int expectedEngineCapacity = 2000;
         final int expectedMaxRpm = 9000;
+        final int manufacturerCodeOffset = bufferOffset + 24;
+        final byte[] manufacturerCode = {'A', 'B', 'C'};
         final String className = "EngineType";
         final String fqClassName = ir.packageName() + "." + className;
 
@@ -182,7 +182,11 @@ public class JavaGeneratorTest
         final short numCylinders = (short)4;
         clazz.getDeclaredMethod("numCylinders", short.class).invoke(flyweight, Short.valueOf(numCylinders));
 
+        clazz.getDeclaredMethod("putManufacturerCode", byte[].class, int.class, int.class)
+             .invoke(flyweight, manufacturerCode, Integer.valueOf(0), Integer.valueOf(manufacturerCode.length));
+
         verify(mockBuffer).putByte(numCylindersOffset, (byte)numCylinders);
+        verify(mockBuffer).putBytes(manufacturerCodeOffset, manufacturerCode, 0, manufacturerCode.length);
     }
 
     @Test

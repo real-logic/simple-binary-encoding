@@ -294,103 +294,161 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generatePrimitiveEncoding(final Token token)
     {
-        final StringBuilder sb = new StringBuilder();
-
         if (Encoding.Presence.CONSTANT == token.encoding().presence())
         {
-            sb.append(generateConstEncodingMethod(token));
+            return generateConstEncodingMethod(token);
         }
         else
         {
-            sb.append(generatePrimitiveEncodingMethods(token));
+            return generatePrimitiveEncodingMethods(token);
         }
-
-        return sb;
     }
 
     private CharSequence generatePrimitiveEncodingMethods(final Token token)
     {
-        final StringBuilder sb = new StringBuilder();
+        final int arrayLength = token.arrayLength();
+
+        if (arrayLength == 1)
+        {
+            return generateSingleEncoding(token);
+        }
+        else if (arrayLength > 1)
+        {
+            return generateArrayEncoding(token);
+        }
+
+        return "";
+    }
+
+    private CharSequence generateSingleEncoding(final Token token)
+    {
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
         final String typePrefix = token.encoding().primitiveType().primitiveName();
         final String propertyName = token.name();
         final Integer offset = Integer.valueOf(token.offset());
 
-        final int arrayLength = token.arrayLength();
+        final StringBuilder sb = new StringBuilder();
 
-        if (arrayLength == 1)
-        {
-            sb.append(String.format(
-                "\n" +
+        sb.append(String.format(
+            "\n" +
                 "    public %s %s()\n" +
                 "    {\n" +
                 "        return CodecUtil.%sGet(buffer, offset + %d);\n" +
                 "    }\n\n",
-                javaTypeName,
-                propertyName,
-                typePrefix,
-                offset
-            ));
+            javaTypeName,
+            propertyName,
+            typePrefix,
+            offset
+        ));
 
-            sb.append(String.format(
-                "    public void %s(final %s value)\n" +
+        sb.append(String.format(
+            "    public void %s(final %s value)\n" +
                 "    {\n" +
                 "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
                 "    }\n",
-                propertyName,
-                javaTypeName,
-                typePrefix,
-                offset
-            ));
-        }
-        else if (arrayLength > 1)
-        {
-            sb.append(String.format(
-                "\n" +
-                "    public int %sLength()\n" +
-                "    {\n" +
-                "        return %d;\n" +
-                "    }\n\n",
-                propertyName,
-                Integer.valueOf(arrayLength)
-            ));
+            propertyName,
+            javaTypeName,
+            typePrefix,
+            offset
+        ));
 
-            sb.append(String.format(
-                "    public %s %s(final int index)\n" +
-                "    {\n" +
-                "        if (index < 0 || index >= %d)\n" +
-                "        {\n" +
-                "            throw new IllegalArgumentException(\"index out of range: \" + %d);\n" +
-                "        }\n\n" +
-                "        return CodecUtil.%sGet(buffer, this.offset + %d + (index * %d));\n" +
-                "    }\n\n",
-                javaTypeName,
-                propertyName,
-                Integer.valueOf(arrayLength),
-                Integer.valueOf(arrayLength),
-                typePrefix,
-                offset,
-                Integer.valueOf(token.encoding().primitiveType().size())
-            ));
+        return sb;
+    }
 
-            sb.append(String.format(
-                "    public void %s(final int index, final %s value)\n" +
+    private CharSequence generateArrayEncoding(final Token token)
+    {
+        final String javaTypeName = javaTypeName(token.encoding().primitiveType());
+        final String typePrefix = token.encoding().primitiveType().primitiveName();
+        final String propertyName = token.name();
+        final Integer offset = Integer.valueOf(token.offset());
+
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
+            "\n" +
+            "    public int %sLength()\n" +
+            "    {\n" +
+            "        return %d;\n" +
+            "    }\n\n",
+            propertyName,
+            Integer.valueOf(token.arrayLength())
+        ));
+
+        sb.append(String.format(
+            "    public %s %s(final int index)\n" +
+            "    {\n" +
+            "        if (index < 0 || index >= %d)\n" +
+            "        {\n" +
+            "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
+            "        }\n\n" +
+            "        return CodecUtil.%sGet(buffer, this.offset + %d + (index * %d));\n" +
+            "    }\n\n",
+            javaTypeName,
+            propertyName,
+            Integer.valueOf(token.arrayLength()),
+            typePrefix,
+            offset,
+            Integer.valueOf(token.encoding().primitiveType().size())
+        ));
+
+        sb.append(String.format(
+            "    public void %s(final int index, final %s value)\n" +
+            "    {\n" +
+            "        if (index < 0 || index >= %d)\n" +
+            "        {\n" +
+            "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
+            "        }\n\n" +
+            "        CodecUtil.%sPut(buffer, this.offset + %d + (index * %d), value);\n" +
+            "    }\n\n",
+            propertyName,
+            javaTypeName,
+            Integer.valueOf(token.arrayLength()),
+            typePrefix,
+            offset,
+            Integer.valueOf(token.encoding().primitiveType().size())
+        ));
+
+        sb.append(String.format(
+            "    public void get%s(final %s[] dst, final int offset, final int length)\n" +
                 "    {\n" +
-                "        if (index < 0 || index >= %d)\n" +
+                "        if (offset < 0 || offset >= %d)\n" +
                 "        {\n" +
-                "            throw new IllegalArgumentException(\"index out of range: \" + %d);\n" +
+                "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
                 "        }\n\n" +
-                "        CodecUtil.%sPut(buffer, this.offset + %d + (index * %d), value);\n" +
-                "    }\n",
-                propertyName,
-                javaTypeName,
-                Integer.valueOf(arrayLength),
-                Integer.valueOf(arrayLength),
-                typePrefix,
-                offset,
-                Integer.valueOf(token.encoding().primitiveType().size())
-            ));
-        }
+                "        if (length < 0 || length > %d)\n" +
+                "        {\n" +
+                "            throw new IndexOutOfBoundsException(\"length out of range: length=\" + length);\n" +
+                "        }\n\n" +
+                "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, length);\n" +
+                "    }\n\n",
+            toUpperFirstChar(propertyName),
+            javaTypeName,
+            Integer.valueOf(token.arrayLength()),
+            Integer.valueOf(token.arrayLength()),
+            typePrefix,
+            offset
+        ));
+
+        sb.append(String.format(
+            "    public void put%s(final %s[] src, final int offset, final int length)\n" +
+            "    {\n" +
+            "        if (offset < 0 || offset >= %d)\n" +
+            "        {\n" +
+            "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
+            "        }\n\n" +
+            "        if (length < 0 || length > %d)\n" +
+            "        {\n" +
+            "            throw new IndexOutOfBoundsException(\"length out of range: length=\" + length);\n" +
+            "        }\n\n" +
+            "        CodecUtil.%ssPut(buffer, this.offset + %d, src, offset, length);\n" +
+            "    }\n",
+            toUpperFirstChar(propertyName),
+            javaTypeName,
+            Integer.valueOf(token.arrayLength()),
+            Integer.valueOf(token.arrayLength()),
+            typePrefix,
+            offset
+        ));
 
         return sb;
     }
