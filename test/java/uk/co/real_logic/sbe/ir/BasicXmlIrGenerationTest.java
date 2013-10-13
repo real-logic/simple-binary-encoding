@@ -210,7 +210,7 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimentions()
+    public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensions()
         throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicGroupSchemaFileTest.xml"));
