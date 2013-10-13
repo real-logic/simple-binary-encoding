@@ -19,67 +19,67 @@ import api.Side;
 
 import java.nio.ByteBuffer;
 
-public class NewOrderSingleFlyweight
+public class NewOrderSingle
 {
     public void resetForEncode(final ByteBuffer buffer)
     {
     }
 
-    public void putClOrderId(final String value)
+    public void clOrderId(final String value)
     {
     }
 
-    public void putSymbolId(final long value)
+    public void symbolId(final long value)
     {
     }
 
-    public void putSide(final Side side)
+    public void side(final Side side)
     {
     }
 
-    public void putOrderQty(final int value)
+    public void orderQty(final int value)
     {
     }
 
-    public void putPrice(final double value)
+    public void price(final double value)
     {
     }
 
-    public void putTransactTime(final long value)
+    public void transactTime(final long value)
     {
     }
 
-    public boolean isValid()
+    public boolean valid()
     {
         return true;
     }
 
-    public String getClOrderId()
+    public String clOrderId()
     {
         return null;
     }
 
-    public long getSymbolId()
+    public long symbolId()
     {
         return 0;
     }
 
-    public Side getSide()
+    public Side side()
     {
         return null;
     }
 
-    public long getOrderQty()
+    public long orderQty()
     {
         return 0;
     }
 
-    public double getPrice()
+    public double price()
     {
         return 0;
     }
 
-    public long getTransactTime()
+    public long transactTime()
     {
         return 0;
     }

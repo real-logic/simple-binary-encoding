@@ -17,41 +17,45 @@ package api.flyweight;
 
 import api.SecurityType;
 
-public class QuoteEntryFlyweight
+public class QuoteEntry
 {
     public void addGroup()
     {
     }
 
-    public void putId(final int id)
+    public void length(final int length)
     {
     }
 
-    public void putSymbol(final String symbol)
+    public void id(final int id)
     {
     }
 
-    public void putSecurityType(final SecurityType securityType)
+    public void symbol(final String symbol)
     {
     }
 
-    public void putTransactTime(final long timestamp)
+    public void securityType(final SecurityType securityType)
     {
     }
 
-    public void putBidPx(final double value)
+    public void transactTime(final long timestamp)
     {
     }
 
-    public void putBidSize(final int value)
+    public void bidPx(final double value)
     {
     }
 
-    public void putOfferPx(final double value)
+    public void bidSize(final int value)
     {
     }
 
-    public void putOfferSize(final int value)
+    public void offerPx(final double value)
+    {
+    }
+
+    public void offerSize(final int value)
     {
     }
 
@@ -60,42 +64,47 @@ public class QuoteEntryFlyweight
         return false;
     }
 
-    public long getId()
+    public long id()
     {
         return 0;
     }
 
-    public String getSymbol()
+    public String symbol()
     {
         return null;
     }
 
-    public SecurityType getSecurityType()
+    public SecurityType securityType()
     {
         return null;
     }
 
-    public long getTransactTime()
+    public long transactTime()
     {
         return 0;
     }
 
-    public double getBidPx()
+    public double bidPx()
     {
         return 0;
     }
 
-    public long getBidSize()
+    public long bidSize()
     {
         return 0;
     }
 
-    public double getOfferPrice()
+    public double offerPrice()
     {
         return 0;
     }
 
-    public long getOfferSize()
+    public long offerSize()
+    {
+        return 0;
+    }
+
+    public int length()
     {
         return 0;
     }

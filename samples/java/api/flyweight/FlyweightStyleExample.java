@@ -31,20 +31,20 @@ public class FlyweightStyleExample
     private final Transport transport = new Transport();
 
     // Can be reused to avoid garbage
-    private final NewOrderSingleFlyweight newOrderSingle = new NewOrderSingleFlyweight();
-    private final MassQuoteFlyweight massQuote = new MassQuoteFlyweight();
+    private final NewOrderSingle newOrderSingle = new NewOrderSingle();
+    private final MassQuote massQuote = new MassQuote();
 
     public void simpleEncode()
     {
         newOrderSingle.resetForEncode(buffer);
 
         // If field is called out of order and a mandatory field is missed then an exception will be thrown
-        newOrderSingle.putClOrderId("123");
-        newOrderSingle.putSymbolId(567L);
-        newOrderSingle.putSide(Side.BUY);
-        newOrderSingle.putOrderQty(1);
-        newOrderSingle.putPrice(3.2);
-        newOrderSingle.putTransactTime(System.currentTimeMillis());
+        newOrderSingle.clOrderId("123");
+        newOrderSingle.symbolId(567L);
+        newOrderSingle.side(Side.BUY);
+        newOrderSingle.orderQty(1);
+        newOrderSingle.price(3.2);
+        newOrderSingle.transactTime(System.currentTimeMillis());
 
         buffer.flip();
         transport.send(buffer);
@@ -57,17 +57,17 @@ public class FlyweightStyleExample
 
         newOrderSingle.resetForDecode(buffer);
 
-        if (!newOrderSingle.isValid()) // should validation just throw an exception?
+        if (!newOrderSingle.valid()) // should validation just throw an exception?
         {
             throw new IllegalStateException("Message is screwed up");
         }
 
-        String clientOrderId = newOrderSingle.getClOrderId();
-        long symbolId = newOrderSingle.getSymbolId();
-        Side side = newOrderSingle.getSide();
-        long orderQty = newOrderSingle.getOrderQty();
-        double price = newOrderSingle.getPrice();
-        long transactTime = newOrderSingle.getTransactTime();
+        String clientOrderId = newOrderSingle.clOrderId();
+        long symbolId = newOrderSingle.symbolId();
+        Side side = newOrderSingle.side();
+        long orderQty = newOrderSingle.orderQty();
+        double price = newOrderSingle.price();
+        long transactTime = newOrderSingle.transactTime();
     }
 
     public void nestedGroupEncode()
@@ -78,51 +78,54 @@ public class FlyweightStyleExample
         massQuote.putQuoteId("1234");
         massQuote.putCtiCode(CtiCode.HOUSE);
 
-        massQuote.getQuoteSet().addGroup(); // Create a new group in the message
-        massQuote.getQuoteSet().putUnderlyingSecurity("ESH0");
+        final QuoteSet quoteSet = massQuote.newQuoteSet(2);
 
-        massQuote.getQuoteSet().getQuoteEntry().addGroup();
-        massQuote.getQuoteSet().getQuoteEntry().putId(1);
-        massQuote.getQuoteSet().getQuoteEntry().putSymbol("ABC1");
-        massQuote.getQuoteSet().getQuoteEntry().putSecurityType(SecurityType.OPT);
-        massQuote.getQuoteSet().getQuoteEntry().putTransactTime(timestamp);
-        massQuote.getQuoteSet().getQuoteEntry().putBidPx(3.1);
-        massQuote.getQuoteSet().getQuoteEntry().putBidSize(10);
-        massQuote.getQuoteSet().getQuoteEntry().putOfferPx(3.2);
-        massQuote.getQuoteSet().getQuoteEntry().putOfferSize(10);
+        quoteSet.putUnderlyingSecurity("ESH0");
 
-        massQuote.getQuoteSet().getQuoteEntry().addGroup();
-        massQuote.getQuoteSet().getQuoteEntry().putId(2);
-        massQuote.getQuoteSet().getQuoteEntry().putSymbol("ABC2");
-        massQuote.getQuoteSet().getQuoteEntry().putSecurityType(SecurityType.OPT);
-        massQuote.getQuoteSet().getQuoteEntry().putTransactTime(timestamp);
-        massQuote.getQuoteSet().getQuoteEntry().putBidPx(3.1);
-        massQuote.getQuoteSet().getQuoteEntry().putBidSize(10);
-        massQuote.getQuoteSet().getQuoteEntry().putOfferPx(3.2);
-        massQuote.getQuoteSet().getQuoteEntry().putOfferSize(10);
+        QuoteEntry quoteEntry = quoteSet.newQuoteEntry(2);
+        quoteEntry.id(1);
+        quoteEntry.symbol("ABC1");
+        quoteEntry.securityType(SecurityType.OPT);
+        quoteEntry.transactTime(timestamp);
+        quoteEntry.bidPx(3.1);
+        quoteEntry.bidSize(10);
+        quoteEntry.offerPx(3.2);
+        quoteEntry.offerSize(10);
 
-        massQuote.getQuoteSet().addGroup(); // Create a new group in the message
-        massQuote.getQuoteSet().putUnderlyingSecurity("EAB0");
+        quoteEntry.next();
+        quoteEntry.id(2);
+        quoteEntry.symbol("ABC2");
+        quoteEntry.securityType(SecurityType.OPT);
+        quoteEntry.transactTime(timestamp);
+        quoteEntry.bidPx(3.1);
+        quoteEntry.bidSize(10);
+        quoteEntry.offerPx(3.2);
+        quoteEntry.offerSize(10);
 
-        massQuote.getQuoteSet().getQuoteEntry().addGroup();
-        massQuote.getQuoteSet().getQuoteEntry().putId(3);
-        massQuote.getQuoteSet().getQuoteEntry().putSymbol("ABC1");
-        massQuote.getQuoteSet().getQuoteEntry().putSecurityType(SecurityType.OPT);
-        massQuote.getQuoteSet().getQuoteEntry().putTransactTime(timestamp);
-        massQuote.getQuoteSet().getQuoteEntry().putBidPx(3.1);
-        massQuote.getQuoteSet().getQuoteEntry().putBidSize(10);
-        massQuote.getQuoteSet().getQuoteEntry().putOfferPx(3.2);
-        massQuote.getQuoteSet().getQuoteEntry().putOfferSize(10);
+        quoteSet.next(); // Create next repeating set
 
-        massQuote.getQuoteSet().getQuoteEntry().addGroup();
-        massQuote.getQuoteSet().getQuoteEntry().putId(4);
-        massQuote.getQuoteSet().getQuoteEntry().putSymbol("ABC2");
-        massQuote.getQuoteSet().getQuoteEntry().putSecurityType(SecurityType.OPT);
-        massQuote.getQuoteSet().getQuoteEntry().putTransactTime(timestamp);
-        massQuote.getQuoteSet().getQuoteEntry().putBidPx(3.1);
-        massQuote.getQuoteSet().getQuoteEntry().putBidSize(10);
-        massQuote.getQuoteSet().getQuoteEntry().putOfferPx(3.2);
-        massQuote.getQuoteSet().getQuoteEntry().putOfferSize(10);
+        quoteSet.putUnderlyingSecurity("EAB0");
+
+        quoteEntry = quoteSet.newQuoteEntry(2);
+        quoteEntry.next();
+        quoteEntry.id(3);
+        quoteEntry.symbol("ABC1");
+        quoteEntry.securityType(SecurityType.OPT);
+        quoteEntry.transactTime(timestamp);
+        quoteEntry.bidPx(3.1);
+        quoteEntry.bidSize(10);
+        quoteEntry.offerPx(3.2);
+        quoteEntry.offerSize(10);
+
+        quoteEntry.next();
+        quoteEntry.id(4);
+        quoteEntry.symbol("ABC2");
+        quoteEntry.securityType(SecurityType.OPT);
+        quoteEntry.transactTime(timestamp);
+        quoteEntry.bidPx(3.1);
+        quoteEntry.bidSize(10);
+        quoteEntry.offerPx(3.2);
+        quoteEntry.offerSize(10);
 
         buffer.flip();
         transport.send(buffer);
@@ -143,22 +146,22 @@ public class FlyweightStyleExample
         String quoteId = massQuote.getQuoteId();
         CtiCode ctiCode = massQuote.getCtiCode();
 
-        QuoteSetFlyweight quoteSet = massQuote.getQuoteSet();
+        QuoteSet quoteSet = massQuote.quoteSet();
         while (quoteSet.next())
         {
-            String underlyingSecurity = quoteSet.getUnderlyingSecurity();
+            String underlyingSecurity = quoteSet.underlyingSecurity();
 
-            QuoteEntryFlyweight quoteEntry = quoteSet.getQuoteEntry();
+            QuoteEntry quoteEntry = quoteSet.quoteEntry();
             while (quoteEntry.next())
             {
-                long id = quoteEntry.getId();
-                String symbol = quoteEntry.getSymbol();
-                SecurityType securityType = quoteEntry.getSecurityType();
-                long timestamp = quoteEntry.getTransactTime();
-                double bidPrice = quoteEntry.getBidPx();
-                long bidSize = quoteEntry.getBidSize();
-                double offerPrice = quoteEntry.getOfferPrice();
-                long offerSize = quoteEntry.getOfferSize();
+                long id = quoteEntry.id();
+                String symbol = quoteEntry.symbol();
+                SecurityType securityType = quoteEntry.securityType();
+                long timestamp = quoteEntry.transactTime();
+                double bidPrice = quoteEntry.bidPx();
+                long bidSize = quoteEntry.bidSize();
+                double offerPrice = quoteEntry.offerPrice();
+                long offerSize = quoteEntry.offerSize();
             }
         }
     }

@@ -15,46 +15,43 @@
  */
 package api.flyweight;
 
-import api.fluent.CtiCode;
-
-import java.nio.ByteBuffer;
-
-public class MassQuoteFlyweight
+public class QuoteSet
 {
-    private QuoteSetFlyweight quoteSet = new QuoteSetFlyweight();
+    private QuoteEntry quoteEntry;
 
-    public void resetForEncode(final ByteBuffer buffer)
+    public void addGroup()
     {
     }
 
-    public void resetForDecode(final ByteBuffer buffer)
+    public void putUnderlyingSecurity(final String security)
     {
     }
 
-    public void putQuoteId(final String quoteId)
+    public QuoteEntry quoteEntry()
+    {
+        return quoteEntry;
+    }
+
+    public int length()
+    {
+        return 0;
+    }
+
+    public void length(final int length)
     {
     }
 
-    public void putCtiCode(final CtiCode code)
+    public String underlyingSecurity()
     {
+        return "";
     }
 
-    public QuoteSetFlyweight getQuoteSet()
+    public boolean next()
     {
-        return quoteSet;
+        return false;
     }
 
-    public boolean isValid()
-    {
-        return true;
-    }
-
-    public String getQuoteId()
-    {
-        return null;
-    }
-
-    public CtiCode getCtiCode()
+    public QuoteEntry newQuoteEntry(final int length)
     {
         return null;
     }
