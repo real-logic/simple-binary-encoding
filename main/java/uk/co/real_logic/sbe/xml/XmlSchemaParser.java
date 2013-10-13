@@ -246,7 +246,7 @@ public class XmlSchemaParser
 
         if (handler == null)
         {
-            throw new IllegalArgumentException("ERROR: " + formatLocationInfo(node) + msg);
+            throw new IllegalStateException("ERROR: " + formatLocationInfo(node) + msg);
         }
         else
         {
@@ -261,7 +261,7 @@ public class XmlSchemaParser
 
         if (handler == null)
         {
-            throw new IllegalArgumentException("WARNING: " + formatLocationInfo(node) + msg);
+            throw new IllegalStateException("WARNING: " + formatLocationInfo(node) + msg);
         }
         else
         {
@@ -283,7 +283,7 @@ public class XmlSchemaParser
 
         if (attrNode == null || "".equals(attrNode.getNodeValue()))
         {
-            throw new IllegalArgumentException("Element attribute is not present or is empty: " + attrName);
+            throw new IllegalStateException("Element attribute is not present or is empty: " + attrName);
         }
 
         return attrNode.getNodeValue();

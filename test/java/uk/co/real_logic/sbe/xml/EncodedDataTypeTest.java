@@ -131,7 +131,7 @@ public class EncodedDataTypeTest
         parseTestXmlWithMap("/types/type", testXmlString);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptionWhenNoPrimitiveTypeSpecified()
         throws Exception
     {
@@ -143,7 +143,7 @@ public class EncodedDataTypeTest
         parseTestXmlWithMap("/types/type", testXmlString);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptionWhenNoNameSpecified()
         throws Exception
     {
