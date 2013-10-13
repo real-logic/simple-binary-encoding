@@ -24,7 +24,18 @@ import static org.junit.Assert.assertTrue;
 
 public class CodecUtilTest
 {
-    private final DirectBuffer buffer = new DirectBuffer(new byte[64]);
+    private static final int BUFFER_CAPACITY = 64;
+
+    private final DirectBuffer buffer = new DirectBuffer(new byte[BUFFER_CAPACITY]);
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionForPositionAboveCapacity()
+    {
+        final int offset = 8;
+        final int position = BUFFER_CAPACITY;
+
+        CodecUtil.checkPosition(position, offset, BUFFER_CAPACITY);
+    }
 
     @Test
     public void shouldTestBitInByte()

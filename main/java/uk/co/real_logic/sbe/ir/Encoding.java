@@ -158,7 +158,10 @@ public class Encoding
     public String toString()
     {
         return "Encoding{" +
-            "minVal=" + minVal +
+            "primitiveType=" + primitiveType +
+            ", byteOrder=" + byteOrder +
+            ", presence=" + presence() +
+            ", minVal=" + minVal +
             ", maxVal=" + maxVal +
             ", nullVal=" + nullVal +
             ", constVal=" + constVal +

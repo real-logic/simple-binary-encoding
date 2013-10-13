@@ -112,7 +112,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(0).signal(), is(Signal.BEGIN_MESSAGE));
         assertThat(tokens.get(0).name(), is("TestMessage50001"));
         assertThat(valueOf(tokens.get(0).schemaId()), is(valueOf(50001L)));
-        assertThat(valueOf(tokens.get(0).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(0).size()), is(valueOf(16)));
         assertThat(valueOf(tokens.get(0).offset()), is(valueOf(0)));
 
         /* assert all elements of node 1 */
@@ -142,7 +142,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(4).signal(), is(Signal.END_MESSAGE));
         assertThat(tokens.get(4).name(), is("TestMessage50001"));
         assertThat(valueOf(tokens.get(4).schemaId()), is(valueOf(50001L)));
-        assertThat(valueOf(tokens.get(4).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(4).size()), is(valueOf(16)));
         assertThat(valueOf(tokens.get(4).offset()), is(valueOf(0)));
     }
 

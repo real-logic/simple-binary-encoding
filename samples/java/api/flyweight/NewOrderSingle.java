@@ -21,7 +21,7 @@ import java.nio.ByteBuffer;
 
 public class NewOrderSingle
 {
-    public void resetForEncode(final ByteBuffer buffer)
+    public void reset(final ByteBuffer buffer)
     {
     }
 
@@ -82,9 +82,5 @@ public class NewOrderSingle
     public long transactTime()
     {
         return 0;
-    }
-
-    public void resetForDecode(final ByteBuffer buffer)
-    {
     }
 }

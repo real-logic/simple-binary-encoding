@@ -81,6 +81,7 @@ public class IrGenerator
         Token token = new Token.Builder()
             .signal(signal)
             .name(msg.getName())
+            .size(msg.getBlockLength())
             .schemaId(msg.getId())
             .build();
 

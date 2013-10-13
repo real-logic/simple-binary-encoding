@@ -201,7 +201,6 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
         javaGenerator.generateMessageStubs();
 
-//        System.out.println(stringWriter);
         final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
         assertNotNull(clazz);
     }

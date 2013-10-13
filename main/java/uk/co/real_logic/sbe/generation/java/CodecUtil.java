@@ -20,6 +20,25 @@ import static uk.co.real_logic.sbe.util.BitUtil.*;
 public class CodecUtil
 {
     /**
+     * Check that a given position is within the capacity of a buffer from a given offset.
+     *
+     * @param position access is required to.
+     * @param offset from which the position is added.
+     * @param capacity of the underlying buffer.
+     */
+    public static void checkPosition(final int position, final int offset, final int capacity)
+    {
+        if ((offset + position) >= capacity)
+        {
+            final String msg = String.format("position=%d is beyond capacity=%d with offset=%d",
+                                             Integer.valueOf(position),
+                                             Integer.valueOf(capacity),
+                                             Integer.valueOf(offset));
+            throw new IllegalStateException(msg);
+        }
+    }
+
+    /**
      * Put a character to a {@link DirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.

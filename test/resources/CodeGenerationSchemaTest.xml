@@ -50,9 +50,18 @@
         <field name="extras" id="4" type="optionalExtras"/>
         <field name="vehicleCode" id="5" type="vehicleCodeType"/>
         <field name="engine" id="6" type="engineType"/>
-        <group name="consumptions" id="7" dimensionType="groupSizeEncoding">
+        <group name="FuelFigures" id="7" dimensionType="groupSizeEncoding">
             <field name="speed" id="8" type="uint16"  semanticType="int"/>
-            <field name="mpg" id="9" type="uint16" semanticType="int"/>
+            <field name="mpg" id="9" type="float" semanticType="int"/>
         </group>
+        <group name="PerformanceFigures" id="7" dimensionType="groupSizeEncoding">
+            <field name="octaneRating" id="8" type="uint8" semanticType="RON"/>
+            <group name="Acceleration" id="9" dimensionType="groupSizeEncoding">
+                <field name="mph" id="10" type="uint16"  semanticType="int"/>
+                <field name="seconds" id="11" type="float" semanticType="int"/>
+            </group>
+        </group>
+        <data name="make" id="12" type="varDataEncoding" semanticType="Make"/>
+        <data name="model" id="13" type="varDataEncoding" semanticType="Model"/>
     </message>
 </messageSchema>

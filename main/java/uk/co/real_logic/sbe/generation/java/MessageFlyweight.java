@@ -21,18 +21,24 @@ package uk.co.real_logic.sbe.generation.java;
 public interface MessageFlyweight
 {
     /**
-     * Reset state in preparation for decoding a message.
+     * Reset the flyweight to a new index in a buffer to overlay a message.
      *
-     * @param buffer from which to read.
+     * @param buffer underlying the message.
      * @param index at which the message body begins.
      */
-    void resetForDecode(final DirectBuffer buffer, final int index);
+    void reset(final DirectBuffer buffer, final int index);
 
     /**
-     * Reset state in preparation for encoding a message.
+     * The position for the end of the currently access block.
      *
-     * @param buffer into which will writes will occur.
-     * @param index at which the message body should begin.
+     * @param position for the end of the currently access block.
      */
-    void resetForEncode(final DirectBuffer buffer, final int index);
+    void position(final int position);
+
+    /**
+     * The position for the end of the currently access block.
+     *
+     * @return the position for the end of the currently access block.
+     */
+    int position();
 }

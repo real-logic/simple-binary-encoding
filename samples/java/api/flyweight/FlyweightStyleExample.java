@@ -36,7 +36,7 @@ public class FlyweightStyleExample
 
     public void simpleEncode()
     {
-        newOrderSingle.resetForEncode(buffer);
+        newOrderSingle.reset(buffer);
 
         // If field is called out of order and a mandatory field is missed then an exception will be thrown
         newOrderSingle.clOrderId("123");
@@ -55,7 +55,7 @@ public class FlyweightStyleExample
         buffer.clear();
         transport.receive(buffer);
 
-        newOrderSingle.resetForDecode(buffer);
+        newOrderSingle.reset(buffer);
 
         if (!newOrderSingle.valid()) // should validation just throw an exception?
         {

@@ -91,8 +91,7 @@ public class JavaGenerator implements CodeGenerator
             {
                 out.append(generateFileHeader(ir.packageName()));
                 out.append(generateClassDeclaration(className, MessageFlyweight.class.getSimpleName()));
-                out.append(generateMessageFlyweightCode());
-
+                out.append(generateMessageFlyweightCode(tokens.get(0).size()));
 
                 out.append("}\n");
             }
@@ -482,21 +481,31 @@ public class JavaGenerator implements CodeGenerator
             "    }\n";
     }
 
-    private CharSequence generateMessageFlyweightCode()
+    private CharSequence generateMessageFlyweightCode(final int blockLength)
     {
-        return
+        return String.format(
+            "    private static final int blockLength = %d;\n\n" +
             "    private DirectBuffer buffer;\n" +
-            "    private int offset;\n\n" +
-            "    public void resetForEncode(final DirectBuffer buffer, final int offset)\n" +
+            "    private int offset;\n" +
+            "    private int position;\n" +
+            "\n" +
+            "    public void reset(final DirectBuffer buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
+            "        position(blockLength);\n" +
             "    }\n\n" +
-            "    public void resetForDecode(final DirectBuffer buffer, final int offset)\n" +
+            "    public int position()\n" +
             "    {\n" +
-            "        this.buffer = buffer;\n" +
-            "        this.offset = offset;\n" +
-            "    }\n";
+            "        return position;\n" +
+            "    }\n\n" +
+            "    public void position(final int position)\n" +
+            "    {\n" +
+            "        CodecUtil.checkPosition(position, offset, buffer.capacity());\n" +
+            "        this.position = position;\n" +
+            "    }\n",
+            Integer.valueOf(blockLength)
+        );
     }
 
     private CharSequence generateLiteral(final Token token)
