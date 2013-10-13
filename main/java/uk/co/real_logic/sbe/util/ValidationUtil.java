@@ -149,14 +149,13 @@ public class ValidationUtil
             {
                 continue;
             }
-            else if (isSbeCppIdentifierPart(c))
+
+            if (isSbeCppIdentifierPart(c))
             {
                 continue;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         return true;
