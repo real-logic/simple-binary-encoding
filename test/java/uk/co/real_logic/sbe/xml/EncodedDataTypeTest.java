@@ -170,6 +170,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
             "    <type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
             "    <type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
+            "    <type name=\"testTypeFloat\" primitiveType=\"float\"/>" +
+            "    <type name=\"testTypeDouble\" primitiveType=\"double\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -182,6 +184,8 @@ public class EncodedDataTypeTest
         assertThat(((EncodedDataType)map.get("testTypeUInt16")).getPrimitiveType(), is(PrimitiveType.UINT16));
         assertThat(((EncodedDataType)map.get("testTypeUInt32")).getPrimitiveType(), is(PrimitiveType.UINT32));
         assertThat(((EncodedDataType)map.get("testTypeUInt64")).getPrimitiveType(), is(PrimitiveType.UINT64));
+        assertThat(((EncodedDataType)map.get("testTypeFloat")).getPrimitiveType(), is(PrimitiveType.FLOAT));
+        assertThat(((EncodedDataType)map.get("testTypeDouble")).getPrimitiveType(), is(PrimitiveType.DOUBLE));
     }
 
     @Test(expected = IllegalArgumentException.class)
