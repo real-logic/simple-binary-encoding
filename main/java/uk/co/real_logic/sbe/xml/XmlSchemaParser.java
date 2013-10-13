@@ -121,6 +121,8 @@ public class XmlSchemaParser
         typeByNameMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, null, PrimitiveType.UINT16, 1, false));
         typeByNameMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, null, PrimitiveType.UINT32, 1, false));
         typeByNameMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, null, PrimitiveType.UINT64, 1, false));
+        typeByNameMap.put("float", new EncodedDataType("float", Presence.REQUIRED, null, null, PrimitiveType.FLOAT, 1, false));
+        typeByNameMap.put("double", new EncodedDataType("double", Presence.REQUIRED, null, null, PrimitiveType.DOUBLE, 1, false));
 
         forEach((NodeList)xPath.compile(TYPE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
                 new NodeFunction()
