@@ -138,11 +138,6 @@ public class FlyweightStyleExample
 
         massQuote.resetForDecode(buffer);
 
-        if (!massQuote.isValid()) // should validation just throw an exception?
-        {
-            throw new IllegalStateException("Message is screwed up");
-        }
-
         String quoteId = massQuote.getQuoteId();
         CtiCode ctiCode = massQuote.getCtiCode();
 

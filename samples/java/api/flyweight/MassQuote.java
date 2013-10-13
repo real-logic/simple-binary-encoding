@@ -49,11 +49,6 @@ public class MassQuote
         return quoteSet;
     }
 
-    public boolean isValid()
-    {
-        return true;
-    }
-
     public String getQuoteId()
     {
         return null;
