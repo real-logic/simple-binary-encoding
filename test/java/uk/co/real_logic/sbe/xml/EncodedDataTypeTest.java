@@ -215,6 +215,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
             "    <type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
             "    <type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
+            "    <type name=\"testTypeFloat\" primitiveType=\"float\"/>" +
+            "    <type name=\"testTypeDouble\" primitiveType=\"double\"/>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -227,6 +229,8 @@ public class EncodedDataTypeTest
         assertThat(valueOf(map.get("testTypeUInt16").size()), is(valueOf(2)));
         assertThat(valueOf(map.get("testTypeUInt32").size()), is(valueOf(4)));
         assertThat(valueOf(map.get("testTypeUInt64").size()), is(valueOf(8)));
+        assertThat(valueOf(map.get("testTypeFloat").size()), is(valueOf(4)));
+        assertThat(valueOf(map.get("testTypeDouble").size()), is(valueOf(8)));
     }
 
     @Test
