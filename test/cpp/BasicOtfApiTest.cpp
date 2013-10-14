@@ -87,6 +87,7 @@ TEST(BasicOtfApi, shouldHandleOnNext)
 
 /*
  * Fixture around listener that also is an OnNext
+ * TODO: move to another Test file that is more appropriate.
  */
 class BasicOtfTest : public testing::Test, public OnNext
 {
@@ -116,7 +117,6 @@ TEST_F(BasicOtfTest, shouldHandleMessageHeader)
 }
 
 /*
- * TODO: Ir object test. Internal test to make sure given binary IR generates correct values and iterates correctly.
  * TODO: testing fixture holds serialized IR buffer
  * TODO: messageHeader handling - basic test to grab blockLength, templateId, version, and reserved with correct values
  * TODO: messageHeader + message dispatch - no variable length data, no groups

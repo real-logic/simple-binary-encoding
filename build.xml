@@ -149,6 +149,7 @@
 
     <target name="cpp:compile" depends="clean, init">
         <cc outtype="static"
+            debug="true"
             subsystem="console"
             objdir="${dir.main.cpp.build}">
             <compilerarg value="-std=c++98"/>
@@ -161,6 +162,7 @@
             <!-- gtest compile -->
             <cc outtype="static"
                 subsystem="console"
+                debug="true"
                 multithreaded="true"
                 exceptions="true"
                 objdir="${dir.gtest.build}">
@@ -174,6 +176,7 @@
             <!-- all tests are placed in the main runner -->
             <cc outtype="executable"
                 subsystem="console"
+                debug="true"
                 outfile="${exec.test.cpp}">
                 <includepath path="${dir.gtest.include}"/>
                 <includepath path="${dir.main.cpp.src}"/>

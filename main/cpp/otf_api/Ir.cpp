@@ -1,9 +1,12 @@
 #include <stdio.h>
+#include <iostream>
 #include <sys/types.h>
 
 #include "Ir.h"
 
 using namespace sbe::on_the_fly;
+using ::std::cout;
+using ::std::endl;
 
 /*
  * Until we have SBE generating C++, just layering a struct over each token
@@ -38,7 +41,7 @@ void Ir::next()
     cursorOffset_ += sizeof(struct IrToken) + currToken->nameLen;
 }
 
-bool Ir::end()
+bool Ir::end() const
 {
     if (cursorOffset_ < len_)
     {
@@ -84,7 +87,7 @@ uint8_t Ir::nameLen() const
 
 std::string Ir::name() const
 {
-    return std::string((buffer_ + sizeof(struct IrToken)), nameLen());
+    return std::string((buffer_ + cursorOffset_ + sizeof(struct IrToken)), nameLen());
 }
 
 // protected
@@ -94,7 +97,7 @@ void Ir::addToken(uint32_t offset,
                   TokenByteOrder byteOrder,
                   TokenPrimitiveType primitiveType,
                   uint16_t schemaId,
-                  std::string &name)
+                  const std::string &name)
 {
     if (buffer_ == NULL)
     {

@@ -62,7 +62,8 @@ public:
         UINT8 = 6,
         UINT16 = 7,
         UINT32 = 8,
-        UINT64 = 9
+        UINT64 = 9,
+        NONE = 255
     };
 
     /**
@@ -74,17 +75,24 @@ public:
         virtual Ir *irForTemplateId(const int templateId) = 0;
     };
 
-    Ir(const char *buffer, const int len);
+    // constructors and destructors
 
-    virtual ~Ir() {
-        delete [] buffer_;
+    Ir(const char *buffer = NULL, const int len = 0);
+
+    virtual ~Ir()
+    {
+        if (buffer_ != NULL)
+        {
+            delete[] buffer_;
+            buffer_ = NULL;
+        }
     };
 
     /// iterator methods for IrTokens
 
     void begin();
     void next();
-    bool end();
+    bool end() const;
 
     /// access methods for current IR Token
 
@@ -97,15 +105,14 @@ public:
     uint8_t nameLen() const;
     std::string name() const;
 
-protected:
-    // TODO: used by test fixtures to generate IR for tests - initial call allocates max sized buffer
+    // used by test fixtures to generate IR for tests - initial call allocates max sized buffer
     void addToken(uint32_t offset,
                   uint32_t size,
                   TokenSignal signal,
                   TokenByteOrder byteOrder,
                   TokenPrimitiveType primitiveType,
                   uint16_t schemaId,
-                  std::string &name);
+                  const std::string &name);
 
 private:
     const char *buffer_;
