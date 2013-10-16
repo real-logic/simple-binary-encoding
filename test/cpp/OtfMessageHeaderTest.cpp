@@ -105,7 +105,7 @@ protected:
 
     virtual int onError(const Error &e)
     {
-        // TODO: save state of what was received and then have tests assert on that.
+        cout << e.message() << endl;
         numErrorsSeen_++;
         return 0;
     };

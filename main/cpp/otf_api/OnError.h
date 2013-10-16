@@ -27,6 +27,7 @@ public:
     Error(const char *errorMsg) : errorMsg_(errorMsg) {};
     Error(const std::string errorMsg) : errorMsg_(errorMsg) {};
     virtual ~Error() {};
+    const std::string &message() const { return errorMsg_; };
 private:
     std::string errorMsg_;
 };
