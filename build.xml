@@ -152,6 +152,7 @@
             debug="true"
             subsystem="console"
             objdir="${dir.main.cpp.build}">
+            <includepath path="${dir.main.cpp.src}"/>
             <compilerarg value="-std=c++98"/>
             <fileset dir="${dir.main.cpp.src}" includes="**/*.cpp"/>
         </cc>
