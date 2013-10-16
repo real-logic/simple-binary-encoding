@@ -139,7 +139,7 @@ int Listener::process(void)
 
     if (onCompleted_ != NULL)
     {
-        onComepleted_->onCompleted();
+        onCompleted_->onCompleted();
     }
     return 0;
 }

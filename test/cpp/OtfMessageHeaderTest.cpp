@@ -111,7 +111,7 @@ protected:
         return 0;
     };
 
-    virtual int onComepleted()
+    virtual int onCompleted()
     {
         numCompletedsSeen_++;
         return 0;
@@ -164,7 +164,7 @@ TEST_F(OtfMessageHeaderTest, shouldHandleTooShortMessageHeader)
 
 TEST_F(OtfMessageHeaderTest, shouldHandleTooShortMessageHeaderWithOnCompleted)
 {
-    bufferLen_ -= 2; // make the data too short. Should generate OnError
+    bufferLen_ -= 2; // make the data too short. Should generate OnError, and no OnCompleted
     listener_.ir(ir_)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
