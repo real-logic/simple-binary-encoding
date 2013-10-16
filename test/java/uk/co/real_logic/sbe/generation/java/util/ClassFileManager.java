@@ -18,10 +18,12 @@ package uk.co.real_logic.sbe.generation.java.util;
 import javax.tools.*;
 import java.io.IOException;
 import java.security.SecureClassLoader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClassFileManager<M extends JavaFileManager> extends ForwardingJavaFileManager<M>
 {
-    private JavaClassObject javaClassObject;
+    private final Map<String, JavaClassObject> classObjectByNameMap = new HashMap<>();
 
     public ClassFileManager(final M standardManager)
     {
@@ -35,7 +37,7 @@ public class ClassFileManager<M extends JavaFileManager> extends ForwardingJavaF
             protected Class<?> findClass(String name)
                 throws ClassNotFoundException
             {
-                final byte[] buffer = javaClassObject.getBytes();
+                final byte[] buffer = classObjectByNameMap.get(name).getBytes();
                 return super.defineClass(name, buffer, 0, buffer.length);
             }
         };
@@ -47,7 +49,8 @@ public class ClassFileManager<M extends JavaFileManager> extends ForwardingJavaF
                                                final FileObject sibling)
         throws IOException
     {
-        javaClassObject = new JavaClassObject(className, kind);
+        final JavaClassObject javaClassObject = new JavaClassObject(className, kind);
+        classObjectByNameMap.put(className, javaClassObject);
 
         return javaClassObject;
     }
