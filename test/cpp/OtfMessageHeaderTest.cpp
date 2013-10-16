@@ -23,7 +23,7 @@ using ::std::endl;
 /*
  * Fixture around listener that also is an OnNext and OnError
  */
-class OtfMessageHeaderTest : public testing::Test, public OnNext, public OnError
+class OtfMessageHeaderTest : public testing::Test, public OnNext, public OnError, public OnCompleted
 {
 protected:
     static const int BLOCKLENGTH = 64;
@@ -73,6 +73,7 @@ protected:
         bufferLen_ = CORRECT_MESSAGEHEADER_SIZE;
         numFieldsSeen_ = 0;
         numErrorsSeen_ = 0;
+        numCompletedsSeen_ = 0;
     };
 
     virtual void TearDown()
@@ -110,14 +111,19 @@ protected:
         return 0;
     };
 
+    virtual int onComepleted()
+    {
+        numCompletedsSeen_++;
+        return 0;
+    }
+
     Listener listener_;
     Ir ir_;
     char *buffer_;
     int bufferLen_;
     int numFieldsSeen_;
     int numErrorsSeen_;
-
-    // TODO: state of callback received. keep queue of received events and assert over them.
+    int numCompletedsSeen_;
 };
 
 const int OtfMessageHeaderTest::BLOCKLENGTH;
@@ -132,6 +138,17 @@ TEST_F(OtfMessageHeaderTest, shouldHandleMessageHeader)
         .subscribe(this, this);
     EXPECT_EQ(numFieldsSeen_, 1);
     EXPECT_EQ(numErrorsSeen_, 0);
+    EXPECT_EQ(numCompletedsSeen_, 0);
+}
+
+TEST_F(OtfMessageHeaderTest, shouldHandleMessageHeaderWithOnCompleted)
+{
+    listener_.ir(ir_)
+        .resetForDecode(buffer_, bufferLen_)
+        .subscribe(this, this, this);
+    EXPECT_EQ(numFieldsSeen_, 1);
+    EXPECT_EQ(numErrorsSeen_, 0);
+    EXPECT_EQ(numCompletedsSeen_, 1);
 }
 
 TEST_F(OtfMessageHeaderTest, shouldHandleTooShortMessageHeader)
@@ -142,16 +159,29 @@ TEST_F(OtfMessageHeaderTest, shouldHandleTooShortMessageHeader)
         .subscribe(this, this);
     EXPECT_EQ(numFieldsSeen_, 0);
     EXPECT_EQ(numErrorsSeen_, 1);
+    EXPECT_EQ(numCompletedsSeen_, 0);
+}
+
+TEST_F(OtfMessageHeaderTest, shouldHandleTooShortMessageHeaderWithOnCompleted)
+{
+    bufferLen_ -= 2; // make the data too short. Should generate OnError
+    listener_.ir(ir_)
+        .resetForDecode(buffer_, bufferLen_)
+        .subscribe(this, this, this);
+    EXPECT_EQ(numFieldsSeen_, 0);
+    EXPECT_EQ(numErrorsSeen_, 1);
+    EXPECT_EQ(numCompletedsSeen_, 0);
 }
 
 /*
- * TODO: messageHeader handling - basic test to grab blockLength, templateId, version, and reserved with correct values
- * TODO: byteOrder tests - 
+ * TODO: byteOrder tests
+ * TODO: grab offset of message after messageHeader and be able to save it and hold templateId - use case!
  */
 
 /*
  * TODO: messageHeader + message dispatch - no variable length data, no groups
- * TODO: grab offset of message after messageHeader and be able to save it and hold templateId - use case!
+ * TODO: test every type (encoded data type, composite, enum, and set) in a single message
+ * TODO: test every primitiveType
  * TODO: single repeating group
  * TODO: nested repeating group - MassQuote
  * TODO: variable length fields

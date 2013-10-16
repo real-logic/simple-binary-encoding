@@ -50,7 +50,7 @@ int Listener::process(void)
             {
                 onError_->onError(Error("buffer too short"));
             }
-            break;
+            return 0;
         }
 
         // overloaded method for encoding callback. 1 per primitiveType. Don't need type passed as method has typed value
@@ -135,6 +135,11 @@ int Listener::process(void)
         default:
             break;
         }
+    }
+
+    if (onCompleted_ != NULL)
+    {
+        onComepleted_->onCompleted();
     }
     return 0;
 }
