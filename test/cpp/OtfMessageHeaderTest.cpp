@@ -105,7 +105,7 @@ protected:
 
     virtual int onError(const Error &e)
     {
-        cout << e.message() << endl;
+        EXPECT_EQ(e.message(), "buffer too short");
         numErrorsSeen_++;
         return 0;
     };
