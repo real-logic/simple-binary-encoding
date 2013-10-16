@@ -108,7 +108,3 @@ TEST_F(OtfIrTest, shouldBeAbleToIterate)
     ir_.next();
     EXPECT_EQ(ir_.end(), true);
 }
-
-/*
- * TODO: Ir object test. Internal test to make sure given binary IR generates correct values and iterates correctly.
- */

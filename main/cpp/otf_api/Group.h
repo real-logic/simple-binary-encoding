@@ -21,10 +21,50 @@ namespace on_the_fly {
 
 class Group
 {
-private:
 public:
-    Group() {};
+
+    Group() : size_(0) {};
     virtual ~Group() {};
+
+    const std::string &name() const
+    {
+        return name_;
+    };
+
+    int size() const
+    {
+        return size_;
+    };
+
+    // iterate over fields
+    void begin();
+    bool end() const;
+    Field &current() const;
+    void next();
+
+protected:
+    // set by Listener
+    Group &name(std::string &name);
+
+    Group &size(const int size)
+    {
+        size_ = size;
+        return *this;
+    };
+
+    Group &reset()
+    {
+        size_ = 0;
+        // TODO: remove all Fields
+        return *this;
+    };
+
+private:
+    std::string name_;
+    Field cachedField_;
+    int size_;
+
+    friend class Listener;
 };
 
 } // namespace on_the_fly

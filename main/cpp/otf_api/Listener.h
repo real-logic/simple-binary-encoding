@@ -94,7 +94,14 @@ private:
     /*
      * Iterator around the serialized IR
      */
-    const Ir *ir_;
+    Ir *ir_;
+
+    /*
+     * The data buffer that we want to decode and asscoiated state of it
+     */
+    const char *buffer_;
+    int bufferLen_;
+    int bufferOffset_;
 
     /*
      * Cached and reused Field and Group objects
@@ -125,27 +132,26 @@ protected:
      * Called once callbacks are setup and processing of the buffer should begin. This could be overriden by 
      * a subclass for testing purposes.
      */
-    virtual int process(void)
-    {
-        /*
-         * TODO:
-         * for (ir_.begin(); !ir_.end();)
-         * {
-         *    go to ir_.offset() in buffer_
-         *    check ir_.signal() to see what this element is
-         *    check ir_.primitiveType() to see how to handle it
-         *    check ir_.byteOrder to see if we have to convert or not
-         *    set Field values
-         *    ir_.next() until we run out of current field/composite/etc.
-         * }
-         */
-        return 0;
-    };
+    virtual int process(void);
+
+    // consolidated IR and data events
+    virtual void processBeginComposite(const std::string &name);
+    virtual void processEndComposite(void);
+    virtual void processBeginField(const std::string &name, const uint16_t schemaId);
+    virtual void processEndField(void);
+    virtual void processBeginEnum(const std::string &name, const char value);
+    virtual void processBeginEnum(const std::string &name, const uint8_t value);
+    virtual void processEnumValidValue(const std::string &name, const int value);
+    virtual void processEndEnum(void);
+    virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value);
+    virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
+    virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value);
 
 public:
 
     /// Basic constructor
-    Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL), ir_(NULL) {};
+    Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL),
+                 ir_(NULL), buffer_(NULL), bufferLen_(0), bufferOffset_(0) {};
 
     /**
      * Set the IR to use for all buffers
@@ -154,9 +160,9 @@ public:
      * \param length of the buffer
      * \return listener object
      */
-    Listener &ir(const Ir *ir)
+    Listener &ir(Ir &ir)
     {
-        ir_ = ir;
+        ir_ = &ir;
         return *this;
     };
 
