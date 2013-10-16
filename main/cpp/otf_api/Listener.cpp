@@ -44,6 +44,15 @@ int Listener::process(void)
     // layer to coalesce for higher up
     for (; !ir_->end(); ir_->next())
     {
+        if ((bufferOffset_ + ir_->offset()) > bufferLen_)
+        {
+            if (onError_ != NULL)
+            {
+                onError_->onError(Error("buffer too short"));
+            }
+            break;
+        }
+
         // overloaded method for encoding callback. 1 per primitiveType. Don't need type passed as method has typed value
         switch (ir_->signal())
         {

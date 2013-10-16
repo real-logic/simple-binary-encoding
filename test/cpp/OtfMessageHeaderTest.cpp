@@ -71,6 +71,8 @@ protected:
         addMessageHeaderIr();
         buffer_ = constructMessageHeader(BLOCKLENGTH, TEMPLATE_ID, VERSION);
         bufferLen_ = CORRECT_MESSAGEHEADER_SIZE;
+        numFieldsSeen_ = 0;
+        numErrorsSeen_ = 0;
     };
 
     virtual void TearDown()
@@ -97,12 +99,14 @@ protected:
         EXPECT_EQ(f.valueUInt(1), TEMPLATE_ID);
         EXPECT_EQ(f.valueUInt(2), VERSION);
         EXPECT_EQ(f.valueUInt(3), 0);
+        numFieldsSeen_++;
         return 0;
     };
 
     virtual int onError(const Error &e)
     {
         // TODO: save state of what was received and then have tests assert on that.
+        numErrorsSeen_++;
         return 0;
     };
 
@@ -110,6 +114,8 @@ protected:
     Ir ir_;
     char *buffer_;
     int bufferLen_;
+    int numFieldsSeen_;
+    int numErrorsSeen_;
 
     // TODO: state of callback received. keep queue of received events and assert over them.
 };
@@ -124,6 +130,8 @@ TEST_F(OtfMessageHeaderTest, shouldHandleMessageHeader)
     listener_.ir(ir_)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this);
+    EXPECT_EQ(numFieldsSeen_, 1);
+    EXPECT_EQ(numErrorsSeen_, 0);
 }
 
 TEST_F(OtfMessageHeaderTest, shouldHandleTooShortMessageHeader)
@@ -132,6 +140,8 @@ TEST_F(OtfMessageHeaderTest, shouldHandleTooShortMessageHeader)
     listener_.ir(ir_)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this);
+    EXPECT_EQ(numFieldsSeen_, 0);
+    EXPECT_EQ(numErrorsSeen_, 1);
 }
 
 /*

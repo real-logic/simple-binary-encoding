@@ -23,10 +23,12 @@ namespace on_the_fly {
 
 class Error
 {
-private:
 public:
-    Error() {};
+    Error(const char *errorMsg) : errorMsg_(errorMsg) {};
+    Error(const std::string errorMsg) : errorMsg_(errorMsg) {};
     virtual ~Error() {};
+private:
+    std::string errorMsg_;
 };
 
 class OnError
