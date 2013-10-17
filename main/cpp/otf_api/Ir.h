@@ -107,6 +107,7 @@ public:
     TokenByteOrder byteOrder() const;
     TokenPrimitiveType primitiveType() const;
     uint16_t schemaId() const;
+    uint64_t validValue() const;
     uint8_t nameLen() const;
     std::string name() const;
 

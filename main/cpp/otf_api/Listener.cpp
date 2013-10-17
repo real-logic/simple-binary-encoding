@@ -132,15 +132,11 @@ int Listener::process(void)
             switch (ir->primitiveType())
             {
             case Ir::CHAR:
-                processBeginEnum(ir->name(), *((char *)(buffer_ + bufferOffset_ + ir->offset())));
-                break;
-
-           case Ir::INT8:
-                processBeginEnum(ir->name(), *((uint8_t *)(buffer_ + bufferOffset_ + ir->offset())));
+                processBeginEnum(ir->name(), ir->primitiveType(), *((char *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::UINT8:
-                processBeginEnum(ir->name(), *((uint8_t *)(buffer_ + bufferOffset_ + ir->offset())));
+                processBeginEnum(ir->name(), ir->primitiveType(), *((uint8_t *)(buffer_ + bufferOffset_)));
                 break;
 
             default:
@@ -150,7 +146,7 @@ int Listener::process(void)
             break;
 
         case Ir::VALID_VALUE:
-            processEnumValidValue(ir->name(), /* TODO: need to pass up value as int or other large enough type */ 0);
+            processEnumValidValue(ir->name(), ir->primitiveType(), ir->validValue());
             break;
 
         case Ir::END_ENUM:
@@ -257,19 +253,25 @@ void Listener::processEndField(void)
     cachedField_.reset();
 }
 
-void Listener::processBeginEnum(const std::string &name, const char value)
+void Listener::processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const char value)
 {
-    cachedField_.type(Field::ENUM);
+    cachedField_.type(Field::ENUM)
+        .addEncoding(name, type, (uint64_t)value);
 }
 
-void Listener::processBeginEnum(const std::string &name, const uint8_t value)
+void Listener::processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, uint8_t value)
 {
-    cachedField_.type(Field::ENUM);
+    cachedField_.type(Field::ENUM)
+        .addEncoding(name, type, (uint64_t)value);
 }
 
-void Listener::processEnumValidValue(const std::string &name, const int value)
+void Listener::processEnumValidValue(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
 {
-    // TODO: if value works, then add value to Field
+    // TODO: can only have 1 valid value, so, could abandon the next one that comes in
+    if (cachedField_.valueUInt() == value)
+    {
+        cachedField_.addValidValue(name);
+    }
 }
 
 void Listener::processEndEnum(void)

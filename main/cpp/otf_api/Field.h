@@ -97,9 +97,9 @@ public:
     };
 
     // query on specific composite piece and encoding
-    Ir::TokenPrimitiveType primitiveType(const int index) const
+    Ir::TokenPrimitiveType primitiveType(const int index = FIELD_INDEX) const
     {
-        return primitiveTypes_[index];
+        return (index == FIELD_INDEX) ? primitiveTypes_[0] : primitiveTypes_[index];
     };
 
     // encoding values. index = -1 means only 1 encoding (for set, enum, encoding) and exceptions on composite
@@ -119,8 +119,12 @@ public:
         return (index == FIELD_INDEX) ? encodingValues_[0].doubleValue_ : encodingValues_[index].doubleValue_;
     };
 
-    // set and enum - exception on incorrect type of field
-    std::string &validValue(const int index = FIELD_INDEX) const;
+    // TODO: set and enum - exception on incorrect type of field
+    const std::string &validValue() const
+    {
+        return validValue_;
+    };
+
     std::vector<std::string> &choices(const int index = FIELD_INDEX) const;  // maybe vector instead of list?
 
 protected:
@@ -187,8 +191,12 @@ protected:
         return *this;
     };
 
-    // set Enum and Set strings
-    Field &validValue(const int index, const std::string value);
+    Field &addValidValue(const std::string value)
+    {
+        validValue_ = value;
+        return *this;
+    };
+
     Field &choice(const int index, const std::string value);
 
     Field &reset()
@@ -207,6 +215,7 @@ private:
     Type type_;
     std::string name_;
     std::string compositeName_;
+    std::string validValue_;
     uint16_t schemaId_;
     uint16_t numEncodings_;
 

@@ -146,9 +146,9 @@ protected:
     virtual void processEndComposite(void);
     virtual void processBeginField(const std::string &name, const uint16_t schemaId);
     virtual void processEndField(void);
-    virtual void processBeginEnum(const std::string &name, const char value);
-    virtual void processBeginEnum(const std::string &name, const uint8_t value);
-    virtual void processEnumValidValue(const std::string &name, const int value);
+    virtual void processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const char value);
+    virtual void processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value);
+    virtual void processEnumValidValue(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
     virtual void processEndEnum(void);
     virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value);
     virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);

@@ -98,6 +98,11 @@ uint16_t Ir::schemaId() const
     return ((struct IrToken *)(buffer_ + cursorOffset_))->schemaId;    
 }
 
+uint64_t Ir::validValue() const
+{
+    return ((struct IrToken *)(buffer_ + cursorOffset_))->schemaId;
+}
+
 uint8_t Ir::nameLen() const
 {
     return ((struct IrToken *)(buffer_ + cursorOffset_))->nameLen;

@@ -282,6 +282,80 @@ TEST_F(OtfMessageAllPrimitiveTypesTest, shouldHandleAllTypes)
     EXPECT_EQ(numCompletedsSeen_, 1);
 }
 
+class OtfMessageEnumTest : public OtfMessageTest, public OtfMessageTestCBs
+{
+protected:
+#define FIELD_ENUM_CHAR_VALUE 0x31
+#define FIELD_ENUM_UINT8_VALUE 0x10
+
+    virtual void constructMessageIr(Ir &ir)
+    {
+        Ir::TokenByteOrder byteOrder = Ir::SBE_LITTLE_ENDIAN;
+        std::string messageStr = std::string("MessageWithEnum");
+        std::string charFieldStr = std::string("EnumCHARField");
+        std::string uint8FieldStr = std::string("EnumUINT8Field");
+
+        ir.addToken(0, 2, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
+        ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
+        ir.addToken(0, 1, Ir::BEGIN_ENUM, byteOrder, Ir::CHAR, 0xFFFF, std::string("char"));
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::CHAR, 0x31, std::string("charValue1"));
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::CHAR, 0x32, std::string("charValue2"));
+        ir.addToken(0, 0, Ir::END_ENUM, byteOrder, Ir::NONE, 0xFFFF, std::string("char"));
+        ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
+        ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 1, uint8FieldStr);
+        ir.addToken(0, 1, Ir::BEGIN_ENUM, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8"));
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, 0x09, std::string("uint8Value1"));
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, 0x10, std::string("uint8Value2"));
+        ir.addToken(0, 0, Ir::END_ENUM, byteOrder, Ir::NONE, 0xFFFF, std::string("uint8"));
+        ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 1, uint8FieldStr);
+        ir.addToken(0, 2, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
+    };
+
+    virtual void constructMessage()
+    {
+        *((char *)(buffer_ + bufferLen_)) = FIELD_ENUM_CHAR_VALUE;
+        bufferLen_ += sizeof(char);
+
+        *((uint8_t *)(buffer_ + bufferLen_)) = FIELD_ENUM_UINT8_VALUE;
+        bufferLen_ += sizeof(uint8_t);
+    };
+
+    virtual int onNext(const Field &f)
+    {
+        OtfMessageTestCBs::onNext(f);
+
+        if (numFieldsSeen_ == 2)
+        {
+            EXPECT_EQ(f.type(), Field::ENUM);
+            EXPECT_EQ(f.numEncodings(), 1);
+            EXPECT_EQ(f.name(Field::FIELD_INDEX), "EnumCHARField");
+            EXPECT_EQ(f.primitiveType(), Ir::CHAR);
+            EXPECT_EQ(f.valueUInt(), FIELD_ENUM_CHAR_VALUE);
+            EXPECT_EQ(f.validValue(), "charValue1");
+        }
+        else if (numFieldsSeen_ == 3)
+        {
+            EXPECT_EQ(f.type(), Field::ENUM);
+            EXPECT_EQ(f.numEncodings(), 1);
+            EXPECT_EQ(f.name(Field::FIELD_INDEX), "EnumUINT8Field");
+            EXPECT_EQ(f.primitiveType(), Ir::UINT8);
+            EXPECT_EQ(f.valueUInt(), FIELD_ENUM_UINT8_VALUE);
+            EXPECT_EQ(f.validValue(), "uint8Value2");
+        }
+        return 0;
+    };
+};
+
+TEST_F(OtfMessageEnumTest, shouldHandleEnum)
+{
+    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+        .resetForDecode(buffer_, bufferLen_)
+        .subscribe(this, this, this);
+    EXPECT_EQ(numFieldsSeen_, 3);
+    EXPECT_EQ(numErrorsSeen_, 0);
+    EXPECT_EQ(numCompletedsSeen_, 1);
+}
+
 /*
  * TODO: test reuse of listener
  * TODO: test offset values on fields
