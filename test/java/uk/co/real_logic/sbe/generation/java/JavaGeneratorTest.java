@@ -18,27 +18,22 @@ package uk.co.real_logic.sbe.generation.java;
 import org.junit.Before;
 import org.junit.Test;
 import uk.co.real_logic.sbe.TestUtil;
-import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.generation.java.util.CompilerUtil;
+import uk.co.real_logic.sbe.generation.java.util.StringWriterOutputManager;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 
-import java.io.StringWriter;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_VISITOR;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class JavaGeneratorTest
 {
-    private final StringWriter stringWriter = new StringWriter();
-    private final StringWriter blackHole = new StringWriter();
-    private final OutputManager mockOutputManager = mock(OutputManager.class);
+    private final StringWriterOutputManager outputManager = new StringWriterOutputManager();
     private final DirectBuffer mockBuffer = mock(DirectBuffer.class);
 
     private IntermediateRepresentation ir;
@@ -49,6 +44,7 @@ public class JavaGeneratorTest
         MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         IrGenerator irg = new IrGenerator();
         ir = irg.generate(schema);
+        outputManager.setPackageName(ir.packageName());
     }
 
     @Test
@@ -60,14 +56,13 @@ public class JavaGeneratorTest
         final Integer blockLength = Integer.valueOf(32);
         final String fqClassName = ir.packageName() + "." + MESSAGE_HEADER_VISITOR;
 
-        when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
-        when(mockOutputManager.createOutput(MESSAGE_HEADER_VISITOR)).thenReturn(stringWriter);
+
         when(Short.valueOf(mockBuffer.getShort(bufferOffset + templateIdOffset))).thenReturn(templateId);
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateMessageHeaderStub();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
+        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
@@ -87,13 +82,10 @@ public class JavaGeneratorTest
         final String className = "Boolean";
         final String fqClassName = ir.packageName() + "." + className;
 
-        when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
-        when(mockOutputManager.createOutput(className)).thenReturn(stringWriter);
-
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
+        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final Object result = clazz.getDeclaredMethod("lookup", short.class).invoke(null, Short.valueOf((short)1));
@@ -107,13 +99,10 @@ public class JavaGeneratorTest
         final String className = "ModelType";
         final String fqClassName = ir.packageName() + "." + className;
 
-        when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
-        when(mockOutputManager.createOutput(className)).thenReturn(stringWriter);
-
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
+        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final Object result = clazz.getDeclaredMethod("lookup", byte.class).invoke(null, Byte.valueOf((byte)'B'));
@@ -129,14 +118,12 @@ public class JavaGeneratorTest
         final String className = "OptionalExtras";
         final String fqClassName = ir.packageName() + "." + className;
 
-        when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
-        when(mockOutputManager.createOutput(className)).thenReturn(stringWriter);
         when(Byte.valueOf(mockBuffer.getByte(bufferOffset))).thenReturn(bitset);
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
+        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
@@ -160,14 +147,12 @@ public class JavaGeneratorTest
         final String className = "EngineType";
         final String fqClassName = ir.packageName() + "." + className;
 
-        when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
-        when(mockOutputManager.createOutput(className)).thenReturn(stringWriter);
         when(Short.valueOf(mockBuffer.getShort(capacityFieldOffset))).thenReturn(Short.valueOf((short)expectedEngineCapacity));
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
+        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
@@ -195,13 +180,10 @@ public class JavaGeneratorTest
         final String className = "BasicCar";
         final String fqClassName = ir.packageName() + "." + className;
 
-        when(mockOutputManager.createOutput(anyString())).thenReturn(blackHole);
-        when(mockOutputManager.createOutput(className)).thenReturn(stringWriter);
-
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, mockOutputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateMessageStubs();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, stringWriter.toString());
+        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
     }
 }

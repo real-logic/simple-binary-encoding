@@ -16,25 +16,23 @@
 package uk.co.real_logic.sbe.generation.java.util;
 
 import javax.tools.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 
 public class CompilerUtil
 {
-    public static Class<?> compileCode(final String className, final String sourceCode) throws Exception
+    public static Class<?> compileCode(final String className, final Map<String, CharSequence> sources) throws Exception
     {
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         final JavaFileManager fileManager = new ClassFileManager<>(compiler.getStandardFileManager(null, null, null));
 
         final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
-        final JavaCompiler.CompilationTask task =
-            compiler.getTask(null, fileManager, diagnostics, null, null,
-                             Arrays.asList(new CharSequenceJavaFileObject(className, sourceCode)));
+        final JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, wrap(sources));
 
         if (!task.call().booleanValue())
         {
-            System.err.println(sourceCode);
-
             for (final Diagnostic diagnostic : diagnostics.getDiagnostics())
             {
                 System.err.println(diagnostic.getCode());
@@ -50,5 +48,16 @@ public class CompilerUtil
         }
 
         return fileManager.getClassLoader(null).loadClass(className);
+    }
+
+    private static Collection<CharSequenceJavaFileObject> wrap(final Map<String, CharSequence> sources)
+    {
+        final Collection<CharSequenceJavaFileObject> collection = new ArrayList<>(sources.size());
+        for (final Map.Entry<String, CharSequence> entry : sources.entrySet())
+        {
+            collection.add(new CharSequenceJavaFileObject(entry.getKey(), entry.getValue()));
+        }
+
+        return collection;
     }
 }

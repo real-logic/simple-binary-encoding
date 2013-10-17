@@ -89,7 +89,7 @@ public class Message
         NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, XPathConstants.NODESET);
         int numGroupEncountered = 0, numDataEncountered = 0;
 
-        List<Field> fieldList = new ArrayList<>();
+        final List<Field> fieldList = new ArrayList<>();
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
@@ -134,8 +134,7 @@ public class Message
         return fieldList;
     }
 
-    private Field parseGroupField(final NodeList nodeList,
-                                  final int nodeIndex) throws XPathExpressionException
+    private Field parseGroupField(final NodeList nodeList, final int nodeIndex) throws XPathExpressionException
     {
         final String dimensionTypeName = getAttributeValue(nodeList.item(nodeIndex), "dimensionType", "groupSizeEncoding");
         final Type dimensionType = typeByNameMap.get(dimensionTypeName);
@@ -152,7 +151,8 @@ public class Message
             ((CompositeType)dimensionType).checkForWellFormedGroupSizeEncoding(nodeList.item(nodeIndex));
         }
 
-        final Field field = new Field.Builder(getAttributeValue(nodeList.item(nodeIndex), "name"))
+        final Field field = new Field.Builder()
+            .name(getAttributeValue(nodeList.item(nodeIndex), "name"))
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .blockLength(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "blockLength", "0")))
@@ -166,8 +166,7 @@ public class Message
         return field;
     }
 
-    private Field parseField(final NodeList nodeList,
-                             final int nodeIndex)
+    private Field parseField(final NodeList nodeList, final int nodeIndex)
     {
         final String typeName = getAttributeValue(nodeList.item(nodeIndex), "type");
         final Type fieldType = typeByNameMap.get(typeName);
@@ -176,7 +175,8 @@ public class Message
             handleError(nodeList.item(nodeIndex), "could not find type: " + typeName);
         }
 
-        Field field = new Field.Builder(getAttributeValue(nodeList.item(nodeIndex), "name"))
+        Field field = new Field.Builder()
+            .name(getAttributeValue(nodeList.item(nodeIndex), "name"))
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
@@ -208,7 +208,8 @@ public class Message
             ((CompositeType)fieldType).makeDataFieldCompositeType();
         }
 
-        final Field field = new Field.Builder(getAttributeValue(nodeList.item(nodeIndex), "name"))
+        final Field field = new Field.Builder()
+            .name(getAttributeValue(nodeList.item(nodeIndex), "name"))
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
@@ -267,7 +268,7 @@ public class Message
             if (field.getGroupFields() != null)
             {
                 /* 0 blockLength as group blockLength is different */
-                int calculatedBlockLength = calculateAndValidateOffsets(node, field.getGroupFields(), 0);
+                final int calculatedBlockLength = calculateAndValidateOffsets(node, field.getGroupFields(), 0);
 
                 /* validate the <group> blockLength, if set */
                 validateBlockLength(node, field.getBlockLength(), calculatedBlockLength);
@@ -313,7 +314,7 @@ public class Message
      */
     private int calculateMessageBlockLength()
     {
-        int currLength = 0;
+        int blockLength = 0;
 
         for (final Field field : fieldList)
         {
@@ -323,18 +324,18 @@ public class Message
             }
             else if (field.getType() != null) // will be <field> or <data>
             {
-                int calculatedSize = field.getType().size();
+                final int calculatedSize = field.getType().size();
 
                 if (Token.VARIABLE_SIZE == calculatedSize)
                 {
-                    return currLength;
+                    return blockLength;
                 }
 
-                currLength = field.getCalculatedOffset() + calculatedSize;
+                blockLength = field.getCalculatedOffset() + calculatedSize;
             }
         }
 
-        return currLength;
+        return blockLength;
     }
 
     /**
@@ -392,7 +393,7 @@ public class Message
      */
     public int getBlockLength()
     {
-        return (blockLength > calculatedBlockLength ? blockLength : calculatedBlockLength);
+        return blockLength > calculatedBlockLength ? blockLength : calculatedBlockLength;
     }
 
     /**
