@@ -37,24 +37,73 @@ Listener &Listener::resetForDecode(const char *data, const int length)
     return *this;
 }
 
+int Listener::subscribe(OnNext *onNext, 
+                        OnError *onError,
+                        OnCompleted *onCompleted)
+{
+    int result = 0;
+
+    if (irCallback_ == NULL)
+    {
+        onNext_ = onNext;
+        onError_ = onError;
+        onCompleted_ = onCompleted;
+        result = process();
+    }
+    else
+    {
+        onNext_ = onNext;
+        onError_ = onError;
+        onCompleted_ = onCompleted;
+        result = process();
+        if (result != -1)
+        {
+            // cout << "offset " << bufferOffset_ << "/" << bufferLen_ << endl;
+            if (templateId_ != Ir::INVALID_ID)
+            {
+                ir_ = irCallback_->irForTemplateId(templateId_);
+                irCallback_ = NULL;
+                if (ir_ != NULL)
+                {
+                    ir_->begin();
+                    result = process();
+                }
+                else if (onError_ != NULL)
+                {
+                    onError_->onError(Error("no IR found for message"));
+                    result = -1;
+                }
+            }
+            else if (onError_ != NULL)
+            {
+                onError_->onError(Error("template ID encoding name not found"));
+                result = -1;
+            }
+        }
+    }
+    return result;
+}
+
 // protected
 int Listener::process(void)
 {
+    Ir *ir = ir_;
+
     // consolidate the IR and the data buffer and invoke methods that represent events for a semantic
     // layer to coalesce for higher up
-    for (; !ir_->end(); ir_->next())
+    for (; !ir->end(); ir->next())
     {
-        if ((bufferOffset_ + ir_->offset()) > bufferLen_)
+        if (bufferOffset_ > bufferLen_)
         {
             if (onError_ != NULL)
             {
                 onError_->onError(Error("buffer too short"));
             }
-            return 0;
+            return -1;
         }
 
         // overloaded method for encoding callback. 1 per primitiveType. Don't need type passed as method has typed value
-        switch (ir_->signal())
+        switch (ir->signal())
         {
         case Ir::BEGIN_MESSAGE:
             break;
@@ -63,7 +112,7 @@ int Listener::process(void)
             break;
 
         case Ir::BEGIN_COMPOSITE:
-            processBeginComposite(ir_->name());
+            processBeginComposite(ir->name());
             break;
 
         case Ir::END_COMPOSITE:
@@ -71,7 +120,7 @@ int Listener::process(void)
             break;
 
         case Ir::BEGIN_FIELD:
-            processBeginField(ir_->name(), ir_->schemaId());
+            processBeginField(ir->name(), ir->schemaId());
             break;
 
         case Ir::END_FIELD:
@@ -79,27 +128,28 @@ int Listener::process(void)
             break;
 
         case Ir::BEGIN_ENUM:
-            switch (ir_->primitiveType())
+            switch (ir->primitiveType())
             {
             case Ir::CHAR:
-                processBeginEnum(ir_->name(), *((char *)(buffer_ + bufferOffset_ + ir_->offset())));
+                processBeginEnum(ir->name(), *((char *)(buffer_ + bufferOffset_ + ir->offset())));
                 break;
 
            case Ir::INT8:
-                processBeginEnum(ir_->name(), *((uint8_t *)(buffer_ + bufferOffset_ + ir_->offset())));
+                processBeginEnum(ir->name(), *((uint8_t *)(buffer_ + bufferOffset_ + ir->offset())));
                 break;
 
             case Ir::UINT8:
-                processBeginEnum(ir_->name(), *((uint8_t *)(buffer_ + bufferOffset_ + ir_->offset())));
+                processBeginEnum(ir->name(), *((uint8_t *)(buffer_ + bufferOffset_ + ir->offset())));
                 break;
 
             default:
                 break;
             }
+            bufferOffset_ += ir->size();
             break;
 
         case Ir::VALID_VALUE:
-            processEnumValidValue(ir_->name(), /* TODO: need to pass up value as int or other large enough type */ 0);
+            processEnumValidValue(ir->name(), /* TODO: need to pass up value as int or other large enough type */ 0);
             break;
 
         case Ir::END_ENUM:
@@ -108,28 +158,38 @@ int Listener::process(void)
 
             // TODO: groups will "rewind" IR and keep track of the count
 
+            // TODO: set will check each choice in processChoice() and save name to vector if it works
+
         case Ir::ENCODING:
-            switch (ir_->primitiveType())
+
+            // TODO: fix for offset values in IR
+
+            switch (ir->primitiveType())
             {
             case Ir::CHAR:
-                processEncoding(ir_->name(), ir_->primitiveType(), (int64_t)*((char *)(buffer_ + bufferOffset_ + ir_->offset())));
+                processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((char *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::INT8:
-                processEncoding(ir_->name(), ir_->primitiveType(), (int64_t)*((int8_t *)(buffer_ + bufferOffset_ + ir_->offset())));
+                processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int8_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::UINT8:
-                processEncoding(ir_->name(), ir_->primitiveType(), (uint64_t)*((uint8_t *)(buffer_ + bufferOffset_ + ir_->offset())));
+                processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint8_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::UINT16:
-                processEncoding(ir_->name(), ir_->primitiveType(), (uint64_t)*((uint16_t *)(buffer_ + bufferOffset_ + ir_->offset())));
+                processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint16_t *)(buffer_ + bufferOffset_)));
+                break;
+
+            case Ir::UINT32:
+                processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint32_t *)(buffer_ + bufferOffset_)));
                 break;
 
             default:
                 break;
             }
+            bufferOffset_ += ir->size();
             break;
 
         default:
@@ -137,7 +197,7 @@ int Listener::process(void)
         }
     }
 
-    if (onCompleted_ != NULL)
+    if (onCompleted_ != NULL && irCallback_ == NULL)
     {
         onCompleted_->onCompleted();
     }
@@ -162,7 +222,8 @@ void Listener::processEndComposite(void)
 void Listener::processBeginField(const std::string &name, const uint16_t schemaId)
 {
     cachedField_.name(Field::FIELD_INDEX, name)
-        .schemaId(schemaId);
+        .schemaId(schemaId)
+        .type(Field::ENCODING);
 }
 
 void Listener::processEndField(void)
@@ -173,17 +234,17 @@ void Listener::processEndField(void)
 
 void Listener::processBeginEnum(const std::string &name, const char value)
 {
-
+    cachedField_.type(Field::ENUM);
 }
 
 void Listener::processBeginEnum(const std::string &name, const uint8_t value)
 {
-
+    cachedField_.type(Field::ENUM);
 }
 
 void Listener::processEnumValidValue(const std::string &name, const int value)
 {
-
+    // TODO: if value works, then add value to Field
 }
 
 void Listener::processEndEnum(void)
@@ -199,6 +260,11 @@ void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitive
 void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
 {
     cachedField_.addEncoding(name, type, value);
+
+    if (irCallback_ != NULL && headerEncodingName_ == name)
+    {
+        templateId_ = value;
+    }
 }
 
 void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value)

@@ -85,7 +85,7 @@ class Listener
 {
 private:
     /*
-     * The callbacks
+     * The current callbacks
      */
     OnNext *onNext_;
     OnError *onError_;
@@ -109,6 +109,13 @@ private:
     Field cachedField_;
     Group cachedGroup_;
 
+    /*
+     *
+     */
+    std::string headerEncodingName_;
+    Ir::Callback *irCallback_;
+    uint64_t templateId_;
+
 protected:
     /*
      * These deliver methods are protected and normally not used by applications, but useful for testing purposes
@@ -120,7 +127,7 @@ protected:
 
     // int deliver(const Group &group)
     // {
-    //     return ((onNext_) ? onNext_(group) : 0);
+    //     return ((onNext_) ? onNext_->onNext(group) : 0);
     // };
 
     int error(const Error &error)
@@ -151,7 +158,10 @@ public:
 
     /// Basic constructor
     Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL),
-                 ir_(NULL), buffer_(NULL), bufferLen_(0), bufferOffset_(0) {};
+                 ir_(NULL), buffer_(NULL), bufferLen_(0), bufferOffset_(0),
+                 irCallback_(NULL)
+    {
+    };
 
     /**
      * Set the IR to use for all buffers
@@ -176,11 +186,20 @@ public:
     Listener &resetForDecode(const char *data, const int length);
 
     /**
-     * 
+     * Instruct Listener to expect a messageHeader followed by message. The Message template will
+     * be in the messageHeader encoding given by encodingName. The IR for the messageHeader is given. The
+     * callback to be called when the template ID encoding is encountered. This callback must
+     * return the IR to use for the message.
      */
-    Listener &dispatchMessageByHeaderField(const char *fieldName,
-                                           const Ir *headerIr,
-                                           const Ir::Callback *irCallback);
+    Listener &dispatchMessageByHeader(const std::string &encodingName,
+                                      Ir &headerIr,
+                                      Ir::Callback *irCallback)
+    {
+        ir_ = &headerIr;
+        headerEncodingName_ = encodingName;
+        irCallback_ = irCallback;
+        return *this;
+    };
 
     /**
      * Informs listener object that groups should contain aggregates of fields instead of marking start
@@ -188,20 +207,16 @@ public:
      */
     Listener &completeGroups();
 
+    // TODO: add OnNext::onNext(Event) for MESSAGE and GROUP begin/end event markers instead of OnNext(Group)
+    // TODO: make Event base class of Field/Group? and change OnNext to always be Event? or Item? or 
+    // TODO: OnNext MESSAGE marker should include templateId
+
     /**
      * 
      */
-    Listener &subscribe(OnNext *onNext, 
-                        OnError *onError = NULL,
-                        OnCompleted *onCompleted = NULL)
-    {
-        onNext_ = onNext;
-        onError_ = onError;
-        onCompleted_ = onCompleted;
-        // now start everything off
-        process();
-        return *this;
-    };
+    int subscribe(OnNext *onNext, 
+                  OnError *onError = NULL,
+                  OnCompleted *onCompleted = NULL);
 
 }; // class Listener
 

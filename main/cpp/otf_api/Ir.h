@@ -27,6 +27,9 @@ namespace on_the_fly {
 class Ir
 {
 public:
+    /// Invalid message template ID
+    static const int INVALID_ID = 0xFFFF;
+
     enum TokenSignal
     {
         BEGIN_MESSAGE = 1,

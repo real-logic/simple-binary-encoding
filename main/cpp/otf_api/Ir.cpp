@@ -39,6 +39,8 @@ struct IrToken
     // name follows for nameLen bytes
 };
 
+const int Ir::INVALID_ID;
+
 Ir::Ir(const char *buffer, const int len) :
     buffer_(buffer), len_(len)
 {

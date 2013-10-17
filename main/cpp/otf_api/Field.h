@@ -41,7 +41,11 @@ public:
         SET = 4
     };
 
-    Field() : schemaId_(INVALID_ID) {};
+    Field()
+    {
+        reset();
+    };
+
     virtual ~Field() {};
 
     Type type() const
