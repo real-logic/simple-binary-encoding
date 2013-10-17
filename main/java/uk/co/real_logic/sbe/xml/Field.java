@@ -182,7 +182,7 @@ public class Field
 
     public static class Builder
     {
-        private final String name;
+        private String name;
         private String description;
         private int id;
         private Type type;
@@ -193,18 +193,15 @@ public class Field
         private CompositeType dimensionType;
         private boolean variableLength;
 
-        public Builder(final String name)
+        public Builder()
+        {
+            id = INVALID_ID;
+        }
+
+        public Builder name(final String name)
         {
             this.name = name;
-            description = null;
-            id = INVALID_ID;
-            type = null;
-            offset = 0;
-            semanticType = null;
-            presence = null;
-            blockLength = 0;
-            dimensionType = null;
-            variableLength = false;
+            return this;
         }
 
         public Builder description(final String description)

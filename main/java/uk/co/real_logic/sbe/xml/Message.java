@@ -152,7 +152,8 @@ public class Message
             ((CompositeType)dimensionType).checkForWellFormedGroupSizeEncoding(nodeList.item(nodeIndex));
         }
 
-        final Field field = new Field.Builder(getAttributeValue(nodeList.item(nodeIndex), "name"))
+        final Field field = new Field.Builder()
+            .name(getAttributeValue(nodeList.item(nodeIndex), "name"))
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .blockLength(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "blockLength", "0")))
@@ -166,8 +167,7 @@ public class Message
         return field;
     }
 
-    private Field parseField(final NodeList nodeList,
-                             final int nodeIndex)
+    private Field parseField(final NodeList nodeList, final int nodeIndex)
     {
         final String typeName = getAttributeValue(nodeList.item(nodeIndex), "type");
         final Type fieldType = typeByNameMap.get(typeName);
@@ -176,7 +176,8 @@ public class Message
             handleError(nodeList.item(nodeIndex), "could not find type: " + typeName);
         }
 
-        Field field = new Field.Builder(getAttributeValue(nodeList.item(nodeIndex), "name"))
+        Field field = new Field.Builder()
+            .name(getAttributeValue(nodeList.item(nodeIndex), "name"))
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
@@ -208,7 +209,8 @@ public class Message
             ((CompositeType)fieldType).makeDataFieldCompositeType();
         }
 
-        final Field field = new Field.Builder(getAttributeValue(nodeList.item(nodeIndex), "name"))
+        final Field field = new Field.Builder()
+            .name(getAttributeValue(nodeList.item(nodeIndex), "name"))
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
