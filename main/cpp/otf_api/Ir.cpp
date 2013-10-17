@@ -98,7 +98,13 @@ uint16_t Ir::schemaId() const
     return ((struct IrToken *)(buffer_ + cursorOffset_))->schemaId;    
 }
 
+// reuse schemaId for validValue and choice const values - this will probably change for the real IR format
 uint64_t Ir::validValue() const
+{
+    return ((struct IrToken *)(buffer_ + cursorOffset_))->schemaId;
+}
+
+uint64_t Ir::choiceValue() const
 {
     return ((struct IrToken *)(buffer_ + cursorOffset_))->schemaId;
 }

@@ -108,6 +108,7 @@ public:
     TokenPrimitiveType primitiveType() const;
     uint16_t schemaId() const;
     uint64_t validValue() const;
+    uint64_t choiceValue() const;
     uint8_t nameLen() const;
     std::string name() const;
 

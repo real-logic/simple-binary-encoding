@@ -150,6 +150,12 @@ protected:
     virtual void processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value);
     virtual void processEnumValidValue(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
     virtual void processEndEnum(void);
+    virtual void processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value);
+    virtual void processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint16_t value);
+    virtual void processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint32_t value);
+    virtual void processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
+    virtual void processSetChoice(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
+    virtual void processEndSet(void);
     virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value);
     virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
     virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value);

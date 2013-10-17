@@ -153,6 +153,39 @@ int Listener::process(void)
             processEndEnum();
             break;
 
+        case Ir::BEGIN_SET:
+            switch (ir->primitiveType())
+            {
+            case Ir::UINT8:
+                processBeginSet(ir->name(), ir->primitiveType(), *((uint8_t *)(buffer_ + bufferOffset_)));
+                break;
+
+            case Ir::UINT16:
+                processBeginSet(ir->name(), ir->primitiveType(), *((uint16_t *)(buffer_ + bufferOffset_)));
+                break;
+
+            case Ir::UINT32:
+                processBeginSet(ir->name(), ir->primitiveType(), *((uint32_t *)(buffer_ + bufferOffset_)));
+                break;
+
+            case Ir::UINT64:
+                processBeginSet(ir->name(), ir->primitiveType(), *((uint64_t *)(buffer_ + bufferOffset_)));
+                break;
+
+            default:
+                break;
+            }
+            bufferOffset_ += ir->size();
+            break;
+
+        case Ir::CHOICE:
+            processSetChoice(ir->name(), ir->primitiveType(), ir->choiceValue());
+            break;
+
+        case Ir::END_SET:
+            processEndSet();
+            break;
+
             // TODO: groups will "rewind" IR and keep track of the count
 
             // TODO: set will check each choice in processChoice() and save name to vector if it works
@@ -276,7 +309,44 @@ void Listener::processEnumValidValue(const std::string &name, const Ir::TokenPri
 
 void Listener::processEndEnum(void)
 {
+    // not much to do
+}
 
+void Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value)
+{
+    cachedField_.type(Field::SET)
+        .addEncoding(name, type, (uint64_t)value);
+}
+
+void Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint16_t value)
+{
+    cachedField_.type(Field::SET)
+        .addEncoding(name, type, (uint64_t)value);
+}
+
+void Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint32_t value)
+{
+    cachedField_.type(Field::SET)
+        .addEncoding(name, type, (uint64_t)value);
+}
+
+void Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
+{
+    cachedField_.type(Field::SET)
+        .addEncoding(name, type, (uint64_t)value);
+}
+
+void Listener::processSetChoice(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
+{
+    if (cachedField_.valueUInt() & ((uint64_t)0x1 << value))
+    {
+        cachedField_.addChoice(name);
+    }
+}
+
+void Listener::processEndSet(void)
+{
+    // not much to do
 }
 
 void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value)

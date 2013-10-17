@@ -125,7 +125,10 @@ public:
         return validValue_;
     };
 
-    std::vector<std::string> &choices(const int index = FIELD_INDEX) const;  // maybe vector instead of list?
+    const std::vector<std::string> &choices() const
+    {
+        return choiceValues_;
+    }
 
 protected:
     // builder-ish pattern - set by Listener
@@ -197,7 +200,11 @@ protected:
         return *this;
     };
 
-    Field &choice(const int index, const std::string value);
+    Field &addChoice(const std::string value)
+    {
+        choiceValues_.push_back(value);
+        return *this;
+    };
 
     Field &reset()
     {
@@ -208,6 +215,8 @@ protected:
         encodingNames_.clear();
         primitiveTypes_.clear();
         encodingValues_.clear();
+        choiceValues_.clear();
+        validValue_ = "";
         return *this;
     };
 
@@ -222,6 +231,7 @@ private:
     std::vector<std::string> encodingNames_;
     std::vector<Ir::TokenPrimitiveType> primitiveTypes_;
     std::vector<EncodingValue> encodingValues_;
+    std::vector<std::string> choiceValues_;
 
     friend class Listener;
 };
