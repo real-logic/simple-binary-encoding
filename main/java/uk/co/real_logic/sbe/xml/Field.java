@@ -47,7 +47,6 @@ public class Field
     /** Builder constructor */
     public Field(final String name,
                  final String description,
-                 final String groupName,
                  final int id,
                  final Type type,
                  final int offset,
@@ -185,7 +184,6 @@ public class Field
     {
         private final String name;
         private String description;
-        private String groupName;
         private int id;
         private Type type;
         private int offset;
@@ -265,7 +263,7 @@ public class Field
 
         public Field build()
         {
-            return new Field(name, description, groupName, id, type, offset,
+            return new Field(name, description, id, type, offset,
                              semanticType, presence, blockLength, dimensionType, variableLength);
         }
     }
