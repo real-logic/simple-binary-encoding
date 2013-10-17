@@ -41,6 +41,17 @@ public:
         SET = 4
     };
 
+    union EncodingValue
+    {
+        int64_t int64Value_;
+        uint64_t uint64Value_;
+        double doubleValue_;
+
+        EncodingValue(const int64_t value) : int64Value_(value) {};
+        EncodingValue(const uint64_t value) : uint64Value_(value) {};
+        EncodingValue(const double value) : doubleValue_(value) {};
+    };
+
     Field()
     {
         reset();
@@ -95,17 +106,17 @@ public:
     // enums and sets can have values as well. So, could grab encoding values.
     int64_t valueInt(const int index = FIELD_INDEX) const
     {
-        return (index == FIELD_INDEX) ? int64Values_[0] : int64Values_[index];
+        return (index == FIELD_INDEX) ? encodingValues_[0].int64Value_ : encodingValues_[index].int64Value_;
     };
 
     uint64_t valueUInt(const int index = FIELD_INDEX) const
     {
-        return (index == FIELD_INDEX) ? uint64Values_[0] : uint64Values_[index];
+        return (index == FIELD_INDEX) ? encodingValues_[0].uint64Value_ : encodingValues_[index].uint64Value_;
     };
 
     double valueDouble(const int index = FIELD_INDEX) const
     {
-        return (index == FIELD_INDEX) ? doubleValues_[0] : doubleValues_[index];
+        return (index == FIELD_INDEX) ? encodingValues_[0].doubleValue_ : encodingValues_[index].doubleValue_;
     };
 
     // set and enum - exception on incorrect type of field
@@ -153,7 +164,7 @@ protected:
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
-        int64Values_.push_back(value);
+        encodingValues_.push_back(EncodingValue(value));
         numEncodings_++;
         return *this;
     };
@@ -162,7 +173,7 @@ protected:
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
-        uint64Values_.push_back(value);
+        encodingValues_.push_back(EncodingValue(value));
         numEncodings_++;
         return *this;        
     };
@@ -171,7 +182,7 @@ protected:
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
-        doubleValues_.push_back(value);
+        encodingValues_.push_back(EncodingValue(value));
         numEncodings_++;
         return *this;
     };
@@ -188,9 +199,7 @@ protected:
         numEncodings_ = 0;
         encodingNames_.clear();
         primitiveTypes_.clear();
-        int64Values_.clear();
-        uint64Values_.clear();
-        doubleValues_.clear();
+        encodingValues_.clear();
         return *this;
     };
 
@@ -203,9 +212,7 @@ private:
 
     std::vector<std::string> encodingNames_;
     std::vector<Ir::TokenPrimitiveType> primitiveTypes_;
-    std::vector<int64_t> int64Values_;
-    std::vector<uint64_t> uint64Values_;
-    std::vector<double> doubleValues_;
+    std::vector<EncodingValue> encodingValues_;
 
     friend class Listener;
 };

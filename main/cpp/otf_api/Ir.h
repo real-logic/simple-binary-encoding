@@ -66,6 +66,8 @@ public:
         UINT16 = 7,
         UINT32 = 8,
         UINT64 = 9,
+        FLOAT = 10,
+        DOUBLE = 11,
         NONE = 255
     };
 

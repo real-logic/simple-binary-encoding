@@ -29,6 +29,7 @@
     <property name="dir.gtest.include" location="test/cpp/gtest/include"/>
     <property name="dir.gtest.build" location="target/test/cpp/gtest/obj"/>
     <property name="dir.test.cpp.src" location="test/cpp"/>
+    <property name="dir.test.cpp.include" location="test/cpp"/>
     <property name="lib.gtest.name" location="gtest"/>
     <property name="lib.gtest.path" location="target/test/cpp"/>
     <property name="exec.test.cpp" location="target/test/cpp/gtest-runner"/>
@@ -181,6 +182,7 @@
                 outfile="${exec.test.cpp}">
                 <includepath path="${dir.gtest.include}"/>
                 <includepath path="${dir.main.cpp.src}"/>
+                <includepath path="${dir.test.cpp.include}"/>
                 <fileset dir="${dir.main.cpp.build}" includes="*.o"/>
                 <fileset dir="${dir.gtest.build}" includes="*.o"/>
                 <fileset dir="${dir.test.cpp.src}" includes="**/*Test.cpp"/>

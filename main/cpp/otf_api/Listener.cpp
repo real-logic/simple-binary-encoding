@@ -34,6 +34,7 @@ Listener &Listener::resetForDecode(const char *data, const int length)
     buffer_ = data;
     bufferLen_ = length;
     bufferOffset_ = 0;
+    templateId_ = Ir::INVALID_ID;
     return *this;
 }
 
@@ -174,6 +175,18 @@ int Listener::process(void)
                 processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int8_t *)(buffer_ + bufferOffset_)));
                 break;
 
+            case Ir::INT16:
+                processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int16_t *)(buffer_ + bufferOffset_)));
+                break;
+
+            case Ir::INT32:
+                processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int32_t *)(buffer_ + bufferOffset_)));
+                break;
+
+            case Ir::INT64:
+                processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int64_t *)(buffer_ + bufferOffset_)));
+                break;
+
             case Ir::UINT8:
                 processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint8_t *)(buffer_ + bufferOffset_)));
                 break;
@@ -184,6 +197,18 @@ int Listener::process(void)
 
             case Ir::UINT32:
                 processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint32_t *)(buffer_ + bufferOffset_)));
+                break;
+
+            case Ir::UINT64:
+                processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint64_t *)(buffer_ + bufferOffset_)));
+                break;
+
+            case Ir::FLOAT:
+                processEncoding(ir->name(), ir->primitiveType(), (double)*((float *)(buffer_ + bufferOffset_)));
+                break;
+
+            case Ir::DOUBLE:
+                processEncoding(ir->name(), ir->primitiveType(), (double)*((double *)(buffer_ + bufferOffset_)));
                 break;
 
             default:
