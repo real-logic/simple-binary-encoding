@@ -92,6 +92,7 @@ public class IrGenerator
     {
         Token token = new Token.Builder()
             .signal(signal)
+            .size(field.getCalculatedBlockLength())
             .name(field.getName())
             .schemaId(field.getId())
             .build();
