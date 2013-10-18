@@ -53,7 +53,7 @@ public class Message
     private final List<Field> fieldList;
     private final String semanticType;
     private final String headerType;
-    private final int calculatedBlockLength;
+    private final int computedBlockLength;
     private final Map<String, Type> typeByNameMap;
 
     /**
@@ -74,20 +74,18 @@ public class Message
         this.typeByNameMap = typeByNameMap;
 
         fieldList = parseFieldsAndGroups(messageNode);
+        computeAndValidateOffsets(messageNode, fieldList, blockLength);
 
-        calculateAndValidateOffsets(messageNode, fieldList, blockLength);
-
-        calculatedBlockLength = calculateMessageBlockLength();
-
-        validateBlockLength(messageNode, blockLength, calculatedBlockLength);
+        computedBlockLength = computeMessageRootBlockLength();
+        validateBlockLength(messageNode, blockLength, computedBlockLength);
     }
 
     private List<Field> parseFieldsAndGroups(final Node node)
         throws XPathExpressionException, IllegalArgumentException
     {
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, XPathConstants.NODESET);
-        int numGroupEncountered = 0, numDataEncountered = 0;
+        final XPath xPath = XPathFactory.newInstance().newXPath();
+        final NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, XPathConstants.NODESET);
+        boolean groupEncountered = false, dataEncountered = false;
 
         final List<Field> fieldList = new ArrayList<>();
 
@@ -99,26 +97,24 @@ public class Message
             switch (nodeName)
             {
                 case "group":
-                    if (numDataEncountered > 0)
+                    if (dataEncountered)
                     {
-                        handleError(node, "group specified after data specified");
+                        handleError(node, "group node specified after data node");
                     }
 
                     field = parseGroupField(list, i);
-
-                    numGroupEncountered++;
+                    groupEncountered = true;
                     break;
 
                 case "data":
                     field = parseDataField(list, i);
-
-                    numDataEncountered++;
+                    dataEncountered = true;
                     break;
 
                 case "field":
-                    if (numGroupEncountered > 0 || numDataEncountered > 0)
+                    if (groupEncountered || dataEncountered)
                     {
-                        handleError(node, "field specified after group or data specified");
+                        handleError(node, "field node specified after group or data node specified");
                     }
 
                     field = parseField(list, i);
@@ -144,7 +140,7 @@ public class Message
         }
         else if (!(dimensionType instanceof CompositeType))
         {
-            handleError(nodeList.item(nodeIndex), "dimensionType is not composite type: " + dimensionTypeName);
+            handleError(nodeList.item(nodeIndex), "dimensionType should be a composite type: " + dimensionTypeName);
         }
         else
         {
@@ -159,9 +155,9 @@ public class Message
             .dimensionType((CompositeType)dimensionType)
             .build();
 
-        XmlSchemaParser.checkForValidName(nodeList.item(nodeIndex), field.getName());
+        XmlSchemaParser.checkForValidName(nodeList.item(nodeIndex), field.name());
 
-        field.setGroupFields(parseFieldsAndGroups(nodeList.item(nodeIndex))); // recursive call
+        field.groupFields(parseFieldsAndGroups(nodeList.item(nodeIndex))); // recursive call
 
         return field;
     }
@@ -225,113 +221,91 @@ public class Message
     }
 
     /**
-     * Calculate and validate the offsets of the fields in the list. Will set the fields calculatedOffset.
-     * Will validate the blockLength of the fields encompassing &lt;message&gt; or &lt;group&gt;. Will recurse
+     * Compute and validate the offsets of the fields in the list and will set the fields computedOffset.
+     * Will validate the blockLength of the fields encompassing &lt;message&gt; or &lt;group&gt; and recursively descend
      * into repeated groups.
      *
      * @param fields to iterate over
      * @param blockLength of the surrounding element or 0 for not set
      * @return the total size of the list or {@link Token#VARIABLE_SIZE} if the size will vary
      */
-    public int calculateAndValidateOffsets(final Node node, final List<Field> fields, final int blockLength)
+    public int computeAndValidateOffsets(final Node node, final List<Field> fields, final int blockLength)
     {
-        int currOffset = 0;
+        boolean variableSize = false;
+        int offset = 0;
 
         for (final Field field : fields)
         {
-            if (field.getOffset() > 0 && field.getOffset() < currOffset)
+            if (0 != field.offset() && field.offset() < offset)
             {
-                handleError(node, "Specified offset is too small for field name: " + field.getName());
+                handleError(node, "Offset provides insufficient space at field: " + field.name());
             }
 
-            if (Token.VARIABLE_SIZE != currOffset)
+            if (Token.VARIABLE_SIZE != offset)
             {
-                /* if offset specified, then use it (since it was checked before) */
-                if (field.getOffset() > 0)
+                if (0 != field.offset())
                 {
-                    currOffset = field.getOffset();  // reset current offset to the one requested by the field specification
+                    offset = field.offset();
                 }
-                else if (field.getDimensionType() != null && blockLength > 0)
+                else if (null != field.dimensionType() && 0 != blockLength)
                 {
-                    currOffset = blockLength;        // reset current offset to the blockLength specified
+                    offset = blockLength;
                 }
-                else if (field.getVariableLength() && blockLength > 0)
+                else if (field.isVariableLength() && 0 != blockLength)
                 {
-                    currOffset = blockLength;        // reset current offset to the blockLength specified
+                    offset = blockLength;
                 }
             }
 
-            /* save the fields current offset (even for <group> elements!) */
-            field.setCalculatedOffset(currOffset);
+            field.computedOffset(variableSize ? Token.VARIABLE_SIZE : offset);
 
-            /* if this field is a <group> then recurse into it */
-            if (field.getGroupFields() != null)
+            if (null != field.groupFields())
             {
-                /* 0 blockLength as group blockLength is different */
-                final int calculatedBlockLength = calculateAndValidateOffsets(node, field.getGroupFields(), 0);
+                final int groupBlockLength = computeAndValidateOffsets(node, field.groupFields(), 0);
 
-                /* validate the <group> blockLength, if set */
-                validateBlockLength(node, field.getBlockLength(), calculatedBlockLength);
+                validateBlockLength(node, field.blockLength(), groupBlockLength);
+                field.computedBlockLength(Math.max(field.blockLength(), groupBlockLength));
 
-                if (field.getBlockLength() > calculatedBlockLength)
+                variableSize = true;
+            }
+            else if (null != field.type())
+            {
+                int size = field.type().size();
+
+                if (Token.VARIABLE_SIZE == size || variableSize)
                 {
-                    field.setCalculatedBlockLength(field.getBlockLength());
+                    variableSize = true;
                 }
                 else
                 {
-                    field.setCalculatedBlockLength(calculatedBlockLength);
-                }
-
-                /*
-                 * After a <group> element, the offset and total size will be varying
-                 * TODO: these could be DEPENDENT_SIZE such that they depend on the entry count field, etc.
-                 */
-                currOffset = Token.VARIABLE_SIZE;
-            }
-            else if (field.getType() != null) // will be <field> or <data>
-            {
-                int calculatedSize = field.getType().size();
-
-                if (Token.VARIABLE_SIZE == calculatedSize || Token.VARIABLE_SIZE == currOffset)
-                {
-                    currOffset = Token.VARIABLE_SIZE;
-                }
-                else
-                {
-                    currOffset += calculatedSize;
+                    offset += size;
                 }
             }
         }
 
-        return currOffset;
+        return offset;
     }
 
-    /**
-     * Calculate and return the blockLength for a message. Which is the length until the first
-     * variable length field or repeating group. This must be run after the offsets are calculated.
-     *
-     * @return calculated blockLength for the message
-     */
-    private int calculateMessageBlockLength()
+    private int computeMessageRootBlockLength()
     {
         int blockLength = 0;
 
         for (final Field field : fieldList)
         {
-            if (field.getGroupFields() != null)
+            if (field.groupFields() != null)
             {
-                return field.getCalculatedOffset();
+                return field.computedOffset();
             }
-            else if (field.getType() != null) // will be <field> or <data>
+            else if (field.type() != null)
             {
-                final int calculatedSize = field.getType().size();
+                final int fieldSize = field.type().size();
 
-                if (Token.VARIABLE_SIZE == calculatedSize)
+                if (Token.VARIABLE_SIZE == fieldSize)
                 {
                     return blockLength;
                 }
 
-                blockLength = field.getCalculatedOffset() + calculatedSize;
+                blockLength = field.computedOffset() + fieldSize;
             }
         }
 
@@ -343,7 +317,7 @@ public class Message
      *
      * @return schemaId of the message
      */
-    public long getId()
+    public long id()
     {
         return id;
     }
@@ -353,7 +327,7 @@ public class Message
      *
      * @return name of the message
      */
-    public String getName()
+    public String name()
     {
         return name;
     }
@@ -363,7 +337,7 @@ public class Message
      *
      * @return description set by the message or null
      */
-    public String getDescription()
+    public String description()
     {
         return description;
     }
@@ -371,7 +345,7 @@ public class Message
     /**
      * The semanticType of the message (if set) or null
      */
-    public String getSemanticType()
+    public String semanticType()
     {
         return semanticType;
     }
@@ -381,7 +355,7 @@ public class Message
      *
      * @return {@link java.util.List} of the Field objects in this Message
      */
-    public List<Field> getFields()
+    public List<Field> fields()
     {
         return fieldList;
     }
@@ -391,24 +365,24 @@ public class Message
      *
      * @return the size of the {@link Message} in bytes including any padding.
      */
-    public int getBlockLength()
+    public int blockLength()
     {
-        return blockLength > calculatedBlockLength ? blockLength : calculatedBlockLength;
+        return blockLength > computedBlockLength ? blockLength : computedBlockLength;
     }
 
     /**
      * Return the {@link String} representing the {@link Type} for the header of this message
      */
-    public String getHeaderType()
+    public String headerType()
     {
         return headerType;
     }
 
-    private void validateBlockLength(final Node node, final long specifiedBlockLength, final long calculatedBlockLength)
+    private void validateBlockLength(final Node node, final long specifiedBlockLength, final long computedBlockLength)
     {
-        if (0 < specifiedBlockLength && calculatedBlockLength > specifiedBlockLength)
+        if (0 != specifiedBlockLength && computedBlockLength > specifiedBlockLength)
         {
-            handleError(node, "specified blockLength is too small");
+            handleError(node, "specified blockLength provides insufficient space");
         }
     }
 }

@@ -53,11 +53,11 @@ public class BasicSchemaFileTest
         throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicTypesSchemaFileTest.xml"));
-        List<Field> fields = schema.getMessage(1).getFields();
-        assertThat(fields.get(0).getName(), is("header"));
-        assertThat(fields.get(1).getName(), is("EDTField"));
-        assertThat(fields.get(2).getName(), is("ENUMField"));
-        assertThat(fields.get(3).getName(), is("SETField"));
-        assertThat(fields.get(4).getName(), is("int64Field"));
+        List<Field> fields = schema.getMessage(1).fields();
+        assertThat(fields.get(0).name(), is("header"));
+        assertThat(fields.get(1).name(), is("EDTField"));
+        assertThat(fields.get(2).name(), is("ENUMField"));
+        assertThat(fields.get(3).name(), is("SETField"));
+        assertThat(fields.get(4).name(), is("int64Field"));
     }
 }

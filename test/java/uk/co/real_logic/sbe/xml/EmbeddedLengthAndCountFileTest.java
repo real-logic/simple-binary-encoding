@@ -35,12 +35,12 @@ public class EmbeddedLengthAndCountFileTest
         throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("EmbeddedLengthAndCountFileTest.xml"));
-        List<Field> fields = schema.getMessage(1).getFields();
+        List<Field> fields = schema.getMessage(1).fields();
 
-        assertThat(fields.get(1).getName(), is("ListOrdGrp"));
-        assertThat(valueOf(fields.get(1).getId()), is(valueOf(73)));
-        Assert.assertNotNull(fields.get(1).getDimensionType());
-        List<Field> groupFields = fields.get(1).getGroupFields();
+        assertThat(fields.get(1).name(), is("ListOrdGrp"));
+        assertThat(valueOf(fields.get(1).id()), is(valueOf(73)));
+        Assert.assertNotNull(fields.get(1).dimensionType());
+        List<Field> groupFields = fields.get(1).groupFields();
         Assert.assertNotNull(groupFields);
     }
 

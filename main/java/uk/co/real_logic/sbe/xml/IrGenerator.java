@@ -45,7 +45,7 @@ public class IrGenerator
 
         for (final Message message : schema.getMessages())
         {
-            final long msgId = message.getId();
+            final long msgId = message.id();
             ir.addMessage(msgId, generateForMessage(schema, msgId));
         }
 
@@ -60,7 +60,7 @@ public class IrGenerator
         final Message msg = schema.getMessage(messageId);
 
         addMessageSignal(msg, Signal.BEGIN_MESSAGE);
-        addAllFields(msg.getFields());
+        addAllFields(msg.fields());
         addMessageSignal(msg, Signal.END_MESSAGE);
 
         return tokenList;
@@ -80,9 +80,9 @@ public class IrGenerator
     {
         Token token = new Token.Builder()
             .signal(signal)
-            .name(msg.getName())
-            .size(msg.getBlockLength())
-            .schemaId(msg.getId())
+            .name(msg.name())
+            .size(msg.blockLength())
+            .schemaId(msg.id())
             .build();
 
         tokenList.add(token);
@@ -92,9 +92,9 @@ public class IrGenerator
     {
         Token token = new Token.Builder()
             .signal(signal)
-            .size(field.getCalculatedBlockLength())
-            .name(field.getName())
-            .schemaId(field.getId())
+            .size(field.computedBlockLength())
+            .name(field.name())
+            .schemaId(field.id())
             .build();
 
         tokenList.add(token);
@@ -104,13 +104,13 @@ public class IrGenerator
     {
         for (final Field field : fieldList)
         {
-            final Type type = field.getType();
+            final Type type = field.type();
 
             if (type == null)
             {
                 addFieldSignal(field, Signal.BEGIN_GROUP);
-                add(field.getDimensionType(), 0);
-                addAllFields(field.getGroupFields());
+                add(field.dimensionType(), 0);
+                addAllFields(field.groupFields());
                 addFieldSignal(field, Signal.END_GROUP);
             }
             else
@@ -119,19 +119,19 @@ public class IrGenerator
 
                 if (type instanceof EncodedDataType)
                 {
-                    add((EncodedDataType)type, field.getCalculatedOffset());
+                    add((EncodedDataType)type, field.computedOffset());
                 }
                 else if (type instanceof CompositeType)
                 {
-                    add((CompositeType)type, field.getCalculatedOffset());
+                    add((CompositeType)type, field.computedOffset());
                 }
                 else if (type instanceof EnumType)
                 {
-                    add((EnumType)type, field.getCalculatedOffset());
+                    add((EnumType)type, field.computedOffset());
                 }
                 else if (type instanceof SetType)
                 {
-                    add((SetType)type, field.getCalculatedOffset());
+                    add((SetType)type, field.computedOffset());
                 }
                 else
                 {

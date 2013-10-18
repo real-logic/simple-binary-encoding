@@ -41,8 +41,8 @@ public class Field
     private final CompositeType dimensionType; // required for group (not present for field/data)
     private final boolean variableLength;      // true for data (false for field/group)
     private List<Field> groupFieldList;        // used by group fields as the list of child fields in the group
-    private int calculatedOffset;              // used to hold the calculated offset of this field from top level <message> or <group>
-    private int calculatedBlockLength;         // used to hold the calculated block length of this group
+    private int computedOffset;              // used to hold the calculated offset of this field from top level <message> or <group>
+    private int computedBlockLength;         // used to hold the calculated block length of this group
 
     /** Builder constructor */
     public Field(final String name,
@@ -67,8 +67,8 @@ public class Field
         this.dimensionType = dimensionType;
         this.variableLength = variableLength;
         this.groupFieldList = null;
-        this.calculatedOffset = 0;
-        this.calculatedBlockLength = 0;
+        this.computedOffset = 0;
+        this.computedBlockLength = 0;
     }
 
     public void validate(final Node node)
@@ -89,77 +89,77 @@ public class Field
         checkForValidName(node, name);
     }
 
-    public void setGroupFields(final List<Field> list)
+    public void groupFields(final List<Field> fields)
     {
-        groupFieldList = list;
+        groupFieldList = fields;
     }
 
-    public List<Field> getGroupFields()
+    public List<Field> groupFields()
     {
         return groupFieldList;
     }
 
-    public void setCalculatedOffset(final int offset)
+    public void computedOffset(final int offset)
     {
-        calculatedOffset = offset;
+        computedOffset = offset;
     }
 
-    public int getCalculatedOffset()
+    public int computedOffset()
     {
-        return calculatedOffset;
+        return computedOffset;
     }
 
-    public String getName()
+    public String name()
     {
         return name;
     }
 
-    public String getDescription()
+    public String description()
     {
         return description;
     }
 
-    public int getId()
+    public int id()
     {
         return id;
     }
 
-    public Type getType()
+    public Type type()
     {
         return type;
     }
 
-    public int getOffset()
+    public int offset()
     {
         return offset;
     }
 
-    public int getBlockLength()
+    public int blockLength()
     {
         return blockLength;
     }
 
-    public void setCalculatedBlockLength(int length)
+    public void computedBlockLength(int length)
     {
-        calculatedBlockLength = length;
+        computedBlockLength = length;
     }
 
-    public int getCalculatedBlockLength()
+    public int computedBlockLength()
     {
-        return calculatedBlockLength;
+        return computedBlockLength;
     }
 
-    public String getSemanticType()
+    public String semanticType()
     {
         return semanticType;
     }
 
-    public CompositeType getDimensionType()
+    public CompositeType dimensionType()
     {
         return dimensionType;
     }
 
-    public boolean getVariableLength()
+    public boolean isVariableLength()
     {
         return variableLength;
     }
@@ -167,16 +167,19 @@ public class Field
     public String toString()
     {
         return "Field{" +
-            "name=" + name +
-            ", description=" + description +
+            "name='" + name + '\'' +
+            ", description='" + description + '\'' +
             ", id=" + id +
             ", type=" + type +
             ", offset=" + offset +
-            ", semanticType=" + semanticType +
+            ", semanticType='" + semanticType + '\'' +
             ", presence=" + presence +
             ", blockLength=" + blockLength +
+            ", dimensionType=" + dimensionType +
+            ", variableLength=" + variableLength +
             ", groupFieldList=" + groupFieldList +
-            ", calculatedOffset=" + calculatedOffset +
+            ", computedOffset=" + computedOffset +
+            ", computedBlockLength=" + computedBlockLength +
             '}';
     }
 

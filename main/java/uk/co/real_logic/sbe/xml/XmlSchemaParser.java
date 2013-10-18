@@ -218,14 +218,14 @@ public class XmlSchemaParser
      */
     private static void addMessageWithIdCheck(final Map<Long, Message> messageByIdMap, final Message message, final Node node)
     {
-        if (messageByIdMap.get(Long.valueOf(message.getId())) != null)
+        if (messageByIdMap.get(Long.valueOf(message.id())) != null)
         {
-            handleError(node, "message template id already exists: " + message.getId());
+            handleError(node, "message template id already exists: " + message.id());
         }
 
-        checkForValidName(node, message.getName());
+        checkForValidName(node, message.name());
 
-        messageByIdMap.put(Long.valueOf(message.getId()), message);
+        messageByIdMap.put(Long.valueOf(message.id()), message);
     }
 
     private static String formatLocationInfo(final Node node)
