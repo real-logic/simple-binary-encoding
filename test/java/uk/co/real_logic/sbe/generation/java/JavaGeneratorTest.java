@@ -62,7 +62,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateMessageHeaderStub();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
@@ -85,7 +85,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final Object result = clazz.getDeclaredMethod("lookup", short.class).invoke(null, Short.valueOf((short)1));
@@ -102,7 +102,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final Object result = clazz.getDeclaredMethod("lookup", byte.class).invoke(null, Byte.valueOf((byte)'B'));
@@ -123,7 +123,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
@@ -152,7 +152,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
@@ -183,7 +183,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateMessageStubs();
 
-        final Class<?> clazz = CompilerUtil.compileCode(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
     }
 }

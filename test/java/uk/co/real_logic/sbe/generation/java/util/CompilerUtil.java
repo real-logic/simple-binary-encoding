@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class CompilerUtil
 {
-    public static Class<?> compileCode(final String className, final Map<String, CharSequence> sources) throws Exception
+    public static Class<?> compile(final String className, final Map<String, CharSequence> sources) throws Exception
     {
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         final JavaFileManager fileManager = new ClassFileManager<>(compiler.getStandardFileManager(null, null, null));
