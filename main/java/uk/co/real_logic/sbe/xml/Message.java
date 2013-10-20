@@ -231,7 +231,7 @@ public class Message
      */
     public int computeAndValidateOffsets(final Node node, final List<Field> fields, final int blockLength)
     {
-        boolean variableSize = false;
+        boolean variableSizedBlock = false;
         int offset = 0;
 
         for (final Field field : fields)
@@ -257,7 +257,7 @@ public class Message
                 }
             }
 
-            field.computedOffset(variableSize ? Token.VARIABLE_SIZE : offset);
+            field.computedOffset(variableSizedBlock ? Token.VARIABLE_SIZE : offset);
 
             if (null != field.groupFields())
             {
@@ -266,17 +266,18 @@ public class Message
                 validateBlockLength(node, field.blockLength(), groupBlockLength);
                 field.computedBlockLength(Math.max(field.blockLength(), groupBlockLength));
 
-                variableSize = true;
+                variableSizedBlock = true;
             }
             else if (null != field.type())
             {
                 int size = field.type().size();
 
-                if (Token.VARIABLE_SIZE == size || variableSize)
+                if (Token.VARIABLE_SIZE == size)
                 {
-                    variableSize = true;
+                    variableSizedBlock = true;
                 }
-                else
+
+                if (!variableSizedBlock)
                 {
                     offset += size;
                 }
