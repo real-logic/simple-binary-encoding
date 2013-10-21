@@ -84,22 +84,22 @@ protected:
     virtual int onNext(const Field &f)
     {
         EXPECT_EQ(f.type(), Field::COMPOSITE);
-        EXPECT_EQ(f.name(Field::FIELD_INDEX), "");
-        EXPECT_EQ(f.name(Field::COMPOSITE_INDEX), "messageHeader");
+        EXPECT_EQ(f.fieldName(), "");
+        EXPECT_EQ(f.compositeName(), "messageHeader");
         EXPECT_EQ(f.schemaId(), Field::INVALID_ID);
         EXPECT_EQ(f.numEncodings(), 4);
-        EXPECT_EQ(f.name(0), "blockLength");
-        EXPECT_EQ(f.name(1), "templateId");
-        EXPECT_EQ(f.name(2), "version");
-        EXPECT_EQ(f.name(3), "reserved");
+        EXPECT_EQ(f.encodingName(0), "blockLength");
+        EXPECT_EQ(f.encodingName(1), "templateId");
+        EXPECT_EQ(f.encodingName(2), "version");
+        EXPECT_EQ(f.encodingName(3), "reserved");
         EXPECT_EQ(f.primitiveType(0), Ir::UINT16);
         EXPECT_EQ(f.primitiveType(1), Ir::UINT16);
         EXPECT_EQ(f.primitiveType(2), Ir::UINT8);
         EXPECT_EQ(f.primitiveType(3), Ir::UINT8);
-        EXPECT_EQ(f.valueUInt(0), BLOCKLENGTH);
-        EXPECT_EQ(f.valueUInt(1), TEMPLATE_ID);
-        EXPECT_EQ(f.valueUInt(2), VERSION);
-        EXPECT_EQ(f.valueUInt(3), 0);
+        EXPECT_EQ(f.getUInt(0), BLOCKLENGTH);
+        EXPECT_EQ(f.getUInt(1), TEMPLATE_ID);
+        EXPECT_EQ(f.getUInt(2), VERSION);
+        EXPECT_EQ(f.getUInt(3), 0);
         numFieldsSeen_++;
         return 0;
     };

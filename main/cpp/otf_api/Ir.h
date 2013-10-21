@@ -121,6 +121,36 @@ public:
                   uint16_t schemaId,
                   const std::string &name);
 
+    static unsigned int size(TokenPrimitiveType type)
+    {
+        switch (type)
+        {
+        case CHAR:
+        case INT8:
+        case UINT8:
+            return 1;
+            break;
+        case INT16:
+        case UINT16:
+            return 2;
+            break;
+        case INT32:
+        case UINT32:
+        case FLOAT:
+            return 4;
+            break;
+        case INT64:
+        case UINT64:
+        case DOUBLE:
+            return 8;
+            break;
+        case NONE:
+        deefault:
+            return 0;
+            break;
+        }
+    }
+
 private:
     const char *buffer_;
     int len_;

@@ -33,32 +33,32 @@ public:
         if (numFieldsSeen_ == 1)
         {
             EXPECT_EQ(f.type(), Field::COMPOSITE);
-            EXPECT_EQ(f.name(Field::FIELD_INDEX), "");
-            EXPECT_EQ(f.name(Field::COMPOSITE_INDEX), "messageHeader");
+            EXPECT_EQ(f.fieldName(), "");
+            EXPECT_EQ(f.compositeName(), "messageHeader");
             EXPECT_EQ(f.schemaId(), Field::INVALID_ID);
             EXPECT_EQ(f.numEncodings(), 4);
-            EXPECT_EQ(f.name(0), "blockLength");
-            EXPECT_EQ(f.name(1), "templateId");
-            EXPECT_EQ(f.name(2), "version");
-            EXPECT_EQ(f.name(3), "reserved");
+            EXPECT_EQ(f.encodingName(0), "blockLength");
+            EXPECT_EQ(f.encodingName(1), "templateId");
+            EXPECT_EQ(f.encodingName(2), "version");
+            EXPECT_EQ(f.encodingName(3), "reserved");
             EXPECT_EQ(f.primitiveType(0), Ir::UINT16);
             EXPECT_EQ(f.primitiveType(1), Ir::UINT16);
             EXPECT_EQ(f.primitiveType(2), Ir::UINT8);
             EXPECT_EQ(f.primitiveType(3), Ir::UINT8);
-            EXPECT_EQ(f.valueUInt(0), BLOCKLENGTH);
-            EXPECT_EQ(f.valueUInt(1), TEMPLATE_ID);
-            EXPECT_EQ(f.valueUInt(2), VERSION);
-            EXPECT_EQ(f.valueUInt(3), 0);
+            EXPECT_EQ(f.getUInt(0), BLOCKLENGTH);
+            EXPECT_EQ(f.getUInt(1), TEMPLATE_ID);
+            EXPECT_EQ(f.getUInt(2), VERSION);
+            EXPECT_EQ(f.getUInt(3), 0);
         }
         else if (numFieldsSeen_ == 2)
         {
             EXPECT_EQ(f.type(), Field::ENCODING);
-            EXPECT_EQ(f.name(Field::FIELD_INDEX), "Field1");
+            EXPECT_EQ(f.fieldName(), "Field1");
             EXPECT_EQ(f.schemaId(), FIELD_ID);
             EXPECT_EQ(f.numEncodings(), 1);
-            EXPECT_EQ(f.name(0), "uint32");
+            EXPECT_EQ(f.encodingName(0), "uint32");
             EXPECT_EQ(f.primitiveType(0), Ir::UINT32);
-            EXPECT_EQ(f.valueUInt(0), FIELD_VALUE);
+            EXPECT_EQ(f.getUInt(0), FIELD_VALUE);
         }
         return 0;
     };
@@ -256,17 +256,17 @@ protected:
             EXPECT_EQ(f.primitiveType(8), Ir::UINT64);
             EXPECT_EQ(f.primitiveType(9), Ir::FLOAT);
             EXPECT_EQ(f.primitiveType(10), Ir::DOUBLE);
-            EXPECT_EQ(f.valueInt(0), FIELD_CHAR_VALUE);
-            EXPECT_EQ(f.valueInt(1), FIELD_INT8_VALUE);
-            EXPECT_EQ(f.valueInt(2), FIELD_INT16_VALUE);
-            EXPECT_EQ(f.valueInt(3), FIELD_INT32_VALUE);
-            EXPECT_EQ(f.valueInt(4), FIELD_INT64_VALUE);
-            EXPECT_EQ(f.valueUInt(5), FIELD_UINT8_VALUE);
-            EXPECT_EQ(f.valueUInt(6), FIELD_UINT16_VALUE);
-            EXPECT_EQ(f.valueUInt(7), FIELD_UINT32_VALUE);
-            EXPECT_EQ(f.valueUInt(8), FIELD_UINT64_VALUE);
-            EXPECT_EQ(f.valueDouble(9), FIELD_FLOAT_VALUE);
-            EXPECT_EQ(f.valueDouble(10), FIELD_DOUBLE_VALUE);
+            EXPECT_EQ(f.getInt(0), FIELD_CHAR_VALUE);
+            EXPECT_EQ(f.getInt(1), FIELD_INT8_VALUE);
+            EXPECT_EQ(f.getInt(2), FIELD_INT16_VALUE);
+            EXPECT_EQ(f.getInt(3), FIELD_INT32_VALUE);
+            EXPECT_EQ(f.getInt(4), FIELD_INT64_VALUE);
+            EXPECT_EQ(f.getUInt(5), FIELD_UINT8_VALUE);
+            EXPECT_EQ(f.getUInt(6), FIELD_UINT16_VALUE);
+            EXPECT_EQ(f.getUInt(7), FIELD_UINT32_VALUE);
+            EXPECT_EQ(f.getUInt(8), FIELD_UINT64_VALUE);
+            EXPECT_EQ(f.getDouble(9), FIELD_FLOAT_VALUE);
+            EXPECT_EQ(f.getDouble(10), FIELD_DOUBLE_VALUE);
         }
         return 0;
     };
@@ -338,27 +338,27 @@ protected:
         {
             EXPECT_EQ(f.type(), Field::ENUM);
             EXPECT_EQ(f.numEncodings(), 1);
-            EXPECT_EQ(f.name(Field::FIELD_INDEX), "EnumCHARField");
+            EXPECT_EQ(f.fieldName(), "EnumCHARField");
             EXPECT_EQ(f.primitiveType(), Ir::CHAR);
-            EXPECT_EQ(f.valueUInt(), FIELD_ENUM_CHAR_VALUE);
+            EXPECT_EQ(f.getUInt(), FIELD_ENUM_CHAR_VALUE);
             EXPECT_EQ(f.validValue(), "charValue1");
         }
         else if (numFieldsSeen_ == 3)
         {
             EXPECT_EQ(f.type(), Field::ENUM);
             EXPECT_EQ(f.numEncodings(), 1);
-            EXPECT_EQ(f.name(Field::FIELD_INDEX), "EnumUINT8Field");
+            EXPECT_EQ(f.fieldName(), "EnumUINT8Field");
             EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-            EXPECT_EQ(f.valueUInt(), FIELD_ENUM_UINT8_VALUE);
+            EXPECT_EQ(f.getUInt(), FIELD_ENUM_UINT8_VALUE);
             EXPECT_EQ(f.validValue(), "uint8Value2");
         }
         else if (numFieldsSeen_ == 3)
         {
             EXPECT_EQ(f.type(), Field::ENUM);
             EXPECT_EQ(f.numEncodings(), 1);
-            EXPECT_EQ(f.name(Field::FIELD_INDEX), "EnumNoValidValueField");
+            EXPECT_EQ(f.fieldName(), "EnumNoValidValueField");
             EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-            EXPECT_EQ(f.valueUInt(), 0);
+            EXPECT_EQ(f.getUInt(), 0);
             EXPECT_EQ(f.validValue(), "");
         }
         return 0;
@@ -453,56 +453,62 @@ protected:
         {
             EXPECT_EQ(f.type(), Field::SET);
             EXPECT_EQ(f.numEncodings(), 1);
-            EXPECT_EQ(f.name(Field::FIELD_INDEX), "SetUINT8Field");
+            EXPECT_EQ(f.fieldName(), "SetUINT8Field");
             EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-            EXPECT_EQ(f.valueUInt(), FIELD_SET_UINT8_VALUE);
-            const std::vector<std::string> &choices = f.choices();
-            EXPECT_EQ(choices.size(), 1);
-            EXPECT_EQ(choices[0], "uint8Choice0");
+            EXPECT_EQ(f.getUInt(), FIELD_SET_UINT8_VALUE);
+            EXPECT_EQ(f.choices().size(), 1);
+            for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
+            {
+                EXPECT_TRUE(*it == "uint8Choice0");
+            }
         }
         else if (numFieldsSeen_ == 3)
         {
             EXPECT_EQ(f.type(), Field::SET);
             EXPECT_EQ(f.numEncodings(), 1);
-            EXPECT_EQ(f.name(Field::FIELD_INDEX), "SetUINT16Field");
+            EXPECT_EQ(f.fieldName(), "SetUINT16Field");
             EXPECT_EQ(f.primitiveType(), Ir::UINT16);
-            EXPECT_EQ(f.valueUInt(), FIELD_SET_UINT16_VALUE);
-            const std::vector<std::string> &choices = f.choices();
-            EXPECT_EQ(choices.size(), 1);
-            EXPECT_EQ(choices[0], "uint16Choice9");
+            EXPECT_EQ(f.getUInt(), FIELD_SET_UINT16_VALUE);
+            EXPECT_EQ(f.choices().size(), 1);
+            for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
+            {
+                EXPECT_TRUE(*it == "uint16Choice9");
+            }
         }
         else if (numFieldsSeen_ == 4)
         {
             EXPECT_EQ(f.type(), Field::SET);
             EXPECT_EQ(f.numEncodings(), 1);
-            EXPECT_EQ(f.name(Field::FIELD_INDEX), "SetUINT32Field");
+            EXPECT_EQ(f.fieldName(), "SetUINT32Field");
             EXPECT_EQ(f.primitiveType(), Ir::UINT32);
-            EXPECT_EQ(f.valueUInt(), FIELD_SET_UINT32_VALUE);
-            const std::vector<std::string> &choices = f.choices();
-            EXPECT_EQ(choices.size(), 1);
-            EXPECT_EQ(choices[0], "uint32Choice16");
+            EXPECT_EQ(f.getUInt(), FIELD_SET_UINT32_VALUE);
+            EXPECT_EQ(f.choices().size(), 1);
+            for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
+            {
+                EXPECT_TRUE(*it == "uint32Choice16");
+            }
         }
         else if (numFieldsSeen_ == 5)
         {
             EXPECT_EQ(f.type(), Field::SET);
             EXPECT_EQ(f.numEncodings(), 1);
-            EXPECT_EQ(f.name(Field::FIELD_INDEX), "SetUINT64Field");
+            EXPECT_EQ(f.fieldName(), "SetUINT64Field");
             EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.valueUInt(), FIELD_SET_UINT64_VALUE);
-            const std::vector<std::string> &choices = f.choices();
-            EXPECT_EQ(choices.size(), 2);
-            EXPECT_EQ(choices[0], "uint64Choice32");
-            EXPECT_EQ(choices[1], "uint64Choice1");
+            EXPECT_EQ(f.getUInt(), FIELD_SET_UINT64_VALUE);
+            EXPECT_EQ(f.choices().size(), 2);
+            for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
+            {
+                EXPECT_TRUE(*it == "uint64Choice32" || *it == "uint64Choice1");
+            }
         }
         else if (numFieldsSeen_ == 6)
         {
             EXPECT_EQ(f.type(), Field::SET);
             EXPECT_EQ(f.numEncodings(), 1);
-            EXPECT_EQ(f.name(Field::FIELD_INDEX), "SetNoChoicesField");
+            EXPECT_EQ(f.fieldName(), "SetNoChoicesField");
             EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.valueUInt(), 0);
-            const std::vector<std::string> &choices = f.choices();
-            EXPECT_EQ(choices.size(), 0);
+            EXPECT_EQ(f.getUInt(), 0);
+            EXPECT_EQ(f.choices().size(), 0);
         }
         return 0;
     };

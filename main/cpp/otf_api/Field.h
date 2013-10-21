@@ -30,8 +30,6 @@ public:
     static const uint16_t INVALID_ID = 0xFFFF;
     /// index for field name
     static const int FIELD_INDEX = -1;
-    /// index for composite name
-    static const int COMPOSITE_INDEX = -2;
 
     enum Type
     {
@@ -41,15 +39,18 @@ public:
         SET = 4
     };
 
-    union EncodingValue
+    class EncodingValue
     {
-        int64_t int64Value_;
-        uint64_t uint64Value_;
-        double doubleValue_;
-
+    public:
         EncodingValue(const int64_t value) : int64Value_(value) {};
         EncodingValue(const uint64_t value) : uint64Value_(value) {};
         EncodingValue(const double value) : doubleValue_(value) {};
+        EncodingValue(const char *value) : arrayValue_((char *)value) {};
+
+        int64_t int64Value_;
+        uint64_t uint64Value_;
+        double doubleValue_;
+        char *arrayValue_;   // this holds a pointer into the buffer. We don't alloc our own copy since Field is reused.
     };
 
     Field()
@@ -80,20 +81,19 @@ public:
         return schemaId_;
     };
 
-    const std::string &name(const int index = FIELD_INDEX) const
+    const std::string &fieldName() const
     {
-        if (index == FIELD_INDEX)
-        {
-            return name_;
-        }
-        else if (index == COMPOSITE_INDEX)
-        {
-            return compositeName_;
-        }
-        else
-        {
-            return encodingNames_[index];
-        }        
+        return name_;
+    };
+
+    const std::string &compositeName() const
+    {
+        return compositeName_;
+    };
+
+    const std::string &encodingName(const int index) const
+    {
+        return encodingNames_[index];
     };
 
     // query on specific composite piece and encoding
@@ -102,21 +102,35 @@ public:
         return (index == FIELD_INDEX) ? primitiveTypes_[0] : primitiveTypes_[index];
     };
 
+    int length(const int index = FIELD_INDEX) const
+    {
+        return (index == FIELD_INDEX) ? encodingLengths_[0] : encodingLengths_[index];
+    };
+
     // encoding values. index = -1 means only 1 encoding (for set, enum, encoding) and exceptions on composite
     // enums and sets can have values as well. So, could grab encoding values.
-    int64_t valueInt(const int index = FIELD_INDEX) const
+
+    int64_t getInt(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingValues_[0].int64Value_ : encodingValues_[index].int64Value_;
     };
 
-    uint64_t valueUInt(const int index = FIELD_INDEX) const
+    uint64_t getUInt(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingValues_[0].uint64Value_ : encodingValues_[index].uint64Value_;
     };
 
-    double valueDouble(const int index = FIELD_INDEX) const
+    double getDouble(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingValues_[0].doubleValue_ : encodingValues_[index].doubleValue_;
+    };
+
+    void getArray(const int index, char *dst, const int offset, const int length) const
+    {
+        // TODO: bounds check, etc.
+        ::memcpy(dst,
+                 encodingValues_[index].arrayValue_ + (Ir::size(primitiveTypes_[index]) * offset),
+                 Ir::size(primitiveTypes_[index]) * length);
     };
 
     // TODO: set and enum - exception on incorrect type of field
@@ -144,20 +158,21 @@ protected:
         return *this;
     };
 
+    Field &fieldName(const std::string &name)
+    {
+        name_ = name;
+        return *this;
+    };
+
+    Field &compositeName(const std::string &name)
+    {
+        compositeName_ = name;
+        return *this;
+    };
+
     Field &name(const int index, const std::string &name)
     {
-        if (index == FIELD_INDEX)
-        {
-            name_ = name;
-        }
-        else if (index == COMPOSITE_INDEX)
-        {
-            compositeName_ = name;
-        }
-        else
-        {
-            encodingNames_[index] = name;
-        }
+        encodingNames_[index] = name;
         return *this;
     };
 
@@ -172,6 +187,7 @@ protected:
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
         encodingValues_.push_back(EncodingValue(value));
+        encodingLengths_.push_back(1);
         numEncodings_++;
         return *this;
     };
@@ -181,6 +197,7 @@ protected:
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
         encodingValues_.push_back(EncodingValue(value));
+        encodingLengths_.push_back(1);
         numEncodings_++;
         return *this;        
     };
@@ -190,9 +207,20 @@ protected:
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
         encodingValues_.push_back(EncodingValue(value));
+        encodingLengths_.push_back(1);
         numEncodings_++;
         return *this;
     };
+
+    Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const char *array, const int size)
+    {
+        encodingNames_.push_back(name);
+        primitiveTypes_.push_back(type);
+        encodingValues_.push_back(EncodingValue(array));
+        encodingLengths_.push_back(size / Ir::size(type));
+        numEncodings_++;
+        return *this;
+    }
 
     Field &addValidValue(const std::string value)
     {
@@ -215,6 +243,7 @@ protected:
         encodingNames_.clear();
         primitiveTypes_.clear();
         encodingValues_.clear();
+        encodingLengths_.clear();
         choiceValues_.clear();
         validValue_ = "";
         return *this;
@@ -231,6 +260,8 @@ private:
     std::vector<std::string> encodingNames_;
     std::vector<Ir::TokenPrimitiveType> primitiveTypes_;
     std::vector<EncodingValue> encodingValues_;
+    std::vector<int> encodingLengths_;
+
     std::vector<std::string> choiceValues_;
 
     friend class Listener;

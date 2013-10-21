@@ -26,7 +26,6 @@ using ::std::endl;
 
 const uint16_t Field::INVALID_ID;
 const int Field::FIELD_INDEX;
-const int Field::COMPOSITE_INDEX;
 
 Listener &Listener::resetForDecode(const char *data, const int length)
 {
@@ -194,6 +193,14 @@ int Listener::process(void)
 
             // TODO: fix for offset values in IR
 
+            // if this is an array, then handle it
+            if ((ir->size() / Ir::size(ir->primitiveType())) > 1)
+            {
+                processEncoding(ir->name(), ir->primitiveType(), buffer_ + bufferOffset_, ir->size());
+                break;
+            }
+
+            // fall through to single items
             switch (ir->primitiveType())
             {
             case Ir::CHAR:
@@ -260,13 +267,13 @@ int Listener::process(void)
 
 void Listener::processBeginComposite(const std::string &name)
 {
-    cachedField_.name(Field::COMPOSITE_INDEX, name)
+    cachedField_.compositeName(name)
         .type(Field::COMPOSITE);
 }
 
 void Listener::processEndComposite(void)
 {
-    if (cachedField_.name(Field::FIELD_INDEX) == "")
+    if (cachedField_.fieldName() == "")
     {
         onNext_->onNext(cachedField_);
         cachedField_.reset();
@@ -275,7 +282,7 @@ void Listener::processEndComposite(void)
 
 void Listener::processBeginField(const std::string &name, const uint16_t schemaId)
 {
-    cachedField_.name(Field::FIELD_INDEX, name)
+    cachedField_.fieldName(name)
         .schemaId(schemaId)
         .type(Field::ENCODING);
 }
@@ -301,7 +308,7 @@ void Listener::processBeginEnum(const std::string &name, const Ir::TokenPrimitiv
 void Listener::processEnumValidValue(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
 {
     // TODO: can only have 1 valid value, so, could abandon the next one that comes in
-    if (cachedField_.valueUInt() == value)
+    if (cachedField_.getUInt() == value)
     {
         cachedField_.addValidValue(name);
     }
@@ -338,7 +345,7 @@ void Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitive
 
 void Listener::processSetChoice(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
 {
-    if (cachedField_.valueUInt() & ((uint64_t)0x1 << value))
+    if (cachedField_.getUInt() & ((uint64_t)0x1 << value))
     {
         cachedField_.addChoice(name);
     }
@@ -367,4 +374,9 @@ void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitive
 void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value)
 {
     cachedField_.addEncoding(name, type, value);
+}
+
+void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const char *value, const int size)
+{
+    cachedField_.addEncoding(name, type, value, size);
 }

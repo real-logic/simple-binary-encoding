@@ -159,6 +159,7 @@ protected:
     virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value);
     virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
     virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value);
+    virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const char *value, const int size);
 
 public:
 
