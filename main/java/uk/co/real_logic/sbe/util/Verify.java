@@ -40,7 +40,7 @@ public class Verify
      * Verify that a map contains and entry for a given key.
      *
      * @param map to be checked.
-     * @param key to lookup by.
+     * @param key to get by.
      * @param name of entry.
      * @throws NullPointerException if map or key is null
      * @throws IllegalStateException if the entry does not exist.

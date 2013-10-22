@@ -48,27 +48,27 @@ public enum Presence
     }
 
     /**
-     * Lookup Presence value and return enum.
+     * Lookup Presence name and return enum.
      *
-     * @param value of presence to lookup
-     * @return the {@link Presence} matching the value
-     * @throws IllegalArgumentException if the value is not found
+     * @param name of presence to get
+     * @return the {@link Presence} matching the name
+     * @throws IllegalArgumentException if the name is not found
      */
-    public static Presence lookup(final String value)
+    public static Presence get(final String name)
     {
-        if (value == null)
+        if (name == null)
         {
             return null;
         }
 
         for (final Presence p : values())
         {
-            if (value.equals(p.value))
+            if (name.equals(p.value))
             {
                 return p;
             }
         }
 
-        throw new IllegalArgumentException("No Presence for value: " + value);
+        throw new IllegalArgumentException("No Presence for name: " + name);
     }
 }

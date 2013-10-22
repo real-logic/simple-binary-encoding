@@ -50,7 +50,7 @@ public class SetType extends Type
     {
         super(node);
 
-        encodingType = PrimitiveType.lookup(getAttributeValue(node, "encodingType"));
+        encodingType = PrimitiveType.get(getAttributeValue(node, "encodingType"));
         if (encodingType != PrimitiveType.UINT8 && encodingType != PrimitiveType.UINT16 &&
             encodingType != PrimitiveType.UINT32 && encodingType != PrimitiveType.UINT64)
         {
@@ -102,7 +102,7 @@ public class SetType extends Type
     /**
      * Get the {@link Choice} represented by a {@link PrimitiveValue}.
      *
-     * @param value to lookup
+     * @param value to get
      * @return the {@link Choice} represented by a {@link PrimitiveValue} or null if not found.
      */
     public Choice getChoice(final PrimitiveValue value)
@@ -113,7 +113,7 @@ public class SetType extends Type
     /**
      * Get the {@link Choice} represented by a String name.
      *
-     * @param name to lookup
+     * @param name to get
      * @return the {@link Choice} represented by a String name or null if not found.
      */
     public Choice getChoice(final String name)

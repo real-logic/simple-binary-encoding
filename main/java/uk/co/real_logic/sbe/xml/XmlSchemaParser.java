@@ -230,7 +230,7 @@ public class XmlSchemaParser
 
     private static String formatLocationInfo(final Node node)
     {
-        Node parentNode = node.getParentNode();
+        final Node parentNode = node.getParentNode();
 
         return "at " +
             "<" + parentNode.getNodeName() +
@@ -242,7 +242,7 @@ public class XmlSchemaParser
     /** Handle an error condition as consequence of parsing. */
     public static void handleError(final Node node, final String msg)
     {
-        ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
+        final ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
 
         if (handler == null)
         {
@@ -257,7 +257,7 @@ public class XmlSchemaParser
     /** Handle a warning condition as a consequence of parsing. */
     public static void handleWarning(final Node node, final String msg)
     {
-        ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
+        final ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
 
         if (handler == null)
         {
@@ -279,7 +279,7 @@ public class XmlSchemaParser
      */
     public static String getAttributeValue(final Node elementNode, final String attrName)
     {
-        Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
+        final Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
 
         if (attrNode == null || "".equals(attrNode.getNodeValue()))
         {
@@ -299,7 +299,7 @@ public class XmlSchemaParser
      */
     public static String getAttributeValue(final Node elementNode, final String attrName, final String defValue)
     {
-        Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
+        final Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
 
         if (attrNode == null)
         {
@@ -318,7 +318,7 @@ public class XmlSchemaParser
      */
     public static String getAttributeValueOrNull(final Node elementNode, final String attrName)
     {
-        Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
+        final Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
 
         if (attrNode == null)
         {
@@ -329,14 +329,14 @@ public class XmlSchemaParser
     }
 
     /**
-     * Helper function to convert a schema byteOrder into a {@link ByteOrder}
+     * Helper function to convert a schema byteOrderName into a {@link ByteOrder}
      *
-     * @param byteOrder specified as a FIX SBE string
+     * @param byteOrderName specified as a FIX SBE string
      * @return ByteOrder representation
      */
-    public static ByteOrder lookupByteOrder(final String byteOrder)
+    public static ByteOrder getByteOrder(final String byteOrderName)
     {
-        switch (byteOrder)
+        switch (byteOrderName)
         {
             case "littleEndian":
                 return ByteOrder.LITTLE_ENDIAN;

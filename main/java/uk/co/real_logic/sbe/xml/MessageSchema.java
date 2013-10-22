@@ -50,7 +50,7 @@ public class MessageSchema
         this.description = getAttributeValueOrNull(schemaNode, "description");
         this.version = Long.parseLong(getAttributeValue(schemaNode, "version", "0"));  // default version is 0
         this.semanticVersion = getAttributeValueOrNull(schemaNode, "semanticVersion");
-        this.byteOrder = lookupByteOrder(getAttributeValue(schemaNode, "byteOrder", "littleEndian"));
+        this.byteOrder = getByteOrder(getAttributeValue(schemaNode, "byteOrder", "littleEndian"));
         this.typeByNameMap = typeByNameMap;
         this.messageByIdMap = messageByIdMap;
 

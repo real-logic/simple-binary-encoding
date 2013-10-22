@@ -49,7 +49,7 @@ public class EncodedDataType extends Type
     {
         super(node);
 
-        primitiveType = PrimitiveType.lookup(getAttributeValue(node, "primitiveType"));
+        primitiveType = PrimitiveType.get(getAttributeValue(node, "primitiveType"));
         length = Integer.parseInt(getAttributeValue(node, "length", "1"));
         varLen = Boolean.parseBoolean(getAttributeValue(node, "variableLength", "false"));
 

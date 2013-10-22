@@ -178,21 +178,21 @@ public enum PrimitiveType
     /**
      * Lookup PrimitiveType by String name and return Enum
      *
-     * @param value of primitiveType to lookup
+     * @param name of primitiveType to get
      * @return the {@link PrimitiveType} matching the name
      * @throws IllegalArgumentException if name not found
      */
-    public static PrimitiveType lookup(final String value)
+    public static PrimitiveType get(final String name)
     {
         for (final PrimitiveType p : Singleton.VALUES)
         {
-            if (value.equals(p.name))
+            if (name.equals(p.name))
             {
                 return p;
             }
         }
 
-        throw new IllegalArgumentException("No PrimitiveType for value: " + value);
+        throw new IllegalArgumentException("No PrimitiveType for name: " + name);
     }
 
     /**

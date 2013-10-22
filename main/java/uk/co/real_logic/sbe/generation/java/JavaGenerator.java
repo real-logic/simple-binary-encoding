@@ -225,7 +225,7 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-           "    public static %s lookup(final %s value)\n" +
+           "    public static %s get(final %s value)\n" +
            "    {\n" +
            "        switch(value)\n" +
            "        {\n",

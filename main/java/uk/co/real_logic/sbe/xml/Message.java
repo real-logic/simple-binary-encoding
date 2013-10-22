@@ -243,7 +243,7 @@ public class Message
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
             .semanticType(getAttributeValueOrNull(nodeList.item(nodeIndex), "semanticType"))
-            .presence(Presence.lookup(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
+            .presence(Presence.get(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
             .type(fieldType)
             .build();
 
@@ -276,7 +276,7 @@ public class Message
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
             .semanticType(getAttributeValueOrNull(nodeList.item(nodeIndex), "semanticType"))
-            .presence(Presence.lookup(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
+            .presence(Presence.get(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
             .type(fieldType)
             .variableLength(true)
             .build();

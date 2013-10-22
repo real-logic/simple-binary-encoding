@@ -73,7 +73,7 @@ public class IntermediateRepresentation
     /**
      * Get the message for a given identifier.
      *
-     * @param messageId to lookup.
+     * @param messageId to get.
      * @return the List of {@link Token}s representing the message or null if the id is not found.
      */
     public List<Token> message(final long messageId)
@@ -84,7 +84,7 @@ public class IntermediateRepresentation
     /**
      * Get the type representation for a given type name.
      *
-     * @param name of type to lookup.
+     * @param name of type to get.
      * @return the List of {@link Token}s representing the type or null if the name is not found.
      */
     public List<Token> type(final String name)

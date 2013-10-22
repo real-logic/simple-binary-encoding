@@ -41,7 +41,7 @@ public abstract class Type
     public Type(final Node node)
     {
         name = getAttributeValue(node, "name");
-        presence = Presence.lookup(getAttributeValue(node, "presence", "required"));
+        presence = Presence.get(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
         semanticType = getAttributeValueOrNull(node, "semanticType");
     }

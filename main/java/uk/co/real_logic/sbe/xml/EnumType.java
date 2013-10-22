@@ -55,7 +55,7 @@ public class EnumType extends Type
     {
         super(node);
 
-        encodingType = PrimitiveType.lookup(getAttributeValue(node, "encodingType"));
+        encodingType = PrimitiveType.get(getAttributeValue(node, "encodingType"));
         if (encodingType != PrimitiveType.CHAR && encodingType != PrimitiveType.UINT8)
         {
             throw new IllegalArgumentException("illegal encodingType " + encodingType);
@@ -119,7 +119,7 @@ public class EnumType extends Type
     /**
      * Get the {@link ValidValue} represented by a {@link PrimitiveValue}.
      *
-     * @param value to lookup.
+     * @param value to get.
      * @return the {@link ValidValue} represented by a {@link PrimitiveValue} or null.
      */
     public ValidValue getValidValue(final PrimitiveValue value)
@@ -130,7 +130,7 @@ public class EnumType extends Type
     /**
      * Get the {@link ValidValue} represented by a string name.
      *
-     * @param name to lookup.
+     * @param name to get.
      * @return the {@link ValidValue} represented by a string name or null.
      */
     public ValidValue getValidValue(final String name)

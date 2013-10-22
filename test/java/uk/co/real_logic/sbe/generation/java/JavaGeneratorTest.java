@@ -88,7 +88,7 @@ public class JavaGeneratorTest
         final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
-        final Object result = clazz.getDeclaredMethod("lookup", short.class).invoke(null, Short.valueOf((short)1));
+        final Object result = clazz.getDeclaredMethod("get", short.class).invoke(null, Short.valueOf((short)1));
 
         assertThat(result.toString(), is("TRUE"));
     }
@@ -105,7 +105,7 @@ public class JavaGeneratorTest
         final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
-        final Object result = clazz.getDeclaredMethod("lookup", byte.class).invoke(null, Byte.valueOf((byte)'B'));
+        final Object result = clazz.getDeclaredMethod("get", byte.class).invoke(null, Byte.valueOf((byte)'B'));
 
         assertThat(result.toString(), is("B"));
     }
