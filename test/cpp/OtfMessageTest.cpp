@@ -525,10 +525,9 @@ TEST_F(OtfMessageSetTest, shouldHandleSet)
 }
 
 /*
+ * TODO: variable length fields (with char and with uint8 types)
  * TODO: test reuse of listener
- * TODO: test fixed length field (20 chars)
  * TODO: test offset values on fields
  * TODO: single repeating group
  * TODO: nested repeating group - MassQuote
- * TODO: variable length fields
  */

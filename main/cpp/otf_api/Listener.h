@@ -146,20 +146,22 @@ protected:
     virtual void processEndComposite(void);
     virtual void processBeginField(const std::string &name, const uint16_t schemaId);
     virtual void processEndField(void);
-    virtual void processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const char value);
-    virtual void processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value);
+    virtual uint64_t processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const char value);
+    virtual uint64_t processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value);
     virtual void processEnumValidValue(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
     virtual void processEndEnum(void);
-    virtual void processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value);
-    virtual void processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint16_t value);
-    virtual void processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint32_t value);
-    virtual void processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
+    virtual uint64_t processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value);
+    virtual uint64_t processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint16_t value);
+    virtual uint64_t processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint32_t value);
+    virtual uint64_t processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
     virtual void processSetChoice(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
     virtual void processEndSet(void);
-    virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value);
-    virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
-    virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value);
-    virtual void processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const char *value, const int size);
+    virtual void processBeginVarData(const std::string &name, const uint16_t schemaId);
+    virtual void processEndVarData(void);
+    virtual uint64_t processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value);
+    virtual uint64_t processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
+    virtual uint64_t processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value);
+    virtual uint64_t processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const char *value, const int size);
 
 public:
 

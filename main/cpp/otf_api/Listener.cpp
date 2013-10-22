@@ -131,17 +131,16 @@ int Listener::process(void)
             switch (ir->primitiveType())
             {
             case Ir::CHAR:
-                processBeginEnum(ir->name(), ir->primitiveType(), *((char *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processBeginEnum(ir->name(), ir->primitiveType(), *((char *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::UINT8:
-                processBeginEnum(ir->name(), ir->primitiveType(), *((uint8_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processBeginEnum(ir->name(), ir->primitiveType(), *((uint8_t *)(buffer_ + bufferOffset_)));
                 break;
 
             default:
                 break;
             }
-            bufferOffset_ += ir->size();
             break;
 
         case Ir::VALID_VALUE:
@@ -156,25 +155,24 @@ int Listener::process(void)
             switch (ir->primitiveType())
             {
             case Ir::UINT8:
-                processBeginSet(ir->name(), ir->primitiveType(), *((uint8_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processBeginSet(ir->name(), ir->primitiveType(), *((uint8_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::UINT16:
-                processBeginSet(ir->name(), ir->primitiveType(), *((uint16_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processBeginSet(ir->name(), ir->primitiveType(), *((uint16_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::UINT32:
-                processBeginSet(ir->name(), ir->primitiveType(), *((uint32_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processBeginSet(ir->name(), ir->primitiveType(), *((uint32_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::UINT64:
-                processBeginSet(ir->name(), ir->primitiveType(), *((uint64_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processBeginSet(ir->name(), ir->primitiveType(), *((uint64_t *)(buffer_ + bufferOffset_)));
                 break;
 
             default:
                 break;
             }
-            bufferOffset_ += ir->size();
             break;
 
         case Ir::CHOICE:
@@ -185,6 +183,14 @@ int Listener::process(void)
             processEndSet();
             break;
 
+        case Ir::BEGIN_VAR_DATA:
+            processBeginVarData(ir->name(), ir->schemaId());
+            break;
+
+        case Ir::END_VAR_DATA:
+            processEndVarData();
+            break;
+
             // TODO: groups will "rewind" IR and keep track of the count
 
             // TODO: set will check each choice in processChoice() and save name to vector if it works
@@ -192,11 +198,12 @@ int Listener::process(void)
         case Ir::ENCODING:
 
             // TODO: fix for offset values in IR
+            // bump buffOffset_ for offset value in IR.
 
-            // if this is an array, then handle it
-            if ((ir->size() / Ir::size(ir->primitiveType())) > 1)
+            // if this is an array or variable size field (0xFFFFFFFF size), then handle it
+            if (ir->size() != Ir::size(ir->primitiveType()))
             {
-                processEncoding(ir->name(), ir->primitiveType(), buffer_ + bufferOffset_, ir->size());
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), buffer_ + bufferOffset_, ir->size());
                 break;
             }
 
@@ -204,53 +211,53 @@ int Listener::process(void)
             switch (ir->primitiveType())
             {
             case Ir::CHAR:
-                processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((char *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((char *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::INT8:
-                processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int8_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int8_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::INT16:
-                processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int16_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int16_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::INT32:
-                processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int32_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int32_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::INT64:
-                processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int64_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int64_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::UINT8:
-                processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint8_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint8_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::UINT16:
-                processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint16_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint16_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::UINT32:
-                processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint32_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint32_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::UINT64:
-                processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint64_t *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint64_t *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::FLOAT:
-                processEncoding(ir->name(), ir->primitiveType(), (double)*((float *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (double)*((float *)(buffer_ + bufferOffset_)));
                 break;
 
             case Ir::DOUBLE:
-                processEncoding(ir->name(), ir->primitiveType(), (double)*((double *)(buffer_ + bufferOffset_)));
+                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (double)*((double *)(buffer_ + bufferOffset_)));
                 break;
 
             default:
                 break;
             }
-            bufferOffset_ += ir->size();
+            // TODO: fix for variable length fields and offsets
             break;
 
         default:
@@ -293,16 +300,18 @@ void Listener::processEndField(void)
     cachedField_.reset();
 }
 
-void Listener::processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const char value)
+uint64_t Listener::processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const char value)
 {
     cachedField_.type(Field::ENUM)
         .addEncoding(name, type, (uint64_t)value);
+    return Ir::size(type);
 }
 
-void Listener::processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, uint8_t value)
+uint64_t Listener::processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, uint8_t value)
 {
     cachedField_.type(Field::ENUM)
         .addEncoding(name, type, (uint64_t)value);
+    return Ir::size(type);
 }
 
 void Listener::processEnumValidValue(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
@@ -319,28 +328,32 @@ void Listener::processEndEnum(void)
     // not much to do
 }
 
-void Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value)
+uint64_t Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value)
 {
     cachedField_.type(Field::SET)
         .addEncoding(name, type, (uint64_t)value);
+    return Ir::size(type);
 }
 
-void Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint16_t value)
+uint64_t Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint16_t value)
 {
     cachedField_.type(Field::SET)
         .addEncoding(name, type, (uint64_t)value);
+    return Ir::size(type);
 }
 
-void Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint32_t value)
+uint64_t Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint32_t value)
 {
     cachedField_.type(Field::SET)
         .addEncoding(name, type, (uint64_t)value);
+    return Ir::size(type);
 }
 
-void Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
+uint64_t Listener::processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
 {
     cachedField_.type(Field::SET)
         .addEncoding(name, type, (uint64_t)value);
+    return Ir::size(type);
 }
 
 void Listener::processSetChoice(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
@@ -356,12 +369,25 @@ void Listener::processEndSet(void)
     // not much to do
 }
 
-void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value)
+void Listener::processBeginVarData(const std::string &name, const uint16_t schemaId)
 {
-    cachedField_.addEncoding(name, type, value);
+    cachedField_.fieldName(name)
+        .schemaId(schemaId)
+        .type(Field::VAR_DATA);
 }
 
-void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
+void Listener::processEndVarData(void)
+{
+    // not much to do
+}
+
+uint64_t Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value)
+{
+    cachedField_.addEncoding(name, type, value);
+    return Ir::size(type);
+}
+
+uint64_t Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
 {
     cachedField_.addEncoding(name, type, value);
 
@@ -369,14 +395,30 @@ void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitive
     {
         templateId_ = value;
     }
+    else if (cachedField_.type() == Field::VAR_DATA)
+    {
+        cachedField_.varDataLength(value);
+    }
+    return Ir::size(type);
 }
 
-void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value)
+uint64_t Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value)
 {
     cachedField_.addEncoding(name, type, value);
+    return Ir::size(type);
 }
 
-void Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const char *value, const int size)
+uint64_t Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const char *value, const int size)
 {
-    cachedField_.addEncoding(name, type, value, size);
+    // arrays and variable length fields both come through here
+    if (cachedField_.type() == Field::VAR_DATA)
+    {
+        cachedField_.addEncoding(name, type, value, cachedField_.varDataLength());
+        return cachedField_.varDataLength();
+    }
+    else
+    {
+        cachedField_.addEncoding(name, type, value, size);
+        return size;
+    }
 }

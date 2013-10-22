@@ -29,6 +29,8 @@ class Ir
 public:
     /// Invalid message template ID
     static const int INVALID_ID = 0xFFFF;
+    /// Value representing a variable length field (size)
+    static const uint32_t VARIABLE_SIZE = 0xFFFFFFFF;
 
     enum TokenSignal
     {
@@ -46,7 +48,9 @@ public:
         BEGIN_SET = 12,
         CHOICE = 13,
         END_SET = 14,
-        ENCODING = 15
+        BEGIN_VAR_DATA = 15,
+        END_VAR_DATA = 16,
+        ENCODING = 17
     };
 
     enum TokenByteOrder

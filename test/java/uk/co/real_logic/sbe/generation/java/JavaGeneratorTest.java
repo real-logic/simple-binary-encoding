@@ -137,11 +137,11 @@ public class JavaGeneratorTest
     public void shouldGenerateCompositeStub() throws Exception
     {
         final int bufferOffset = 64;
-        final int capacityFieldOffset = bufferOffset + 25;
-        final int numCylindersOffset = bufferOffset + 27;
+        final int capacityFieldOffset = bufferOffset;
+        final int numCylindersOffset = bufferOffset + 2;
         final int expectedEngineCapacity = 2000;
         final int expectedMaxRpm = 9000;
-        final int manufacturerCodeOffset = bufferOffset + 28;
+        final int manufacturerCodeOffset = bufferOffset + 3;
         final byte[] manufacturerCode = {'A', 'B', 'C'};
         final String className = "EngineType";
         final String fqClassName = ir.packageName() + "." + className;

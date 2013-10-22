@@ -52,8 +52,7 @@
     </types>
 
     <message name="SbeMessageIR" id="1" description="serialized IR representing an SBE message" blockLength="8">
-        <field name="NoTokens" id="1" type="groupSize" groupName="TokenList"/>
-        <group name="TokenList">
+k        <group name="TokenList">
             <field name="Offset" id="2" type="uint32" semanticType="int"/>
             <field name="Size" id="3" type="uint32" semanticType="int"/>
             <field name="Signal" id="4" type="Signal" semanticType="int"/>

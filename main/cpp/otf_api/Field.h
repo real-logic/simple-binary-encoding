@@ -36,7 +36,8 @@ public:
         COMPOSITE = 1,
         ENCODING = 2,
         ENUM = 3,
-        SET = 4
+        SET = 4,
+        VAR_DATA = 5
     };
 
     class EncodingValue
@@ -74,6 +75,7 @@ public:
     bool isComposite() const { return (COMPOSITE == type_) ? true : false; };
     bool isEnum() const { return (ENUM == type_) ? true : false; };
     bool isSet() const {return (SET == type_) ? true : false; };
+    bool isVariableData() const { return (VAR_DATA == type_) ? true : false; };
 
     // query on overall field properties
     uint16_t schemaId() const
@@ -125,6 +127,7 @@ public:
         return (index == FIELD_INDEX) ? encodingValues_[0].doubleValue_ : encodingValues_[index].doubleValue_;
     };
 
+    // variable length and static arrays handled the same
     void getArray(const int index, char *dst, const int offset, const int length) const
     {
         // TODO: bounds check, etc.
@@ -142,7 +145,7 @@ public:
     const std::vector<std::string> &choices() const
     {
         return choiceValues_;
-    }
+    };
 
 protected:
     // builder-ish pattern - set by Listener
@@ -234,12 +237,24 @@ protected:
         return *this;
     };
 
+    Field &varDataLength(const uint64_t value)
+    {
+        varDataLength_ = value;
+        return *this;
+    };
+
+    uint64_t varDataLength(void)
+    {
+        return varDataLength_;
+    };
+
     Field &reset()
     {
         name_ = "";
         compositeName_ = "";
         schemaId_ = INVALID_ID;
         numEncodings_ = 0;
+        varDataLength_ = 0;
         encodingNames_.clear();
         primitiveTypes_.clear();
         encodingValues_.clear();
@@ -256,6 +271,7 @@ private:
     std::string validValue_;
     uint16_t schemaId_;
     uint16_t numEncodings_;
+    uint64_t varDataLength_;
 
     std::vector<std::string> encodingNames_;
     std::vector<Ir::TokenPrimitiveType> primitiveTypes_;

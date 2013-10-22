@@ -6,3 +6,4 @@ GPATH
 prop
 .DS_Store
 .idea
+*.iml

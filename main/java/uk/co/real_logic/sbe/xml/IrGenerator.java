@@ -153,11 +153,12 @@ public class IrGenerator
     {
         Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_COMPOSITE)
-            .name(type.name());
+            .name(type.name())
+            .offset(currOffset);
 
         tokenList.add(builder.build());
 
-        int offset = currOffset;
+        int offset = 0;
         for (final EncodedDataType edt : type.getTypeList())
         {
             add(edt, offset);

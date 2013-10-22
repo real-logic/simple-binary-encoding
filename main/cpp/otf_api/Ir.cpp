@@ -40,6 +40,7 @@ struct IrToken
 };
 
 const int Ir::INVALID_ID;
+const uint32_t Ir::VARIABLE_SIZE;
 
 Ir::Ir(const char *buffer, const int len) :
     buffer_(buffer), len_(len)
