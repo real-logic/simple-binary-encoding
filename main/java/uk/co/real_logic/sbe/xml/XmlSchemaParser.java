@@ -164,25 +164,6 @@ public class XmlSchemaParser
     }
 
     /**
-     * Helper function to add a Type to a typeByNameMap based on name. Checks to make sure name does not exist.
-     *
-     * @param typeByNameMap of names to Type objects
-     * @param type          to be added to typeByNameMap
-     * @param node          for the type
-     */
-    private static void addTypeWithNameCheck(final Map<String, Type> typeByNameMap, final Type type, final Node node)
-    {
-        if (typeByNameMap.get(type.name()) != null)
-        {
-            handleWarning(node, "type already exists for name: " + type.name());
-        }
-
-        checkForValidName(node, type.name());
-
-        typeByNameMap.put(type.name(), type);
-    }
-
-    /**
      * Scan XML for all message definitions and save in map
      *
      * @param document      for the XML parsing
@@ -207,36 +188,6 @@ public class XmlSchemaParser
                 });
 
         return messageByIdMap;
-    }
-
-    /**
-     * Helper function to add a Message to a messageByIdMap based on schemaId. Checks to make sure schemaId does not exist.
-     *
-     * @param messageByIdMap of schemaId to Message objects
-     * @param message        to be added to messageByIdMap
-     * @param node           for the message
-     */
-    private static void addMessageWithIdCheck(final Map<Long, Message> messageByIdMap, final Message message, final Node node)
-    {
-        if (messageByIdMap.get(Long.valueOf(message.id())) != null)
-        {
-            handleError(node, "message template id already exists: " + message.id());
-        }
-
-        checkForValidName(node, message.name());
-
-        messageByIdMap.put(Long.valueOf(message.id()), message);
-    }
-
-    private static String formatLocationInfo(final Node node)
-    {
-        final Node parentNode = node.getParentNode();
-
-        return "at " +
-            "<" + parentNode.getNodeName() +
-            (getAttributeValueOrNull(parentNode, "name") == null ? ">" : (" name=\"" + getAttributeValueOrNull(parentNode, "name") + "\"> ")) +
-            "<" + node.getNodeName() +
-            (getAttributeValueOrNull(node, "name") == null ? ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
     }
 
     /** Handle an error condition as consequence of parsing. */
@@ -362,6 +313,42 @@ public class XmlSchemaParser
         {
             handleWarning(node, "name is not valid for Java: " + name);
         }
+    }
+
+
+    private static void addTypeWithNameCheck(final Map<String, Type> typeByNameMap, final Type type, final Node node)
+    {
+        if (typeByNameMap.get(type.name()) != null)
+        {
+            handleWarning(node, "type already exists for name: " + type.name());
+        }
+
+        checkForValidName(node, type.name());
+
+        typeByNameMap.put(type.name(), type);
+    }
+
+    private static void addMessageWithIdCheck(final Map<Long, Message> messageByIdMap, final Message message, final Node node)
+    {
+        if (messageByIdMap.get(Long.valueOf(message.id())) != null)
+        {
+            handleError(node, "message template id already exists: " + message.id());
+        }
+
+        checkForValidName(node, message.name());
+
+        messageByIdMap.put(Long.valueOf(message.id()), message);
+    }
+
+    private static String formatLocationInfo(final Node node)
+    {
+        final Node parentNode = node.getParentNode();
+
+        return "at " +
+            "<" + parentNode.getNodeName() +
+            (getAttributeValueOrNull(parentNode, "name") == null ? ">" : (" name=\"" + getAttributeValueOrNull(parentNode, "name") + "\"> ")) +
+            "<" + node.getNodeName() +
+            (getAttributeValueOrNull(node, "name") == null ? ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
     }
 
     private interface NodeFunction
