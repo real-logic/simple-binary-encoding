@@ -113,6 +113,12 @@ public class IrGenerator
                 addAllFields(field.groupFields());
                 addFieldSignal(field, Signal.END_GROUP);
             }
+            else if (type instanceof CompositeType && field.isVariableLength())
+            {
+                addFieldSignal(field, Signal.BEGIN_VAR_DATA);
+                add((CompositeType)type, field.computedOffset());
+                addFieldSignal(field, Signal.END_VAR_DATA);
+            }
             else
             {
                 addFieldSignal(field, Signal.BEGIN_FIELD);

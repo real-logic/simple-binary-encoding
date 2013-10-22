@@ -63,6 +63,12 @@ public enum Signal
     /** Denotes the end of a bitset */
     END_SET,
 
+    /** Denotes the beginning of a variable data block */
+    BEGIN_VAR_DATA,
+
+    /** Denotes the end of a variable data block */
+    END_VAR_DATA,
+
     /** Denotes the {@link uk.co.real_logic.sbe.ir.Token} is an encoding */
     ENCODING
 }

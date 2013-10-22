@@ -164,7 +164,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(tokens.get(0).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(0).offset()), is(valueOf(0)));
 
-        assertThat(tokens.get(1).signal(), is(Signal.BEGIN_FIELD));
+        assertThat(tokens.get(1).signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(tokens.get(1).name(), is("encryptedNewPassword"));
         assertThat(valueOf(tokens.get(1).schemaId()), is(valueOf(1404L)));
         assertThat(valueOf(tokens.get(1).size()), is(valueOf(0)));
@@ -196,7 +196,7 @@ public class BasicXmlIrGenerationTest
         assertThat(valueOf(tokens.get(5).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(5).offset()), is(valueOf(0)));
 
-        assertThat(tokens.get(6).signal(), is(Signal.END_FIELD));
+        assertThat(tokens.get(6).signal(), is(Signal.END_VAR_DATA));
         assertThat(tokens.get(6).name(), is("encryptedNewPassword"));
         assertThat(valueOf(tokens.get(6).schemaId()), is(valueOf(1404L)));
         assertThat(valueOf(tokens.get(6).size()), is(valueOf(0)));
@@ -282,7 +282,7 @@ public class BasicXmlIrGenerationTest
         List<Token> tokens = ir.message(2);
 
         /* assert the varDataEncoding field node is formed correctly */
-        assertThat(tokens.get(lengthFieldIdx).signal(), is(Signal.BEGIN_FIELD));
+        assertThat(tokens.get(lengthFieldIdx).signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(tokens.get(lengthFieldIdx).name(), is("EncryptedPassword"));
         assertThat(valueOf(tokens.get(lengthFieldIdx).schemaId()), is(valueOf(1402L)));
 

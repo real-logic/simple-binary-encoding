@@ -56,7 +56,6 @@ public class JavaGeneratorTest
         final Integer blockLength = Integer.valueOf(32);
         final String fqClassName = ir.packageName() + "." + MESSAGE_HEADER_VISITOR;
 
-
         when(Short.valueOf(mockBuffer.getShort(bufferOffset + templateIdOffset))).thenReturn(templateId);
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
@@ -138,11 +137,11 @@ public class JavaGeneratorTest
     public void shouldGenerateCompositeStub() throws Exception
     {
         final int bufferOffset = 64;
-        final int capacityFieldOffset = bufferOffset + 21;
-        final int numCylindersOffset = bufferOffset + 23;
+        final int capacityFieldOffset = bufferOffset + 25;
+        final int numCylindersOffset = bufferOffset + 27;
         final int expectedEngineCapacity = 2000;
         final int expectedMaxRpm = 9000;
-        final int manufacturerCodeOffset = bufferOffset + 24;
+        final int manufacturerCodeOffset = bufferOffset + 28;
         final byte[] manufacturerCode = {'A', 'B', 'C'};
         final String className = "EngineType";
         final String fqClassName = ir.packageName() + "." + className;
@@ -183,6 +182,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateMessageStubs();
 
+        //System.out.println(outputManager.getSource(fqClassName));
         final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
     }

@@ -22,6 +22,7 @@ import uk.co.real_logic.sbe.util.Verify;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.javaTypeName;
@@ -93,9 +94,27 @@ public class JavaGenerator implements CodeGenerator
                 out.append(generateClassDeclaration(className, MessageFlyweight.class.getSimpleName()));
                 out.append(generateMessageFlyweightCode(tokens.get(0).size()));
 
+                int offset = 0;
+                final List<Token> rootFields = new ArrayList<>();
+
+                offset = collectRootFields(rootFields, tokens.subList(1, tokens.size() - 1), offset);
+                out.append(generateFields(rootFields));
+
                 out.append("}\n");
             }
         }
+    }
+
+    private int collectRootFields(final List<Token> rootFields, final List<Token> tokens, int offset)
+    {
+        Token currentToken = tokens.get(offset);
+        while (Signal.BEGIN_GROUP != currentToken.signal())
+        {
+            rootFields.add(currentToken);
+            currentToken = tokens.get(++offset);
+        }
+
+        return offset;
     }
 
     private void generateChoiceSet(final List<Token> tokens) throws IOException
@@ -506,6 +525,11 @@ public class JavaGenerator implements CodeGenerator
             "    }\n",
             Integer.valueOf(blockLength)
         );
+    }
+
+    private CharSequence generateFields(final List<Token> tokens)
+    {
+        return "";
     }
 
     private CharSequence generateLiteral(final Token token)
