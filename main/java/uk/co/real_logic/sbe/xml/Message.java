@@ -80,6 +80,72 @@ public class Message
         validateBlockLength(messageNode, blockLength, computedBlockLength);
     }
 
+    /**
+     * Return the template schemaId of the message
+     *
+     * @return schemaId of the message
+     */
+    public long id()
+    {
+        return id;
+    }
+
+    /**
+     * Return the name of the message
+     *
+     * @return name of the message
+     */
+    public String name()
+    {
+        return name;
+    }
+
+    /**
+     * The description of the message (if set) or null
+     *
+     * @return description set by the message or null
+     */
+    public String description()
+    {
+        return description;
+    }
+
+    /**
+     * The semanticType of the message (if set) or null
+     */
+    public String semanticType()
+    {
+        return semanticType;
+    }
+
+    /**
+     * Return the list of fields in the message
+     *
+     * @return {@link java.util.List} of the Field objects in this Message
+     */
+    public List<Field> fields()
+    {
+        return fieldList;
+    }
+
+    /**
+     * Return the size of the {@link Message} in bytes including any padding.
+     *
+     * @return the size of the {@link Message} in bytes including any padding.
+     */
+    public int blockLength()
+    {
+        return blockLength > computedBlockLength ? blockLength : computedBlockLength;
+    }
+
+    /**
+     * Return the {@link String} representing the {@link Type} for the header of this message
+     */
+    public String headerType()
+    {
+        return headerType;
+    }
+
     private List<Field> parseFieldsAndGroups(final Node node)
         throws XPathExpressionException, IllegalArgumentException
     {
@@ -218,72 +284,6 @@ public class Message
         field.validate(nodeList.item(nodeIndex));
 
         return field;
-    }
-
-    /**
-     * Return the template schemaId of the message
-     *
-     * @return schemaId of the message
-     */
-    public long id()
-    {
-        return id;
-    }
-
-    /**
-     * Return the name of the message
-     *
-     * @return name of the message
-     */
-    public String name()
-    {
-        return name;
-    }
-
-    /**
-     * The description of the message (if set) or null
-     *
-     * @return description set by the message or null
-     */
-    public String description()
-    {
-        return description;
-    }
-
-    /**
-     * The semanticType of the message (if set) or null
-     */
-    public String semanticType()
-    {
-        return semanticType;
-    }
-
-    /**
-     * Return the list of fields in the message
-     *
-     * @return {@link java.util.List} of the Field objects in this Message
-     */
-    public List<Field> fields()
-    {
-        return fieldList;
-    }
-
-    /**
-     * Return the size of the {@link Message} in bytes including any padding.
-     *
-     * @return the size of the {@link Message} in bytes including any padding.
-     */
-    public int blockLength()
-    {
-        return blockLength > computedBlockLength ? blockLength : computedBlockLength;
-    }
-
-    /**
-     * Return the {@link String} representing the {@link Type} for the header of this message
-     */
-    public String headerType()
-    {
-        return headerType;
     }
 
     /*
