@@ -29,12 +29,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.checkForValidName;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
-/** SBE setType */
+/**
+ * SBE setType representing a bitset of options.
+ */
 public class SetType extends Type
 {
     private final PrimitiveType encodingType;
@@ -58,29 +57,34 @@ public class SetType extends Type
             throw new IllegalArgumentException("Illegal encodingType " + encodingType);
         }
 
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile("choice").evaluate(node, XPathConstants.NODESET);
+        final XPath xPath = XPathFactory.newInstance().newXPath();
+        final NodeList list = (NodeList)xPath.compile("choice").evaluate(node, XPathConstants.NODESET);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             Choice c = new Choice(list.item(i), encodingType);
 
-            if (choiceByPrimitiveValueMap.get(c.getPrimitiveValue()) != null)
+            if (choiceByPrimitiveValueMap.get(c.primitiveValue()) != null)
             {
-                handleWarning(node, "Choice value already defined: " + c.getPrimitiveValue());
+                handleWarning(node, "Choice value already defined: " + c.primitiveValue());
             }
 
-            if (choiceByNameMap.get(c.getName()) != null)
+            if (choiceByNameMap.get(c.name()) != null)
             {
-                handleWarning(node, "Choice already exists for name: " + c.getName());
+                handleWarning(node, "Choice already exists for name: " + c.name());
             }
 
-            choiceByPrimitiveValueMap.put(c.getPrimitiveValue(), c);
-            choiceByNameMap.put(c.getName(), c);
+            choiceByPrimitiveValueMap.put(c.primitiveValue(), c);
+            choiceByNameMap.put(c.name(), c);
         }
     }
 
-    public PrimitiveType getEncodingType()
+    /**
+     * The encoding type of the bitset to be used on the wire.
+     *
+     * @return encoding type of the bitset to be used on the wire.
+     */
+    public PrimitiveType encodingType()
     {
         return encodingType;
     }
@@ -95,17 +99,34 @@ public class SetType extends Type
         return encodingType.size();
     }
 
+    /**
+     * Get the {@link Choice} represented by a {@link PrimitiveValue}.
+     *
+     * @param value to lookup
+     * @return the {@link Choice} represented by a {@link PrimitiveValue} or null if not found.
+     */
     public Choice getChoice(final PrimitiveValue value)
     {
         return choiceByPrimitiveValueMap.get(value);
     }
 
+    /**
+     * Get the {@link Choice} represented by a String name.
+     *
+     * @param name to lookup
+     * @return the {@link Choice} represented by a String name or null if not found.
+     */
     public Choice getChoice(final String name)
     {
         return choiceByNameMap.get(name);
     }
 
-    public Collection<Choice> getChoices()
+    /**
+     * The collection of possible {@link Choice} values for a bitset.
+     *
+     * @return the collection of possible {@link Choice} values for a bitset.
+     */
+    public Collection<Choice> choices()
     {
         return choiceByNameMap.values();
     }
@@ -138,17 +159,32 @@ public class SetType extends Type
             checkForValidName(node, name);
         }
 
-        public PrimitiveValue getPrimitiveValue()
+        /**
+         * The {@link PrimitiveValue} representation of the bitset choice.
+         *
+         * @return the {@link PrimitiveValue} representation of the bitset choice.
+         */
+        public PrimitiveValue primitiveValue()
         {
             return value;
         }
 
-        public String getName()
+        /**
+         * The String name representation of the bitset choice.
+         *
+         * @return the String name representation of the bitset choice.
+         */
+        public String name()
         {
             return name;
         }
 
-        public String getDescription()
+        /**
+         * The description of the bitset choice.
+         *
+         * @return the description of the bitset choice.
+         */
+        public String description()
         {
             return description;
         }

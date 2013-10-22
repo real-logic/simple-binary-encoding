@@ -153,14 +153,14 @@ public class CompositeType extends Type
         {
             EncodedDataType type = new EncodedDataType(list.item(i));
 
-            if (compositeMap.get(type.getName()) != null)
+            if (compositeMap.get(type.name()) != null)
             {
-                XmlSchemaParser.handleError(node, "composite already has type name: " + type.getName());
+                XmlSchemaParser.handleError(node, "composite already has type name: " + type.name());
             }
             else
             {
                 compositeList.add(type);
-                compositeMap.put(type.getName(), type);
+                compositeMap.put(type.name(), type);
             }
         }
     }
@@ -187,7 +187,7 @@ public class CompositeType extends Type
 
         for (final EncodedDataType t : compositeList)
         {
-            if (t.getVariableLength())
+            if (t.isVariableLength())
             {
                 return Token.VARIABLE_SIZE;
             }
@@ -218,7 +218,7 @@ public class CompositeType extends Type
 
         if (edt != null)
         {
-            edt.setVariableLength(true);
+            edt.variableLength(true);
         }
     }
 

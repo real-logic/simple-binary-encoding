@@ -76,11 +76,11 @@ public class Field
         if (type != null)
         {
             // must be present or must be on the type. If on both, they must agree.
-            if (semanticType == null && type.getSemanticType() == null)
+            if (semanticType == null && type.semanticType() == null)
             {
                 handleError(node, "Missing semanticType on type and field: " + name);
             }
-            else if (semanticType != null && type.getSemanticType() != null && !semanticType.equals(type.getSemanticType()))
+            else if (semanticType != null && type.semanticType() != null && !semanticType.equals(type.semanticType()))
             {
                 handleError(node, "Mismatched semanticType on type and field: " + name);
             }

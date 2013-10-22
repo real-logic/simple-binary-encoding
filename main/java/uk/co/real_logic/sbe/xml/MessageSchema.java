@@ -26,13 +26,13 @@ import java.util.Map;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
- * Class to encapsulate the message schema attributes, messageHeader, and reference for multiple {@link Message} objects
+ * Message schema composite for schema attributes, messageHeader, and reference for multiple {@link Message} objects.
  */
 public class MessageSchema
 {
     private static final String MESSAGE_HEADER_KEY = "messageHeader";
 
-    private final String pkg;                         // package (optional?)
+    private final String packageName;                 // package (optional?)
     private final String description;                 // description (optional)
     private final long version;                       // version (optional - default is 0)
     private final String semanticVersion;             // semanticVersion (optional)
@@ -46,7 +46,7 @@ public class MessageSchema
     {
         Verify.present(typeByNameMap, MESSAGE_HEADER_KEY, "Message header");
 
-        this.pkg = getAttributeValue(schemaNode, "package");
+        this.packageName = getAttributeValue(schemaNode, "package");
         this.description = getAttributeValueOrNull(schemaNode, "description");
         this.version = Long.parseLong(getAttributeValue(schemaNode, "version", "0"));  // default version is 0
         this.semanticVersion = getAttributeValueOrNull(schemaNode, "semanticVersion");
@@ -60,27 +60,47 @@ public class MessageSchema
     /**
      * @return the Schema messageHeader type or null if not defined. This should be a {@link CompositeType}.
      */
-    public CompositeType getMessageHeader()
+    public CompositeType messageHeader()
     {
         return (CompositeType)typeByNameMap.get(MESSAGE_HEADER_KEY);
     }
 
-    public String getPackage()
+    /**
+     * The package name for the schema.
+     *
+     * @return he package name for the schema.
+     */
+    public String packageName()
     {
-        return pkg;
+        return packageName;
     }
 
-    public String getDescription()
+    /**
+     * The description of the schema.
+     *
+     * @return the description of the scheam.
+     */
+    public String description()
     {
         return description;
     }
 
-    public long getVersion()
+    /**
+     * The version number of the schema.
+     *
+     * @return the version number of the schema.
+     */
+    public long version()
     {
         return version;
     }
 
-    public String getSemanticVersion()
+    /**
+     * The semantic version number of the schema. Typically use to reference a third party standard such as FIX.
+     *
+     * @return the semantic version number of the schema.
+     */
+    public String semanticVersion()
     {
         return semanticVersion;
     }
@@ -101,7 +121,7 @@ public class MessageSchema
      *
      * @return the {@link Collection} of {@link Message}s for this Schema.
      */
-    public Collection<Message> getMessages()
+    public Collection<Message> messages()
     {
         return messageByIdMap.values();
     }
@@ -109,7 +129,7 @@ public class MessageSchema
     /**
      * Return the byte order specified by the messageSchema
      */
-    public ByteOrder getByteOrder()
+    public ByteOrder byteOrder()
     {
         return byteOrder;
     }

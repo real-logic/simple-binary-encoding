@@ -90,11 +90,11 @@ public class ErrorHandlerTest
         parseTestXmlAddToMap(map, "/types/enum", testXmlString, handler);
         parseTestXmlAddToMap(map, "/types/set", testXmlString, handler);
 
-        assertThat(valueOf(handler.getErrors()), is(valueOf(3)));
-        assertThat(valueOf(handler.getWarnings()), is(valueOf(19)));
+        assertThat(valueOf(handler.errorCount()), is(valueOf(3)));
+        assertThat(valueOf(handler.warningCount()), is(valueOf(19)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldExitAfterTypes()
         throws Exception
     {
@@ -114,7 +114,7 @@ public class ErrorHandlerTest
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldExitAfterTypesWhenDupTypesDefined()
         throws Exception
     {
@@ -134,7 +134,7 @@ public class ErrorHandlerTest
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldExitAfterMessageWhenDupMessageIdsDefined()
         throws Exception
     {
@@ -154,7 +154,7 @@ public class ErrorHandlerTest
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldExitAfterMessage()
         throws Exception
     {
@@ -194,28 +194,28 @@ public class ErrorHandlerTest
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            Type t = null;
+            Type type = null;
 
             if (xPathExpr.endsWith("enum"))
             {
-                t = new EnumType(list.item(i));
+                type = new EnumType(list.item(i));
             }
             else if (xPathExpr.endsWith("set"))
             {
-                t = new SetType(list.item(i));
+                type = new SetType(list.item(i));
             }
             else if (xPathExpr.endsWith("type"))
             {
-                t = new EncodedDataType(list.item(i));
+                type = new EncodedDataType(list.item(i));
             }
             else if (xPathExpr.endsWith("composite"))
             {
-                t = new CompositeType(list.item(i));
+                type = new CompositeType(list.item(i));
             }
 
-            if (t != null)
+            if (type != null)
             {
-                map.put(t.getName(), t);
+                map.put(type.name(), type);
             }
         }
     }

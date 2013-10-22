@@ -56,11 +56,11 @@ public class SetTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
         SetType e = (SetType)map.get("biOp");
-        assertThat(e.getName(), is("biOp"));
-        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.getChoices().size()), is(valueOf(2)));
-        assertThat(e.getChoice("Bit1").getPrimitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
-        assertThat(e.getChoice("Bit0").getPrimitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
+        assertThat(e.name(), is("biOp"));
+        assertThat(e.encodingType(), is(PrimitiveType.UINT8));
+        assertThat(valueOf(e.choices().size()), is(valueOf(2)));
+        assertThat(e.getChoice("Bit1").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
+        assertThat(e.getChoice("Bit0").primitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
     }
 
     @Test
@@ -79,24 +79,24 @@ public class SetTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
         SetType e = (SetType)map.get("listed");
-        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
+        assertThat(e.encodingType(), is(PrimitiveType.UINT8));
 
         int foundBit0 = 0, foundBit1 = 0, foundBit2 = 0, foundBit3 = 0, count = 0;
-        for (final SetType.Choice choice : e.getChoices())
+        for (final SetType.Choice choice : e.choices())
         {
-            if (choice.getName().equals("Bit0"))
+            if (choice.name().equals("Bit0"))
             {
                 foundBit0++;
             }
-            else if (choice.getName().equals("Bit1"))
+            else if (choice.name().equals("Bit1"))
             {
                 foundBit1++;
             }
-            else if (choice.getName().equals("Bit2"))
+            else if (choice.name().equals("Bit2"))
             {
                 foundBit2++;
             }
-            else if (choice.getName().equals("Bit3"))
+            else if (choice.name().equals("Bit3"))
             {
                 foundBit3++;
             }
@@ -186,7 +186,7 @@ public class SetTypeTest
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             Type t = new SetType(list.item(i));
-            map.put(t.getName(), t);
+            map.put(t.name(), t);
         }
 
         return map;

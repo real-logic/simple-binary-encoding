@@ -70,7 +70,7 @@ public abstract class Type
      *
      * @return name of the Type
      */
-    public String getName()
+    public String name()
     {
         return name;
     }
@@ -80,14 +80,14 @@ public abstract class Type
      *
      * @return presence of the Type
      */
-    public Presence getPresence()
+    public Presence presence()
     {
         return presence;
     }
 
     /**
      * The size (in octets) of the Type.
-     * <p>
+     * <p/>
      * Overridden by subtypes. This returns 0 by default.
      *
      * @return size of the type in octets
@@ -99,7 +99,7 @@ public abstract class Type
      *
      * @return description set by the type or null
      */
-    public String getDescription()
+    public String description()
     {
         return description;
     }
@@ -109,7 +109,7 @@ public abstract class Type
      *
      * @return semanticType of the Type if set or null if not set
      */
-    public String getSemanticType()
+    public String semanticType()
     {
         return semanticType;
     }

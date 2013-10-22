@@ -54,7 +54,7 @@ public class EncodedDataType extends Type
         varLen = Boolean.parseBoolean(getAttributeValue(node, "variableLength", "false"));
 
         // handle constant presence by grabbing child node and parsing it's CDATA based on primitiveType (save it)
-        if (this.getPresence() == Presence.CONSTANT)
+        if (this.presence() == Presence.CONSTANT)
         {
             if (node.getFirstChild() == null)
             {
@@ -94,7 +94,7 @@ public class EncodedDataType extends Type
         String nullValueStr = getAttributeValueOrNull(node, "nullVal");
         if (nullValueStr != null)
         {
-            if (getPresence() != Presence.OPTIONAL)
+            if (presence() != Presence.OPTIONAL)
             {
                 handleWarning(node, "nullVal set, but presence is not optional");
             }
@@ -143,7 +143,7 @@ public class EncodedDataType extends Type
      *
      * @return length attribute of the type
      */
-    public int getLength()
+    public int length()
     {
         return length;
     }
@@ -153,12 +153,12 @@ public class EncodedDataType extends Type
      *
      * @return variableLength boolean of the type
      */
-    public boolean getVariableLength()
+    public boolean isVariableLength()
     {
         return varLen;
     }
 
-    public void setVariableLength(final boolean variableLength)
+    public void variableLength(final boolean variableLength)
     {
         this.varLen = variableLength;
     }
@@ -168,7 +168,7 @@ public class EncodedDataType extends Type
      *
      * @return primitiveType attribute of the type
      */
-    public PrimitiveType getPrimitiveType()
+    public PrimitiveType primitiveType()
     {
         return primitiveType;
     }
@@ -180,7 +180,7 @@ public class EncodedDataType extends Type
      */
     public int size()
     {
-        if (getPresence() == Presence.CONSTANT)
+        if (presence() == Presence.CONSTANT)
         {
             return 0;
         }
@@ -198,10 +198,10 @@ public class EncodedDataType extends Type
      *
      * @return value of the constant for this type
      */
-    public PrimitiveValue getConstValue()
+    public PrimitiveValue constValue()
         throws IllegalArgumentException
     {
-        if (getPresence() != Presence.CONSTANT)
+        if (presence() != Presence.CONSTANT)
         {
             throw new IllegalStateException("type is not of constant presence");
         }
@@ -214,7 +214,7 @@ public class EncodedDataType extends Type
      *
      * @return value of the minVal
      */
-    public PrimitiveValue getMinValue()
+    public PrimitiveValue minValue()
     {
         return minValue;
     }
@@ -224,7 +224,7 @@ public class EncodedDataType extends Type
      *
      * @return value of the maxVal
      */
-    public PrimitiveValue getMaxValue()
+    public PrimitiveValue maxValue()
     {
         return maxValue;
     }
@@ -234,7 +234,7 @@ public class EncodedDataType extends Type
      *
      * @return value of the nullVal primitiveType or type
      */
-    public PrimitiveValue getNullValue()
+    public PrimitiveValue nullValue()
     {
         return nullValue;
     }

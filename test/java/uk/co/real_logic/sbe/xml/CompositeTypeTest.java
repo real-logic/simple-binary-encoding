@@ -56,9 +56,9 @@ public class CompositeTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         CompositeType decimal = (CompositeType)map.get("decimal");
-        assertThat(decimal.getName(), is("decimal"));
-        assertThat(decimal.getType("mantissa").getPrimitiveType(), is(PrimitiveType.INT64));
-        assertThat(decimal.getType("exponent").getPrimitiveType(), is(PrimitiveType.INT8));
+        assertThat(decimal.name(), is("decimal"));
+        assertThat(decimal.getType("mantissa").primitiveType(), is(PrimitiveType.INT64));
+        assertThat(decimal.getType("exponent").primitiveType(), is(PrimitiveType.INT8));
         assertThat(valueOf(decimal.size()), is(valueOf(9)));
     }
 
@@ -76,11 +76,11 @@ public class CompositeTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         CompositeType decimal32 = (CompositeType)map.get("decimal32");
-        assertThat(decimal32.getName(), is("decimal32"));
-        assertThat(decimal32.getType("mantissa").getPrimitiveType(), is(PrimitiveType.INT32));
-        assertThat(decimal32.getType("exponent").getPrimitiveType(), is(PrimitiveType.INT8));
-        assertThat(decimal32.getType("exponent").getPresence(), is(Presence.CONSTANT));
-        assertThat((decimal32.getType("exponent")).getConstValue(), is(PrimitiveValue.parse("-2", PrimitiveType.INT8)));
+        assertThat(decimal32.name(), is("decimal32"));
+        assertThat(decimal32.getType("mantissa").primitiveType(), is(PrimitiveType.INT32));
+        assertThat(decimal32.getType("exponent").primitiveType(), is(PrimitiveType.INT8));
+        assertThat(decimal32.getType("exponent").presence(), is(Presence.CONSTANT));
+        assertThat((decimal32.getType("exponent")).constValue(), is(PrimitiveValue.parse("-2", PrimitiveType.INT8)));
         assertThat(valueOf(decimal32.size()), is(valueOf(4)));
     }
 
@@ -98,11 +98,11 @@ public class CompositeTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         CompositeType decimal64 = (CompositeType)map.get("decimal64");
-        assertThat(decimal64.getName(), is("decimal64"));
-        assertThat(decimal64.getType("mantissa").getPrimitiveType(), is(PrimitiveType.INT64));
-        assertThat(decimal64.getType("exponent").getPrimitiveType(), is(PrimitiveType.INT8));
-        assertThat(decimal64.getType("exponent").getPresence(), is(Presence.CONSTANT));
-        assertThat((decimal64.getType("exponent")).getConstValue(), is(PrimitiveValue.parse("-2", PrimitiveType.INT8)));
+        assertThat(decimal64.name(), is("decimal64"));
+        assertThat(decimal64.getType("mantissa").primitiveType(), is(PrimitiveType.INT64));
+        assertThat(decimal64.getType("exponent").primitiveType(), is(PrimitiveType.INT8));
+        assertThat(decimal64.getType("exponent").presence(), is(Presence.CONSTANT));
+        assertThat((decimal64.getType("exponent")).constValue(), is(PrimitiveValue.parse("-2", PrimitiveType.INT8)));
         assertThat(valueOf(decimal64.size()), is(valueOf(8)));
     }
 
@@ -121,8 +121,8 @@ public class CompositeTypeTest
         Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         CompositeType c = (CompositeType)map.get("decimal");
         assertThat(valueOf(c.getTypeList().size()), is(valueOf(2)));
-        assertThat(c.getTypeList().get(0).getName(), is("mantissa"));
-        assertThat(c.getTypeList().get(1).getName(), is("exponent"));
+        assertThat(c.getTypeList().get(0).name(), is("mantissa"));
+        assertThat(c.getTypeList().get(1).name(), is("exponent"));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class CompositeTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         CompositeType c = (CompositeType)map.get("PRICENULL");
-        assertThat((c.getType("mantissa")).getNullValue(), is(PrimitiveValue.parse(nullValStr, PrimitiveType.INT64)));
+        assertThat((c.getType("mantissa")).nullValue(), is(PrimitiveValue.parse(nullValStr, PrimitiveType.INT64)));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -174,7 +174,7 @@ public class CompositeTypeTest
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             Type t = new CompositeType(list.item(i));
-            map.put(t.getName(), t);
+            map.put(t.name(), t);
         }
 
         return map;

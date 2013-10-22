@@ -17,12 +17,17 @@
 package uk.co.real_logic.sbe.xml;
 
 /**
- * Presence attribute for Type
+ * Presence attribute values for a {@link Type} applied to a {@link Field}.
  */
 public enum Presence
 {
+    /** The field must be present in the message encoding. */
     REQUIRED("required"),
+
+    /** The field value is constant and held in the schema and not passed on the wire. */
     CONSTANT("constant"),
+
+    /** The field is optional and an optional value must be provided in the schema. */
     OPTIONAL("optional");
 
     private final String value;

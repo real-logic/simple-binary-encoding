@@ -56,11 +56,11 @@ public class EnumTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("biOp");
-        assertThat(e.getName(), is("biOp"));
-        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.getValidValues().size()), is(valueOf(2)));
-        assertThat(e.getValidValue("on").getPrimitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
-        assertThat(e.getValidValue("off").getPrimitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
+        assertThat(e.name(), is("biOp"));
+        assertThat(e.encodingType(), is(PrimitiveType.UINT8));
+        assertThat(valueOf(e.validValues().size()), is(valueOf(2)));
+        assertThat(e.getValidValue("on").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
+        assertThat(e.getValidValue("off").primitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
     }
 
     @Test
@@ -77,11 +77,11 @@ public class EnumTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("Boolean");
-        assertThat(e.getName(), is("Boolean"));
-        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.getValidValues().size()), is(valueOf(2)));
-        assertThat(e.getValidValue("True").getPrimitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
-        assertThat(e.getValidValue("False").getPrimitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
+        assertThat(e.name(), is("Boolean"));
+        assertThat(e.encodingType(), is(PrimitiveType.UINT8));
+        assertThat(valueOf(e.validValues().size()), is(valueOf(2)));
+        assertThat(e.getValidValue("True").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
+        assertThat(e.getValidValue("False").primitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
     }
 
     @Test
@@ -100,12 +100,12 @@ public class EnumTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("optionalBoolean");
-        assertThat(e.getName(), is("optionalBoolean"));
-        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.getValidValues().size()), is(valueOf(2)));
-        assertThat(e.getValidValue("True").getPrimitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
-        assertThat(e.getValidValue("False").getPrimitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
-        assertThat(e.getNullValue(), is(PrimitiveValue.parse(nullValueStr, PrimitiveType.UINT8)));
+        assertThat(e.name(), is("optionalBoolean"));
+        assertThat(e.encodingType(), is(PrimitiveType.UINT8));
+        assertThat(valueOf(e.validValues().size()), is(valueOf(2)));
+        assertThat(e.getValidValue("True").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
+        assertThat(e.getValidValue("False").primitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
+        assertThat(e.nullValue(), is(PrimitiveValue.parse(nullValueStr, PrimitiveType.UINT8)));
     }
 
     @Test
@@ -123,21 +123,21 @@ public class EnumTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("triOp");
-        assertThat(e.getName(), is("triOp"));
-        assertThat(e.getEncodingType(), is(PrimitiveType.UINT8));
+        assertThat(e.name(), is("triOp"));
+        assertThat(e.encodingType(), is(PrimitiveType.UINT8));
 
         int foundOn = 0, foundOff = 0, foundNotKnown = 0, count = 0;
-        for (final EnumType.ValidValue v : e.getValidValues())
+        for (final EnumType.ValidValue v : e.validValues())
         {
-            if (v.getName().equals("on"))
+            if (v.name().equals("on"))
             {
                 foundOn++;
             }
-            else if (v.getName().equals("off"))
+            else if (v.name().equals("off"))
             {
                 foundOff++;
             }
-            else if (v.getName().equals("notKnown"))
+            else if (v.name().equals("notKnown"))
             {
                 foundNotKnown++;
             }
@@ -165,11 +165,11 @@ public class EnumTypeTest
 
         Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         EnumType e = (EnumType)map.get("mixed");
-        assertThat(e.getEncodingType(), is(PrimitiveType.CHAR));
-        assertThat(e.getValidValue("Cee").getPrimitiveValue(), is(PrimitiveValue.parse("C", PrimitiveType.CHAR)));
-        assertThat(e.getValidValue("One").getPrimitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.CHAR)));
-        assertThat(e.getValidValue("Two").getPrimitiveValue(), is(PrimitiveValue.parse("2", PrimitiveType.CHAR)));
-        assertThat(e.getValidValue("Eee").getPrimitiveValue(), is(PrimitiveValue.parse("E", PrimitiveType.CHAR)));
+        assertThat(e.encodingType(), is(PrimitiveType.CHAR));
+        assertThat(e.getValidValue("Cee").primitiveValue(), is(PrimitiveValue.parse("C", PrimitiveType.CHAR)));
+        assertThat(e.getValidValue("One").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.CHAR)));
+        assertThat(e.getValidValue("Two").primitiveValue(), is(PrimitiveValue.parse("2", PrimitiveType.CHAR)));
+        assertThat(e.getValidValue("Eee").primitiveValue(), is(PrimitiveValue.parse("E", PrimitiveType.CHAR)));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -235,7 +235,7 @@ public class EnumTypeTest
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             Type t = new EnumType(list.item(i));
-            map.put(t.getName(), t);
+            map.put(t.name(), t);
         }
 
         return map;

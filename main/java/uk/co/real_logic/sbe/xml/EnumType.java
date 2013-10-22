@@ -64,7 +64,7 @@ public class EnumType extends Type
         String nullValueStr = getAttributeValueOrNull(node, "nullVal");
         if (nullValueStr != null)
         {
-            if (getPresence() != Presence.OPTIONAL)
+            if (presence() != Presence.OPTIONAL)
             {
                 handleError(node, "nullVal set, but presence is not optional");
                 nullValue = null;
@@ -86,22 +86,22 @@ public class EnumType extends Type
         {
             ValidValue v = new ValidValue(list.item(i), encodingType);
 
-            if (validValueByPrimitiveValueMap.get(v.getPrimitiveValue()) != null)
+            if (validValueByPrimitiveValueMap.get(v.primitiveValue()) != null)
             {
-                handleWarning(node, "validValue already exists for value: " + v.getPrimitiveValue());
+                handleWarning(node, "validValue already exists for value: " + v.primitiveValue());
             }
 
-            if (validValueByNameMap.get(v.getName()) != null)
+            if (validValueByNameMap.get(v.name()) != null)
             {
-                handleWarning(node, "validValue already exists for name: " + v.getName());
+                handleWarning(node, "validValue already exists for name: " + v.name());
             }
 
-            validValueByPrimitiveValueMap.put(v.getPrimitiveValue(), v);
-            validValueByNameMap.put(v.getName(), v);
+            validValueByPrimitiveValueMap.put(v.primitiveValue(), v);
+            validValueByNameMap.put(v.name(), v);
         }
     }
 
-    public PrimitiveType getEncodingType()
+    public PrimitiveType encodingType()
     {
         return encodingType;
     }
@@ -116,11 +116,23 @@ public class EnumType extends Type
         return encodingType.size();
     }
 
+    /**
+     * Get the {@link ValidValue} represented by a {@link PrimitiveValue}.
+     *
+     * @param value to lookup.
+     * @return the {@link ValidValue} represented by a {@link PrimitiveValue} or null.
+     */
     public ValidValue getValidValue(final PrimitiveValue value)
     {
         return validValueByPrimitiveValueMap.get(value);
     }
 
+    /**
+     * Get the {@link ValidValue} represented by a string name.
+     *
+     * @param name to lookup.
+     * @return the {@link ValidValue} represented by a string name or null.
+     */
     public ValidValue getValidValue(final String name)
     {
         return validValueByNameMap.get(name);
@@ -131,12 +143,17 @@ public class EnumType extends Type
      *
      * @return value of the nullVal
      */
-    public PrimitiveValue getNullValue()
+    public PrimitiveValue nullValue()
     {
         return nullValue;
     }
 
-    public Collection<ValidValue> getValidValues()
+    /**
+     * The collection of valid values for this enumeration.
+     *
+     * @return the collection of valid values for this enumeration.
+     */
+    public Collection<ValidValue> validValues()
     {
         return validValueByNameMap.values();
     }
@@ -165,17 +182,32 @@ public class EnumType extends Type
             checkForValidName(node, name);
         }
 
-        public PrimitiveValue getPrimitiveValue()
+        /**
+         * {@link PrimitiveType} for the {@link ValidValue}.
+         *
+         * @return {@link PrimitiveType} for the {@link ValidValue}.
+         */
+        public PrimitiveValue primitiveValue()
         {
             return value;
         }
 
-        public String getName()
+        /**
+         * The name of the {@link ValidValue}.
+         *
+         * @return the name of the {@link ValidValue}
+         */
+        public String name()
         {
             return name;
         }
 
-        public String getDescription()
+        /**
+         * The description of the {@link ValidValue}.
+         *
+         * @return the description of the {@link ValidValue}.
+         */
+        public String description()
         {
             return description;
         }

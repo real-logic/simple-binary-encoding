@@ -172,14 +172,14 @@ public class XmlSchemaParser
      */
     private static void addTypeWithNameCheck(final Map<String, Type> typeByNameMap, final Type type, final Node node)
     {
-        if (typeByNameMap.get(type.getName()) != null)
+        if (typeByNameMap.get(type.name()) != null)
         {
-            handleWarning(node, "type already exists for name: " + type.getName());
+            handleWarning(node, "type already exists for name: " + type.name());
         }
 
-        checkForValidName(node, type.getName());
+        checkForValidName(node, type.name());
 
-        typeByNameMap.put(type.getName(), type);
+        typeByNameMap.put(type.name(), type);
     }
 
     /**
