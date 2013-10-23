@@ -274,8 +274,12 @@ int Listener::process(void)
 
 void Listener::processBeginComposite(const std::string &name)
 {
-    cachedField_.compositeName(name)
-        .type(Field::COMPOSITE);
+    cachedField_.compositeName(name);
+
+    if (cachedField_.type() != Field::VAR_DATA)
+    {
+        cachedField_.type(Field::COMPOSITE);
+    }
 }
 
 void Listener::processEndComposite(void)
@@ -378,7 +382,8 @@ void Listener::processBeginVarData(const std::string &name, const uint16_t schem
 
 void Listener::processEndVarData(void)
 {
-    // not much to do
+    onNext_->onNext(cachedField_);
+    cachedField_.reset();
 }
 
 uint64_t Listener::processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value)
@@ -395,7 +400,7 @@ uint64_t Listener::processEncoding(const std::string &name, const Ir::TokenPrimi
     {
         templateId_ = value;
     }
-    else if (cachedField_.type() == Field::VAR_DATA)
+    else if (cachedField_.type() == Field::VAR_DATA && name == "length")
     {
         cachedField_.varDataLength(value);
     }
