@@ -374,10 +374,10 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-                "    public %s %s()\n" +
-                "    {\n" +
-                "        return CodecUtil.%sGet(buffer, offset + %d);\n" +
-                "    }\n\n",
+            "    public %s %s()\n" +
+            "    {\n" +
+            "        return CodecUtil.%sGet(buffer, offset + %d);\n" +
+            "    }\n\n",
             javaTypeName,
             propertyName,
             typePrefix,
@@ -386,9 +386,9 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "    public void %s(final %s value)\n" +
-                "    {\n" +
-                "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
-                "    }\n",
+            "    {\n" +
+            "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
+            "    }\n",
             propertyName,
             javaTypeName,
             typePrefix,
@@ -452,17 +452,17 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "    public void get%s(final %s[] dst, final int offset, final int length)\n" +
-                "    {\n" +
-                "        if (offset < 0 || offset >= %d)\n" +
-                "        {\n" +
-                "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
-                "        }\n\n" +
-                "        if (length < 0 || length > %d)\n" +
-                "        {\n" +
-                "            throw new IndexOutOfBoundsException(\"length out of range: length=\" + length);\n" +
-                "        }\n\n" +
-                "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, length);\n" +
-                "    }\n\n",
+            "    {\n" +
+            "        if (offset < 0 || offset >= %d)\n" +
+            "        {\n" +
+            "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
+            "        }\n\n" +
+            "        if (length < 0 || length > %d)\n" +
+            "        {\n" +
+            "            throw new IndexOutOfBoundsException(\"length out of range: length=\" + length);\n" +
+            "        }\n\n" +
+            "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, length);\n" +
+            "    }\n\n",
             toUpperFirstChar(propertyName),
             javaTypeName,
             Integer.valueOf(token.arrayLength()),
@@ -635,11 +635,11 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-                "    public %s %s()\n" +
-                "    {\n" +
-                "        %s.reset(buffer, offset + %d);\n" +
-                "        return %s;\n" +
-                "    }\n",
+            "    public %s %s()\n" +
+            "    {\n" +
+            "        %s.reset(buffer, offset + %d);\n" +
+            "        return %s;\n" +
+            "    }\n",
             bitsetName,
             propertyName,
             propertyName,
@@ -666,11 +666,11 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-                "    public %s %s()\n" +
-                "    {\n" +
-                "        %s.reset(buffer, offset + %d);\n" +
-                "        return %s;\n" +
-                "    }\n",
+            "    public %s %s()\n" +
+            "    {\n" +
+            "        %s.reset(buffer, offset + %d);\n" +
+            "        return %s;\n" +
+            "    }\n",
             compositeName,
             propertyName,
             propertyName,
