@@ -22,10 +22,10 @@ public class CharSequenceJavaFileObject extends SimpleJavaFileObject
 {
     private final CharSequence sourceCode;
 
-    public CharSequenceJavaFileObject(final String className, final CharSequence sourcCode)
+    public CharSequenceJavaFileObject(final String className, final CharSequence sourceCode)
     {
         super(URI.create("string:///" + className.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
-        this.sourceCode = sourcCode;
+        this.sourceCode = sourceCode;
     }
 
     public CharSequence getCharContent(boolean ignoreEncodingErrors)
