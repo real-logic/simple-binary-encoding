@@ -26,31 +26,53 @@ using ::std::endl;
 class OtfVariableDataTest : public OtfMessageTest, public OtfMessageTestCBs
 {
 protected:
-#define VAR_DATA_STR "this is a variable length data string"
-#define VAR_DATA_SIZE (sizeof(VAR_DATA_STR) - 1)
+#define VAR_DATA_CHAR_STR "this is a variable length data string"
+#define VAR_DATA_CHAR_SIZE (sizeof(VAR_DATA_CHAR_STR) - 1)
+#define VAR_DATA_UINT8_SIZE 27
+#define VAR_DATA_UINT8_SEED 0x9A
 
     virtual void constructMessageIr(Ir &ir)
     {
         Ir::TokenByteOrder byteOrder = Ir::SBE_LITTLE_ENDIAN;
         std::string messageStr = std::string("MessageWithVarData");
-        std::string varDataStr = std::string("VarDataField");
-        std::string compositeStr = std::string("varDataEncoding");
+        std::string varDataStr1 = std::string("VarDataField1");
+        std::string varDataStr2 = std::string("VarDataField2");
+        std::string compositeStr1 = std::string("varDataEncodingChar");
+        std::string compositeStr2 = std::string("varDataEncodingUInt8");
 
         ir.addToken(0, 0xFFFFFFFF, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
-        ir.addToken(0, 0, Ir::BEGIN_VAR_DATA, byteOrder, Ir::NONE, FIELD_ID, varDataStr);
-        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
+        ir.addToken(0, 0, Ir::BEGIN_VAR_DATA, byteOrder, Ir::NONE, FIELD_ID, varDataStr1);
+        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr1);
         ir.addToken(0, 1, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("length"));
         ir.addToken(1, 0xFFFFFFFF, Ir::ENCODING, byteOrder, Ir::CHAR, 0xFFFF, std::string("varData"));
-        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
-        ir.addToken(0, 0, Ir::END_VAR_DATA, byteOrder, Ir::NONE, FIELD_ID, varDataStr);
+        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr1);
+        ir.addToken(0, 0, Ir::END_VAR_DATA, byteOrder, Ir::NONE, FIELD_ID, varDataStr1);
+        ir.addToken(0, 0, Ir::BEGIN_VAR_DATA, byteOrder, Ir::NONE, FIELD_ID + 1, varDataStr2);
+        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr2);
+        ir.addToken(0xFFFFFFFF, 1, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("length"));
+        ir.addToken(0xFFFFFFFF, 0xFFFFFFFF, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("varData"));
+        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr2);
+        ir.addToken(0, 0, Ir::END_VAR_DATA, byteOrder, Ir::NONE, FIELD_ID + 1, varDataStr2);
         ir.addToken(0, 0xFFFFFFFF, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
     };
 
+    void constructUInt8Array(char *dst, const int length, const uint8_t seed)
+    {
+        uint8_t *array = (uint8_t *)dst;
+        for (uint8_t i = 0; i < length; i++)
+        {
+            array[i] = seed ^ i;
+        }
+    }
+
     virtual void constructMessage()
     {
-        buffer_[bufferLen_] = VAR_DATA_SIZE;
-        ::memcpy(buffer_ + bufferLen_ + 1, VAR_DATA_STR, VAR_DATA_SIZE);
-        bufferLen_ += 1 + VAR_DATA_SIZE;
+        buffer_[bufferLen_] = VAR_DATA_CHAR_SIZE;
+        ::memcpy(buffer_ + bufferLen_ + 1, VAR_DATA_CHAR_STR, VAR_DATA_CHAR_SIZE);
+        bufferLen_ += 1 + VAR_DATA_CHAR_SIZE;
+        buffer_[bufferLen_] = VAR_DATA_UINT8_SIZE;
+        constructUInt8Array(buffer_ + bufferLen_ + 1, VAR_DATA_UINT8_SIZE, VAR_DATA_UINT8_SEED);
+        bufferLen_ += 1+ VAR_DATA_UINT8_SIZE;
     };
 
     virtual int onNext(const Field &f)
@@ -59,29 +81,51 @@ protected:
 
         if (numFieldsSeen_ == 2)
         {
-            char fieldValue[VAR_DATA_SIZE + 1];
+            char fieldValue[VAR_DATA_CHAR_SIZE + 1];
 
             EXPECT_EQ(f.type(), Field::VAR_DATA);
             EXPECT_EQ(f.numEncodings(), 2);
-            EXPECT_EQ(f.fieldName(), "VarDataField");
+            EXPECT_EQ(f.fieldName(), "VarDataField1");
             EXPECT_EQ(f.primitiveType(0), Ir::UINT8);
             EXPECT_EQ(f.primitiveType(1), Ir::CHAR);
             EXPECT_EQ(f.length(0), 1);
-            EXPECT_EQ(f.length(1), VAR_DATA_SIZE);
-            EXPECT_EQ(f.getUInt(0), VAR_DATA_SIZE);
-            f.getArray(1, fieldValue, 0, VAR_DATA_SIZE);
-            EXPECT_EQ(std::string(fieldValue, VAR_DATA_SIZE), VAR_DATA_STR);
+            EXPECT_EQ(f.length(1), VAR_DATA_CHAR_SIZE);
+            EXPECT_EQ(f.getUInt(0), VAR_DATA_CHAR_SIZE);
+            f.getArray(1, fieldValue, 0, VAR_DATA_CHAR_SIZE);
+            EXPECT_EQ(std::string(fieldValue, VAR_DATA_CHAR_SIZE), VAR_DATA_CHAR_STR);
+        }
+        else if (numFieldsSeen_ == 3)
+        {
+            char fieldValue[VAR_DATA_UINT8_SIZE + 1];
+            char controlValue[VAR_DATA_UINT8_SIZE + 1];
+
+            constructUInt8Array(controlValue, VAR_DATA_UINT8_SIZE, VAR_DATA_UINT8_SEED);
+            EXPECT_EQ(f.type(), Field::VAR_DATA);
+            EXPECT_EQ(f.numEncodings(), 2);
+            EXPECT_EQ(f.fieldName(), "VarDataField2");
+            EXPECT_EQ(f.primitiveType(0), Ir::UINT8);
+            EXPECT_EQ(f.primitiveType(1), Ir::UINT8);
+            EXPECT_EQ(f.length(0), 1);
+            EXPECT_EQ(f.length(1), VAR_DATA_UINT8_SIZE);
+            EXPECT_EQ(f.getUInt(0), VAR_DATA_UINT8_SIZE);
+            f.getArray(1, fieldValue, 0, VAR_DATA_UINT8_SIZE);
+            EXPECT_EQ(::memcmp(fieldValue, controlValue, VAR_DATA_UINT8_SIZE), 0);
         }
         return 0;
     };
+
+    virtual int onError(const Error &e)
+    {
+        return OtfMessageTestCBs::onError(e);
+    };
 };
 
-TEST_F(OtfVariableDataTest, shouldHandleVariableDataWithCharType)
+TEST_F(OtfVariableDataTest, shouldHandleVariableData)
 {
     listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
-    EXPECT_EQ(numFieldsSeen_, 2);
+    EXPECT_EQ(numFieldsSeen_, 3);
     EXPECT_EQ(numErrorsSeen_, 0);
     EXPECT_EQ(numCompletedsSeen_, 1);
 }
