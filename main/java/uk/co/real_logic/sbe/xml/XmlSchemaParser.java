@@ -63,34 +63,34 @@ public class XmlSchemaParser
     public static MessageSchema parse(final InputStream in)
         throws Exception
     {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setXIncludeAware(true);
         factory.setNamespaceAware(true);
 
-        String xsdFilename = System.getProperty(SbeTool.SBE_VALIDATE_XSD);
+        final String xsdFilename = System.getProperty(SbeTool.SBE_VALIDATE_XSD);
         if (xsdFilename != null)
         {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             factory.setSchema(schemaFactory.newSchema(new File(xsdFilename)));
         }
 
-        Document document = factory.newDocumentBuilder().parse(in);
-        XPath xPath = XPathFactory.newInstance().newXPath();
+        final Document document = factory.newDocumentBuilder().parse(in);
+        final XPath xPath = XPathFactory.newInstance().newXPath();
 
         /* saving the error handling state in the XML DOM tree. */
-        ErrorHandler errorHandler = new ErrorHandler();
+        final ErrorHandler errorHandler = new ErrorHandler();
         document.setUserData(XML_ERROR_HANDLER_KEY, errorHandler, null);
 
-        Map<String, Type> typeByNameMap = findTypes(document, xPath);
+        final Map<String, Type> typeByNameMap = findTypes(document, xPath);
 
         errorHandler.checkIfShouldExit();
 
-        Map<Long, Message> messageByIdMap = findMessages(document, xPath, typeByNameMap);
+        final Map<Long, Message> messageByIdMap = findMessages(document, xPath, typeByNameMap);
 
         errorHandler.checkIfShouldExit();
 
         final Node schemaNode = (Node)xPath.compile(MESSAGE_SCHEMA_XPATH_EXPR).evaluate(document, XPathConstants.NODE);
-        MessageSchema messageSchema = new MessageSchema(schemaNode, typeByNameMap, messageByIdMap);
+        final MessageSchema messageSchema = new MessageSchema(schemaNode, typeByNameMap, messageByIdMap);
 
         errorHandler.checkIfShouldExit();
 

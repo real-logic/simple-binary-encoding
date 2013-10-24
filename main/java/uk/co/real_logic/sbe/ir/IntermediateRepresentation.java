@@ -71,12 +71,12 @@ public class IntermediateRepresentation
     }
 
     /**
-     * Get the message for a given identifier.
+     * Get the getMessage for a given identifier.
      *
      * @param messageId to get.
      * @return the List of {@link Token}s representing the message or null if the id is not found.
      */
-    public List<Token> message(final long messageId)
+    public List<Token> getMessage(final long messageId)
     {
         return messagesByIdMap.get(Long.valueOf(messageId));
     }
@@ -87,7 +87,7 @@ public class IntermediateRepresentation
      * @param name of type to get.
      * @return the List of {@link Token}s representing the type or null if the name is not found.
      */
-    public List<Token> type(final String name)
+    public List<Token> getType(final String name)
     {
         return typesByNameMap.get(name);
     }
