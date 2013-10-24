@@ -61,7 +61,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateMessageHeaderStub();
 
-        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
@@ -78,13 +78,13 @@ public class JavaGeneratorTest
     @Test
     public void shouldGenerateUint8EnumStub() throws Exception
     {
-        final String className = "Boolean";
+        final String className = "BooleanType";
         final String fqClassName = ir.packageName() + "." + className;
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final Object result = clazz.getDeclaredMethod("get", short.class).invoke(null, Short.valueOf((short)1));
@@ -101,7 +101,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final Object result = clazz.getDeclaredMethod("get", byte.class).invoke(null, Byte.valueOf((byte)'B'));
@@ -122,7 +122,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
@@ -151,7 +151,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
@@ -180,10 +180,11 @@ public class JavaGeneratorTest
         final String fqClassName = ir.packageName() + "." + className;
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
+        javaGenerator.generateTypeStubs();
         javaGenerator.generateMessageStubs();
 
         //System.out.println(outputManager.getSource(fqClassName));
-        final Class<?> clazz = CompilerUtil.compile(fqClassName, outputManager.getSources());
+        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
     }
 }

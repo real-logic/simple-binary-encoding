@@ -39,4 +39,9 @@ public class JavaClassObject extends SimpleJavaFileObject
     {
         return baos;
     }
+
+    public Kind getKind()
+    {
+        return Kind.CLASS;
+    }
 }

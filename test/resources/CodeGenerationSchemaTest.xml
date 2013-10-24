@@ -20,24 +20,24 @@
         </composite>
     </types>
     <types>
-        <type name="modelYearType" primitiveType="uint16" semanticType="ModelYear"/>
-        <type name="vehicleCodeType" primitiveType="char" length="16" semanticType="VehicleCode"/>
-        <composite name="engineType" semanticType="Engine">
+        <type name="ModelYearType" primitiveType="uint16" semanticType="ModelYear"/>
+        <type name="VehicleCodeType" primitiveType="char" length="16" semanticType="VehicleCode"/>
+        <composite name="EngineType" semanticType="Engine">
             <type name="capacity" primitiveType="uint16"/>
             <type name="numCylinders" primitiveType="uint8"/>
             <type name="maxRpm" primitiveType="uint16" presence="constant">9000</type>
             <type name="manufacturerCode" primitiveType="char" length="3"/>
         </composite>
-        <enum name="Boolean" encodingType="uint8" semanticType="Boolean">
+        <enum name="BooleanType" encodingType="uint8" semanticType="Boolean">
             <validValue name="FALSE">0</validValue>
             <validValue name="TRUE">1</validValue>
         </enum>
-        <enum name="modelType" encodingType="char" semanticType="Model">
+        <enum name="ModelType" encodingType="char" semanticType="Model">
             <validValue name="A">A</validValue>
             <validValue name="B">B</validValue>
             <validValue name="C">C</validValue>
         </enum>
-        <set name="optionalExtras" encodingType="uint8" semanticType="Extras">
+        <set name="OptionalExtras" encodingType="uint8" semanticType="Extras">
             <choice name="sunRoof">0</choice>
             <choice name="sportsPack">1</choice>
             <choice name="cruiseControl">2</choice>
@@ -45,12 +45,12 @@
     </types>
     <message name="BasicCar" id="1" description="Description of a basic Car">
         <field name="serialNumber" id="1" type="uint32" semanticType="SerialNumber"/>
-        <field name="modelYear" id="2" type="modelYearType"/>
-        <field name="available" id="3" type="Boolean"/>
-        <field name="code" id="4" type="modelType"/>
-        <field name="extras" id="5" type="optionalExtras"/>
-        <field name="vehicleCode" id="6" type="vehicleCodeType"/>
-        <field name="engine" id="7" type="engineType"/>
+        <field name="modelYear" id="2" type="ModelYearType"/>
+        <field name="available" id="3" type="BooleanType"/>
+        <field name="code" id="4" type="ModelType"/>
+        <field name="extras" id="5" type="OptionalExtras"/>
+        <field name="vehicleCode" id="6" type="VehicleCodeType"/>
+        <field name="engine" id="7" type="EngineType"/>
         <group name="FuelFigures" id="8" dimensionType="groupSizeEncoding">
             <field name="speed" id="9" type="uint16"  semanticType="int"/>
             <field name="mpg" id="10" type="float" semanticType="int"/>

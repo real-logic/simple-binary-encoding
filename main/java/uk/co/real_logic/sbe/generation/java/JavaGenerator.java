@@ -55,7 +55,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateFixedFlyweightCode());
 
             final List<Token> tokens = ir.header();
-            out.append(generatePrimitiveEncodings(tokens.subList(1, tokens.size() - 1)));
+            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1)));
 
             out.append("}\n");
         }
@@ -94,24 +94,50 @@ public class JavaGenerator implements CodeGenerator
                 out.append(generateClassDeclaration(className, MessageFlyweight.class.getSimpleName()));
                 out.append(generateMessageFlyweightCode(tokens.get(0).size()));
 
+                final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
-                final List<Token> rootFields = new ArrayList<>();
 
-                offset = collectRootFields(rootFields, tokens.subList(1, tokens.size() - 1), offset);
+                final List<Token> rootFields = new ArrayList<>();
+                offset = collectRootFields(messageBody, offset, rootFields);
                 out.append(generateFields(rootFields));
+
+                final List<Token> groups = new ArrayList<>();
+                offset = collectGroups(messageBody, offset, groups);
+
+                final List<Token> varData = messageBody.subList(offset, messageBody.size());
 
                 out.append("}\n");
             }
         }
     }
 
-    private int collectRootFields(final List<Token> rootFields, final List<Token> tokens, int offset)
+    private int collectRootFields(final List<Token> tokens, int offset, final List<Token> rootFields)
     {
-        Token currentToken = tokens.get(offset);
-        while (Signal.BEGIN_GROUP != currentToken.signal())
+        for (int size = tokens.size(); offset < size; offset++)
         {
-            rootFields.add(currentToken);
-            currentToken = tokens.get(++offset);
+            final Token token = tokens.get(offset);
+            if (Signal.BEGIN_GROUP == token.signal() || Signal.BEGIN_VAR_DATA == token.signal())
+            {
+                return offset;
+            }
+
+            rootFields.add(token);
+        }
+
+        return offset;
+    }
+
+    private int collectGroups(final List<Token> tokens, int offset, final List<Token> groups)
+    {
+        for (int size = tokens.size(); offset < size; offset++)
+        {
+            final Token token = tokens.get(offset);
+            if (Signal.BEGIN_VAR_DATA == token.signal())
+            {
+                return offset;
+            }
+
+            groups.add(token);
         }
 
         return offset;
@@ -161,7 +187,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateClassDeclaration(compositeName, FixedFlyweight.class.getSimpleName()));
             out.append(generateFixedFlyweightCode());
 
-            out.append(generatePrimitiveEncodings(tokens.subList(1, tokens.size() - 1)));
+            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1)));
 
             out.append("}\n");
         }
@@ -295,7 +321,7 @@ public class JavaGenerator implements CodeGenerator
         return "public enum " + name + "\n{\n";
     }
 
-    private CharSequence generatePrimitiveEncodings(final List<Token> tokens)
+    private CharSequence generatePrimitivePropertyEncodings(final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -303,56 +329,55 @@ public class JavaGenerator implements CodeGenerator
         {
             if (token.signal() == Signal.ENCODING)
             {
-                sb.append(generatePrimitiveEncoding(token));
+                sb.append(generatePrimitiveProperty(token.name(), token));
             }
         }
 
        return sb;
     }
 
-    private CharSequence generatePrimitiveEncoding(final Token token)
+    private CharSequence generatePrimitiveProperty(final String propertyName, final Token token)
     {
         if (Encoding.Presence.CONSTANT == token.encoding().presence())
         {
-            return generateConstEncodingMethod(token);
+            return generateConstPropertyMethod(propertyName, token);
         }
         else
         {
-            return generatePrimitiveEncodingMethods(token);
+            return generatePrimitivePropertyMethods(propertyName, token);
         }
     }
 
-    private CharSequence generatePrimitiveEncodingMethods(final Token token)
+    private CharSequence generatePrimitivePropertyMethods(final String propertyName, final Token token)
     {
         final int arrayLength = token.arrayLength();
 
         if (arrayLength == 1)
         {
-            return generateSingleEncoding(token);
+            return generateSingleValueProperty(propertyName, token);
         }
         else if (arrayLength > 1)
         {
-            return generateArrayEncoding(token);
+            return generateArrayProperty(propertyName, token);
         }
 
         return "";
     }
 
-    private CharSequence generateSingleEncoding(final Token token)
+    private CharSequence generateSingleValueProperty(final String propertyName, final Token token)
     {
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
         final String typePrefix = token.encoding().primitiveType().primitiveName();
-        final String propertyName = token.name();
         final Integer offset = Integer.valueOf(token.offset());
 
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
             "\n" +
-                "    public %s %s()\n" +
-                "    {\n" +
-                "        return CodecUtil.%sGet(buffer, offset + %d);\n" +
-                "    }\n\n",
+            "    public %s %s()\n" +
+            "    {\n" +
+            "        return CodecUtil.%sGet(buffer, offset + %d);\n" +
+            "    }\n\n",
             javaTypeName,
             propertyName,
             typePrefix,
@@ -361,9 +386,9 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "    public void %s(final %s value)\n" +
-                "    {\n" +
-                "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
-                "    }\n",
+            "    {\n" +
+            "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
+            "    }\n",
             propertyName,
             javaTypeName,
             typePrefix,
@@ -373,11 +398,10 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateArrayEncoding(final Token token)
+    private CharSequence generateArrayProperty(final String propertyName, final Token token)
     {
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
         final String typePrefix = token.encoding().primitiveType().primitiveName();
-        final String propertyName = token.name();
         final Integer offset = Integer.valueOf(token.offset());
 
         final StringBuilder sb = new StringBuilder();
@@ -428,17 +452,17 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "    public void get%s(final %s[] dst, final int offset, final int length)\n" +
-                "    {\n" +
-                "        if (offset < 0 || offset >= %d)\n" +
-                "        {\n" +
-                "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
-                "        }\n\n" +
-                "        if (length < 0 || length > %d)\n" +
-                "        {\n" +
-                "            throw new IndexOutOfBoundsException(\"length out of range: length=\" + length);\n" +
-                "        }\n\n" +
-                "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, length);\n" +
-                "    }\n\n",
+            "    {\n" +
+            "        if (offset < 0 || offset >= %d)\n" +
+            "        {\n" +
+            "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
+            "        }\n\n" +
+            "        if (length < 0 || length > %d)\n" +
+            "        {\n" +
+            "            throw new IndexOutOfBoundsException(\"length out of range: length=\" + length);\n" +
+            "        }\n\n" +
+            "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, length);\n" +
+            "    }\n\n",
             toUpperFirstChar(propertyName),
             javaTypeName,
             Integer.valueOf(token.arrayLength()),
@@ -471,18 +495,15 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateConstEncodingMethod(final Token token)
+    private CharSequence generateConstPropertyMethod(final String propertyName, final Token token)
     {
-        final String javaTypeName = javaTypeName(token.encoding().primitiveType());
-        final String propertyName = token.name();
-
         return String.format(
             "\n" +
             "    public %s %s()\n" +
             "    {\n" +
             "        return %s;\n" +
             "    }\n",
-            javaTypeName,
+            javaTypeName(token.encoding().primitiveType()),
             propertyName,
             generateLiteral(token)
         );
@@ -529,7 +550,135 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateFields(final List<Token> tokens)
     {
-        return "";
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0, size = tokens.size(); i < size; i++)
+        {
+            final Token signalToken = tokens.get(i);
+            if (signalToken.signal() == Signal.BEGIN_FIELD)
+            {
+                final Token encodingToken = tokens.get(i + 1);
+                final String propertyName = signalToken.name();
+
+                switch (encodingToken.signal())
+                {
+                    case ENCODING:
+                        sb.append(generatePrimitiveProperty(propertyName, encodingToken));
+                        break;
+
+                    case BEGIN_ENUM:
+                        sb.append(generateEnumProperty(propertyName, encodingToken));
+                        break;
+
+                    case BEGIN_SET:
+                        sb.append(generateBitsetProperty(propertyName, encodingToken));
+                        break;
+
+                    case BEGIN_COMPOSITE:
+                        sb.append(generateCompositeProperty(propertyName, encodingToken));
+                        break;
+                }
+            }
+        }
+
+        return sb;
+    }
+
+    private CharSequence generateEnumProperty(final String propertyName, final Token token)
+    {
+        final String enumName = token.name();
+        final String typePrefix = token.encoding().primitiveType().primitiveName();
+        final Integer offset = Integer.valueOf(token.offset());
+
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
+            "\n" +
+            "    public %s %s()\n" +
+            "    {\n" +
+            "        return %s.get(CodecUtil.%sGet(buffer, offset + %d));\n" +
+            "    }\n\n",
+            enumName,
+            propertyName,
+            enumName,
+            typePrefix,
+            offset
+        ));
+
+        sb.append(String.format(
+            "    public void %s(final %s value)\n" +
+            "    {\n" +
+            "        CodecUtil.%sPut(buffer, offset + %d, value.value());\n" +
+            "    }\n",
+            propertyName,
+            enumName,
+            typePrefix,
+            offset
+        ));
+
+        return sb;
+    }
+
+    private Object generateBitsetProperty(final String propertyName, final Token token)
+    {
+        final String bitsetName = token.name();
+        final Integer offset = Integer.valueOf(token.offset());
+
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
+            "\n    final %s %s = new %s();\n",
+            bitsetName,
+            propertyName,
+            bitsetName
+        ));
+
+        sb.append(String.format(
+            "\n" +
+            "    public %s %s()\n" +
+            "    {\n" +
+            "        %s.reset(buffer, offset + %d);\n" +
+            "        return %s;\n" +
+            "    }\n",
+            bitsetName,
+            propertyName,
+            propertyName,
+            offset,
+            propertyName
+        ));
+
+        return sb;
+    }
+
+    private Object generateCompositeProperty(final String propertyName, final Token token)
+    {
+        final String compositeName = token.name();
+        final Integer offset = Integer.valueOf(token.offset());
+
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
+            "\n    final %s %s = new %s();\n",
+            compositeName,
+            propertyName,
+            compositeName
+        ));
+
+        sb.append(String.format(
+            "\n" +
+            "    public %s %s()\n" +
+            "    {\n" +
+            "        %s.reset(buffer, offset + %d);\n" +
+            "        return %s;\n" +
+            "    }\n",
+            compositeName,
+            propertyName,
+            propertyName,
+            offset,
+            propertyName
+        ));
+
+        return sb;
     }
 
     private CharSequence generateLiteral(final Token token)
