@@ -49,7 +49,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(0).signal(), is(Signal.BEGIN_COMPOSITE));
         assertThat(tokens.get(0).name(), is("messageHeader"));
         assertThat(valueOf(tokens.get(0).schemaId()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(0).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(0).size()), is(valueOf(6)));
         assertThat(valueOf(tokens.get(0).offset()), is(valueOf(0)));
 
         /* assert all elements of node 1 */
@@ -92,7 +92,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(5).signal(), is(Signal.END_COMPOSITE));
         assertThat(tokens.get(5).name(), is("messageHeader"));
         assertThat(valueOf(tokens.get(5).schemaId()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(5).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(5).size()), is(valueOf(6)));
         assertThat(valueOf(tokens.get(5).offset()), is(valueOf(0)));
     }
 
@@ -172,7 +172,7 @@ public class BasicXmlIrGenerationTest
 
         assertThat(tokens.get(2).signal(), is(Signal.BEGIN_COMPOSITE));
         assertThat(tokens.get(2).name(), is("varDataEncoding"));
-        assertThat(valueOf(tokens.get(2).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(2).size()), is(valueOf(-1)));
         assertThat(valueOf(tokens.get(2).offset()), is(valueOf(0)));
 
         assertThat(tokens.get(3).signal(), is(Signal.ENCODING));
@@ -193,7 +193,7 @@ public class BasicXmlIrGenerationTest
 
         assertThat(tokens.get(5).signal(), is(Signal.END_COMPOSITE));
         assertThat(tokens.get(5).name(), is("varDataEncoding"));
-        assertThat(valueOf(tokens.get(5).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(5).size()), is(valueOf(-1)));
         assertThat(valueOf(tokens.get(5).offset()), is(valueOf(0)));
 
         assertThat(tokens.get(6).signal(), is(Signal.END_VAR_DATA));

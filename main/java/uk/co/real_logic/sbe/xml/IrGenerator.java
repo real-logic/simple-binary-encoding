@@ -154,7 +154,8 @@ public class IrGenerator
         Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_COMPOSITE)
             .name(type.name())
-            .offset(currOffset);
+            .offset(currOffset)
+            .size(type.size());
 
         tokenList.add(builder.build());
 
