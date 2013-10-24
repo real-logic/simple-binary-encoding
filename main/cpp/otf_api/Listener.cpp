@@ -29,7 +29,7 @@ const int Field::FIELD_INDEX;
 
 Listener::Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL),
                        ir_(NULL), buffer_(NULL), bufferLen_(0), bufferOffset_(0),
-                       irCallback_(NULL), topFrame_(messageFrame_), messageFrame_()
+                       irCallback_(NULL), messageFrame_()
 {
 }
 
@@ -105,6 +105,7 @@ int Listener::process(void)
     // layer to coalesce for higher up
     for (; !ir->end(); ir->next())
     {
+        //cout << "IR @ " << ir->position() << " " << ir->signal() << endl;
         if (bufferOffset_ > bufferLen_)
         {
             if (onError_ != NULL)
@@ -292,12 +293,12 @@ int Listener::process(void)
 
 void Listener::processBeginMessage(const std::string &name)
 {
-    topFrame_.scopeName_ = name;
+    stack_.top().scopeName_ = name;
 }
 
 void Listener::processEndMessage(void)
 {
-    topFrame_.scopeName_ = "";
+    stack_.top().scopeName_ = "";
 }
 
 void Listener::processBeginComposite(const std::string &name)
@@ -309,30 +310,32 @@ void Listener::processBeginComposite(const std::string &name)
         cachedField_.type(Field::COMPOSITE);
     }
 
-    if (topFrame_.state_ == Frame::BEGAN_GROUP)
+    if (stack_.top().state_ == Frame::BEGAN_GROUP)
     {
-        topFrame_.state_ = Frame::DIMENSIONS;
+        stack_.top().state_ = Frame::DIMENSIONS;
     }
 }
 
 void Listener::processEndComposite(void)
 {
-    if (cachedField_.fieldName() == "" && topFrame_.state_ == Frame::MESSAGE)
+    if (cachedField_.fieldName() == "" && stack_.top().state_ == Frame::MESSAGE)
     {
         onNext_->onNext(cachedField_);
         cachedField_.reset();
     }
 
-    if (topFrame_.state_ == Frame::DIMENSIONS)
+    if (stack_.top().state_ == Frame::DIMENSIONS)
     {
-        topFrame_.state_ = Frame::BODY_OF_GROUP;
+        cachedField_.reset(); // probably saved some state in the encodings, so reset it out for the fields to follow
 
-        topFrame_.irPosition_ = ir_->position();
-        // cout << "save IR position " << topFrame_.irPosition_ << endl;
+        stack_.top().state_ = Frame::BODY_OF_GROUP;
 
-        cachedGroup_.name(topFrame_.scopeName_)
+        stack_.top().irPosition_ = ir_->position();
+        //cout << "save IR position " << stack_.top().irPosition_ << endl;
+
+        cachedGroup_.name(stack_.top().scopeName_)
             .iteration(0)
-            .numInGroup(topFrame_.numInGroup_)
+            .numInGroup(stack_.top().numInGroup_)
             .event(Group::START);
         onNext_->onNext(cachedGroup_);
         cachedGroup_.reset();
@@ -452,16 +455,16 @@ uint64_t Listener::processEncoding(const std::string &name, const Ir::TokenPrimi
     {
         cachedField_.varDataLength(value);
     }
-    else if (topFrame_.state_ == Frame::DIMENSIONS)
+    else if (stack_.top().state_ == Frame::DIMENSIONS)
     {
         if (name == "blockLength")
         {
-            topFrame_.blockLength_ = value;
+            stack_.top().blockLength_ = value;
          }
         else if (name == "numInGroup")
         {
-            topFrame_.numInGroup_ = value;
-            topFrame_.iteration_ = 0;
+            stack_.top().numInGroup_ = value;
+            stack_.top().iteration_ = 0;
          }
     }
     return Ir::size(type);
@@ -490,40 +493,40 @@ uint64_t Listener::processEncoding(const std::string &name, const Ir::TokenPrimi
 
 void Listener::processBeginGroup(const std::string &name)
 {
-    topFrame_ = Frame(ir_->name().c_str());
-    stack_.push(topFrame_);
-    topFrame_.state_ = Frame::BEGAN_GROUP;
+    stack_.push(Frame(ir_->name().c_str()));
+    stack_.top().state_ = Frame::BEGAN_GROUP;
 }
 
 void Listener::processEndGroup(void)
 {
-    cachedGroup_.name(topFrame_.scopeName_)
-        .iteration(topFrame_.iteration_)
-        .numInGroup(topFrame_.numInGroup_)
+    bool popped = false;
+
+    //cout << "END_GROUP " << stack_.top().scopeName_ << endl;
+    cachedGroup_.name(stack_.top().scopeName_)
+        .iteration(stack_.top().iteration_)
+        .numInGroup(stack_.top().numInGroup_)
         .event(Group::END);
     onNext_->onNext(cachedGroup_);
     cachedGroup_.reset();
 
-    if (++topFrame_.iteration_ < topFrame_.numInGroup_)
+    if (++stack_.top().iteration_ < stack_.top().numInGroup_)
     {
         // don't pop frame yet
-        ir_->position(topFrame_.irPosition_);  // rewind IR to first field in group
+        ir_->position(stack_.top().irPosition_);  // rewind IR to first field in group
+
+        cachedGroup_.name(stack_.top().scopeName_)
+            .iteration(stack_.top().iteration_)
+            .numInGroup(stack_.top().numInGroup_)
+            .event(Group::START);
+        onNext_->onNext(cachedGroup_);
+        cachedGroup_.reset();
     }
     else
     {
         // pop frame
         stack_.pop();
-        topFrame_ = stack_.top();
+        popped = true;
     }
 
-    // cout << "IR position " << ir_->position() << endl;
-    if (topFrame_.state_ != Frame::MESSAGE)
-    {
-        cachedGroup_.name(topFrame_.scopeName_)
-            .iteration(topFrame_.iteration_)
-            .numInGroup(topFrame_.numInGroup_)
-            .event(Group::START);
-        onNext_->onNext(cachedGroup_);
-        cachedGroup_.reset();
-    }
+    //cout << "IR position " << ir_->position() << endl;
 }

@@ -528,5 +528,5 @@ TEST_F(OtfMessageSetTest, shouldHandleSet)
  * TODO: test reuse of listener
  * TODO: test offset values on fields
  * TODO: byte order
- * TODO: nested repeating group - MassQuote
+ * TODO: MassQuote
  */

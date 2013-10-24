@@ -140,7 +140,6 @@ private:
     };
 
     Frame messageFrame_;
-    Frame &topFrame_;
     std::stack<Frame, std::vector<Frame> > stack_;
 
 protected:
