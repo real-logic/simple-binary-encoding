@@ -131,11 +131,11 @@ private:
         std::string scopeName_;
         int blockLength_;
         int numInGroup_;
-        int currentIndex_;
+        int iteration_;
         int irPosition_;
         State state_;
 
-        Frame(const std::string &name = "") : blockLength_(-1), numInGroup_(-1), currentIndex_(-1),
+        Frame(const std::string &name = "") : blockLength_(-1), numInGroup_(-1), iteration_(-1),
                                               irPosition_(-1), scopeName_(name), state_(MESSAGE) {};
     };
 

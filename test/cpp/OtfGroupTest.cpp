@@ -94,37 +94,37 @@ protected:
         {
             EXPECT_EQ(g.event(), Group::START);
             EXPECT_EQ(numFieldsSeen_, 1);
-            EXPECT_EQ(g.currentIndex(), 0);
+            EXPECT_EQ(g.iteration(), 0);
         }
         else if (numGroupsSeen_ == 2)
         {
             EXPECT_EQ(g.event(), Group::END);
             EXPECT_EQ(numFieldsSeen_, 2);
-            EXPECT_EQ(g.currentIndex(), 0);
+            EXPECT_EQ(g.iteration(), 0);
         }
         else if (numGroupsSeen_ == 3)
         {
             EXPECT_EQ(g.event(), Group::START);
             EXPECT_EQ(numFieldsSeen_, 2);
-            EXPECT_EQ(g.currentIndex(), 1);
+            EXPECT_EQ(g.iteration(), 1);
         }
         else if (numGroupsSeen_ == 4)
         {
             EXPECT_EQ(g.event(), Group::END);
             EXPECT_EQ(numFieldsSeen_, 3);
-            EXPECT_EQ(g.currentIndex(), 1);
+            EXPECT_EQ(g.iteration(), 1);
         }
         else if (numGroupsSeen_ == 5)
         {
             EXPECT_EQ(g.event(), Group::START);
             EXPECT_EQ(numFieldsSeen_, 3);
-            EXPECT_EQ(g.currentIndex(), 2);
+            EXPECT_EQ(g.iteration(), 2);
         }
         else if (numGroupsSeen_ == 6)
         {
             EXPECT_EQ(g.event(), Group::END);
             EXPECT_EQ(numFieldsSeen_, 4);
-            EXPECT_EQ(g.currentIndex(), 2);
+            EXPECT_EQ(g.iteration(), 2);
         }
         return 0;
     };

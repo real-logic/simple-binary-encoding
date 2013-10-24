@@ -41,9 +41,9 @@ public:
         return name_;
     };
 
-    int currentIndex() const
+    int iteration() const
     {
-        return currentIndex_;
+        return iteration_;
     };
 
     int numInGroup() const
@@ -58,9 +58,9 @@ protected:
         return *this;
     };
 
-    Group &currentIndex(const int currentIndex)
+    Group &iteration(const int iteration)
     {
-        currentIndex_ = currentIndex;
+        iteration_ = iteration;
         return *this;
     };
 
@@ -78,7 +78,7 @@ protected:
 
     Group &reset()
     {
-        currentIndex_ = -1;
+        iteration_ = -1;
         numInGroup_ = 0;
         name_ = "";
         event_ = NONE;
@@ -88,7 +88,7 @@ protected:
 private:
     std::string name_;
     Event event_;
-    int currentIndex_;
+    int iteration_;
     int numInGroup_;
 
     friend class Listener;

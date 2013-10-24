@@ -331,7 +331,7 @@ void Listener::processEndComposite(void)
         // cout << "save IR position " << topFrame_.irPosition_ << endl;
 
         cachedGroup_.name(topFrame_.scopeName_)
-            .currentIndex(0)
+            .iteration(0)
             .numInGroup(topFrame_.numInGroup_)
             .event(Group::START);
         onNext_->onNext(cachedGroup_);
@@ -461,7 +461,7 @@ uint64_t Listener::processEncoding(const std::string &name, const Ir::TokenPrimi
         else if (name == "numInGroup")
         {
             topFrame_.numInGroup_ = value;
-            topFrame_.currentIndex_ = 0;
+            topFrame_.iteration_ = 0;
          }
     }
     return Ir::size(type);
@@ -498,13 +498,13 @@ void Listener::processBeginGroup(const std::string &name)
 void Listener::processEndGroup(void)
 {
     cachedGroup_.name(topFrame_.scopeName_)
-        .currentIndex(topFrame_.currentIndex_)
+        .iteration(topFrame_.iteration_)
         .numInGroup(topFrame_.numInGroup_)
         .event(Group::END);
     onNext_->onNext(cachedGroup_);
     cachedGroup_.reset();
 
-    if (++topFrame_.currentIndex_ < topFrame_.numInGroup_)
+    if (++topFrame_.iteration_ < topFrame_.numInGroup_)
     {
         // don't pop frame yet
         ir_->position(topFrame_.irPosition_);  // rewind IR to first field in group
@@ -520,7 +520,7 @@ void Listener::processEndGroup(void)
     if (topFrame_.state_ != Frame::MESSAGE)
     {
         cachedGroup_.name(topFrame_.scopeName_)
-            .currentIndex(topFrame_.currentIndex_)
+            .iteration(topFrame_.iteration_)
             .numInGroup(topFrame_.numInGroup_)
             .event(Group::START);
         onNext_->onNext(cachedGroup_);
