@@ -17,6 +17,8 @@
 #ifndef _LISTENER_H_
 #define _LISTENER_H_
 
+#include <stack>
+
 #include "otf_api/OnNext.h"
 #include "otf_api/OnError.h"
 #include "otf_api/OnCompleted.h"
@@ -110,11 +112,36 @@ private:
     Group cachedGroup_;
 
     /*
-     *
+     * State associated with message dispatching from header
      */
     std::string headerEncodingName_;
     Ir::Callback *irCallback_;
     uint64_t templateId_;
+
+    /*
+     * Stack frame to hold the repeating group state
+     */
+    struct Frame
+    {
+        enum State
+        {
+            BEGAN_GROUP, DIMENSIONS, BODY_OF_GROUP, MESSAGE
+        };
+
+        std::string scopeName_;
+        int blockLength_;
+        int numInGroup_;
+        int currentIndex_;
+        int irPosition_;
+        State state_;
+
+        Frame(const std::string &name = "") : blockLength_(-1), numInGroup_(-1), currentIndex_(-1),
+                                              irPosition_(-1), scopeName_(name), state_(MESSAGE) {};
+    };
+
+    Frame messageFrame_;
+    Frame &topFrame_;
+    std::stack<Frame, std::vector<Frame> > stack_;
 
 protected:
     /*
@@ -125,10 +152,10 @@ protected:
         return ((onNext_) ? onNext_->onNext(field) : 0);
     };
 
-    // int deliver(const Group &group)
-    // {
-    //     return ((onNext_) ? onNext_->onNext(group) : 0);
-    // };
+    int deliver(const Group &group)
+    {
+        return ((onNext_) ? onNext_->onNext(group) : 0);
+    };
 
     int error(const Error &error)
     {
@@ -142,6 +169,8 @@ protected:
     virtual int process(void);
 
     // consolidated IR and data events
+    virtual void processBeginMessage(const std::string &name);
+    virtual void processEndMessage(void);
     virtual void processBeginComposite(const std::string &name);
     virtual void processEndComposite(void);
     virtual void processBeginField(const std::string &name, const uint16_t schemaId);
@@ -162,15 +191,13 @@ protected:
     virtual uint64_t processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
     virtual uint64_t processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value);
     virtual uint64_t processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const char *value, const int size);
+    virtual void processBeginGroup(const std::string &name);
+    virtual void processEndGroup(void);
 
 public:
 
     /// Basic constructor
-    Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL),
-                 ir_(NULL), buffer_(NULL), bufferLen_(0), bufferOffset_(0),
-                 irCallback_(NULL)
-    {
-    };
+    Listener();
 
     /**
      * Set the IR to use for all buffers

@@ -22,11 +22,17 @@
 class OtfMessageTestCBs : public OnNext, public OnError, public OnCompleted
 {
 public:
-    OtfMessageTestCBs() : numFieldsSeen_(0), numErrorsSeen_(0), numCompletedsSeen_(0) {};
+OtfMessageTestCBs() : numFieldsSeen_(0), numErrorsSeen_(0), numCompletedsSeen_(0), numGroupsSeen_(0) {};
 
     virtual int onNext(const Field &f)
     {
         numFieldsSeen_++;
+        return 0;
+    };
+
+    virtual int onNext(const Group &g)
+    {
+        numGroupsSeen_++;
         return 0;
     };
 
@@ -45,6 +51,7 @@ public:
     int numFieldsSeen_;
     int numErrorsSeen_;
     int numCompletedsSeen_;
+    int numGroupsSeen_;
 };
 
 #endif /* _OTFMESSAGETESTCBS_H_ */

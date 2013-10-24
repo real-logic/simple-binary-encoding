@@ -115,6 +115,10 @@ public:
     uint64_t choiceValue() const;
     uint8_t nameLen() const;
     std::string name() const;
+    int position() const;    
+
+    /// rewind or fast-forward IR to given position
+    void position(int pos);
 
     // used by test fixtures to generate IR for tests - initial call allocates max sized buffer
     void addToken(uint32_t offset,

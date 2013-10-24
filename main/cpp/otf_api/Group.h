@@ -22,47 +22,74 @@ namespace on_the_fly {
 class Group
 {
 public:
+    enum Event
+    {
+        START = 1,
+        END = 2,
+        NONE = 3
+    };
 
-    Group() : size_(0) {};
-    virtual ~Group() {};
+    Group() {};
+
+    Event event() const
+    {
+        return event_;
+    };
 
     const std::string &name() const
     {
         return name_;
     };
 
-    int size() const
+    int currentIndex() const
     {
-        return size_;
+        return currentIndex_;
     };
 
-    // iterate over fields
-    void begin();
-    bool end() const;
-    Field &current() const;
-    void next();
+    int numInGroup() const
+    {
+        return numInGroup_;
+    };
 
 protected:
-    // set by Listener
-    Group &name(std::string &name);
-
-    Group &size(const int size)
+    Group &name(const std::string &name)
     {
-        size_ = size;
+        name_ = name;
+        return *this;
+    };
+
+    Group &currentIndex(const int currentIndex)
+    {
+        currentIndex_ = currentIndex;
+        return *this;
+    };
+
+    Group &numInGroup(const int numInGroup)
+    {
+        numInGroup_ = numInGroup;
+        return *this;
+    };
+
+    Group &event(Event event)
+    {
+        event_ = event;
         return *this;
     };
 
     Group &reset()
     {
-        size_ = 0;
-        // TODO: remove all Fields
+        currentIndex_ = -1;
+        numInGroup_ = 0;
+        name_ = "";
+        event_ = NONE;
         return *this;
     };
 
 private:
     std::string name_;
-    Field cachedField_;
-    int size_;
+    Event event_;
+    int currentIndex_;
+    int numInGroup_;
 
     friend class Listener;
 };

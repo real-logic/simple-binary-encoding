@@ -104,6 +104,11 @@ protected:
         return 0;
     };
 
+    virtual int onNext(const Group &p)
+    {
+        return 0;
+    };
+
     virtual int onError(const Error &e)
     {
         EXPECT_EQ(e.message(), "buffer too short");

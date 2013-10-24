@@ -17,6 +17,7 @@
 #define _ONNEXT_H_
 
 #include "otf_api/Field.h"
+#include "otf_api/Group.h"
 
 namespace sbe {
 namespace on_the_fly {
@@ -25,6 +26,7 @@ class OnNext
 {
 public:
     virtual int onNext(const Field &field) = 0;
+    virtual int onNext(const Group &group) = 0;
 };
 
 } // namepsace on_the_fly

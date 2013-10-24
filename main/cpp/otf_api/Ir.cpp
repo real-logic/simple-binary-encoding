@@ -120,6 +120,16 @@ std::string Ir::name() const
     return std::string((buffer_ + cursorOffset_ + sizeof(struct IrToken)), nameLen());
 }
 
+int Ir::position() const
+{
+    return cursorOffset_;
+}
+
+void Ir::position(const int pos)
+{
+    cursorOffset_ = pos;
+}
+
 // protected
 void Ir::addToken(uint32_t offset,
                   uint32_t size,
