@@ -79,10 +79,12 @@ public class FlyweightStyleExample
         massQuote.putCtiCode(CtiCode.HOUSE);
 
         final MassQuote.QuoteSet quoteSet = massQuote.quoteSetCount(2);
+        quoteSet.next();
 
         quoteSet.putUnderlyingSecurity("ESH0");
 
         MassQuote.QuoteSet.QuoteEntry quoteEntry = quoteSet.quoteEntryCount(2);
+        quoteEntry.next();
         quoteEntry.id(1);
         quoteEntry.symbol("ABC1");
         quoteEntry.securityType(SecurityType.OPT);

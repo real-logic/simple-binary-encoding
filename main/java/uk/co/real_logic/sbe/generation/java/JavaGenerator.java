@@ -35,6 +35,7 @@ public class JavaGenerator implements CodeGenerator
     /** Class name to be used for visitor pattern that accesses the message header. */
     public static final String MESSAGE_HEADER_VISITOR = "MessageHeader";
 
+    private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
 
     private final IntermediateRepresentation ir;
@@ -59,7 +60,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateFixedFlyweightCode());
 
             final List<Token> tokens = ir.header();
-            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), ""));
+            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");
         }
@@ -103,12 +104,12 @@ public class JavaGenerator implements CodeGenerator
 
                 final List<Token> rootFields = new ArrayList<>();
                 offset = collectRootFields(messageBody, offset, rootFields);
-                out.append(generateFields(rootFields, ""));
+                out.append(generateFields(rootFields, BASE_INDENT));
 
                 final List<Token> groups = new ArrayList<>();
                 offset = collectGroups(messageBody, offset, groups);
                 StringBuilder sb = new StringBuilder();
-                generateGroups(sb, groups, 0, "");
+                generateGroups(sb, groups, 0, BASE_INDENT);
                 out.append(sb);
 
                 final List<Token> varData = messageBody.subList(offset, messageBody.size());
@@ -153,7 +154,7 @@ public class JavaGenerator implements CodeGenerator
         return index;
     }
 
-    private int generateGroups(final StringBuilder sb, final List<Token> tokens, int index, String indent)
+    private int generateGroups(final StringBuilder sb, final List<Token> tokens, int index, final String indent)
     {
         for (int size = tokens.size(); index < size; index++)
         {
@@ -209,9 +210,9 @@ public class JavaGenerator implements CodeGenerator
             indent + "        dimensions.reset(buffer, position());\n" +
             indent + "        size = dimensions.numInGroup();\n" +
             indent + "        blockLength = dimensions.blockLength();\n" +
-            indent + "        index = 0;\n" +
+            indent + "        index = -1;\n" +
             indent + "        offset = position() + %d; // include dimensions header\n" +
-            indent + "        position(offset + blockLength);\n" +
+            indent + "        position(offset);\n" +
             indent + "    }\n\n",
             dimensionTypeSize
         ));
@@ -226,11 +227,11 @@ public class JavaGenerator implements CodeGenerator
             indent + "        dimensions.reset(buffer, position());\n" +
             indent + "        dimensions.numInGroup((%s)size);\n" +
             indent + "        dimensions.blockLength((%s)%d);\n" +
-            indent + "        index = 0;\n" +
+            indent + "        index = -1;\n" +
             indent + "        this.size = size;\n" +
             indent + "        blockLength = %d;\n" +
             indent + "        offset = position() + %d; // include dimensions header\n" +
-            indent + "        position(offset + blockLength);\n" +
+            indent + "        position(offset);\n" +
             indent + "    }\n\n",
             javaTypeForNumInGroup,
             javaTypeForBlockLength,
@@ -246,15 +247,16 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n\n"
         );
 
-
         sb.append(
-            indent + "    public void next()\n" +
+            indent + "    public boolean next()\n" +
             indent + "    {\n" +
-            indent + "        if (++index >= size)\n" +
+            indent + "        if (index + 1 >= size)\n" +
             indent + "        {\n" +
-            indent + "            throw new java.util.NoSuchElementException(Integer.toString(index));\n" +
+            indent + "            return false;\n" +
             indent + "        }\n\n" +
             indent + "        position(position() + blockLength);\n" +
+            indent + "        ++index;\n" +
+            indent + "        return true;\n" +
             indent + "    }\n\n"
         );
     }
@@ -338,7 +340,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateClassDeclaration(compositeName, FixedFlyweight.class.getSimpleName()));
             out.append(generateFixedFlyweightCode());
 
-            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), ""));
+            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");
         }
@@ -457,13 +459,13 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateClassDeclaration(final String className, final String implementsName)
+    private CharSequence generateClassDeclaration(final String className, final String implementedInterface)
     {
         return String.format(
             "public class %s implements %s\n" +
             "{\n",
             className,
-            implementsName
+            implementedInterface
         );
     }
 

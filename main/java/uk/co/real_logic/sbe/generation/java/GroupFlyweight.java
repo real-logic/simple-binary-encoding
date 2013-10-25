@@ -38,4 +38,11 @@ public interface GroupFlyweight
      * @return the number of times the group repeats.
      */
     int size();
+
+    /**
+     * Advance the group forward to next element. The cursor initially starts at -1.
+     *
+     * @return true is the advance succeeds due to sufficient space.
+     */
+    boolean next();
 }
