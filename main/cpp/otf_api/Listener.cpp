@@ -20,6 +20,34 @@
 
 #include "otf_api/Listener.h"
 
+/*
+ * builtins for GCC. MSVC has similar ones.
+ */
+inline uint16_t byteswap16(uint16_t value)
+{
+    return __builtin_bswap16(value);
+}
+
+inline uint32_t byteswap32(uint32_t value)
+{
+    return __builtin_bswap32(value);
+}
+
+inline uint64_t byteswap64(uint64_t value)
+{
+    return __builtin_bswap64(value);
+}
+
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#    define SWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? v : byteswap16(v))
+#    define SWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? v : byteswap32(v))
+#    define SWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? v : byteswap64(v))
+#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#    define SWAP16(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? v : byteswap16(v))
+#    define SWAP32(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? v : byteswap32(v))
+#    define SWAP64(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? v : byteswap64(v))
+#endif /* byte ordering */
+
 using namespace sbe::on_the_fly;
 using ::std::cout;
 using ::std::endl;
