@@ -199,7 +199,7 @@ public class Message
     private Field parseGroupField(final NodeList nodeList, final int nodeIndex) throws XPathExpressionException
     {
         final String dimensionTypeName = getAttributeValue(nodeList.item(nodeIndex), "dimensionType", "groupSizeEncoding");
-        final Type dimensionType = typeByNameMap.get(dimensionTypeName);
+        Type dimensionType = typeByNameMap.get(dimensionTypeName);
         if (dimensionType == null)
         {
             handleError(nodeList.item(nodeIndex), "could not find dimensionType: " + dimensionTypeName);
@@ -207,6 +207,7 @@ public class Message
         else if (!(dimensionType instanceof CompositeType))
         {
             handleError(nodeList.item(nodeIndex), "dimensionType should be a composite type: " + dimensionTypeName);
+            dimensionType = null;
         }
         else
         {
