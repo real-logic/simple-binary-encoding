@@ -21,6 +21,13 @@ package uk.co.real_logic.sbe.generation.java;
 public interface MessageFlyweight
 {
     /**
+     * Get the root block length for the message type.
+     *
+     * @return the root block length for the message type.
+     */
+    int blockLength();
+
+    /**
      * Reset the flyweight to a new index in a buffer to overlay a message.
      *
      * @param buffer underlying the message.
