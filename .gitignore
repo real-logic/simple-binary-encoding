@@ -4,6 +4,7 @@ GTAGS
 GRTAGS
 GPATH
 prop
+out
 .DS_Store
 .idea
 *.iml
