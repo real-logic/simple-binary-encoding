@@ -25,6 +25,7 @@ import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
@@ -176,6 +177,7 @@ public class JavaGeneratorTest
     @Test
     public void shouldGenerateBasicMessage() throws Exception
     {
+        final DirectBuffer buffer = new DirectBuffer(new byte[4096]);
         final String className = "BasicCar";
         final String fqClassName = ir.packageName() + "." + className;
 
@@ -183,8 +185,17 @@ public class JavaGeneratorTest
         javaGenerator.generateTypeStubs();
         javaGenerator.generateMessageStubs();
 
-        //System.out.println(outputManager.getSource(fqClassName));
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
+
+        final MessageFlyweight messageFlyweight = (MessageFlyweight)clazz.newInstance();
+        messageFlyweight.reset(buffer, 0);
+
+        final int initialPosition = messageFlyweight.position();
+        assertThat(Integer.valueOf(messageFlyweight.blockLength()), is(Integer.valueOf(initialPosition)));
+
+        final GroupFlyweight groupFlyweight = (GroupFlyweight)clazz.getDeclaredMethod("fuelFigures").invoke(messageFlyweight);
+        assertThat(Integer.valueOf(messageFlyweight.position()), greaterThan(Integer.valueOf(initialPosition)));
+        assertThat(Integer.valueOf(groupFlyweight.size()), is(Integer.valueOf(0)));
     }
 }

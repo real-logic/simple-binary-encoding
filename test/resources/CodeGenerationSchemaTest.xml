@@ -51,13 +51,13 @@
         <field name="extras" id="5" type="OptionalExtras"/>
         <field name="vehicleCode" id="6" type="VehicleCodeType"/>
         <field name="engine" id="7" type="EngineType"/>
-        <group name="FuelFigures" id="8" dimensionType="groupSizeEncoding">
+        <group name="fuelFigures" id="8" dimensionType="groupSizeEncoding">
             <field name="speed" id="9" type="uint16"  semanticType="int"/>
             <field name="mpg" id="10" type="float" semanticType="int"/>
         </group>
-        <group name="PerformanceFigures" id="11" dimensionType="groupSizeEncoding">
+        <group name="performanceFigures" id="11" dimensionType="groupSizeEncoding">
             <field name="octaneRating" id="12" type="uint8" semanticType="RON"/>
-            <group name="Acceleration" id="13" dimensionType="groupSizeEncoding">
+            <group name="acceleration" id="13" dimensionType="groupSizeEncoding">
                 <field name="mph" id="14" type="uint16"  semanticType="int"/>
                 <field name="seconds" id="15" type="float" semanticType="int"/>
             </group>

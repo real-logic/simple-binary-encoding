@@ -174,7 +174,7 @@ public class JavaGenerator implements CodeGenerator
                     index = generateGroups(sb, tokens, index, indent + INDENT);
                 }
 
-                sb.append(indent).append("    }\n\n");
+                sb.append(indent).append("    }\n");
             }
         }
 
@@ -188,7 +188,7 @@ public class JavaGenerator implements CodeGenerator
                                           final String indent)
     {
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
-        final Integer dimensionTypeSize = Integer.valueOf(tokens.get(index + 1).size());
+        final Integer dimensionHeaderSize = Integer.valueOf(tokens.get(index + 1).size());
 
         sb.append(String.format(
             "\n" +
@@ -211,10 +211,11 @@ public class JavaGenerator implements CodeGenerator
             indent + "        size = dimensions.numInGroup();\n" +
             indent + "        blockLength = dimensions.blockLength();\n" +
             indent + "        index = -1;\n" +
-            indent + "        offset = position() + %d; // include dimensions header\n" +
+            indent + "        final int dimensionsHeaderSize = %d;\n" +
+            indent + "        offset = position() + dimensionsHeaderSize;\n" +
             indent + "        position(offset);\n" +
             indent + "    }\n\n",
-            dimensionTypeSize
+            dimensionHeaderSize
         ));
 
         final Integer blockLength = Integer.valueOf(tokens.get(index).size());
@@ -230,14 +231,15 @@ public class JavaGenerator implements CodeGenerator
             indent + "        index = -1;\n" +
             indent + "        this.size = size;\n" +
             indent + "        blockLength = %d;\n" +
-            indent + "        offset = position() + %d; // include dimensions header\n" +
+            indent + "        final int dimensionsHeaderSize = %d;\n" +
+            indent + "        offset = position() + dimensionsHeaderSize;\n" +
             indent + "        position(offset);\n" +
             indent + "    }\n\n",
             javaTypeForNumInGroup,
             javaTypeForBlockLength,
             blockLength,
             blockLength,
-            dimensionTypeSize
+            dimensionHeaderSize
         ));
 
         sb.append(
@@ -255,9 +257,9 @@ public class JavaGenerator implements CodeGenerator
             indent + "            return false;\n" +
             indent + "        }\n\n" +
             indent + "        position(position() + blockLength);\n" +
-            indent + "        ++index;\n" +
+            indent + "        ++index;\n\n" +
             indent + "        return true;\n" +
-            indent + "    }\n\n"
+            indent + "    }\n"
         );
     }
 
@@ -269,6 +271,7 @@ public class JavaGenerator implements CodeGenerator
         final String propertyName = formatPropertyName(groupName);
 
         sb.append(String.format(
+            "\n" +
             indent + "    final %s %s = new %s();\n",
             className,
             propertyName,
@@ -291,9 +294,66 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateVarData(final List<Token> varData)
+    private CharSequence generateVarData(final List<Token> tokens)
     {
-        return "";
+        final StringBuilder sb = new StringBuilder();
+
+        for (int i = 0, size = tokens.size(); i < size; i++)
+        {
+            final Token token = tokens.get(i);
+            if (token.signal() == Signal.BEGIN_VAR_DATA)
+            {
+                final String propertyName = toUpperFirstChar(token.name());
+
+                sb.append(String.format(
+                    "\n"  +
+                    "    public String get%sEncoding()\n" +
+                    "    {\n" +
+                    "        return \"%s\";\n" +
+                    "    }\n\n",
+                    propertyName,
+                    "UTF-8"
+                ));
+
+                final Token lengthToken = tokens.get(i + 2);
+                final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
+                final String lengthJavaType = javaTypeName(lengthToken.encoding().primitiveType());
+                final String lengthTypePrefix = lengthToken.encoding().primitiveType().primitiveName();
+
+                sb.append(String.format(
+                    "    public void get%s(final byte[] dst, final int offset, final int length)\n" +
+                    "    {\n" +
+                    "        final int sizeOfLengthField = %d;\n" +
+                    "        final int lengthPosition = position();\n" +
+                    "        position(lengthPosition + sizeOfLengthField);\n" +
+                    "        final int dataLength = CodecUtil.%sGet(buffer, lengthPosition);\n" +
+                    "        position(position() + dataLength);\n" +
+                    "        CodecUtil.int8sGet(buffer, position(), dst, offset, Math.min(length, dataLength));\n" +
+                    "    }\n\n",
+                    propertyName,
+                    sizeOfLengthField,
+                    lengthTypePrefix
+                ));
+
+                sb.append(String.format(
+                    "    public void put%s(final byte[] src, final int offset, final int length)\n" +
+                    "    {\n" +
+                    "        final int sizeOfLengthField = %d;\n" +
+                    "        final int lengthPosition = position();\n" +
+                    "        position(lengthPosition + sizeOfLengthField);\n" +
+                    "        CodecUtil.%sPut(buffer, lengthPosition, (%s)length);\n" +
+                    "        position(position() + length);\n" +
+                    "        CodecUtil.int8sPut(buffer, position(), src, offset, length);\n" +
+                    "    }\n",
+                    propertyName,
+                    sizeOfLengthField,
+                    lengthTypePrefix,
+                    lengthJavaType
+                ));
+            }
+        }
+
+        return sb;
     }
 
     private void generateChoiceSet(final List<Token> tokens) throws IOException
@@ -610,17 +670,13 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
             indent + "        }\n\n" +
-            indent + "        if (length < 0 || length > %d)\n" +
-            indent + "        {\n" +
-            indent + "            throw new IndexOutOfBoundsException(\"length out of range: length=\" + length);\n" +
-            indent + "        }\n\n" +
-            indent + "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, length);\n" +
+            indent + "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, Math.min(length, %d));\n" +
             indent + "    }\n\n",
             toUpperFirstChar(propertyName),
             javaTypeName,
-            Integer.valueOf(token.arrayLength()),
             typePrefix,
-            offset
+            offset,
+            Integer.valueOf(token.arrayLength())
         ));
 
         sb.append(String.format(
@@ -630,17 +686,13 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
             indent + "        }\n\n" +
-            indent + "        if (length < 0 || length > %d)\n" +
-            indent + "        {\n" +
-            indent + "            throw new IndexOutOfBoundsException(\"length out of range: length=\" + length);\n" +
-            indent + "        }\n\n" +
-            indent + "        CodecUtil.%ssPut(buffer, this.offset + %d, src, offset, length);\n" +
+            indent + "        CodecUtil.%ssPut(buffer, this.offset + %d, src, offset, Math.min(length, %d));\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
             javaTypeName,
-            Integer.valueOf(token.arrayLength()),
             typePrefix,
-            offset
+            offset,
+            Integer.valueOf(token.arrayLength())
         ));
 
         return sb;
