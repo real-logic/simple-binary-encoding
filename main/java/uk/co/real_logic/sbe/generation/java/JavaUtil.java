@@ -74,4 +74,26 @@ public class JavaUtil
     {
         return Character.toLowerCase(str.charAt(0)) + str.substring(1);
     }
+
+    /**
+     * Format a String as a property name.
+     *
+     * @param str to be formatted.
+     * @return the string formatted as a property name.
+     */
+    public static String formatPropertyName(final String str)
+    {
+        return toLowerFirstChar(str);
+    }
+
+    /**
+     * Format a String as a class name.
+     *
+     * @param str to be formatted.
+     * @return the string formatted as a class name.
+     */
+    public static String formatClassName(final String str)
+    {
+        return toUpperFirstChar(str);
+    }
 }

@@ -78,11 +78,11 @@ public class FlyweightStyleExample
         massQuote.putQuoteId("1234");
         massQuote.putCtiCode(CtiCode.HOUSE);
 
-        final QuoteSet quoteSet = massQuote.newQuoteSet(2);
+        final MassQuote.QuoteSet quoteSet = massQuote.quoteSetCount(2);
 
         quoteSet.putUnderlyingSecurity("ESH0");
 
-        QuoteEntry quoteEntry = quoteSet.newQuoteEntry(2);
+        MassQuote.QuoteSet.QuoteEntry quoteEntry = quoteSet.quoteEntryCount(2);
         quoteEntry.id(1);
         quoteEntry.symbol("ABC1");
         quoteEntry.securityType(SecurityType.OPT);
@@ -106,7 +106,7 @@ public class FlyweightStyleExample
 
         quoteSet.putUnderlyingSecurity("EAB0");
 
-        quoteEntry = quoteSet.newQuoteEntry(2);
+        quoteEntry = quoteSet.quoteEntryCount(2);
         quoteEntry.next();
         quoteEntry.id(3);
         quoteEntry.symbol("ABC1");
@@ -141,12 +141,12 @@ public class FlyweightStyleExample
         String quoteId = massQuote.getQuoteId();
         CtiCode ctiCode = massQuote.getCtiCode();
 
-        QuoteSet quoteSet = massQuote.quoteSet();
+        MassQuote.QuoteSet quoteSet = massQuote.quoteSet();
         while (quoteSet.next())
         {
             String underlyingSecurity = quoteSet.underlyingSecurity();
 
-            QuoteEntry quoteEntry = quoteSet.quoteEntry();
+            MassQuote.QuoteSet.QuoteEntry quoteEntry = quoteSet.quoteEntry();
             while (quoteEntry.next())
             {
                 long id = quoteEntry.id();

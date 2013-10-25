@@ -15,6 +15,7 @@
  */
 package api.flyweight;
 
+import api.SecurityType;
 import api.fluent.CtiCode;
 
 import java.nio.ByteBuffer;
@@ -44,7 +45,7 @@ public class MassQuote
         return quoteSet;
     }
 
-    public QuoteSet newQuoteSet(final int length)
+    public QuoteSet quoteSetCount(final int length)
     {
         return quoteSet;
     }
@@ -57,5 +58,132 @@ public class MassQuote
     public CtiCode getCtiCode()
     {
         return null;
+    }
+
+    public class QuoteSet
+    {
+        private QuoteEntry quoteEntry;
+
+        public void putUnderlyingSecurity(final String security)
+        {
+        }
+
+        public QuoteEntry quoteEntry()
+        {
+            return quoteEntry;
+        }
+
+        public int length()
+        {
+            return 0;
+        }
+
+        public void length(final int length)
+        {
+        }
+
+        public String underlyingSecurity()
+        {
+            return "";
+        }
+
+        public boolean next()
+        {
+            return false;
+        }
+
+        public QuoteEntry quoteEntryCount(final int length)
+        {
+            return null;
+        }
+
+        public class QuoteEntry
+        {
+            public void length(final int length)
+            {
+            }
+
+            public void id(final int id)
+            {
+            }
+
+            public void symbol(final String symbol)
+            {
+            }
+
+            public void securityType(final SecurityType securityType)
+            {
+            }
+
+            public void transactTime(final long timestamp)
+            {
+            }
+
+            public void bidPx(final double value)
+            {
+            }
+
+            public void bidSize(final int value)
+            {
+            }
+
+            public void offerPx(final double value)
+            {
+            }
+
+            public void offerSize(final int value)
+            {
+            }
+
+            public boolean next()
+            {
+                return false;
+            }
+
+            public long id()
+            {
+                return 0;
+            }
+
+            public String symbol()
+            {
+                return null;
+            }
+
+            public SecurityType securityType()
+            {
+                return null;
+            }
+
+            public long transactTime()
+            {
+                return 0;
+            }
+
+            public double bidPx()
+            {
+                return 0;
+            }
+
+            public long bidSize()
+            {
+                return 0;
+            }
+
+            public double offerPrice()
+            {
+                return 0;
+            }
+
+            public long offerSize()
+            {
+                return 0;
+            }
+
+            public int length()
+            {
+                return 0;
+            }
+        }
     }
 }
