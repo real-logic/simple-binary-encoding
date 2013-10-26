@@ -333,22 +333,13 @@ public class PrimitiveValue
                 switch (representation)
                 {
                     case LONG:
-                        if (longValue == rhs.longValue)
-                        {
-                            return true;
-                        }
-                        break;
+                        return longValue == rhs.longValue;
 
                     case DOUBLE:
-                        if (doubleToLongBits(doubleValue) == doubleToLongBits(rhs.doubleValue))
-                        {
-                            return true;
-                        }
-                        break;
+                        return doubleToLongBits(doubleValue) == doubleToLongBits(rhs.doubleValue);
 
                     case BYTE_ARRAY:
                         return Arrays.equals(byteArrayValue, rhs.byteArrayValue);
-
                 }
             }
         }
