@@ -263,18 +263,18 @@ public class IrGenerator
         switch (type.presence())
         {
             case REQUIRED:
-                encodingBuilder.minVal(type.minValue())
-                               .maxVal(type.maxValue());
+                encodingBuilder.minVal(type.minVal())
+                               .maxVal(type.maxVal());
                 break;
 
             case OPTIONAL:
-                encodingBuilder.minVal(type.minValue())
-                               .maxVal(type.maxValue())
-                               .nullVal(type.nullValue());
+                encodingBuilder.minVal(type.minVal())
+                               .maxVal(type.maxVal())
+                               .nullVal(type.nullVal());
                 break;
 
             case CONSTANT:
-                encodingBuilder.constVal(type.constValue());
+                encodingBuilder.constVal(type.constVal());
                 break;
         }
 

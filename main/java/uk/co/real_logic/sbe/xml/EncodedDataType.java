@@ -34,10 +34,10 @@ public class EncodedDataType extends Type
 {
     private final PrimitiveType primitiveType;
     private final int length;
-    private final PrimitiveValue constValue;
-    private final PrimitiveValue minValue;
-    private final PrimitiveValue maxValue;
-    private final PrimitiveValue nullValue;
+    private final PrimitiveValue constVal;
+    private final PrimitiveValue minVal;
+    private final PrimitiveValue maxVal;
+    private final PrimitiveValue nullVal;
     private boolean varLen;
 
     /**
@@ -53,81 +53,66 @@ public class EncodedDataType extends Type
         length = Integer.parseInt(getAttributeValue(node, "length", "1"));
         varLen = Boolean.parseBoolean(getAttributeValue(node, "variableLength", "false"));
 
-        // handle constant presence by grabbing child node and parsing it's CDATA based on primitiveType (save it)
-        if (this.presence() == Presence.CONSTANT)
+        if (presence() == Presence.CONSTANT)
         {
             if (node.getFirstChild() == null)
             {
                 handleError(node, "type has declared presence \"constant\" but XML node has no data");
-                constValue = null;
+                constVal = null;
             }
             else
             {
                 if (length > 1)
                 {
-                    constValue = PrimitiveValue.parse(node.getFirstChild().getNodeValue(),
+                    constVal = PrimitiveValue.parse(node.getFirstChild().getNodeValue(),
                                                       primitiveType,
                                                       length,
                                                       getAttributeValue(node, "encoding", "UTF-8"));
                 }
                 else
                 {
-                    constValue = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), primitiveType);
+                    constVal = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), primitiveType);
                 }
             }
         }
         else
         {
-            constValue = null;
+            constVal = null;
         }
 
-        String minValueStr = getAttributeValueOrNull(node, "minVal");
-        if (minValueStr != null)
-        {
-            minValue = PrimitiveValue.parse(minValueStr, primitiveType);
-        }
-        else
-        {
-            minValue = null;
-        }
+        final String minValStr = getAttributeValueOrNull(node, "minVal");
+        minVal =  minValStr != null ? PrimitiveValue.parse(minValStr, primitiveType) : null;
 
-        String maxValueStr = getAttributeValueOrNull(node, "maxVal");
-        if (maxValueStr != null)
-        {
-            maxValue = PrimitiveValue.parse(maxValueStr, primitiveType);
-        }
-        else
-        {
-            maxValue = null;
-        }
+        final String maxValStr = getAttributeValueOrNull(node, "maxVal");
+        maxVal = maxValStr != null ? PrimitiveValue.parse(maxValStr, primitiveType) : null;
 
-        String nullValueStr = getAttributeValueOrNull(node, "nullVal");
-        if (nullValueStr != null)
+        final String nullValStr = getAttributeValueOrNull(node, "nullVal");
+        if (nullValStr != null)
         {
             if (presence() != Presence.OPTIONAL)
             {
                 handleWarning(node, "nullVal set, but presence is not optional");
             }
 
-            nullValue = PrimitiveValue.parse(nullValueStr, primitiveType);
+            nullVal = PrimitiveValue.parse(nullValStr, primitiveType);
         }
         else
         {
             // TODO: should we check for presence=optional and flag it? No, should default to primitiveType nullVal
-            nullValue = null; // this value is invalid unless nullVal specified for type
+            nullVal = null; // this value is invalid unless nullVal specified for type
         }
     }
 
     /**
      * Construct a new EncodedDataType with direct values. Does not handle constant values.
      *
-     * @param name        of the type
-     * @param presence    of the type
-     * @param description of the type or null
-     * @param semanticType    of the type or null
-     * @param primitiveType   of the EncodedDataType
-     * @param length      of the EncodedDataType
-     * @param varLen      of the EncodedDataType
+     * @param name          of the type
+     * @param presence      of the type
+     * @param description   of the type or null
+     * @param semanticType  of the type or null
+     * @param primitiveType of the EncodedDataType
+     * @param length        of the EncodedDataType
+     * @param varLen        of the EncodedDataType
      */
     public EncodedDataType(final String name,
                            final Presence presence,
@@ -142,10 +127,10 @@ public class EncodedDataType extends Type
         this.primitiveType = primitiveType;
         this.length = length;
         this.varLen = varLen;
-        this.constValue = null;
-        this.minValue = null;
-        this.maxValue = null;
-        this.nullValue = null;
+        this.constVal = null;
+        this.minVal = null;
+        this.maxVal = null;
+        this.nullVal = null;
     }
 
     /**
@@ -200,7 +185,7 @@ public class EncodedDataType extends Type
             return Token.VARIABLE_SIZE;
         }
 
-        return (primitiveType.size() * length);
+        return primitiveType.size() * length;
     }
 
     /**
@@ -208,7 +193,7 @@ public class EncodedDataType extends Type
      *
      * @return value of the constant for this type
      */
-    public PrimitiveValue constValue()
+    public PrimitiveValue constVal()
         throws IllegalArgumentException
     {
         if (presence() != Presence.CONSTANT)
@@ -216,7 +201,7 @@ public class EncodedDataType extends Type
             throw new IllegalStateException("type is not of constant presence");
         }
 
-        return constValue;
+        return constVal;
     }
 
     /**
@@ -224,9 +209,9 @@ public class EncodedDataType extends Type
      *
      * @return value of the minVal
      */
-    public PrimitiveValue minValue()
+    public PrimitiveValue minVal()
     {
-        return minValue;
+        return minVal;
     }
 
     /**
@@ -234,9 +219,9 @@ public class EncodedDataType extends Type
      *
      * @return value of the maxVal
      */
-    public PrimitiveValue maxValue()
+    public PrimitiveValue maxVal()
     {
-        return maxValue;
+        return maxVal;
     }
 
     /**
@@ -244,8 +229,8 @@ public class EncodedDataType extends Type
      *
      * @return value of the nullVal primitiveType or type
      */
-    public PrimitiveValue nullValue()
+    public PrimitiveValue nullVal()
     {
-        return nullValue;
+        return nullVal;
     }
 }
