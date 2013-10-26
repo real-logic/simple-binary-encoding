@@ -63,7 +63,17 @@ public class EncodedDataType extends Type
             }
             else
             {
-                constValue = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), primitiveType);
+                if (length > 1)
+                {
+                    constValue = PrimitiveValue.parse(node.getFirstChild().getNodeValue(),
+                                                      primitiveType,
+                                                      length,
+                                                      getAttributeValue(node, "encoding", "UTF-8"));
+                }
+                else
+                {
+                    constValue = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), primitiveType);
+                }
             }
         }
         else

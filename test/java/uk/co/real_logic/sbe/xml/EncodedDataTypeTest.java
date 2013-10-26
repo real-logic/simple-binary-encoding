@@ -314,6 +314,23 @@ public class EncodedDataTypeTest
     }
 
     @Test
+    public void shouldReturnCorrectConstantStringWhenSpecified()
+        throws Exception
+    {
+        final String strConst = "string constant";
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeConstString\" primitiveType=\"char\" presence=\"constant\" " +
+                      "length=\"" + strConst.length() + "\"" +
+                 ">" + strConst + "</type>" +
+            "</types>";
+
+        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        assertThat((((EncodedDataType)map.get("testTypeConstString")).constValue()),
+                   is(parse(strConst, PrimitiveType.CHAR, strConst.length(), "UTF-8")));
+    }
+
+    @Test
     public void shouldReturnDefaultMinValueWhenSpecified()
         throws Exception
     {

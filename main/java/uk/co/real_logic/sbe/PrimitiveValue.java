@@ -17,6 +17,8 @@
 package uk.co.real_logic.sbe;
 
 import static java.lang.Double.doubleToLongBits;
+import static java.util.Arrays.equals;
+import static java.nio.charset.Charset.forName;
 
 /**
  * Class used to encapsulate values for primitives. Used for nullVal, minVal, maxVal, and constants
@@ -93,7 +95,8 @@ public class PrimitiveValue
     public enum Representation
     {
         LONG,
-        DOUBLE
+        DOUBLE,
+        BYTE_ARRAY
     }
 
     public static final long MIN_VALUE_CHAR = 0x20;
@@ -143,6 +146,7 @@ public class PrimitiveValue
     private final Representation representation;
     private final long longValue;
     private final double doubleValue;
+    private final byte[] byteArrayValue;
 
     /**
      * Construct and fill in value as a long.
@@ -154,6 +158,7 @@ public class PrimitiveValue
         representation = Representation.LONG;
         longValue = value;
         doubleValue = 0.0;
+        byteArrayValue = null;
     }
 
     /**
@@ -165,6 +170,20 @@ public class PrimitiveValue
         representation = Representation.DOUBLE;
         longValue = 0;
         doubleValue = value;
+        byteArrayValue = null;
+    }
+
+    /**
+     * Construct and fill in value as a byte array.
+     *
+     * @param value as a byte array
+     */
+    public PrimitiveValue(final byte[] value)
+    {
+        representation = Representation.BYTE_ARRAY;
+        longValue = 0;
+        doubleValue = 0.0;
+        byteArrayValue = value;
     }
 
     /**
@@ -207,6 +226,25 @@ public class PrimitiveValue
     }
 
     /**
+     * Parse constant value string and set representation based on type, length, and encoding
+     *
+     * @param value expressed as a String
+     * @param primitiveType that this is supposed to be
+     * @param length of the type
+     * @param encoding of the String
+     * @return a new {@link PrimitiveValue} for the value.
+     * @throws IllegalArgumentException if parsing malformed type
+     */
+    public static PrimitiveValue parse(final String value,
+                                       final PrimitiveType primitiveType,
+                                       final int length,
+                                       final String encoding)
+    {
+        // TODO: handle incorrect length, encoding, etc.
+        return new PrimitiveValue(value.getBytes(forName(encoding)));
+    }
+
+    /**
      * Return long value for this PrimitiveValue
      *
      * @return value expressed as a long
@@ -239,6 +277,21 @@ public class PrimitiveValue
     }
 
     /**
+     * Return byte array value for this PrimitiveValue.
+     *
+     * @return value expressed as a byte array
+     * @throws IllegalStateException if not a byte array value representation
+     */
+    public byte[] byteArrayValue()
+    {
+        if (representation != Representation.BYTE_ARRAY)
+        {
+            throw new IllegalStateException("PrimitiveValue is not a byte[] representation");
+        }
+        return byteArrayValue;
+    }
+
+    /**
      * Return String representation of this object
      *
      * @return String representing object value
@@ -252,6 +305,9 @@ public class PrimitiveValue
 
             case DOUBLE:
                 return Double.toString(doubleValue);
+
+            case BYTE_ARRAY:
+                return byteArrayValue.toString();
 
             default:
                 throw new IllegalStateException("Unsupported Representation: " + representation);
@@ -287,6 +343,10 @@ public class PrimitiveValue
                             return true;
                         }
                         break;
+
+                    case BYTE_ARRAY:
+                        return equals(byteArrayValue, rhs.byteArrayValue);
+
                 }
             }
         }
@@ -303,6 +363,7 @@ public class PrimitiveValue
     {
         final long bits = (representation == Representation.LONG) ? longValue : doubleToLongBits(doubleValue);
 
+        // TODO: byte[] should use Arrays.hashCode(byteArrayValue)
         return (int)(bits ^ (bits >>> 32));
     }
 }
