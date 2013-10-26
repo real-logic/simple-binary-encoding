@@ -363,9 +363,24 @@ public class PrimitiveValue
      */
     public int hashCode()
     {
-        final long bits = (representation == Representation.LONG) ? longValue : doubleToLongBits(doubleValue);
+        final long bits;
+        switch (representation)
+        {
+            case LONG:
+                bits = longValue;
+                break;
 
-        // TODO: byte[] should use Arrays.hashCode(byteArrayValue)
+            case DOUBLE:
+                bits = doubleToLongBits(doubleValue);
+                break;
+
+            case BYTE_ARRAY:
+                return Arrays.hashCode(byteArrayValue);
+
+            default:
+                throw new IllegalStateException("Unrecognised representation: " + representation);
+        }
+
         return (int)(bits ^ (bits >>> 32));
     }
 }
