@@ -47,6 +47,7 @@ public class Encoding
     private final PrimitiveValue maxVal;
     private final PrimitiveValue nullVal;
     private final PrimitiveValue constVal;
+    private final String characterEncoding;
 
     public Encoding()
     {
@@ -56,6 +57,7 @@ public class Encoding
         maxVal = null;
         nullVal = null;
         constVal = null;
+        characterEncoding = "";
     }
 
     public Encoding(final PrimitiveType primitiveType,
@@ -63,7 +65,8 @@ public class Encoding
                     final PrimitiveValue minVal,
                     final PrimitiveValue maxVal,
                     final PrimitiveValue nullVal,
-                    final PrimitiveValue constVal)
+                    final PrimitiveValue constVal,
+                    final String characterEncoding)
     {
         Verify.notNull(byteOrder, "byteOrder");
 
@@ -73,6 +76,7 @@ public class Encoding
         this.maxVal = maxVal;
         this.nullVal = nullVal;
         this.constVal = constVal;
+        this.characterEncoding = characterEncoding;
     }
 
     /**
@@ -155,6 +159,16 @@ public class Encoding
         return Presence.REQUIRED;
     }
 
+    /**
+     * The character encoding for the token or null if not set.
+     *
+     * @return the character encoding for the token or null if not set.
+     */
+    public String characterEncoding()
+    {
+        return characterEncoding;
+    }
+
     public String toString()
     {
         return "Encoding{" +
@@ -165,6 +179,7 @@ public class Encoding
             ", maxVal=" + maxVal +
             ", nullVal=" + nullVal +
             ", constVal=" + constVal +
+            ", characterEncoding=" + characterEncoding +
             '}';
     }
 
@@ -179,6 +194,7 @@ public class Encoding
         private PrimitiveValue maxVal;
         private PrimitiveValue nullVal;
         private PrimitiveValue constVal;
+        private String characterEncoding;
 
         public Builder()
         {
@@ -188,6 +204,7 @@ public class Encoding
             maxVal = null;
             nullVal = null;
             constVal = null;
+            characterEncoding = "";
         }
 
         public Builder primitiveType(final PrimitiveType primitiveType)
@@ -226,9 +243,15 @@ public class Encoding
             return this;
         }
 
+        public Builder characterEncoding(final String characterEncoding)
+        {
+            this.characterEncoding = characterEncoding;
+            return this;
+        }
+
         public Encoding build()
         {
-            return new Encoding(primitiveType, byteOrder, minVal, maxVal, nullVal, constVal);
+            return new Encoding(primitiveType, byteOrder, minVal, maxVal, nullVal, constVal, characterEncoding);
         }
     }
 }

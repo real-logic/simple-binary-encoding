@@ -258,7 +258,8 @@ public class IrGenerator
     {
         Encoding.Builder encodingBuilder = new Encoding.Builder()
             .primitiveType(type.primitiveType())
-            .byteOrder(byteOrder);
+            .byteOrder(byteOrder)
+            .characterEncoding(type.characterEncoding());
 
         switch (type.presence())
         {

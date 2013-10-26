@@ -38,6 +38,7 @@ public class EncodedDataType extends Type
     private final PrimitiveValue minVal;
     private final PrimitiveValue maxVal;
     private final PrimitiveValue nullVal;
+    private final String characterEncoding;
     private boolean varLen;
 
     /**
@@ -52,6 +53,7 @@ public class EncodedDataType extends Type
         primitiveType = PrimitiveType.get(getAttributeValue(node, "primitiveType"));
         length = Integer.parseInt(getAttributeValue(node, "length", "1"));
         varLen = Boolean.parseBoolean(getAttributeValue(node, "variableLength", "false"));
+        characterEncoding = getAttributeValue(node, "encoding", "UTF-8");
 
         if (presence() == Presence.CONSTANT)
         {
@@ -65,9 +67,9 @@ public class EncodedDataType extends Type
                 if (length > 1)
                 {
                     constVal = PrimitiveValue.parse(node.getFirstChild().getNodeValue(),
-                                                      primitiveType,
-                                                      length,
-                                                      getAttributeValue(node, "encoding", "UTF-8"));
+                                                    primitiveType,
+                                                    length,
+                                                    characterEncoding);
                 }
                 else
                 {
@@ -131,6 +133,7 @@ public class EncodedDataType extends Type
         this.minVal = null;
         this.maxVal = null;
         this.nullVal = null;
+        characterEncoding = "";
     }
 
     /**
@@ -232,5 +235,15 @@ public class EncodedDataType extends Type
     public PrimitiveValue nullVal()
     {
         return nullVal;
+    }
+
+    /**
+     * The character encoding of the type
+     *
+     * @return value representing the encoding
+     */
+    public String characterEncoding()
+    {
+        return characterEncoding;
     }
 }
