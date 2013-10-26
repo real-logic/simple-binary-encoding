@@ -16,6 +16,7 @@
  */
 package uk.co.real_logic.sbe;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 import static java.lang.Double.doubleToLongBits;
@@ -148,6 +149,7 @@ public class PrimitiveValue
     private final long longValue;
     private final double doubleValue;
     private final byte[] byteArrayValue;
+    private final String characterEncoding;
 
     /**
      * Construct and fill in value as a long.
@@ -160,6 +162,7 @@ public class PrimitiveValue
         longValue = value;
         doubleValue = 0.0;
         byteArrayValue = null;
+        characterEncoding = null;
     }
 
     /**
@@ -172,6 +175,7 @@ public class PrimitiveValue
         longValue = 0;
         doubleValue = value;
         byteArrayValue = null;
+        characterEncoding = null;
     }
 
     /**
@@ -179,12 +183,13 @@ public class PrimitiveValue
      *
      * @param value as a byte array
      */
-    public PrimitiveValue(final byte[] value)
+    public PrimitiveValue(final byte[] value, final String characterEncoding)
     {
         representation = Representation.BYTE_ARRAY;
         longValue = 0;
         doubleValue = 0.0;
         byteArrayValue = value;
+        this.characterEncoding = characterEncoding;
     }
 
     /**
@@ -227,22 +232,22 @@ public class PrimitiveValue
     }
 
     /**
-     * Parse constant value string and set representation based on type, length, and encoding
+     * Parse constant value string and set representation based on type, length, and characterEncoding
      *
      * @param value expressed as a String
      * @param primitiveType that this is supposed to be
      * @param length of the type
-     * @param encoding of the String
+     * @param characterEncoding of the String
      * @return a new {@link PrimitiveValue} for the value.
      * @throws IllegalArgumentException if parsing malformed type
      */
     public static PrimitiveValue parse(final String value,
                                        final PrimitiveType primitiveType,
                                        final int length,
-                                       final String encoding)
+                                       final String characterEncoding)
     {
-        // TODO: handle incorrect length, encoding, etc.
-        return new PrimitiveValue(value.getBytes(forName(encoding)));
+        // TODO: handle incorrect length, characterEncoding, etc.
+        return new PrimitiveValue(value.getBytes(forName(characterEncoding)), characterEncoding);
     }
 
     /**
@@ -294,6 +299,16 @@ public class PrimitiveValue
     }
 
     /**
+     * The character encoding of the byte array representation.
+     *
+     * @return the character encoding of te byte array representation.
+     */
+    public String characterEncoding()
+    {
+        return characterEncoding;
+    }
+
+    /**
      * Return String representation of this object
      *
      * @return String representing object value
@@ -309,7 +324,14 @@ public class PrimitiveValue
                 return Double.toString(doubleValue);
 
             case BYTE_ARRAY:
-                return new String(byteArrayValue);
+                try
+                {
+                    return characterEncoding == null ? new String(byteArrayValue) : new String(byteArrayValue, characterEncoding);
+                }
+                catch (final UnsupportedEncodingException ex)
+                {
+                    throw new IllegalStateException(ex);
+                }
 
             default:
                 throw new IllegalStateException("Unsupported Representation: " + representation);
