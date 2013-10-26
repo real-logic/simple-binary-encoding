@@ -16,8 +16,9 @@
  */
 package uk.co.real_logic.sbe;
 
+import java.util.Arrays;
+
 import static java.lang.Double.doubleToLongBits;
-import static java.util.Arrays.equals;
 import static java.nio.charset.Charset.forName;
 
 /**
@@ -288,6 +289,7 @@ public class PrimitiveValue
         {
             throw new IllegalStateException("PrimitiveValue is not a byte[] representation");
         }
+
         return byteArrayValue;
     }
 
@@ -307,7 +309,7 @@ public class PrimitiveValue
                 return Double.toString(doubleValue);
 
             case BYTE_ARRAY:
-                return byteArrayValue.toString();
+                return new String(byteArrayValue);
 
             default:
                 throw new IllegalStateException("Unsupported Representation: " + representation);
@@ -345,7 +347,7 @@ public class PrimitiveValue
                         break;
 
                     case BYTE_ARRAY:
-                        return equals(byteArrayValue, rhs.byteArrayValue);
+                        return Arrays.equals(byteArrayValue, rhs.byteArrayValue);
 
                 }
             }
