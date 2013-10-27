@@ -87,8 +87,11 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    public void generateMessageStubs() throws IOException
+    public void generate() throws IOException
     {
+        generateMessageHeaderStub();
+        generateTypeStubs();
+
         for (final List<Token> tokens : ir.messages())
         {
             final String className = formatClassName(tokens.get(0).name());

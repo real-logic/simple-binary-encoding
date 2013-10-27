@@ -54,8 +54,9 @@ public class EnumTypeTest
             "</enum>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
-        EnumType e = (EnumType)map.get("biOp");
+        final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
+        final EnumType e = (EnumType)map.get("biOp");
+
         assertThat(e.name(), is("biOp"));
         assertThat(e.encodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.validValues().size()), is(valueOf(2)));
@@ -75,8 +76,9 @@ public class EnumTypeTest
             "</enum>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
-        EnumType e = (EnumType)map.get("Boolean");
+        final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
+        final EnumType e = (EnumType)map.get("Boolean");
+
         assertThat(e.name(), is("Boolean"));
         assertThat(e.encodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.validValues().size()), is(valueOf(2)));
@@ -98,8 +100,9 @@ public class EnumTypeTest
             "</enum>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
-        EnumType e = (EnumType)map.get("optionalBoolean");
+        final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
+        final EnumType e = (EnumType)map.get("optionalBoolean");
+
         assertThat(e.name(), is("optionalBoolean"));
         assertThat(e.encodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.validValues().size()), is(valueOf(2)));
@@ -121,8 +124,9 @@ public class EnumTypeTest
             "</enum>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
-        EnumType e = (EnumType)map.get("triOp");
+        final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
+        final EnumType e = (EnumType)map.get("triOp");
+
         assertThat(e.name(), is("triOp"));
         assertThat(e.encodingType(), is(PrimitiveType.UINT8));
 
@@ -222,15 +226,15 @@ public class EnumTypeTest
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-        Map<String, Type> map = new HashMap<>();
+        final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+        final XPath xPath = XPathFactory.newInstance().newXPath();
+        final NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
+        final Map<String, Type> map = new HashMap<>();
 
-        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "true");
-        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, new ErrorHandler(), null);
+        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "true");
+        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
+        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "true");
+        document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, new ErrorHandler(), null);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {

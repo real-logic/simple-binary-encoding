@@ -26,9 +26,9 @@ import java.io.PrintStream;
 public class ErrorHandler
 {
     private final PrintStream out;
-    private final boolean raiseExceptionOnError;
-    private final boolean suppressOutput;
+    private final boolean stopOnError;
     private final boolean warningsFatal;
+    private final boolean suppressOutput;
     private int errors = 0;
     private int warnings = 0;
 
@@ -40,9 +40,9 @@ public class ErrorHandler
     public ErrorHandler(final PrintStream stream)
     {
         out = stream;
-        raiseExceptionOnError = Boolean.parseBoolean(System.getProperty(SbeTool.SBE_VALIDATE_EXCEPTION));
-        suppressOutput = Boolean.parseBoolean(System.getProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS));
-        warningsFatal = Boolean.parseBoolean(System.getProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL));
+        stopOnError = Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_STOP_ON_ERROR));
+        warningsFatal = Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_WARNINGS_FATAL));
+        suppressOutput = Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT));
     }
 
     /**
@@ -67,7 +67,7 @@ public class ErrorHandler
             out.println("ERROR: " + msg);
         }
 
-        if (raiseExceptionOnError)
+        if (stopOnError)
         {
             throw new IllegalArgumentException(msg);
         }
@@ -87,7 +87,7 @@ public class ErrorHandler
             out.println("WARNING: " + msg);
         }
 
-        if (warningsFatal && raiseExceptionOnError)
+        if (warningsFatal && stopOnError)
         {
             throw new IllegalArgumentException(msg);
         }
@@ -134,9 +134,9 @@ public class ErrorHandler
     {
         return "ErrorHandler{" +
             "out=" + out +
-            ", raiseExceptionOnError=" + raiseExceptionOnError +
-            ", suppressOutput=" + suppressOutput +
+            ", stopOnError=" + stopOnError +
             ", warningsFatal=" + warningsFatal +
+            ", suppressOutput=" + suppressOutput +
             ", errors=" + errors +
             ", warnings=" + warnings +
             '}';

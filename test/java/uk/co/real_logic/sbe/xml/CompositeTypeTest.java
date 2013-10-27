@@ -167,9 +167,9 @@ public class CompositeTypeTest
         NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
         Map<String, Type> map = new HashMap<>();
 
-        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
-        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, new ErrorHandler(), null);
+        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "true");
+        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
+        document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, new ErrorHandler(), null);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {

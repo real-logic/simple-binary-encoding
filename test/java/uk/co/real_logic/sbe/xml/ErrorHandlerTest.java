@@ -79,10 +79,10 @@ public class ErrorHandlerTest
             "<type name=\"NullButNotOptional\" primitiveType=\"int8\" presence=\"required\" nullVal=\"10\"/>" +
             "</types>";
 
-        Map<String, Type> map = new HashMap<>();
-        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "false");
-        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "false");
+        final Map<String, Type> map = new HashMap<>();
+        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
+        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
+        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "false");
         ErrorHandler handler = new ErrorHandler();
 
         parseTestXmlAddToMap(map, "/types/composite", testXmlString, handler);
@@ -98,15 +98,15 @@ public class ErrorHandlerTest
     public void shouldExitAfterTypes()
         throws Exception
     {
-        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "false");
-        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "false");
+        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
+        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
+        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "false");
 
         try
         {
             parse(TestUtil.getLocalResource("ErrorHandlerTypesTest.xml"));
         }
-        catch (IllegalArgumentException shouldHaveOnly2Errors)
+        catch (final IllegalArgumentException shouldHaveOnly2Errors)
         {
             assertThat(shouldHaveOnly2Errors.getMessage(), is("had 2 errors"));
 
@@ -118,15 +118,15 @@ public class ErrorHandlerTest
     public void shouldExitAfterTypesWhenDupTypesDefined()
         throws Exception
     {
-        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "false");
-        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "true");
+        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
+        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
+        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "true");
 
         try
         {
             parse(TestUtil.getLocalResource("ErrorHandlerTypesDupTest.xml"));
         }
-        catch (IllegalArgumentException shouldHaveOnly1Warning)
+        catch (final IllegalArgumentException shouldHaveOnly1Warning)
         {
             assertThat(shouldHaveOnly1Warning.getMessage(), is("had 1 warnings"));
 
@@ -138,15 +138,15 @@ public class ErrorHandlerTest
     public void shouldExitAfterMessageWhenDupMessageIdsDefined()
         throws Exception
     {
-        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "false");
-        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "true");
+        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
+        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
+        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "true");
 
         try
         {
             parse(TestUtil.getLocalResource("ErrorHandlerDupMessageTest.xml"));
         }
-        catch (IllegalArgumentException shouldHaveOnly1Error)
+        catch (final IllegalArgumentException shouldHaveOnly1Error)
         {
             assertThat(shouldHaveOnly1Error.getMessage(), is("had 1 errors"));
 
@@ -158,15 +158,15 @@ public class ErrorHandlerTest
     public void shouldExitAfterMessage()
         throws Exception
     {
-        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "false");
-        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "true");
+        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
+        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
+        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "true");
 
         try
         {
             parse(TestUtil.getLocalResource("ErrorHandlerMessageTest.xml"));
         }
-        catch (IllegalArgumentException shouldHaveOnly12Errors)
+        catch (final IllegalArgumentException shouldHaveOnly12Errors)
         {
             assertThat(shouldHaveOnly12Errors.getMessage(), is("had 12 errors"));
 
@@ -178,15 +178,15 @@ public class ErrorHandlerTest
     public void shouldExitAfterMessageWhenGroupDimensionsNotComposite()
         throws Exception
     {
-        System.setProperty(SbeTool.SBE_VALIDATE_EXCEPTION, "false");
-        System.setProperty(SbeTool.SBE_VALIDATE_OUTPUT_SUPPRESS, "true");
-        System.setProperty(SbeTool.SBE_VALIDATE_WARNINGS_FATAL, "true");
+        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
+        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
+        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "true");
 
         try
         {
             parse(TestUtil.getLocalResource("ErrorHandlerGroupDimensionsTest.xml"));
         }
-        catch (IllegalArgumentException shouldHaveOnly1Error)
+        catch (final IllegalArgumentException shouldHaveOnly1Error)
         {
             assertThat(shouldHaveOnly1Error.getMessage(), is("had 1 errors"));
 
@@ -206,11 +206,11 @@ public class ErrorHandlerTest
                                              final ErrorHandler handler)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
+        final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+        final XPath xPath = XPathFactory.newInstance().newXPath();
+        final NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
 
-        document.setUserData(XmlSchemaParser.XML_ERROR_HANDLER_KEY, handler, null);
+        document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, handler, null);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {

@@ -23,21 +23,9 @@ import java.io.IOException;
 public interface CodeGenerator
 {
     /**
-     * Generate the stub for reading message headers.
-     */
-    void generateMessageHeaderStub() throws IOException;
-
-    /**
-     * Generate the the stubs for handling types.
+     * Generate the complete set of types and messages for a schema.
      *
      * @throws IOException if an error is encountered when writing the output.
      */
-    void generateTypeStubs() throws IOException;
-
-    /**
-     * Generate the stubs for handling the messages.
-     *
-     * @throws IOException if an error is encountered when writing the output.
-     */
-    void generateMessageStubs() throws IOException;
+    void generate() throws IOException;
 }

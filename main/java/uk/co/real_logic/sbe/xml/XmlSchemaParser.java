@@ -16,13 +16,12 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.SbeTool;
-import uk.co.real_logic.sbe.util.ValidationUtil;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.SbeTool;
+import uk.co.real_logic.sbe.util.ValidationUtil;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,7 +42,8 @@ import java.util.Map;
  */
 public class XmlSchemaParser
 {
-    public static final String XML_ERROR_HANDLER_KEY = "SBEErrorHandler";
+    /** Key for storing {@link ErrorHandler} as user data in XML document */
+    public static final String ERROR_HANDLER_KEY = "SbeErrorHandler";
 
     private static final String TYPE_XPATH_EXPR = "/messageSchema/types/type";
     private static final String COMPOSITE_XPATH_EXPR = "/messageSchema/types/composite";
@@ -67,7 +67,7 @@ public class XmlSchemaParser
         factory.setXIncludeAware(true);
         factory.setNamespaceAware(true);
 
-        final String xsdFilename = System.getProperty(SbeTool.SBE_VALIDATE_XSD);
+        final String xsdFilename = System.getProperty(SbeTool.VALIDATION_XSD);
         if (xsdFilename != null)
         {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -77,9 +77,8 @@ public class XmlSchemaParser
         final Document document = factory.newDocumentBuilder().parse(in);
         final XPath xPath = XPathFactory.newInstance().newXPath();
 
-        /* saving the error handling state in the XML DOM tree. */
         final ErrorHandler errorHandler = new ErrorHandler();
-        document.setUserData(XML_ERROR_HANDLER_KEY, errorHandler, null);
+        document.setUserData(ERROR_HANDLER_KEY, errorHandler, null);
 
         final Map<String, Type> typeByNameMap = findTypes(document, xPath);
 
@@ -106,8 +105,7 @@ public class XmlSchemaParser
      * @param xPath    for XPath expression reuse
      * @return {@link java.util.Map} of name {@link java.lang.String} to Type
      */
-    public static Map<String, Type> findTypes(final Document document, final XPath xPath)
-        throws Exception
+    public static Map<String, Type> findTypes(final Document document, final XPath xPath) throws Exception
     {
         final Map<String, Type> typeByNameMap = new HashMap<>();
 
@@ -193,7 +191,7 @@ public class XmlSchemaParser
     /** Handle an error condition as consequence of parsing. */
     public static void handleError(final Node node, final String msg)
     {
-        final ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
+        final ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(ERROR_HANDLER_KEY);
 
         if (handler == null)
         {
@@ -208,7 +206,7 @@ public class XmlSchemaParser
     /** Handle a warning condition as a consequence of parsing. */
     public static void handleWarning(final Node node, final String msg)
     {
-        final ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(XML_ERROR_HANDLER_KEY);
+        final ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(ERROR_HANDLER_KEY);
 
         if (handler == null)
         {

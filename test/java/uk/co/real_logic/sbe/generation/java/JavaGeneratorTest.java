@@ -182,8 +182,7 @@ public class JavaGeneratorTest
         final String fqClassName = ir.packageName() + "." + className;
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
-        javaGenerator.generateTypeStubs();
-        javaGenerator.generateMessageStubs();
+        javaGenerator.generate();
 
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
