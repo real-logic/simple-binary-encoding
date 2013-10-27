@@ -338,14 +338,16 @@ public class JavaGenerator implements CodeGenerator
                 final String lengthTypePrefix = lengthToken.encoding().primitiveType().primitiveName();
 
                 sb.append(String.format(
-                    "    public void get%s(final byte[] dst, final int offset, final int length)\n" +
+                    "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
                     "    {\n" +
                     "        final int sizeOfLengthField = %d;\n" +
                     "        final int lengthPosition = position();\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
                     "        final int dataLength = CodecUtil.%sGet(buffer, lengthPosition);\n" +
+                    "        final int bytesCopied = Math.min(length, dataLength);\n" +
+                    "        CodecUtil.int8sGet(buffer, position(), dst, offset, bytesCopied);\n" +
                     "        position(position() + dataLength);\n" +
-                    "        CodecUtil.int8sGet(buffer, position(), dst, offset, Math.min(length, dataLength));\n" +
+                    "        return bytesCopied;\n" +
                     "    }\n\n",
                     propertyName,
                     sizeOfLengthField,
@@ -353,14 +355,15 @@ public class JavaGenerator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    "    public void put%s(final byte[] src, final int offset, final int length)\n" +
+                    "    public int put%s(final byte[] src, final int offset, final int length)\n" +
                     "    {\n" +
                     "        final int sizeOfLengthField = %d;\n" +
                     "        final int lengthPosition = position();\n" +
-                    "        position(lengthPosition + sizeOfLengthField);\n" +
                     "        CodecUtil.%sPut(buffer, lengthPosition, (%s)length);\n" +
-                    "        position(position() + length);\n" +
+                    "        position(lengthPosition + sizeOfLengthField);\n" +
                     "        CodecUtil.int8sPut(buffer, position(), src, offset, length);\n" +
+                    "        position(position() + length);\n" +
+                    "        return length;" +
                     "    }\n",
                     propertyName,
                     sizeOfLengthField,
