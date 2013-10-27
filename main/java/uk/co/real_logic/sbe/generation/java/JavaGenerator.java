@@ -275,7 +275,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    final %s %s = new %s();\n",
+            indent + "    private final %s %s = new %s();\n",
             className,
             propertyName,
             className
@@ -370,7 +370,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateClassDeclaration(bitSetName, FixedFlyweight.class.getSimpleName()));
             out.append(generateFixedFlyweightCode());
 
-            out.append(generateChoices(tokens.subList(1, tokens.size() - 1)));
+            out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
             out.append("}\n");
         }
@@ -410,7 +410,7 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private CharSequence generateChoices(final List<Token> tokens)
+    private CharSequence generateChoices(final String bitsetClassName, final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -428,13 +428,15 @@ public class JavaGenerator implements CodeGenerator
                     "    {\n" +
                     "        return CodecUtil.%sGetChoice(buffer, offset, %s);\n" +
                     "    }\n\n" +
-                    "    public void %s(final boolean value)\n" +
+                    "    public %s %s(final boolean value)\n" +
                     "    {\n" +
                     "        CodecUtil.%sPutChoice(buffer, offset, %s, value);\n" +
+                    "        return this;" +
                     "    }\n",
                     choiceName,
                     typePrefix,
                     choiceBitPosition,
+                    bitsetClassName,
                     choiceName,
                     typePrefix,
                     choiceBitPosition
@@ -840,7 +842,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    final %s %s = new %s();\n",
+            indent + "    private final %s %s = new %s();\n",
             bitsetName,
             formattedPropertyName,
             bitsetName
@@ -872,7 +874,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    final %s %s = new %s();\n",
+            indent + "    private final %s %s = new %s();\n",
             compositeName,
             propertyName,
             compositeName
