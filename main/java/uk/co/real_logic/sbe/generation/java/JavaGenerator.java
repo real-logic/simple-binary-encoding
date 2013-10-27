@@ -304,15 +304,16 @@ public class JavaGenerator implements CodeGenerator
             if (token.signal() == Signal.BEGIN_VAR_DATA)
             {
                 final String propertyName = toUpperFirstChar(token.name());
+                final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
 
                 sb.append(String.format(
                     "\n"  +
-                    "    public String get%sEncoding()\n" +
+                    "    public String %sEncoding()\n" +
                     "    {\n" +
                     "        return \"%s\";\n" +
                     "    }\n\n",
-                    propertyName,
-                    "UTF-8"
+                    formatPropertyName(propertyName),
+                    characterEncoding
                 ));
 
                 final Token lengthToken = tokens.get(i + 2);
