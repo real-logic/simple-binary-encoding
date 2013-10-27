@@ -620,7 +620,6 @@ TEST_F(OtfMessageConstantsTest, shouldHandleAllTypes)
 }
 
 /*
- * TODO: test constants for arrays
  * TODO: test reuse of listener
  * TODO: test offset values on fields
  * TODO: byte order
