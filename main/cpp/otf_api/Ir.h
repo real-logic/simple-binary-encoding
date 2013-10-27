@@ -115,7 +115,9 @@ public:
     uint64_t choiceValue() const;
     uint8_t nameLen() const;
     std::string name() const;
-    int position() const;    
+    uint64_t constLen() const;
+    const char *constVal() const;
+    int position() const;
 
     /// rewind or fast-forward IR to given position
     void position(int pos);
@@ -127,7 +129,8 @@ public:
                   TokenByteOrder byteOrder,
                   TokenPrimitiveType primitiveType,
                   uint16_t schemaId,
-                  const std::string &name);
+                  const std::string &name,
+                  const char *constVal = NULL);
 
     static unsigned int size(TokenPrimitiveType type)
     {

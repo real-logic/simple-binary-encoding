@@ -29,14 +29,17 @@ using ::std::endl;
  */
 struct IrToken
 {
-    uint32_t offset;
-    uint32_t size;
-    uint16_t schemaId;
+    uint8_t tokenLen;
     uint8_t signal;
     uint8_t primitiveType;
     uint8_t byteOrder;
+    uint32_t offset;
+    uint32_t size;
+    uint16_t schemaId;
     uint8_t nameLen;
     // name follows for nameLen bytes
+    // constLen (uint8_t) field follows name
+    // constant value follows constLen
 };
 
 const int Ir::INVALID_ID;
@@ -57,7 +60,7 @@ void Ir::next()
 {
     struct IrToken *currToken = (struct IrToken *)(buffer_ + cursorOffset_);
 
-    cursorOffset_ += sizeof(struct IrToken) + currToken->nameLen;
+    cursorOffset_ += currToken->tokenLen;
 }
 
 bool Ir::end() const
@@ -120,6 +123,21 @@ std::string Ir::name() const
     return std::string((buffer_ + cursorOffset_ + sizeof(struct IrToken)), nameLen());
 }
 
+uint64_t Ir::constLen() const
+{
+    return *(uint8_t *)(buffer_ + cursorOffset_ + sizeof(struct IrToken) + nameLen());
+}
+
+const char *Ir::constVal() const
+{
+    if (constLen() == 0)
+    {
+        return NULL;
+    }
+
+    return (buffer_ + cursorOffset_ + sizeof(struct IrToken) + nameLen() + 1);
+}
+
 int Ir::position() const
 {
     return cursorOffset_;
@@ -130,14 +148,14 @@ void Ir::position(const int pos)
     cursorOffset_ = pos;
 }
 
-// protected
 void Ir::addToken(uint32_t offset,
                   uint32_t size,
                   TokenSignal signal,
                   TokenByteOrder byteOrder,
                   TokenPrimitiveType primitiveType,
                   uint16_t schemaId,
-                  const std::string &name)
+                  const std::string &name,
+                  const char *constVal)
 {
     if (buffer_ == NULL)
     {
@@ -145,6 +163,7 @@ void Ir::addToken(uint32_t offset,
     }
 
     struct IrToken *token = (struct IrToken *)(buffer_ + cursorOffset_);
+    token->tokenLen = sizeof(struct IrToken) + name.size();
     token->offset = offset;
     token->size = size;
     token->signal = signal;
@@ -153,6 +172,17 @@ void Ir::addToken(uint32_t offset,
     token->schemaId = schemaId;
     token->nameLen = name.size();
     ::strncpy((char *)(buffer_ + cursorOffset_ + sizeof(struct IrToken)), name.c_str(), name.size());
-    cursorOffset_ += sizeof(struct IrToken) + name.size();
+    if (constVal != NULL)
+    {
+        *(uint8_t *)(buffer_ + cursorOffset_ + token->tokenLen) = size;
+        ::memcpy((void *)(buffer_ + cursorOffset_ + token->tokenLen + 1), constVal, size);
+        token->tokenLen += 1 + size;
+    }
+    else
+    {
+        *(uint8_t *)(buffer_ + cursorOffset_ + token->tokenLen) = 0;
+        token->tokenLen += 1;
+    }
+    cursorOffset_ += token->tokenLen;
     len_ = cursorOffset_;
 }

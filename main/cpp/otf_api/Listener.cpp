@@ -134,6 +134,7 @@ int Listener::process(void)
     for (; !ir->end(); ir->next())
     {
         //cout << "IR @ " << ir->position() << " " << ir->signal() << endl;
+        //cout << "offsets " << bufferOffset_ << "/" << bufferLen_ << endl;
         if (bufferOffset_ > bufferLen_)
         {
             if (onError_ != NULL)
@@ -243,70 +244,82 @@ int Listener::process(void)
             break;
 
         case Ir::ENCODING:
-
-            // TODO: fix for offset values in IR
-            // bump buffOffset_ for offset value in IR.
-
-            // if this is an array or variable size field (0xFFFFFFFF size), then handle it
-            if (ir->size() != Ir::size(ir->primitiveType()))
             {
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), buffer_ + bufferOffset_, ir->size());
+                // TODO: fix for offset values in IR
+                // TODO: bump buffOffset_ for offset value in IR. Offset in IR is relative to saved relativeAnchor_
+
+                const char *valuePosition = buffer_ + bufferOffset_;
+                const char *constVal = ir->constVal();
+                int *calculatedOffset = &bufferOffset_;
+                int constOffset;
+
+                // use ir->constVal() for value if this token is a constant
+                if (constVal != NULL)
+                {
+                    valuePosition = constVal;
+                    calculatedOffset = &constOffset;  // use a dummy variable for offset as constant comes from IR
+                }
+
+                // if this is an array or variable size field (0xFFFFFFFF size), then handle it
+                if (ir->size() != Ir::size(ir->primitiveType()))
+                {
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), valuePosition, ir->size());
+                    break;
+                }
+
+                // fall through to single items
+                switch (ir->primitiveType())
+                {
+                case Ir::CHAR:
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((char *)(valuePosition)));
+                    break;
+
+                case Ir::INT8:
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int8_t *)(valuePosition)));
+                    break;
+
+                case Ir::INT16:
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int16_t *)(valuePosition)));
+                    break;
+
+                case Ir::INT32:
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int32_t *)(valuePosition)));
+                    break;
+
+                case Ir::INT64:
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int64_t *)(valuePosition)));
+                    break;
+
+                case Ir::UINT8:
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint8_t *)(valuePosition)));
+                    break;
+
+                case Ir::UINT16:
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint16_t *)(valuePosition)));
+                    break;
+
+                case Ir::UINT32:
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint32_t *)(valuePosition)));
+                    break;
+
+                case Ir::UINT64:
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint64_t *)(valuePosition)));
+                    break;
+
+                case Ir::FLOAT:
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), (double)*((float *)(valuePosition)));
+                    break;
+
+                case Ir::DOUBLE:
+                    *calculatedOffset += processEncoding(ir->name(), ir->primitiveType(), (double)*((double *)(valuePosition)));
+                    break;
+
+                default:
+                    break;
+                }
+                // TODO: fix for variable length fields and offsets
                 break;
             }
-
-            // fall through to single items
-            switch (ir->primitiveType())
-            {
-            case Ir::CHAR:
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((char *)(buffer_ + bufferOffset_)));
-                break;
-
-            case Ir::INT8:
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int8_t *)(buffer_ + bufferOffset_)));
-                break;
-
-            case Ir::INT16:
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int16_t *)(buffer_ + bufferOffset_)));
-                break;
-
-            case Ir::INT32:
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int32_t *)(buffer_ + bufferOffset_)));
-                break;
-
-            case Ir::INT64:
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (int64_t)*((int64_t *)(buffer_ + bufferOffset_)));
-                break;
-
-            case Ir::UINT8:
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint8_t *)(buffer_ + bufferOffset_)));
-                break;
-
-            case Ir::UINT16:
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint16_t *)(buffer_ + bufferOffset_)));
-                break;
-
-            case Ir::UINT32:
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint32_t *)(buffer_ + bufferOffset_)));
-                break;
-
-            case Ir::UINT64:
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (uint64_t)*((uint64_t *)(buffer_ + bufferOffset_)));
-                break;
-
-            case Ir::FLOAT:
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (double)*((float *)(buffer_ + bufferOffset_)));
-                break;
-
-            case Ir::DOUBLE:
-                bufferOffset_ += processEncoding(ir->name(), ir->primitiveType(), (double)*((double *)(buffer_ + bufferOffset_)));
-                break;
-
-            default:
-                break;
-            }
-            // TODO: fix for variable length fields and offsets
-            break;
-
         default:
             break;
         }

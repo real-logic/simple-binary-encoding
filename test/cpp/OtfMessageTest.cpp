@@ -524,7 +524,103 @@ TEST_F(OtfMessageSetTest, shouldHandleSet)
     EXPECT_EQ(numCompletedsSeen_, 1);
 }
 
+class OtfMessageConstantsTest : public OtfMessageTest, public OtfMessageTestCBs
+{
+protected:
+
+    virtual void constructMessageIr(Ir &ir)
+    {
+        Ir::TokenByteOrder byteOrder = Ir::SBE_LITTLE_ENDIAN;
+        std::string messageStr = std::string("Message1");
+        std::string fieldStr = std::string("Field1");
+        std::string compositeStr = std::string("AllTypes");
+        char constChar = FIELD_CHAR_VALUE;
+        int8_t constInt8 = FIELD_INT8_VALUE;
+        int16_t constInt16 = FIELD_INT16_VALUE;
+        int32_t constInt32 = FIELD_INT32_VALUE;
+        int64_t constInt64 = FIELD_INT64_VALUE;
+        uint8_t constUInt8 = FIELD_UINT8_VALUE;
+        uint16_t constUInt16 = FIELD_UINT16_VALUE;
+        uint32_t constUInt32 = FIELD_UINT32_VALUE;
+        uint64_t constUInt64 = FIELD_UINT64_VALUE;
+        float constFloat = FIELD_FLOAT_VALUE;
+        double constDouble = FIELD_DOUBLE_VALUE;
+
+        ir.addToken(0, 43, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
+        ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
+        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
+        ir.addToken(0, 1, Ir::ENCODING, byteOrder, Ir::CHAR, 0xFFFF, std::string("char"), (const char *)&constChar);
+        ir.addToken(1, 1, Ir::ENCODING, byteOrder, Ir::INT8, 0xFFFF, std::string("int8"), (const char *)&constInt8);
+        ir.addToken(2, 2, Ir::ENCODING, byteOrder, Ir::INT16, 0xFFFF, std::string("int16"), (const char *)&constInt16);
+        ir.addToken(4, 4, Ir::ENCODING, byteOrder, Ir::INT32, 0xFFFF, std::string("int32"), (const char *)&constInt32);
+        ir.addToken(8, 8, Ir::ENCODING, byteOrder, Ir::INT64, 0xFFFF, std::string("int64"), (const char *)&constInt64);
+        ir.addToken(16, 1, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8"), (const char *)&constUInt8);
+        ir.addToken(17, 2, Ir::ENCODING, byteOrder, Ir::UINT16, 0xFFFF, std::string("uint16"), (const char *)&constUInt16);
+        ir.addToken(19, 4, Ir::ENCODING, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"), (const char *)&constUInt32);
+        ir.addToken(23, 8, Ir::ENCODING, byteOrder, Ir::UINT64, 0xFFFF, std::string("uint64"), (const char *)&constUInt64);
+        ir.addToken(31, 4, Ir::ENCODING, byteOrder, Ir::FLOAT, 0xFFFF, std::string("float"), (const char *)&constFloat);
+        ir.addToken(35, 8, Ir::ENCODING, byteOrder, Ir::DOUBLE, 0xFFFF, std::string("double"), (const char *)&constDouble);
+        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
+        ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
+        ir.addToken(0, 43, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
+    };
+
+    virtual void constructMessage()
+    {
+        // there is nothing actually in the message. It's all constants.
+    };
+
+    virtual int onNext(const Field &f)
+    {
+        OtfMessageTestCBs::onNext(f);
+
+        if (numFieldsSeen_ == 2)
+        {
+            EXPECT_EQ(f.numEncodings(), 11);
+            EXPECT_EQ(f.primitiveType(0), Ir::CHAR);
+            EXPECT_EQ(f.primitiveType(1), Ir::INT8);
+            EXPECT_EQ(f.primitiveType(2), Ir::INT16);
+            EXPECT_EQ(f.primitiveType(3), Ir::INT32);
+            EXPECT_EQ(f.primitiveType(4), Ir::INT64);
+            EXPECT_EQ(f.primitiveType(5), Ir::UINT8);
+            EXPECT_EQ(f.primitiveType(6), Ir::UINT16);
+            EXPECT_EQ(f.primitiveType(7), Ir::UINT32);
+            EXPECT_EQ(f.primitiveType(8), Ir::UINT64);
+            EXPECT_EQ(f.primitiveType(9), Ir::FLOAT);
+            EXPECT_EQ(f.primitiveType(10), Ir::DOUBLE);
+            EXPECT_EQ(f.getInt(0), FIELD_CHAR_VALUE);
+            EXPECT_EQ(f.getInt(1), FIELD_INT8_VALUE);
+            EXPECT_EQ(f.getInt(2), FIELD_INT16_VALUE);
+            EXPECT_EQ(f.getInt(3), FIELD_INT32_VALUE);
+            EXPECT_EQ(f.getInt(4), FIELD_INT64_VALUE);
+            EXPECT_EQ(f.getUInt(5), FIELD_UINT8_VALUE);
+            EXPECT_EQ(f.getUInt(6), FIELD_UINT16_VALUE);
+            EXPECT_EQ(f.getUInt(7), FIELD_UINT32_VALUE);
+            EXPECT_EQ(f.getUInt(8), FIELD_UINT64_VALUE);
+            EXPECT_EQ(f.getDouble(9), FIELD_FLOAT_VALUE);
+            EXPECT_EQ(f.getDouble(10), FIELD_DOUBLE_VALUE);
+        }
+        return 0;
+    };
+
+    virtual int onError(const Error &e)
+    {
+        return OtfMessageTestCBs::onError(e);
+    };
+};
+
+TEST_F(OtfMessageConstantsTest, shouldHandleAllTypes)
+{
+    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+        .resetForDecode(buffer_, bufferLen_)
+        .subscribe(this, this, this);
+    EXPECT_EQ(numFieldsSeen_, 2);
+    EXPECT_EQ(numErrorsSeen_, 0);
+    EXPECT_EQ(numCompletedsSeen_, 1);
+}
+
 /*
+ * TODO: test constants for arrays
  * TODO: test reuse of listener
  * TODO: test offset values on fields
  * TODO: byte order
