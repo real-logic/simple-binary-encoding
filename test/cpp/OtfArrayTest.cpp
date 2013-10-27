@@ -145,3 +145,56 @@ TEST_F(OtfUInt32ArrayTest, shouldHandleUInt32Array)
     EXPECT_EQ(numErrorsSeen_, 0);
     EXPECT_EQ(numCompletedsSeen_, 1);
 }
+
+class OtfConstantCharArrayTest : public OtfMessageTest, public OtfMessageTestCBs
+{
+protected:
+
+    virtual void constructMessageIr(Ir &ir)
+    {
+        Ir::TokenByteOrder byteOrder = Ir::SBE_LITTLE_ENDIAN;
+        std::string messageStr = std::string("MessageWithCharArray");
+        std::string charFieldStr = std::string("CharArrayField");
+        const char constStr[] = STR_FIELD_VALUE;
+
+        ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
+        ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
+        ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::ENCODING, byteOrder, Ir::CHAR, 0xFFFF, std::string("char"), constStr);
+        ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
+        ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
+    };
+
+    virtual void constructMessage()
+    {
+        // nothing here. It's all constant.
+    };
+
+    virtual int onNext(const Field &f)
+    {
+        OtfMessageTestCBs::onNext(f);
+
+        if (numFieldsSeen_ == 2)
+        {
+            char fieldValue[STR_FIELD_VALUE_SIZE + 1];
+
+            EXPECT_EQ(f.type(), Field::ENCODING);
+            EXPECT_EQ(f.numEncodings(), 1);
+            EXPECT_EQ(f.fieldName(), "CharArrayField");
+            EXPECT_EQ(f.primitiveType(), Ir::CHAR);
+            EXPECT_EQ(f.length(), STR_FIELD_VALUE_SIZE);
+            f.getArray(0, fieldValue, 0, STR_FIELD_VALUE_SIZE);
+            EXPECT_EQ(std::string(fieldValue, STR_FIELD_VALUE_SIZE), STR_FIELD_VALUE);
+        }
+        return 0;
+    };
+};
+
+TEST_F(OtfConstantCharArrayTest, shouldHandleCharArray)
+{
+    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+        .resetForDecode(buffer_, bufferLen_)
+        .subscribe(this, this, this);
+    EXPECT_EQ(numFieldsSeen_, 2);
+    EXPECT_EQ(numErrorsSeen_, 0);
+    EXPECT_EQ(numCompletedsSeen_, 1);
+}
