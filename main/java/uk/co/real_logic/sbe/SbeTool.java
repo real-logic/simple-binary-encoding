@@ -40,7 +40,7 @@ import java.io.FileInputStream;
  * Properties
  * <ul>
  *     <li><code>sbe.validation.xsd</code>: Use XSD to validate or not.</li>
- *     <li><code>sbe.generate</code>: Generate or not.</li>
+ *     <li><code>sbe.should.generate</code>: Generate or not. Defaults to true</li>
  *     <li><code>sbe.target.language</code>: Target language for code generation, defaults to Java.</li>
  *     <li><code>sbe.output.dir</code>: Target directory for code generation, defaults to current directory.</li>
  * </ul>
@@ -58,6 +58,9 @@ public class SbeTool
 
     /** Boolean system property to control suppressing output on all errors and warnings */
     public static final String VALIDATION_SUPPRESS_OUTPUT = "sbe.validation.suppress.output";
+
+    /** Boolean system property to turn on or off generation. */
+    public static final String SHOULD_GENERATE = "sbe.should.generate";
 
     /** Target language for generated code. */
     public static final String TARGET_LANGUAGE = "sbe.target.language";
@@ -81,32 +84,47 @@ public class SbeTool
         final String messageSchemaFileName = args[0];
         final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
         final String targetCodeGenerator = System.getProperty(TARGET_LANGUAGE, "Java");
+        final boolean shouldGenerate = Boolean.parseBoolean(System.getProperty(SHOULD_GENERATE, "true"));
 
-        generate(messageSchemaFileName, outputDirName, targetCodeGenerator);
+        final MessageSchema schema = parseSchema(messageSchemaFileName);
+
+        if (shouldGenerate)
+        {
+            generate(new IrGenerator().generate(schema), outputDirName, targetCodeGenerator);
+        }
+    }
+
+    /**
+     * Parse the message schema specification.
+     *
+     * @param messageSchemaFileName file containing the SBE specification for the
+     * @return the parsed {@link MessageSchema} for the specification found in the file.
+     * @throws Exception if an error occurs when parsing the specification.
+     */
+    public static MessageSchema parseSchema(final String messageSchemaFileName) throws Exception
+    {
+        try (final BufferedInputStream in = new BufferedInputStream(new FileInputStream(messageSchemaFileName)))
+        {
+            return XmlSchemaParser.parse(in);
+        }
     }
 
     /**
      * Generate SBE encoding and decoding stubs for a target language.
      *
-     * @param messageSchemaFileName file containing encoding specification for the messages.
+     * @param ir for the parsed specification.
      * @param outputDirName directory into which code will be generated.
      * @param targetLanguage for the generated code.
      * @throws Exception if an error occurs while generating the code.
      */
-    public static void generate(final String messageSchemaFileName,
+    public static void generate(final IntermediateRepresentation ir,
                                 final String outputDirName,
                                 final String targetLanguage)
         throws Exception
     {
         final TargetCodeGenerator targetCodeGenerator = TargetCodeGenerator.get(targetLanguage);
+        final CodeGenerator codeGenerator = targetCodeGenerator.newInstance(ir, outputDirName);
 
-        try (final BufferedInputStream in = new BufferedInputStream(new FileInputStream(messageSchemaFileName)))
-        {
-            final MessageSchema schema = XmlSchemaParser.parse(in);
-            final IntermediateRepresentation ir = new IrGenerator().generate(schema);
-            final CodeGenerator codeGenerator = targetCodeGenerator.newInstance(ir, outputDirName);
-
-            codeGenerator.generate();
-        }
+        codeGenerator.generate();
     }
 }
