@@ -215,8 +215,8 @@ public class JavaGenerator implements CodeGenerator
             indent + "        blockLength = dimensions.blockLength();\n" +
             indent + "        index = -1;\n" +
             indent + "        final int dimensionsHeaderSize = %d;\n" +
-            indent + "        offset = position() + dimensionsHeaderSize;\n" +
-            indent + "        position(offset);\n" +
+            indent + "        position(position() + dimensionsHeaderSize);\n" +
+            indent + "        offset = position() - blockLength;\n" +
             indent + "    }\n\n",
             dimensionHeaderSize
         ));
@@ -235,8 +235,8 @@ public class JavaGenerator implements CodeGenerator
             indent + "        this.size = size;\n" +
             indent + "        blockLength = %d;\n" +
             indent + "        final int dimensionsHeaderSize = %d;\n" +
-            indent + "        offset = position() + dimensionsHeaderSize;\n" +
-            indent + "        position(offset);\n" +
+            indent + "        position(position() + dimensionsHeaderSize);\n" +
+            indent + "        offset = position() - blockLength;\n" +
             indent + "    }\n\n",
             javaTypeForNumInGroup,
             javaTypeForBlockLength,
@@ -260,6 +260,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            return false;\n" +
             indent + "        }\n\n" +
             indent + "        position(position() + blockLength);\n" +
+            indent + "        offset += blockLength;\n" +
             indent + "        ++index;\n\n" +
             indent + "        return true;\n" +
             indent + "    }\n"
