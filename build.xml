@@ -146,6 +146,41 @@
 
     <target name="all" depends="clean, checkstyle, build, test, javadoc, dist"/>
 
+    <!-- SBE Examples targets -->
+
+    <property name="dir.examples.src" value="examples/java"/>
+    <property name="dir.examples.resources" value="examples/resources"/>
+    <property name="dir.gen.java" value="target/gen/java"/>
+    <property name="dir.examples.build" location="target/examples/java/classes"/>
+
+    <path id="examples.classpath">
+        <pathelement path="${dir.examples.build}"/>
+        <fileset dir="${dir.dist}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="examples:gen" depends="dist">
+        <mkdir dir="${dir.gen.java}"/>
+        <mkdir dir="${dir.examples.build}"/>
+        <java classname="uk.co.real_logic.sbe.SbeTool">
+            <classpath refid="examples.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.gen.java}"/>
+            <sysproperty key="sbe.target.language" value="Java"/>
+            <arg value="${dir.examples.resources}/TestSchema.xml"/>
+        </java>
+        <javac srcdir="${dir.gen.java}" destdir="${dir.examples.build}" includeAntRuntime="false" debug="true">
+            <classpath refid="examples.classpath"/>
+        </javac>
+        <javac srcdir="${dir.examples.src}" destdir="${dir.examples.build}" includeAntRuntime="false" debug="true">
+            <classpath refid="examples.classpath"/>
+        </javac>
+        <java classname="uk.co.real_logic.sbe.examples.SbeExample">
+            <classpath refid="examples.classpath"/>
+        </java>
+
+    </target>
+
     <!-- C++ related targets -->
 
     <target name="cpp:compile" depends="clean, init">
