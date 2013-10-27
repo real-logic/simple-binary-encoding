@@ -133,6 +133,7 @@ public class SbeExample
         final Engine engine = car.engine();
         sb.append("\ncar.engine.capacity=").append(engine.capacity());
         sb.append("\ncar.engine.numCylinders=").append(engine.numCylinders());
+        sb.append("\ncar.engine.maxRpm=").append(engine.maxRpm());
         sb.append("\ncar.vehicleCode=");
         for (int i = 0, size = engine.manufacturerCodeLength(); i < size; i++)
         {
