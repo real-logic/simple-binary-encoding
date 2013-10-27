@@ -82,15 +82,15 @@ public class SbeTool
         }
 
         final String messageSchemaFileName = args[0];
-        final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
-        final String targetCodeGenerator = System.getProperty(TARGET_LANGUAGE, "Java");
-        final boolean shouldGenerate = Boolean.parseBoolean(System.getProperty(SHOULD_GENERATE, "true"));
-
         final MessageSchema schema = parseSchema(messageSchemaFileName);
 
+        final boolean shouldGenerate = Boolean.parseBoolean(System.getProperty(SHOULD_GENERATE, "true"));
         if (shouldGenerate)
         {
-            generate(new IrGenerator().generate(schema), outputDirName, targetCodeGenerator);
+            final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
+            final String targetLanguage = System.getProperty(TARGET_LANGUAGE, "Java");
+
+            generate(new IrGenerator().generate(schema), outputDirName, targetLanguage);
         }
     }
 
