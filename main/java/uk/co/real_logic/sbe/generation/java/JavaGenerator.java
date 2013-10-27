@@ -294,6 +294,20 @@ public class JavaGenerator implements CodeGenerator
             propertyName
         ));
 
+
+        sb.append(String.format(
+            "\n" +
+                indent + "    public %s %sSize(final int size)\n" +
+                indent + "    {\n" +
+                indent + "        %s.resetForEncode(size);\n" +
+                indent + "        return %s;\n" +
+                indent + "    }\n",
+            className,
+            propertyName,
+            propertyName,
+            propertyName
+        ));
+
         return sb;
     }
 

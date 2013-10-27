@@ -78,12 +78,12 @@ public class FlyweightStyleExample
         massQuote.putQuoteId("1234");
         massQuote.putCtiCode(CtiCode.HOUSE);
 
-        final MassQuote.QuoteSet quoteSet = massQuote.quoteSetCount(2);
+        final MassQuote.QuoteSet quoteSet = massQuote.quoteSetSize(2);
         quoteSet.next();
 
         quoteSet.putUnderlyingSecurity("ESH0");
 
-        MassQuote.QuoteSet.QuoteEntry quoteEntry = quoteSet.quoteEntryCount(2);
+        MassQuote.QuoteSet.QuoteEntry quoteEntry = quoteSet.quoteEntrySize(2);
         quoteEntry.next();
         quoteEntry.id(1);
         quoteEntry.symbol("ABC1");
@@ -108,7 +108,7 @@ public class FlyweightStyleExample
 
         quoteSet.putUnderlyingSecurity("EAB0");
 
-        quoteEntry = quoteSet.quoteEntryCount(2);
+        quoteEntry = quoteSet.quoteEntrySize(2);
         quoteEntry.next();
         quoteEntry.id(3);
         quoteEntry.symbol("ABC1");

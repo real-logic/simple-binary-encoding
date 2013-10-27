@@ -45,7 +45,7 @@ public class MassQuote
         return quoteSet;
     }
 
-    public QuoteSet quoteSetCount(final int length)
+    public QuoteSet quoteSetSize(final int length)
     {
         return quoteSet;
     }
@@ -92,7 +92,7 @@ public class MassQuote
             return false;
         }
 
-        public QuoteEntry quoteEntryCount(final int length)
+        public QuoteEntry quoteEntrySize(final int length)
         {
             return null;
         }
