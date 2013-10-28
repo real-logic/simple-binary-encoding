@@ -507,7 +507,7 @@ public class JavaGenerator implements CodeGenerator
         sb.append(String.format(
            "    public static %s get(final %s value)\n" +
            "    {\n" +
-           "        switch(value)\n" +
+           "        switch (value)\n" +
            "        {\n",
            enumName,
            javaTypeName(tokens.get(0).encoding().primitiveType())
