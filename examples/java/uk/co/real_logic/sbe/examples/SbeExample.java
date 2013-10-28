@@ -60,6 +60,12 @@ public class SbeExample
         car.modelYear(2013);
         car.available(BooleanType.TRUE);
         car.code(Model.A);
+
+        for (int i = 0, size = car.someNumbersLength(); i < size; i++)
+        {
+            car.someNumbers(i, i);
+        }
+
         car.putVehicleCode(VEHICLE_CODE, 0, VEHICLE_CODE.length);
         car.extras().cruiseControl(true).sportsPack(true).sunRoof(false);
 
@@ -125,7 +131,14 @@ public class SbeExample
         sb.append("\ncar.modelYear=").append(car.modelYear());
         sb.append("\ncar.available=").append(car.available());
         sb.append("\ncar.code=").append(car.code());
+
         sb.append("\ncar.vehicleCode=");
+        for (int i = 0, size = car.someNumbersLength(); i < size; i++)
+        {
+            sb.append(car.someNumbers(i)).append(", ");
+        }
+
+        sb.append("\ncar.someNumbers=");
         for (int i = 0, size = car.vehicleCodeLength(); i < size; i++)
         {
             sb.append((char)car.vehicleCode(i));

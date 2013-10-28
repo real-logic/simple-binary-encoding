@@ -676,7 +676,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
-            indent + "        return CodecUtil.%sGet(buffer, this.offset + %d + (index * %d%s));\n" +
+            indent + "        return CodecUtil.%sGet(buffer, this.offset + %d + (index * %d)%s);\n" +
             indent + "    }\n\n",
             javaTypeName,
             propertyName,

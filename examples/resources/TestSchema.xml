@@ -22,6 +22,7 @@
     <types>
         <type name="ModelYear" primitiveType="uint16" semanticType="ModelYear"/>
         <type name="VehicleCode" primitiveType="char" length="6" semanticType="VehicleCode"/>
+        <type name="someNumbers" primitiveType="int32" length="5" semanticType="SomeArray"/>
         <composite name="Engine" semanticType="Engine">
             <type name="capacity" primitiveType="uint16"/>
             <type name="numCylinders" primitiveType="uint8"/>
@@ -49,21 +50,22 @@
         <field name="modelYear" id="2" type="ModelYear"/>
         <field name="available" id="3" type="BooleanType"/>
         <field name="code" id="4" type="Model"/>
+        <field name="someNumbers" id="5" type="someNumbers"/>
         <field name="vehicleCode" id="6" type="VehicleCode"/>
-        <field name="extras" id="5" type="OptionalExtras"/>
-        <field name="engine" id="7" type="Engine"/>
-        <group name="fuelFigures" id="8" dimensionType="groupSizeEncoding">
-            <field name="speed" id="9" type="uint16"  semanticType="int"/>
-            <field name="mpg" id="10" type="float" semanticType="int"/>
+        <field name="extras" id="7" type="OptionalExtras"/>
+        <field name="engine" id="8" type="Engine"/>
+        <group name="fuelFigures" id="9" dimensionType="groupSizeEncoding">
+            <field name="speed" id="10" type="uint16"  semanticType="int"/>
+            <field name="mpg" id="11" type="float" semanticType="int"/>
         </group>
-        <group name="performanceFigures" id="11" dimensionType="groupSizeEncoding">
-            <field name="octaneRating" id="12" type="uint8" semanticType="RON"/>
-            <group name="acceleration" id="13" dimensionType="groupSizeEncoding">
-                <field name="mph" id="14" type="uint16"  semanticType="int"/>
-                <field name="seconds" id="15" type="float" semanticType="int"/>
+        <group name="performanceFigures" id="12" dimensionType="groupSizeEncoding">
+            <field name="octaneRating" id="13" type="uint8" semanticType="RON"/>
+            <group name="acceleration" id="14" dimensionType="groupSizeEncoding">
+                <field name="mph" id="15" type="uint16"  semanticType="int"/>
+                <field name="seconds" id="16" type="float" semanticType="int"/>
             </group>
         </group>
-        <data name="make" id="16" type="varDataEncoding" semanticType="Make"/>
-        <data name="model" id="17" type="varDataEncoding" semanticType="Model"/>
+        <data name="make" id="17" type="varDataEncoding" semanticType="Make"/>
+        <data name="model" id="18" type="varDataEncoding" semanticType="Model"/>
     </message>
 </messageSchema>
