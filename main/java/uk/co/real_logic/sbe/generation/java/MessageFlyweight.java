@@ -28,6 +28,13 @@ public interface MessageFlyweight
     int blockLength();
 
     /**
+     * Offset in the underlying buffer at which the message starts.
+     *
+     * @return offset in the underlying buffer at which the message starts.
+     */
+    int offset();
+
+    /**
      * Reset the flyweight to a new index in a buffer to overlay a message.
      *
      * @param buffer underlying the message.
@@ -43,7 +50,7 @@ public interface MessageFlyweight
     void position(final int position);
 
     /**
-     * The position for the end of the currently access block.
+     * The position for the end of the currently access block from the message starting offset.
      *
      * @return the position for the end of the currently access block.
      */

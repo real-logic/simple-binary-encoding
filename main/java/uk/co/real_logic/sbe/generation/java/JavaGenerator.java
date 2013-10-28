@@ -822,6 +822,10 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        return blockLength;\n" +
             "    }\n\n" +
+            "    public int offset()\n" +
+            "    {\n" +
+            "        return offset;\n" +
+            "    }\n\n" +
             "    public void reset(final DirectBuffer buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
