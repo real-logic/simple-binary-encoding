@@ -686,35 +686,39 @@ public class JavaGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public void get%s(final %s[] dst, final int offset, final int length)\n" +
+            indent + "    public int get%s(final %s[] dst, final int offset, final int length)\n" +
             indent + "    {\n" +
             indent + "        if (offset < 0 || offset > (dst.length - length))\n" +
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
             indent + "        }\n\n" +
-            indent + "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, Math.min(length, %d));\n" +
+            indent + "        final int elementsCopied = Math.min(length, %d);\n" +
+            indent + "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, elementsCopied);\n" +
+            indent + "        return elementsCopied;\n" +
             indent + "    }\n\n",
             toUpperFirstChar(propertyName),
             javaTypeName,
+            Integer.valueOf(token.arrayLength()),
             typePrefix,
-            offset,
-            Integer.valueOf(token.arrayLength())
+            offset
         ));
 
         sb.append(String.format(
-            indent + "    public void put%s(final %s[] src, final int offset, final int length)\n" +
+            indent + "    public int put%s(final %s[] src, final int offset, final int length)\n" +
             indent + "    {\n" +
             indent + "        if (offset < 0 || offset > (src.length - length))\n" +
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
             indent + "        }\n\n" +
-            indent + "        CodecUtil.%ssPut(buffer, this.offset + %d, src, offset, Math.min(length, %d));\n" +
+            indent + "        final int elementsCopied = Math.min(length, %d);\n" +
+            indent + "        CodecUtil.%ssPut(buffer, this.offset + %d, src, offset, elementsCopied);\n" +
+            indent + "        return elementsCopied;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
             javaTypeName,
+            Integer.valueOf(token.arrayLength()),
             typePrefix,
-            offset,
-            Integer.valueOf(token.arrayLength())
+            offset
         ));
 
         return sb;
