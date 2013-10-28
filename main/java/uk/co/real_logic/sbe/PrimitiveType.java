@@ -126,7 +126,7 @@ public enum PrimitiveType
     }
 
     /**
-     * The name of the primitive type as a String
+     * The name of the primitive type as a String.
      *
      * @return the name as a String
      */
@@ -136,7 +136,7 @@ public enum PrimitiveType
     }
 
     /**
-     * The size of the primitive type in octets
+     * The size of the primitive type in octets.
      *
      * @return size (in octets) of the primitive type
      */
@@ -146,7 +146,7 @@ public enum PrimitiveType
     }
 
     /**
-     * The minVal of the primitive type
+     * The minVal of the primitive type.
      *
      * @return default minVal of the primitive type
      */
@@ -156,7 +156,7 @@ public enum PrimitiveType
     }
 
     /**
-     * The maxVal of the primitive type
+     * The maxVal of the primitive type.
      *
      * @return default maxVal of the primitive type
      */
@@ -166,7 +166,7 @@ public enum PrimitiveType
     }
 
     /**
-     * The nullVal of the primitive type
+     * The nullVal of the primitive type.
      *
      * @return default nullVal of the primitive type
      */
@@ -176,7 +176,7 @@ public enum PrimitiveType
     }
 
     /**
-     * Lookup PrimitiveType by String name and return Enum
+     * Lookup PrimitiveType by String name and return Enum.
      *
      * @param name of primitiveType to get
      * @return the {@link PrimitiveType} matching the name
@@ -197,7 +197,7 @@ public enum PrimitiveType
 
     /**
      * Used to hold a reference to the values array without having it defensively copied
-     * on every call to {@link PrimitiveType#values()}
+     * on every call to {@link PrimitiveType#values()}.
      */
     static class Singleton
     {
