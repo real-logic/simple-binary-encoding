@@ -686,41 +686,42 @@ public class JavaGenerator implements CodeGenerator
             Integer.valueOf(token.encoding().primitiveType().size())
         ));
 
-        sb.append(String.format(
-            indent + "    public int get%s(final %s[] dst, final int offset, final int length)\n" +
-            indent + "    {\n" +
-            indent + "        if (offset < 0 || offset > (dst.length - length))\n" +
-            indent + "        {\n" +
-            indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
-            indent + "        }\n\n" +
-            indent + "        final int elementsCopied = Math.min(length, %d);\n" +
-            indent + "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, elementsCopied);\n" +
-            indent + "        return elementsCopied;\n" +
-            indent + "    }\n\n",
-            toUpperFirstChar(propertyName),
-            javaTypeName,
-            Integer.valueOf(token.arrayLength()),
-            typePrefix,
-            offset
-        ));
+        if (token.encoding().primitiveType() == PrimitiveType.CHAR)
+        {
+            sb.append(String.format(
+                indent + "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
+                indent + "    {\n" +
+                indent + "        if (offset < 0 || offset > (dst.length - length))\n" +
+                indent + "        {\n" +
+                indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
+                indent + "        }\n\n" +
+                indent + "        final int bytesCopied = Math.min(length, %d);\n" +
+                indent + "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, bytesCopied);\n" +
+                indent + "        return bytesCopied;\n" +
+                indent + "    }\n\n",
+                toUpperFirstChar(propertyName),
+                Integer.valueOf(token.arrayLength()),
+                typePrefix,
+                offset
+            ));
 
-        sb.append(String.format(
-            indent + "    public int put%s(final %s[] src, final int offset, final int length)\n" +
-            indent + "    {\n" +
-            indent + "        if (offset < 0 || offset > (src.length - length))\n" +
-            indent + "        {\n" +
-            indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
-            indent + "        }\n\n" +
-            indent + "        final int elementsCopied = Math.min(length, %d);\n" +
-            indent + "        CodecUtil.%ssPut(buffer, this.offset + %d, src, offset, elementsCopied);\n" +
-            indent + "        return elementsCopied;\n" +
-            indent + "    }\n",
-            toUpperFirstChar(propertyName),
-            javaTypeName,
-            Integer.valueOf(token.arrayLength()),
-            typePrefix,
-            offset
-        ));
+            sb.append(String.format(
+                indent + "    public int put%s(final byte[] src, final int offset, final int length)\n" +
+                indent + "    {\n" +
+                indent + "        if (offset < 0 || offset > (src.length - length))\n" +
+                indent + "        {\n" +
+                indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
+                indent + "        }\n\n" +
+                indent + "        final int bytesCopied = Math.min(length, %d);\n" +
+                indent + "        CodecUtil.%ssPut(buffer, this.offset + %d, src, offset, bytesCopied);\n" +
+                indent + "        return bytesCopied;\n" +
+                indent + "    }\n",
+                toUpperFirstChar(propertyName),
+                Integer.valueOf(token.arrayLength()),
+                typePrefix,
+                offset
+            ));
+        }
 
         return sb;
     }
