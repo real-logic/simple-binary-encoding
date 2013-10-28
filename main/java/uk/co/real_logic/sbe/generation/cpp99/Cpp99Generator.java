@@ -812,6 +812,7 @@ public class Cpp99Generator implements CodeGenerator
             "private:\n" +
             "    char *buffer_;\n" +
             "    int offset_;\n\n" +
+            "public:\n" +
             "    void resetForEncode(char *buffer, const int offset)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
