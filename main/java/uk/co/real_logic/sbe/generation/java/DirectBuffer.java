@@ -22,8 +22,6 @@ import uk.co.real_logic.sbe.util.Verify;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import static uk.co.real_logic.sbe.util.BitUtil.*;
-
 /**
  * Direct buffer which can wrap a byte[] or a {@link ByteBuffer} that is heap or direct allocated for direct access
  * with native types.
@@ -125,65 +123,6 @@ public class DirectBuffer
     }
 
     /**
-     * Get from the underlying buffer and put them into a supplied array.
-     * This method will try to fill the supplied byte array.
-     *
-     * @param index in the underlying buffer to start from.
-     * @param dst   into which elements will be copied.
-     * @return count of bytes copied.
-     */
-    public int getLongs(final int index, final long[] dst)
-    {
-        return getLongs(index, dst, 0, dst.length);
-    }
-
-    /**
-     * Get from the underlying buffer and put them into a supplied array.
-     *
-     * @param index  in the underlying buffer to start from.
-     * @param dst    into which the elements will be copied.
-     * @param offset in the supplied array to start the copy
-     * @param length of the supplied array to use.
-     * @return count of bytes copied.
-     */
-    public int getLongs(final int index, final long[] dst, final int offset, final int length)
-    {
-        final int count = Math.min(length * SIZE_OF_LONG, capacity - index);
-        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_LONG), count);
-
-        return count;
-    }
-
-    /**
-     * Put from the supplied array into the underlying buffer.
-     *
-     * @param index in the underlying buffer to start from.
-     * @param src   from which elements will be copied.
-     * @return count of bytes copied.
-     */
-    public int putLongs(final int index, final long[] src)
-    {
-        return putLongs(index, src, 0, src.length);
-    }
-
-    /**
-     * Put from the supplied array into the underlying buffer.
-     *
-     * @param index  in the underlying buffer to start from.
-     * @param src    from which the elements will be copied.
-     * @param offset in the supplied array to start the copy
-     * @param length of the supplied array to use.
-     * @return count of bytes copied.
-     */
-    public int putLongs(final int index, final long[] src, final int offset, final int length)
-    {
-        final int count = Math.min(length * SIZE_OF_LONG, capacity - index);
-        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_LONG), byteArray, baseOffset + index, count);
-
-        return count;
-    }
-
-    /**
      * Get the value at a given index.
      *
      * @param index in bytes from which to get.
@@ -203,65 +142,6 @@ public class DirectBuffer
     public void putInt(final int index, final int value)
     {
         UNSAFE.putInt(byteArray, baseOffset + index, value);
-    }
-
-    /**
-     * Get from the underlying buffer and put into a supplied array.
-     * This method will try to fill the supplied byte array.
-     *
-     * @param index in the underlying buffer to start from.
-     * @param dst   into which elements will be copied.
-     * @return count of bytes copied.
-     */
-    public int getInts(final int index, final int[] dst)
-    {
-        return getInts(index, dst, 0, dst.length);
-    }
-
-    /**
-     * Get from the underlying buffer and put into a supplied array.
-     *
-     * @param index  in the underlying buffer to start from.
-     * @param dst    into which the elements will be copied.
-     * @param offset in the supplied array to start the copy
-     * @param length of the supplied array to use.
-     * @return count of bytes copied.
-     */
-    public int getInts(final int index, final int[] dst, final int offset, final int length)
-    {
-        final int count = Math.min(length * SIZE_OF_INT, capacity - index);
-        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_INT), count);
-
-        return count;
-    }
-
-    /**
-     * Put from the supplied array into the underlying buffer.
-     *
-     * @param index in the underlying buffer to start from.
-     * @param src   from which elements will be copied.
-     * @return count of bytes copied.
-     */
-    public int putInts(final int index, final int[] src)
-    {
-        return putInts(index, src, 0, src.length);
-    }
-
-    /**
-     * Put from the supplied array into the underlying buffer.
-     *
-     * @param index  in the underlying buffer to start from.
-     * @param src    from which the elements will be copied.
-     * @param offset in the supplied array to start the copy
-     * @param length of the supplied array to use.
-     * @return count of bytes copied.
-     */
-    public int putInts(final int index, final int[] src, final int offset, final int length)
-    {
-        final int count = Math.min(length * SIZE_OF_INT, capacity - index);
-        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_INT), byteArray, baseOffset + index, count);
-
-        return count;
     }
 
     /**
@@ -287,65 +167,6 @@ public class DirectBuffer
     }
 
     /**
-     * Get from the underlying buffer and put into a supplied array.
-     * This method will try to fill the supplied byte array.
-     *
-     * @param index in the underlying buffer to start from.
-     * @param dst   into which elements will be copied.
-     * @return count of bytes copied.
-     */
-    public int getDoubles(final int index, final double[] dst)
-    {
-        return getDoubles(index, dst, 0, dst.length);
-    }
-
-    /**
-     * Get from the underlying buffer and put into a supplied array.
-     *
-     * @param index  in the underlying buffer to start from.
-     * @param dst    into which the elements will be copied.
-     * @param offset in the supplied array to start the copy
-     * @param length of the supplied array to use.
-     * @return count of bytes copied.
-     */
-    public int getDoubles(final int index, final double[] dst, final int offset, final int length)
-    {
-        final int count = Math.min(length * SIZE_OF_DOUBLE, capacity - index);
-        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_DOUBLE), count);
-
-        return count;
-    }
-
-    /**
-     * Put from the supplied array into the underlying buffer.
-     *
-     * @param index in the underlying buffer to start from.
-     * @param src   from which elements will be copied.
-     * @return count of bytes copied.
-     */
-    public int putDoubles(final int index, final double[] src)
-    {
-        return putDoubles(index, src, 0, src.length);
-    }
-
-    /**
-     * Put from the supplied array into the underlying buffer.
-     *
-     * @param index  in the underlying buffer to start from.
-     * @param src    from which the elements will be copied.
-     * @param offset in the supplied array to start the copy
-     * @param length of the supplied array to use.
-     * @return count of bytes copied.
-     */
-    public int putDoubles(final int index, final double[] src, final int offset, final int length)
-    {
-        final int count = Math.min(length * SIZE_OF_DOUBLE, capacity - index);
-        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_DOUBLE), byteArray, baseOffset + index, count);
-
-        return count;
-    }
-
-    /**
      * Get the value at a given index.
      *
      * @param index in bytes from which to get.
@@ -368,65 +189,6 @@ public class DirectBuffer
     }
 
     /**
-     * Get from the underlying buffer and put into a supplied array.
-     * This method will try to fill the supplied byte array.
-     *
-     * @param index in the underlying buffer to start from.
-     * @param dst   into which elements will be copied.
-     * @return count of bytes copied.
-     */
-    public int getFloats(final int index, final float[] dst)
-    {
-        return getFloats(index, dst, 0, dst.length);
-    }
-
-    /**
-     * Get from the underlying buffer and put into a supplied array.
-     *
-     * @param index  in the underlying buffer to start from.
-     * @param dst    into which the elements will be copied.
-     * @param offset in the supplied array to start the copy
-     * @param length of the supplied array to use.
-     * @return count of bytes copied.
-     */
-    public int getFloats(final int index, final float[] dst, final int offset, final int length)
-    {
-        final int count = Math.min(length * SIZE_OF_FLOAT, capacity - index);
-        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_FLOAT), count);
-
-        return count;
-    }
-
-    /**
-     * Put from the supplied array into the underlying buffer.
-     *
-     * @param index in the underlying buffer to start from.
-     * @param src   from which elements will be copied.
-     * @return count of bytes copied.
-     */
-    public int putFloats(final int index, final float[] src)
-    {
-        return putFloats(index, src, 0, src.length);
-    }
-
-    /**
-     * Put from the supplied array into the underlying buffer.
-     *
-     * @param index  in the underlying buffer to start from.
-     * @param src    from which the elements will be copied.
-     * @param offset in the supplied array to start the copy
-     * @param length of the supplied array to use.
-     * @return count of bytes copied.
-     */
-    public int putFloats(final int index, final float[] src, final int offset, final int length)
-    {
-        final int count = Math.min(length * SIZE_OF_FLOAT, capacity - index);
-        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_FLOAT), byteArray, baseOffset + index, count);
-
-        return count;
-    }
-
-    /**
      * Get the value at a given index.
      *
      * @param index in bytes from which to get.
@@ -446,65 +208,6 @@ public class DirectBuffer
     public void putShort(final int index, final short value)
     {
         UNSAFE.putShort(byteArray, baseOffset + index, value);
-    }
-
-    /**
-     * Get from the underlying buffer and put into a supplied array.
-     * This method will try to fill the supplied byte array.
-     *
-     * @param index in the underlying buffer to start from.
-     * @param dst   into which elements will be copied.
-     * @return count of bytes copied.
-     */
-    public int getShorts(final int index, final short[] dst)
-    {
-        return getShorts(index, dst, 0, dst.length);
-    }
-
-    /**
-     * Get from the underlying buffer and put into a supplied array.
-     *
-     * @param index  in the underlying buffer to start from.
-     * @param dst    into which the elements will be copied.
-     * @param offset in the supplied array to start the copy
-     * @param length of the supplied array to use.
-     * @return count of bytes copied.
-     */
-    public int getShorts(final int index, final short[] dst, final int offset, final int length)
-    {
-        final int count = Math.min(length * SIZE_OF_SHORT, capacity - index);
-        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_SHORT), count);
-
-        return count;
-    }
-
-    /**
-     * Put from the supplied array into the underlying buffer.
-     *
-     * @param index in the underlying buffer to start from.
-     * @param src   from which elements will be copied.
-     * @return count of bytes copied.
-     */
-    public int putShorts(final int index, final short[] src)
-    {
-        return putShorts(index, src, 0, src.length);
-    }
-
-    /**
-     * Put from the supplied array into the underlying buffer.
-     *
-     * @param index  in the underlying buffer to start from.
-     * @param src    from which the elements will be copied.
-     * @param offset in the supplied array to start the copy
-     * @param length of the supplied array to use.
-     * @return count of bytes copied.
-     */
-    public int putShorts(final int index, final short[] src, final int offset, final int length)
-    {
-        final int count = Math.min(length * SIZE_OF_SHORT, capacity - index);
-        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + (offset * SIZE_OF_SHORT), byteArray, baseOffset + index, count);
-
-        return count;
     }
 
     /**

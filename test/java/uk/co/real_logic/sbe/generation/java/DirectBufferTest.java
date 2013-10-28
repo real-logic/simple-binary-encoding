@@ -70,35 +70,6 @@ public class DirectBufferTest
     }
 
     @Theory
-    public void shouldGetLongsFromBuffer(final DirectBuffer buffer)
-    {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
-        duplicateBuffer.putLong(0).putLong(1).putLong(2).putLong(3).putLong(4);
-
-        final long[] results = new long[5];
-        buffer.getLongs(0, results);
-
-        for (long i = 0; i < results.length; i++)
-        {
-            assertThat(Long.valueOf(results[(int)i]), is(Long.valueOf(i)));
-        }
-    }
-
-    @Theory
-    public void shouldPutLongsToBuffer(final DirectBuffer buffer)
-    {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
-        final long[] expected = new long[]{0, 1, 2, 3, 4};
-
-        buffer.putLongs(0, expected);
-
-        for (long i = 0; i < expected.length; i++)
-        {
-            assertThat(Long.valueOf(duplicateBuffer.getLong()), is(Long.valueOf(i)));
-        }
-    }
-
-    @Theory
     public void shouldGetIntFromBuffer(final DirectBuffer buffer)
     {
         final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
@@ -119,35 +90,6 @@ public class DirectBufferTest
     }
 
     @Theory
-    public void shouldGetIntsFromBuffer(final DirectBuffer buffer)
-    {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
-        duplicateBuffer.putInt(0).putInt(1).putInt(2).putInt(3).putInt(4);
-
-        final int[] results = new int[5];
-        buffer.getInts(0, results);
-
-        for (int i = 0; i < results.length; i++)
-        {
-            assertThat(Integer.valueOf(results[i]), is(Integer.valueOf(i)));
-        }
-    }
-
-    @Theory
-    public void shouldPutIntsToBuffer(final DirectBuffer buffer)
-    {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
-        final int[] expected = new int[]{0, 1, 2, 3, 4};
-
-        buffer.putInts(0, expected);
-
-        for (int i = 0; i < expected.length; i++)
-        {
-            assertThat(Integer.valueOf(duplicateBuffer.getInt()), is(Integer.valueOf(i)));
-        }
-    }
-
-    @Theory
     public void shouldGetShortFromBuffer(final DirectBuffer buffer)
     {
         final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
@@ -165,36 +107,6 @@ public class DirectBufferTest
         buffer.putShort(INDEX, SHORT_VALUE);
 
         assertThat(Short.valueOf(duplicateBuffer.getShort(INDEX)), is(Short.valueOf(SHORT_VALUE)));
-    }
-
-
-    @Theory
-    public void shouldGetShortsFromBuffer(final DirectBuffer buffer)
-    {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
-        duplicateBuffer.putShort((short)0).putShort((short)1).putShort((short)2).putShort((short)3).putShort((short)4);
-
-        final short[] results = new short[5];
-        buffer.getShorts(0, results);
-
-        for (int i = 0; i < results.length; i++)
-        {
-            assertThat(Short.valueOf(results[i]), is(Short.valueOf((short)i)));
-        }
-    }
-
-    @Theory
-    public void shouldPutShortsToBuffer(final DirectBuffer buffer)
-    {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
-        final short[] expected = new short[]{0, 1, 2, 3, 4};
-
-        buffer.putShorts(0, expected);
-
-        for (int i = 0; i < expected.length; i++)
-        {
-            assertThat(Short.valueOf(duplicateBuffer.getShort()), is(Short.valueOf((short)i)));
-        }
     }
 
     @Theory
@@ -218,35 +130,6 @@ public class DirectBufferTest
     }
 
     @Theory
-    public void shouldGetDoublesFromBuffer(final DirectBuffer buffer)
-    {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
-        duplicateBuffer.putDouble(0).putDouble(1.0d).putDouble(2.0d).putDouble(3.0d).putDouble(4.0d);
-
-        final double[] results = new double[5];
-        buffer.getDoubles(0, results);
-
-        for (int i = 0; i < results.length; i++)
-        {
-            assertThat(Double.valueOf(results[i]), is(Double.valueOf(i)));
-        }
-    }
-
-    @Theory
-    public void shouldPutDoublesToBuffer(final DirectBuffer buffer)
-    {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
-        final double[] expected = new double[]{0, 1.0d, 2.0d, 3.0d, 4.0d};
-
-        buffer.putDoubles(0, expected);
-
-        for (int i = 0; i < expected.length; i++)
-        {
-            assertThat(Double.valueOf(duplicateBuffer.getDouble()), is(Double.valueOf(i)));
-        }
-    }
-
-    @Theory
     public void shouldGetFloatFromBuffer(final DirectBuffer buffer)
     {
         final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
@@ -264,36 +147,6 @@ public class DirectBufferTest
         buffer.putFloat(INDEX, FLOAT_VALUE);
 
         assertThat(Float.valueOf(duplicateBuffer.getFloat(INDEX)), is(Float.valueOf(FLOAT_VALUE)));
-    }
-
-
-    @Theory
-    public void shouldGetFloatsFromBuffer(final DirectBuffer buffer)
-    {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
-        duplicateBuffer.putFloat(0).putFloat(1.0f).putFloat(2.0f).putFloat(3.0f).putFloat(4.0f);
-
-        final float[] results = new float[5];
-        buffer.getFloats(0, results);
-
-        for (int i = 0; i < results.length; i++)
-        {
-            assertThat(Float.valueOf(results[i]), is(Float.valueOf(i)));
-        }
-    }
-
-    @Theory
-    public void shouldPutFloatsToBuffer(final DirectBuffer buffer)
-    {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
-        final float[] expected = new float[]{0, 1.0f, 2.0f, 3.0f, 4.0f};
-
-        buffer.putFloats(0, expected);
-
-        for (int i = 0; i < expected.length; i++)
-        {
-            assertThat(Float.valueOf(duplicateBuffer.getFloat()), is(Float.valueOf(i)));
-        }
     }
 
     @Theory

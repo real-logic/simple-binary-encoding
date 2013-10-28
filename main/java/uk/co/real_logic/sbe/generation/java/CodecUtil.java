@@ -34,6 +34,7 @@ public class CodecUtil
                                              Integer.valueOf(position),
                                              Integer.valueOf(capacity),
                                              Integer.valueOf(offset));
+
             throw new IllegalStateException(msg);
         }
     }
@@ -113,7 +114,10 @@ public class CodecUtil
      */
     public static void int16sPut(final DirectBuffer buffer, final int index, final short[] src, final int offset, final int length)
     {
-        buffer.putShorts(index, src, offset, length);
+        for (int i = 0; i < length; i++)
+        {
+            buffer.putShort(index + (i * SIZE_OF_SHORT), src[offset + i]);
+        }
     }
 
     /**
@@ -139,7 +143,10 @@ public class CodecUtil
      */
     public static void int32sPut(final DirectBuffer buffer, final int index, final int[] src, final int offset, final int length)
     {
-        buffer.putInts(index, src, offset, length);
+        for (int i = 0; i < length; i++)
+        {
+            buffer.putInt(index + (i * SIZE_OF_INT), src[offset + i]);
+        }
     }
 
     /**
@@ -165,7 +172,10 @@ public class CodecUtil
      */
     public static void int64sPut(final DirectBuffer buffer, final int index, final long[] src, final int offset, final int length)
     {
-        buffer.putLongs(index, src, offset, length);
+        for (int i = 0; i < length; i++)
+        {
+            buffer.putLong(index + (i * SIZE_OF_LONG), src[offset + i]);
+        }
     }
 
     /**
@@ -418,7 +428,10 @@ public class CodecUtil
      */
     public static void int16sGet(final DirectBuffer buffer, final int index, final short[] dst, final int offset, final int length)
     {
-        buffer.getShorts(index, dst, offset, length);
+        for (int i = 0; i < length; i++)
+        {
+            dst[offset + i] = buffer.getShort(index + (i * SIZE_OF_SHORT));
+        }
     }
 
     /**
@@ -444,7 +457,10 @@ public class CodecUtil
      */
     public static void int32sGet(final DirectBuffer buffer, final int index, final int[] dst, final int offset, final int length)
     {
-        buffer.getInts(index, dst, offset, length);
+        for (int i = 0; i < length; i++)
+        {
+            dst[offset + i] = buffer.getInt(index + (i * SIZE_OF_INT));
+        }
     }
 
     /**
@@ -470,7 +486,10 @@ public class CodecUtil
      */
     public static void int64sGet(final DirectBuffer buffer, final int index, final long[] dst, final int offset, final int length)
     {
-        buffer.getLongs(index, dst, offset, length);
+        for (int i = 0; i < length; i++)
+        {
+            dst[offset + i] = buffer.getLong(index + (i * SIZE_OF_LONG));
+        }
     }
 
     /**
@@ -612,7 +631,10 @@ public class CodecUtil
      */
     public static void floatsGet(final DirectBuffer buffer, final int index, final float[] dst, final int offset, final int length)
     {
-        buffer.getFloats(index, dst, offset, length);
+        for (int i = 0; i < length; i++)
+        {
+            dst[offset + i] = buffer.getFloat(index + (i * SIZE_OF_FLOAT));
+        }
     }
 
     /**
@@ -638,7 +660,10 @@ public class CodecUtil
      */
     public static void doublesGet(final DirectBuffer buffer, final int index, final double[] dst, final int offset, final int length)
     {
-        buffer.getDoubles(index, dst, offset, length);
+        for (int i = 0; i < length; i++)
+        {
+            dst[offset + i] = buffer.getDouble(index + (i * SIZE_OF_DOUBLE));
+        }
     }
 
     /**
