@@ -576,7 +576,7 @@ public class JavaGenerator implements CodeGenerator
     {
         if (Encoding.Presence.CONSTANT == token.encoding().presence())
         {
-            return generateConstPropertyMethod(propertyName, token, indent);
+            return generateConstPropertyMethods(propertyName, token, indent);
         }
         else
         {
@@ -725,7 +725,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateConstPropertyMethod(final String propertyName, final Token token, final String indent)
+    private CharSequence generateConstPropertyMethods(final String propertyName, final Token token, final String indent)
     {
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
 
