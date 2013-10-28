@@ -64,17 +64,14 @@ public class EncodedDataType extends Type
             }
             else
             {
+                final String nodeValue = node.getFirstChild().getNodeValue();
                 if (PrimitiveType.CHAR == primitiveType)
                 {
-                    final String nodeValue = node.getFirstChild().getNodeValue();
-                    constVal = PrimitiveValue.parse(nodeValue,
-                                                    primitiveType,
-                                                    nodeValue.length(),
-                                                    characterEncoding);
+                    constVal = PrimitiveValue.parse(nodeValue, primitiveType, nodeValue.length(), characterEncoding);
                 }
                 else
                 {
-                    constVal = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), primitiveType);
+                    constVal = PrimitiveValue.parse(nodeValue, primitiveType);
                 }
             }
         }
