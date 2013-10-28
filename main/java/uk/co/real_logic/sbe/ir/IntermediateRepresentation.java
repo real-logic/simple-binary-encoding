@@ -122,6 +122,16 @@ public class IntermediateRepresentation
         return packageName;
     }
 
+    /**
+     * Get the namespace name to be used for generated code.
+     *
+     * @return the namespace name to be used for generated code.
+     */
+    public String namespaceName()
+    {
+        return packageName;
+    }
+
     private void captureTypes(final List<Token> tokens)
     {
         for (int i = 0, size = tokens.size(); i < size; i++)

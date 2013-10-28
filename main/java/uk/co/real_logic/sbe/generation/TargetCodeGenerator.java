@@ -15,6 +15,8 @@
  */
 package uk.co.real_logic.sbe.generation;
 
+import uk.co.real_logic.sbe.generation.cpp99.Cpp99Generator;
+import uk.co.real_logic.sbe.generation.cpp99.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.generation.java.PackageOutputManager;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
@@ -40,7 +42,7 @@ public enum TargetCodeGenerator
         public CodeGenerator newInstance(final IntermediateRepresentation ir, final String outputDir)
             throws IOException
         {
-            return null;
+            return new Cpp99Generator(ir, new NamespaceOutputManager(outputDir, ir.namespaceName()));
         }
     };
 

@@ -51,6 +51,10 @@ public class DirectBufferTest
     @DataPoint
     public static final DirectBuffer DIRECT_BYTE_BUFFER = new DirectBuffer(ByteBuffer.allocateDirect(BUFFER_SIZE));
 
+    @DataPoint
+    public static final DirectBuffer HEAP_BYTE_BUFFER_SLICE = new DirectBuffer(((ByteBuffer)
+            (ByteBuffer.allocate(BUFFER_SIZE*2).position(BUFFER_SIZE))).slice());
+
     @Theory
     public void shouldGetLongFromBuffer(final DirectBuffer buffer)
     {
@@ -218,6 +222,43 @@ public class DirectBufferTest
 
         assertThat(dstBuffer.array(), is(testBytes));
     }
+    @Theory
+    public void shouldGetBytesFromBufferToDirectBuffer(final DirectBuffer buffer)
+    {
+        final byte[] testBytes = "Hello World".getBytes();
+
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
+        duplicateBuffer.position(INDEX);
+        duplicateBuffer.put(testBytes);
+
+        final ByteBuffer dstBuffer = ByteBuffer.allocateDirect(testBytes.length);
+        buffer.getBytes(INDEX, dstBuffer, testBytes.length);
+
+        byte[] result = new byte[testBytes.length];
+        dstBuffer.flip();
+        dstBuffer.get(result);
+        assertThat(result, is(testBytes));
+    }
+
+    @Theory
+    public void shouldGetBytesFromBufferToSlice(final DirectBuffer buffer)
+    {
+        final byte[] testBytes = "Hello World".getBytes();
+
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
+        duplicateBuffer.position(INDEX);
+        duplicateBuffer.put(testBytes);
+
+        final ByteBuffer dstBuffer =
+            ((ByteBuffer) ByteBuffer.allocate(testBytes.length*2).position(testBytes.length)).slice();
+
+        buffer.getBytes(INDEX, dstBuffer, testBytes.length);
+
+        byte[] result = new byte[testBytes.length];
+        dstBuffer.flip();
+        dstBuffer.get(result);
+        assertThat(result, is(testBytes));
+    }
 
     @Theory
     public void shouldPutBytesToBuffer(final DirectBuffer buffer)
@@ -238,6 +279,42 @@ public class DirectBufferTest
     {
         final byte[] testBytes = "Hello World".getBytes();
         final ByteBuffer srcBuffer = ByteBuffer.wrap(testBytes);
+
+        buffer.putBytes(INDEX, srcBuffer, testBytes.length);
+
+        final byte[] buff = new byte[testBytes.length];
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
+        duplicateBuffer.position(INDEX);
+        duplicateBuffer.get(buff);
+
+        assertThat(buff, is(testBytes));
+    }
+    @Theory
+    public void shouldPutBytesToBufferFromDirectBuffer(final DirectBuffer buffer)
+    {
+        final byte[] testBytes = "Hello World".getBytes();
+        final ByteBuffer srcBuffer = ByteBuffer.allocateDirect(testBytes.length);
+        srcBuffer.put(testBytes);
+        srcBuffer.flip();
+
+        buffer.putBytes(INDEX, srcBuffer, testBytes.length);
+
+        final byte[] buff = new byte[testBytes.length];
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
+        duplicateBuffer.position(INDEX);
+        duplicateBuffer.get(buff);
+
+        assertThat(buff, is(testBytes));
+    }
+    @Theory
+    public void shouldPutBytesToBufferFromSlice(final DirectBuffer buffer)
+    {
+        final byte[] testBytes = "Hello World".getBytes();
+        final ByteBuffer srcBuffer =
+                ((ByteBuffer) ByteBuffer.allocate(testBytes.length*2).position(testBytes.length)).slice();
+
+        srcBuffer.put(testBytes);
+        srcBuffer.flip();
 
         buffer.putBytes(INDEX, srcBuffer, testBytes.length);
 

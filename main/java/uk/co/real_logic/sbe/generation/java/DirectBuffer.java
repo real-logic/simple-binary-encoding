@@ -69,7 +69,7 @@ public class DirectBuffer
         if (byteBuffer.hasArray())
         {
             byteArray = byteBuffer.array();
-            baseOffset = BYTE_ARRAY_OFFSET;
+            baseOffset = BYTE_ARRAY_OFFSET + byteBuffer.arrayOffset();
         }
         else
         {
@@ -361,7 +361,7 @@ public class DirectBuffer
         if (dstBuffer.hasArray())
         {
             dstByteArray = dstBuffer.array();
-            dstBaseOffset = BYTE_ARRAY_OFFSET;
+            dstBaseOffset = BYTE_ARRAY_OFFSET + dstBuffer.arrayOffset();
         }
         else
         {
@@ -423,7 +423,7 @@ public class DirectBuffer
         if (srcBuffer.hasArray())
         {
             srcByteArray = srcBuffer.array();
-            srcBaseOffset = BYTE_ARRAY_OFFSET;
+            srcBaseOffset = BYTE_ARRAY_OFFSET + srcBuffer.arrayOffset();
         }
         else
         {

@@ -620,8 +620,9 @@ TEST_F(OtfMessageConstantsTest, shouldHandleAllTypes)
 }
 
 /*
- * TODO: test reuse of listener
+ * TODO: test constants for enum and set
  * TODO: test offset values on fields
  * TODO: byte order
+ * TODO: test reuse of listener
  * TODO: MassQuote
  */

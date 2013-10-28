@@ -246,7 +246,11 @@ int Listener::process(void)
         case Ir::ENCODING:
             {
                 // TODO: fix for offset values in IR
-                // TODO: bump buffOffset_ for offset value in IR. Offset in IR is relative to saved relativeAnchor_
+                // TODO: bump buffOffset_ for offset value in IR. Offset in IR is relative to saved relativeOffsetAnchor_
+                //  Message, Group, Composite are relativeOffsetAnchor_ points that must be saved when encountered.
+                //  Encoding, Enum, Set, Group must honor offset and adjust
+                //  Group moves bufferOffset_ to start of group
+                //  Group then also updates relativeOffsetAnchor_ value
 
                 const char *valuePosition = buffer_ + bufferOffset_;
                 const char *constVal = ir->constVal();
