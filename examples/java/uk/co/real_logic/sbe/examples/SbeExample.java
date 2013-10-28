@@ -130,6 +130,11 @@ public class SbeExample
             sb.append((char)car.vehicleCode(i));
         }
 
+        final OptionalExtras extras = car.extras();
+        sb.append("\ncar.extras.cruiseControl=").append(extras.cruiseControl());
+        sb.append("\ncar.extras.sportsPack=").append(extras.sportsPack());
+        sb.append("\ncar.extras.sunRoof=").append(extras.sunRoof());
+
         final Engine engine = car.engine();
         sb.append("\ncar.engine.capacity=").append(engine.capacity());
         sb.append("\ncar.engine.numCylinders=").append(engine.numCylinders());
