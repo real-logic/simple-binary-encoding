@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.ir.Encoding;
@@ -726,16 +727,75 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateConstPropertyMethod(final String propertyName, final Token token, final String indent)
     {
-        return String.format(
+        final String javaTypeName = javaTypeName(token.encoding().primitiveType());
+
+        if (token.encoding().primitiveType() != PrimitiveType.CHAR)
+        {
+            return String.format(
+                "\n" +
+                indent + "    public %s %s()\n" +
+                indent + "    {\n" +
+                indent + "        return %s;\n" +
+                indent + "    }\n",
+                javaTypeName,
+                propertyName,
+                generateLiteral(token)
+            );
+        }
+
+        final StringBuilder sb = new StringBuilder();
+
+        final byte[] constantValue = token.encoding().constVal().byteArrayValue();
+        final StringBuilder values = new StringBuilder();
+        for (final byte b : constantValue)
+        {
+            values.append(b).append(", ");
+        }
+        if (values.length() > 0)
+        {
+            values.setLength(values.length() - 2);
+        }
+
+        sb.append(String.format(
             "\n" +
-            indent + "    public %s %s()\n" +
-            indent + "    {\n" +
-            indent + "        return %s;\n" +
-            indent + "    }\n",
-            javaTypeName(token.encoding().primitiveType()),
+            indent + "    private static final byte[] %sValue = {%s};\n",
             propertyName,
-            generateLiteral(token)
-        );
+            values
+        ));
+
+        sb.append(String.format(
+            "\n" +
+            indent + "    public int %sLength()\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n\n",
+            propertyName,
+            Integer.valueOf(constantValue.length)
+        ));
+
+        sb.append(String.format(
+            indent + "    public %s %s(final int index)\n" +
+            indent + "    {\n" +
+            indent + "        return %sValue[index];\n" +
+            indent + "    }\n\n",
+            javaTypeName,
+            propertyName,
+            propertyName
+        ));
+
+        sb.append(String.format(
+            indent + "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
+            indent + "    {\n" +
+            indent + "        final int elementsCopied = Math.min(length, %d);\n" +
+            indent + "        System.arraycopy(%sValue, 0, dst, offset, elementsCopied);\n" +
+            indent + "        return elementsCopied;\n" +
+            indent + "    }\n",
+            toUpperFirstChar(propertyName),
+            Integer.valueOf(constantValue.length),
+            propertyName
+        ));
+
+        return sb;
     }
 
     private CharSequence generateFixedFlyweightCode()

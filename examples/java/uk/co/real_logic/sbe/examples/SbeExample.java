@@ -118,6 +118,7 @@ public class SbeExample
     {
         car.reset(directBuffer, 0);
 
+        final byte[] buffer = new byte[128];
         final StringBuilder sb = new StringBuilder();
 
         sb.append("\ncar.serialNumber=").append(car.serialNumber());
@@ -139,11 +140,14 @@ public class SbeExample
         sb.append("\ncar.engine.capacity=").append(engine.capacity());
         sb.append("\ncar.engine.numCylinders=").append(engine.numCylinders());
         sb.append("\ncar.engine.maxRpm=").append(engine.maxRpm());
-        sb.append("\ncar.vehicleCode=");
+        sb.append("\ncar.engine.manufacturerCode=");
         for (int i = 0, size = engine.manufacturerCodeLength(); i < size; i++)
         {
             sb.append((char)engine.manufacturerCode(i));
         }
+
+        int bytesCopied = engine.getFuel(buffer, 0, buffer.length);
+        sb.append("\ncar.engine.fuel=").append(new String(buffer, 0, bytesCopied, Charset.forName("ASCII")));
 
         final Car.FuelFigures fuelFigures = car.fuelFigures();
         while (fuelFigures.next())
@@ -165,9 +169,7 @@ public class SbeExample
             }
         }
 
-        final byte[] buffer = new byte[128];
-
-        int bytesCopied = car.getMake(buffer, 0, buffer.length);
+        bytesCopied = car.getMake(buffer, 0, buffer.length);
         sb.append("\ncar.make=").append(new String(buffer, 0, bytesCopied, Charset.forName(car.makeCharacterEncoding())));
 
         bytesCopied = car.getModel(buffer, 0, buffer.length);

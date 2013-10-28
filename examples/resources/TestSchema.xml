@@ -16,7 +16,7 @@
         </composite>
         <composite name="varDataEncoding">
             <type name="length" primitiveType="uint8" semanticType="Length"/>
-            <type name="varData" primitiveType="uint8" length="0" semanticType="data"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8" semanticType="data"/>
         </composite>
     </types>
     <types>
@@ -27,6 +27,7 @@
             <type name="numCylinders" primitiveType="uint8"/>
             <type name="maxRpm" primitiveType="uint16" presence="constant">9000</type>
             <type name="manufacturerCode" primitiveType="char" length="3"/>
+            <type name="fuel" primitiveType="char" presence="constant">Petrol</type>
         </composite>
         <enum name="BooleanType" encodingType="uint8" semanticType="Boolean">
             <validValue name="FALSE">0</validValue>

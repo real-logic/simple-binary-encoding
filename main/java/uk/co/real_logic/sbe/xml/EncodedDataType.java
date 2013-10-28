@@ -53,7 +53,7 @@ public class EncodedDataType extends Type
         primitiveType = PrimitiveType.get(getAttributeValue(node, "primitiveType"));
         length = Integer.parseInt(getAttributeValue(node, "length", "1"));
         varLen = Boolean.parseBoolean(getAttributeValue(node, "variableLength", "false"));
-        characterEncoding = getAttributeValue(node, "encoding", "UTF-8");
+        characterEncoding = getAttributeValue(node, "characterEncoding", "UTF-8");
 
         if (presence() == Presence.CONSTANT)
         {
@@ -64,11 +64,12 @@ public class EncodedDataType extends Type
             }
             else
             {
-                if (length > 1)
+                if (PrimitiveType.CHAR == primitiveType)
                 {
-                    constVal = PrimitiveValue.parse(node.getFirstChild().getNodeValue(),
+                    final String nodeValue = node.getFirstChild().getNodeValue();
+                    constVal = PrimitiveValue.parse(nodeValue,
                                                     primitiveType,
-                                                    length,
+                                                    nodeValue.length(),
                                                     characterEncoding);
                 }
                 else

@@ -16,23 +16,24 @@
         </composite>
         <composite name="varDataEncoding">
             <type name="length" primitiveType="uint8" semanticType="Length"/>
-            <type name="varData" primitiveType="uint8" length="0" semanticType="data"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8" semanticType="data"/>
         </composite>
     </types>
     <types>
-        <type name="ModelYearType" primitiveType="uint16" semanticType="ModelYear"/>
-        <type name="VehicleCodeType" primitiveType="char" length="16" semanticType="VehicleCode"/>
-        <composite name="EngineType" semanticType="Engine">
+        <type name="ModelYear" primitiveType="uint16" semanticType="ModelYear"/>
+        <type name="VehicleCode" primitiveType="char" length="6" semanticType="VehicleCode"/>
+        <composite name="Engine" semanticType="Engine">
             <type name="capacity" primitiveType="uint16"/>
             <type name="numCylinders" primitiveType="uint8"/>
             <type name="maxRpm" primitiveType="uint16" presence="constant">9000</type>
             <type name="manufacturerCode" primitiveType="char" length="3"/>
+            <type name="fuel" primitiveType="char" presence="constant">Petrol</type>
         </composite>
         <enum name="BooleanType" encodingType="uint8" semanticType="Boolean">
             <validValue name="FALSE">0</validValue>
             <validValue name="TRUE">1</validValue>
         </enum>
-        <enum name="ModelType" encodingType="char" semanticType="Model">
+        <enum name="Model" encodingType="char" semanticType="Model">
             <validValue name="A">A</validValue>
             <validValue name="B">B</validValue>
             <validValue name="C">C</validValue>
@@ -43,14 +44,14 @@
             <choice name="cruiseControl">2</choice>
         </set>
     </types>
-    <message name="BasicCar" id="1" description="Description of a basic Car">
+    <message name="Car" id="1" description="Description of a basic Car">
         <field name="serialNumber" id="1" type="uint32" semanticType="SerialNumber"/>
-        <field name="modelYear" id="2" type="ModelYearType"/>
+        <field name="modelYear" id="2" type="ModelYear"/>
         <field name="available" id="3" type="BooleanType"/>
-        <field name="code" id="4" type="ModelType"/>
+        <field name="code" id="4" type="Model"/>
+        <field name="vehicleCode" id="6" type="VehicleCode"/>
         <field name="extras" id="5" type="OptionalExtras"/>
-        <field name="vehicleCode" id="6" type="VehicleCodeType"/>
-        <field name="engine" id="7" type="EngineType"/>
+        <field name="engine" id="7" type="Engine"/>
         <group name="fuelFigures" id="8" dimensionType="groupSizeEncoding">
             <field name="speed" id="9" type="uint16"  semanticType="int"/>
             <field name="mpg" id="10" type="float" semanticType="int"/>

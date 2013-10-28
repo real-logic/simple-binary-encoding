@@ -22,6 +22,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.SbeTool;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -310,7 +311,10 @@ public class EncodedDataTypeTest
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypePresenceConst")).constVal()), is(parse("F", PrimitiveType.CHAR)));
+
+        final String expectedString = "F";
+        final PrimitiveValue expectedValue = parse(expectedString, PrimitiveType.CHAR, expectedString.length(), "UTF-8");
+        assertThat((((EncodedDataType)map.get("testTypePresenceConst")).constVal()), is(expectedValue));
     }
 
     @Test

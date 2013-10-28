@@ -42,8 +42,8 @@ public class JavaGeneratorTest
     @Before
     public void setUp() throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
-        IrGenerator irg = new IrGenerator();
+        final MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
+        final IrGenerator irg = new IrGenerator();
         ir = irg.generate(schema);
         outputManager.setPackageName(ir.packageName());
     }
@@ -96,7 +96,7 @@ public class JavaGeneratorTest
     @Test
     public void shouldGenerateCharEnumStub() throws Exception
     {
-        final String className = "ModelType";
+        final String className = "Model";
         final String fqClassName = ir.packageName() + "." + className;
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
@@ -144,7 +144,7 @@ public class JavaGeneratorTest
         final int expectedMaxRpm = 9000;
         final int manufacturerCodeOffset = bufferOffset + 3;
         final byte[] manufacturerCode = {'A', 'B', 'C'};
-        final String className = "EngineType";
+        final String className = "Engine";
         final String fqClassName = ir.packageName() + "." + className;
 
         when(Short.valueOf(mockBuffer.getShort(capacityFieldOffset))).thenReturn(Short.valueOf((short)expectedEngineCapacity));
@@ -178,7 +178,7 @@ public class JavaGeneratorTest
     public void shouldGenerateBasicMessage() throws Exception
     {
         final DirectBuffer buffer = new DirectBuffer(new byte[4096]);
-        final String className = "BasicCar";
+        final String className = "Car";
         final String fqClassName = ir.packageName() + "." + className;
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
