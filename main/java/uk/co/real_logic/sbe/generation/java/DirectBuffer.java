@@ -28,6 +28,8 @@ import java.nio.ByteOrder;
  */
 public class DirectBuffer
 {
+    private static final ByteOrder NATIVE_BYTE_ORDER = ByteOrder.nativeOrder();
+
     private static final Unsafe UNSAFE = BitUtil.getUnsafe();
     private static final long BYTE_ARRAY_OFFSET = UNSAFE.arrayBaseOffset(byte[].class);
 
@@ -97,18 +99,25 @@ public class DirectBuffer
     public ByteBuffer duplicateByteBuffer()
     {
         byteBuffer.clear();
-        return byteBuffer.duplicate().order(ByteOrder.nativeOrder());
+        return byteBuffer.duplicate();
     }
 
     /**
      * Get the value at a given index.
      *
      * @param index in bytes from which to get.
+     * @param byteOrder of the value to be read.
      * @return the value for at a given index
      */
-    public long getLong(final int index)
+    public long getLong(final int index, final ByteOrder byteOrder)
     {
-        return UNSAFE.getLong(byteArray, baseOffset + index);
+        long bits = UNSAFE.getLong(byteArray, baseOffset + index);
+        if (NATIVE_BYTE_ORDER != byteOrder)
+        {
+            bits = Long.reverseBytes(bits);
+        }
+
+        return bits;
     }
 
     /**
@@ -116,21 +125,35 @@ public class DirectBuffer
      *
      * @param index in bytes for where to put.
      * @param value for at a given index
+     * @param byteOrder of the value when written
      */
-    public void putLong(final int index, final long value)
+    public void putLong(final int index, final long value, final ByteOrder byteOrder)
     {
-        UNSAFE.putLong(byteArray, baseOffset + index, value);
+        long bits = value;
+        if (NATIVE_BYTE_ORDER != byteOrder)
+        {
+            bits = Long.reverseBytes(bits);
+        }
+
+        UNSAFE.putLong(byteArray, baseOffset + index, bits);
     }
 
     /**
      * Get the value at a given index.
      *
      * @param index in bytes from which to get.
+     * @param byteOrder of the value to be read.
      * @return the value at a given index.
      */
-    public int getInt(final int index)
+    public int getInt(final int index, final ByteOrder byteOrder)
     {
-        return UNSAFE.getInt(byteArray, baseOffset + index);
+        int bits = UNSAFE.getInt(byteArray, baseOffset + index);
+        if (NATIVE_BYTE_ORDER != byteOrder)
+        {
+            bits = Integer.reverseBytes(bits);
+        }
+
+        return bits;
     }
 
     /**
@@ -138,21 +161,37 @@ public class DirectBuffer
      *
      * @param index in bytes for where to put.
      * @param value to be written
+     * @param byteOrder of the value when written
      */
-    public void putInt(final int index, final int value)
+    public void putInt(final int index, final int value, final ByteOrder byteOrder)
     {
-        UNSAFE.putInt(byteArray, baseOffset + index, value);
+        int bits = value;
+        if (NATIVE_BYTE_ORDER != byteOrder)
+        {
+            bits = Integer.reverseBytes(bits);
+        }
+
+        UNSAFE.putInt(byteArray, baseOffset + index, bits);
     }
 
     /**
      * Get the value at a given index.
      *
      * @param index in bytes from which to get.
+     * @param byteOrder of the value to be read.
      * @return the value at a given index.
      */
-    public double getDouble(final int index)
+    public double getDouble(final int index, final ByteOrder byteOrder)
     {
-        return UNSAFE.getDouble(byteArray, baseOffset + index);
+        if (NATIVE_BYTE_ORDER != byteOrder)
+        {
+            long bits = UNSAFE.getLong(byteArray, baseOffset + index);
+            return Double.longBitsToDouble(Long.reverseBytes(bits));
+        }
+        else
+        {
+            return UNSAFE.getDouble(byteArray, baseOffset + index);
+        }
     }
 
     /**
@@ -160,21 +199,39 @@ public class DirectBuffer
      *
      * @param index in bytes for where to put.
      * @param value to be written
+     * @param byteOrder of the value when written.
      */
-    public void putDouble(final int index, final double value)
+    public void putDouble(final int index, final double value, final ByteOrder byteOrder)
     {
-        UNSAFE.putDouble(byteArray, baseOffset + index, value);
+        if (NATIVE_BYTE_ORDER != byteOrder)
+        {
+            long bits = Long.reverseBytes(Double.doubleToRawLongBits(value));
+            UNSAFE.putLong(byteArray, baseOffset + index, bits);
+        }
+        else
+        {
+            UNSAFE.putDouble(byteArray, baseOffset + index, value);
+        }
     }
 
     /**
      * Get the value at a given index.
      *
      * @param index in bytes from which to get.
+     * @param byteOrder of the value to be read.
      * @return the value at a given index.
      */
-    public float getFloat(final int index)
+    public float getFloat(final int index, final ByteOrder byteOrder)
     {
-        return UNSAFE.getFloat(byteArray, baseOffset + index);
+        if (NATIVE_BYTE_ORDER != byteOrder)
+        {
+            int bits = UNSAFE.getInt(byteArray, baseOffset + index);
+            return Float.intBitsToFloat(Integer.reverseBytes(bits));
+        }
+        else
+        {
+            return UNSAFE.getFloat(byteArray, baseOffset + index);
+        }
     }
 
     /**
@@ -182,21 +239,37 @@ public class DirectBuffer
      *
      * @param index in bytes for where to put.
      * @param value to be written
+     * @param byteOrder of the value when written.
      */
-    public void putFloat(final int index, final float value)
+    public void putFloat(final int index, final float value, final ByteOrder byteOrder)
     {
-        UNSAFE.putFloat(byteArray, baseOffset + index, value);
+        if (NATIVE_BYTE_ORDER != byteOrder)
+        {
+            int bits = Integer.reverseBytes(Float.floatToRawIntBits(value));
+            UNSAFE.putLong(byteArray, baseOffset + index, bits);
+        }
+        else
+        {
+            UNSAFE.putFloat(byteArray, baseOffset + index, value);
+        }
     }
 
     /**
      * Get the value at a given index.
      *
      * @param index in bytes from which to get.
+     * @param byteOrder of the value to be read.
      * @return the value at a given index.
      */
-    public short getShort(final int index)
+    public short getShort(final int index, final ByteOrder byteOrder)
     {
-        return UNSAFE.getShort(byteArray, baseOffset + index);
+        short bits = UNSAFE.getShort(byteArray, baseOffset + index);
+        if (NATIVE_BYTE_ORDER != byteOrder)
+        {
+            bits = Short.reverseBytes(bits);
+        }
+
+        return bits;
     }
 
     /**
@@ -204,10 +277,17 @@ public class DirectBuffer
      *
      * @param index in bytes for where to put.
      * @param value to be written
+     * @param byteOrder of the value when written.
      */
-    public void putShort(final int index, final short value)
+    public void putShort(final int index, final short value, final ByteOrder byteOrder)
     {
-        UNSAFE.putShort(byteArray, baseOffset + index, value);
+        short bits = value;
+        if (NATIVE_BYTE_ORDER != byteOrder)
+        {
+            bits = Short.reverseBytes(bits);
+        }
+
+        UNSAFE.putShort(byteArray, baseOffset + index, bits);
     }
 
     /**

@@ -17,6 +17,8 @@ package uk.co.real_logic.sbe.generation.java;
 
 import org.junit.Test;
 
+import java.nio.ByteOrder;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -24,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 public class CodecUtilTest
 {
+    private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
     private static final int BUFFER_CAPACITY = 64;
 
     private final DirectBuffer buffer = new DirectBuffer(new byte[BUFFER_CAPACITY]);
@@ -79,11 +82,11 @@ public class CodecUtilTest
         final short bits = (short)0b0000_0000_0000_0100;
         final int bufferIndex = 8;
         final int bitIndex = 2;
-        buffer.putShort(bufferIndex, bits);
+        buffer.putShort(bufferIndex, bits, BYTE_ORDER);
 
         for (int i = 0; i < 16; i++)
         {
-            boolean result = CodecUtil.uint16GetChoice(buffer, bufferIndex, i);
+            boolean result = CodecUtil.uint16GetChoice(buffer, bufferIndex, i, BYTE_ORDER);
             if (bitIndex == i)
             {
                 assertTrue(result);
@@ -103,9 +106,9 @@ public class CodecUtilTest
         int total = 0;
         for (int i = 0; i < 16; i++)
         {
-            CodecUtil.uint16PutChoice(buffer, bufferIndex, i, true);
+            CodecUtil.uint16PutChoice(buffer, bufferIndex, i, true, BYTE_ORDER);
             total += (1 << i);
-            assertThat(Short.valueOf(buffer.getShort(bufferIndex)), is(Short.valueOf((short)total)));
+            assertThat(Short.valueOf(buffer.getShort(bufferIndex, BYTE_ORDER)), is(Short.valueOf((short)total)));
         }
     }
 
@@ -115,11 +118,11 @@ public class CodecUtilTest
         final int bits = 0b0000_0000_0000_0000_0000_0000_0000_0100;
         final int bufferIndex = 8;
         final int bitIndex = 2;
-        buffer.putInt(bufferIndex, bits);
+        buffer.putInt(bufferIndex, bits, BYTE_ORDER);
 
         for (int i = 0; i < 32; i++)
         {
-            boolean result = CodecUtil.uint32GetChoice(buffer, bufferIndex, i);
+            boolean result = CodecUtil.uint32GetChoice(buffer, bufferIndex, i, BYTE_ORDER);
             if (bitIndex == i)
             {
                 assertTrue(result);
@@ -139,9 +142,9 @@ public class CodecUtilTest
         long total = 0;
         for (int i = 0; i < 32; i++)
         {
-            CodecUtil.uint32PutChoice(buffer, bufferIndex, i, true);
+            CodecUtil.uint32PutChoice(buffer, bufferIndex, i, true, BYTE_ORDER);
             total += (1 << i);
-            assertThat(Integer.valueOf(buffer.getInt(bufferIndex)), is(Integer.valueOf((int)total)));
+            assertThat(Integer.valueOf(buffer.getInt(bufferIndex, BYTE_ORDER)), is(Integer.valueOf((int)total)));
         }
     }
 }

@@ -24,6 +24,8 @@ import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 
+import java.nio.ByteOrder;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertNotNull;
@@ -34,6 +36,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class JavaGeneratorTest
 {
+    private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
     private final StringWriterOutputManager outputManager = new StringWriterOutputManager();
     private final DirectBuffer mockBuffer = mock(DirectBuffer.class);
 
@@ -57,7 +60,7 @@ public class JavaGeneratorTest
         final Integer blockLength = Integer.valueOf(32);
         final String fqClassName = ir.packageName() + "." + MESSAGE_HEADER_VISITOR;
 
-        when(Short.valueOf(mockBuffer.getShort(bufferOffset + templateIdOffset))).thenReturn(templateId);
+        when(Short.valueOf(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER))).thenReturn(templateId);
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateMessageHeaderStub();
@@ -73,7 +76,7 @@ public class JavaGeneratorTest
 
         clazz.getDeclaredMethod("blockLength", int.class).invoke(flyweight, blockLength);
 
-        verify(mockBuffer).putShort(bufferOffset, blockLength.shortValue());
+        verify(mockBuffer).putShort(bufferOffset, blockLength.shortValue(), BYTE_ORDER);
     }
 
     @Test
@@ -147,7 +150,7 @@ public class JavaGeneratorTest
         final String className = "Engine";
         final String fqClassName = ir.packageName() + "." + className;
 
-        when(Short.valueOf(mockBuffer.getShort(capacityFieldOffset))).thenReturn(Short.valueOf((short)expectedEngineCapacity));
+        when(Short.valueOf(mockBuffer.getShort(capacityFieldOffset, BYTE_ORDER))).thenReturn(Short.valueOf((short)expectedEngineCapacity));
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();

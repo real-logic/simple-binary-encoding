@@ -26,6 +26,7 @@ import uk.co.real_logic.sbe.util.Verify;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -337,6 +338,9 @@ public class JavaGenerator implements CodeGenerator
                 final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
                 final String lengthJavaType = javaTypeName(lengthToken.encoding().primitiveType());
                 final String lengthTypePrefix = lengthToken.encoding().primitiveType().primitiveName();
+                final ByteOrder byteOrder = lengthToken.encoding().byteOrder();
+                final String byteOrderStr = lengthToken.encoding().primitiveType().size() == 1 ? "" : ", ByteOrder." + byteOrder;
+
 
                 sb.append(String.format(
                     "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
@@ -344,7 +348,7 @@ public class JavaGenerator implements CodeGenerator
                     "        final int sizeOfLengthField = %d;\n" +
                     "        final int lengthPosition = position();\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
-                    "        final int dataLength = CodecUtil.%sGet(buffer, lengthPosition);\n" +
+                    "        final int dataLength = CodecUtil.%sGet(buffer, lengthPosition%s);\n" +
                     "        final int bytesCopied = Math.min(length, dataLength);\n" +
                     "        CodecUtil.int8sGet(buffer, position(), dst, offset, bytesCopied);\n" +
                     "        position(position() + dataLength);\n" +
@@ -352,7 +356,8 @@ public class JavaGenerator implements CodeGenerator
                     "    }\n\n",
                     propertyName,
                     sizeOfLengthField,
-                    lengthTypePrefix
+                    lengthTypePrefix,
+                    byteOrderStr
                 ));
 
                 sb.append(String.format(
@@ -360,7 +365,7 @@ public class JavaGenerator implements CodeGenerator
                     "    {\n" +
                     "        final int sizeOfLengthField = %d;\n" +
                     "        final int lengthPosition = position();\n" +
-                    "        CodecUtil.%sPut(buffer, lengthPosition, (%s)length);\n" +
+                    "        CodecUtil.%sPut(buffer, lengthPosition, (%s)length%s);\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
                     "        CodecUtil.int8sPut(buffer, position(), src, offset, length);\n" +
                     "        position(position() + length);\n" +
@@ -369,7 +374,8 @@ public class JavaGenerator implements CodeGenerator
                     propertyName,
                     sizeOfLengthField,
                     lengthTypePrefix,
-                    lengthJavaType
+                    lengthJavaType,
+                    byteOrderStr
                 ));
             }
         }
@@ -438,25 +444,29 @@ public class JavaGenerator implements CodeGenerator
                 final String choiceName = token.name();
                 final String typePrefix = token.encoding().primitiveType().primitiveName();
                 final String choiceBitPosition = token.encoding().constVal().toString();
+                final ByteOrder byteOrder = token.encoding().byteOrder();
+                final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", ByteOrder." + byteOrder;
 
                 sb.append(String.format(
                     "\n" +
                     "    public boolean %s()\n" +
                     "    {\n" +
-                    "        return CodecUtil.%sGetChoice(buffer, offset, %s);\n" +
+                    "        return CodecUtil.%sGetChoice(buffer, offset, %s%s);\n" +
                     "    }\n\n" +
                     "    public %s %s(final boolean value)\n" +
                     "    {\n" +
-                    "        CodecUtil.%sPutChoice(buffer, offset, %s, value);\n" +
+                    "        CodecUtil.%sPutChoice(buffer, offset, %s, value%s);\n" +
                     "        return this;" +
                     "    }\n",
                     choiceName,
                     typePrefix,
                     choiceBitPosition,
+                    byteOrderStr,
                     bitsetClassName,
                     choiceName,
                     typePrefix,
-                    choiceBitPosition
+                    choiceBitPosition,
+                    byteOrderStr
                 ));
             }
         }
@@ -537,6 +547,7 @@ public class JavaGenerator implements CodeGenerator
         return String.format(
             "/* Generated class message */\n" +
             "package %s;\n\n" +
+            "import java.nio.ByteOrder;\n" +
             "import uk.co.real_logic.sbe.generation.java.*;\n\n",
             packageName
         );
@@ -605,6 +616,8 @@ public class JavaGenerator implements CodeGenerator
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
         final String typePrefix = token.encoding().primitiveType().primitiveName();
         final Integer offset = Integer.valueOf(token.offset());
+        final ByteOrder byteOrder = token.encoding().byteOrder();
+        final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", ByteOrder." + byteOrder;
 
         final StringBuilder sb = new StringBuilder();
 
@@ -612,23 +625,25 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
-            indent + "        return CodecUtil.%sGet(buffer, offset + %d);\n" +
+            indent + "        return CodecUtil.%sGet(buffer, offset + %d%s);\n" +
             indent + "    }\n\n",
             javaTypeName,
             propertyName,
             typePrefix,
-            offset
+            offset,
+            byteOrderStr
         ));
 
         sb.append(String.format(
             indent + "    public void %s(final %s value)\n" +
             indent + "    {\n" +
-            indent + "        CodecUtil.%sPut(buffer, offset + %d, value);\n" +
+            indent + "        CodecUtil.%sPut(buffer, offset + %d, value%s);\n" +
             indent + "    }\n",
             propertyName,
             javaTypeName,
             typePrefix,
-            offset
+            offset,
+            byteOrderStr
         ));
 
         return sb;
@@ -639,6 +654,8 @@ public class JavaGenerator implements CodeGenerator
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
         final String typePrefix = token.encoding().primitiveType().primitiveName();
         final Integer offset = Integer.valueOf(token.offset());
+        final ByteOrder byteOrder = token.encoding().byteOrder();
+        final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", ByteOrder." + byteOrder;
 
         final StringBuilder sb = new StringBuilder();
 
@@ -659,14 +676,15 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
-            indent + "        return CodecUtil.%sGet(buffer, this.offset + %d + (index * %d));\n" +
+            indent + "        return CodecUtil.%sGet(buffer, this.offset + %d + (index * %d%s));\n" +
             indent + "    }\n\n",
             javaTypeName,
             propertyName,
             Integer.valueOf(token.arrayLength()),
             typePrefix,
             offset,
-            Integer.valueOf(token.encoding().primitiveType().size())
+            Integer.valueOf(token.encoding().primitiveType().size()),
+            byteOrderStr
         ));
 
         sb.append(String.format(
@@ -676,14 +694,15 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
-            indent + "        CodecUtil.%sPut(buffer, this.offset + %d + (index * %d), value);\n" +
+            indent + "        CodecUtil.%sPut(buffer, this.offset + %d + (index * %d), value%s);\n" +
             indent + "    }\n\n",
             propertyName,
             javaTypeName,
             Integer.valueOf(token.arrayLength()),
             typePrefix,
             offset,
-            Integer.valueOf(token.encoding().primitiveType().size())
+            Integer.valueOf(token.encoding().primitiveType().size()),
+            byteOrderStr
         ));
 
         if (token.encoding().primitiveType() == PrimitiveType.CHAR)
@@ -696,12 +715,11 @@ public class JavaGenerator implements CodeGenerator
                 indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
                 indent + "        }\n\n" +
                 indent + "        final int bytesCopied = Math.min(length, %d);\n" +
-                indent + "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, bytesCopied);\n" +
+                indent + "        CodecUtil.charsGet(buffer, this.offset + %d, dst, offset, bytesCopied);\n" +
                 indent + "        return bytesCopied;\n" +
                 indent + "    }\n\n",
                 toUpperFirstChar(propertyName),
                 Integer.valueOf(token.arrayLength()),
-                typePrefix,
                 offset
             ));
 
@@ -713,12 +731,11 @@ public class JavaGenerator implements CodeGenerator
                 indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
                 indent + "        }\n\n" +
                 indent + "        final int bytesCopied = Math.min(length, %d);\n" +
-                indent + "        CodecUtil.%ssPut(buffer, this.offset + %d, src, offset, bytesCopied);\n" +
+                indent + "        CodecUtil.charsPut(buffer, this.offset + %d, src, offset, bytesCopied);\n" +
                 indent + "        return bytesCopied;\n" +
                 indent + "    }\n",
                 toUpperFirstChar(propertyName),
                 Integer.valueOf(token.arrayLength()),
-                typePrefix,
                 offset
             ));
         }
@@ -787,9 +804,9 @@ public class JavaGenerator implements CodeGenerator
         sb.append(String.format(
             indent + "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
             indent + "    {\n" +
-            indent + "        final int elementsCopied = Math.min(length, %d);\n" +
-            indent + "        System.arraycopy(%sValue, 0, dst, offset, elementsCopied);\n" +
-            indent + "        return elementsCopied;\n" +
+            indent + "        final int bytesCopied = Math.min(length, %d);\n" +
+            indent + "        System.arraycopy(%sValue, 0, dst, offset, bytesCopied);\n" +
+            indent + "        return bytesCopied;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
             Integer.valueOf(constantValue.length),
@@ -887,6 +904,8 @@ public class JavaGenerator implements CodeGenerator
         final String enumName = token.name();
         final String typePrefix = token.encoding().primitiveType().primitiveName();
         final Integer offset = Integer.valueOf(token.offset());
+        final ByteOrder byteOrder = token.encoding().byteOrder();
+        final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", ByteOrder." + byteOrder;
 
         final StringBuilder sb = new StringBuilder();
 
@@ -894,24 +913,26 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
-            indent + "        return %s.get(CodecUtil.%sGet(buffer, offset + %d));\n" +
+            indent + "        return %s.get(CodecUtil.%sGet(buffer, offset + %d)%s);\n" +
             indent + "    }\n\n",
             enumName,
             propertyName,
             enumName,
             typePrefix,
-            offset
+            offset,
+            byteOrderStr
         ));
 
         sb.append(String.format(
             indent + "    public void %s(final %s value)\n" +
             indent + "    {\n" +
-            indent + "        CodecUtil.%sPut(buffer, offset + %d, value.value());\n" +
+            indent + "        CodecUtil.%sPut(buffer, offset + %d, value.value()%s);\n" +
             indent + "    }\n",
             propertyName,
             enumName,
             typePrefix,
-            offset
+            offset,
+            byteOrderStr
         ));
 
         return sb;

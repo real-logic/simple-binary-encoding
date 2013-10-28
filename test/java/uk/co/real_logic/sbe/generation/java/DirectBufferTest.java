@@ -21,6 +21,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import static java.lang.Integer.valueOf;
 import static org.hamcrest.Matchers.is;
@@ -30,6 +31,7 @@ import static uk.co.real_logic.sbe.util.BitUtil.SIZE_OF_BYTE;
 @RunWith(Theories.class)
 public class DirectBufferTest
 {
+    private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
     private static final int BUFFER_SIZE = 4096;
     private static final int INDEX = 8;
 
@@ -52,19 +54,19 @@ public class DirectBufferTest
     @Theory
     public void shouldGetLongFromBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
         duplicateBuffer.putLong(INDEX, LONG_VALUE);
 
-        assertThat(Long.valueOf(buffer.getLong(INDEX)), is(Long.valueOf(LONG_VALUE)));
+        assertThat(Long.valueOf(buffer.getLong(INDEX, BYTE_ORDER)), is(Long.valueOf(LONG_VALUE)));
     }
 
     @Theory
     public void shouldPutLongToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
-        buffer.putLong(INDEX, LONG_VALUE);
+        buffer.putLong(INDEX, LONG_VALUE, BYTE_ORDER);
 
         assertThat(Long.valueOf(duplicateBuffer.getLong(INDEX)), is(Long.valueOf(LONG_VALUE)));
     }
@@ -72,19 +74,19 @@ public class DirectBufferTest
     @Theory
     public void shouldGetIntFromBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
         duplicateBuffer.putInt(INDEX, INT_VALUE);
 
-        assertThat(valueOf(buffer.getInt(INDEX)), is(valueOf(INT_VALUE)));
+        assertThat(valueOf(buffer.getInt(INDEX, BYTE_ORDER)), is(valueOf(INT_VALUE)));
     }
 
     @Theory
     public void shouldPutIntToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
-        buffer.putInt(INDEX, INT_VALUE);
+        buffer.putInt(INDEX, INT_VALUE, BYTE_ORDER);
 
         assertThat(valueOf(duplicateBuffer.getInt(INDEX)), is(valueOf(INT_VALUE)));
     }
@@ -92,19 +94,19 @@ public class DirectBufferTest
     @Theory
     public void shouldGetShortFromBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
         duplicateBuffer.putShort(INDEX, SHORT_VALUE);
 
-        assertThat(Short.valueOf(buffer.getShort(INDEX)), is(Short.valueOf(SHORT_VALUE)));
+        assertThat(Short.valueOf(buffer.getShort(INDEX, BYTE_ORDER)), is(Short.valueOf(SHORT_VALUE)));
     }
 
     @Theory
     public void shouldPutShortToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
-        buffer.putShort(INDEX, SHORT_VALUE);
+        buffer.putShort(INDEX, SHORT_VALUE, BYTE_ORDER);
 
         assertThat(Short.valueOf(duplicateBuffer.getShort(INDEX)), is(Short.valueOf(SHORT_VALUE)));
     }
@@ -112,19 +114,19 @@ public class DirectBufferTest
     @Theory
     public void shouldGetDoubleFromBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
         duplicateBuffer.putDouble(INDEX, DOUBLE_VALUE);
 
-        assertThat(Double.valueOf(buffer.getDouble(INDEX)), is(Double.valueOf(DOUBLE_VALUE)));
+        assertThat(Double.valueOf(buffer.getDouble(INDEX, BYTE_ORDER)), is(Double.valueOf(DOUBLE_VALUE)));
     }
 
     @Theory
     public void shouldPutDoubleToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
-        buffer.putDouble(INDEX, DOUBLE_VALUE);
+        buffer.putDouble(INDEX, DOUBLE_VALUE, BYTE_ORDER);
 
         assertThat(Double.valueOf(duplicateBuffer.getDouble(INDEX)), is(Double.valueOf(DOUBLE_VALUE)));
     }
@@ -132,19 +134,19 @@ public class DirectBufferTest
     @Theory
     public void shouldGetFloatFromBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
         duplicateBuffer.putFloat(INDEX, FLOAT_VALUE);
 
-        assertThat(Float.valueOf(buffer.getFloat(INDEX)), is(Float.valueOf(FLOAT_VALUE)));
+        assertThat(Float.valueOf(buffer.getFloat(INDEX, BYTE_ORDER)), is(Float.valueOf(FLOAT_VALUE)));
     }
 
     @Theory
     public void shouldPutFloatToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
-        buffer.putFloat(INDEX, FLOAT_VALUE);
+        buffer.putFloat(INDEX, FLOAT_VALUE, BYTE_ORDER);
 
         assertThat(Float.valueOf(duplicateBuffer.getFloat(INDEX)), is(Float.valueOf(FLOAT_VALUE)));
     }
@@ -152,7 +154,7 @@ public class DirectBufferTest
     @Theory
     public void shouldGetByteFromBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
         duplicateBuffer.put(INDEX, BYTE_VALUE);
 
@@ -162,7 +164,7 @@ public class DirectBufferTest
     @Theory
     public void shouldPutByteToBuffer(final DirectBuffer buffer)
     {
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
 
         buffer.putByte(INDEX, BYTE_VALUE);
 
@@ -192,7 +194,7 @@ public class DirectBufferTest
     {
         final byte[] testBytes = "Hello World".getBytes();
 
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
         duplicateBuffer.position(INDEX);
         duplicateBuffer.put(testBytes);
 
@@ -207,7 +209,7 @@ public class DirectBufferTest
     {
         final byte[] testBytes = "Hello World".getBytes();
 
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
         duplicateBuffer.position(INDEX);
         duplicateBuffer.put(testBytes);
 
@@ -224,7 +226,7 @@ public class DirectBufferTest
         buffer.putBytes(INDEX, testBytes);
 
         final byte[] buff = new byte[testBytes.length];
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
         duplicateBuffer.position(INDEX);
         duplicateBuffer.get(buff);
 
@@ -240,7 +242,7 @@ public class DirectBufferTest
         buffer.putBytes(INDEX, srcBuffer, testBytes.length);
 
         final byte[] buff = new byte[testBytes.length];
-        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer();
+        final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
         duplicateBuffer.position(INDEX);
         duplicateBuffer.get(buff);
 
