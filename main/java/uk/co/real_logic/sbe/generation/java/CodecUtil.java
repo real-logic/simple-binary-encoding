@@ -113,6 +113,7 @@ public class CodecUtil
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
+     * @param byteOrder for the buffer encoding
      */
     public static void int16Put(final DirectBuffer buffer,
                                 final int index,
@@ -130,6 +131,7 @@ public class CodecUtil
      * @param src to be be written
      * @param offset in the src buffer to write from
      * @param length of the src buffer to copy.
+     * @param byteOrder for the buffer encoding
      */
     public static void int16sPut(final DirectBuffer buffer,
                                  final int index,
@@ -150,6 +152,7 @@ public class CodecUtil
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
+     * @param byteOrder for the buffer encoding
      */
     public static void int32Put(final DirectBuffer buffer,
                                 final int index,
@@ -167,6 +170,7 @@ public class CodecUtil
      * @param src to be be written
      * @param offset in the src buffer to write from
      * @param length of the src buffer to copy.
+     * @param byteOrder for the buffer encoding
      */
     public static void int32sPut(final DirectBuffer buffer,
                                  final int index,
@@ -187,6 +191,7 @@ public class CodecUtil
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
+     * @param byteOrder for the buffer encoding
      */
     public static void int64Put(final DirectBuffer buffer,
                                 final int index,
@@ -204,6 +209,7 @@ public class CodecUtil
      * @param src to be be written
      * @param offset in the src buffer to write from
      * @param length of the src buffer to copy.
+     * @param byteOrder for the buffer encoding
      */
     public static void int64sPut(final DirectBuffer buffer,
                                  final int index,
@@ -260,6 +266,7 @@ public class CodecUtil
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
+     * @param byteOrder for the buffer encoding
      */
     public static void uint16Put(final DirectBuffer buffer,
                                  final int index,
@@ -277,6 +284,7 @@ public class CodecUtil
      * @param src to be be written
      * @param offset in the src buffer to write from
      * @param length of the src buffer to copy.
+     * @param byteOrder for the buffer encoding
      */
     public static void uint16sPut(final DirectBuffer buffer,
                                   final int index,
@@ -297,6 +305,7 @@ public class CodecUtil
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
+     * @param byteOrder for the buffer encoding
      */
     public static void uint32Put(final DirectBuffer buffer,
                                  final int index,
@@ -314,6 +323,7 @@ public class CodecUtil
      * @param src to be be written
      * @param offset in the src buffer to write from
      * @param length of the src buffer to copy.
+     * @param byteOrder for the buffer encoding
      */
     public static void uint32sPut(final DirectBuffer buffer,
                                   final int index,
@@ -334,6 +344,7 @@ public class CodecUtil
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
+     * @param byteOrder for the buffer encoding
      */
     public static void uint64Put(final DirectBuffer buffer,
                                  final int index,
@@ -351,6 +362,7 @@ public class CodecUtil
      * @param src to be be written
      * @param offset in the src buffer to write from
      * @param length of the src buffer to copy.
+     * @param byteOrder for the buffer encoding
      */
     public static void uint64sPut(final DirectBuffer buffer,
                                   final int index,
@@ -371,6 +383,7 @@ public class CodecUtil
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
+     * @param byteOrder for the buffer encoding
      */
     public static void floatPut(final DirectBuffer buffer,
                                 final int index,
@@ -388,6 +401,7 @@ public class CodecUtil
      * @param src to be be written
      * @param offset in the src buffer to write from
      * @param length of the src buffer to copy.
+     * @param byteOrder for the buffer encoding
      */
     public static void floatsPut(final DirectBuffer buffer,
                                  final int index,
@@ -408,6 +422,7 @@ public class CodecUtil
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
+     * @param byteOrder for the buffer encoding
      */
     public static void doublePut(final DirectBuffer buffer,
                                  final int index,
@@ -425,6 +440,7 @@ public class CodecUtil
      * @param src to be be written
      * @param offset in the src buffer to write from
      * @param length of the src buffer to copy.
+     * @param byteOrder for the buffer encoding
      */
     public static void doublesPut(final DirectBuffer buffer,
                                   final int index,
@@ -506,6 +522,7 @@ public class CodecUtil
      *
      * @param buffer from which the value should be read.
      * @param index from which to begin reading.
+     * @param byteOrder for the buffer encoding
      * @return the short representation of the value
      */
     public static short int16Get(final DirectBuffer buffer,
@@ -523,6 +540,7 @@ public class CodecUtil
      * @param dst into which the copy will occur
      * @param offset at which to start in the destination
      * @param length of the array to copy
+     * @param byteOrder for the buffer encoding
      */
     public static void int16sGet(final DirectBuffer buffer,
                                  final int index,
@@ -542,6 +560,7 @@ public class CodecUtil
      *
      * @param buffer from which the value should be read.
      * @param index from which to begin reading.
+     * @param byteOrder for the buffer encoding
      * @return the int representation of the value
      */
     public static int int32Get(final DirectBuffer buffer,
@@ -559,6 +578,7 @@ public class CodecUtil
      * @param dst into which the copy will occur
      * @param offset at which to start in the destination
      * @param length of the array to copy
+     * @param byteOrder for the buffer encoding
      */
     public static void int32sGet(final DirectBuffer buffer,
                                  final int index,
@@ -578,6 +598,7 @@ public class CodecUtil
      *
      * @param buffer from which the value should be read.
      * @param index from which to begin reading.
+     * @param byteOrder for the buffer encoding
      * @return the long representation of the value
      */
     public static long int64Get(final DirectBuffer buffer,
@@ -595,6 +616,7 @@ public class CodecUtil
      * @param dst into which the copy will occur
      * @param offset at which to start in the destination
      * @param length of the array to copy
+     * @param byteOrder for the buffer encoding
      */
     public static void int64sGet(final DirectBuffer buffer,
                                  final int index,
@@ -647,6 +669,7 @@ public class CodecUtil
      *
      * @param buffer from which the value should be read.
      * @param index from which to begin reading.
+     * @param byteOrder for the buffer encoding
      * @return the int representation of the value
      */
     public static int uint16Get(final DirectBuffer buffer,
@@ -664,6 +687,7 @@ public class CodecUtil
      * @param dst into which the copy will occur
      * @param offset at which to start in the destination
      * @param length of the array to copy
+     * @param byteOrder for the buffer encoding
      */
     public static void uint16sGet(final DirectBuffer buffer,
                                   final int index,
@@ -683,6 +707,7 @@ public class CodecUtil
      *
      * @param buffer from which the value should be read.
      * @param index from which to begin reading.
+     * @param byteOrder for the buffer encoding
      * @return the long representation of the value
      */
     public static long uint32Get(final DirectBuffer buffer,
@@ -700,6 +725,7 @@ public class CodecUtil
      * @param dst into which the copy will occur
      * @param offset at which to start in the destination
      * @param length of the array to copy
+     * @param byteOrder for the buffer encoding
      */
     public static void uint32sGet(final DirectBuffer buffer,
                                   final int index,
@@ -719,6 +745,7 @@ public class CodecUtil
      *
      * @param buffer from which the value should be read.
      * @param index from which to begin reading.
+     * @param byteOrder for the buffer encoding
      * @return the long representation of the value
      */
     public static long uint64Get(final DirectBuffer buffer,
@@ -736,6 +763,7 @@ public class CodecUtil
      * @param dst into which the copy will occur
      * @param offset at which to start in the destination
      * @param length of the array to copy
+     * @param byteOrder for the buffer encoding
      */
     public static void uint64sGet(final DirectBuffer buffer,
                                   final int index,
@@ -755,6 +783,7 @@ public class CodecUtil
      *
      * @param buffer from which the value should be read.
      * @param index from which to begin reading.
+     * @param byteOrder for the buffer encoding
      * @return the float representation of the value
      */
     public static float floatGet(final DirectBuffer buffer,
@@ -772,6 +801,7 @@ public class CodecUtil
      * @param dst into which the copy will occur
      * @param offset at which to start in the destination
      * @param length of the array to copy
+     * @param byteOrder for the buffer encoding
      */
     public static void floatsGet(final DirectBuffer buffer,
                                  final int index,
@@ -791,6 +821,7 @@ public class CodecUtil
      *
      * @param buffer from which the value should be read.
      * @param index from which to begin reading.
+     * @param byteOrder for the buffer encoding
      * @return the double representation of the value
      */
     public static double doubleGet(final DirectBuffer buffer,
@@ -808,6 +839,7 @@ public class CodecUtil
      * @param dst into which the copy will occur
      * @param offset at which to start in the destination
      * @param length of the array to copy
+     * @param byteOrder for the buffer encoding
      */
     public static void doublesGet(final DirectBuffer buffer,
                                   final int index,
@@ -861,6 +893,7 @@ public class CodecUtil
      * @param buffer to read from.
      * @param index of the beginning byte
      * @param bitIndex bit index to read
+     * @param byteOrder for the buffer encoding
      * @return true if the bit is set otherwise false.
      */
     public static boolean uint16GetChoice(final DirectBuffer buffer,
@@ -878,6 +911,7 @@ public class CodecUtil
      * @param index of the beginning byte.
      * @param bitIndex bit index to set.
      * @param switchOn true sets bit to 1 and false sets it to 0.
+     * @param byteOrder for the buffer encoding
      */
     public static void uint16PutChoice(final DirectBuffer buffer,
                                        final int index,
@@ -896,6 +930,7 @@ public class CodecUtil
      * @param buffer to read from.
      * @param index of the beginning byte
      * @param bitIndex bit index to read
+     * @param byteOrder for the buffer encoding
      * @return true if the bit is set otherwise false.
      */
     public static boolean uint32GetChoice(final DirectBuffer buffer,
@@ -913,6 +948,7 @@ public class CodecUtil
      * @param index of the beginning byte.
      * @param bitIndex bit index to set.
      * @param switchOn true sets bit to 1 and false sets it to 0.
+     * @param byteOrder for the buffer encoding
      */
     public static void uint32PutChoice(final DirectBuffer buffer,
                                        final int index,
@@ -931,6 +967,7 @@ public class CodecUtil
      * @param buffer to read from.
      * @param index of the beginning byte
      * @param bitIndex bit index to read
+     * @param byteOrder for the buffer encoding
      * @return true if the bit is set otherwise false.
      */
     public static boolean uint64GetChoice(final DirectBuffer buffer,
@@ -948,6 +985,7 @@ public class CodecUtil
      * @param index of the beginning byte.
      * @param bitIndex bit index to set.
      * @param switchOn true sets bit to 1 and false sets it to 0.
+     * @param byteOrder for the buffer encoding
      */
     public static void uint64PutChoice(final DirectBuffer buffer,
                                        final int index,
