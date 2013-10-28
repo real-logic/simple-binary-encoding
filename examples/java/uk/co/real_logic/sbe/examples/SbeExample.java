@@ -132,13 +132,13 @@ public class SbeExample
         sb.append("\ncar.available=").append(car.available());
         sb.append("\ncar.code=").append(car.code());
 
-        sb.append("\ncar.vehicleCode=");
+        sb.append("\ncar.someNumbers=");
         for (int i = 0, size = car.someNumbersLength(); i < size; i++)
         {
             sb.append(car.someNumbers(i)).append(", ");
         }
 
-        sb.append("\ncar.someNumbers=");
+        sb.append("\ncar.vehicleCode=");
         for (int i = 0, size = car.vehicleCodeLength(); i < size; i++)
         {
             sb.append((char)car.vehicleCode(i));
