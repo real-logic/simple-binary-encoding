@@ -352,9 +352,6 @@ public class DirectBuffer
      */
     public int getBytes(final int index, final ByteBuffer dstBuffer, final int length)
     {
-        byteBuffer.clear().limit(index + length).position(index);
-        dstBuffer.put(byteBuffer);
-
         int count = Math.min(dstBuffer.remaining(), capacity - index);
         count = Math.min(count, length);
 
