@@ -168,10 +168,10 @@ public class SbeExample
         final byte[] buffer = new byte[128];
 
         int bytesCopied = car.getMake(buffer, 0, buffer.length);
-        sb.append("\ncar.make=").append(new String(buffer, 0, bytesCopied, Charset.forName(car.makeEncoding())));
+        sb.append("\ncar.make=").append(new String(buffer, 0, bytesCopied, Charset.forName(car.makeCharacterEncoding())));
 
         bytesCopied = car.getModel(buffer, 0, buffer.length);
-        sb.append("\ncar.model=").append(new String(buffer, 0, bytesCopied, Charset.forName(car.modelEncoding())));
+        sb.append("\ncar.model=").append(new String(buffer, 0, bytesCopied, Charset.forName(car.modelCharacterEncoding())));
 
         System.out.println(sb);
     }
