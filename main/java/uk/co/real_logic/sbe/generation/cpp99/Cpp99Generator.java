@@ -102,7 +102,7 @@ public class Cpp99Generator implements CodeGenerator
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.namespaceName(), className));
-                out.append(generateClassDeclaration(className, MessageFlyweight.class.getSimpleName()));
+                out.append(generateClassDeclaration(className, "MessageFlyweight"));
                 out.append(generateMessageFlyweightCode(tokens.get(0).size()));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
@@ -121,7 +121,7 @@ public class Cpp99Generator implements CodeGenerator
                 final List<Token> varData = messageBody.subList(offset, messageBody.size());
                 out.append(generateVarData(varData));
 
-                out.append("}\n");
+                out.append("};\n}\n#endif\n");
             }
         }
     }
@@ -391,7 +391,7 @@ public class Cpp99Generator implements CodeGenerator
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
-            out.append("}\n");
+            out.append("};\n}\n#endif\n");
         }
     }
 
@@ -409,7 +409,7 @@ public class Cpp99Generator implements CodeGenerator
 
             out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumName));
 
-            out.append("}\n");
+            out.append("};\n}\n#endif\n");
         }
     }
 
@@ -425,7 +425,7 @@ public class Cpp99Generator implements CodeGenerator
 
             out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
-            out.append("}\n");
+            out.append("};\n}\n#endif\n");
         }
     }
 
@@ -828,34 +828,39 @@ public class Cpp99Generator implements CodeGenerator
     private CharSequence generateMessageFlyweightCode(final int blockLength)
     {
         return String.format(
-            "    private static final int blockLength = %d;\n\n" +
-            "    private DirectBuffer buffer;\n" +
-            "    private int offset;\n" +
-            "    private int position;\n" +
-            "\n" +
-            "    public int blockLength()\n" +
+            "private:\n" +
+            "    char *buffer_;\n" +
+            "    int offset_;\n" +
+            "    int position_;\n" +
+            "public:\n\n" +
+            "    sbe_uint64_t blockLength(void) const\n" +
             "    {\n" +
-            "        return blockLength;\n" +
-            "    }\n\n" +
-            "    public int offset()\n" +
+            "        return %d;\n" +
+            "    };\n\n" +
+            "    sbe_uint64_t offset(void) const\n" +
             "    {\n" +
-            "        return offset;\n" +
-            "    }\n\n" +
-            "    public void reset(final DirectBuffer buffer, final int offset)\n" +
+            "        return offset_;\n" +
+            "    };\n\n" +
+            "    void resetForEncode(char *buffer, const int offset)\n" +
             "    {\n" +
-            "        this.buffer = buffer;\n" +
-            "        this.offset = offset;\n" +
-            "        position(blockLength);\n" +
-            "    }\n\n" +
-            "    public int position()\n" +
+            "        buffer_ = buffer;\n" +
+            "        offset_ = offset;\n" +
+            "        position(blockLength());\n" +
+            "    };\n\n" +
+            "    void resetForDecode(const char *buffer, const int offset)\n" +
             "    {\n" +
-            "        return position;\n" +
-            "    }\n\n" +
-            "    public void position(final int position)\n" +
+            "        buffer_ = (char *)buffer;\n" +
+            "        offset_ = offset;\n" +
+            "        position(blockLength());\n" +
+            "    };\n\n" +
+            "    sbe_uint64_t position(void) const\n" +
             "    {\n" +
-            "        CodecUtil.checkPosition(position, offset, buffer.capacity());\n" +
-            "        this.position = position;\n" +
-            "    }\n",
+            "        return position_;\n" +
+            "    };\n\n" +
+            "    void position(const sbe_uint64_t position)\n" +
+            "    {\n" +
+            "        position_ = position;\n" +
+            "    };\n\n",
             Integer.valueOf(blockLength)
         );
     }
