@@ -154,6 +154,9 @@
     <property name="dir.examples.build" location="target/examples/java/classes"/>
 
     <property name="dir.gen.cpp99" value="target/gen/cpp99"/>
+    <property name="exec.example.cpp99" location="target/gen/cpp99/SbeExample"/>
+    <property name="dir.examples.cpp99.src" location="examples/cpp99"/>
+    <property name="dir.examples.cpp99.include" location="main/cpp"/>
 
     <path id="examples.classpath">
         <pathelement path="${dir.examples.build}"/>
@@ -191,9 +194,19 @@
             <sysproperty key="sbe.target.language" value="Cpp99"/>
             <arg value="${dir.examples.resources}/TestSchema.xml"/>
         </java>
+        <cc outtype="executable"
+            debug="true"
+            subsystem="console"
+            outfile="${exec.example.cpp99}">
+            <includepath path="${dir.examples.cpp99.src}"/>
+            <includepath path="${dir.gen.cpp99}"/>
+            <includepath path="${dir.examples.cpp99.include}"/>
+            <compilerarg value="-std=c++98"/>
+            <libset libs="stdc++"/>
+            <fileset dir="${dir.examples.cpp99.src}" includes="SbeExample.cpp"/>
+        </cc>
+        <exec executable="${exec.example.cpp99}" failonerror="true"/>
     </target>
-
-    <!-- C++ related targets -->
 
     <target name="cpp:compile" depends="clean, init">
         <cc outtype="static"

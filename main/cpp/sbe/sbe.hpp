@@ -41,6 +41,18 @@ public:
     virtual void resetForDecode(const char *buffer, const int offset) = 0;
 };
 
+/// Interface for MessageFlyweight
+class MessageFlyweight
+{
+public:
+    virtual void resetForEncode(char *buffer, const int offset) = 0;
+    virtual void resetForDecode(const char *buffer, const int offset) = 0;
+    virtual uint64_t blockLength(void) const = 0;
+    virtual uint64_t offset(void) const = 0;
+    virtual uint64_t position(void) const = 0;
+    virtual void position(const uint64_t position) = 0;
+};
+
 }
 
 #endif /* _SBE_HPP_ */
