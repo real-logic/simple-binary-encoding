@@ -21,7 +21,7 @@
 using namespace std;
 using namespace uk_co_real_logic_sbe_examples;
 
-void encodeHdr(const MessageHeader &hdr, char *buffer)
+void encodeHdr(MessageHeader &hdr, char *buffer)
 {
     hdr.resetForEncode(buffer, 0);
 
@@ -37,8 +37,8 @@ void decodeHdr(MessageHeader &hdr, const char *buffer)
 
     cout << "messageHeader.blockLength=" << hdr.blockLength() << endl;
     cout << "messageHeader.templateId=" << hdr.templateId() << endl;
-    cout << "messageHeader.version=" << hdr.version () << endl;
-    cout << "messageHeader.reserved=" << hdr.reserved() << endl;
+    cout << "messageHeader.version=" << (sbe_uint32_t)hdr.version() << endl;
+    cout << "messageHeader.reserved=" << (sbe_uint32_t)hdr.reserved() << endl;
 }
 
 int main(int argc, const char* argv[])
@@ -46,7 +46,7 @@ int main(int argc, const char* argv[])
     char buffer[2048];
     MessageHeader hdr;
 
-    encodeHeader(hdr, buffer);
-    decodeHeader(hdr, buffer);
+    encodeHdr(hdr, buffer);
+    decodeHdr(hdr, buffer);
     return 0;
 }
