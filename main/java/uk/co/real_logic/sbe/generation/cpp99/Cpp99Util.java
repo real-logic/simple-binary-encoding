@@ -21,7 +21,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Utilities for mapping between IR and the Java language.
+ * Utilities for mapping between IR and the C++ language.
  */
 public class Cpp99Util
 {
