@@ -18,8 +18,6 @@ package uk.co.real_logic.sbe.generation.cpp99;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
-import uk.co.real_logic.sbe.generation.java.FixedFlyweight;
-import uk.co.real_logic.sbe.generation.java.MessageFlyweight;
 import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.ir.Signal;
@@ -69,8 +67,10 @@ public class Cpp99Generator implements CodeGenerator
         }
     }
 
-    public void generateTypeStubs() throws IOException
+    public List<String> generateTypeStubs() throws IOException
     {
+        List<String> typesToInclude = new ArrayList<>();
+
         for (final List<Token> tokens : ir.types())
         {
             switch (tokens.get(0).signal())
@@ -87,13 +87,16 @@ public class Cpp99Generator implements CodeGenerator
                     generateComposite(tokens);
                     break;
             }
+            typesToInclude.add(tokens.get(0).name());
         }
+
+        return typesToInclude;
     }
 
     public void generate() throws IOException
     {
         generateMessageHeaderStub();
-        generateTypeStubs();
+        final List<String> typesToInclude = generateTypeStubs();
 
         for (final List<Token> tokens : ir.messages())
         {
@@ -102,6 +105,7 @@ public class Cpp99Generator implements CodeGenerator
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.namespaceName(), className));
+                out.append(generateFileIncludes(ir.namespaceName(), typesToInclude));
                 out.append(generateClassDeclaration(className, "MessageFlyweight"));
                 out.append(generateMessageFlyweightCode(tokens.get(0).size()));
 
@@ -198,7 +202,7 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "public class %s implements GroupFlyweight\n" +
+            indent + "class %s : pubic GroupFlyweight\n" +
             indent + "{\n" +
             indent + "    private final %s dimensions = new %s();\n" +
             indent + "    private int blockLength;\n" +
@@ -386,7 +390,7 @@ public class Cpp99Generator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
             out.append(generateFileHeader(ir.namespaceName(), bitSetName));
-            out.append(generateClassDeclaration(bitSetName, FixedFlyweight.class.getSimpleName()));
+            out.append(generateClassDeclaration(bitSetName, "FixedFlyweight"));
             out.append(generateFixedFlyweightCode());
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
@@ -420,7 +424,7 @@ public class Cpp99Generator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(compositeName))
         {
             out.append(generateFileHeader(ir.namespaceName(), compositeName));
-            out.append(generateClassDeclaration(compositeName, FixedFlyweight.class.getSimpleName()));
+            out.append(generateClassDeclaration(compositeName, "FixedFlyweight"));
             out.append(generateFixedFlyweightCode());
 
             out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
@@ -547,6 +551,23 @@ public class Cpp99Generator implements CodeGenerator
             className,
             namespaceName
         );
+    }
+
+    private CharSequence generateFileIncludes(final String namespaceName, final List<String> typesToInclude)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        for (final String incName : typesToInclude)
+        {
+            sb.append(String.format(
+                "#include \"%s/%s.hpp\"\n",
+                namespaceName,
+                incName
+            ));
+        }
+        sb.append("\n");
+
+        return sb;
     }
 
     private CharSequence generateClassDeclaration(final String className, final String implementedInterface)

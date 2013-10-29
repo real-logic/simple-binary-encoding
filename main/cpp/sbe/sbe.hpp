@@ -53,6 +53,16 @@ public:
     virtual void position(const uint64_t position) = 0;
 };
 
+/// Interface for GroupFlyweight
+class GroupFlyweight
+{
+public:
+    virtual void resetForDecode(void) = 0;
+    virtual void resetForEncode(const int size) = 0;
+    virtual int size(void) const = 0;
+    virtual bool next(void) = 0;
+};
+
 }
 
 #endif /* _SBE_HPP_ */
