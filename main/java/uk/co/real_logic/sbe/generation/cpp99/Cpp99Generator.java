@@ -441,26 +441,29 @@ public class Cpp99Generator implements CodeGenerator
             if (token.signal() == Signal.CHOICE)
             {
                 final String choiceName = token.name();
-                final String typePrefix = token.encoding().primitiveType().primitiveName();
+                final String typeName = cpp99TypeName(token.encoding().primitiveType());
                 final String choiceBitPosition = token.encoding().constVal().toString();
 
                 sb.append(String.format(
                     "\n" +
-                    "    public boolean %s()\n" +
+                    "    bool %s(void) const\n" +
                     "    {\n" +
-                    "        return CodecUtil.%sGetChoice(buffer, offset, %s);\n" +
-                    "    }\n\n" +
-                    "    public %s %s(final boolean value)\n" +
-                    "    {\n" +
-                    "        CodecUtil.%sPutChoice(buffer, offset, %s, value);\n" +
-                    "        return this;" +
-                    "    }\n",
+                    "        return (*((%s *)(buffer_ + offset_)) & (uint64_t)0x1 << %s)) ? true : false;\n" +
+                    "    };\n\n",
                     choiceName,
-                    typePrefix,
-                    choiceBitPosition,
+                    typeName,
+                    choiceBitPosition
+                ));
+
+                sb.append(String.format(
+                    "    %s &%s(const bool value)\n" +
+                    "    {\n" +
+                    "        *((%s *)(buffer_ + offset_)) |= (uint64_t)value << %s);\n" +
+                    "        return *this;\n" +
+                    "    };\n",
                     bitsetClassName,
                     choiceName,
-                    typePrefix,
+                    typeName,
                     choiceBitPosition
                 ));
             }
