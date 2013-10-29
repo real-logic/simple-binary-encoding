@@ -683,25 +683,42 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public int %sLength()\n" +
+            indent + "    int %sLength(void) const\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
-            indent + "    }\n\n",
+            indent + "    };\n\n",
             propertyName,
             Integer.valueOf(token.arrayLength())
         ));
 
         sb.append(String.format(
-            indent + "    public %s %s(final int index)\n" +
+            indent + "    %s %s(const int index) const throw\n" +
             indent + "    {\n" +
             indent + "        if (index < 0 || index >= %d)\n" +
             indent + "        {\n" +
-            indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
+            indent + "            throw \"index out of range\";\n" +
             indent + "        }\n\n" +
-            indent + "        return CodecUtil.%sGet(buffer, this.offset + %d + (index * %d));\n" +
+            indent + "        return *((%s *)(buffer_ + offset_ + %d + (index * %d)));\n" +
             indent + "    }\n\n",
             cpp99TypeName,
             propertyName,
+            Integer.valueOf(token.arrayLength()),
+            cpp99TypeName,
+            offset,
+            Integer.valueOf(token.encoding().primitiveType().size())
+        ));
+
+        sb.append(String.format(
+            indent + "    void %s(const int index, const %s value) throw\n" +
+            indent + "    {\n" +
+            indent + "        if (index < 0 || index >= %d)\n" +
+            indent + "        {\n" +
+            indent + "            throw \"index out of range\";\n" +
+            indent + "        }\n\n" +
+            indent + "        *((%s *)(buffer_ + offset_ + %d + (index * %d))) = value;\n" +
+            indent + "    }\n\n",
+            propertyName,
+            cpp99TypeName,
             Integer.valueOf(token.arrayLength()),
             typePrefix,
             offset,
@@ -709,58 +726,32 @@ public class Cpp99Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public void %s(final int index, final %s value)\n" +
+            indent + "    int get%s(char *dst, const int offset, const int length) const\n" +
             indent + "    {\n" +
-            indent + "        if (index < 0 || index >= %d)\n" +
+            indent + "        if (offset < 0)\n" +
             indent + "        {\n" +
-            indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
+            indent + "             throw \"offset out of range\"" +
             indent + "        }\n\n" +
-            indent + "        CodecUtil.%sPut(buffer, this.offset + %d + (index * %d), value);\n" +
+            indent + "        ::memcpy(dst + offset, buffer_ + offset_ + %d, length);\n" +
+            indent + "        return length;\n" +
             indent + "    }\n\n",
-            propertyName,
-            cpp99TypeName,
-            Integer.valueOf(token.arrayLength()),
-            typePrefix,
-            offset,
-            Integer.valueOf(token.encoding().primitiveType().size())
+            toUpperFirstChar(propertyName),
+            offset
         ));
 
-        if (token.encoding().primitiveType() == PrimitiveType.CHAR)
-        {
-            sb.append(String.format(
-                indent + "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
-                indent + "    {\n" +
-                indent + "        if (offset < 0 || offset > (dst.length - length))\n" +
-                indent + "        {\n" +
-                indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
-                indent + "        }\n\n" +
-                indent + "        final int bytesCopied = Math.min(length, %d);\n" +
-                indent + "        CodecUtil.%ssGet(buffer, this.offset + %d, dst, offset, bytesCopied);\n" +
-                indent + "        return bytesCopied;\n" +
-                indent + "    }\n\n",
-                toUpperFirstChar(propertyName),
-                Integer.valueOf(token.arrayLength()),
-                typePrefix,
-                offset
-            ));
-
-            sb.append(String.format(
-                indent + "    public int put%s(final byte[] src, final int offset, final int length)\n" +
-                indent + "    {\n" +
-                indent + "        if (offset < 0 || offset > (src.length - length))\n" +
-                indent + "        {\n" +
-                indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
-                indent + "        }\n\n" +
-                indent + "        final int bytesCopied = Math.min(length, %d);\n" +
-                indent + "        CodecUtil.%ssPut(buffer, this.offset + %d, src, offset, bytesCopied);\n" +
-                indent + "        return bytesCopied;\n" +
-                indent + "    }\n",
-                toUpperFirstChar(propertyName),
-                Integer.valueOf(token.arrayLength()),
-                typePrefix,
-                offset
-            ));
-        }
+        sb.append(String.format(
+            indent + "    int put%s(const char *src, const int offset, const int length)\n" +
+            indent + "    {\n" +
+            indent + "        if (offset < 0)\n" +
+            indent + "        {\n" +
+            indent + "            throw \"offset out of range\";\n" +
+            indent + "        }\n\n" +
+            indent + "        ::memcpy(buffer_ + offset_ + %d, src + offset, length);\n" +
+            indent + "        return length;\n" +
+            indent + "    }\n",
+            toUpperFirstChar(propertyName),
+            offset
+        ));
 
         return sb;
     }
