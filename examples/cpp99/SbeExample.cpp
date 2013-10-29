@@ -23,7 +23,7 @@ using namespace uk_co_real_logic_sbe_examples;
 
 void encodeHdr(MessageHeader &hdr, char *buffer)
 {
-    hdr.resetForEncode(buffer, 0);
+    hdr.reset(buffer, 0);
 
     hdr.blockLength(10);
     hdr.templateId(100);
@@ -31,9 +31,9 @@ void encodeHdr(MessageHeader &hdr, char *buffer)
     hdr.reserved(0);
 }
 
-void decodeHdr(MessageHeader &hdr, const char *buffer)
+void decodeHdr(MessageHeader &hdr, char *buffer)
 {
-    hdr.resetForDecode(buffer, 0);
+    hdr.reset(buffer, 0);
 
     cout << "messageHeader.blockLength=" << hdr.blockLength() << endl;
     cout << "messageHeader.templateId=" << hdr.templateId() << endl;

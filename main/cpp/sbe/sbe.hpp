@@ -37,16 +37,14 @@ namespace sbe {
 class FixedFlyweight
 {
 public:
-    virtual void resetForEncode(char *buffer, const int offset) = 0;
-    virtual void resetForDecode(const char *buffer, const int offset) = 0;
+    virtual void reset(char *buffer, const int offset) = 0;
 };
 
 /// Interface for MessageFlyweight
 class MessageFlyweight
 {
 public:
-    virtual void resetForEncode(char *buffer, const int offset) = 0;
-    virtual void resetForDecode(const char *buffer, const int offset) = 0;
+    virtual void reset(char *buffer, const int offset) = 0;
     virtual uint64_t blockLength(void) const = 0;
     virtual uint64_t offset(void) const = 0;
     virtual uint64_t position(void) const = 0;
@@ -57,8 +55,7 @@ public:
 class GroupFlyweight
 {
 public:
-    virtual void resetForDecode(void) = 0;
-    virtual void resetForEncode(const int size) = 0;
+    virtual void reset(char *buffer, const int offset) = 0;
     virtual int size(void) const = 0;
     virtual bool next(void) = 0;
 };

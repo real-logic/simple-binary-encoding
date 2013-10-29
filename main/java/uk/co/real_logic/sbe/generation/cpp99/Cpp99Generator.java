@@ -56,7 +56,7 @@ public class Cpp99Generator implements CodeGenerator
     {
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_VISITOR))
         {
-            out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), MESSAGE_HEADER_VISITOR));
+            out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), MESSAGE_HEADER_VISITOR, null));
             out.append(generateClassDeclaration(MESSAGE_HEADER_VISITOR, "FixedFlyweight"));
             out.append(generateFixedFlyweightCode());
 
@@ -104,10 +104,9 @@ public class Cpp99Generator implements CodeGenerator
 
             try (final Writer out = outputManager.createOutput(className))
             {
-                out.append(generateFileHeader(ir.namespaceName(), className));
-                out.append(generateFileIncludes(ir.namespaceName(), typesToInclude));
+                out.append(generateFileHeader(ir.namespaceName(), className, typesToInclude));
                 out.append(generateClassDeclaration(className, "MessageFlyweight"));
-                out.append(generateMessageFlyweightCode(tokens.get(0).size()));
+                out.append(generateMessageFlyweightCode(tokens.get(0).size(), typesToInclude));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -389,7 +388,7 @@ public class Cpp99Generator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
-            out.append(generateFileHeader(ir.namespaceName(), bitSetName));
+            out.append(generateFileHeader(ir.namespaceName(), bitSetName, null));
             out.append(generateClassDeclaration(bitSetName, "FixedFlyweight"));
             out.append(generateFixedFlyweightCode());
 
@@ -405,11 +404,11 @@ public class Cpp99Generator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateFileHeader(ir.namespaceName(), enumName));
+            out.append(generateFileHeader(ir.namespaceName(), enumName, null));
             out.append(generateEnumDeclaration(enumName));
 
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1)));
-            out.append(generateEnumBody(tokens.get(0), enumName));
+            // out.append(generateEnumBody(tokens.get(0), enumName));
 
             out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumName));
 
@@ -423,7 +422,7 @@ public class Cpp99Generator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(compositeName))
         {
-            out.append(generateFileHeader(ir.namespaceName(), compositeName));
+            out.append(generateFileHeader(ir.namespaceName(), compositeName, null));
             out.append(generateClassDeclaration(compositeName, "FixedFlyweight"));
             out.append(generateFixedFlyweightCode());
 
@@ -474,14 +473,19 @@ public class Cpp99Generator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
+        sb.append(
+            "    enum Value \n" +
+            "    {\n"
+        );
+
         for (final Token token : tokens)
         {
             final CharSequence constVal = generateLiteral(token);
-            sb.append("    ").append(token.name()).append('(').append(constVal).append("),\n");
+            sb.append("        ").append(token.name()).append(" = ").append(constVal).append(",\n");
         }
 
         sb.setLength(sb.length() - 2);
-        sb.append(";\n\n");
+        sb.append("\n    };\n\n");
 
         return sb;
     }
@@ -491,17 +495,16 @@ public class Cpp99Generator implements CodeGenerator
         final String cpp99EncodingType = cpp99TypeName(token.encoding().primitiveType());
 
         return String.format(
-            "    private final %s value;\n\n"+
-            "    %s(final %s value)\n" +
+            "    %s value_;\n\n"+
+            "    void value(const %s value)\n" +
             "    {\n" +
-            "        this.value = value;\n" +
-            "    }\n\n" +
-            "    public %s value()\n" +
+            "        value_ = value;\n" +
+            "    };\n\n" +
+            "    %s value(void) const\n" +
             "    {\n" +
-            "        return value;\n" +
-            "    }\n\n",
+            "        return value_;\n" +
+            "    };\n\n",
             cpp99EncodingType,
-            enumName,
             cpp99EncodingType,
             cpp99EncodingType
         );
@@ -512,7 +515,7 @@ public class Cpp99Generator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-           "    public static %s get(final %s value)\n" +
+           "    static %s::Value get(const %s value)\n" +
            "    {\n" +
            "        switch (value)\n" +
            "        {\n",
@@ -531,41 +534,46 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(
             "        }\n\n" +
-            "        throw new IllegalArgumentException(\"Unknown value: \" + value);\n" +
-            "    }\n"
+            "        throw \"unknown value enum value\";\n" +
+            "    };\n"
         );
 
         return sb;
     }
 
-    private CharSequence generateFileHeader(final String namespaceName, final String className)
-    {
-        return String.format(
-            "/* Generated class message */\n" +
-            "#ifndef _%s_HPP_\n" +
-            "#define _%s_HPP_\n\n" +
-            "#include \"sbe/sbe.hpp\"\n\n" +
-            "using namespace sbe;\n\n" +
-            "namespace %s {\n\n",
-            className,
-            className,
-            namespaceName
-        );
-    }
-
-    private CharSequence generateFileIncludes(final String namespaceName, final List<String> typesToInclude)
+    private CharSequence generateFileHeader(final String namespaceName,
+                                            final String className,
+                                            final List<String> typesToInclude)
     {
         final StringBuilder sb = new StringBuilder();
 
-        for (final String incName : typesToInclude)
+        sb.append(String.format(
+            "/* Generated class message */\n" +
+            "#ifndef _%s_HPP_\n" +
+            "#define _%s_HPP_\n\n" +
+            "#include \"sbe/sbe.hpp\"\n\n",
+            className.toUpperCase(),
+            className.toUpperCase()
+        ));
+
+        if (typesToInclude != null)
         {
-            sb.append(String.format(
-                "#include \"%s/%s.hpp\"\n",
-                namespaceName,
-                incName
-            ));
+            for (final String incName : typesToInclude)
+            {
+                sb.append(String.format(
+                        "#include \"%s/%s.hpp\"\n",
+                        namespaceName,
+                        incName
+                ));
+            }
+            sb.append("\n");
         }
-        sb.append("\n");
+
+        sb.append(String.format(
+            "using namespace sbe;\n\n" +
+            "namespace %s {\n\n",
+            namespaceName
+        ));
 
         return sb;
     }
@@ -582,7 +590,7 @@ public class Cpp99Generator implements CodeGenerator
 
     private CharSequence generateEnumDeclaration(final String name)
     {
-        return "public enum " + name + "\n{\n";
+        return "class " + name + "\n{\n";
     }
 
     private CharSequence generatePrimitivePropertyEncodings(final List<Token> tokens, final String indent)
@@ -762,10 +770,10 @@ public class Cpp99Generator implements CodeGenerator
         {
             return String.format(
                 "\n" +
-                indent + "    public %s %s()\n" +
+                indent + "    %s %s(void) const\n" +
                 indent + "    {\n" +
                 indent + "        return %s;\n" +
-                indent + "    }\n",
+                indent + "    };\n",
                 cpp99TypeName,
                 propertyName,
                 generateLiteral(token)
@@ -834,25 +842,38 @@ public class Cpp99Generator implements CodeGenerator
             "    char *buffer_;\n" +
             "    int offset_;\n\n" +
             "public:\n" +
-            "    void resetForEncode(char *buffer, const int offset)\n" +
+            "    void reset(char *buffer, const int offset)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
-            "        offset_ = offset;\n" +
-            "    };\n\n" +
-            "    void resetForDecode(const char *buffer, const int offset)\n" +
-            "    {\n" +
-            "        buffer_ = (char *)buffer;\n" +
             "        offset_ = offset;\n" +
             "    };\n";
     }
 
-    private CharSequence generateMessageFlyweightCode(final int blockLength)
+    private CharSequence generateMessageFlyweightCode(final int blockLength, final List<String> typesToInclude)
     {
-        return String.format(
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
             "private:\n" +
             "    char *buffer_;\n" +
             "    int offset_;\n" +
-            "    int position_;\n" +
+            "    int position_;\n"
+        ));
+
+        if (typesToInclude != null)
+        {
+            for (final String incName : typesToInclude)
+            {
+                sb.append(String.format(
+                   "    %s %s_;\n",
+                   formatClassName(incName),
+                   toLowerFirstChar(formatClassName(incName))
+                ));
+            }
+            sb.append("\n");
+        }
+
+        sb.append(String.format(
             "public:\n\n" +
             "    sbe_uint64_t blockLength(void) const\n" +
             "    {\n" +
@@ -862,15 +883,9 @@ public class Cpp99Generator implements CodeGenerator
             "    {\n" +
             "        return offset_;\n" +
             "    };\n\n" +
-            "    void resetForEncode(char *buffer, const int offset)\n" +
+            "    void reset(char *buffer, const int offset)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
-            "        offset_ = offset;\n" +
-            "        position(blockLength());\n" +
-            "    };\n\n" +
-            "    void resetForDecode(const char *buffer, const int offset)\n" +
-            "    {\n" +
-            "        buffer_ = (char *)buffer;\n" +
             "        offset_ = offset;\n" +
             "        position(blockLength());\n" +
             "    };\n\n" +
@@ -883,7 +898,9 @@ public class Cpp99Generator implements CodeGenerator
             "        position_ = position;\n" +
             "    };\n\n",
             Integer.valueOf(blockLength)
-        );
+        ));
+
+        return sb;
     }
 
     private CharSequence generateFields(final List<Token> tokens, final String indent)
@@ -925,32 +942,32 @@ public class Cpp99Generator implements CodeGenerator
     private CharSequence generateEnumProperty(final String propertyName, final Token token, final String indent)
     {
         final String enumName = token.name();
-        final String typePrefix = token.encoding().primitiveType().primitiveName();
+        final String typeName = cpp99TypeName(token.encoding().primitiveType());
         final Integer offset = Integer.valueOf(token.offset());
 
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
             "\n" +
-            indent + "    public %s %s()\n" +
+            indent + "    %s::Value %s(void) const\n" +
             indent + "    {\n" +
-            indent + "        return %s.get(CodecUtil.%sGet(buffer, offset + %d));\n" +
-            indent + "    }\n\n",
+            indent + "        return %s::get(*((%s *)(buffer_ + offset_ + %d)));\n" +
+            indent + "    };\n\n",
             enumName,
             propertyName,
             enumName,
-            typePrefix,
+            typeName,
             offset
         ));
 
         sb.append(String.format(
-            indent + "    public void %s(final %s value)\n" +
+            indent + "    void %s(const %s::Value value)\n" +
             indent + "    {\n" +
-            indent + "        CodecUtil.%sPut(buffer, offset + %d, value.value());\n" +
-            indent + "    }\n",
+            indent + "        *((%s *)(buffer_ + offset_ + %d)) = value;\n" +
+            indent + "    };\n",
             propertyName,
             enumName,
-            typePrefix,
+            typeName,
             offset
         ));
 
@@ -967,18 +984,10 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    private final %s %s = new %s();\n",
-            bitsetName,
-            formattedPropertyName,
-            bitsetName
-        ));
-
-        sb.append(String.format(
-            "\n" +
-            indent + "    public %s %s()\n" +
+            indent + "    %s &%s()\n" +
             indent + "    {\n" +
-            indent + "        %s.reset(buffer, offset + %d);\n" +
-            indent + "        return %s;\n" +
+            indent + "        %s_.reset(buffer_, offset_ + %d);\n" +
+            indent + "        return %s_;\n" +
             indent + "    }\n",
             bitsetName,
             formattedPropertyName,
@@ -999,19 +1008,11 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    private final %s %s = new %s();\n",
-            compositeName,
-            propertyName,
-            compositeName
-        ));
-
-        sb.append(String.format(
-            "\n" +
-            indent + "    public %s %s()\n" +
+            indent + "    %s &%s(void)\n" +
             indent + "    {\n" +
-            indent + "        %s.reset(buffer, offset + %d);\n" +
-            indent + "        return %s;\n" +
-            indent + "    }\n",
+            indent + "        %s_.reset(buffer_, offset_ + %d);\n" +
+            indent + "        return %s_;\n" +
+            indent + "    };\n",
             compositeName,
             propertyName,
             propertyName,
