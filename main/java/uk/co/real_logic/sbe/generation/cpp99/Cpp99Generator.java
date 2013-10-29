@@ -696,13 +696,14 @@ public class Cpp99Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        if (index < 0 || index >= %d)\n" +
             indent + "        {\n" +
-            indent + "            throw \"index out of range\";\n" +
+            indent + "            throw \"index out of range for %s\";\n" +
             indent + "        }\n\n" +
             indent + "        return *((%s *)(buffer_ + offset_ + %d + (index * %d)));\n" +
-            indent + "    }\n\n",
+            indent + "    };\n\n",
             cpp99TypeName,
             propertyName,
             Integer.valueOf(token.arrayLength()),
+            propertyName,
             cpp99TypeName,
             offset,
             Integer.valueOf(token.encoding().primitiveType().size())
@@ -713,13 +714,14 @@ public class Cpp99Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        if (index < 0 || index >= %d)\n" +
             indent + "        {\n" +
-            indent + "            throw \"index out of range\";\n" +
+            indent + "            throw \"index out of range for %s\";\n" +
             indent + "        }\n\n" +
             indent + "        *((%s *)(buffer_ + offset_ + %d + (index * %d))) = value;\n" +
-            indent + "    }\n\n",
+            indent + "    };\n\n",
             propertyName,
             cpp99TypeName,
             Integer.valueOf(token.arrayLength()),
+            propertyName,
             typePrefix,
             offset,
             Integer.valueOf(token.encoding().primitiveType().size())
@@ -730,11 +732,12 @@ public class Cpp99Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        if (offset < 0)\n" +
             indent + "        {\n" +
-            indent + "             throw \"offset out of range\"" +
+            indent + "             throw \"offset out of range for get%s\";\n" +
             indent + "        }\n\n" +
             indent + "        ::memcpy(dst + offset, buffer_ + offset_ + %d, length);\n" +
             indent + "        return length;\n" +
-            indent + "    }\n\n",
+            indent + "    };\n\n",
+            toUpperFirstChar(propertyName),
             toUpperFirstChar(propertyName),
             offset
         ));
@@ -744,11 +747,12 @@ public class Cpp99Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        if (offset < 0)\n" +
             indent + "        {\n" +
-            indent + "            throw \"offset out of range\";\n" +
+            indent + "            throw \"offset out of range for put%s\";\n" +
             indent + "        }\n\n" +
             indent + "        ::memcpy(buffer_ + offset_ + %d, src + offset, length);\n" +
             indent + "        return length;\n" +
-            indent + "    }\n",
+            indent + "    };\n",
+            toUpperFirstChar(propertyName),
             toUpperFirstChar(propertyName),
             offset
         ));
@@ -789,40 +793,45 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    private static final byte[] %sValue = {%s};\n",
-            propertyName,
-            values
-        ));
-
-        sb.append(String.format(
-            "\n" +
-            indent + "    public int %sLength()\n" +
+            indent + "    int %sLength(void) const\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
-            indent + "    }\n\n",
+            indent + "    };\n\n",
             propertyName,
             Integer.valueOf(constantValue.length)
         ));
 
         sb.append(String.format(
-            indent + "    public %s %s(final int index)\n" +
+            indent + "    %s %s(const int index) const\n" +
             indent + "    {\n" +
+            indent + "        static sbe_uint8_t %sValues[] = {%s};\n\n" +
             indent + "        return %sValue[index];\n" +
-            indent + "    }\n\n",
+            indent + "    };\n\n",
             cpp99TypeName,
             propertyName,
+            propertyName,
+            values,
             propertyName
         ));
 
         sb.append(String.format(
-            indent + "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
+            indent + "    int get%s(char *dst, const int offset, const int length) const\n" +
             indent + "    {\n" +
-            indent + "        final int elementsCopied = Math.min(length, %d);\n" +
-            indent + "        System.arraycopy(%sValue, 0, dst, offset, elementsCopied);\n" +
-            indent + "        return elementsCopied;\n" +
-            indent + "    }\n",
+            indent + "        static sbe_uint8_t %sValues[] = {%s};\n" +
+            indent + "        int bytesToCopy = (length < sizeof(%sValues)) ? length : sizeof(%sValues);\n\n" +
+            indent + "        if (offset < 0)\n" +
+            indent + "        {\n" +
+            indent + "            throw \"offset out of range for get%s\";\n" +
+            indent + "        }\n\n" +
+            indent + "        ::memcpy(dst + offset, %sValues, bytesToCopy);\n" +
+            indent + "        return bytesToCopy;\n" +
+            indent + "    };\n",
             toUpperFirstChar(propertyName),
-            Integer.valueOf(constantValue.length),
+            propertyName,
+            values,
+            propertyName,
+            propertyName,
+            propertyName,
             propertyName
         ));
 
