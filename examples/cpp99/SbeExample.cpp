@@ -22,19 +22,19 @@
 using namespace std;
 using namespace uk_co_real_logic_sbe_examples;
 
-void encodeHdr(MessageHeader &hdr, char *buffer)
+void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset)
 {
-    hdr.reset(buffer, 0);
+    hdr.reset(buffer, offset);
 
-    hdr.blockLength(10);
-    hdr.templateId(100);
-    hdr.version(1);
+    hdr.blockLength(car.blockLength());
+    hdr.templateId(car.schemaId());
+    hdr.version(0);
     hdr.reserved(0);
 }
 
-void decodeHdr(MessageHeader &hdr, char *buffer)
+void decodeHdr(MessageHeader &hdr, char *buffer, int offset)
 {
-    hdr.reset(buffer, 0);
+    hdr.reset(buffer, offset);
 
     cout << "messageHeader.blockLength=" << hdr.blockLength() << endl;
     cout << "messageHeader.templateId=" << hdr.templateId() << endl;
@@ -47,9 +47,9 @@ char MANUFACTURER_CODE[] = {'1', '2', '3'};
 const char *MAKE = "Honda";
 const char *MODEL = "Civic VTi";
 
-void encodeCar(Car &car, char *buffer)
+void encodeCar(Car &car, char *buffer, int offset)
 {
-    car.reset(buffer, 0);
+    car.reset(buffer, offset);
 
     car.serialNumber(1234);
     car.modelYear(2013);
@@ -113,6 +113,7 @@ void encodeCar(Car &car, char *buffer)
 
     car.putMake(MAKE, 0, strlen(MAKE));
     car.putModel(MODEL, 0, strlen(MODEL));
+
 }
 
 const char *format(int value)
@@ -173,9 +174,9 @@ const char *format(bool value)
     }
 }
 
-void decodeCar(Car &car, char *buffer)
+void decodeCar(Car &car, char *buffer, int offset)
 {
-    car.reset(buffer, 0);
+    car.reset(buffer, offset);
     std::string sb;
 
     sb.append("\ncar.serialNumber=").append(format((int)car.serialNumber()));
@@ -205,6 +206,7 @@ void decodeCar(Car &car, char *buffer)
     sb.append("\ncar.engine.capacity=").append(format((int)engine.capacity()));
     sb.append("\ncar.engine.numCylinders=").append(format((int)engine.numCylinders()));
     sb.append("\ncar.engine.maxRpm=").append(format((int)engine.maxRpm()));
+    sb.append("\ncar.engine.manufacturerCodeLength=").append(format((int)engine.manufacturerCodeLength()));
     sb.append("\ncar.engine.manufacturerCode=");
     for (int i = 0, size = engine.manufacturerCodeLength(); i < size; i++)
     {
@@ -254,10 +256,12 @@ int main(int argc, const char* argv[])
     MessageHeader hdr;
     Car car;
 
-    encodeHdr(hdr, buffer);
-    decodeHdr(hdr, buffer);
+    encodeHdr(hdr, car, buffer, 0);
+    encodeCar(car, buffer, hdr.size());
 
-    encodeCar(car, buffer);
-    decodeCar(car, buffer);
+    cout << "Encoding size is " << hdr.size() << " + " << car.size() << endl;
+
+    decodeHdr(hdr, buffer, 0);
+    decodeCar(car, buffer, hdr.size());
     return 0;
 }

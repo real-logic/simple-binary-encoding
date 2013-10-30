@@ -38,6 +38,7 @@ class FixedFlyweight
 {
 public:
     virtual void reset(char *buffer, const int offset) = 0;
+    virtual int size(void) const = 0;
 };
 
 /// Interface for MessageFlyweight
@@ -50,6 +51,7 @@ public:
     virtual uint64_t position(void) const = 0;
     virtual void position(const uint64_t position) = 0;
     virtual char *buffer(void) = 0;
+    virtual int size(void) const = 0;
 };
 
 /// Interface for GroupFlyweight

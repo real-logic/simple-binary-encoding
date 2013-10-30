@@ -58,7 +58,7 @@ public class Cpp99Generator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), MESSAGE_HEADER_VISITOR, null));
             out.append(generateClassDeclaration(MESSAGE_HEADER_VISITOR, "FixedFlyweight"));
-            out.append(generateFixedFlyweightCode());
+            out.append(generateFixedFlyweightCode(ir.header().get(0).size()));
 
             final List<Token> tokens = ir.header();
             out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
@@ -106,7 +106,7 @@ public class Cpp99Generator implements CodeGenerator
             {
                 out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), className, typesToInclude));
                 out.append(generateClassDeclaration(className, "MessageFlyweight"));
-                out.append(generateMessageFlyweightCode(tokens.get(0).size(), typesToInclude));
+                out.append(generateMessageFlyweightCode(tokens.get(0).size(), tokens.get(0).schemaId()));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -405,7 +405,7 @@ public class Cpp99Generator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), bitSetName, null));
             out.append(generateClassDeclaration(bitSetName, "FixedFlyweight"));
-            out.append(generateFixedFlyweightCode());
+            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
@@ -438,7 +438,7 @@ public class Cpp99Generator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), compositeName, null));
             out.append(generateClassDeclaration(compositeName, "FixedFlyweight"));
-            out.append(generateFixedFlyweightCode());
+            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
 
             out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
@@ -834,9 +834,9 @@ public class Cpp99Generator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFixedFlyweightCode()
+    private CharSequence generateFixedFlyweightCode(final int size)
     {
-        return
+        return String.format(
             "private:\n" +
             "    char *buffer_;\n" +
             "    int offset_;\n\n" +
@@ -845,10 +845,16 @@ public class Cpp99Generator implements CodeGenerator
             "    {\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
-            "    };\n";
+            "    };\n\n" +
+            "    int size(void) const\n" +
+            "    {\n" +
+            "        return %s;\n" +
+            "    };\n\n",
+            size
+        );
     }
 
-    private CharSequence generateMessageFlyweightCode(final int blockLength, final List<String> typesToInclude)
+    private CharSequence generateMessageFlyweightCode(final int blockLength, final long schemaId)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -873,7 +879,7 @@ public class Cpp99Generator implements CodeGenerator
             "    {\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
-            "        position(blockLength());\n" +
+            "        position(offset + blockLength());\n" +
             "    };\n\n" +
             "    sbe_uint64_t position(void) const\n" +
             "    {\n" +
@@ -883,6 +889,14 @@ public class Cpp99Generator implements CodeGenerator
             "    {\n" +
             "        position_ = position;\n" +
             "    };\n\n" +
+            "    int size(void) const\n" +
+            "    {\n" +
+            "        return position() - offset_;\n" +
+            "    };\n\n" +
+            "    int schemaId(void) const\n" +
+            "    {\n" +
+            "        return %d;\n" +
+            "    };\n\n" +
             "    char *buffer(void)\n" +
             "    {\n" +
             "        return buffer_;\n" +
@@ -891,7 +905,8 @@ public class Cpp99Generator implements CodeGenerator
             "    {\n" +
             "        return this;\n" +
             "    };\n",
-            Integer.valueOf(blockLength)
+            Integer.valueOf(blockLength),
+            schemaId
         ));
 
         return sb;
