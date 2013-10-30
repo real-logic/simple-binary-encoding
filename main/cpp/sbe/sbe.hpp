@@ -49,14 +49,15 @@ public:
     virtual uint64_t offset(void) const = 0;
     virtual uint64_t position(void) const = 0;
     virtual void position(const uint64_t position) = 0;
+    virtual char *buffer(void) = 0;
 };
 
 /// Interface for GroupFlyweight
 class GroupFlyweight
 {
 public:
-    virtual void resetForDecode(void) = 0;
-    virtual void resetForEncode(const int size) = 0;
+    virtual void resetForDecode(MessageFlyweight *message) = 0;
+    virtual void resetForEncode(MessageFlyweight *message, const int size) = 0;
     virtual int size(void) const = 0;
     virtual bool next(void) = 0;
 };
