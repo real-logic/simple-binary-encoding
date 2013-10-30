@@ -55,7 +55,8 @@ public:
 class GroupFlyweight
 {
 public:
-    virtual void reset(char *buffer, const int offset) = 0;
+    virtual void resetForDecode(void) = 0;
+    virtual void resetForEncode(const int size) = 0;
     virtual int size(void) const = 0;
     virtual bool next(void) = 0;
 };

@@ -203,26 +203,28 @@ public class Cpp99Generator implements CodeGenerator
             "\n" +
             indent + "class %s : pubic GroupFlyweight\n" +
             indent + "{\n" +
-            indent + "    private final %s dimensions = new %s();\n" +
-            indent + "    private int blockLength;\n" +
-            indent + "    private int size;\n" +
-            indent + "    private int index;\n" +
-            indent + "    private int offset;\n\n",
+            indent + "private:\n" +
+            indent + "    %s dimensions_;\n" +
+            indent + "    int blockLength_;\n" +
+            indent + "    int size_;\n" +
+            indent + "    int index_;\n" +
+            indent + "    int offset_;\n\n" +
+            indent + "public:\n\n",
             formatClassName(groupName),
             dimensionsClassName,
             dimensionsClassName
         ));
 
         sb.append(String.format(
-            indent + "    public void resetForDecode()\n" +
+            indent + "    void resetForDecode(void)\n" +
             indent + "    {\n" +
-            indent + "        dimensions.reset(buffer, position());\n" +
-            indent + "        size = dimensions.numInGroup();\n" +
-            indent + "        blockLength = dimensions.blockLength();\n" +
-            indent + "        index = -1;\n" +
-            indent + "        final int dimensionsHeaderSize = %d;\n" +
+            indent + "        dimensions_.reset(buffer_, position());\n" +
+            indent + "        size_ = dimensions_.numInGroup();\n" +
+            indent + "        blockLength_ = dimensions_.blockLength();\n" +
+            indent + "        index_ = -1;\n" +
+            indent + "        int dimensionsHeaderSize = %d;\n" +
             indent + "        position(position() + dimensionsHeaderSize);\n" +
-            indent + "    }\n\n",
+            indent + "    };\n\n",
             dimensionHeaderSize
         ));
 
@@ -231,17 +233,17 @@ public class Cpp99Generator implements CodeGenerator
         final String cpp99TypeForNumInGroup = cpp99TypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    public void resetForEncode(final int size)\n" +
+            indent + "    void resetForEncode(final int size)\n" +
             indent + "    {\n" +
-            indent + "        dimensions.reset(buffer, position());\n" +
-            indent + "        dimensions.numInGroup((%s)size);\n" +
-            indent + "        dimensions.blockLength((%s)%d);\n" +
+            indent + "        dimensions_.reset(buffer_, position());\n" +
+            indent + "        dimensions_.numInGroup((%s)size);\n" +
+            indent + "        dimensions_.blockLength((%s)%d);\n" +
             indent + "        index = -1;\n" +
-            indent + "        this.size = size;\n" +
-            indent + "        blockLength = %d;\n" +
-            indent + "        final int dimensionsHeaderSize = %d;\n" +
+            indent + "        size_ = size;\n" +
+            indent + "        blockLength_ = %d;\n" +
+            indent + "        int dimensionsHeaderSize = %d;\n" +
             indent + "        position(position() + dimensionsHeaderSize);\n" +
-            indent + "    }\n\n",
+            indent + "    };\n\n",
             cpp99TypeForNumInGroup,
             cpp99TypeForBlockLength,
             blockLength,
@@ -250,24 +252,24 @@ public class Cpp99Generator implements CodeGenerator
         ));
 
         sb.append(
-            indent + "    public int size()\n" +
+            indent + "    int size(void) const\n" +
             indent + "    {\n" +
-            indent + "        return size;\n" +
-            indent + "    }\n\n"
+            indent + "        return size_;\n" +
+            indent + "    };\n\n"
         );
 
         sb.append(
-            indent + "    public boolean next()\n" +
+            indent + "    bool next(void)\n" +
             indent + "    {\n" +
-            indent + "        if (index + 1 >= size)\n" +
+            indent + "        if (index_ + 1 >= size)\n" +
             indent + "        {\n" +
             indent + "            return false;\n" +
             indent + "        }\n\n" +
-            indent + "        offset = position();\n" +
-            indent + "        position(offset + blockLength);\n" +
-            indent + "        ++index;\n\n" +
+            indent + "        offset_ = position();\n" +
+            indent + "        position(offset_ + blockLength_);\n" +
+            indent + "        ++index_;\n\n" +
             indent + "        return true;\n" +
-            indent + "    }\n"
+            indent + "    };\n"
         );
     }
 
@@ -280,18 +282,19 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    private final %s %s = new %s();\n",
+            "private:\n" +
+            indent + "    %s %s_;\n\n" +
+            "public:\n",
             className,
-            propertyName,
-            className
+            propertyName
         ));
 
         sb.append(String.format(
             "\n" +
-            indent + "    public %s %s()\n" +
+            indent + "    %s &%s(void)\n" +
             indent + "    {\n" +
-            indent + "        %s.resetForDecode();\n" +
-            indent + "        return %s;\n" +
+            indent + "        %s_.resetForDecode();\n" +
+            indent + "        return %s_;\n" +
             indent + "    }\n",
             className,
             propertyName,
@@ -302,10 +305,10 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-                indent + "    public %s %sSize(final int size)\n" +
+                indent + "    %s &%sSize(const int size)\n" +
                 indent + "    {\n" +
-                indent + "        %s.resetForEncode(size);\n" +
-                indent + "        return %s;\n" +
+                indent + "        %s_.resetForEncode(size);\n" +
+                indent + "        return %s_;\n" +
                 indent + "    }\n",
             className,
             propertyName,
@@ -330,7 +333,7 @@ public class Cpp99Generator implements CodeGenerator
 
                 sb.append(String.format(
                     "\n"  +
-                    "    public String %sCharacterEncoding()\n" +
+                    "    const char *%sCharacterEncoding()\n" +
                     "    {\n" +
                     "        return \"%s\";\n" +
                     "    }\n\n",
@@ -344,36 +347,36 @@ public class Cpp99Generator implements CodeGenerator
                 final String lengthTypePrefix = lengthToken.encoding().primitiveType().primitiveName();
 
                 sb.append(String.format(
-                    "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
+                    "    int get%s(char *dst, const int offset, const int length) const\n" +
                     "    {\n" +
-                    "        final int sizeOfLengthField = %d;\n" +
-                    "        final int lengthPosition = position();\n" +
+                    "        int sizeOfLengthField = %d;\n" +
+                    "        int lengthPosition = position();\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
-                    "        final int dataLength = CodecUtil.%sGet(buffer, lengthPosition);\n" +
-                    "        final int bytesCopied = Math.min(length, dataLength);\n" +
-                    "        CodecUtil.int8sGet(buffer, position(), dst, offset, bytesCopied);\n" +
+                    "        uint64_t dataLength = *((%s *)(buffer_ + lengthPosition);\n" +
+                    "        int bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
+                    "        ::memcpy(dst + offset, buffer_ + position(), bytesToCopy);\n" +
                     "        position(position() + dataLength);\n" +
-                    "        return bytesCopied;\n" +
+                    "        return bytesToCopy;\n" +
                     "    }\n\n",
                     propertyName,
                     sizeOfLengthField,
-                    lengthTypePrefix
+                    lengthCpp99Type
                 ));
 
                 sb.append(String.format(
-                    "    public int put%s(final byte[] src, final int offset, final int length)\n" +
+                    "    int put%s(const char *src, const int offset, const int length)\n" +
                     "    {\n" +
-                    "        final int sizeOfLengthField = %d;\n" +
-                    "        final int lengthPosition = position();\n" +
-                    "        CodecUtil.%sPut(buffer, lengthPosition, (%s)length);\n" +
+                    "        int sizeOfLengthField = %d;\n" +
+                    "        int lengthPosition = position();\n" +
+                    "        *((%s *)(buffer_ + lengthPosition)) = (%s)length;\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
-                    "        CodecUtil.int8sPut(buffer, position(), src, offset, length);\n" +
+                    "        ::memcpy(buffer_ + position(), src + offset, length);\n" +
                     "        position(position() + length);\n" +
-                    "        return length;" +
+                    "        return length;\n" +
                     "    }\n",
                     propertyName,
                     sizeOfLengthField,
-                    lengthTypePrefix,
+                    lengthCpp99Type,
                     lengthCpp99Type
                 ));
             }
@@ -493,26 +496,6 @@ public class Cpp99Generator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateEnumBody(final Token token, final String enumName)
-    {
-        final String cpp99EncodingType = cpp99TypeName(token.encoding().primitiveType());
-
-        return String.format(
-            "    %s value_;\n\n"+
-            "    void value(const %s value)\n" +
-            "    {\n" +
-            "        value_ = value;\n" +
-            "    };\n\n" +
-            "    %s value(void) const\n" +
-            "    {\n" +
-            "        return value_;\n" +
-            "    };\n\n",
-            cpp99EncodingType,
-            cpp99EncodingType,
-            cpp99EncodingType
-        );
-    }
-
     private CharSequence generateEnumLookupMethod(final List<Token> tokens, final String enumName)
     {
         final StringBuilder sb = new StringBuilder();
@@ -535,11 +518,12 @@ public class Cpp99Generator implements CodeGenerator
             );
         }
 
-        sb.append(
+        sb.append(String.format(
             "        }\n\n" +
-            "        throw \"unknown value enum value\";\n" +
-            "    };\n"
-        );
+            "        throw \"unknown value for enum %s\";\n" +
+            "    };\n",
+            enumName
+        ));
 
         return sb;
     }
