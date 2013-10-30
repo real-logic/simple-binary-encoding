@@ -63,7 +63,7 @@ public class Cpp99Generator implements CodeGenerator
             final List<Token> tokens = ir.header();
             out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
-            out.append("};\n}\n#endif\n"); // close class, namespace, and ifndef
+            out.append("};\n}\n#endif\n");
         }
     }
 
@@ -357,7 +357,6 @@ public class Cpp99Generator implements CodeGenerator
                 final Token lengthToken = tokens.get(i + 2);
                 final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
                 final String lengthCpp99Type = cpp99TypeName(lengthToken.encoding().primitiveType());
-                final String lengthTypePrefix = lengthToken.encoding().primitiveType().primitiveName();
 
                 sb.append(String.format(
                     "    int get%s(char *dst, const int offset, const int length)\n" +
@@ -638,7 +637,6 @@ public class Cpp99Generator implements CodeGenerator
     private CharSequence generateSingleValueProperty(final String propertyName, final Token token, final String indent)
     {
         final String cpp99TypeName = cpp99TypeName(token.encoding().primitiveType());
-        final String typePrefix = token.encoding().primitiveType().primitiveName();
         final Integer offset = Integer.valueOf(token.offset());
 
         final StringBuilder sb = new StringBuilder();
@@ -672,7 +670,6 @@ public class Cpp99Generator implements CodeGenerator
     private CharSequence generateArrayProperty(final String propertyName, final Token token, final String indent)
     {
         final String cpp99TypeName = cpp99TypeName(token.encoding().primitiveType());
-        final String typePrefix = token.encoding().primitiveType().primitiveName();
         final Integer offset = Integer.valueOf(token.offset());
 
         final StringBuilder sb = new StringBuilder();
@@ -859,21 +856,6 @@ public class Cpp99Generator implements CodeGenerator
             "    int position_;\n"
         ));
 
-        /*
-        if (typesToInclude != null)
-        {
-            for (final String incName : typesToInclude)
-            {
-                sb.append(String.format(
-                   "    %s %s_;\n",
-                   formatClassName(incName),
-                   toLowerFirstChar(formatClassName(incName))
-                ));
-            }
-            sb.append("\n");
-        }
-        */
-
         sb.append(String.format(
             "public:\n\n" +
             "    sbe_uint64_t blockLength(void) const\n" +
@@ -988,7 +970,6 @@ public class Cpp99Generator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         final String bitsetName = formatClassName(token.name());
-        final String formattedPropertyName = formatPropertyName(propertyName);
         final Integer offset = Integer.valueOf(token.offset());
 
         sb.append(String.format(
