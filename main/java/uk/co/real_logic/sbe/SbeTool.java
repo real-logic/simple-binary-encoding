@@ -82,6 +82,7 @@ public class SbeTool
         if (args.length != 1)
         {
             System.err.format("Usage: %s <filename>\n", SbeTool.class.getName());
+            System.exit(-1);
         }
 
         final String messageSchemaFileName = args[0];
