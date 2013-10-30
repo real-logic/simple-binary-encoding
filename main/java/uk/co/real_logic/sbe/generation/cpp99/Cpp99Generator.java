@@ -208,9 +208,9 @@ public class Cpp99Generator implements CodeGenerator
             indent + "    int blockLength_;\n" +
             indent + "    int size_;\n" +
             indent + "    int index_;\n" +
-            indent + "    int offset_;\n\n" +
-            indent + "    MessageFlyweight *message_;" +
-            indent + "    char *buffer_;" +
+            indent + "    int offset_;\n" +
+            indent + "    MessageFlyweight *message_;\n" +
+            indent + "    char *buffer_;\n\n" +
             indent + "public:\n\n",
             formatClassName(groupName),
             dimensionsClassName,
@@ -275,7 +275,7 @@ public class Cpp99Generator implements CodeGenerator
             indent + "        message_->position(offset_ + blockLength_);\n" +
             indent + "        ++index_;\n\n" +
             indent + "        return true;\n" +
-            indent + "    };\n"
+            indent + "    };\n\n"
         );
 
         sb.append(
@@ -308,7 +308,7 @@ public class Cpp99Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        %s_.resetForDecode(message());\n" +
             indent + "        return %s_;\n" +
-            indent + "    }\n",
+            indent + "    };\n",
             className,
             propertyName,
             propertyName,
@@ -322,7 +322,7 @@ public class Cpp99Generator implements CodeGenerator
                 indent + "    {\n" +
                 indent + "        %s_.resetForEncode(message(), size);\n" +
                 indent + "        return %s_;\n" +
-                indent + "    }\n",
+                indent + "    };\n",
             className,
             propertyName,
             propertyName,
@@ -349,7 +349,7 @@ public class Cpp99Generator implements CodeGenerator
                     "    const char *%sCharacterEncoding()\n" +
                     "    {\n" +
                     "        return \"%s\";\n" +
-                    "    }\n\n",
+                    "    };\n\n",
                     formatPropertyName(propertyName),
                     characterEncoding
                 ));
@@ -369,7 +369,7 @@ public class Cpp99Generator implements CodeGenerator
                     "        ::memcpy(dst + offset, buffer_ + position(), bytesToCopy);\n" +
                     "        position(position() + (sbe_uint64_t)dataLength);\n" +
                     "        return bytesToCopy;\n" +
-                    "    }\n\n",
+                    "    };\n\n",
                     propertyName,
                     sizeOfLengthField,
                     lengthCpp99Type
@@ -385,7 +385,7 @@ public class Cpp99Generator implements CodeGenerator
                     "        ::memcpy(buffer_ + position(), src + offset, length);\n" +
                     "        position(position() + (sbe_uint64_t)length);\n" +
                     "        return length;\n" +
-                    "    }\n",
+                    "    };\n",
                     propertyName,
                     sizeOfLengthField,
                     lengthCpp99Type,
@@ -546,7 +546,10 @@ public class Cpp99Generator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-            "/* Generated class message */\n" +
+            "/* Generated class message */\n"
+        ));
+
+        sb.append(String.format(
             "#ifndef _%s_HPP_\n" +
             "#define _%s_HPP_\n\n" +
             "#include \"sbe/sbe.hpp\"\n\n",
@@ -853,7 +856,7 @@ public class Cpp99Generator implements CodeGenerator
             "private:\n" +
             "    char *buffer_;\n" +
             "    int offset_;\n" +
-            "    int position_;\n"
+            "    int position_;\n\n"
         ));
 
         sb.append(String.format(
@@ -882,12 +885,12 @@ public class Cpp99Generator implements CodeGenerator
             "    };\n\n" +
             "    char *buffer(void)\n" +
             "    {\n" +
-            "        return buffer_;" +
+            "        return buffer_;\n" +
             "    };\n\n" +
             "    MessageFlyweight *message(void)\n" +
             "    {\n" +
             "        return this;\n" +
-            "    };\n\n",
+            "    };\n",
             Integer.valueOf(blockLength)
         ));
 
@@ -987,7 +990,7 @@ public class Cpp99Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        %s_.reset(buffer_, offset_ + %d);\n" +
             indent + "        return %s_;\n" +
-            indent + "    }\n",
+            indent + "    };\n",
             bitsetName,
             propertyName,
             propertyName,
