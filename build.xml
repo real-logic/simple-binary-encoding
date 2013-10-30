@@ -5,9 +5,11 @@
     <property name="module.name" value="sbe"/>
     <property name="dir.main.src" location="main/java"/>
     <property name="dir.main.build" location="target/main/java/classes"/>
+	
     <property name="dir.test.src" location="test/java"/>
     <property name="dir.test.build" location="target/test/java/classes"/>
     <property name="dir.test.lib" location="test/lib"/>
+	
     <property name="dir.reports" location="target/reports"/>
 
     <property name="dir.reports.unit" location="target/reports/unit"/>
@@ -128,7 +130,7 @@
             <bottom><![CDATA[<i>Copyright &#169; 2013 Real Logic Ltd. All Rights Reserved.</i>]]></bottom>
         </javadoc>
     </target>
-
+        
     <target name="dist" depends="build, javadoc" description="Generate the distribution">
         <jar destfile="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar">
             <manifest>
@@ -143,7 +145,7 @@
             <fileset dir="${dir.main.src}"/>
         </jar>
     </target>
-
+	
     <target name="all" depends="clean, checkstyle, build, test, javadoc, dist"/>
 
     <!-- SBE Examples targets -->
@@ -253,4 +255,48 @@
             </exec>
         </sequential>
     </target>
+	
+	<!-- SBE Performance Tests -->
+	
+    <property name="dir.perf.src" location="perf/java"/>
+    <property name="dir.perf.build" location="target/perf/java/classes"/>
+    <property name="dir.perf.lib" location="perf/lib"/>
+    <property name="dir.perf.gen" location="target/perf/gen/java"/>
+    
+    <property name="perf.jmh.jar" value="perf/lib/jmh-core-1.0-SNAPSHOT.jar"/>
+    <property name="perf.args4j.jar" value="perf/lib/args4j-2.0.16.jar"/>
+
+    <path id="perf.classpath">
+        <pathelement location="${perf.jmh.jar}"/>       
+        <pathelement location="${perf.args4j.jar}"/>
+        <pathelement location="${dir.main.build}"/>
+        <pathelement location="${dir.examples.build}"/>
+    </path>
+
+    <target name="perf" depends="build, examples:gen">
+        <mkdir dir="${dir.perf.build}"/>
+        <mkdir dir="${dir.perf.gen}"/>
+    	
+        <javac srcdir="${dir.perf.src}" 
+               destdir="${dir.perf.build}" 
+               source="1.7" 
+               target="1.7"
+               classpathref="perf.classpath"
+               includeantruntime="false">
+            <compilerarg value="-s"/>
+            <compilerarg value="${dir.perf.gen}"/>
+        </javac>
+        
+        <jar destfile="${dir.dist}//${module.name}-microbenchmarks-${build.version}-${DSTAMP}.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.openjdk.jmh.Main"/>
+            </manifest>
+            <fileset dir="${dir.main.build}" includes="**/*"/>
+            <fileset dir="${dir.perf.build}" includes="**/*"/>
+            <fileset dir="${dir.examples.build}" includes="**/*"/>
+            <zipfileset src="${perf.jmh.jar}" includes="**/*"/>
+            <zipfileset src="${perf.args4j.jar}" includes="**/*"/>
+        </jar>
+    </target>
+	
 </project>
