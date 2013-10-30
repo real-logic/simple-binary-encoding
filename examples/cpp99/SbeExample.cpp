@@ -16,7 +16,7 @@
 #include <iostream>
 
 #include "uk_co_real_logic_sbe_examples/MessageHeader.hpp"
-// #include "uk_co_real_logic_sbe_examples/Car.hpp"
+#include "uk_co_real_logic_sbe_examples/Car.hpp"
 
 using namespace std;
 using namespace uk_co_real_logic_sbe_examples;
