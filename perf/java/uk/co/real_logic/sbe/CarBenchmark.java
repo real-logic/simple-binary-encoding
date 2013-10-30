@@ -45,9 +45,11 @@ public class CarBenchmark
         state.car.reset(state.buffer, 0);
         
         state.car.code(Model.A);
-        state.car.fuelFigures().mpg(35.6F);
-        state.car.fuelFigures().speed(100);       
         state.car.modelYear(2005);
+
+        final Car.FuelFigures fuelFigures = state.car.fuelFigures();
+        fuelFigures.mpg(35.6F);
+        fuelFigures.speed(100);
 
         final Car.PerformanceFigures performanceFigures = state.car.performanceFigures();
         performanceFigures.accelerationSize(10);
