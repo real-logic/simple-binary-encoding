@@ -31,8 +31,7 @@ public class CarBenchmark
     private static final byte[] AUDI = "AUDI".getBytes();
     private static final byte[] R8 = "R8".getBytes();
     private static final byte[] V8 = "V8".getBytes();
-    
-    
+
     @State(Scope.Thread)
     public static class MyState
     {
@@ -41,7 +40,7 @@ public class CarBenchmark
     }
 
     @GenerateMicroBenchmark
-    public Car testMethod(MyState state)
+    public Car testMethod(final MyState state)
     {
         state.car.reset(state.buffer, 0);
         
