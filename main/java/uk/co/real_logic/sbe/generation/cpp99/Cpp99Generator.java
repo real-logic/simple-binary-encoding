@@ -385,7 +385,7 @@ public class Cpp99Generator implements CodeGenerator
                     "        sbe_uint64_t sizeOfLengthField = %d;\n" +
                     "        sbe_uint64_t lengthPosition = position();\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
-                    "        sbe_uint64_t dataLength = *((%s *)(buffer_ + lengthPosition));\n" +
+                    "        sbe_uint64_t dataLength = %s(*((%s *)(buffer_ + lengthPosition)));\n" +
                     "        int bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
                     "        ::memcpy(dst + offset, buffer_ + position(), bytesToCopy);\n" +
                     "        position(position() + (sbe_uint64_t)dataLength);\n" +
@@ -393,6 +393,7 @@ public class Cpp99Generator implements CodeGenerator
                     "    };\n\n",
                     propertyName,
                     sizeOfLengthField,
+                    formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
                     lengthCpp99Type
                 ));
 
@@ -401,7 +402,7 @@ public class Cpp99Generator implements CodeGenerator
                     "    {\n" +
                     "        sbe_uint64_t sizeOfLengthField = %d;\n" +
                     "        sbe_uint64_t lengthPosition = position();\n" +
-                    "        *((%s *)(buffer_ + lengthPosition)) = (%s)length;\n" +
+                    "        *((%s *)(buffer_ + lengthPosition)) = %s((%s)length);\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
                     "        ::memcpy(buffer_ + position(), src + offset, length);\n" +
                     "        position(position() + (sbe_uint64_t)length);\n" +
@@ -410,6 +411,7 @@ public class Cpp99Generator implements CodeGenerator
                     propertyName,
                     sizeOfLengthField,
                     lengthCpp99Type,
+                    formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
                     lengthCpp99Type
                 ));
             }
@@ -483,9 +485,10 @@ public class Cpp99Generator implements CodeGenerator
                     "\n" +
                     "    bool %s(void) const\n" +
                     "    {\n" +
-                    "        return (*((%s *)(buffer_ + offset_)) & ((uint64_t)0x1 << %s)) ? true : false;\n" +
+                    "        return (%s(*((%s *)(buffer_ + offset_))) & ((uint64_t)0x1 << %s)) ? true : false;\n" +
                     "    };\n\n",
                     choiceName,
+                    formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
                     typeName,
                     choiceBitPosition
                 ));
@@ -493,12 +496,13 @@ public class Cpp99Generator implements CodeGenerator
                 sb.append(String.format(
                     "    %s &%s(const bool value)\n" +
                     "    {\n" +
-                    "        *((%s *)(buffer_ + offset_)) |= ((uint64_t)value << %s);\n" +
+                    "        *((%s *)(buffer_ + offset_)) |= %s((uint64_t)value << %s);\n" +
                     "        return *this;\n" +
                     "    };\n",
                     bitsetClassName,
                     choiceName,
                     typeName,
+                    formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
                     choiceBitPosition
                 ));
             }
@@ -680,10 +684,11 @@ public class Cpp99Generator implements CodeGenerator
             "\n" +
             indent + "    %s %s(void) const\n" +
             indent + "    {\n" +
-            indent + "        return *((%s *)(buffer_ + offset_ + %d));\n" +
+            indent + "        return %s(*((%s *)(buffer_ + offset_ + %d)));\n" +
             indent + "    };\n\n",
             cpp99TypeName,
             propertyName,
+            formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
             cpp99TypeName,
             offset
         ));
@@ -691,14 +696,15 @@ public class Cpp99Generator implements CodeGenerator
         sb.append(String.format(
             indent + "    %s &%s(const %s value)\n" +
             indent + "    {\n" +
-            indent + "        *((%s *)(buffer_ + offset_ + %d)) = value;\n" +
+            indent + "        *((%s *)(buffer_ + offset_ + %d)) = %s(value);\n" +
             indent + "        return *this;\n" +
             indent + "    };\n",
             formatClassName(containingClassName),
             propertyName,
             cpp99TypeName,
             cpp99TypeName,
-            offset
+            offset,
+            formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())
         ));
 
         return sb;
@@ -728,12 +734,13 @@ public class Cpp99Generator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw \"index out of range for %s\";\n" +
             indent + "        }\n\n" +
-            indent + "        return *((%s *)(buffer_ + offset_ + %d + (index * %d)));\n" +
+            indent + "        return %s(*((%s *)(buffer_ + offset_ + %d + (index * %d))));\n" +
             indent + "    };\n\n",
             cpp99TypeName,
             propertyName,
             Integer.valueOf(token.arrayLength()),
             propertyName,
+            formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
             cpp99TypeName,
             offset,
             Integer.valueOf(token.encoding().primitiveType().size())
@@ -746,7 +753,7 @@ public class Cpp99Generator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw \"index out of range for %s\";\n" +
             indent + "        }\n\n" +
-            indent + "        *((%s *)(buffer_ + offset_ + %d + (index * %d))) = value;\n" +
+            indent + "        *((%s *)(buffer_ + offset_ + %d + (index * %d))) = %s(value);\n" +
             indent + "    };\n\n",
             propertyName,
             cpp99TypeName,
@@ -754,7 +761,8 @@ public class Cpp99Generator implements CodeGenerator
             propertyName,
             cpp99TypeName,
             offset,
-            Integer.valueOf(token.encoding().primitiveType().size())
+            Integer.valueOf(token.encoding().primitiveType().size()),
+            formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())
         ));
 
         sb.append(String.format(
@@ -1009,11 +1017,12 @@ public class Cpp99Generator implements CodeGenerator
             "\n" +
             indent + "    %s::Value %s(void) const\n" +
             indent + "    {\n" +
-            indent + "        return %s::get(*((%s *)(buffer_ + offset_ + %d)));\n" +
+            indent + "        return %s::get(%s(*((%s *)(buffer_ + offset_ + %d))));\n" +
             indent + "    };\n\n",
             enumName,
             propertyName,
             enumName,
+            formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
             typeName,
             offset
         ));
@@ -1021,14 +1030,15 @@ public class Cpp99Generator implements CodeGenerator
         sb.append(String.format(
             indent + "    %s &%s(const %s::Value value)\n" +
             indent + "    {\n" +
-            indent + "        *((%s *)(buffer_ + offset_ + %d)) = value;\n" +
+            indent + "        *((%s *)(buffer_ + offset_ + %d)) = %s(value);\n" +
             indent + "        return *this;\n" +
             indent + "    };\n",
             formatClassName(containingClassName),
             propertyName,
             enumName,
             typeName,
-            offset
+            offset,
+            formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())
         ));
 
         return sb;

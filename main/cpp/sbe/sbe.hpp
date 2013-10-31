@@ -33,6 +33,28 @@ typedef double sbe_double_t;
 
 namespace sbe {
 
+/*
+ * Define some byte ordering macros
+ * These use gcc builtins. MSVC should be similar.
+ */
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    #define SBE_BIG_ENDIAN_ENCODE_16(v) __builtin_bswap16(v) 
+    #define SBE_BIG_ENDIAN_ENCODE_32(v) __builtin_bswap32(v) 
+    #define SBE_BIG_ENDIAN_ENCODE_64(v) __builtin_bswap64(v) 
+    #define SBE_LITTLE_ENDIAN_ENCODE_16(v) (v)
+    #define SBE_LITTLE_ENDIAN_ENCODE_32(v) (v)
+    #define SBE_LITTLE_ENDIAN_ENCODE_64(v) (v)
+#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+    #define SBE_LITTLE_ENDIAN_ENCODE_16(v) __builtin_bswap16(v)
+    #define SBE_LITTLE_ENDIAN_ENCODE_32(v) __builtin_bswap32(v)
+    #define SBE_LITTLE_ENDIAN_ENCODE_64(v) __builtin_bswap64(v)
+    #define SBE_BIG_ENDIAN_ENCODE_16(v) (v)
+    #define SBE_BIG_ENDIAN_ENCODE_32(v) (v)
+    #define SBE_BIG_ENDIAN_ENCODE_64(v) (v)
+#else
+    #error "Byte Ordering of platform not determined. Set __BYTE_ORDER__ manually."
+#endif
+
 /// Interface for FixedFlyweight
 class FixedFlyweight
 {
