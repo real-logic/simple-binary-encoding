@@ -26,10 +26,10 @@ void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset)
 {
     hdr.reset(buffer, offset);
 
-    hdr.blockLength(car.blockLength());
-    hdr.templateId(car.templateId());
-    hdr.version(0);
-    hdr.reserved(0);
+    hdr.blockLength(car.blockLength())
+        .templateId(car.templateId())
+        .version(0)
+        .reserved(0);
 }
 
 void decodeHdr(MessageHeader &hdr, char *buffer, int offset)
@@ -51,10 +51,10 @@ void encodeCar(Car &car, char *buffer, int offset)
 {
     car.reset(buffer, offset);
 
-    car.serialNumber(1234);
-    car.modelYear(2013);
-    car.available(BooleanType::TRUE);
-    car.code(Model::A);
+    car.serialNumber(1234)
+       .modelYear(2013)
+       .available(BooleanType::TRUE)
+       .code(Model::A);
 
     for (int i = 0, size = car.someNumbersLength(); i < size; i++)
     {
@@ -62,26 +62,26 @@ void encodeCar(Car &car, char *buffer, int offset)
     }
 
     car.putVehicleCode(VEHICLE_CODE, 0, sizeof(VEHICLE_CODE));
-    car.extras().cruiseControl(true).sportsPack(true).sunRoof(false);
+    car.extras()
+       .cruiseControl(true)
+       .sportsPack(true)
+       .sunRoof(false);
 
-    Engine &engine = car.engine();
-    engine.capacity(2000);
-    engine.numCylinders((short)4);
-    engine.putManufacturerCode(MANUFACTURER_CODE, 0, sizeof(MANUFACTURER_CODE));
+    car.engine()
+       .capacity(2000)
+       .numCylinders((short)4)
+       .putManufacturerCode(MANUFACTURER_CODE, 0, sizeof(MANUFACTURER_CODE));
 
     Car::FuelFigures &fuelFigures = car.fuelFiguresSize(3);
 
     fuelFigures.next();
-    fuelFigures.speed(30);
-    fuelFigures.mpg(35.9f);
+    fuelFigures.speed(30).mpg(35.9f);
 
     fuelFigures.next();
-    fuelFigures.speed(55);
-    fuelFigures.mpg(49.0f);
+    fuelFigures.speed(55).mpg(49.0f);
 
     fuelFigures.next();
-    fuelFigures.speed(75);
-    fuelFigures.mpg(40.0f);
+    fuelFigures.speed(75).mpg(40.0f);
 
     Car::PerformanceFigures &performanceFigures = car.performanceFiguresSize(2);
 
@@ -91,12 +91,10 @@ void encodeCar(Car &car, char *buffer, int offset)
     Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.accelerationSize(2);
 
     acceleration.next();
-    acceleration.mph(60);
-    acceleration.seconds(7.5f);
+    acceleration.mph(60).seconds(7.5f);
 
     acceleration.next();
-    acceleration.mph(100);
-    acceleration.seconds(12.2f);
+    acceleration.mph(100).seconds(12.2f);
 
     performanceFigures.next();
     performanceFigures.octaneRating((short)99);
@@ -104,12 +102,10 @@ void encodeCar(Car &car, char *buffer, int offset)
     acceleration = performanceFigures.accelerationSize(2);
 
     acceleration.next();
-    acceleration.mph(60);
-    acceleration.seconds(7.1f);
+    acceleration.mph(60).seconds(7.1f);
 
     acceleration.next();
-    acceleration.mph(100);
-    acceleration.seconds(11.8f);
+    acceleration.mph(100).seconds(11.8f);
 
     car.putMake(MAKE, 0, strlen(MAKE));
     car.putModel(MODEL, 0, strlen(MODEL));

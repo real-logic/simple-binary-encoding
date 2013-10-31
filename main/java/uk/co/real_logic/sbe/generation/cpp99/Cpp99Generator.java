@@ -61,7 +61,7 @@ public class Cpp99Generator implements CodeGenerator
             out.append(generateFixedFlyweightCode(ir.header().get(0).size()));
 
             final List<Token> tokens = ir.header();
-            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_VISITOR, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("};\n}\n#endif\n");
         }
@@ -113,7 +113,7 @@ public class Cpp99Generator implements CodeGenerator
 
                 final List<Token> rootFields = new ArrayList<>();
                 offset = collectRootFields(messageBody, offset, rootFields);
-                out.append(generateFields(rootFields, BASE_INDENT));
+                out.append(generateFields(className, rootFields, BASE_INDENT));
 
                 final List<Token> groups = new ArrayList<>();
                 offset = collectGroups(messageBody, offset, groups);
@@ -175,7 +175,7 @@ public class Cpp99Generator implements CodeGenerator
 
                 final List<Token> rootFields = new ArrayList<>();
                 index = collectRootFields(tokens, ++index, rootFields);
-                sb.append(generateFields(rootFields, indent + INDENT));
+                sb.append(generateFields(groupName, rootFields, indent + INDENT));
 
                 if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
                 {
@@ -440,7 +440,7 @@ public class Cpp99Generator implements CodeGenerator
             out.append(generateClassDeclaration(compositeName, "FixedFlyweight"));
             out.append(generateFixedFlyweightCode(tokens.get(0).size()));
 
-            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("};\n}\n#endif\n");
         }
@@ -594,7 +594,9 @@ public class Cpp99Generator implements CodeGenerator
         return "class " + name + "\n{\npublic:\n\n";
     }
 
-    private CharSequence generatePrimitivePropertyEncodings(final List<Token> tokens, final String indent)
+    private CharSequence generatePrimitivePropertyEncodings(final String containingClassName,
+                                                            final List<Token> tokens,
+                                                            final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -602,14 +604,17 @@ public class Cpp99Generator implements CodeGenerator
         {
             if (token.signal() == Signal.ENCODING)
             {
-                sb.append(generatePrimitiveProperty(token.name(), token, indent));
+                sb.append(generatePrimitiveProperty(containingClassName, token.name(), token, indent));
             }
         }
 
        return sb;
     }
 
-    private CharSequence generatePrimitiveProperty(final String propertyName, final Token token, final String indent)
+    private CharSequence generatePrimitiveProperty(final String containingClassName,
+                                                   final String propertyName,
+                                                   final Token token,
+                                                   final String indent)
     {
         if (Encoding.Presence.CONSTANT == token.encoding().presence())
         {
@@ -617,17 +622,20 @@ public class Cpp99Generator implements CodeGenerator
         }
         else
         {
-            return generatePrimitivePropertyMethods(propertyName, token, indent);
+            return generatePrimitivePropertyMethods(containingClassName, propertyName, token, indent);
         }
     }
 
-    private CharSequence generatePrimitivePropertyMethods(final String propertyName, final Token token, final String indent)
+    private CharSequence generatePrimitivePropertyMethods(final String containingClassName,
+                                                          final String propertyName,
+                                                          final Token token,
+                                                          final String indent)
     {
         final int arrayLength = token.arrayLength();
 
         if (arrayLength == 1)
         {
-            return generateSingleValueProperty(propertyName, token, indent);
+            return generateSingleValueProperty(containingClassName, propertyName, token, indent);
         }
         else if (arrayLength > 1)
         {
@@ -637,7 +645,10 @@ public class Cpp99Generator implements CodeGenerator
         return "";
     }
 
-    private CharSequence generateSingleValueProperty(final String propertyName, final Token token, final String indent)
+    private CharSequence generateSingleValueProperty(final String containingClassName,
+                                                     final String propertyName,
+                                                     final Token token,
+                                                     final String indent)
     {
         final String cpp99TypeName = cpp99TypeName(token.encoding().primitiveType());
         final Integer offset = Integer.valueOf(token.offset());
@@ -657,10 +668,12 @@ public class Cpp99Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    void %s(const %s value)\n" +
+            indent + "    %s &%s(const %s value)\n" +
             indent + "    {\n" +
             indent + "        *((%s *)(buffer_ + offset_ + %d)) = value;\n" +
+            indent + "        return *this;\n" +
             indent + "    };\n",
+            formatClassName(containingClassName),
             propertyName,
             cpp99TypeName,
             cpp99TypeName,
@@ -912,7 +925,9 @@ public class Cpp99Generator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFields(final List<Token> tokens, final String indent)
+    private CharSequence generateFields(final String containingClassName,
+                                        final List<Token> tokens,
+                                        final String indent)
     {
         StringBuilder sb = new StringBuilder();
 
@@ -927,11 +942,11 @@ public class Cpp99Generator implements CodeGenerator
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
-                        sb.append(generatePrimitiveProperty(propertyName, encodingToken, indent));
+                        sb.append(generatePrimitiveProperty(containingClassName, propertyName, encodingToken, indent));
                         break;
 
                     case BEGIN_ENUM:
-                        sb.append(generateEnumProperty(propertyName, encodingToken, indent));
+                        sb.append(generateEnumProperty(containingClassName, propertyName, encodingToken, indent));
                         break;
 
                     case BEGIN_SET:
@@ -948,7 +963,10 @@ public class Cpp99Generator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateEnumProperty(final String propertyName, final Token token, final String indent)
+    private CharSequence generateEnumProperty(final String containingClassName,
+                                              final String propertyName,
+                                              final Token token,
+                                              final String indent)
     {
         final String enumName = token.name();
         final String typeName = cpp99TypeName(token.encoding().primitiveType());
@@ -970,10 +988,12 @@ public class Cpp99Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    void %s(const %s::Value value)\n" +
+            indent + "    %s &%s(const %s::Value value)\n" +
             indent + "    {\n" +
             indent + "        *((%s *)(buffer_ + offset_ + %d)) = value;\n" +
+            indent + "        return *this;\n" +
             indent + "    };\n",
+            formatClassName(containingClassName),
             propertyName,
             enumName,
             typeName,
