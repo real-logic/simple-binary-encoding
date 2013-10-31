@@ -169,7 +169,8 @@ public class Cpp99Generator implements CodeGenerator
         {
             if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
             {
-                final String groupName = tokens.get(index).name();
+                final Token groupToken = tokens.get(index);
+                final String groupName = groupToken.name();
 
                 generateGroupClassHeader(sb, groupName, tokens, index, indent + INDENT);
 
@@ -183,7 +184,7 @@ public class Cpp99Generator implements CodeGenerator
                 }
 
                 sb.append(indent).append("    };\n");
-                sb.append(generateGroupProperty(groupName, indent));
+                sb.append(generateGroupProperty(groupName, groupToken, indent));
             }
         }
 
@@ -286,7 +287,9 @@ public class Cpp99Generator implements CodeGenerator
         );
     }
 
-    private CharSequence generateGroupProperty(final String groupName, final String indent)
+    private CharSequence generateGroupProperty(final String groupName,
+                                               final Token token,
+                                               final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -304,6 +307,16 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
+            indent + "    int %sId(void) const\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    };\n\n",
+            groupName,
+            token.schemaId()
+        ));
+
+        sb.append(String.format(
+            "\n" +
             indent + "    %s &%s(void)\n" +
             indent + "    {\n" +
             indent + "        %s_.resetForDecode(message());\n" +
@@ -315,14 +328,13 @@ public class Cpp99Generator implements CodeGenerator
             propertyName
         ));
 
-
         sb.append(String.format(
             "\n" +
-                indent + "    %s &%sSize(const int size)\n" +
-                indent + "    {\n" +
-                indent + "        %s_.resetForEncode(message(), size);\n" +
-                indent + "        return %s_;\n" +
-                indent + "    };\n",
+            indent + "    %s &%sSize(const int size)\n" +
+            indent + "    {\n" +
+            indent + "        %s_.resetForEncode(message(), size);\n" +
+            indent + "        return %s_;\n" +
+            indent + "    };\n",
             className,
             propertyName,
             propertyName,
@@ -352,6 +364,15 @@ public class Cpp99Generator implements CodeGenerator
                     "    };\n\n",
                     formatPropertyName(propertyName),
                     characterEncoding
+                ));
+
+                sb.append(String.format(
+                    "    int %sId(void) const\n" +
+                    "    {\n" +
+                    "        return %d;\n" +
+                    "    };\n\n",
+                    formatPropertyName(propertyName),
+                    token.schemaId()
                 ));
 
                 final Token lengthToken = tokens.get(i + 2);
@@ -938,6 +959,16 @@ public class Cpp99Generator implements CodeGenerator
             {
                 final Token encodingToken = tokens.get(i + 1);
                 final String propertyName = signalToken.name();
+
+                sb.append(String.format(
+                    "\n" +
+                    indent + "    int %sId(void) const\n" +
+                    indent + "    {\n" +
+                    indent + "        return %d;\n" +
+                    indent + "    };\n\n",
+                    propertyName,
+                    signalToken.schemaId()
+                ));
 
                 switch (encodingToken.signal())
                 {
