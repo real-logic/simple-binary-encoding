@@ -1011,12 +1011,12 @@ public class Cpp99Generator implements CodeGenerator
         final Integer offset = Integer.valueOf(token.offset());
 
         sb.append(String.format(
-                "\n" +
-                        "private:\n" +
-                        indent + "    %s %s_;\n\n" +
-                        "public:\n",
-                bitsetName,
-                propertyName
+            "\n" +
+            indent + "private:\n" +
+            indent + "    %s %s_;\n\n" +
+            indent + "public:\n",
+            bitsetName,
+            propertyName
         ));
 
         sb.append(String.format(
