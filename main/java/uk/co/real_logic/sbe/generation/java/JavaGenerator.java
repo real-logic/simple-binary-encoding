@@ -62,7 +62,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateFixedFlyweightCode());
 
             final List<Token> tokens = ir.header();
-            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_VISITOR, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");
         }
@@ -109,7 +109,7 @@ public class JavaGenerator implements CodeGenerator
 
                 final List<Token> rootFields = new ArrayList<>();
                 offset = collectRootFields(messageBody, offset, rootFields);
-                out.append(generateFields(rootFields, BASE_INDENT));
+                out.append(generateFields(className, rootFields, BASE_INDENT));
 
                 final List<Token> groups = new ArrayList<>();
                 offset = collectGroups(messageBody, offset, groups);
@@ -172,7 +172,7 @@ public class JavaGenerator implements CodeGenerator
 
                 final List<Token> rootFields = new ArrayList<>();
                 index = collectRootFields(tokens, ++index, rootFields);
-                sb.append(generateFields(rootFields, indent + INDENT));
+                sb.append(generateFields(groupName, rootFields, indent + INDENT));
 
                 if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
                 {
@@ -427,7 +427,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateClassDeclaration(compositeName, FixedFlyweight.class.getSimpleName()));
             out.append(generateFixedFlyweightCode());
 
-            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");
         }
@@ -568,7 +568,9 @@ public class JavaGenerator implements CodeGenerator
         return "public enum " + name + "\n{\n";
     }
 
-    private CharSequence generatePrimitivePropertyEncodings(final List<Token> tokens, final String indent)
+    private CharSequence generatePrimitivePropertyEncodings(final String containingClassName,
+                                                            final List<Token> tokens,
+                                                            final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -576,14 +578,17 @@ public class JavaGenerator implements CodeGenerator
         {
             if (token.signal() == Signal.ENCODING)
             {
-                sb.append(generatePrimitiveProperty(token.name(), token, indent));
+                sb.append(generatePrimitiveProperty(containingClassName, token.name(), token, indent));
             }
         }
 
        return sb;
     }
 
-    private CharSequence generatePrimitiveProperty(final String propertyName, final Token token, final String indent)
+    private CharSequence generatePrimitiveProperty(final String containingClassName,
+                                                   final String propertyName,
+                                                   final Token token,
+                                                   final String indent)
     {
         if (Encoding.Presence.CONSTANT == token.encoding().presence())
         {
@@ -591,17 +596,20 @@ public class JavaGenerator implements CodeGenerator
         }
         else
         {
-            return generatePrimitivePropertyMethods(propertyName, token, indent);
+            return generatePrimitivePropertyMethods(containingClassName, propertyName, token, indent);
         }
     }
 
-    private CharSequence generatePrimitivePropertyMethods(final String propertyName, final Token token, final String indent)
+    private CharSequence generatePrimitivePropertyMethods(final String containingClassName,
+                                                          final String propertyName,
+                                                          final Token token,
+                                                          final String indent)
     {
         final int arrayLength = token.arrayLength();
 
         if (arrayLength == 1)
         {
-            return generateSingleValueProperty(propertyName, token, indent);
+            return generateSingleValueProperty(containingClassName, propertyName, token, indent);
         }
         else if (arrayLength > 1)
         {
@@ -611,7 +619,10 @@ public class JavaGenerator implements CodeGenerator
         return "";
     }
 
-    private CharSequence generateSingleValueProperty(final String propertyName, final Token token, final String indent)
+    private CharSequence generateSingleValueProperty(final String containingClassName,
+                                                     final String propertyName,
+                                                     final Token token,
+                                                     final String indent)
     {
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
         final String typePrefix = token.encoding().primitiveType().primitiveName();
@@ -635,10 +646,12 @@ public class JavaGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public void %s(final %s value)\n" +
+            indent + "    public %s %s(final %s value)\n" +
             indent + "    {\n" +
             indent + "        CodecUtil.%sPut(buffer, offset + %d, value%s);\n" +
+            indent + "        return this;\n" +
             indent + "    }\n",
+            formatClassName(containingClassName),
             propertyName,
             javaTypeName,
             typePrefix,
@@ -863,7 +876,7 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateFields(final List<Token> tokens, final String indent)
+    private CharSequence generateFields(final String containingClassName, final List<Token> tokens, final String indent)
     {
         StringBuilder sb = new StringBuilder();
 
@@ -878,11 +891,11 @@ public class JavaGenerator implements CodeGenerator
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
-                        sb.append(generatePrimitiveProperty(propertyName, encodingToken, indent));
+                        sb.append(generatePrimitiveProperty(containingClassName, propertyName, encodingToken, indent));
                         break;
 
                     case BEGIN_ENUM:
-                        sb.append(generateEnumProperty(propertyName, encodingToken, indent));
+                        sb.append(generateEnumProperty(containingClassName, propertyName, encodingToken, indent));
                         break;
 
                     case BEGIN_SET:
@@ -899,7 +912,10 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateEnumProperty(final String propertyName, final Token token, final String indent)
+    private CharSequence generateEnumProperty(final String containingClassName,
+                                              final String propertyName,
+                                              final Token token,
+                                              final String indent)
     {
         final String enumName = token.name();
         final String typePrefix = token.encoding().primitiveType().primitiveName();
@@ -924,10 +940,12 @@ public class JavaGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public void %s(final %s value)\n" +
+            indent + "    public %s %s(final %s value)\n" +
             indent + "    {\n" +
             indent + "        CodecUtil.%sPut(buffer, offset + %d, value.value()%s);\n" +
+            indent + "        return this;\n" +
             indent + "    }\n",
+            formatClassName(containingClassName),
             propertyName,
             enumName,
             typePrefix,

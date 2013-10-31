@@ -56,10 +56,10 @@ public class SbeExample
     {
         car.reset(directBuffer, 0);
 
-        car.serialNumber(1234);
-        car.modelYear(2013);
-        car.available(BooleanType.TRUE);
-        car.code(Model.A);
+        car.serialNumber(1234)
+           .modelYear(2013)
+           .available(BooleanType.TRUE)
+           .code(Model.A);
 
         for (int i = 0, size = car.someNumbersLength(); i < size; i++)
         {
@@ -67,26 +67,25 @@ public class SbeExample
         }
 
         car.putVehicleCode(VEHICLE_CODE, 0, VEHICLE_CODE.length);
-        car.extras().cruiseControl(true).sportsPack(true).sunRoof(false);
 
-        final Engine engine = car.engine();
-        engine.capacity(2000);
-        engine.numCylinders((short)4);
-        engine.putManufacturerCode(MANUFACTURER_CODE, 0, MANUFACTURER_CODE.length);
+        car.extras().cruiseControl(true)
+                    .sportsPack(true)
+                    .sunRoof(false);
+
+        car.engine().capacity(2000)
+                    .numCylinders((short)4)
+                    .putManufacturerCode(MANUFACTURER_CODE, 0, MANUFACTURER_CODE.length);
 
         final Car.FuelFigures fuelFigures = car.fuelFiguresSize(3);
 
         fuelFigures.next();
-        fuelFigures.speed(30);
-        fuelFigures.mpg(35.9f);
+        fuelFigures.speed(30).mpg(35.9f);
 
         fuelFigures.next();
-        fuelFigures.speed(55);
-        fuelFigures.mpg(49.0f);
+        fuelFigures.speed(55).mpg(49.0f);
 
         fuelFigures.next();
-        fuelFigures.speed(75);
-        fuelFigures.mpg(40.0f);
+        fuelFigures.speed(75).mpg(40.0f);
 
         final Car.PerformanceFigures performanceFigures = car.performanceFiguresSize(2);
 
@@ -96,12 +95,10 @@ public class SbeExample
         Car.PerformanceFigures.Acceleration acceleration = performanceFigures.accelerationSize(2);
 
         acceleration.next();
-        acceleration.mph(60);
-        acceleration.seconds(7.5f);
+        acceleration.mph(60).seconds(7.5f);
 
         acceleration.next();
-        acceleration.mph(100);
-        acceleration.seconds(12.2f);
+        acceleration.mph(100).seconds(12.2f);
 
         performanceFigures.next();
         performanceFigures.octaneRating((short)99);
@@ -109,12 +106,10 @@ public class SbeExample
         acceleration = performanceFigures.accelerationSize(2);
 
         acceleration.next();
-        acceleration.mph(60);
-        acceleration.seconds(7.1f);
+        acceleration.mph(60).seconds(7.1f);
 
         acceleration.next();
-        acceleration.mph(100);
-        acceleration.seconds(11.8f);
+        acceleration.mph(100).seconds(11.8f);
 
         car.putMake(MAKE, 0, MAKE.length);
         car.putModel(MODEL, 0, MODEL.length);
