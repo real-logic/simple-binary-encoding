@@ -893,7 +893,7 @@ public class Cpp99Generator implements CodeGenerator
             "    {\n" +
             "        return position() - offset_;\n" +
             "    };\n\n" +
-            "    int schemaId(void) const\n" +
+            "    int templateId(void) const\n" +
             "    {\n" +
             "        return %d;\n" +
             "    };\n\n" +

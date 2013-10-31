@@ -27,7 +27,7 @@ void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset)
     hdr.reset(buffer, offset);
 
     hdr.blockLength(car.blockLength());
-    hdr.templateId(car.schemaId());
+    hdr.templateId(car.templateId());
     hdr.version(0);
     hdr.reserved(0);
 }

@@ -52,6 +52,7 @@ public:
     virtual void position(const uint64_t position) = 0;
     virtual char *buffer(void) = 0;
     virtual int size(void) const = 0;
+    virtual int templateId(void) const = 0;
 };
 
 /// Interface for GroupFlyweight
