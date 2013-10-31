@@ -861,7 +861,7 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
-            "        position(blockLength);\n" +
+            "        position(offset + blockLength);\n" +
             "    }\n\n" +
             "    public int position()\n" +
             "    {\n" +
