@@ -52,7 +52,7 @@ namespace sbe {
     #define SBE_BIG_ENDIAN_ENCODE_32(v) (v)
     #define SBE_BIG_ENDIAN_ENCODE_64(v) (v)
 #else
-    #error "Byte Ordering of platform not determined. Set __BYTE_ORDER__ manually."
+    #error "Byte Ordering of platform not determined. Set __BYTE_ORDER__ manually before including this file."
 #endif
 
 /// Interface for FixedFlyweight
