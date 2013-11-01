@@ -110,6 +110,23 @@ int Listener::subscribe(OnNext *onNext,
     return result;
 }
 
+inline void Listener::updateBufferOffsetFromIr(const Ir *ir)
+{
+    int newOffset = relativeOffsetAnchor_;
+
+    // constants don't move the offset as they are only held in the IR and variable lengths can't be used either
+    if (ir->constLen() == 0 && ir->offset() != 0xFFFFFFFF)
+    {
+        newOffset += ir->offset();
+    }
+
+    //cout << "updating offset " << relativeOffsetAnchor_ << " + " << ir->offset() << " = " << newOffset << " or " << bufferOffset_;
+
+    // take the max of the bufferOffset_ and the newOffset
+    bufferOffset_ = (bufferOffset_ > newOffset) ? bufferOffset_ : newOffset;
+    //cout << " = bufferOffset = " << bufferOffset_ << endl;
+}
+
 // protected
 int Listener::process(void)
 {
@@ -161,6 +178,7 @@ int Listener::process(void)
 
         case Ir::BEGIN_ENUM:
             {
+                updateBufferOffsetFromIr(ir);
                 const char *valuePosition = buffer_ + bufferOffset_;
 
                 switch (ir->primitiveType())
@@ -189,6 +207,7 @@ int Listener::process(void)
 
         case Ir::BEGIN_SET:
             {
+                updateBufferOffsetFromIr(ir);
                 const char *valuePosition = buffer_ + bufferOffset_;
 
                 switch (ir->primitiveType())
@@ -240,13 +259,7 @@ int Listener::process(void)
 
         case Ir::ENCODING:
             {
-                // TODO: fix for offset values in IR
-                // TODO: bump buffOffset_ for offset value in IR. Offset in IR is relative to saved relativeOffsetAnchor_
-                //  Message, Group, Composite are relativeOffsetAnchor_ points that must be saved when encountered.
-                //  Encoding, Enum, Set, Group must honor offset and adjust
-                //  Group moves bufferOffset_ to start of group
-                //  Group then also updates relativeOffsetAnchor_ value
-
+                updateBufferOffsetFromIr(ir);
                 const char *valuePosition = buffer_ + bufferOffset_;
                 const char *constVal = ir->constVal();
                 int *calculatedOffset = &bufferOffset_;
@@ -260,7 +273,7 @@ int Listener::process(void)
                 }
 
                 // if this is an array or variable size field (0xFFFFFFFF size), then handle it
-                if (ir->size() != Ir::size(ir->primitiveType()))
+                if (ir->size() > Ir::size(ir->primitiveType()))
                 {
                     *calculatedOffset += processEncoding(ir, valuePosition, ir->size());
                     break;
@@ -381,6 +394,8 @@ void Listener::processEndComposite(void)
             .event(Group::START);
         onNext_->onNext(cachedGroup_);
         cachedGroup_.reset();
+
+        relativeOffsetAnchor_ = bufferOffset_;
     }
 }
 
@@ -516,7 +531,7 @@ void Listener::processBeginGroup(const Ir *ir)
 {
     stack_.push(Frame(ir->name().c_str()));
     stack_.top().state_ = Frame::BEGAN_GROUP;
-    // TODO: before saving anchor, update based on desired offset of group (this is only encountered 1st time)
+    updateBufferOffsetFromIr(ir);
     relativeOffsetAnchor_ = bufferOffset_;
 }
 

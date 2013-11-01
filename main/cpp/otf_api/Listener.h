@@ -100,6 +100,8 @@ private:
     Frame messageFrame_;
     std::stack<Frame, std::vector<Frame> > stack_;
 
+    void updateBufferOffsetFromIr(const Ir *ir);
+
 protected:
     /*
      * These deliver methods are protected and normally not used by applications, but useful for testing purposes
@@ -120,7 +122,7 @@ protected:
     };
 
     /*
-     * Called once callbacks are setup and processing of the buffer should begin. This could be overriden by 
+     * Called once callbacks are setup and processing of the buffer should begin. This could be overridden by
      * a subclass for testing purposes.
      */
     virtual int process(void);
