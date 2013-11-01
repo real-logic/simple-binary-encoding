@@ -368,6 +368,7 @@ void Listener::processBeginComposite(const Ir *ir)
         stack_.top().state_ = Frame::DIMENSIONS;
     }
 
+    updateBufferOffsetFromIr(ir);
     relativeOffsetAnchor_ = bufferOffset_;
 }
 
@@ -396,6 +397,11 @@ void Listener::processEndComposite(void)
         cachedGroup_.reset();
 
         relativeOffsetAnchor_ = bufferOffset_;
+    }
+    else
+    {
+        // total hack! when we go in and out of scope of a composite, the offsets shift.
+        relativeOffsetAnchor_ -= ir_->offset();
     }
 }
 

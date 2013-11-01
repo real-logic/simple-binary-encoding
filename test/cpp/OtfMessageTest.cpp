@@ -619,9 +619,132 @@ TEST_F(OtfMessageConstantsTest, shouldHandleAllTypes)
     EXPECT_EQ(numCompletedsSeen_, 1);
 }
 
+class OtfMessageOffsetTest : public OtfMessageTest, public OtfMessageTestCBs
+{
+protected:
+    std::string messageStr;
+    std::string setFieldStr;
+    std::string enumFieldStr;
+    std::string compositeFieldStr;
+    std::string compositeStr;
+    std::string uint32FieldStr;
+
+    virtual void constructMessageIr(Ir &ir)
+    {
+        Ir::TokenByteOrder byteOrder = Ir::SBE_LITTLE_ENDIAN;
+        messageStr = std::string("MessageWithOffsets");
+        setFieldStr = std::string("SetField");
+        enumFieldStr = std::string("EnumField");
+        compositeFieldStr = std::string("CompositeField");
+        compositeStr = std::string("CompositeOffsets");
+        uint32FieldStr = std::string("UInt32Field");
+
+        ir.addToken(0, 68, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
+
+        ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, setFieldStr);
+        ir.addToken(0, 1, Ir::BEGIN_SET, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8"));
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT8, 0, std::string("uint8Choice0"));
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT8, 1, std::string("uint8Choice1"));
+        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, 0xFFFF, std::string("uint8"));
+        ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, setFieldStr);
+
+        ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 1, enumFieldStr);
+        ir.addToken(2, 1, Ir::BEGIN_ENUM, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8"));
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, 0x09, std::string("uint8Value1"));
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, 0x10, std::string("uint8Value2"));
+        ir.addToken(0, 0, Ir::END_ENUM, byteOrder, Ir::NONE, 0xFFFF, std::string("uint8"));
+        ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 1, enumFieldStr);
+
+        ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 2, compositeFieldStr);
+        ir.addToken(8, 12, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
+        ir.addToken(0, 8, Ir::ENCODING, byteOrder, Ir::UINT64, 0xFFFF, std::string("uint64"));
+        ir.addToken(8, 4, Ir::ENCODING, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"));
+        ir.addToken(8, 12, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
+        ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 2, compositeFieldStr);
+
+        ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 3, uint32FieldStr);
+        ir.addToken(64, 4, Ir::ENCODING, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"));
+        ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 3, uint32FieldStr);
+
+        ir.addToken(0, 68, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
+    };
+
+    virtual void constructMessage()
+    {
+        *((uint8_t *)(buffer_ + bufferLen_)) = FIELD_SET_UINT8_VALUE;
+        *((uint8_t *)(buffer_ + bufferLen_ + 2)) = FIELD_ENUM_UINT8_VALUE;
+        *((uint64_t *)(buffer_ + bufferLen_ + 8)) = FIELD_UINT64_VALUE;
+        *((uint32_t *)(buffer_ + bufferLen_ + 16)) = FIELD_UINT32_VALUE;
+        *((uint32_t *)(buffer_ + bufferLen_ + 64)) = FIELD_UINT32_VALUE;
+        bufferLen_ += 68;
+    };
+
+    virtual int onNext(const Field &f)
+    {
+        OtfMessageTestCBs::onNext(f);
+
+        if (numFieldsSeen_ == 2)
+        {
+            EXPECT_EQ(f.type(), Field::SET);
+            EXPECT_EQ(f.numEncodings(), 1);
+            EXPECT_EQ(f.fieldName(), setFieldStr);
+            EXPECT_EQ(f.primitiveType(), Ir::UINT8);
+            EXPECT_EQ(f.getUInt(), FIELD_SET_UINT8_VALUE);
+            EXPECT_EQ(f.choices().size(), 1);
+            for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
+            {
+                EXPECT_TRUE(*it == "uint8Choice0");
+            }
+        }
+        else if (numFieldsSeen_ == 3)
+        {
+            EXPECT_EQ(f.type(), Field::ENUM);
+            EXPECT_EQ(f.numEncodings(), 1);
+            EXPECT_EQ(f.fieldName(), enumFieldStr);
+            EXPECT_EQ(f.primitiveType(), Ir::UINT8);
+            EXPECT_EQ(f.getUInt(), FIELD_ENUM_UINT8_VALUE);
+            EXPECT_EQ(f.validValue(), "uint8Value2");
+        }
+        else if (numFieldsSeen_ == 4)
+        {
+            EXPECT_EQ(f.type(), Field::COMPOSITE);
+            EXPECT_EQ(f.numEncodings(), 2);
+            EXPECT_EQ(f.fieldName(), compositeFieldStr);
+            EXPECT_EQ(f.compositeName(), compositeStr);
+            EXPECT_EQ(f.primitiveType(0), Ir::UINT64);
+            EXPECT_EQ(f.primitiveType(1), Ir::UINT32);
+            EXPECT_EQ(f.getUInt(0), FIELD_UINT64_VALUE);
+            EXPECT_EQ(f.getUInt(1), FIELD_UINT32_VALUE);
+        }
+        else if (numFieldsSeen_ == 5)
+        {
+            EXPECT_EQ(f.type(), Field::ENCODING);
+            EXPECT_EQ(f.numEncodings(), 1);
+            EXPECT_EQ(f.fieldName(), uint32FieldStr);
+            EXPECT_EQ(f.primitiveType(), Ir::UINT32);
+            EXPECT_EQ(f.getUInt(), FIELD_UINT32_VALUE);
+        }
+        return 0;
+    };
+
+    virtual int onError(const Error &e)
+    {
+        return OtfMessageTestCBs::onError(e);
+    };
+};
+
+TEST_F(OtfMessageOffsetTest, shouldHandleOffsets)
+{
+    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+        .resetForDecode(buffer_, bufferLen_)
+        .subscribe(this, this, this);
+    EXPECT_EQ(numFieldsSeen_, 5);
+    EXPECT_EQ(numErrorsSeen_, 0);
+    EXPECT_EQ(numCompletedsSeen_, 1);
+}
+
 /*
  * TODO: test constants for enum and set
- * TODO: test offset values on fields
  * TODO: byte order
  * TODO: test reuse of listener
  * TODO: MassQuote
