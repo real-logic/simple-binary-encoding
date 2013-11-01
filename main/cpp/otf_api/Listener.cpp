@@ -389,9 +389,9 @@ void Listener::processEndComposite(void)
         //cout << "save IR position " << stack_.top().irPosition_ << endl;
 
         cachedGroup_.name(stack_.top().scopeName_)
-            .iteration(0)
-            .numInGroup(stack_.top().numInGroup_)
-            .event(Group::START);
+                    .iteration(0)
+                    .numInGroup(stack_.top().numInGroup_)
+                    .event(Group::START);
         onNext_->onNext(cachedGroup_);
         cachedGroup_.reset();
 
@@ -402,8 +402,8 @@ void Listener::processEndComposite(void)
 void Listener::processBeginField(const Ir *ir)
 {
     cachedField_.fieldName(ir->name())
-        .schemaId(ir->schemaId())
-        .type(Field::ENCODING);
+                .schemaId(ir->schemaId())
+                .type(Field::ENCODING);
 }
 
 void Listener::processEndField(void)
@@ -415,14 +415,14 @@ void Listener::processEndField(void)
 uint64_t Listener::processBeginEnum(const Ir *ir, const char value)
 {
     cachedField_.type(Field::ENUM)
-        .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value);
+                .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value);
     return ir->size();
 }
 
 uint64_t Listener::processBeginEnum(const Ir *ir, uint8_t value)
 {
     cachedField_.type(Field::ENUM)
-        .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value);
+                .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value);
     return ir->size();
 }
 
@@ -443,7 +443,7 @@ void Listener::processEndEnum(void)
 uint64_t Listener::processBeginSet(const Ir *ir, const uint64_t value)
 {
     cachedField_.type(Field::SET)
-        .addEncoding(ir->name(), ir->primitiveType(), value);
+                .addEncoding(ir->name(), ir->primitiveType(), value);
     return ir->size();
 }
 
@@ -463,8 +463,8 @@ void Listener::processEndSet(void)
 void Listener::processBeginVarData(const Ir *ir)
 {
     cachedField_.fieldName(ir->name())
-        .schemaId(ir->schemaId())
-        .type(Field::VAR_DATA);
+                .schemaId(ir->schemaId())
+                .type(Field::VAR_DATA);
 }
 
 void Listener::processEndVarData(void)
@@ -541,9 +541,9 @@ void Listener::processEndGroup(void)
 
     //cout << "END_GROUP " << stack_.top().scopeName_ << endl;
     cachedGroup_.name(stack_.top().scopeName_)
-        .iteration(stack_.top().iteration_)
-        .numInGroup(stack_.top().numInGroup_)
-        .event(Group::END);
+                .iteration(stack_.top().iteration_)
+                .numInGroup(stack_.top().numInGroup_)
+                .event(Group::END);
     onNext_->onNext(cachedGroup_);
     cachedGroup_.reset();
 
@@ -553,9 +553,9 @@ void Listener::processEndGroup(void)
         ir_->position(stack_.top().irPosition_);  // rewind IR to first field in group
 
         cachedGroup_.name(stack_.top().scopeName_)
-            .iteration(stack_.top().iteration_)
-            .numInGroup(stack_.top().numInGroup_)
-            .event(Group::START);
+                    .iteration(stack_.top().iteration_)
+                    .numInGroup(stack_.top().numInGroup_)
+                    .event(Group::START);
         onNext_->onNext(cachedGroup_);
         cachedGroup_.reset();
         relativeOffsetAnchor_ = bufferOffset_;
