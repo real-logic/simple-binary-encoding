@@ -122,6 +122,7 @@ public class SbeExample
         final byte[] buffer = new byte[128];
         final StringBuilder sb = new StringBuilder();
 
+        sb.append("\ncar.templateId=").append(car.templateId());
         sb.append("\ncar.serialNumber=").append(car.serialNumber());
         sb.append("\ncar.modelYear=").append(car.modelYear());
         sb.append("\ncar.available=").append(car.available());
@@ -182,6 +183,8 @@ public class SbeExample
 
         bytesCopied = car.getModel(buffer, 0, buffer.length);
         sb.append("\ncar.model=").append(new String(buffer, 0, bytesCopied, Charset.forName(car.modelCharacterEncoding())));
+
+        sb.append("\ncar.size=").append(car.size());
 
         System.out.println(sb);
     }

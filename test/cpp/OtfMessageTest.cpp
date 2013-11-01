@@ -275,8 +275,8 @@ protected:
 TEST_F(OtfMessageAllPrimitiveTypesTest, shouldHandleAllTypes)
 {
     listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
-        .resetForDecode(buffer_, bufferLen_)
-        .subscribe(this, this, this);
+             .resetForDecode(buffer_, bufferLen_)
+             .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 2);
     EXPECT_EQ(numErrorsSeen_, 0);
     EXPECT_EQ(numCompletedsSeen_, 1);
@@ -368,8 +368,8 @@ protected:
 TEST_F(OtfMessageEnumTest, shouldHandleEnum)
 {
     listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
-        .resetForDecode(buffer_, bufferLen_)
-        .subscribe(this, this, this);
+             .resetForDecode(buffer_, bufferLen_)
+             .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 4);
     EXPECT_EQ(numErrorsSeen_, 0);
     EXPECT_EQ(numCompletedsSeen_, 1);
@@ -517,8 +517,8 @@ protected:
 TEST_F(OtfMessageSetTest, shouldHandleSet)
 {
     listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
-        .resetForDecode(buffer_, bufferLen_)
-        .subscribe(this, this, this);
+             .resetForDecode(buffer_, bufferLen_)
+             .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 6);
     EXPECT_EQ(numErrorsSeen_, 0);
     EXPECT_EQ(numCompletedsSeen_, 1);
@@ -612,8 +612,8 @@ protected:
 TEST_F(OtfMessageConstantsTest, shouldHandleAllTypes)
 {
     listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
-        .resetForDecode(buffer_, bufferLen_)
-        .subscribe(this, this, this);
+             .resetForDecode(buffer_, bufferLen_)
+             .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 2);
     EXPECT_EQ(numErrorsSeen_, 0);
     EXPECT_EQ(numCompletedsSeen_, 1);
@@ -736,8 +736,8 @@ protected:
 TEST_F(OtfMessageOffsetTest, shouldHandleOffsets)
 {
     listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
-        .resetForDecode(buffer_, bufferLen_)
-        .subscribe(this, this, this);
+             .resetForDecode(buffer_, bufferLen_)
+             .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 5);
     EXPECT_EQ(numErrorsSeen_, 0);
     EXPECT_EQ(numCompletedsSeen_, 1);

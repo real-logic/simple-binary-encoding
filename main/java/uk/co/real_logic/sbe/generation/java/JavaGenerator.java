@@ -59,7 +59,7 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(MESSAGE_HEADER_VISITOR, FixedFlyweight.class.getSimpleName()));
-            out.append(generateFixedFlyweightCode());
+            out.append(generateFixedFlyweightCode(ir.header().get(0).size()));
 
             final List<Token> tokens = ir.header();
             out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_VISITOR, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
@@ -102,7 +102,7 @@ public class JavaGenerator implements CodeGenerator
             {
                 out.append(generateFileHeader(ir.packageName()));
                 out.append(generateClassDeclaration(className, MessageFlyweight.class.getSimpleName()));
-                out.append(generateMessageFlyweightCode(tokens.get(0).size()));
+                out.append(generateMessageFlyweightCode(tokens.get(0).size(), tokens.get(0).schemaId()));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -391,7 +391,7 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(bitSetName, FixedFlyweight.class.getSimpleName()));
-            out.append(generateFixedFlyweightCode());
+            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
@@ -425,7 +425,7 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(compositeName, FixedFlyweight.class.getSimpleName()));
-            out.append(generateFixedFlyweightCode());
+            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
 
             out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
@@ -829,19 +829,25 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFixedFlyweightCode()
+    private CharSequence generateFixedFlyweightCode(final int size)
     {
-        return
+        return String.format(
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n\n" +
             "    public void reset(final DirectBuffer buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
-            "    }\n";
+            "    }\n\n" +
+            "    public int size()\n" +
+            "    {\n" +
+            "        return %d;\n" +
+            "    };\n",
+            size
+        );
     }
 
-    private CharSequence generateMessageFlyweightCode(final int blockLength)
+    private CharSequence generateMessageFlyweightCode(final int blockLength, final long schemaId)
     {
         return String.format(
             "    private static final int blockLength = %d;\n\n" +
@@ -863,6 +869,14 @@ public class JavaGenerator implements CodeGenerator
             "        this.offset = offset;\n" +
             "        position(offset + blockLength);\n" +
             "    }\n\n" +
+            "    public int size()\n" +
+            "    {\n" +
+            "        return position - offset;\n" +
+            "    };\n\n" +
+            "    public long templateId()\n" +
+            "    {\n" +
+            "        return %d;\n" +
+            "    }\n\n" +
             "    public int position()\n" +
             "    {\n" +
             "        return position;\n" +
@@ -872,7 +886,8 @@ public class JavaGenerator implements CodeGenerator
             "        CodecUtil.checkPosition(position, offset, buffer.capacity());\n" +
             "        this.position = position;\n" +
             "    }\n",
-            Integer.valueOf(blockLength)
+            Integer.valueOf(blockLength),
+            schemaId
         );
     }
 
