@@ -231,7 +231,6 @@ int Listener::process(void)
             break;
 
         case Ir::BEGIN_GROUP:
-            // TODO: before saving anchor, update based on desired offset of group (this is only encountered 1st time)
             processBeginGroup(ir);
             break;
 
@@ -402,14 +401,14 @@ uint64_t Listener::processBeginEnum(const Ir *ir, const char value)
 {
     cachedField_.type(Field::ENUM)
         .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value);
-    return Ir::size(ir->primitiveType());
+    return ir->size();
 }
 
 uint64_t Listener::processBeginEnum(const Ir *ir, uint8_t value)
 {
     cachedField_.type(Field::ENUM)
         .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value);
-    return Ir::size(ir->primitiveType());
+    return ir->size();
 }
 
 void Listener::processEnumValidValue(const Ir *ir)
@@ -430,7 +429,7 @@ uint64_t Listener::processBeginSet(const Ir *ir, const uint64_t value)
 {
     cachedField_.type(Field::SET)
         .addEncoding(ir->name(), ir->primitiveType(), value);
-    return Ir::size(ir->primitiveType());
+    return ir->size();
 }
 
 void Listener::processSetChoice(const Ir *ir)
@@ -462,7 +461,7 @@ void Listener::processEndVarData(void)
 uint64_t Listener::processEncoding(const Ir *ir, const int64_t value)
 {
     cachedField_.addEncoding(ir->name(), ir->primitiveType(), value);
-    return Ir::size(ir->primitiveType());
+    return ir->size();
 }
 
 uint64_t Listener::processEncoding(const Ir *ir, const uint64_t value)
@@ -489,13 +488,13 @@ uint64_t Listener::processEncoding(const Ir *ir, const uint64_t value)
             stack_.top().iteration_ = 0;
          }
     }
-    return Ir::size(ir->primitiveType());
+    return ir->size();
 }
 
 uint64_t Listener::processEncoding(const Ir *ir, const double value)
 {
     cachedField_.addEncoding(ir->name(), ir->primitiveType(), value);
-    return Ir::size(ir->primitiveType());
+    return ir->size();
 }
 
 uint64_t Listener::processEncoding(const Ir *ir, const char *value, const int size)
@@ -517,6 +516,7 @@ void Listener::processBeginGroup(const Ir *ir)
 {
     stack_.push(Frame(ir->name().c_str()));
     stack_.top().state_ = Frame::BEGAN_GROUP;
+    // TODO: before saving anchor, update based on desired offset of group (this is only encountered 1st time)
     relativeOffsetAnchor_ = bufferOffset_;
 }
 
