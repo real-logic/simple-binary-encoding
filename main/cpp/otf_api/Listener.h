@@ -61,6 +61,7 @@ private:
     const char *buffer_;
     int bufferLen_;
     int bufferOffset_;
+    int relativeOffsetAnchor_;
 
     /*
      * Cached and reused Field and Group objects
@@ -92,8 +93,8 @@ private:
         int irPosition_;
         State state_;
 
-        Frame(const std::string &name = "") : blockLength_(-1), numInGroup_(-1), iteration_(-1),
-                                              irPosition_(-1), scopeName_(name), state_(MESSAGE) {};
+        Frame(const std::string &name = "") : scopeName_(name), blockLength_(-1), numInGroup_(-1), iteration_(-1),
+                                              irPosition_(-1), state_(MESSAGE) {};
     };
 
     Frame messageFrame_;
@@ -125,29 +126,26 @@ protected:
     virtual int process(void);
 
     // consolidated IR and data events
-    virtual void processBeginMessage(const std::string &name);
+    virtual void processBeginMessage(const Ir *ir);
     virtual void processEndMessage(void);
-    virtual void processBeginComposite(const std::string &name);
+    virtual void processBeginComposite(const Ir *ir);
     virtual void processEndComposite(void);
-    virtual void processBeginField(const std::string &name, const uint16_t schemaId);
+    virtual void processBeginField(const Ir *ir);
     virtual void processEndField(void);
-    virtual uint64_t processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const char value);
-    virtual uint64_t processBeginEnum(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value);
-    virtual void processEnumValidValue(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
+    virtual uint64_t processBeginEnum(const Ir *ir, const char value);
+    virtual uint64_t processBeginEnum(const Ir *ir, const uint8_t value);
+    virtual void processEnumValidValue(const Ir *ir);
     virtual void processEndEnum(void);
-    virtual uint64_t processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint8_t value);
-    virtual uint64_t processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint16_t value);
-    virtual uint64_t processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint32_t value);
-    virtual uint64_t processBeginSet(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
-    virtual void processSetChoice(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
+    virtual uint64_t processBeginSet(const Ir *ir, const uint64_t value);
+    virtual void processSetChoice(const Ir *ir);
     virtual void processEndSet(void);
-    virtual void processBeginVarData(const std::string &name, const uint16_t schemaId);
+    virtual void processBeginVarData(const Ir *ir);
     virtual void processEndVarData(void);
-    virtual uint64_t processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value);
-    virtual uint64_t processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value);
-    virtual uint64_t processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value);
-    virtual uint64_t processEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const char *value, const int size);
-    virtual void processBeginGroup(const std::string &name);
+    virtual uint64_t processEncoding(const Ir *ir, const int64_t value);
+    virtual uint64_t processEncoding(const Ir *ir, const uint64_t value);
+    virtual uint64_t processEncoding(const Ir *ir, const double value);
+    virtual uint64_t processEncoding(const Ir *ir, const char *value, const int size);
+    virtual void processBeginGroup(const Ir *ir);
     virtual void processEndGroup(void);
 
 public:

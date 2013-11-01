@@ -217,6 +217,7 @@
             objdir="${dir.main.cpp.build}">
             <includepath path="${dir.main.cpp.src}"/>
             <compilerarg value="-std=c++98"/>
+            <compilerarg value="-Wall"/>
             <fileset dir="${dir.main.cpp.src}" includes="**/*.cpp"/>
         </cc>
     </target>
@@ -230,6 +231,7 @@
                 multithreaded="true"
                 exceptions="true"
                 objdir="${dir.gtest.build}">
+                <compilerarg value="-Wall"/>
                 <includepath path="${dir.gtest.include}"/>
                 <includepath path="${dir.gtest.src}"/>
                 <fileset dir="${dir.gtest.src}">
@@ -242,6 +244,7 @@
                 subsystem="console"
                 debug="true"
                 outfile="${exec.test.cpp}">
+                <compilerarg value="-Wall"/>
                 <includepath path="${dir.gtest.include}"/>
                 <includepath path="${dir.main.cpp.src}"/>
                 <includepath path="${dir.test.cpp.include}"/>

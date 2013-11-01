@@ -156,7 +156,7 @@ public:
             return 8;
             break;
         case NONE:
-        deefault:
+        default:
             return 0;
             break;
         }
