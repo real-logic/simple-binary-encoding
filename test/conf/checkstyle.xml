@@ -102,10 +102,6 @@
 
         <module name="PackageDeclaration"/>
 
-        <module name="ReturnCount">
-            <property name="max" value="3"/>
-        </module>
-
         <module name="FallThrough"/>
 
         <module name="FinalClass"/>
