@@ -39,8 +39,9 @@ public interface MessageFlyweight
      *
      * @param buffer underlying the message.
      * @param index at which the message body begins.
+     * @return the flyweight as a sub classed covariant type to provide a fluent API.
      */
-    void reset(final DirectBuffer buffer, final int index);
+    MessageFlyweight reset(final DirectBuffer buffer, final int index);
 
     /**
      * The position for the end of the currently access block.

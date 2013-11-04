@@ -102,7 +102,7 @@ public class JavaGenerator implements CodeGenerator
             {
                 out.append(generateFileHeader(ir.packageName()));
                 out.append(generateClassDeclaration(className, MessageFlyweight.class.getSimpleName()));
-                out.append(generateMessageFlyweightCode(tokens.get(0).size()));
+                out.append(generateMessageFlyweightCode(tokens.get(0).size(), className));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -113,7 +113,7 @@ public class JavaGenerator implements CodeGenerator
 
                 final List<Token> groups = new ArrayList<>();
                 offset = collectGroups(messageBody, offset, groups);
-                StringBuilder sb = new StringBuilder();
+                final StringBuilder sb = new StringBuilder();
                 generateGroups(sb, groups, 0, BASE_INDENT);
                 out.append(sb);
 
@@ -197,13 +197,14 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "public class %s implements GroupFlyweight\n" +
+            indent + "public class %s implements GroupFlyweight<%s>\n" +
             indent + "{\n" +
             indent + "    private final %s dimensions = new %s();\n" +
             indent + "    private int blockLength;\n" +
-            indent + "    private int size;\n" +
+            indent + "    private int count;\n" +
             indent + "    private int index;\n" +
             indent + "    private int offset;\n\n",
+            formatClassName(groupName),
             formatClassName(groupName),
             dimensionsClassName,
             dimensionsClassName
@@ -213,7 +214,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public void resetForDecode()\n" +
             indent + "    {\n" +
             indent + "        dimensions.reset(buffer, position());\n" +
-            indent + "        size = dimensions.numInGroup();\n" +
+            indent + "        count = dimensions.numInGroup();\n" +
             indent + "        blockLength = dimensions.blockLength();\n" +
             indent + "        index = -1;\n" +
             indent + "        final int dimensionsHeaderSize = %d;\n" +
@@ -227,13 +228,13 @@ public class JavaGenerator implements CodeGenerator
         final String javaTypeForNumInGroup = javaTypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    public void resetForEncode(final int size)\n" +
+            indent + "    public void resetForEncode(final int count)\n" +
             indent + "    {\n" +
             indent + "        dimensions.reset(buffer, position());\n" +
-            indent + "        dimensions.numInGroup((%s)size);\n" +
+            indent + "        dimensions.numInGroup((%s)count);\n" +
             indent + "        dimensions.blockLength((%s)%d);\n" +
             indent + "        index = -1;\n" +
-            indent + "        this.size = size;\n" +
+            indent + "        this.count = count;\n" +
             indent + "        blockLength = %d;\n" +
             indent + "        final int dimensionsHeaderSize = %d;\n" +
             indent + "        position(position() + dimensionsHeaderSize);\n" +
@@ -245,26 +246,39 @@ public class JavaGenerator implements CodeGenerator
             dimensionHeaderSize
         ));
 
-        sb.append(
-            indent + "    public int size()\n" +
+        sb.append(String.format(
+            indent + "    public int count()\n" +
             indent + "    {\n" +
-            indent + "        return size;\n" +
+            indent + "        return count;\n" +
+            indent + "    }\n\n" +
+            indent + "    public Iterator iterator()\n" +
+            indent + "    {\n" +
+            indent + "        return this;\n" +
+            indent + "    }\n\n" +
+            indent + "    public void remove()\n" +
+            indent + "    {\n" +
+            indent + "        throw new UnsupportedOperationException();\n" +
+            indent + "    }\n\n" +
+            indent + "    public boolean hasNext()\n" +
+            indent + "    {\n" +
+            indent + "        return index + 1 < count;\n" +
             indent + "    }\n\n"
-        );
+        ));
 
-        sb.append(
-            indent + "    public boolean next()\n" +
+        sb.append(String.format(
+            indent + "    public %s next()\n" +
             indent + "    {\n" +
-            indent + "        if (index + 1 >= size)\n" +
+            indent + "        if (index + 1 >= count)\n" +
             indent + "        {\n" +
-            indent + "            return false;\n" +
+            indent + "            throw new NoSuchElementException();\n" +
             indent + "        }\n\n" +
             indent + "        offset = position();\n" +
             indent + "        position(offset + blockLength);\n" +
             indent + "        ++index;\n\n" +
-            indent + "        return true;\n" +
-            indent + "    }\n"
-        );
+            indent + "        return this;\n" +
+            indent + "    }\n",
+            formatClassName(groupName)
+        ));
     }
 
     private CharSequence generateGroupProperty(final String groupName, final String indent)
@@ -298,9 +312,9 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-                indent + "    public %s %sSize(final int size)\n" +
+                indent + "    public %s %sCount(final int count)\n" +
                 indent + "    {\n" +
-                indent + "        %s.resetForEncode(size);\n" +
+                indent + "        %s.resetForEncode(count);\n" +
                 indent + "        return %s;\n" +
                 indent + "    }\n",
             className,
@@ -548,6 +562,7 @@ public class JavaGenerator implements CodeGenerator
             "/* Generated class message */\n" +
             "package %s;\n\n" +
             "import java.nio.ByteOrder;\n" +
+            "import java.util.*;\n" +
             "import uk.co.real_logic.sbe.generation.java.*;\n\n",
             packageName
         );
@@ -841,7 +856,7 @@ public class JavaGenerator implements CodeGenerator
             "    }\n";
     }
 
-    private CharSequence generateMessageFlyweightCode(final int blockLength)
+    private CharSequence generateMessageFlyweightCode(final int blockLength, final String className)
     {
         return String.format(
             "    private static final int blockLength = %d;\n\n" +
@@ -857,11 +872,12 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        return offset;\n" +
             "    }\n\n" +
-            "    public void reset(final DirectBuffer buffer, final int offset)\n" +
+            "    public %s reset(final DirectBuffer buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
             "        position(offset + blockLength);\n" +
+            "        return this;" +
             "    }\n\n" +
             "    public int position()\n" +
             "    {\n" +
@@ -872,7 +888,8 @@ public class JavaGenerator implements CodeGenerator
             "        CodecUtil.checkPosition(position, offset, buffer.capacity());\n" +
             "        this.position = position;\n" +
             "    }\n",
-            Integer.valueOf(blockLength)
+            Integer.valueOf(blockLength),
+            className
         );
     }
 

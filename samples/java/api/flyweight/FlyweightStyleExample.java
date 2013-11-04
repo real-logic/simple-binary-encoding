@@ -38,13 +38,13 @@ public class FlyweightStyleExample
     {
         newOrderSingle.reset(buffer);
 
-        // If field is called out of order and a mandatory field is missed then an exception will be thrown
-        newOrderSingle.clOrderId("123");
-        newOrderSingle.symbolId(567L);
-        newOrderSingle.side(Side.BUY);
-        newOrderSingle.orderQty(1);
-        newOrderSingle.price(3.2);
-        newOrderSingle.transactTime(System.currentTimeMillis());
+        newOrderSingle
+            .clOrderId("123")
+            .symbolId(567L)
+            .side(Side.BUY)
+            .orderQty(1)
+            .price(3.2)
+            .transactTime(System.currentTimeMillis());
 
         buffer.flip();
         transport.send(buffer);
@@ -57,11 +57,6 @@ public class FlyweightStyleExample
 
         newOrderSingle.reset(buffer);
 
-        if (!newOrderSingle.valid()) // should validation just throw an exception?
-        {
-            throw new IllegalStateException("Message is screwed up");
-        }
-
         String clientOrderId = newOrderSingle.clOrderId();
         long symbolId = newOrderSingle.symbolId();
         Side side = newOrderSingle.side();
@@ -72,62 +67,57 @@ public class FlyweightStyleExample
 
     public void nestedGroupEncode()
     {
-        massQuote.resetForEncode(buffer);
         final long timestamp = System.currentTimeMillis();
 
-        massQuote.putQuoteId("1234");
-        massQuote.putCtiCode(CtiCode.HOUSE);
+        massQuote.reset(buffer)
+            .quoteId("1234")
+            .ctiCode(CtiCode.HOUSE);
 
-        final MassQuote.QuoteSet quoteSet = massQuote.quoteSetSize(2);
-        quoteSet.next();
+        MassQuote.QuoteSet quoteSet = massQuote.quoteSetCount(2);
 
-        quoteSet.putUnderlyingSecurity("ESH0");
+        quoteSet.next().underlyingSecurity("ESH0");
 
-        MassQuote.QuoteSet.QuoteEntry quoteEntry = quoteSet.quoteEntrySize(2);
-        quoteEntry.next();
-        quoteEntry.id(1);
-        quoteEntry.symbol("ABC1");
-        quoteEntry.securityType(SecurityType.OPT);
-        quoteEntry.transactTime(timestamp);
-        quoteEntry.bidPx(3.1);
-        quoteEntry.bidSize(10);
-        quoteEntry.offerPx(3.2);
-        quoteEntry.offerSize(10);
+        quoteSet.quoteEntryCount(2)
+            .next()
+                .id(1)
+                .symbol("ABC1")
+                .securityType(SecurityType.OPT)
+                .transactTime(timestamp)
+                .bidPx(3.1)
+                .bidSize(10)
+                .offerPx(3.2)
+                .offerSize(10)
+            .next()
+                .id(2)
+                .symbol("ABC2")
+                .securityType(SecurityType.OPT)
+                .transactTime(timestamp)
+                .bidPx(3.1)
+                .bidSize(10)
+                .offerPx(3.2)
+                .offerSize(10);
 
-        quoteEntry.next();
-        quoteEntry.id(2);
-        quoteEntry.symbol("ABC2");
-        quoteEntry.securityType(SecurityType.OPT);
-        quoteEntry.transactTime(timestamp);
-        quoteEntry.bidPx(3.1);
-        quoteEntry.bidSize(10);
-        quoteEntry.offerPx(3.2);
-        quoteEntry.offerSize(10);
+        quoteSet.next().underlyingSecurity("EAB0");
 
-        quoteSet.next(); // Create next repeating set
-
-        quoteSet.putUnderlyingSecurity("EAB0");
-
-        quoteEntry = quoteSet.quoteEntrySize(2);
-        quoteEntry.next();
-        quoteEntry.id(3);
-        quoteEntry.symbol("ABC1");
-        quoteEntry.securityType(SecurityType.OPT);
-        quoteEntry.transactTime(timestamp);
-        quoteEntry.bidPx(3.1);
-        quoteEntry.bidSize(10);
-        quoteEntry.offerPx(3.2);
-        quoteEntry.offerSize(10);
-
-        quoteEntry.next();
-        quoteEntry.id(4);
-        quoteEntry.symbol("ABC2");
-        quoteEntry.securityType(SecurityType.OPT);
-        quoteEntry.transactTime(timestamp);
-        quoteEntry.bidPx(3.1);
-        quoteEntry.bidSize(10);
-        quoteEntry.offerPx(3.2);
-        quoteEntry.offerSize(10);
+        quoteSet.quoteEntryCount(2)
+            .next()
+                .id(3)
+                .symbol("ABC1")
+                .securityType(SecurityType.OPT)
+                .transactTime(timestamp)
+                .bidPx(3.1)
+                .bidSize(10)
+                .offerPx(3.2)
+                .offerSize(10)
+            .next()
+                .id(4)
+                .symbol("ABC2")
+                .securityType(SecurityType.OPT)
+                .transactTime(timestamp)
+                .bidPx(3.1)
+                .bidSize(10)
+                .offerPx(3.2)
+                .offerSize(10);
 
         buffer.flip();
         transport.send(buffer);
@@ -138,18 +128,16 @@ public class FlyweightStyleExample
         buffer.clear();
         transport.receive(buffer);
 
-        massQuote.resetForDecode(buffer);
+        massQuote.reset(buffer);
 
-        String quoteId = massQuote.getQuoteId();
-        CtiCode ctiCode = massQuote.getCtiCode();
+        String quoteId = massQuote.quoteId();
+        CtiCode ctiCode = massQuote.ctiCode();
 
-        MassQuote.QuoteSet quoteSet = massQuote.quoteSet();
-        while (quoteSet.next())
+        for (MassQuote.QuoteSet quoteSet : massQuote.quoteSet())
         {
             String underlyingSecurity = quoteSet.underlyingSecurity();
 
-            MassQuote.QuoteSet.QuoteEntry quoteEntry = quoteSet.quoteEntry();
-            while (quoteEntry.next())
+            for (MassQuote.QuoteSet.QuoteEntry quoteEntry : quoteSet.quoteEntry())
             {
                 long id = quoteEntry.id();
                 String symbol = quoteEntry.symbol();

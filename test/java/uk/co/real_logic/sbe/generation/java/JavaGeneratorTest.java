@@ -198,6 +198,6 @@ public class JavaGeneratorTest
 
         final GroupFlyweight groupFlyweight = (GroupFlyweight)clazz.getDeclaredMethod("fuelFigures").invoke(messageFlyweight);
         assertThat(Integer.valueOf(messageFlyweight.position()), greaterThan(Integer.valueOf(initialPosition)));
-        assertThat(Integer.valueOf(groupFlyweight.size()), is(Integer.valueOf(0)));
+        assertThat(Integer.valueOf(groupFlyweight.count()), is(Integer.valueOf(0)));
     }
 }

@@ -19,25 +19,34 @@ import api.SecurityType;
 import api.fluent.CtiCode;
 
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 
 public class MassQuote
 {
     private QuoteSet quoteSet = new QuoteSet();
 
-    public void resetForEncode(final ByteBuffer buffer)
+    public MassQuote reset(final ByteBuffer buffer)
     {
+        return this;
+    }
+    public MassQuote quoteId(final String quoteId)
+    {
+        return this;
     }
 
-    public void resetForDecode(final ByteBuffer buffer)
+    public MassQuote ctiCode(final CtiCode code)
     {
+        return this;
     }
 
-    public void putQuoteId(final String quoteId)
+    public String quoteId()
     {
+        return null;
     }
 
-    public void putCtiCode(final CtiCode code)
+    public CtiCode ctiCode()
     {
+        return null;
     }
 
     public QuoteSet quoteSet()
@@ -45,41 +54,18 @@ public class MassQuote
         return quoteSet;
     }
 
-    public QuoteSet quoteSetSize(final int length)
+    public QuoteSet quoteSetCount(final int count)
     {
         return quoteSet;
     }
 
-    public String getQuoteId()
-    {
-        return null;
-    }
-
-    public CtiCode getCtiCode()
-    {
-        return null;
-    }
-
-    public class QuoteSet
+    public class QuoteSet implements Iterable<QuoteSet>, Iterator<QuoteSet>
     {
         private QuoteEntry quoteEntry;
 
-        public void putUnderlyingSecurity(final String security)
+        public QuoteSet underlyingSecurity(final String security)
         {
-        }
-
-        public QuoteEntry quoteEntry()
-        {
-            return quoteEntry;
-        }
-
-        public int length()
-        {
-            return 0;
-        }
-
-        public void length(final int length)
-        {
+            return this;
         }
 
         public String underlyingSecurity()
@@ -87,57 +73,94 @@ public class MassQuote
             return "";
         }
 
-        public boolean next()
+        public QuoteEntry quoteEntry()
         {
-            return false;
+            return quoteEntry;
         }
 
-        public QuoteEntry quoteEntrySize(final int length)
+        public int count()
+        {
+            return 0;
+        }
+
+        public boolean hasNext()
+        {
+            return true;
+        }
+
+        public QuoteSet next()
+        {
+            return this;
+        }
+
+        public void remove()
+        {
+        }
+
+        public QuoteEntry quoteEntryCount(final int count)
         {
             return null;
         }
 
-        public class QuoteEntry
+        public Iterator<QuoteSet> iterator()
         {
-            public void length(final int length)
+            return this;
+        }
+
+        public class QuoteEntry implements Iterable<QuoteEntry>, Iterator<QuoteEntry>
+        {
+            public QuoteEntry id(final int id)
             {
+                return this;
             }
 
-            public void id(final int id)
+            public QuoteEntry symbol(final String symbol)
             {
+                return this;
             }
 
-            public void symbol(final String symbol)
+            public QuoteEntry securityType(final SecurityType securityType)
             {
+                return this;
             }
 
-            public void securityType(final SecurityType securityType)
+            public QuoteEntry transactTime(final long timestamp)
             {
+                return this;
             }
 
-            public void transactTime(final long timestamp)
+            public QuoteEntry bidPx(final double value)
             {
+                return this;
             }
 
-            public void bidPx(final double value)
+            public QuoteEntry bidSize(final int value)
             {
+                return this;
             }
 
-            public void bidSize(final int value)
+            public QuoteEntry offerPx(final double value)
             {
+                return this;
             }
 
-            public void offerPx(final double value)
+            public QuoteEntry offerSize(final int value)
             {
+                return this;
             }
 
-            public void offerSize(final int value)
+            public boolean hasNext()
             {
+                return true;
             }
 
-            public boolean next()
+            public QuoteEntry next()
             {
-                return false;
+                return this;
+            }
+
+            public void remove()
+            {
             }
 
             public long id()
@@ -180,9 +203,9 @@ public class MassQuote
                 return 0;
             }
 
-            public int length()
+            public Iterator<QuoteEntry> iterator()
             {
-                return 0;
+                return this;
             }
         }
     }
