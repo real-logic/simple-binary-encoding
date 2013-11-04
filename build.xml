@@ -297,8 +297,7 @@
             <fileset dir="${dir.main.build}" includes="**/*"/>
             <fileset dir="${dir.perf.build}" includes="**/*"/>
             <fileset dir="${dir.examples.build}" includes="**/*"/>
-            <zipfileset src="${perf.jmh.jar}" includes="**/*"/>
-            <zipfileset src="${perf.args4j.jar}" includes="**/*"/>
+            <zipgroupfileset dir="${dir.perf.lib}" includes="**/*.jar"/>
         </jar>
     </target>
 	
