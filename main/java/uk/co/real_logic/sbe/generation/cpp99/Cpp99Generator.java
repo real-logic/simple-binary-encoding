@@ -262,22 +262,23 @@ public class Cpp99Generator implements CodeGenerator
             indent + "    int count(void) const\n" +
             indent + "    {\n" +
             indent + "        return count_;\n" +
+            indent + "    };\n\n" +
+            indent + "    bool hasNext(void) const\n" +
+            indent + "    {\n" +
+            indent + "        return index_ + 1 < count_;\n" +
             indent + "    };\n\n"
         );
 
-        sb.append(
-            indent + "    bool next(void)\n" +
+        sb.append(String.format(
+            indent + "    %s &next(void)\n" +
             indent + "    {\n" +
-            indent + "        if (index_ + 1 >= count_)\n" +
-            indent + "        {\n" +
-            indent + "            return false;\n" +
-            indent + "        }\n\n" +
             indent + "        offset_ = message_->position();\n" +
             indent + "        message_->position(offset_ + blockLength_);\n" +
             indent + "        ++index_;\n\n" +
-            indent + "        return true;\n" +
-            indent + "    };\n\n"
-        );
+            indent + "        return *this;\n" +
+            indent + "    };\n\n",
+            formatClassName(groupName)
+        ));
 
         sb.append(
             indent + "    MessageFlyweight *message(void)\n" +

@@ -72,44 +72,29 @@ void encodeCar(Car &car, char *buffer, int offset)
        .numCylinders((short)4)
        .putManufacturerCode(MANUFACTURER_CODE, 0, sizeof(MANUFACTURER_CODE));
 
-    Car::FuelFigures &fuelFigures = car.fuelFiguresCount(3);
-
-    fuelFigures.next();
-    fuelFigures.speed(30).mpg(35.9f);
-
-    fuelFigures.next();
-    fuelFigures.speed(55).mpg(49.0f);
-
-    fuelFigures.next();
-    fuelFigures.speed(75).mpg(40.0f);
+    car.fuelFiguresCount(3)
+       .next().speed(30).mpg(35.9f)
+       .next().speed(55).mpg(49.0f)
+       .next().speed(75).mpg(40.0f);
 
     Car::PerformanceFigures &performanceFigures = car.performanceFiguresCount(2);
 
-    performanceFigures.next();
-    performanceFigures.octaneRating((short)95);
+    performanceFigures.next()
+        .octaneRating((short)95)
+        .accelerationCount(3)
+            .next().mph(30).seconds(4.0f)
+            .next().mph(60).seconds(7.5f)
+            .next().mph(100).seconds(12.2f);
 
-    Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.accelerationCount(2);
-
-    acceleration.next();
-    acceleration.mph(60).seconds(7.5f);
-
-    acceleration.next();
-    acceleration.mph(100).seconds(12.2f);
-
-    performanceFigures.next();
-    performanceFigures.octaneRating((short)99);
-
-    acceleration = performanceFigures.accelerationCount(2);
-
-    acceleration.next();
-    acceleration.mph(60).seconds(7.1f);
-
-    acceleration.next();
-    acceleration.mph(100).seconds(11.8f);
+    performanceFigures.next()
+        .octaneRating((short)99)
+        .accelerationCount(3)
+            .next().mph(30).seconds(3.8f)
+            .next().mph(60).seconds(7.1f)
+            .next().mph(100).seconds(11.8f);
 
     car.putMake(MAKE, 0, strlen(MAKE));
     car.putModel(MODEL, 0, strlen(MODEL));
-
 }
 
 const char *format(int value)
@@ -228,8 +213,9 @@ void decodeCar(Car &car, char *buffer, int offset)
     sb.append("\ncar.fuelFiguresId=").append(format(car.fuelFiguresId()));
     sb.append("\ncar.fuelFigures.speedId=").append(format(fuelFigures.speedId()));
     sb.append("\ncar.fuelFigures.mpgId=").append(format(fuelFigures.mpgId()));
-    while (fuelFigures.next())
+    while (fuelFigures.hasNext())
     {
+        fuelFigures.next();
         sb.append("\ncar.fuelFigures.speed=").append(format((int)fuelFigures.speed()));
         sb.append("\ncar.fuelFigures.mpg=").append(format((double)fuelFigures.mpg()));
     }
@@ -238,15 +224,17 @@ void decodeCar(Car &car, char *buffer, int offset)
     sb.append("\ncar.performanceFiguresId=").append(format(car.performanceFiguresId()));
     sb.append("\ncar.performanceFigures.octaneRatingId=").append(format(performanceFigures.octaneRatingId()));
     sb.append("\ncar.performanceFigures.accelerationId=").append(format(performanceFigures.accelerationId()));
-    while (performanceFigures.next())
+    while (performanceFigures.hasNext())
     {
+        performanceFigures.next();
         sb.append("\ncar.performanceFigures.octaneRating=").append(format((int)performanceFigures.octaneRating()));
 
         Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
         sb.append("\ncar.performanceFigures.acceleration.mphId=").append(format(acceleration.mphId()));
         sb.append("\ncar.performanceFigures.acceleration.secondsId=").append(format(acceleration.secondsId()));
-        while (acceleration.next())
+        while (acceleration.hasNext())
         {
+            acceleration.next();
             sb.append("\ncar.performanceFigures.acceleration.mph=").append(format((int)acceleration.mph()));
             sb.append("\ncar.performanceFigures.acceleration.seconds=").append(format((double)acceleration.seconds()));
         }
