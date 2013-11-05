@@ -59,7 +59,7 @@ namespace sbe {
 class FixedFlyweight
 {
 public:
-    virtual void reset(char *buffer, const int offset) = 0;
+    virtual FixedFlyweight &reset(char *buffer, const int offset) = 0;
     virtual int size(void) const = 0;
 };
 
@@ -67,7 +67,7 @@ public:
 class MessageFlyweight
 {
 public:
-    virtual void reset(char *buffer, const int offset) = 0;
+    virtual MessageFlyweight &reset(char *buffer, const int offset) = 0;
     virtual uint64_t blockLength(void) const = 0;
     virtual uint64_t offset(void) const = 0;
     virtual uint64_t position(void) const = 0;

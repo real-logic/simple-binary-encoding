@@ -24,9 +24,8 @@ using namespace uk_co_real_logic_sbe_examples;
 
 void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset)
 {
-    hdr.reset(buffer, offset);
-
-    hdr.blockLength(car.blockLength())
+    hdr.reset(buffer, offset)
+       .blockLength(car.blockLength())
        .templateId(car.templateId())
        .version(0)
        .reserved(0);
@@ -49,9 +48,8 @@ const char *MODEL = "Civic VTi";
 
 void encodeCar(Car &car, char *buffer, int offset)
 {
-    car.reset(buffer, offset);
-
-    car.serialNumber(1234)
+    car.reset(buffer, offset)
+       .serialNumber(1234)
        .modelYear(2013)
        .available(BooleanType::TRUE)
        .code(Model::A)
