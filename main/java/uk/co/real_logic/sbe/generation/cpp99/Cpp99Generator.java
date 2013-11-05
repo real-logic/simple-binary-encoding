@@ -69,7 +69,7 @@ public class Cpp99Generator implements CodeGenerator
 
     public List<String> generateTypeStubs() throws IOException
     {
-        List<String> typesToInclude = new ArrayList<>();
+        final List<String> typesToInclude = new ArrayList<>();
 
         for (final List<Token> tokens : ir.types())
         {
@@ -87,6 +87,7 @@ public class Cpp99Generator implements CodeGenerator
                     generateComposite(tokens);
                     break;
             }
+
             typesToInclude.add(tokens.get(0).name());
         }
 
@@ -313,7 +314,7 @@ public class Cpp99Generator implements CodeGenerator
             indent + "        return %d;\n" +
             indent + "    };\n\n",
             groupName,
-            token.schemaId()
+            Long.valueOf(token.schemaId())
         ));
 
         sb.append(String.format(
@@ -373,7 +374,7 @@ public class Cpp99Generator implements CodeGenerator
                     "        return %d;\n" +
                     "    };\n\n",
                     formatPropertyName(propertyName),
-                    token.schemaId()
+                    Long.valueOf(token.schemaId())
                 ));
 
                 final Token lengthToken = tokens.get(i + 2);
@@ -893,7 +894,7 @@ public class Cpp99Generator implements CodeGenerator
             "    {\n" +
             "        return %s;\n" +
             "    };\n\n",
-            size
+            Integer.valueOf(size)
         );
     }
 
@@ -949,7 +950,7 @@ public class Cpp99Generator implements CodeGenerator
             "        return this;\n" +
             "    };\n",
             Integer.valueOf(blockLength),
-            schemaId
+            Long.valueOf(schemaId)
         ));
 
         return sb;
@@ -976,7 +977,7 @@ public class Cpp99Generator implements CodeGenerator
                     indent + "        return %d;\n" +
                     indent + "    };\n\n",
                     propertyName,
-                    signalToken.schemaId()
+                    Long.valueOf(signalToken.schemaId())
                 ));
 
                 switch (encodingToken.signal())

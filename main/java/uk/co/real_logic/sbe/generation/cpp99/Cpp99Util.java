@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public class Cpp99Util
 {
-    static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
+    private static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
 
     static
     {
@@ -105,8 +105,7 @@ public class Cpp99Util
      * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}
      * @return the string formatted as the byte ordering encoding
      */
-    public static String formatByteOrderEncoding(final ByteOrder byteOrder,
-                                                 final PrimitiveType primitiveType)
+    public static String formatByteOrderEncoding(final ByteOrder byteOrder, final PrimitiveType primitiveType)
     {
         switch (primitiveType.size())
         {

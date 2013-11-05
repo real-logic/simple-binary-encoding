@@ -21,7 +21,7 @@ import uk.co.real_logic.sbe.util.Verify;
 import java.io.*;
 
 /**
- * {@link uk.co.real_logic.sbe.generation.OutputManager} for managing the creation of C++99 source files as the target of code generation.
+ * {@link OutputManager} for managing the creation of C++99 source files as the target of code generation.
  * The character encoding for the {@link java.io.Writer} is UTF-8.
  */
 public class NamespaceOutputManager implements OutputManager
@@ -34,13 +34,15 @@ public class NamespaceOutputManager implements OutputManager
      * @param baseDirectoryName for the generated source code.
      * @param namespaceName for the generated source code relative to the baseDirectoryName.
      */
-    public NamespaceOutputManager(final String baseDirectoryName, final String namespaceName) throws IOException
+    public NamespaceOutputManager(final String baseDirectoryName, final String namespaceName)
+        throws IOException
     {
         Verify.notNull(baseDirectoryName, "baseDirectoryName");
         Verify.notNull(namespaceName, "namespaceName");
 
-        final String dirName = (baseDirectoryName.endsWith("" + File.separatorChar) ? baseDirectoryName : baseDirectoryName + File.separatorChar) +
-                               namespaceName.replace('.', '_');
+        final String dirName =
+            (baseDirectoryName.endsWith("" + File.separatorChar) ? baseDirectoryName : baseDirectoryName + File.separatorChar) +
+            namespaceName.replace('.', '_');
 
         outputDir = new File(dirName);
         if (!outputDir.exists())
