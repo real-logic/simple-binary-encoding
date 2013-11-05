@@ -54,14 +54,14 @@ void encodeCar(Car &car, char *buffer, int offset)
     car.serialNumber(1234)
        .modelYear(2013)
        .available(BooleanType::TRUE)
-       .code(Model::A);
+       .code(Model::A)
+       .putVehicleCode(VEHICLE_CODE, 0, sizeof(VEHICLE_CODE));
 
     for (int i = 0, size = car.someNumbersLength(); i < size; i++)
     {
         car.someNumbers(i, i);
     }
 
-    car.putVehicleCode(VEHICLE_CODE, 0, sizeof(VEHICLE_CODE));
     car.extras()
        .cruiseControl(true)
        .sportsPack(true)
