@@ -252,7 +252,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return count;\n" +
             indent + "    }\n\n" +
-            indent + "    public Iterator iterator()\n" +
+            indent + "    public Iterator<%s> iterator()\n" +
             indent + "    {\n" +
             indent + "        return this;\n" +
             indent + "    }\n\n" +
@@ -263,7 +263,8 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public boolean hasNext()\n" +
             indent + "    {\n" +
             indent + "        return index + 1 < count;\n" +
-            indent + "    }\n\n"
+            indent + "    }\n\n",
+            formatClassName(groupName)
         ));
 
         sb.append(String.format(
@@ -379,14 +380,14 @@ public class JavaGenerator implements CodeGenerator
 
 
                 sb.append(String.format(
-                    "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
+                    "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
                     "    {\n" +
                     "        final int sizeOfLengthField = %d;\n" +
                     "        final int lengthPosition = position();\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
                     "        final int dataLength = CodecUtil.%sGet(buffer, lengthPosition%s);\n" +
                     "        final int bytesCopied = Math.min(length, dataLength);\n" +
-                    "        CodecUtil.int8sGet(buffer, position(), dst, offset, bytesCopied);\n" +
+                    "        CodecUtil.int8sGet(buffer, position(), dst, dstOffset, bytesCopied);\n" +
                     "        position(position() + dataLength);\n" +
                     "        return bytesCopied;\n" +
                     "    }\n\n",
@@ -397,15 +398,15 @@ public class JavaGenerator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    "    public int put%s(final byte[] src, final int offset, final int length)\n" +
+                    "    public int put%s(final byte[] src, final int srcOffset, final int length)\n" +
                     "    {\n" +
                     "        final int sizeOfLengthField = %d;\n" +
                     "        final int lengthPosition = position();\n" +
                     "        CodecUtil.%sPut(buffer, lengthPosition, (%s)length%s);\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
-                    "        CodecUtil.int8sPut(buffer, position(), src, offset, length);\n" +
+                    "        CodecUtil.int8sPut(buffer, position(), src, srcOffset, length);\n" +
                     "        position(position() + length);\n" +
-                    "        return length;" +
+                    "        return length;\n" +
                     "    }\n",
                     propertyName,
                     sizeOfLengthField,
@@ -750,7 +751,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
             indent + "        CodecUtil.%sPut(buffer, this.offset + %d + (index * %d), value%s);\n" +
-            indent + "    }\n\n",
+            indent + "    }\n",
             propertyName,
             javaTypeName,
             fieldLength,
@@ -763,6 +764,7 @@ public class JavaGenerator implements CodeGenerator
         if (token.encoding().primitiveType() == PrimitiveType.CHAR)
         {
             sb.append(String.format(
+                "\n" +
                 indent + "    public int get%s(final byte[] dst, final int dstOffset)\n" +
                 indent + "    {\n" +
                 indent + "        final int length = %d;\n" +
@@ -911,12 +913,12 @@ public class JavaGenerator implements CodeGenerator
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
             "        position(offset + blockLength);\n" +
-            "        return this;" +
+            "        return this;\n" +
             "    }\n\n" +
             "    public int size()\n" +
             "    {\n" +
             "        return position - offset;\n" +
-            "    };\n\n" +
+            "    }\n\n" +
             "    public long templateId()\n" +
             "    {\n" +
             "        return %d;\n" +
@@ -938,7 +940,7 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateFields(final String containingClassName, final List<Token> tokens, final String indent)
     {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
@@ -953,7 +955,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "    public long %sId()\n" +
                     indent + "    {\n" +
                     indent + "        return %d;\n" +
-                    indent + "    }\n\n",
+                    indent + "    }\n",
                     propertyName,
                     Long.valueOf(signalToken.schemaId())
                 ));
