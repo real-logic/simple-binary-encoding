@@ -283,9 +283,7 @@ public class JavaGenerator implements CodeGenerator
         ));
     }
 
-    private CharSequence generateGroupProperty(final String groupName,
-                                               final Token token,
-                                               final String indent)
+    private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -377,7 +375,6 @@ public class JavaGenerator implements CodeGenerator
                 final String lengthTypePrefix = lengthToken.encoding().primitiveType().primitiveName();
                 final ByteOrder byteOrder = lengthToken.encoding().byteOrder();
                 final String byteOrderStr = lengthToken.encoding().primitiveType().size() == 1 ? "" : ", ByteOrder." + byteOrder;
-
 
                 sb.append(String.format(
                     "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
@@ -582,7 +579,7 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateFileHeader(final String packageName)
     {
         return String.format(
-            "/* Generated class message */\n" +
+            "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
             "package %s;\n\n" +
             "import java.nio.ByteOrder;\n" +
             "import java.util.*;\n" +
@@ -770,7 +767,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        final int length = %d;\n" +
                 indent + "        if (dstOffset < 0 || dstOffset > (dst.length - length))\n" +
                 indent + "        {\n" +
-                indent + "            throw new IndexOutOfBoundsException(\"offset out of range for copy: offset=\" + dstOffset);\n" +
+                indent + "            throw new IndexOutOfBoundsException(\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
                 indent + "        CodecUtil.charsGet(buffer, this.offset + %d, dst, dstOffset, length);\n" +
                 indent + "        return length;\n" +
@@ -786,7 +783,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        final int length = %d;\n" +
                 indent + "        if (srcOffset < 0 || srcOffset > (src.length - length))\n" +
                 indent + "        {\n" +
-                indent + "            throw new IndexOutOfBoundsException(\"offset out of range for copy: offset=\" + srcOffset);\n" +
+                indent + "            throw new IndexOutOfBoundsException(\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
                 indent + "        }\n\n" +
                 indent + "        CodecUtil.charsPut(buffer, this.offset + %d, src, srcOffset, length);\n" +
                 indent + "        return this;\n" +
