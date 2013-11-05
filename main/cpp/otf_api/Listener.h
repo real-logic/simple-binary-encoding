@@ -194,21 +194,19 @@ public:
     };
 
     /**
-     * Informs listener object that groups should contain aggregates of fields instead of marking start
-     * and end of the field. i.e. the OnNext(Group) callback object is called with Groups containing Fields.
-     */
-    Listener &completeGroups();
-
-    // TODO: add OnNext::onNext(Event) for MESSAGE and GROUP begin/end event markers instead of OnNext(Group)
-    // TODO: make Event base class of Field/Group? and change OnNext to always be Event? or Item? or 
-    // TODO: OnNext MESSAGE marker should include templateId
-
-    /**
      * 
      */
     int subscribe(OnNext *onNext, 
                   OnError *onError = NULL,
                   OnCompleted *onCompleted = NULL);
+
+    /**
+     *
+     */
+    int bufferOffset(void) const
+    {
+        return bufferOffset_;
+    };
 
 }; // class Listener
 
