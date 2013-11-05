@@ -382,14 +382,14 @@ public class Cpp99Generator implements CodeGenerator
                 final String lengthCpp99Type = cpp99TypeName(lengthToken.encoding().primitiveType());
 
                 sb.append(String.format(
-                    "    int get%s(char *dst, const int offset, const int length)\n" +
+                    "    int get%s(char *dst, const int length)\n" +
                     "    {\n" +
                     "        sbe_uint64_t sizeOfLengthField = %d;\n" +
                     "        sbe_uint64_t lengthPosition = position();\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
                     "        sbe_uint64_t dataLength = %s(*((%s *)(buffer_ + lengthPosition)));\n" +
                     "        int bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
-                    "        ::memcpy(dst + offset, buffer_ + position(), bytesToCopy);\n" +
+                    "        ::memcpy(dst, buffer_ + position(), bytesToCopy);\n" +
                     "        position(position() + (sbe_uint64_t)dataLength);\n" +
                     "        return bytesToCopy;\n" +
                     "    };\n\n",
@@ -400,13 +400,13 @@ public class Cpp99Generator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    "    int put%s(const char *src, const int offset, const int length)\n" +
+                    "    int put%s(const char *src, const int length)\n" +
                     "    {\n" +
                     "        sbe_uint64_t sizeOfLengthField = %d;\n" +
                     "        sbe_uint64_t lengthPosition = position();\n" +
                     "        *((%s *)(buffer_ + lengthPosition)) = %s((%s)length);\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
-                    "        ::memcpy(buffer_ + position(), src + offset, length);\n" +
+                    "        ::memcpy(buffer_ + position(), src, length);\n" +
                     "        position(position() + (sbe_uint64_t)length);\n" +
                     "        return length;\n" +
                     "    };\n",
@@ -666,7 +666,7 @@ public class Cpp99Generator implements CodeGenerator
         }
         else if (arrayLength > 1)
         {
-            return generateArrayProperty(propertyName, token, indent);
+            return generateArrayProperty(containingClassName, propertyName, token, indent);
         }
 
         return "";
@@ -712,7 +712,10 @@ public class Cpp99Generator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateArrayProperty(final String propertyName, final Token token, final String indent)
+    private CharSequence generateArrayProperty(final String containingClassName,
+                                               final String propertyName,
+                                               final Token token,
+                                               final String indent)
     {
         final String cpp99TypeName = cpp99TypeName(token.encoding().primitiveType());
         final Integer offset = Integer.valueOf(token.offset());
@@ -768,33 +771,31 @@ public class Cpp99Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    int get%s(char *dst, const int offset, const int length) const\n" +
+            indent + "    int get%s(char *dst, const int length) const\n" +
             indent + "    {\n" +
-            indent + "        if (offset < 0)\n" +
+            indent + "        if (length > %d)\n" +
             indent + "        {\n" +
-            indent + "             throw \"offset out of range for get%s\";\n" +
+            indent + "             throw \"length too large for get%s\";\n" +
             indent + "        }\n\n" +
-            indent + "        ::memcpy(dst + offset, buffer_ + offset_ + %d, length);\n" +
+            indent + "        ::memcpy(dst, buffer_ + offset_ + %d, length);\n" +
             indent + "        return length;\n" +
             indent + "    };\n\n",
             toUpperFirstChar(propertyName),
+            Integer.valueOf(token.arrayLength()),
             toUpperFirstChar(propertyName),
             offset
         ));
 
         sb.append(String.format(
-            indent + "    int put%s(const char *src, const int offset, const int length)\n" +
+            indent + "    %s &put%s(const char *src)\n" +
             indent + "    {\n" +
-            indent + "        if (offset < 0)\n" +
-            indent + "        {\n" +
-            indent + "            throw \"offset out of range for put%s\";\n" +
-            indent + "        }\n\n" +
-            indent + "        ::memcpy(buffer_ + offset_ + %d, src + offset, length);\n" +
-            indent + "        return length;\n" +
+            indent + "        ::memcpy(buffer_ + offset_ + %d, src, %d);\n" +
+            indent + "        return *this;\n" +
             indent + "    };\n",
+            containingClassName,
             toUpperFirstChar(propertyName),
-            toUpperFirstChar(propertyName),
-            offset
+            offset,
+            Integer.valueOf(token.arrayLength())
         ));
 
         return sb;
@@ -855,15 +856,11 @@ public class Cpp99Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    int get%s(char *dst, const int offset, const int length) const\n" +
+            indent + "    int get%s(char *dst, const int length) const\n" +
             indent + "    {\n" +
             indent + "        static sbe_uint8_t %sValues[] = {%s};\n" +
             indent + "        int bytesToCopy = (length < sizeof(%sValues)) ? length : sizeof(%sValues);\n\n" +
-            indent + "        if (offset < 0)\n" +
-            indent + "        {\n" +
-            indent + "            throw \"offset out of range for get%s\";\n" +
-            indent + "        }\n\n" +
-            indent + "        ::memcpy(dst + offset, %sValues, bytesToCopy);\n" +
+            indent + "        ::memcpy(dst, %sValues, bytesToCopy);\n" +
             indent + "        return bytesToCopy;\n" +
             indent + "    };\n",
             toUpperFirstChar(propertyName),

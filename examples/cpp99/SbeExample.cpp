@@ -55,7 +55,7 @@ void encodeCar(Car &car, char *buffer, int offset)
        .modelYear(2013)
        .available(BooleanType::TRUE)
        .code(Model::A)
-       .putVehicleCode(VEHICLE_CODE, 0, sizeof(VEHICLE_CODE));
+       .putVehicleCode(VEHICLE_CODE);
 
     for (int i = 0, size = car.someNumbersLength(); i < size; i++)
     {
@@ -70,7 +70,7 @@ void encodeCar(Car &car, char *buffer, int offset)
     car.engine()
        .capacity(2000)
        .numCylinders((short)4)
-       .putManufacturerCode(MANUFACTURER_CODE, 0, sizeof(MANUFACTURER_CODE));
+       .putManufacturerCode(MANUFACTURER_CODE);
 
     car.fuelFiguresCount(3)
        .next().speed(30).mpg(35.9f)
@@ -93,8 +93,8 @@ void encodeCar(Car &car, char *buffer, int offset)
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-    car.putMake(MAKE, 0, strlen(MAKE));
-    car.putModel(MODEL, 0, strlen(MODEL));
+    car.putMake(MAKE, strlen(MAKE));
+    car.putModel(MODEL, strlen(MODEL));
 }
 
 const char *format(int value)
@@ -206,7 +206,8 @@ void decodeCar(Car &car, char *buffer, int offset)
     }
 
     char tmp[1024];
-    int bytesCopied = engine.getFuel(tmp, 0, sizeof(tmp));
+    int bytesCopied = engine.getFuel(tmp, sizeof(tmp));
+    sb.append("\ncar.engine.fuelLength=").append(format(bytesCopied));
     sb.append("\ncar.engine.fuel=").append(tmp, bytesCopied);
 
     Car::FuelFigures &fuelFigures = car.fuelFigures();
@@ -240,13 +241,13 @@ void decodeCar(Car &car, char *buffer, int offset)
         }
     }
 
-    bytesCopied = car.getMake(tmp, 0, sizeof(tmp));
+    bytesCopied = car.getMake(tmp, sizeof(tmp));
     sb.append("\ncar.makeId=").append(format(car.makeId()));
     sb.append("\ncar.makeLength=").append(format((int)bytesCopied));
     sb.append("\ncar.make=").append(tmp, bytesCopied);
     sb.append("\ncar.makeCharacterEncoding=").append(car.makeCharacterEncoding());
 
-    bytesCopied = car.getModel(tmp, 0, sizeof(tmp));
+    bytesCopied = car.getModel(tmp, sizeof(tmp));
     sb.append("\ncar.modelId=").append(format(car.modelId()));
     sb.append("\ncar.modelLength=").append(format((int)bytesCopied));
     sb.append("\ncar.model=").append(tmp, bytesCopied);
