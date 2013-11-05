@@ -48,6 +48,8 @@ public class JavaGeneratorTest
         final MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         final IrGenerator irg = new IrGenerator();
         ir = irg.generate(schema);
+
+        outputManager.clear();
         outputManager.setPackageName(ir.packageName());
     }
 

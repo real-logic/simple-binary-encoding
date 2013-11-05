@@ -96,8 +96,6 @@ public class CompilerUtil
         throws Exception
     {
         final Collection<File> files = new ArrayList<>(sources.size());
-        int i = 0;
-
         for (final Map.Entry<String, CharSequence> entry : sources.entrySet())
         {
             final String fqClassName = entry.getKey();

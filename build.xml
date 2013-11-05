@@ -101,9 +101,15 @@
                 <classpath refid="test.classpath"/>
                 <formatter type="xml"/>
                 <formatter type="plain" usefile="false"/>
-                <batchtest fork="true" todir="${dir.reports.unit}">
+                <batchtest todir="${dir.reports.unit}">
                     <fileset dir="${dir.test.src}">
                         <include name="**/*Test.java"/>
+                        <exclude name="**/JavaGeneratorTest.java"/>
+                    </fileset>
+                </batchtest>
+                <batchtest fork="true" todir="${dir.reports.unit}">
+                    <fileset dir="${dir.test.src}">
+                        <include name="**/JavaGeneratorTest.java"/>
                     </fileset>
                 </batchtest>
             </junit>

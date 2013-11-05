@@ -56,4 +56,10 @@ public class StringWriterOutputManager implements OutputManager
 
         return sources;
     }
+
+    public void clear()
+    {
+        packageName = "";
+        sourceFileByName.clear();
+    }
 }
