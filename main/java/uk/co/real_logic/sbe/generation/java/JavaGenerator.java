@@ -59,7 +59,7 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(MESSAGE_HEADER_VISITOR, FixedFlyweight.class.getSimpleName()));
-            out.append(generateFixedFlyweightCode(ir.header().get(0).size()));
+            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_VISITOR, ir.header().get(0).size()));
 
             final List<Token> tokens = ir.header();
             out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_VISITOR, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
@@ -425,7 +425,7 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(bitSetName, FixedFlyweight.class.getSimpleName()));
-            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
+            out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
@@ -459,7 +459,7 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(compositeName, FixedFlyweight.class.getSimpleName()));
-            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
+            out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size()));
 
             out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
@@ -871,20 +871,22 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFixedFlyweightCode(final int size)
+    private CharSequence generateFixedFlyweightCode(final String className, final int size)
     {
         return String.format(
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n\n" +
-            "    public void reset(final DirectBuffer buffer, final int offset)\n" +
+            "    public %s reset(final DirectBuffer buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
+            "        return this;\n" +
             "    }\n\n" +
             "    public int size()\n" +
             "    {\n" +
             "        return %d;\n" +
-            "    };\n",
+            "    }\n",
+            className,
             Integer.valueOf(size)
         );
     }

@@ -25,6 +25,7 @@ public interface FixedFlyweight
      *
      * @param buffer from which to read and write.
      * @param offset at which the flyweight starts.
+     * @return covariant subclass for fluent API support.
      */
-    void reset(final DirectBuffer buffer, final int offset);
+    FixedFlyweight reset(final DirectBuffer buffer, final int offset);
 }

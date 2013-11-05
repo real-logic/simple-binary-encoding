@@ -27,6 +27,9 @@ public class SbeExample
     private static final byte[] MAKE;
     private static final byte[] MODEL;
 
+    private static final MessageHeader MESSAGE_HEADER = new MessageHeader();
+    private static final Car CAR = new Car();
+
     static
     {
         try
@@ -44,16 +47,34 @@ public class SbeExample
     {
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
         final DirectBuffer directBuffer = new DirectBuffer(byteBuffer);
+        int bufferOffset = 0;
 
-        final Car car = new Car();
+        // Setup for encoding a message
 
-        encode(car, directBuffer);
-        decode(car, directBuffer);
+        MESSAGE_HEADER
+            .reset(directBuffer, bufferOffset)
+            .blockLength(CAR.blockLength())
+            .templateId((int)CAR.templateId())
+            .version((short)0);
+
+        bufferOffset += MESSAGE_HEADER.size();
+        encode(CAR, directBuffer, bufferOffset);
+
+        // Decode the encoded message
+
+        bufferOffset = 0;
+        MESSAGE_HEADER.reset(directBuffer, bufferOffset);
+
+        final int templateId = MESSAGE_HEADER.templateId();
+        final int version = MESSAGE_HEADER.version();
+        // Lookup the applicable flyweight to decode this type of message based on templateId and version.
+
+        bufferOffset += MESSAGE_HEADER.size();
+        decode(CAR, directBuffer, bufferOffset);
     }
 
-    private static void encode(final Car car, final DirectBuffer directBuffer)
+    private static void encode(final Car car, final DirectBuffer directBuffer, final int bufferOffset)
     {
-        final int bufferOffset = 0;
         final int srcOffset = 0;
 
         car.reset(directBuffer, bufferOffset)
@@ -101,10 +122,9 @@ public class SbeExample
         car.putModel(MODEL, srcOffset, MODEL.length);
     }
 
-    private static void decode(final Car car, final DirectBuffer directBuffer)
+    private static void decode(final Car car, final DirectBuffer directBuffer, final int bufferOffset)
         throws Exception
     {
-        final int bufferOffset = 0;
         final byte[] buffer = new byte[128];
         final StringBuilder sb = new StringBuilder();
 
