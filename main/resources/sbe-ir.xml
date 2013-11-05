@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messageSchema package="uk.co.real_logic.sbe.ir.generated"
+               description="SBE IR Serialization"
+               version="0"
+               byteOrder="littleEndian">
+    <!--
+        IR serialization
+    -->
+
+    <types>
+        <composite name="messageHeader" semanticType="messageHeader">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint8"/>
+            <type name="reserved" primitiveType="uint8"/>
+        </composite>
+        <composite name="groupSize" semanticType="NumInGroup">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint8"/>
+        </composite>
+        <composite name="varDataEncoding">
+            <type name="length" primitiveType="uint8" semanticType="Length"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8" semanticType="data"/>
+        </composite>
+        <enum name="SerializedPrimitiveType" encodingType="uint8">
+            <validValue name="CHAR">1</validValue>
+            <validValue name="INT8">2</validValue>
+            <validValue name="INT16">3</validValue>
+            <validValue name="INT32">4</validValue>
+            <validValue name="INT64">5</validValue>
+            <validValue name="UINT8">6</validValue>
+            <validValue name="UINT16">7</validValue>
+            <validValue name="UINT32">8</validValue>
+            <validValue name="UINT64">9</validValue>
+            <validValue name="FLOAT">10</validValue>
+            <validValue name="DOUBLE">11</validValue>
+        </enum>
+        <enum name="SerializedSignal" encodingType="uint8">
+            <validValue name="BEGIN_MESSAGE">1</validValue>
+            <validValue name="END_MESSAGE">2</validValue>
+            <validValue name="BEGIN_COMPOSITE">3</validValue>
+            <validValue name="END_COMPOSITE">4</validValue>
+            <validValue name="BEGIN_FIELD">5</validValue>
+            <validValue name="END_FIELD">6</validValue>
+            <validValue name="BEGIN_GROUP">7</validValue>
+            <validValue name="END_GROUP">8</validValue>
+            <validValue name="BEGIN_ENUM">9</validValue>
+            <validValue name="VALID_VALUE">10</validValue>
+            <validValue name="END_ENUM">11</validValue>
+            <validValue name="BEGIN_SET">12</validValue>
+            <validValue name="CHOICE">13</validValue>
+            <validValue name="END_SET">14</validValue>
+            <validValue name="BEGIN_VAR_DATA">15</validValue>
+            <validValue name="END_VAR_DATA">16</validValue>
+            <validValue name="ENCODING">17</validValue>
+        </enum>
+        <enum name="SerializedByteOrder" encodingType="uint8">
+            <validValue name="LITTLE_ENDIAN">0</validValue>
+            <validValue name="BIG_ENDIAN">1</validValue>
+        </enum>
+    </types>
+
+    <message name="SerializedFrame" id="1" description="Frame Header for start of Serialized IR">
+        <field name="SbeIrVersion" id="1" type="uint8" semanticType="Version"/>
+        <field name="schemaVersion" id="2" type="uint8" semanticType="Version"/>
+        <field name="byteOrder" id="3" type="SerializedByteOrder" semanticType="ByteOrder"/>
+        <data name="packageVal" id="4" type="varDataEncoding" semanticType="Package"/>
+    </message>
+
+    <message name="SerializedToken" id="2" description="Serialized IR Token">
+        <field name="offset" id="11" type="uint32" semanticType="Offset"/>
+        <field name="size" id="12" type="uint32" semanticType="Size"/>
+        <field name="schemaID" id="13" type="uint16" semanticType="ID"/>
+        <field name="signal" id="14" type="SerializedSignal" semanticType="Signal"/>
+        <field name="primitiveType" id="15" type="SerializedPrimitiveType" semanticType="PrimitiveType"/>
+        <field name="byteOrder" id="16" type="SerializedByteOrder" semanticType="ByteOrder"/>
+        <field name="sinceVersion" id="17" type="uint8" semanticType="Version"/>
+        <data name="name" id="18" type="varDataEncoding" semanticType="String"/>
+        <data name="constVal" id="19" type="varDataEncoding" semanticType="Value"/>
+        <data name="minVal" id="20" type="varDataEncoding" semanticType="Value"/>
+        <data name="maxVal" id="21" type="varDataEncoding" semanticType="Value"/>
+        <data name="nullVal" id="22" type="varDataEncoding" semanticType="Value"/>
+        <data name="characterEncoding" id="23" type="varDataEncoding" semanticType="String"/>
+    </message>
+</messageSchema>
