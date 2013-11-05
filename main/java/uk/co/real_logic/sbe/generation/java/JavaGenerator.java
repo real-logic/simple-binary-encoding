@@ -306,7 +306,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return %d;\n" +
             indent + "    }\n\n",
             groupName,
-            token.schemaId()
+            Long.valueOf(token.schemaId())
         ));
 
         sb.append(String.format(
@@ -367,7 +367,7 @@ public class JavaGenerator implements CodeGenerator
                     "        return %d;\n" +
                     "    }\n\n",
                     formatPropertyName(propertyName),
-                    token.schemaId()
+                    Long.valueOf(token.schemaId())
                 ));
 
                 final Token lengthToken = tokens.get(i + 2);
@@ -650,7 +650,7 @@ public class JavaGenerator implements CodeGenerator
         }
         else if (arrayLength > 1)
         {
-            return generateArrayProperty(propertyName, token, indent);
+            return generateArrayProperty(containingClassName, propertyName, token, indent);
         }
 
         return "";
@@ -699,13 +699,18 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateArrayProperty(final String propertyName, final Token token, final String indent)
+    private CharSequence generateArrayProperty(final String containingClassName,
+                                               final String propertyName,
+                                               final Token token,
+                                               final String indent)
     {
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
         final String typePrefix = token.encoding().primitiveType().primitiveName();
         final Integer offset = Integer.valueOf(token.offset());
         final ByteOrder byteOrder = token.encoding().byteOrder();
         final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", ByteOrder." + byteOrder;
+        final Integer fieldLength = Integer.valueOf(token.arrayLength());
+        final Integer typeSize = Integer.valueOf(token.encoding().primitiveType().size());
 
         final StringBuilder sb = new StringBuilder();
 
@@ -716,7 +721,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return %d;\n" +
             indent + "    }\n\n",
             propertyName,
-            Integer.valueOf(token.arrayLength())
+            fieldLength
         ));
 
         sb.append(String.format(
@@ -730,10 +735,10 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n\n",
             javaTypeName,
             propertyName,
-            Integer.valueOf(token.arrayLength()),
+            fieldLength,
             typePrefix,
             offset,
-            Integer.valueOf(token.encoding().primitiveType().size()),
+            typeSize,
             byteOrderStr
         ));
 
@@ -748,44 +753,45 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n\n",
             propertyName,
             javaTypeName,
-            Integer.valueOf(token.arrayLength()),
+            fieldLength,
             typePrefix,
             offset,
-            Integer.valueOf(token.encoding().primitiveType().size()),
+            typeSize,
             byteOrderStr
         ));
 
         if (token.encoding().primitiveType() == PrimitiveType.CHAR)
         {
             sb.append(String.format(
-                indent + "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
+                indent + "    public int get%s(final byte[] dst, final int dstOffset)\n" +
                 indent + "    {\n" +
-                indent + "        if (offset < 0 || offset > (dst.length - length))\n" +
+                indent + "        final int length = %d;\n" +
+                indent + "        if (dstOffset < 0 || dstOffset > (dst.length - length))\n" +
                 indent + "        {\n" +
-                indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
+                indent + "            throw new IndexOutOfBoundsException(\"offset out of range for copy: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
-                indent + "        final int bytesCopied = Math.min(length, %d);\n" +
-                indent + "        CodecUtil.charsGet(buffer, this.offset + %d, dst, offset, bytesCopied);\n" +
-                indent + "        return bytesCopied;\n" +
+                indent + "        CodecUtil.charsGet(buffer, this.offset + %d, dst, dstOffset, length);\n" +
+                indent + "        return length;\n" +
                 indent + "    }\n\n",
                 toUpperFirstChar(propertyName),
-                Integer.valueOf(token.arrayLength()),
+                fieldLength,
                 offset
             ));
 
             sb.append(String.format(
-                indent + "    public int put%s(final byte[] src, final int offset, final int length)\n" +
+                indent + "    public %s put%s(final byte[] src, final int srcOffset)\n" +
                 indent + "    {\n" +
-                indent + "        if (offset < 0 || offset > (src.length - length))\n" +
+                indent + "        final int length = %d;\n" +
+                indent + "        if (srcOffset < 0 || srcOffset > (src.length - length))\n" +
                 indent + "        {\n" +
-                indent + "            throw new IndexOutOfBoundsException(\"offset out of range: offset=\" + offset);\n" +
+                indent + "            throw new IndexOutOfBoundsException(\"offset out of range for copy: offset=\" + srcOffset);\n" +
                 indent + "        }\n\n" +
-                indent + "        final int bytesCopied = Math.min(length, %d);\n" +
-                indent + "        CodecUtil.charsPut(buffer, this.offset + %d, src, offset, bytesCopied);\n" +
-                indent + "        return bytesCopied;\n" +
+                indent + "        CodecUtil.charsPut(buffer, this.offset + %d, src, srcOffset, length);\n" +
+                indent + "        return this;\n" +
                 indent + "    }\n",
+                containingClassName,
                 toUpperFirstChar(propertyName),
-                Integer.valueOf(token.arrayLength()),
+                fieldLength,
                 offset
             ));
         }
@@ -880,7 +886,7 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        return %d;\n" +
             "    };\n",
-            size
+            Integer.valueOf(size)
         );
     }
 
@@ -926,7 +932,7 @@ public class JavaGenerator implements CodeGenerator
             "    }\n",
             Integer.valueOf(blockLength),
             className,
-            schemaId
+            Long.valueOf(schemaId)
         );
     }
 
@@ -949,7 +955,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "        return %d;\n" +
                     indent + "    }\n\n",
                     propertyName,
-                    signalToken.schemaId()
+                    Long.valueOf(signalToken.schemaId())
                 ));
 
                 switch (encodingToken.signal())

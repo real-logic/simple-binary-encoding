@@ -170,8 +170,8 @@ public class JavaGeneratorTest
         final short numCylinders = (short)4;
         clazz.getDeclaredMethod("numCylinders", short.class).invoke(flyweight, Short.valueOf(numCylinders));
 
-        clazz.getDeclaredMethod("putManufacturerCode", byte[].class, int.class, int.class)
-             .invoke(flyweight, manufacturerCode, Integer.valueOf(0), Integer.valueOf(manufacturerCode.length));
+        clazz.getDeclaredMethod("putManufacturerCode", byte[].class, int.class)
+             .invoke(flyweight, manufacturerCode, Integer.valueOf(0));
 
         verify(mockBuffer).putByte(numCylindersOffset, (byte)numCylinders);
         verify(mockBuffer).putBytes(manufacturerCodeOffset, manufacturerCode, 0, manufacturerCode.length);

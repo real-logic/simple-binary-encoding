@@ -54,19 +54,19 @@ public class SbeExample
     private static void encode(final Car car, final DirectBuffer directBuffer)
     {
         final int bufferOffset = 0;
+        final int srcOffset = 0;
 
         car.reset(directBuffer, bufferOffset)
            .serialNumber(1234)
            .modelYear(2013)
            .available(BooleanType.TRUE)
-           .code(Model.A);
+           .code(Model.A)
+           .putVehicleCode(VEHICLE_CODE, srcOffset);
 
         for (int i = 0, size = car.someNumbersLength(); i < size; i++)
         {
             car.someNumbers(i, i);
         }
-
-        car.putVehicleCode(VEHICLE_CODE, 0, VEHICLE_CODE.length);
 
         car.extras()
            .cruiseControl(true)
@@ -76,7 +76,7 @@ public class SbeExample
         car.engine()
            .capacity(2000)
            .numCylinders((short)4)
-           .putManufacturerCode(MANUFACTURER_CODE, 0, MANUFACTURER_CODE.length);
+           .putManufacturerCode(MANUFACTURER_CODE, srcOffset);
 
         car.fuelFiguresCount(3)
            .next().speed(30).mpg(35.9f)
@@ -97,18 +97,18 @@ public class SbeExample
                 .next().mph(60).seconds(7.1f)
                 .next().mph(100).seconds(11.8f);
 
-        final int offset = 0;
-        car.putMake(MAKE, offset, MAKE.length);
-        car.putModel(MODEL, offset, MODEL.length);
+        car.putMake(MAKE, srcOffset, MAKE.length);
+        car.putModel(MODEL, srcOffset, MODEL.length);
     }
 
     private static void decode(final Car car, final DirectBuffer directBuffer)
         throws Exception
     {
-        car.reset(directBuffer, 0);
-
+        final int bufferOffset = 0;
         final byte[] buffer = new byte[128];
         final StringBuilder sb = new StringBuilder();
+
+        car.reset(directBuffer, bufferOffset);
 
         sb.append("\ncar.templateId=").append(car.templateId());
         sb.append("\ncar.serialNumber=").append(car.serialNumber());
