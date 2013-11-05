@@ -207,7 +207,7 @@ public class Cpp99Generator implements CodeGenerator
             indent + "private:\n" +
             indent + "    %s dimensions_;\n" +
             indent + "    int blockLength_;\n" +
-            indent + "    int size_;\n" +
+            indent + "    int count_;\n" +
             indent + "    int index_;\n" +
             indent + "    int offset_;\n" +
             indent + "    MessageFlyweight *message_;\n" +
@@ -224,7 +224,7 @@ public class Cpp99Generator implements CodeGenerator
             indent + "        message_ = message;\n" +
             indent + "        buffer_ = message_->buffer();\n" +
             indent + "        dimensions_.reset(buffer_, message_->position());\n" +
-            indent + "        size_ = dimensions_.numInGroup();\n" +
+            indent + "        count_ = dimensions_.numInGroup();\n" +
             indent + "        blockLength_ = dimensions_.blockLength();\n" +
             indent + "        index_ = -1;\n" +
             indent + "        int dimensionsHeaderSize = %d;\n" +
@@ -238,15 +238,15 @@ public class Cpp99Generator implements CodeGenerator
         final String cpp99TypeForNumInGroup = cpp99TypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    void resetForEncode(MessageFlyweight *message, const int size)\n" +
+            indent + "    void resetForEncode(MessageFlyweight *message, const int count)\n" +
             indent + "    {\n" +
             indent + "        message_ = message;\n" +
             indent + "        buffer_ = message_->buffer();\n" +
             indent + "        dimensions_.reset(buffer_, message_->position());\n" +
-            indent + "        dimensions_.numInGroup((%s)size);\n" +
+            indent + "        dimensions_.numInGroup((%s)count);\n" +
             indent + "        dimensions_.blockLength((%s)%d);\n" +
             indent + "        index_ = -1;\n" +
-            indent + "        size_ = size;\n" +
+            indent + "        count_ = count;\n" +
             indent + "        blockLength_ = %d;\n" +
             indent + "        int dimensionsHeaderSize = %d;\n" +
             indent + "        message_->position(message_->position() + dimensionsHeaderSize);\n" +
@@ -259,16 +259,16 @@ public class Cpp99Generator implements CodeGenerator
         ));
 
         sb.append(
-            indent + "    int size(void) const\n" +
+            indent + "    int count(void) const\n" +
             indent + "    {\n" +
-            indent + "        return size_;\n" +
+            indent + "        return count_;\n" +
             indent + "    };\n\n"
         );
 
         sb.append(
             indent + "    bool next(void)\n" +
             indent + "    {\n" +
-            indent + "        if (index_ + 1 >= size_)\n" +
+            indent + "        if (index_ + 1 >= count_)\n" +
             indent + "        {\n" +
             indent + "            return false;\n" +
             indent + "        }\n\n" +
@@ -330,9 +330,9 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    %s &%sSize(const int size)\n" +
+            indent + "    %s &%sCount(const int count)\n" +
             indent + "    {\n" +
-            indent + "        %s_.resetForEncode(message(), size);\n" +
+            indent + "        %s_.resetForEncode(message(), count);\n" +
             indent + "        return %s_;\n" +
             indent + "    };\n",
             className,

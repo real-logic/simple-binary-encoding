@@ -82,8 +82,8 @@ class GroupFlyweight
 {
 public:
     virtual void resetForDecode(MessageFlyweight *message) = 0;
-    virtual void resetForEncode(MessageFlyweight *message, const int size) = 0;
-    virtual int size(void) const = 0;
+    virtual void resetForEncode(MessageFlyweight *message, const int count) = 0;
+    virtual int count(void) const = 0;
     virtual bool next(void) = 0;
 };
 

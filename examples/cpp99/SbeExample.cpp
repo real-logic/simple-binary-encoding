@@ -72,7 +72,7 @@ void encodeCar(Car &car, char *buffer, int offset)
        .numCylinders((short)4)
        .putManufacturerCode(MANUFACTURER_CODE, 0, sizeof(MANUFACTURER_CODE));
 
-    Car::FuelFigures &fuelFigures = car.fuelFiguresSize(3);
+    Car::FuelFigures &fuelFigures = car.fuelFiguresCount(3);
 
     fuelFigures.next();
     fuelFigures.speed(30).mpg(35.9f);
@@ -83,12 +83,12 @@ void encodeCar(Car &car, char *buffer, int offset)
     fuelFigures.next();
     fuelFigures.speed(75).mpg(40.0f);
 
-    Car::PerformanceFigures &performanceFigures = car.performanceFiguresSize(2);
+    Car::PerformanceFigures &performanceFigures = car.performanceFiguresCount(2);
 
     performanceFigures.next();
     performanceFigures.octaneRating((short)95);
 
-    Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.accelerationSize(2);
+    Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.accelerationCount(2);
 
     acceleration.next();
     acceleration.mph(60).seconds(7.5f);
@@ -99,7 +99,7 @@ void encodeCar(Car &car, char *buffer, int offset)
     performanceFigures.next();
     performanceFigures.octaneRating((short)99);
 
-    acceleration = performanceFigures.accelerationSize(2);
+    acceleration = performanceFigures.accelerationCount(2);
 
     acceleration.next();
     acceleration.mph(60).seconds(7.1f);
