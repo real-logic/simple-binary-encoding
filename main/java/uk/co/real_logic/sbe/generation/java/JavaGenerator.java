@@ -165,8 +165,9 @@ public class JavaGenerator implements CodeGenerator
         {
             if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
             {
-                final String groupName = tokens.get(index).name();
-                sb.append(generateGroupProperty(groupName, indent));
+                final Token groupToken = tokens.get(index);
+                final String groupName = groupToken.name();
+                sb.append(generateGroupProperty(groupName, groupToken, indent));
 
                 generateGroupClassHeader(sb, groupName, tokens, index, indent + INDENT);
 
@@ -281,7 +282,9 @@ public class JavaGenerator implements CodeGenerator
         ));
     }
 
-    private CharSequence generateGroupProperty(final String groupName, final String indent)
+    private CharSequence generateGroupProperty(final String groupName,
+                                               final Token token,
+                                               final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -294,6 +297,16 @@ public class JavaGenerator implements CodeGenerator
             className,
             propertyName,
             className
+        ));
+
+        sb.append(String.format(
+            "\n" +
+            indent + "    public long %sId()\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n\n",
+            groupName,
+            token.schemaId()
         ));
 
         sb.append(String.format(
@@ -346,6 +359,15 @@ public class JavaGenerator implements CodeGenerator
                     "    }\n\n",
                     formatPropertyName(propertyName),
                     characterEncoding
+                ));
+
+                sb.append(String.format(
+                    "    public long %sId()\n" +
+                    "    {\n" +
+                    "        return %d;\n" +
+                    "    }\n\n",
+                    formatPropertyName(propertyName),
+                    token.schemaId()
                 ));
 
                 final Token lengthToken = tokens.get(i + 2);
@@ -919,6 +941,16 @@ public class JavaGenerator implements CodeGenerator
             {
                 final Token encodingToken = tokens.get(i + 1);
                 final String propertyName = signalToken.name();
+
+                sb.append(String.format(
+                    "\n" +
+                    indent + "    public long %sId()\n" +
+                    indent + "    {\n" +
+                    indent + "        return %d;\n" +
+                    indent + "    }\n\n",
+                    propertyName,
+                    signalToken.schemaId()
+                ));
 
                 switch (encodingToken.signal())
                 {
