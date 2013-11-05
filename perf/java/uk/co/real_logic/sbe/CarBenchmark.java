@@ -52,7 +52,7 @@ public class CarBenchmark
         fuelFigures.speed(100);
 
         final Car.PerformanceFigures performanceFigures = state.car.performanceFigures();
-        performanceFigures.accelerationSize(10);
+        performanceFigures.accelerationCount(10);
         performanceFigures.octaneRating((short)98);
 
         state.car.putMake(AUDI, 0, AUDI.length);

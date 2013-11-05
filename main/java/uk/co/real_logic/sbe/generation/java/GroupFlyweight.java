@@ -15,10 +15,12 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import java.util.Iterator;
+
 /**
  * Interface for repeating groups
  */
-public interface GroupFlyweight
+public interface GroupFlyweight<T> extends Iterable<T>, Iterator<T>
 {
     /**
      * Reset the flyweight to begin decoding from the current position
@@ -26,23 +28,16 @@ public interface GroupFlyweight
     void resetForDecode();
 
     /**
-     * Reset the flyweight to begin encoding for the current position for size of repeat count.
+     * Reset the flyweight to begin encoding for the current position for a repeat count.
      *
-     * @param size of the the times the groups will repeat.
+     * @param count of the the times the groups will repeat.
      */
-    void resetForEncode(final int size);
+    void resetForEncode(final int count);
 
     /**
-     * Get the number of times the group repeats.
+     * Count of the times the group repeats.
      *
      * @return the number of times the group repeats.
      */
-    int size();
-
-    /**
-     * Advance the group forward to next element. The cursor initially starts at -1.
-     *
-     * @return true is the advance succeeds due to sufficient space.
-     */
-    boolean next();
+    int count();
 }

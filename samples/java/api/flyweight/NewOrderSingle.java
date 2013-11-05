@@ -25,33 +25,34 @@ public class NewOrderSingle
     {
     }
 
-    public void clOrderId(final String value)
+    public NewOrderSingle clOrderId(final String value)
     {
+        return this;
     }
 
-    public void symbolId(final long value)
+    public NewOrderSingle symbolId(final long value)
     {
+        return this;
     }
 
-    public void side(final Side side)
+    public NewOrderSingle side(final Side side)
     {
+        return this;
     }
 
-    public void orderQty(final int value)
+    public NewOrderSingle orderQty(final int value)
     {
+        return this;
     }
 
-    public void price(final double value)
+    public NewOrderSingle price(final double value)
     {
+        return this;
     }
 
-    public void transactTime(final long value)
+    public NewOrderSingle transactTime(final long value)
     {
-    }
-
-    public boolean valid()
-    {
-        return true;
+        return this;
     }
 
     public String clOrderId()

@@ -19,7 +19,6 @@ import uk.co.real_logic.sbe.generation.java.DirectBuffer;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 
 public class SbeExample
 {
@@ -41,7 +40,7 @@ public class SbeExample
         }
     }
 
-    public static void main(final String[] args)
+    public static void main(final String[] args)throws Exception
     {
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
         final DirectBuffer directBuffer = new DirectBuffer(byteBuffer);
@@ -54,9 +53,10 @@ public class SbeExample
 
     private static void encode(final Car car, final DirectBuffer directBuffer)
     {
-        car.reset(directBuffer, 0);
+        final int bufferOffset = 0;
 
-        car.serialNumber(1234)
+        car.reset(directBuffer, bufferOffset)
+           .serialNumber(1234)
            .modelYear(2013)
            .available(BooleanType.TRUE)
            .code(Model.A);
@@ -68,54 +68,42 @@ public class SbeExample
 
         car.putVehicleCode(VEHICLE_CODE, 0, VEHICLE_CODE.length);
 
-        car.extras().cruiseControl(true)
-                    .sportsPack(true)
-                    .sunRoof(false);
+        car.extras()
+           .cruiseControl(true)
+           .sportsPack(true)
+           .sunRoof(false);
 
-        car.engine().capacity(2000)
-                    .numCylinders((short)4)
-                    .putManufacturerCode(MANUFACTURER_CODE, 0, MANUFACTURER_CODE.length);
+        car.engine()
+           .capacity(2000)
+           .numCylinders((short)4)
+           .putManufacturerCode(MANUFACTURER_CODE, 0, MANUFACTURER_CODE.length);
 
-        final Car.FuelFigures fuelFigures = car.fuelFiguresSize(3);
+        car.fuelFiguresCount(3)
+           .next().speed(30).mpg(35.9f)
+           .next().speed(55).mpg(49.0f)
+           .next().speed(75).mpg(40.0f);
 
-        fuelFigures.next();
-        fuelFigures.speed(30).mpg(35.9f);
+        final Car.PerformanceFigures performanceFigures = car.performanceFiguresCount(2);
+        performanceFigures.next()
+            .octaneRating((short)95)
+            .accelerationCount(3)
+                .next().mph(30).seconds(4.0f)
+                .next().mph(60).seconds(7.5f)
+                .next().mph(100).seconds(12.2f);
+        performanceFigures.next()
+            .octaneRating((short)99)
+            .accelerationCount(3)
+                .next().mph(30).seconds(3.8f)
+                .next().mph(60).seconds(7.1f)
+                .next().mph(100).seconds(11.8f);
 
-        fuelFigures.next();
-        fuelFigures.speed(55).mpg(49.0f);
-
-        fuelFigures.next();
-        fuelFigures.speed(75).mpg(40.0f);
-
-        final Car.PerformanceFigures performanceFigures = car.performanceFiguresSize(2);
-
-        performanceFigures.next();
-        performanceFigures.octaneRating((short)95);
-
-        Car.PerformanceFigures.Acceleration acceleration = performanceFigures.accelerationSize(2);
-
-        acceleration.next();
-        acceleration.mph(60).seconds(7.5f);
-
-        acceleration.next();
-        acceleration.mph(100).seconds(12.2f);
-
-        performanceFigures.next();
-        performanceFigures.octaneRating((short)99);
-
-        acceleration = performanceFigures.accelerationSize(2);
-
-        acceleration.next();
-        acceleration.mph(60).seconds(7.1f);
-
-        acceleration.next();
-        acceleration.mph(100).seconds(11.8f);
-
-        car.putMake(MAKE, 0, MAKE.length);
-        car.putModel(MODEL, 0, MODEL.length);
+        final int offset = 0;
+        car.putMake(MAKE, offset, MAKE.length);
+        car.putModel(MODEL, offset, MODEL.length);
     }
 
     private static void decode(final Car car, final DirectBuffer directBuffer)
+        throws Exception
     {
         car.reset(directBuffer, 0);
 
@@ -155,34 +143,27 @@ public class SbeExample
             sb.append((char)engine.manufacturerCode(i));
         }
 
-        int bytesCopied = engine.getFuel(buffer, 0, buffer.length);
-        sb.append("\ncar.engine.fuel=").append(new String(buffer, 0, bytesCopied, Charset.forName("ASCII")));
+        sb.append("\ncar.engine.fuel=").append(new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
 
-        final Car.FuelFigures fuelFigures = car.fuelFigures();
-        while (fuelFigures.next())
+        for (final Car.FuelFigures fuelFigures : car.fuelFigures())
         {
             sb.append("\ncar.fuelFigures.speed=").append(fuelFigures.speed());
             sb.append("\ncar.fuelFigures.mpg=").append(fuelFigures.mpg());
         }
 
-        final Car.PerformanceFigures performanceFigures = car.performanceFigures();
-        while (performanceFigures.next())
+        for (final Car.PerformanceFigures performanceFigures : car.performanceFigures())
         {
             sb.append("\ncar.performanceFigures.octaneRating=").append(performanceFigures.octaneRating());
 
-            final Car.PerformanceFigures.Acceleration acceleration = performanceFigures.acceleration();
-            while (acceleration.next())
+            for (final Car.PerformanceFigures.Acceleration acceleration : performanceFigures.acceleration())
             {
                 sb.append("\ncar.performanceFigures.acceleration.mph=").append(acceleration.mph());
                 sb.append("\ncar.performanceFigures.acceleration.seconds=").append(acceleration.seconds());
             }
         }
 
-        bytesCopied = car.getMake(buffer, 0, buffer.length);
-        sb.append("\ncar.make=").append(new String(buffer, 0, bytesCopied, Charset.forName(car.makeCharacterEncoding())));
-
-        bytesCopied = car.getModel(buffer, 0, buffer.length);
-        sb.append("\ncar.model=").append(new String(buffer, 0, bytesCopied, Charset.forName(car.modelCharacterEncoding())));
+        sb.append("\ncar.make=").append(new String(buffer, 0, car.getMake(buffer, 0, buffer.length), car.makeCharacterEncoding()));
+        sb.append("\ncar.model=").append(new String(buffer, 0, car.getModel(buffer, 0, buffer.length), car.modelCharacterEncoding()));
 
         sb.append("\ncar.size=").append(car.size());
 
