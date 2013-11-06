@@ -20,6 +20,7 @@ import uk.co.real_logic.sbe.ir.generated.SerializedFrame;
 import uk.co.real_logic.sbe.ir.generated.SerializedToken;
 import uk.co.real_logic.sbe.util.Verify;
 
+import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,7 +28,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
-public class Serializer
+public class Serializer implements Closeable
 {
     private static final int CAPACITY = 4096;
 
@@ -123,7 +124,7 @@ public class Serializer
         serializedToken.putMaxVal(byteArray, 0, SerializationUtils.putVal(byteArray, token.encoding().maxVal()));
         serializedToken.putNullVal(byteArray, 0, SerializationUtils.putVal(byteArray, token.encoding().nullVal()));
         serializedToken.putCharacterEncoding(token.encoding().characterEncoding().getBytes(), 0,
-                                             token.encoding().characterEncoding().getBytes().length);
+                token.encoding().characterEncoding().getBytes().length);
 
         return serializedToken.size();
     }

@@ -26,7 +26,7 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Deserializer
+public class Deserializer implements Closeable
 {
     private static final int CAPACITY = 4096;
 
