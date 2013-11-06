@@ -69,6 +69,7 @@
                     maxErrors="0">
             <fileset dir="${dir.main.src}">
                 <include name="**/*.java"/>
+                <exclude name="**/ir/generated/**"/>
             </fileset>
             <fileset dir="${dir.test.src}">
                 <include name="**/*.java"/>
@@ -151,8 +152,25 @@
             <fileset dir="${dir.main.src}"/>
         </jar>
     </target>
-	
+
     <target name="all" depends="clean, checkstyle, build, test, javadoc, dist"/>
+
+    <!-- SBE Serialized IR targets -->
+
+    <path id="sbetool.classpath">
+        <fileset dir="${dir.dist}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="generate:java:sbeir" depends="dist" description="Generate serialized IR code">
+        <java classname="uk.co.real_logic.sbe.SbeTool">
+            <classpath refid="sbetool.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.main.src}"/>
+            <sysproperty key="sbe.target.language" value="Java"/>
+            <arg value="${dir.main.resources}/sbe-ir.xml"/>
+        </java>
+    </target>
 
     <!-- SBE Examples targets -->
 
