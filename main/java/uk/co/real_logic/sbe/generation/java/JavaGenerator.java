@@ -894,14 +894,14 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateMessageFlyweightCode(final int blockLength, final String className, final long schemaId)
     {
         return String.format(
-            "    private static final int blockLength = %d;\n\n" +
+            "    private static final int BLOCKLENGTH = %d;\n\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
             "    private int position;\n" +
             "\n" +
             "    public int blockLength()\n" +
             "    {\n" +
-            "        return blockLength;\n" +
+            "        return BLOCKLENGTH;\n" +
             "    }\n\n" +
             "    public int offset()\n" +
             "    {\n" +
@@ -911,7 +911,7 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
-            "        position(offset + blockLength);\n" +
+            "        position(offset + blockLength());\n" +
             "        return this;\n" +
             "    }\n\n" +
             "    public int size()\n" +
