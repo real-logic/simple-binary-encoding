@@ -137,6 +137,7 @@ public class SetType extends Type
         private final String name;
         private final String description;
         private final PrimitiveValue value;
+        private final int sinceVersion;
 
         /**
          * Construct a Choice given the XML node and the encodingType
@@ -149,6 +150,7 @@ public class SetType extends Type
             name = getAttributeValue(node, "name");
             description = getAttributeValueOrNull(node, "description");
             value = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), encodingType);
+            sinceVersion = Integer.parseInt(getAttributeValue(node, "sinceVersion", "0"));
 
             // choice values are bit positions (0, 1, 2, 3, 4, etc.) from LSB to MSB
             if (value.longValue() >= (encodingType.size() * 8))
@@ -187,6 +189,16 @@ public class SetType extends Type
         public String description()
         {
             return description;
+        }
+
+        /**
+         * The sinceVersion value of the {@link Choice}
+         *
+         * @return the sinceVersion value of the {@link Choice}
+         */
+        public int sinceVersion()
+        {
+            return sinceVersion;
         }
     }
 }

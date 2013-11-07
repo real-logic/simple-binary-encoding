@@ -1,13 +1,11 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.generation.java.CodecUtil;
-import uk.co.real_logic.sbe.generation.java.DirectBuffer;
-import uk.co.real_logic.sbe.generation.java.MessageFlyweight;
+import uk.co.real_logic.sbe.generation.java.*;
 
 public class SerializedFrame implements MessageFlyweight
 {
-    private static final int BLOCK_LENGTH = 2;
+    private static final int BLOCK_LENGTH = 8;
     private static final long TEMPLATE_ID = 1;
     private static final int TEMPLATE_VERSION = 0;
 
@@ -48,7 +46,7 @@ public class SerializedFrame implements MessageFlyweight
     }
 
     public SerializedFrame resetForDecode(final DirectBuffer buffer, final int offset,
-                                          final int actingBlockLength, final int actingVersion)
+                             final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;
@@ -79,14 +77,19 @@ public class SerializedFrame implements MessageFlyweight
         return 1;
     }
 
-    public short sbeIrVersion()
+    public int sbeIrVersion()
     {
-        return CodecUtil.uint8Get(buffer, offset + 0);
+        if (actingVersion < 0)
+        {
+            return (byte)0;
+        }
+
+        return CodecUtil.int32Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public SerializedFrame sbeIrVersion(final short value)
+    public SerializedFrame sbeIrVersion(final int value)
     {
-        CodecUtil.uint8Put(buffer, offset + 0, value);
+        CodecUtil.int32Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
@@ -95,14 +98,19 @@ public class SerializedFrame implements MessageFlyweight
         return 2;
     }
 
-    public short schemaVersion()
+    public int schemaVersion()
     {
-        return CodecUtil.uint8Get(buffer, offset + 1);
+        if (actingVersion < 0)
+        {
+            return (byte)0;
+        }
+
+        return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public SerializedFrame schemaVersion(final short value)
+    public SerializedFrame schemaVersion(final int value)
     {
-        CodecUtil.uint8Put(buffer, offset + 1, value);
+        CodecUtil.int32Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 

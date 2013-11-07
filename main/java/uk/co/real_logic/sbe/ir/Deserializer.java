@@ -38,6 +38,7 @@ public class Deserializer implements Closeable
     private int offset = 0;
     private String irPackageName = null;
     private List<Token> irHeader = null;
+    private int irVersion = 0;
     private final byte[] valArray = new byte[CAPACITY];
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
 
@@ -79,7 +80,7 @@ public class Deserializer implements Closeable
             i = captureHeader(tokens, 0);
         }
 
-        final IntermediateRepresentation ir = new IntermediateRepresentation(irPackageName, irHeader);
+        final IntermediateRepresentation ir = new IntermediateRepresentation(irPackageName, irHeader, irVersion);
 
         for (; i < size; i++)
         {
@@ -139,7 +140,7 @@ public class Deserializer implements Closeable
 
         final byte[] byteArray = new byte[1024];
 
-        // TODO: save schemaVersion from serializedFrame
+        irVersion = serializedFrame.schemaVersion();
 
         irPackageName = new String(byteArray, 0, serializedFrame.getPackageVal(byteArray, 0, byteArray.length));
 
@@ -158,6 +159,7 @@ public class Deserializer implements Closeable
         builder.offset(serializedToken.tokenOffset())
                .size(serializedToken.tokenSize())
                .schemaId(serializedToken.schemaID())
+               .version(serializedToken.tokenVersion())
                .signal(SerializationUtils.signal(serializedToken.signal()));
 
         final PrimitiveType type = SerializationUtils.primitiveType(serializedToken.primitiveType());

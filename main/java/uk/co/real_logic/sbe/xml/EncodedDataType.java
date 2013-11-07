@@ -39,6 +39,7 @@ public class EncodedDataType extends Type
     private final PrimitiveValue maxVal;
     private final PrimitiveValue nullVal;
     private final String characterEncoding;
+    private final int sinceVersion;
     private boolean varLen;
 
     /**
@@ -54,6 +55,7 @@ public class EncodedDataType extends Type
         length = Integer.parseInt(getAttributeValue(node, "length", "1"));
         varLen = Boolean.parseBoolean(getAttributeValue(node, "variableLength", "false"));
         characterEncoding = getAttributeValue(node, "characterEncoding", "UTF-8");
+        sinceVersion = Integer.parseInt(getAttributeValue(node, "sinceVersion", "0"));
 
         if (presence() == Presence.CONSTANT)
         {
@@ -132,6 +134,7 @@ public class EncodedDataType extends Type
         this.maxVal = null;
         this.nullVal = null;
         characterEncoding = "";
+        sinceVersion = 0;
     }
 
     /**
@@ -243,5 +246,15 @@ public class EncodedDataType extends Type
     public String characterEncoding()
     {
         return characterEncoding;
+    }
+
+    /**
+     * Return the sinceVersion of the {@link EncodedDataType}
+     *
+     * @return the sinceVersion value of the {@link EncodedDataType}
+     */
+    public int sinceVersion()
+    {
+        return sinceVersion;
     }
 }

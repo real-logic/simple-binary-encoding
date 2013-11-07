@@ -135,6 +135,7 @@ public class CompositeType extends Type
 {
     private final List<EncodedDataType> compositeList = new ArrayList<>();
     private final Map<String, EncodedDataType> compositeMap = new HashMap<>();
+    private final int sinceVersion;
 
     /**
      * Construct a new compositeType from XML Schema.
@@ -146,6 +147,7 @@ public class CompositeType extends Type
     {
         super(node);
 
+        sinceVersion = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "sinceVersion", "0"));
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile("type").evaluate(node, XPathConstants.NODESET);
 
@@ -196,6 +198,16 @@ public class CompositeType extends Type
         }
 
         return size;
+    }
+
+    /**
+     * Return the sinceVersion value of the {@link CompositeType}
+     *
+     * @return the sinceVersion of the {@link CompositeType}
+     */
+    public int sinceVersion()
+    {
+        return sinceVersion;
     }
 
     /**

@@ -219,6 +219,7 @@ public class Message
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .blockLength(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "blockLength", "0")))
+            .sinceVersion(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "sinceVersion", "0")))
             .dimensionType((CompositeType)dimensionType)
             .build();
 
@@ -245,6 +246,7 @@ public class Message
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
             .semanticType(getAttributeValueOrNull(nodeList.item(nodeIndex), "semanticType"))
             .presence(Presence.get(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
+            .sinceVersion(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "sinceVersion", "0")))
             .type(fieldType)
             .build();
 
@@ -278,6 +280,7 @@ public class Message
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
             .semanticType(getAttributeValueOrNull(nodeList.item(nodeIndex), "semanticType"))
             .presence(Presence.get(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
+            .sinceVersion(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "sinceVersion", "0")))
             .type(fieldType)
             .variableLength(true)
             .build();

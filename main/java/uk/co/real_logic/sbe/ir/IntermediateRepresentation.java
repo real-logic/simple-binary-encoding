@@ -29,6 +29,7 @@ public class IntermediateRepresentation
     private final List<Token> headerTokens;
     private final Map<Long, List<Token>> messagesByIdMap = new HashMap<>();
     private final Map<String, List<Token>> typesByNameMap = new HashMap<>();
+    private final int version;
 
     /**
      * Create a new IR container taking a defensive copy of the header {@link Token}s passed.
@@ -36,13 +37,14 @@ public class IntermediateRepresentation
      * @param packageName that should be applied to generated code.
      * @param headerTokens representing the message header.
      */
-    public IntermediateRepresentation(final String packageName, final List<Token> headerTokens)
+    public IntermediateRepresentation(final String packageName, final List<Token> headerTokens, final int version)
     {
         Verify.notNull(packageName, "packageName");
         Verify.notNull(headerTokens, "headerTokens");
 
         this.packageName = packageName;
         this.headerTokens = Collections.unmodifiableList(new ArrayList<>(headerTokens));
+        this.version = version;
     }
 
     /**
@@ -130,6 +132,16 @@ public class IntermediateRepresentation
     public String namespaceName()
     {
         return packageName;
+    }
+
+    /**
+     * Get the version of the schema.
+     *
+     * @return version number.
+     */
+    public int version()
+    {
+        return version;
     }
 
     private void captureTypes(final List<Token> tokens)

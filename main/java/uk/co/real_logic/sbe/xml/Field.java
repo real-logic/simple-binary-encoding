@@ -40,6 +40,7 @@ public class Field
     private final int blockLength;             // optional for group (not present for field/data)
     private final CompositeType dimensionType; // required for group (not present for field/data)
     private final boolean variableLength;      // true for data (false for field/group)
+    private final int sinceVersion;            // optional
     private List<Field> groupFieldList;        // used by group fields as the list of child fields in the group
     private int computedOffset;              // used to hold the calculated offset of this field from top level <message> or <group>
     private int computedBlockLength;         // used to hold the calculated block length of this group
@@ -54,7 +55,8 @@ public class Field
                  final Presence presence,
                  final int blockLength,
                  final CompositeType dimensionType,
-                 final boolean variableLength)
+                 final boolean variableLength,
+                 final int sinceVersion)
     {
         this.name = name;
         this.description = description;
@@ -66,6 +68,7 @@ public class Field
         this.blockLength = blockLength;
         this.dimensionType = dimensionType;
         this.variableLength = variableLength;
+        this.sinceVersion = sinceVersion;
         this.groupFieldList = null;
         this.computedOffset = 0;
         this.computedBlockLength = 0;
@@ -164,6 +167,11 @@ public class Field
         return variableLength;
     }
 
+    public int sinceVersion()
+    {
+        return sinceVersion;
+    }
+
     public String toString()
     {
         return "Field{" +
@@ -176,6 +184,7 @@ public class Field
             ", presence=" + presence +
             ", blockLength=" + blockLength +
             ", dimensionType=" + dimensionType +
+            ", sinceVersion=" + sinceVersion +
             ", variableLength=" + variableLength +
             ", groupFieldList=" + groupFieldList +
             ", computedOffset=" + computedOffset +
@@ -195,10 +204,12 @@ public class Field
         private int blockLength;
         private CompositeType dimensionType;
         private boolean variableLength;
+        private int sinceVersion;
 
         public Builder()
         {
             id = INVALID_ID;
+            sinceVersion = 0;
         }
 
         public Builder name(final String name)
@@ -261,10 +272,16 @@ public class Field
             return this;
         }
 
+        public Builder sinceVersion(final int sinceVersion)
+        {
+            this.sinceVersion = sinceVersion;
+            return this;
+        }
+
         public Field build()
         {
             return new Field(name, description, id, type, offset,
-                             semanticType, presence, blockLength, dimensionType, variableLength);
+                             semanticType, presence, blockLength, dimensionType, variableLength, sinceVersion);
         }
     }
 }

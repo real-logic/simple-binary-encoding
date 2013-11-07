@@ -31,6 +31,7 @@ public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
     private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
+    private int version = 0;
 
     /**
      * Generate a complete {@link IntermediateRepresentation} for a given schema.
@@ -41,7 +42,7 @@ public class IrGenerator
     public IntermediateRepresentation generate(final MessageSchema schema)
     {
         final IntermediateRepresentation ir =
-            new IntermediateRepresentation(schema.packageName(), generateForHeader(schema));
+            new IntermediateRepresentation(schema.packageName(), generateForHeader(schema), schema.version());
 
         for (final Message message : schema.messages())
         {
@@ -56,6 +57,7 @@ public class IrGenerator
     {
         tokenList.clear();
         byteOrder = schema.byteOrder();
+        version = schema.version();
 
         final Message msg = schema.getMessage(messageId);
 
@@ -71,7 +73,7 @@ public class IrGenerator
         tokenList.clear();
 
         byteOrder = schema.byteOrder();
-        add(schema.messageHeader(), 0);
+        add(schema.messageHeader(), 0, null);
 
         return tokenList;
     }
@@ -83,6 +85,7 @@ public class IrGenerator
             .name(msg.name())
             .size(msg.blockLength())
             .schemaId(msg.id())
+            .version(version)
             .build();
 
         tokenList.add(token);
@@ -95,6 +98,7 @@ public class IrGenerator
             .size(field.computedBlockLength())
             .name(field.name())
             .schemaId(field.id())
+            .version(field.sinceVersion())
             .build();
 
         tokenList.add(token);
@@ -109,14 +113,14 @@ public class IrGenerator
             if (type == null)
             {
                 addFieldSignal(field, Signal.BEGIN_GROUP);
-                add(field.dimensionType(), 0);
+                add(field.dimensionType(), 0, field);
                 addAllFields(field.groupFields());
                 addFieldSignal(field, Signal.END_GROUP);
             }
             else if (type instanceof CompositeType && field.isVariableLength())
             {
                 addFieldSignal(field, Signal.BEGIN_VAR_DATA);
-                add((CompositeType)type, field.computedOffset());
+                add((CompositeType)type, field.computedOffset(), field);
                 addFieldSignal(field, Signal.END_VAR_DATA);
             }
             else
@@ -125,19 +129,19 @@ public class IrGenerator
 
                 if (type instanceof EncodedDataType)
                 {
-                    add((EncodedDataType)type, field.computedOffset());
+                    add((EncodedDataType)type, field.computedOffset(), field);
                 }
                 else if (type instanceof CompositeType)
                 {
-                    add((CompositeType)type, field.computedOffset());
+                    add((CompositeType)type, field.computedOffset(), field);
                 }
                 else if (type instanceof EnumType)
                 {
-                    add((EnumType)type, field.computedOffset());
+                    add((EnumType)type, field.computedOffset(), field);
                 }
                 else if (type instanceof SetType)
                 {
-                    add((SetType)type, field.computedOffset());
+                    add((SetType)type, field.computedOffset(), field);
                 }
                 else
                 {
@@ -149,7 +153,7 @@ public class IrGenerator
         }
     }
 
-    private void add(final CompositeType type, final int currOffset)
+    private void add(final CompositeType type, final int currOffset, final Field field)
     {
         Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_COMPOSITE)
@@ -157,19 +161,24 @@ public class IrGenerator
             .offset(currOffset)
             .size(type.size());
 
+        if (field != null)
+        {
+            builder.version(field.sinceVersion());
+        }
+
         tokenList.add(builder.build());
 
         int offset = 0;
         for (final EncodedDataType edt : type.getTypeList())
         {
-            add(edt, offset);
+            add(edt, offset, field);
             offset += edt.size();
         }
 
         tokenList.add(builder.signal(Signal.END_COMPOSITE).build());
     }
 
-    private void add(final EnumType type, final int offset)
+    private void add(final EnumType type, final int offset, final Field field)
     {
         PrimitiveType encodingType = type.encodingType();
         Encoding.Builder encodingBuilder = new Encoding.Builder()
@@ -188,11 +197,16 @@ public class IrGenerator
             .offset(offset)
             .encoding(encodingBuilder.build());
 
+        if (field != null)
+        {
+            builder.version(field.sinceVersion());
+        }
+
         tokenList.add(builder.build());
 
         for (final EnumType.ValidValue validValue : type.validValues())
         {
-            add(validValue, encodingType);
+            add(validValue, encodingType, field);
         }
 
         builder.signal(Signal.END_ENUM);
@@ -200,7 +214,7 @@ public class IrGenerator
         tokenList.add(builder.build());
     }
 
-    private void add(final EnumType.ValidValue value, final PrimitiveType encodingType)
+    private void add(final EnumType.ValidValue value, final PrimitiveType encodingType, final Field field)
     {
         Token.Builder builder = new Token.Builder()
             .signal(Signal.VALID_VALUE)
@@ -211,10 +225,15 @@ public class IrGenerator
                           .constVal(value.primitiveValue())
                           .build());
 
+        if (field != null)
+        {
+            builder.version(field.sinceVersion());
+        }
+
         tokenList.add(builder.build());
     }
 
-    private void add(final SetType type, final int offset)
+    private void add(final SetType type, final int offset, final Field field)
     {
         PrimitiveType encodingType = type.encodingType();
 
@@ -227,11 +246,16 @@ public class IrGenerator
                           .primitiveType(encodingType)
                           .build());
 
+        if (field != null)
+        {
+            builder.version(field.sinceVersion());
+        }
+
         tokenList.add(builder.build());
 
         for (final SetType.Choice choice : type.choices())
         {
-            add(choice, encodingType);
+            add(choice, encodingType, field);
         }
 
         builder.signal(Signal.END_SET);
@@ -239,22 +263,26 @@ public class IrGenerator
         tokenList.add(builder.build());
     }
 
-    private void add(final SetType.Choice value, final PrimitiveType encodingType)
+    private void add(final SetType.Choice value, final PrimitiveType encodingType, final Field field)
     {
-        Token token = new Token.Builder()
+        Token.Builder builder = new Token.Builder()
             .signal(Signal.CHOICE)
             .name(value.name())
             .encoding(new Encoding.Builder()
                           .constVal(value.primitiveValue())
                           .byteOrder(byteOrder)
                           .primitiveType(encodingType)
-                          .build())
-            .build();
+                          .build());
 
-        tokenList.add(token);
+        if (field != null)
+        {
+            builder.version(field.sinceVersion());
+        }
+
+        tokenList.add(builder.build());
     }
 
-    private void add(final EncodedDataType type, final int offset)
+    private void add(final EncodedDataType type, final int offset, final Field field)
     {
         Encoding.Builder encodingBuilder = new Encoding.Builder()
             .primitiveType(type.primitiveType())
@@ -266,6 +294,11 @@ public class IrGenerator
             .name(type.name())
             .size(type.size())
             .offset(offset);
+
+        if (field != null)
+        {
+            tokenBuilder.version(field.sinceVersion());
+        }
 
         switch (type.presence())
         {

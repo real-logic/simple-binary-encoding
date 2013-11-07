@@ -1,15 +1,11 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.generation.java.CodecUtil;
-import uk.co.real_logic.sbe.generation.java.DirectBuffer;
-import uk.co.real_logic.sbe.generation.java.MessageFlyweight;
-
-import java.nio.ByteOrder;
+import uk.co.real_logic.sbe.generation.java.*;
 
 public class SerializedToken implements MessageFlyweight
 {
-    private static final int BLOCK_LENGTH = 16;
+    private static final int BLOCK_LENGTH = 19;
     private static final long TEMPLATE_ID = 2;
     private static final int TEMPLATE_VERSION = 0;
 
@@ -50,7 +46,7 @@ public class SerializedToken implements MessageFlyweight
     }
 
     public SerializedToken resetForDecode(final DirectBuffer buffer, final int offset,
-                                          final int actingBlockLength, final int actingVersion)
+                             final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;
@@ -83,12 +79,17 @@ public class SerializedToken implements MessageFlyweight
 
     public int tokenOffset()
     {
-        return CodecUtil.int32Get(buffer, offset + 0, ByteOrder.LITTLE_ENDIAN);
+        if (actingVersion < 0)
+        {
+            return (byte)0;
+        }
+
+        return CodecUtil.int32Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
     public SerializedToken tokenOffset(final int value)
     {
-        CodecUtil.int32Put(buffer, offset + 0, value, ByteOrder.LITTLE_ENDIAN);
+        CodecUtil.int32Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
@@ -99,12 +100,17 @@ public class SerializedToken implements MessageFlyweight
 
     public int tokenSize()
     {
-        return CodecUtil.int32Get(buffer, offset + 4, ByteOrder.LITTLE_ENDIAN);
+        if (actingVersion < 0)
+        {
+            return (byte)0;
+        }
+
+        return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
     public SerializedToken tokenSize(final int value)
     {
-        CodecUtil.int32Put(buffer, offset + 4, value, ByteOrder.LITTLE_ENDIAN);
+        CodecUtil.int32Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
@@ -115,12 +121,38 @@ public class SerializedToken implements MessageFlyweight
 
     public int schemaID()
     {
-        return CodecUtil.int32Get(buffer, offset + 8, ByteOrder.LITTLE_ENDIAN);
+        if (actingVersion < 0)
+        {
+            return (byte)0;
+        }
+
+        return CodecUtil.int32Get(buffer, offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
     public SerializedToken schemaID(final int value)
     {
-        CodecUtil.int32Put(buffer, offset + 8, value, ByteOrder.LITTLE_ENDIAN);
+        CodecUtil.int32Put(buffer, offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return this;
+    }
+
+    public long tokenVersionId()
+    {
+        return 17;
+    }
+
+    public int tokenVersion()
+    {
+        if (actingVersion < 0)
+        {
+            return (byte)0;
+        }
+
+        return CodecUtil.int32Get(buffer, offset + 12, java.nio.ByteOrder.LITTLE_ENDIAN);
+    }
+
+    public SerializedToken tokenVersion(final int value)
+    {
+        CodecUtil.int32Put(buffer, offset + 12, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
@@ -131,12 +163,12 @@ public class SerializedToken implements MessageFlyweight
 
     public SerializedSignal signal()
     {
-        return SerializedSignal.get(CodecUtil.uint8Get(buffer, offset + 12));
+        return SerializedSignal.get(CodecUtil.uint8Get(buffer, offset + 16));
     }
 
     public SerializedToken signal(final SerializedSignal value)
     {
-        CodecUtil.uint8Put(buffer, offset + 12, value.value());
+        CodecUtil.uint8Put(buffer, offset + 16, value.value());
         return this;
     }
 
@@ -147,12 +179,12 @@ public class SerializedToken implements MessageFlyweight
 
     public SerializedPrimitiveType primitiveType()
     {
-        return SerializedPrimitiveType.get(CodecUtil.uint8Get(buffer, offset + 13));
+        return SerializedPrimitiveType.get(CodecUtil.uint8Get(buffer, offset + 17));
     }
 
     public SerializedToken primitiveType(final SerializedPrimitiveType value)
     {
-        CodecUtil.uint8Put(buffer, offset + 13, value.value());
+        CodecUtil.uint8Put(buffer, offset + 17, value.value());
         return this;
     }
 
@@ -163,28 +195,12 @@ public class SerializedToken implements MessageFlyweight
 
     public SerializedByteOrder byteOrder()
     {
-        return SerializedByteOrder.get(CodecUtil.uint8Get(buffer, offset + 14));
+        return SerializedByteOrder.get(CodecUtil.uint8Get(buffer, offset + 18));
     }
 
     public SerializedToken byteOrder(final SerializedByteOrder value)
     {
-        CodecUtil.uint8Put(buffer, offset + 14, value.value());
-        return this;
-    }
-
-    public long sinceVersionId()
-    {
-        return 17;
-    }
-
-    public short sinceVersion()
-    {
-        return CodecUtil.uint8Get(buffer, offset + 15);
-    }
-
-    public SerializedToken sinceVersion(final short value)
-    {
-        CodecUtil.uint8Put(buffer, offset + 15, value);
+        CodecUtil.uint8Put(buffer, offset + 18, value.value());
         return this;
     }
 

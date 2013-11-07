@@ -1,17 +1,13 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.generation.java.CodecUtil;
-import uk.co.real_logic.sbe.generation.java.DirectBuffer;
-import uk.co.real_logic.sbe.generation.java.FixedFlyweight;
-
-import java.nio.ByteOrder;
+import uk.co.real_logic.sbe.generation.java.*;
 
 public class MessageHeader implements FixedFlyweight
 {
     private DirectBuffer buffer;
-    private int actingVersion;
     private int offset;
+    private int actingVersion;
 
     public MessageHeader reset(final DirectBuffer buffer, final int offset, final int actingVersion)
     {
@@ -28,28 +24,43 @@ public class MessageHeader implements FixedFlyweight
 
     public int blockLength()
     {
-        return CodecUtil.uint16Get(buffer, offset + 0, ByteOrder.LITTLE_ENDIAN);
+        if (actingVersion < 0)
+        {
+            return (byte)0;
+        }
+
+        return CodecUtil.uint16Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
     public MessageHeader blockLength(final int value)
     {
-        CodecUtil.uint16Put(buffer, offset + 0, value, ByteOrder.LITTLE_ENDIAN);
+        CodecUtil.uint16Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
     public int templateId()
     {
-        return CodecUtil.uint16Get(buffer, offset + 2, ByteOrder.LITTLE_ENDIAN);
+        if (actingVersion < 0)
+        {
+            return (byte)0;
+        }
+
+        return CodecUtil.uint16Get(buffer, offset + 2, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
     public MessageHeader templateId(final int value)
     {
-        CodecUtil.uint16Put(buffer, offset + 2, value, ByteOrder.LITTLE_ENDIAN);
+        CodecUtil.uint16Put(buffer, offset + 2, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
     public short version()
     {
+        if (actingVersion < 0)
+        {
+            return (byte)0;
+        }
+
         return CodecUtil.uint8Get(buffer, offset + 4);
     }
 
@@ -61,6 +72,11 @@ public class MessageHeader implements FixedFlyweight
 
     public short reserved()
     {
+        if (actingVersion < 0)
+        {
+            return (byte)0;
+        }
+
         return CodecUtil.uint8Get(buffer, offset + 5);
     }
 

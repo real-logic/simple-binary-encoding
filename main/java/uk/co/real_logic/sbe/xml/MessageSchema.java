@@ -34,7 +34,7 @@ public class MessageSchema
 
     private final String packageName;                 // package (optional?)
     private final String description;                 // description (optional)
-    private final long version;                       // version (optional - default is 0)
+    private final int version;                        // version (optional - default is 0)
     private final String semanticVersion;             // semanticVersion (optional)
     private final ByteOrder byteOrder;                // byteOrder (optional - default is littleEndian)
     private final Map<String, Type> typeByNameMap;
@@ -48,7 +48,7 @@ public class MessageSchema
 
         this.packageName = getAttributeValue(schemaNode, "package");
         this.description = getAttributeValueOrNull(schemaNode, "description");
-        this.version = Long.parseLong(getAttributeValue(schemaNode, "version", "0"));  // default version is 0
+        this.version = Integer.parseInt(getAttributeValue(schemaNode, "version", "0"));  // default version is 0
         this.semanticVersion = getAttributeValueOrNull(schemaNode, "semanticVersion");
         this.byteOrder = getByteOrder(getAttributeValue(schemaNode, "byteOrder", "littleEndian"));
         this.typeByNameMap = typeByNameMap;
@@ -90,7 +90,7 @@ public class MessageSchema
      *
      * @return the version number of the schema.
      */
-    public long version()
+    public int version()
     {
         return version;
     }

@@ -101,8 +101,8 @@ public class Serializer implements Closeable
     private int serializeFrame()
     {
         serializedFrame.resetForEncode(directBuffer, 0)
-                       .sbeIrVersion((short)0)
-                       .schemaVersion((short)0);
+                       .sbeIrVersion(0)
+                       .schemaVersion(ir.version());
 
         serializedFrame.putPackageVal(ir.packageName().getBytes(), 0, ir.packageName().getBytes().length);
 
@@ -119,10 +119,10 @@ public class Serializer implements Closeable
                        .tokenOffset(token.offset())
                        .tokenSize(token.size())
                        .schemaID((int)token.schemaId())
+                       .tokenVersion(token.version())
                        .signal(SerializationUtils.signal(token.signal()))
                        .primitiveType(SerializationUtils.primitiveType(type))
-                       .byteOrder(SerializationUtils.byteOrder(token.encoding().byteOrder()))
-                       .sinceVersion((short)0);
+                       .byteOrder(SerializationUtils.byteOrder(token.encoding().byteOrder()));
 
         serializedToken.putName(token.name().getBytes(), 0, token.name().getBytes().length);
 

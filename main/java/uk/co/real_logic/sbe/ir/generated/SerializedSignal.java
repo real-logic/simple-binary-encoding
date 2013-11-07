@@ -1,8 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import java.nio.ByteOrder;
-import java.util.*;
 import uk.co.real_logic.sbe.generation.java.*;
 
 public enum SerializedSignal

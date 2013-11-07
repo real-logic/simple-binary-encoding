@@ -62,8 +62,8 @@
     </types>
 
     <message name="SerializedFrame" id="1" description="Frame Header for start of Serialized IR">
-        <field name="sbeIrVersion" id="1" type="uint8" semanticType="Version"/>
-        <field name="schemaVersion" id="2" type="uint8" semanticType="Version"/>
+        <field name="sbeIrVersion" id="1" type="int32" semanticType="Version"/>
+        <field name="schemaVersion" id="2" type="int32" semanticType="Version"/>
         <data name="packageVal" id="4" type="varDataEncoding" semanticType="Package"/>
     </message>
 
@@ -71,10 +71,10 @@
         <field name="tokenOffset" id="11" type="int32" semanticType="Offset"/>
         <field name="tokenSize" id="12" type="int32" semanticType="Size"/>
         <field name="schemaID" id="13" type="int32" semanticType="ID"/>
+        <field name="tokenVersion" id="17" type="int32" semanticType="Version"/>
         <field name="signal" id="14" type="SerializedSignal" semanticType="Signal"/>
         <field name="primitiveType" id="15" type="SerializedPrimitiveType" semanticType="PrimitiveType"/>
         <field name="byteOrder" id="16" type="SerializedByteOrder" semanticType="ByteOrder"/>
-        <field name="sinceVersion" id="17" type="uint8" semanticType="Version"/>
         <data name="name" id="18" type="varDataEncoding" semanticType="String"/>
         <data name="constVal" id="19" type="varDataEncoding" semanticType="Value"/>
         <data name="minVal" id="20" type="varDataEncoding" semanticType="Value"/>
