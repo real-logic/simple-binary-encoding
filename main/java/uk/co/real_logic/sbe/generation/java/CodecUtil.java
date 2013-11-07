@@ -23,21 +23,17 @@ public class CodecUtil
      * Check that a given position is within the capacity of a buffer from a given offset.
      *
      * @param position access is required to.
-     * @param offset from which the position is added.
      * @param capacity of the underlying buffer.
      */
-    public static void checkPosition(final int position,
-                                     final int offset,
-                                     final int capacity)
+    public static void checkPosition(final int position, final int capacity)
     {
-        if ((offset + position) >= capacity)
+        if (position >= capacity)
         {
-            final String msg = String.format("position=%d is beyond capacity=%d with offset=%d",
+            final String msg = String.format("position=%d is beyond capacity=%d",
                                              Integer.valueOf(position),
-                                             Integer.valueOf(capacity),
-                                             Integer.valueOf(offset));
+                                             Integer.valueOf(capacity));
 
-            throw new IllegalStateException(msg);
+            throw new IndexOutOfBoundsException(msg);
         }
     }
 

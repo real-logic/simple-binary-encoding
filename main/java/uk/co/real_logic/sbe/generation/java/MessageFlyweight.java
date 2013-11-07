@@ -70,16 +70,16 @@ public interface MessageFlyweight
                                     final int actingBlockLength, final int actingVersion);
 
     /**
-     * The position for the end of the currently access block.
+     * The position for the end of the currently accessed block in the underlying buffer.
      *
-     * @param position for the end of the currently access block.
+     * @param position for the end of the currently access block in the underlying buffer.
      */
     void position(final int position);
 
     /**
-     * The position for the end of the currently access block from the message starting offset.
+     * The position for the end of the currently access block in the underlying buffer.
      *
-     * @return the position for the end of the currently access block.
+     * @return the position for the end of the currently access block in the underlying buffer.
      */
     int position();
 }

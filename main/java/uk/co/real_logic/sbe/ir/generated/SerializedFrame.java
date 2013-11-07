@@ -70,7 +70,7 @@ public class SerializedFrame implements MessageFlyweight
 
     public void position(final int position)
     {
-        CodecUtil.checkPosition(position, offset, buffer.capacity());
+        CodecUtil.checkPosition(position, buffer.capacity());
         this.position = position;
     }
 

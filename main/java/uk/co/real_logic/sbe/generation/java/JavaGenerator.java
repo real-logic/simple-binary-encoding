@@ -973,7 +973,7 @@ public class JavaGenerator implements CodeGenerator
             "    }\n\n" +
             "    public void position(final int position)\n" +
             "    {\n" +
-            "        CodecUtil.checkPosition(position, offset, buffer.capacity());\n" +
+            "        CodecUtil.checkPosition(position, buffer.capacity());\n" +
             "        this.position = position;\n" +
             "    }\n",
             Integer.valueOf(blockLength),

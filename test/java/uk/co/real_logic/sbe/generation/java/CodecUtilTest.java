@@ -31,13 +31,12 @@ public class CodecUtilTest
 
     private final DirectBuffer buffer = new DirectBuffer(new byte[BUFFER_CAPACITY]);
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowExceptionForPositionAboveCapacity()
     {
-        final int offset = 8;
         final int position = BUFFER_CAPACITY;
 
-        CodecUtil.checkPosition(position, offset, BUFFER_CAPACITY);
+        CodecUtil.checkPosition(position, BUFFER_CAPACITY);
     }
 
     @Test
