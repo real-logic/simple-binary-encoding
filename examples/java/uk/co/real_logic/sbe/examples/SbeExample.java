@@ -47,15 +47,16 @@ public class SbeExample
     {
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
         final DirectBuffer directBuffer = new DirectBuffer(byteBuffer);
+        final int messageTemplateVersion = 0;
         int bufferOffset = 0;
 
         // Setup for encoding a message
 
         MESSAGE_HEADER
-            .reset(directBuffer, bufferOffset)
+            .reset(directBuffer, bufferOffset, messageTemplateVersion)
             .blockLength(CAR.blockLength())
             .templateId((int)CAR.templateId())
-            .version((short)CAR.version());
+            .version((short)CAR.templateVersion());
 
         bufferOffset += MESSAGE_HEADER.size();
         encode(CAR, directBuffer, bufferOffset);
@@ -63,7 +64,7 @@ public class SbeExample
         // Decode the encoded message
 
         bufferOffset = 0;
-        MESSAGE_HEADER.reset(directBuffer, bufferOffset);
+        MESSAGE_HEADER.reset(directBuffer, bufferOffset, messageTemplateVersion);
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
         final int templateId = MESSAGE_HEADER.templateId();

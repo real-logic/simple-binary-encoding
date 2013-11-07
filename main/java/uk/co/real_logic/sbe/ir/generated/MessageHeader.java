@@ -1,19 +1,23 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
+import uk.co.real_logic.sbe.generation.java.CodecUtil;
+import uk.co.real_logic.sbe.generation.java.DirectBuffer;
+import uk.co.real_logic.sbe.generation.java.FixedFlyweight;
+
 import java.nio.ByteOrder;
-import java.util.*;
-import uk.co.real_logic.sbe.generation.java.*;
 
 public class MessageHeader implements FixedFlyweight
 {
     private DirectBuffer buffer;
+    private int actingVersion;
     private int offset;
 
-    public MessageHeader reset(final DirectBuffer buffer, final int offset)
+    public MessageHeader reset(final DirectBuffer buffer, final int offset, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;
+        this.actingVersion = actingVersion;
         return this;
     }
 

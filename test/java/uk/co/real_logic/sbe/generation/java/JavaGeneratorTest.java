@@ -59,6 +59,7 @@ public class JavaGeneratorTest
         final int bufferOffset = 64;
         final int templateIdOffset = 2;
         final Short templateId = Short.valueOf((short)7);
+        final int actingVersion = 0;
         final Integer blockLength = Integer.valueOf(32);
         final String fqClassName = ir.packageName() + "." + MESSAGE_HEADER_VISITOR;
 
@@ -71,7 +72,7 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
-        flyweight.reset(mockBuffer, bufferOffset);
+        flyweight.reset(mockBuffer, bufferOffset, actingVersion);
 
         final Integer result = (Integer)clazz.getDeclaredMethod("templateId").invoke(flyweight);
         assertThat(result, is(Integer.valueOf(templateId.intValue())));
@@ -119,6 +120,7 @@ public class JavaGeneratorTest
     public void shouldGenerateChoiceSetStub() throws Exception
     {
         final int bufferOffset = 8;
+        final int actingVersion = 0;
         final Byte bitset = Byte.valueOf((byte)0b0000_0100);
         final String className = "OptionalExtras";
         final String fqClassName = ir.packageName() + "." + className;
@@ -132,7 +134,7 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
-        flyweight.reset(mockBuffer, bufferOffset);
+        flyweight.reset(mockBuffer, bufferOffset, actingVersion);
 
         final Object result = clazz.getDeclaredMethod("cruiseControl").invoke(flyweight);
 
@@ -142,6 +144,7 @@ public class JavaGeneratorTest
     @Test
     public void shouldGenerateCompositeStub() throws Exception
     {
+        final int actingVersion = 0;
         final int bufferOffset = 64;
         final int capacityFieldOffset = bufferOffset;
         final int numCylindersOffset = bufferOffset + 2;
@@ -161,7 +164,7 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
-        flyweight.reset(mockBuffer, bufferOffset);
+        flyweight.reset(mockBuffer, bufferOffset, actingVersion);
 
         final Integer capacityResult = (Integer)clazz.getDeclaredMethod("capacity").invoke(flyweight);
         assertThat(capacityResult, is(Integer.valueOf(expectedEngineCapacity)));

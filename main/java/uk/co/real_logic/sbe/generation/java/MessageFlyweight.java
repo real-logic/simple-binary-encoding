@@ -39,7 +39,7 @@ public interface MessageFlyweight
      *
      * @return the version up to which this template supports.
      */
-    int version();
+    int templateVersion();
 
     /**
      * Offset in the underlying buffer at which the message starts.

@@ -1,18 +1,20 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import java.nio.ByteOrder;
-import java.util.*;
-import uk.co.real_logic.sbe.generation.java.*;
+import uk.co.real_logic.sbe.generation.java.CodecUtil;
+import uk.co.real_logic.sbe.generation.java.DirectBuffer;
+import uk.co.real_logic.sbe.generation.java.FixedFlyweight;
 
 public class VarDataEncoding implements FixedFlyweight
 {
     private DirectBuffer buffer;
+    private int actingVersion;
     private int offset;
 
-    public VarDataEncoding reset(final DirectBuffer buffer, final int offset)
+    public VarDataEncoding reset(final DirectBuffer buffer, final int offset, final int actingVersion)
     {
         this.buffer = buffer;
+        this.actingVersion = actingVersion;
         this.offset = offset;
         return this;
     }

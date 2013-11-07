@@ -7,6 +7,10 @@ import uk.co.real_logic.sbe.generation.java.MessageFlyweight;
 
 public class SerializedFrame implements MessageFlyweight
 {
+    private static final int BLOCK_LENGTH = 2;
+    private static final long TEMPLATE_ID = 1;
+    private static final int TEMPLATE_VERSION = 0;
+
     private DirectBuffer buffer;
     private int offset;
     private int position;
@@ -15,12 +19,17 @@ public class SerializedFrame implements MessageFlyweight
 
     public int blockLength()
     {
-        return 2;
+        return BLOCK_LENGTH;
     }
 
-    public int version()
+    public long templateId()
     {
-        return 0;
+        return TEMPLATE_ID;
+    }
+
+    public int templateVersion()
+    {
+        return TEMPLATE_VERSION;
     }
 
     public int offset()
@@ -32,8 +41,8 @@ public class SerializedFrame implements MessageFlyweight
     {
         this.buffer = buffer;
         this.offset = offset;
-        this.actingBlockLength = blockLength();
-        this.actingVersion = version();
+        this.actingBlockLength = BLOCK_LENGTH;
+        this.actingVersion = TEMPLATE_VERSION;
         position(offset + actingBlockLength);
         return this;
     }
@@ -52,11 +61,6 @@ public class SerializedFrame implements MessageFlyweight
     public int size()
     {
         return position - offset;
-    }
-
-    public long templateId()
-    {
-        return 1;
     }
 
     public int position()

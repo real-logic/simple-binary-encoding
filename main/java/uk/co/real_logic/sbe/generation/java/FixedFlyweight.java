@@ -25,7 +25,8 @@ public interface FixedFlyweight
      *
      * @param buffer from which to read and write.
      * @param offset at which the flyweight starts.
+     * @param actingVersion of the containing template being decoded
      * @return covariant subclass for fluent API support.
      */
-    FixedFlyweight reset(final DirectBuffer buffer, final int offset);
+    FixedFlyweight reset(final DirectBuffer buffer, final int offset, final int actingVersion);
 }

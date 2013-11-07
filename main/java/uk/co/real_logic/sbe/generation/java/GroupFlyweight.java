@@ -24,8 +24,10 @@ public interface GroupFlyweight<T> extends Iterable<T>, Iterator<T>
 {
     /**
      * Reset the flyweight to begin decoding from the current position
+     *
+     * @param actingVersion of the containing template being decoded.
      */
-    void resetForDecode();
+    void resetForDecode(final int actingVersion);
 
     /**
      * Reset the flyweight to begin encoding for the current position for a repeat count.
