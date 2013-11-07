@@ -34,6 +34,7 @@ public class Serializer implements Closeable
     private static final int CAPACITY = 4096;
 
     private final FileChannel channel;
+    private final ByteBuffer resultBuffer;
     private final ByteBuffer buffer;
     private final DirectBuffer directBuffer;
     private final IntermediateRepresentation ir;
@@ -41,12 +42,23 @@ public class Serializer implements Closeable
     private final SerializedToken serializedToken = new SerializedToken();
     private final byte[] valArray = new byte[CAPACITY];
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
+    private int totalSize = 0;
 
     public Serializer(final String fileName, final IntermediateRepresentation ir)
         throws FileNotFoundException
     {
         channel = new FileOutputStream(fileName).getChannel();
+        resultBuffer = null;
         buffer = ByteBuffer.allocateDirect(CAPACITY);
+        directBuffer = new DirectBuffer(buffer);
+        this.ir = ir;
+    }
+
+    public Serializer(final ByteBuffer buffer, final IntermediateRepresentation ir)
+    {
+        channel = null;
+        resultBuffer = buffer;
+        this.buffer = ByteBuffer.allocateDirect(CAPACITY);
         directBuffer = new DirectBuffer(buffer);
         this.ir = ir;
     }
@@ -65,37 +77,43 @@ public class Serializer implements Closeable
     {
         Verify.notNull(ir, "ir");
 
-        int totalSize = 0;
+        write(buffer, serializeFrame());
 
-        buffer.position(0);
-        buffer.limit(serializeFrame());
-        channel.write(buffer);
-
-        totalSize += serializeTokenList(ir.header());
+        serializeTokenList(ir.header());
 
         for (final List<Token> tokenList : ir.messages())
         {
-            totalSize += serializeTokenList(tokenList);
+            serializeTokenList(tokenList);
         }
 
         return totalSize;
     }
 
-    private int serializeTokenList(final List<Token> tokenList)
+    private void serializeTokenList(final List<Token> tokenList)
         throws IOException
     {
-        int totalSize = 0;
-
         for (final Token token : tokenList)
         {
-            buffer.position(0);
-            int tokenSize = serializeToken(token);
-            buffer.limit(tokenSize);
+            write(buffer, serializeToken(token));
+        }
+    }
+
+    private void write(final ByteBuffer buffer, final int size)
+        throws IOException
+    {
+        buffer.position(0);
+        buffer.limit(size);
+
+        if (channel != null)
+        {
             channel.write(buffer);
-            totalSize += tokenSize;
+        }
+        else if (resultBuffer != null)
+        {
+            resultBuffer.put(buffer);
         }
 
-        return totalSize;
+        totalSize += size;
     }
 
     private int serializeFrame()
@@ -118,7 +136,7 @@ public class Serializer implements Closeable
         serializedToken.resetForEncode(directBuffer, 0)
                        .tokenOffset(token.offset())
                        .tokenSize(token.size())
-                       .schemaID((int)token.schemaId())
+                       .schemaID((int) token.schemaId())
                        .tokenVersion(token.version())
                        .signal(SerializationUtils.signal(token.signal()))
                        .primitiveType(SerializationUtils.primitiveType(type))

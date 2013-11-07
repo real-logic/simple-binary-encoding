@@ -21,6 +21,7 @@ import uk.co.real_logic.sbe.ir.generated.SerializedFrame;
 import uk.co.real_logic.sbe.ir.generated.SerializedToken;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -47,6 +48,13 @@ public class Deserializer implements Closeable
     {
         channel = new RandomAccessFile(fileName, "r").getChannel();
         buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+        directBuffer = new DirectBuffer(buffer);
+    }
+
+    public Deserializer(final ByteBuffer buffer)
+    {
+        channel = null;
+        this.buffer = null;
         directBuffer = new DirectBuffer(buffer);
     }
 
