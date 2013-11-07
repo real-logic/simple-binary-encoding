@@ -18,12 +18,15 @@ package uk.co.real_logic.sbe;
 
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
+import uk.co.real_logic.sbe.ir.Deserializer;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
+import uk.co.real_logic.sbe.ir.Serializer;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 
 /**
@@ -71,6 +74,9 @@ public class SbeTool
     /** Output directory for generated code */
     public static final String OUTPUT_DIR = "sbe.output.dir";
 
+    /** Boolean system property to turn on or off serialization of IR. */
+    public static final String SHOULD_SERIALIZE = "sbe.should.serialize";
+
     /**
      * Main entry point for the SBE Tool.
      *
@@ -85,8 +91,21 @@ public class SbeTool
             System.exit(-1);
         }
 
-        final String messageSchemaFileName = args[0];
-        final MessageSchema schema = parseSchema(messageSchemaFileName);
+        final String fileName = args[0];
+        IntermediateRepresentation ir = null;
+
+        if (fileName.endsWith(".xml"))
+        {
+            ir = new IrGenerator().generate(parseSchema(fileName));
+        }
+        else if (fileName.endsWith(".sbeir"))
+        {
+            ir = new Deserializer(fileName).deserialize();
+        }
+        else
+        {
+            System.out.println("File format not supported.");
+        }
 
         final boolean shouldGenerate = Boolean.parseBoolean(System.getProperty(SHOULD_GENERATE, "true"));
         if (shouldGenerate)
@@ -94,7 +113,17 @@ public class SbeTool
             final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
             final String targetLanguage = System.getProperty(TARGET_LANGUAGE, "Java");
 
-            generate(new IrGenerator().generate(schema), outputDirName, targetLanguage);
+            generate(ir, outputDirName, targetLanguage);
+        }
+
+        final boolean shouldSerialize = Boolean.parseBoolean(System.getProperty(SHOULD_SERIALIZE, "false"));
+        if (shouldSerialize)
+        {
+            final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
+            final String serializedFileName = new File(fileName).getName().replace(".xml", ".sbeir");
+            final Serializer serializer = new Serializer(outputDirName + File.separatorChar + serializedFileName, ir);
+
+            serializer.serialize();
         }
     }
 

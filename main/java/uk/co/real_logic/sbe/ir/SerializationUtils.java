@@ -166,6 +166,11 @@ public class SerializationUtils
 
     public static SerializedPrimitiveType primitiveType(final PrimitiveType type)
     {
+        if (type == null)
+        {
+            return SerializedPrimitiveType.NONE;
+        }
+
         switch (type)
         {
             case INT8:
@@ -199,8 +204,10 @@ public class SerializationUtils
                 return SerializedPrimitiveType.DOUBLE;
 
             case CHAR:
-            default:
                 return SerializedPrimitiveType.CHAR;
+
+            default:
+                return SerializedPrimitiveType.NONE;
         }
     }
 
@@ -265,6 +272,7 @@ public class SerializationUtils
         }
 
         final String stringRep = new String(array, 0, length);
+        System.out.println("getVal(" + type.toString() + ")=" + stringRep);
 
         return PrimitiveValue.parse(stringRep, type);
     }

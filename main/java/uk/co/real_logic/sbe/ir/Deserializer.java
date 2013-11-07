@@ -65,7 +65,10 @@ public class Deserializer implements Closeable
         List<Token> tokens = new ArrayList<>();
         while (offset < buffer.limit())
         {
-            tokens.add(deserializeToken());
+            final Token token = deserializeToken();
+
+            System.out.println(token.toString());
+            tokens.add(token);
         }
 
         int i = 0, size = tokens.size();
@@ -149,8 +152,10 @@ public class Deserializer implements Closeable
 
         final byte[] byteArray = new byte[1024];
 
-        builder.offset(serializedToken.offset())
-               .size(serializedToken.size())
+        serializedToken.reset(directBuffer, offset);
+
+        builder.offset(serializedToken.tokenOffset())
+               .size(serializedToken.tokenSize())
                .schemaId(serializedToken.schemaID())
                .signal(SerializationUtils.signal(serializedToken.signal()));
 

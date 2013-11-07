@@ -23,6 +23,7 @@
             <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8" semanticType="data"/>
         </composite>
         <enum name="SerializedPrimitiveType" encodingType="uint8">
+            <validValue name="NONE">0</validValue>
             <validValue name="CHAR">1</validValue>
             <validValue name="INT8">2</validValue>
             <validValue name="INT16">3</validValue>
@@ -67,9 +68,9 @@
     </message>
 
     <message name="SerializedToken" id="2" description="Serialized IR Token">
-        <field name="tokenOffset" id="11" type="uint32" semanticType="Offset"/>
-        <field name="tokenSize" id="12" type="uint32" semanticType="Size"/>
-        <field name="schemaID" id="13" type="uint16" semanticType="ID"/>
+        <field name="tokenOffset" id="11" type="int32" semanticType="Offset"/>
+        <field name="tokenSize" id="12" type="int32" semanticType="Size"/>
+        <field name="schemaID" id="13" type="int32" semanticType="ID"/>
         <field name="signal" id="14" type="SerializedSignal" semanticType="Signal"/>
         <field name="primitiveType" id="15" type="SerializedPrimitiveType" semanticType="PrimitiveType"/>
         <field name="byteOrder" id="16" type="SerializedByteOrder" semanticType="ByteOrder"/>

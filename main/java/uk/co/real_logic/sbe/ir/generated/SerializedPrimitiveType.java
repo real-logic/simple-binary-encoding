@@ -16,6 +16,7 @@ public enum SerializedPrimitiveType
     UINT8((short)6),
     INT64((short)5),
     UINT64((short)9),
+    NONE((short)0),
     UINT16((short)7),
     INT16((short)3);
 
@@ -44,6 +45,7 @@ public enum SerializedPrimitiveType
             case 6: return UINT8;
             case 5: return INT64;
             case 9: return UINT64;
+            case 0: return NONE;
             case 7: return UINT16;
             case 3: return INT16;
         }

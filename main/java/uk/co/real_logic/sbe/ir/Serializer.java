@@ -109,10 +109,12 @@ public class Serializer implements Closeable
     {
         final byte[] byteArray = new byte[1024];
 
+        System.out.println(token.toString());
+
         serializedToken.reset(directBuffer, 0)
                        .tokenOffset(token.offset())
                        .tokenSize(token.size())
-                       .schemaID((short)token.schemaId())
+                       .schemaID((int)token.schemaId())
                        .signal(SerializationUtils.signal(token.signal()))
                        .primitiveType(SerializationUtils.primitiveType(token.encoding().primitiveType()))
                        .byteOrder(SerializationUtils.byteOrder(token.encoding().byteOrder()))
