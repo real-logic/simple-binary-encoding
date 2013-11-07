@@ -261,6 +261,12 @@ public class IrGenerator
             .byteOrder(byteOrder)
             .characterEncoding(type.characterEncoding());
 
+        Token.Builder tokenBuilder = new Token.Builder()
+            .signal(Signal.ENCODING)
+            .name(type.name())
+            .size(type.size())
+            .offset(offset);
+
         switch (type.presence())
         {
             case REQUIRED:
@@ -279,13 +285,8 @@ public class IrGenerator
                 break;
         }
 
-        Token token = new Token.Builder()
-            .signal(Signal.ENCODING)
-            .name(type.name())
-            .size(type.size())
-            .offset(offset)
-            .encoding(encodingBuilder.build())
-            .build();
+        Token token = tokenBuilder.encoding(encodingBuilder.build())
+                                  .build();
 
         tokenList.add(token);
     }

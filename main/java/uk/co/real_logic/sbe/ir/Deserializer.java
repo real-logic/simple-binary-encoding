@@ -38,6 +38,8 @@ public class Deserializer implements Closeable
     private int offset;
     private String irPackageName = null;
     private List<Token> irHeader = null;
+    private final byte[] valArray;
+    private final DirectBuffer valBuffer;
 
     public Deserializer(final String fileName)
             throws IOException
@@ -46,6 +48,8 @@ public class Deserializer implements Closeable
         buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         directBuffer = new DirectBuffer(buffer);
         offset = 0;
+        valArray = new byte[CAPACITY];
+        valBuffer = new DirectBuffer(valArray);
     }
 
     public void close()
@@ -151,7 +155,7 @@ public class Deserializer implements Closeable
         Encoding.Builder encBuilder = new Encoding.Builder();
 
         final byte[] byteArray = new byte[1024];
-
+        System.out.println("offset " + offset);
         serializedToken.reset(directBuffer, offset);
 
         builder.offset(serializedToken.tokenOffset())
@@ -167,10 +171,12 @@ public class Deserializer implements Closeable
         // must deserialize vardata in order
 
         builder.name(new String(byteArray, 0, serializedToken.getName(byteArray, 0, byteArray.length)));
-        encBuilder.constVal(SerializationUtils.getVal(byteArray, serializedToken.getConstVal(byteArray, 0, byteArray.length), type));
-        encBuilder.minVal(SerializationUtils.getVal(byteArray, serializedToken.getMinVal(byteArray, 0, byteArray.length), type));
-        encBuilder.maxVal(SerializationUtils.getVal(byteArray, serializedToken.getMaxVal(byteArray, 0, byteArray.length), type));
-        encBuilder.nullVal(SerializationUtils.getVal(byteArray, serializedToken.getNullVal(byteArray, 0, byteArray.length), type));
+
+        encBuilder.constVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getConstVal(valArray, 0, valArray.length)));
+        encBuilder.minVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getMinVal(valArray, 0, valArray.length)));
+        encBuilder.maxVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getMaxVal(valArray, 0, valArray.length)));
+        encBuilder.nullVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getNullVal(valArray, 0, valArray.length)));
+
         encBuilder.characterEncoding(new String(byteArray, 0, serializedToken.getCharacterEncoding(byteArray, 0, byteArray.length)));
 
         offset += serializedToken.size();

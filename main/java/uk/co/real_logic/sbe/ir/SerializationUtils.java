@@ -17,6 +17,8 @@ package uk.co.real_logic.sbe.ir;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
+import uk.co.real_logic.sbe.generation.java.CodecUtil;
+import uk.co.real_logic.sbe.generation.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.generated.SerializedByteOrder;
 import uk.co.real_logic.sbe.ir.generated.SerializedPrimitiveType;
 import uk.co.real_logic.sbe.ir.generated.SerializedSignal;
@@ -251,29 +253,127 @@ public class SerializationUtils
         }
     }
 
-    public static int putVal(final byte[] array, final PrimitiveValue value)
+    public static int putVal(final DirectBuffer buffer,
+                             final PrimitiveValue value,
+                             final PrimitiveType type)
     {
         if (value == null)
         {
             return 0;
         }
 
-        final byte[] stringRep = value.toString().getBytes();
+        switch (type)
+        {
+            case CHAR:
+                if (value.size() == 1)
+                {
+                    CodecUtil.charPut(buffer, 0, (byte)value.longValue());
+                    return 1;
+                }
+                else
+                {
+                    CodecUtil.charsPut(buffer, 0, value.byteArrayValue(), 0, value.byteArrayValue().length);
+                    return value.byteArrayValue().length;
+                }
 
-        System.arraycopy(stringRep, 0, array, 0, stringRep.length);
-        return stringRep.length;
+            case INT8:
+                CodecUtil.int8sPut(buffer, 0, (byte)value.longValue());
+                return 1;
+
+            case INT16:
+                CodecUtil.int16Put(buffer, 0, (short)value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                return 2;
+
+            case INT32:
+                CodecUtil.int32Put(buffer, 0, (int)value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                return 4;
+
+            case INT64:
+                CodecUtil.int64Put(buffer, 0, value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                return 8;
+
+            case UINT8:
+                CodecUtil.uint8Put(buffer, 0, (short)value.longValue());
+                return 1;
+
+            case UINT16:
+                CodecUtil.uint16Put(buffer, 0, (int)value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                return 2;
+
+            case UINT32:
+                CodecUtil.uint32Put(buffer, 0, value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                return 4;
+
+            case UINT64:
+                CodecUtil.uint64Put(buffer, 0, value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                return 8;
+
+            case FLOAT:
+                CodecUtil.floatPut(buffer, 0, (float)value.doubleValue(), ByteOrder.LITTLE_ENDIAN);
+                return 4;
+
+            case DOUBLE:
+                CodecUtil.doublePut(buffer, 0, value.doubleValue(), ByteOrder.LITTLE_ENDIAN);
+                return 8;
+
+            default:
+                return 0;
+        }
     }
 
-    public static PrimitiveValue getVal(final byte[] array, final int length, final PrimitiveType type)
+    public static PrimitiveValue getVal(final DirectBuffer buffer, final PrimitiveType type, final int length)
     {
         if (length == 0)
         {
             return null;
         }
 
-        final String stringRep = new String(array, 0, length);
-        System.out.println("getVal(" + type.toString() + ")=" + stringRep);
+        switch (type)
+        {
+            case CHAR:
+                if (length == 1)
+                {
+                    return new PrimitiveValue(CodecUtil.charGet(buffer, 0), 1);
+                }
+                else
+                {
+                    final byte[] array = new byte[length];
+                    CodecUtil.charsGet(buffer, 0, array, 0, array.length);
+                    return new PrimitiveValue(array, "UTF-8", array.length);
+                }
 
-        return PrimitiveValue.parse(stringRep, type);
+            case INT8:
+                return new PrimitiveValue(CodecUtil.int8Get(buffer, 0), 1);
+
+            case INT16:
+                return new PrimitiveValue(CodecUtil.int16Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 2);
+
+            case INT32:
+                return new PrimitiveValue(CodecUtil.int32Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 4);
+
+            case INT64:
+                return new PrimitiveValue(CodecUtil.int64Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 8);
+
+            case UINT8:
+                return new PrimitiveValue(CodecUtil.uint8Get(buffer, 0), 1);
+
+            case UINT16:
+                return new PrimitiveValue(CodecUtil.uint16Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 2);
+
+            case UINT32:
+                return new PrimitiveValue(CodecUtil.uint32Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 4);
+
+            case UINT64:
+                return new PrimitiveValue(CodecUtil.uint64Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 8);
+
+            case FLOAT:
+                return new PrimitiveValue(CodecUtil.floatGet(buffer, 0, ByteOrder.LITTLE_ENDIAN), 4);
+
+            case DOUBLE:
+                return new PrimitiveValue(CodecUtil.doubleGet(buffer, 0, ByteOrder.LITTLE_ENDIAN), 8);
+
+            default:
+                return null;
+        }
     }
 }

@@ -150,32 +150,35 @@ public class PrimitiveValue
     private final double doubleValue;
     private final byte[] byteArrayValue;
     private final String characterEncoding;
+    private final int size;
 
     /**
      * Construct and fill in value as a long.
      *
      * @param value in long format
      */
-    public PrimitiveValue(final long value)
+    public PrimitiveValue(final long value, final int size)
     {
         representation = Representation.LONG;
         longValue = value;
         doubleValue = 0.0;
         byteArrayValue = null;
         characterEncoding = null;
+        this.size = size;
     }
 
     /**
      * Construct and fill in value as a double.
      * @param value in double format
      */
-    public PrimitiveValue(final double value)
+    public PrimitiveValue(final double value, final int size)
     {
         representation = Representation.DOUBLE;
         longValue = 0;
         doubleValue = value;
         byteArrayValue = null;
         characterEncoding = null;
+        this.size = size;
     }
 
     /**
@@ -183,13 +186,14 @@ public class PrimitiveValue
      *
      * @param value as a byte array
      */
-    public PrimitiveValue(final byte[] value, final String characterEncoding)
+    public PrimitiveValue(final byte[] value, final String characterEncoding, final int size)
     {
         representation = Representation.BYTE_ARRAY;
         longValue = 0;
         doubleValue = 0.0;
         byteArrayValue = value;
         this.characterEncoding = characterEncoding;
+        this.size = size;
     }
 
     /**
@@ -209,22 +213,38 @@ public class PrimitiveValue
                 {
                     throw new IllegalArgumentException("Constant char value malformed: " + value);
                 }
-                return new PrimitiveValue((long)value.getBytes()[0]);
+                return new PrimitiveValue((long)value.getBytes()[0], 1);
 
             case INT8:
+                return new PrimitiveValue(Long.parseLong(value), 1);
+
             case INT16:
+                return new PrimitiveValue(Long.parseLong(value), 2);
+
             case INT32:
+                return new PrimitiveValue(Long.parseLong(value), 4);
+
             case INT64:
+                return new PrimitiveValue(Long.parseLong(value), 8);
+
             case UINT8:
+                return new PrimitiveValue(Long.parseLong(value), 1);
+
             case UINT16:
+                return new PrimitiveValue(Long.parseLong(value), 2);
+
             case UINT32:
+                return new PrimitiveValue(Long.parseLong(value), 4);
+
             case UINT64:
                 // TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit integers...
-                return new PrimitiveValue(Long.parseLong(value));
+                return new PrimitiveValue(Long.parseLong(value), 8);
 
             case FLOAT:
+                return new PrimitiveValue(Double.parseDouble(value), 4);
+
             case DOUBLE:
-                return new PrimitiveValue(Double.parseDouble(value));
+                return new PrimitiveValue(Double.parseDouble(value), 8);
 
             default:
                 throw new IllegalArgumentException("Unknown PrimitiveType: " + primitiveType);
@@ -247,7 +267,7 @@ public class PrimitiveValue
                                        final String characterEncoding)
     {
         // TODO: handle incorrect length, characterEncoding, etc.
-        return new PrimitiveValue(value.getBytes(forName(characterEncoding)), characterEncoding);
+        return new PrimitiveValue(value.getBytes(forName(characterEncoding)), characterEncoding, length);
     }
 
     /**
@@ -296,6 +316,16 @@ public class PrimitiveValue
         }
 
         return byteArrayValue;
+    }
+
+    /**
+     * Return size for this PrimitiveValue for serialization purposes.
+     *
+     * @return size for serialization
+     */
+    public int size()
+    {
+        return size;
     }
 
     /**

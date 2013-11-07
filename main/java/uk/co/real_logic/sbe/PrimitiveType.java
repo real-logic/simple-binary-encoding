@@ -111,18 +111,18 @@ public enum PrimitiveType
     {
         this.name = name;
         this.size = size;
-        this.minVal = new PrimitiveValue(minVal);
-        this.maxVal = new PrimitiveValue(maxVal);
-        this.nullVal = new PrimitiveValue(nullVal);
+        this.minVal = new PrimitiveValue(minVal, size);
+        this.maxVal = new PrimitiveValue(maxVal, size);
+        this.nullVal = new PrimitiveValue(nullVal, size);
     }
 
     PrimitiveType(final String name, final int size, final double minVal, final double maxVal, final double nullVal)
     {
         this.name = name;
         this.size = size;
-        this.minVal = new PrimitiveValue(minVal);
-        this.maxVal = new PrimitiveValue(maxVal);
-        this.nullVal = new PrimitiveValue(nullVal);
+        this.minVal = new PrimitiveValue(minVal, size);
+        this.maxVal = new PrimitiveValue(maxVal, size);
+        this.nullVal = new PrimitiveValue(nullVal, size);
     }
 
     /**

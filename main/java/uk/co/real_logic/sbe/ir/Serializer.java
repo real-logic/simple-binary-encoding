@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.ir;
 
+import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.generated.SerializedFrame;
 import uk.co.real_logic.sbe.ir.generated.SerializedToken;
@@ -38,6 +39,8 @@ public class Serializer implements Closeable
     private final IntermediateRepresentation ir;
     private final SerializedFrame serializedFrame = new SerializedFrame();
     private final SerializedToken serializedToken = new SerializedToken();
+    private final byte[] valArray;
+    private final DirectBuffer valBuffer;
 
     public Serializer(final String fileName, final IntermediateRepresentation ir)
         throws FileNotFoundException
@@ -46,6 +49,8 @@ public class Serializer implements Closeable
         buffer = ByteBuffer.allocateDirect(CAPACITY);
         directBuffer = new DirectBuffer(buffer);
         this.ir = ir;
+        valArray = new byte[CAPACITY];
+        valBuffer = new DirectBuffer(valArray);
     }
 
     public void close()
@@ -107,7 +112,7 @@ public class Serializer implements Closeable
 
     private int serializeToken(final Token token)
     {
-        final byte[] byteArray = new byte[1024];
+        final PrimitiveType type = token.encoding().primitiveType();
 
         System.out.println(token.toString());
 
@@ -116,15 +121,21 @@ public class Serializer implements Closeable
                        .tokenSize(token.size())
                        .schemaID((int)token.schemaId())
                        .signal(SerializationUtils.signal(token.signal()))
-                       .primitiveType(SerializationUtils.primitiveType(token.encoding().primitiveType()))
+                       .primitiveType(SerializationUtils.primitiveType(type))
                        .byteOrder(SerializationUtils.byteOrder(token.encoding().byteOrder()))
-                       .sinceVersion((short)0);
+                       .sinceVersion((short) 0);
 
         serializedToken.putName(token.name().getBytes(), 0, token.name().getBytes().length);
-        serializedToken.putConstVal(byteArray, 0, SerializationUtils.putVal(byteArray, token.encoding().constVal()));
-        serializedToken.putMinVal(byteArray, 0, SerializationUtils.putVal(byteArray, token.encoding().minVal()));
-        serializedToken.putMaxVal(byteArray, 0, SerializationUtils.putVal(byteArray, token.encoding().maxVal()));
-        serializedToken.putNullVal(byteArray, 0, SerializationUtils.putVal(byteArray, token.encoding().nullVal()));
+
+        serializedToken.putConstVal(valArray, 0,
+                SerializationUtils.putVal(valBuffer, token.encoding().constVal(), type));
+        serializedToken.putMinVal(valArray, 0,
+                SerializationUtils.putVal(valBuffer, token.encoding().minVal(), type));
+        serializedToken.putMaxVal(valArray, 0,
+                SerializationUtils.putVal(valBuffer, token.encoding().maxVal(), type));
+        serializedToken.putNullVal(valArray, 0,
+                SerializationUtils.putVal(valBuffer, token.encoding().nullVal(), type));
+
         serializedToken.putCharacterEncoding(token.encoding().characterEncoding().getBytes(), 0,
                 token.encoding().characterEncoding().getBytes().length);
 
