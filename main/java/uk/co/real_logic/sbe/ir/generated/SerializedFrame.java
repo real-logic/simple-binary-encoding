@@ -1,21 +1,26 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import java.nio.ByteOrder;
-import java.util.*;
-import uk.co.real_logic.sbe.generation.java.*;
+import uk.co.real_logic.sbe.generation.java.CodecUtil;
+import uk.co.real_logic.sbe.generation.java.DirectBuffer;
+import uk.co.real_logic.sbe.generation.java.MessageFlyweight;
 
 public class SerializedFrame implements MessageFlyweight
 {
-    private static final int BLOCKLENGTH = 2;
-
     private DirectBuffer buffer;
     private int offset;
     private int position;
+    private int actingBlockLength;
+    private int actingVersion;
 
     public int blockLength()
     {
-        return BLOCKLENGTH;
+        return 2;
+    }
+
+    public int version()
+    {
+        return 0;
     }
 
     public int offset()
@@ -23,11 +28,24 @@ public class SerializedFrame implements MessageFlyweight
         return offset;
     }
 
-    public SerializedFrame reset(final DirectBuffer buffer, final int offset)
+    public SerializedFrame resetForEncode(final DirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
         this.offset = offset;
-        position(offset + blockLength());
+        this.actingBlockLength = blockLength();
+        this.actingVersion = version();
+        position(offset + actingBlockLength);
+        return this;
+    }
+
+    public SerializedFrame resetForDecode(final DirectBuffer buffer, final int offset,
+                                          final int actingBlockLength, final int actingVersion)
+    {
+        this.buffer = buffer;
+        this.offset = offset;
+        this.actingBlockLength = actingBlockLength;
+        this.actingVersion = actingVersion;
+        position(offset + actingBlockLength);
         return this;
     }
 

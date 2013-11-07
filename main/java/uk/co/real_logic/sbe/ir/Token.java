@@ -62,6 +62,16 @@ import uk.co.real_logic.sbe.util.Verify;
  */
 public class Token
 {
+    /** Indicates how the version field should be interpreted. */
+    public enum VersionContext
+    {
+        /** Indicates the version is for the template itself. */
+        TEMPLATE_VERSION,
+
+        /** Indicates the field was introduced since this template version. */
+        SINCE_TEMPLATE_VERSION
+    }
+
     /** Invalid ID value. */
     public static final long INVALID_ID = -1;
 
@@ -74,6 +84,7 @@ public class Token
     private final Signal signal;
     private final String name;
     private final long schemaId;
+    private final int version;
     private final int size;
     private final int offset;
     private final Encoding encoding;
@@ -81,14 +92,18 @@ public class Token
     /**
      * Construct an {@link Token} by providing values for all fields.
      *
-     * @param signal        for the token role
-     * @param size          of the node in bytes.
-     * @param offset        within the {@link uk.co.real_logic.sbe.xml.Message}.
-     * @param encoding       for the {@link uk.co.real_logic.sbe.xml.Message}.
+     * @param signal for the token role
+     * @param name of the token in the message
+     * @param schemaId as the identifier in the message declaration
+     * @param version application within the template
+     * @param size of the component part
+     * @param offset in the underlying message as octets
+     * @param encoding of the primitive field
      */
     public Token(final Signal signal,
                  final String name,
                  final long schemaId,
+                 final int version,
                  final int size,
                  final int offset,
                  final Encoding encoding)
@@ -100,6 +115,7 @@ public class Token
         this.signal = signal;
         this.name = name;
         this.schemaId = schemaId;
+        this.version = version;
         this.size = size;
         this.offset = offset;
         this.encoding = encoding;
@@ -133,6 +149,34 @@ public class Token
     public long schemaId()
     {
         return schemaId;
+    }
+
+    /**
+     * The version context for this token.
+     *
+     * @return version context for this token.
+     * @see Token#versionContext()
+     */
+    public int version()
+    {
+        return version;
+    }
+
+    /**
+     * The context in which the version field should be interpreted.
+     *
+     * @return context in which the version field should be interpreted.
+     */
+    public VersionContext versionContext()
+    {
+        if (signal == Signal.BEGIN_MESSAGE || signal == Signal.END_MESSAGE)
+        {
+            return VersionContext.TEMPLATE_VERSION;
+        }
+        else
+        {
+            return VersionContext.SINCE_TEMPLATE_VERSION;
+        }
     }
 
     /**
@@ -189,6 +233,7 @@ public class Token
             "signal=" + signal +
             ", name='" + name + '\'' +
             ", schemaId=" + schemaId +
+            ", version=" + version +
             ", size=" + size +
             ", offset=" + offset +
             ", encoding=" + encoding +
@@ -200,6 +245,7 @@ public class Token
         private Signal signal;
         private String name;
         private long schemaId = INVALID_ID;
+        private int version = 0;
         private int size = 0;
         private int offset = 0;
         private Encoding encoding = new Encoding();
@@ -219,6 +265,12 @@ public class Token
         public Builder schemaId(final long schemaId)
         {
             this.schemaId = schemaId;
+            return this;
+        }
+
+        public Builder version(final int version)
+        {
+            this.version = version;
             return this;
         }
 
@@ -242,7 +294,7 @@ public class Token
 
         public Token build()
         {
-            return new Token(signal, name, schemaId, size, offset, encoding);
+            return new Token(signal, name, schemaId, version, size, offset, encoding);
         }
     }
 }

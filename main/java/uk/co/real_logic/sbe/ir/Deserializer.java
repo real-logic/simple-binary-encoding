@@ -35,25 +35,22 @@ public class Deserializer implements Closeable
     private final DirectBuffer directBuffer;
     private final SerializedFrame serializedFrame = new SerializedFrame();
     private final SerializedToken serializedToken = new SerializedToken();
-    private int offset;
+    private int offset = 0;
     private String irPackageName = null;
     private List<Token> irHeader = null;
-    private final byte[] valArray;
-    private final DirectBuffer valBuffer;
+    private final byte[] valArray = new byte[CAPACITY];
+    private final DirectBuffer valBuffer = new DirectBuffer(valArray);
 
     public Deserializer(final String fileName)
-            throws IOException
+        throws IOException
     {
         channel = new RandomAccessFile(fileName, "r").getChannel();
         buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         directBuffer = new DirectBuffer(buffer);
-        offset = 0;
-        valArray = new byte[CAPACITY];
-        valBuffer = new DirectBuffer(valArray);
     }
 
     public void close()
-            throws IOException
+        throws IOException
     {
         if (channel != null)
         {
@@ -62,11 +59,11 @@ public class Deserializer implements Closeable
     }
 
     public IntermediateRepresentation deserialize()
-            throws IOException
+        throws IOException
     {
         deserializeFrame();
 
-        List<Token> tokens = new ArrayList<>();
+        final List<Token> tokens = new ArrayList<>();
         while (offset < buffer.limit())
         {
             final Token token = deserializeToken();
@@ -82,7 +79,7 @@ public class Deserializer implements Closeable
             i = captureHeader(tokens, 0);
         }
 
-        IntermediateRepresentation ir = new IntermediateRepresentation(irPackageName, irHeader);
+        final IntermediateRepresentation ir = new IntermediateRepresentation(irPackageName, irHeader);
 
         for (; i < size; i++)
         {
@@ -133,7 +130,7 @@ public class Deserializer implements Closeable
 
     private void deserializeFrame()
     {
-        serializedFrame.reset(directBuffer, offset);
+        serializedFrame.resetForDecode(directBuffer, offset, serializedFrame.blockLength(), 0);
 
         if (serializedFrame.sbeIrVersion() != 0)
         {
@@ -151,12 +148,12 @@ public class Deserializer implements Closeable
 
     private Token deserializeToken()
     {
-        Token.Builder builder = new Token.Builder();
-        Encoding.Builder encBuilder = new Encoding.Builder();
+        final Token.Builder builder = new Token.Builder();
+        final Encoding.Builder encBuilder = new Encoding.Builder();
 
         final byte[] byteArray = new byte[1024];
         System.out.println("offset " + offset);
-        serializedToken.reset(directBuffer, offset);
+        serializedToken.resetForDecode(directBuffer, offset, serializedToken.blockLength(), 0);
 
         builder.offset(serializedToken.tokenOffset())
                .size(serializedToken.tokenSize())

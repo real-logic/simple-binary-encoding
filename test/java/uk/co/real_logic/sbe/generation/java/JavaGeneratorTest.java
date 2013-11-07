@@ -193,7 +193,7 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final MessageFlyweight messageFlyweight = (MessageFlyweight)clazz.newInstance();
-        messageFlyweight.reset(buffer, 0);
+        messageFlyweight.resetForEncode(buffer, 0);
 
         final int initialPosition = messageFlyweight.position();
         assertThat(Integer.valueOf(messageFlyweight.blockLength()), is(Integer.valueOf(initialPosition)));

@@ -55,7 +55,7 @@ public class SbeExample
             .reset(directBuffer, bufferOffset)
             .blockLength(CAR.blockLength())
             .templateId((int)CAR.templateId())
-            .version((short)0);
+            .version((short)CAR.version());
 
         bufferOffset += MESSAGE_HEADER.size();
         encode(CAR, directBuffer, bufferOffset);
@@ -65,19 +65,21 @@ public class SbeExample
         bufferOffset = 0;
         MESSAGE_HEADER.reset(directBuffer, bufferOffset);
 
-        final int templateId = MESSAGE_HEADER.templateId();
-        final int version = MESSAGE_HEADER.version();
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
+        final int templateId = MESSAGE_HEADER.templateId();
+
+        final int version = MESSAGE_HEADER.version();
+        final int blockLength = MESSAGE_HEADER.blockLength();
 
         bufferOffset += MESSAGE_HEADER.size();
-        decode(CAR, directBuffer, bufferOffset);
+        decode(CAR, directBuffer, bufferOffset, blockLength, version);
     }
 
     private static void encode(final Car car, final DirectBuffer directBuffer, final int bufferOffset)
     {
         final int srcOffset = 0;
 
-        car.reset(directBuffer, bufferOffset)
+        car.resetForEncode(directBuffer, bufferOffset)
            .serialNumber(1234)
            .modelYear(2013)
            .available(BooleanType.TRUE)
@@ -122,13 +124,17 @@ public class SbeExample
         car.putModel(MODEL, srcOffset, MODEL.length);
     }
 
-    private static void decode(final Car car, final DirectBuffer directBuffer, final int bufferOffset)
+    private static void decode(final Car car,
+                               final DirectBuffer directBuffer,
+                               final int bufferOffset,
+                               final int actingBlockLength,
+                               final int actingVersion)
         throws Exception
     {
         final byte[] buffer = new byte[128];
         final StringBuilder sb = new StringBuilder();
 
-        car.reset(directBuffer, bufferOffset);
+        car.resetForDecode(directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
         sb.append("\ncar.templateId=").append(car.templateId());
         sb.append("\ncar.serialNumber=").append(car.serialNumber());

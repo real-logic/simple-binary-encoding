@@ -96,13 +96,14 @@ public class JavaGenerator implements CodeGenerator
 
         for (final List<Token> tokens : ir.messages())
         {
-            final String className = formatClassName(tokens.get(0).name());
+            final Token msgToken = tokens.get(0);
+            final String className = formatClassName(msgToken.name());
 
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.packageName()));
                 out.append(generateClassDeclaration(className, MessageFlyweight.class.getSimpleName()));
-                out.append(generateMessageFlyweightCode(tokens.get(0).size(), className, tokens.get(0).schemaId()));
+                out.append(generateMessageFlyweightCode(className, msgToken.size(), msgToken.version(), msgToken.schemaId()));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -891,27 +892,46 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateMessageFlyweightCode(final int blockLength, final String className, final long schemaId)
+    private CharSequence generateMessageFlyweightCode(final String className, final int blockLength,
+                                                      final int version,
+                                                      final long schemaId)
     {
         return String.format(
-            "    private static final int BLOCKLENGTH = %d;\n\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
             "    private int position;\n" +
+            "    private int actingBlockLength;\n" +
+            "    private int actingVersion;\n" +
             "\n" +
             "    public int blockLength()\n" +
             "    {\n" +
-            "        return BLOCKLENGTH;\n" +
+            "        return %d;\n" +
+            "    }\n\n" +
+            "    public int version()\n" +
+            "    {\n" +
+            "        return %d;\n" +
             "    }\n\n" +
             "    public int offset()\n" +
             "    {\n" +
             "        return offset;\n" +
             "    }\n\n" +
-            "    public %s reset(final DirectBuffer buffer, final int offset)\n" +
+            "    public %s resetForEncode(final DirectBuffer buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
-            "        position(offset + blockLength());\n" +
+            "        this.actingBlockLength = blockLength();\n" +
+            "        this.actingVersion = 0;\n" +
+            "        position(offset + actingBlockLength);\n" +
+            "        return this;\n" +
+            "    }\n\n" +
+            "    public %s resetForDecode(final DirectBuffer buffer, final int offset,\n" +
+            "                             final int actingBlockLength, final int actingVersion)\n" +
+            "    {\n" +
+            "        this.buffer = buffer;\n" +
+            "        this.offset = offset;\n" +
+            "        this.actingBlockLength = actingBlockLength;\n" +
+            "        this.actingVersion = actingVersion;\n" +
+            "        position(offset + actingBlockLength);\n" +
             "        return this;\n" +
             "    }\n\n" +
             "    public int size()\n" +
@@ -932,6 +952,8 @@ public class JavaGenerator implements CodeGenerator
             "        this.position = position;\n" +
             "    }\n",
             Integer.valueOf(blockLength),
+            Integer.valueOf(version),
+            className,
             className,
             Long.valueOf(schemaId)
         );

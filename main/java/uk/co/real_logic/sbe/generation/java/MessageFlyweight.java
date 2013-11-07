@@ -28,6 +28,20 @@ public interface MessageFlyweight
     int blockLength();
 
     /**
+     * Get the identifier fo the template for this codec.
+     *
+     * @return the identifier fo the template for this codec.
+     */
+    long templateId();
+
+    /**
+     * Get the version up to which this template supports.
+     *
+     * @return the version up to which this template supports.
+     */
+    int version();
+
+    /**
      * Offset in the underlying buffer at which the message starts.
      *
      * @return offset in the underlying buffer at which the message starts.
@@ -35,13 +49,25 @@ public interface MessageFlyweight
     int offset();
 
     /**
-     * Reset the flyweight to a new index in a buffer to overlay a message.
+     * Reset the flyweight to a new index in a buffer to overlay a message for encoding.
      *
      * @param buffer underlying the message.
-     * @param index at which the message body begins.
+     * @param offset at which the message body begins.
      * @return the flyweight as a sub classed covariant type to provide a fluent API.
      */
-    MessageFlyweight reset(final DirectBuffer buffer, final int index);
+    MessageFlyweight resetForEncode(final DirectBuffer buffer, final int offset);
+
+    /**
+     * Reset the flyweight to a new index in a buffer to overlay a message for decoding.
+     *
+     * @param buffer underlying the message.
+     * @param offset at which the message body begins.
+     * @param actingBlockLength to be used when decoding the message.
+     * @param actingVersion of the template to be used with decoding the message.
+     * @return the flyweight as a sub classed covariant type to provide a fluent API.
+     */
+    MessageFlyweight resetForDecode(final DirectBuffer buffer, final int offset,
+                                    final int actingBlockLength, final int actingVersion);
 
     /**
      * The position for the end of the currently access block.
