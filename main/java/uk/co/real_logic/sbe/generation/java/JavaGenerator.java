@@ -322,7 +322,6 @@ public class JavaGenerator implements CodeGenerator
             propertyName
         ));
 
-
         sb.append(String.format(
             "\n" +
                 indent + "    public %s %sCount(final int count)\n" +
