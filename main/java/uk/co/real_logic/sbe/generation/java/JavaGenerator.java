@@ -489,10 +489,6 @@ public class JavaGenerator implements CodeGenerator
                     "\n" +
                     "    public boolean %s()\n" +
                     "    {\n" +
-                    "        if (actingVersion < %d)\n" +
-                    "        {\n" +
-                    "            return false;\n" +
-                    "        }\n\n" +
                     "        return CodecUtil.%sGetChoice(buffer, offset, %s%s);\n" +
                     "    }\n\n" +
                     "    public %s %s(final boolean value)\n" +
@@ -501,7 +497,6 @@ public class JavaGenerator implements CodeGenerator
                     "        return this;\n" +
                     "    }\n",
                     choiceName,
-                    Integer.valueOf(token.version()),
                     typePrefix,
                     choiceBitPosition,
                     byteOrderStr,
