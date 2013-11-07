@@ -80,7 +80,7 @@ public class JavaGenerator implements CodeGenerator
                     break;
 
                 case BEGIN_SET:
-                    generateChoiceSet(tokens);
+                    generateBitSet(tokens);
                     break;
 
                 case BEGIN_COMPOSITE:
@@ -421,7 +421,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private void generateChoiceSet(final List<Token> tokens) throws IOException
+    private void generateBitSet(final List<Token> tokens) throws IOException
     {
         final String bitSetName = formatClassName(tokens.get(0).name());
 
@@ -471,7 +471,7 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private CharSequence generateChoices(final String bitsetClassName, final List<Token> tokens)
+    private CharSequence generateChoices(final String bitSetClassName, final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -489,18 +489,23 @@ public class JavaGenerator implements CodeGenerator
                     "\n" +
                     "    public boolean %s()\n" +
                     "    {\n" +
+                    "        if (actingVersion < %d)\n" +
+                    "        {\n" +
+                    "            return false;\n" +
+                    "        }\n\n" +
                     "        return CodecUtil.%sGetChoice(buffer, offset, %s%s);\n" +
                     "    }\n\n" +
                     "    public %s %s(final boolean value)\n" +
                     "    {\n" +
                     "        CodecUtil.%sPutChoice(buffer, offset, %s, value%s);\n" +
-                    "        return this;" +
+                    "        return this;\n" +
                     "    }\n",
                     choiceName,
+                    Integer.valueOf(token.version()),
                     typePrefix,
                     choiceBitPosition,
                     byteOrderStr,
-                    bitsetClassName,
+                    bitSetClassName,
                     choiceName,
                     typePrefix,
                     choiceBitPosition,
