@@ -852,7 +852,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    private static final byte[] %sValue = {%s};\n",
+            indent + "    private final byte[] %sValue = {%s};\n",
             propertyName,
             values
         ));
