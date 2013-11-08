@@ -32,11 +32,11 @@ public class Deserializer implements Closeable
     private static final int CAPACITY = 4096;
 
     private final FileChannel channel;
-    private final MappedByteBuffer buffer;
     private final DirectBuffer directBuffer;
     private final SerializedFrame serializedFrame = new SerializedFrame();
     private final SerializedToken serializedToken = new SerializedToken();
-    private int offset = 0;
+    private int offset;
+    private final long size;
     private String irPackageName = null;
     private List<Token> irHeader = null;
     private int irVersion = 0;
@@ -47,15 +47,18 @@ public class Deserializer implements Closeable
         throws IOException
     {
         channel = new RandomAccessFile(fileName, "r").getChannel();
-        buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+        final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         directBuffer = new DirectBuffer(buffer);
+        size = channel.size();
+        offset = 0;
     }
 
     public Deserializer(final ByteBuffer buffer)
     {
         channel = null;
-        this.buffer = null;
+        size = buffer.limit();
         directBuffer = new DirectBuffer(buffer);
+        offset = 0;
     }
 
     public void close()
@@ -73,11 +76,11 @@ public class Deserializer implements Closeable
         deserializeFrame();
 
         final List<Token> tokens = new ArrayList<>();
-        while (offset < buffer.limit())
+        while (offset < size)
         {
             final Token token = deserializeToken();
 
-            System.out.println(token.toString());
+            // System.out.println(token.toString());
             tokens.add(token);
         }
 
@@ -161,7 +164,7 @@ public class Deserializer implements Closeable
         final Encoding.Builder encBuilder = new Encoding.Builder();
 
         final byte[] byteArray = new byte[1024];
-        System.out.println("offset " + offset);
+
         serializedToken.resetForDecode(directBuffer, offset, serializedToken.blockLength(), 0);
 
         builder.offset(serializedToken.tokenOffset())

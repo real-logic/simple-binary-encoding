@@ -59,7 +59,7 @@ public class Serializer implements Closeable
         channel = null;
         resultBuffer = buffer;
         this.buffer = ByteBuffer.allocateDirect(CAPACITY);
-        directBuffer = new DirectBuffer(buffer);
+        directBuffer = new DirectBuffer(this.buffer);
         this.ir = ir;
     }
 
@@ -130,8 +130,6 @@ public class Serializer implements Closeable
     private int serializeToken(final Token token)
     {
         final PrimitiveType type = token.encoding().primitiveType();
-
-        System.out.println(token.toString());
 
         serializedToken.resetForEncode(directBuffer, 0)
                        .tokenOffset(token.offset())
