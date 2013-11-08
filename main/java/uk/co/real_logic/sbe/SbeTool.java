@@ -44,7 +44,7 @@ import java.io.FileInputStream;
  * <ul>
  *     <li><code>sbe.validation.xsd</code>: Use XSD to validate or not.</li>
  *     <li><code>sbe.validation.stop.on.error</code>: Should the parser stop on first error encountered? Defaults to false.</li>
- *     <li><code>sbe.validation.warnings.fatal</code>: Are waring in parsing considered fatal? Defaults to false.</li>
+ *     <li><code>sbe.validation.warnings.fatal</code>: Are warnings in parsing considered fatal? Defaults to false.</li>
  *     <li><code>sbe.validation.suppress.output</code>: Should the parser suppress output during validation? Defaults to false.</li>
  *     <li><code>sbe.should.generate</code>: Generate or not. Defaults to true</li>
  *     <li><code>sbe.target.language</code>: Target language for code generation, defaults to Java.</li>
