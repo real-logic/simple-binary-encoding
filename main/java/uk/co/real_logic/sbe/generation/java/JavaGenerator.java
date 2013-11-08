@@ -36,7 +36,7 @@ import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 public class JavaGenerator implements CodeGenerator
 {
     /** Class name to be used for visitor pattern that accesses the message header. */
-    public static final String MESSAGE_HEADER_VISITOR = "MessageHeader";
+    public static final String MESSAGE_HEADER_TYPE = "MessageHeader";
 
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
@@ -56,14 +56,14 @@ public class JavaGenerator implements CodeGenerator
 
     public void generateMessageHeaderStub() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_VISITOR))
+        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
         {
             out.append(generateFileHeader(ir.packageName()));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_VISITOR, FixedFlyweight.class.getSimpleName()));
-            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_VISITOR, ir.header().get(0).size()));
+            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE, FixedFlyweight.class.getSimpleName()));
+            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, ir.header().get(0).size()));
 
             final List<Token> tokens = ir.header();
-            out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_VISITOR, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");
         }

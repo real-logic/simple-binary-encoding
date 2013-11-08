@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
-import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_VISITOR;
+import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_TYPE;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class JavaGeneratorTest
@@ -61,7 +61,7 @@ public class JavaGeneratorTest
         final Short templateId = Short.valueOf((short)7);
         final int actingVersion = 0;
         final Integer blockLength = Integer.valueOf(32);
-        final String fqClassName = ir.packageName() + "." + MESSAGE_HEADER_VISITOR;
+        final String fqClassName = ir.packageName() + "." + MESSAGE_HEADER_TYPE;
 
         when(Short.valueOf(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER))).thenReturn(templateId);
 
