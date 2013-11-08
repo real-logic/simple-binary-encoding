@@ -353,16 +353,7 @@ public class JavaGenerator implements CodeGenerator
                 generateFieldIdMethod(sb, token, BASE_INDENT);
 
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
-
-                sb.append(String.format(
-                    "\n"  +
-                    "    public String %sCharacterEncoding()\n" +
-                    "    {\n" +
-                    "        return \"%s\";\n" +
-                    "    }\n\n",
-                    formatPropertyName(token.name()),
-                    characterEncoding
-                ));
+                generateCharacterEncodingMethod(sb, token.name(), characterEncoding);
 
                 final String propertyName = toUpperFirstChar(token.name());
                 final Token lengthToken = tokens.get(i + 2);
@@ -810,6 +801,8 @@ public class JavaGenerator implements CodeGenerator
 
         if (token.encoding().primitiveType() == PrimitiveType.CHAR)
         {
+            generateCharacterEncodingMethod(sb, token.name(), token.encoding().characterEncoding());
+
             sb.append(String.format(
                 "\n" +
                 indent + "    public int get%s(final byte[] dst, final int dstOffset)\n" +
@@ -848,6 +841,19 @@ public class JavaGenerator implements CodeGenerator
         }
 
         return sb;
+    }
+
+    private void generateCharacterEncodingMethod(final StringBuilder sb, final String propertyName, final String encoding)
+    {
+        sb.append(String.format(
+            "\n" +
+            "    public String %sCharacterEncoding()\n" +
+            "    {\n" +
+            "        return \"%s\";\n" +
+            "    }\n\n",
+            formatPropertyName(propertyName),
+            encoding
+        ));
     }
 
     private CharSequence generateConstPropertyMethods(final String propertyName, final Token token, final String indent)

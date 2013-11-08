@@ -202,7 +202,7 @@
         </fileset>
     </path>
 
-    <target name="examples:gen" depends="dist">
+    <target name="examples:java" depends="dist">
         <mkdir dir="${dir.gen.java}"/>
         <mkdir dir="${dir.examples.build}"/>
         <java classname="uk.co.real_logic.sbe.SbeTool">
