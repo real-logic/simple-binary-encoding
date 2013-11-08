@@ -696,9 +696,9 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFieldNotPresentCondition(final int fieldVersion, final Encoding encoding, final String indent)
+    private CharSequence generateFieldNotPresentCondition(final int sinceVersion, final Encoding encoding, final String indent)
     {
-        if (0 == fieldVersion)
+        if (0 == sinceVersion)
         {
             return "";
         }
@@ -708,14 +708,14 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            return %s;\n" +
             indent + "        }\n\n",
-            Integer.valueOf(fieldVersion),
-            fieldVersion > 0 ?  generateLiteral(encoding.primitiveType(), encoding.nullVal()) : "(byte)0"
+            Integer.valueOf(sinceVersion),
+            sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.nullVal()) : "(byte)0"
         );
     }
 
-    private CharSequence generateArrayFieldNotPresentCondition(final int fieldVersion, final String indent)
+    private CharSequence generateArrayFieldNotPresentCondition(final int sinceVersion, final String indent)
     {
-        if (0 == fieldVersion)
+        if (0 == sinceVersion)
         {
             return "";
         }
@@ -725,13 +725,13 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            return 0;\n" +
             indent + "        }\n\n",
-            Integer.valueOf(fieldVersion)
+            Integer.valueOf(sinceVersion)
         );
     }
 
-    private CharSequence generateTypeFieldNotPresentCondition(final int fieldVersion, final String indent)
+    private CharSequence generateTypeFieldNotPresentCondition(final int sinceVersion, final String indent)
     {
-        if (0 == fieldVersion)
+        if (0 == sinceVersion)
         {
             return "";
         }
@@ -741,7 +741,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            return null;\n" +
             indent + "        }\n\n",
-            Integer.valueOf(fieldVersion)
+            Integer.valueOf(sinceVersion)
         );
     }
 
