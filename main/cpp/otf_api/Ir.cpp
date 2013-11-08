@@ -19,27 +19,22 @@
 #include <sys/types.h>
 
 #include "otf_api/Ir.h"
+#include "uk_co_real_logic_sbe_ir_generated/SerializedToken.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/SerializedFrame.hpp"
 
 using namespace sbe::on_the_fly;
+using namespace uk_co_real_logic_sbe_ir_generated;
 using ::std::cout;
 using ::std::endl;
 
-/*
- * Until we have SBE generating C++, just layering a struct over each token
- */
-struct IrToken
+struct Ir::Impl
 {
-    uint8_t tokenLen;
-    uint8_t signal;
-    uint8_t primitiveType;
-    uint8_t byteOrder;
-    uint32_t offset;
-    uint32_t size;
-    uint16_t schemaId;
-    uint8_t nameLen;
-    // name follows for nameLen bytes
-    // constLen (uint8_t) field follows name
-    // constant value follows constLen
+    SerializedToken serializedToken;
+    char name[256];
+    char constVal[256];
+    int nameLength;
+    int constValLength;
+    uint32_t serializedTokenSize;
 };
 
 const int Ir::INVALID_ID;
@@ -48,19 +43,57 @@ const uint32_t Ir::VARIABLE_SIZE;
 Ir::Ir(const char *buffer, const int len) :
     buffer_(buffer), len_(len)
 {
+    impl_ = new Ir::Impl;
     begin();
+}
+
+void Ir::readTokenAtCurrentPosition()
+{
+    char tmp[256];
+    int length;
+
+    //printf("read buffer_ %p offset %d\n", buffer_, cursorOffset_);
+
+    impl_->serializedToken.reset((char *)buffer_, cursorOffset_);
+
+    // read all the var data and save in Impl then save size
+
+    impl_->nameLength = impl_->serializedToken.getName(impl_->name, sizeof(impl_->name));
+
+    impl_->constValLength = impl_->serializedToken.getConstVal(impl_->constVal, sizeof(impl_->constVal));
+
+    // don't really do anything with min/max/null/encoding right now
+    length = impl_->serializedToken.getMinVal(tmp, sizeof(tmp));
+    length = impl_->serializedToken.getMaxVal(tmp, sizeof(tmp));
+    length = impl_->serializedToken.getNullVal(tmp, sizeof(tmp));
+    length = impl_->serializedToken.getCharacterEncoding(tmp, sizeof(tmp));
+
+    impl_->serializedTokenSize = impl_->serializedToken.size();
+
+//    printf("token %p %d offset=%d size=%d id=%d signal=%d type=%d order=%d name=%s constLen=%d\n",
+//           buffer_, cursorOffset_, offset(), size(), schemaId(), signal(), primitiveType(), byteOrder(),
+//           name().c_str(), impl_->constValLength);
+
 }
 
 void Ir::begin()
 {
     cursorOffset_ = 0;
+
+    if (buffer_ != NULL)
+    {
+        readTokenAtCurrentPosition();
+    }
 }
 
 void Ir::next()
 {
-    struct IrToken *currToken = (struct IrToken *)(buffer_ + cursorOffset_);
+    cursorOffset_ += impl_->serializedTokenSize;
 
-    cursorOffset_ += currToken->tokenLen;
+    if (!end())
+    {
+        readTokenAtCurrentPosition();
+    }
 }
 
 bool Ir::end() const
@@ -72,60 +105,98 @@ bool Ir::end() const
     return true;
 }
 
-uint32_t Ir::offset() const
+int32_t Ir::offset() const
 {
-    return ((struct IrToken *)(buffer_ + cursorOffset_))->offset;
+    return impl_->serializedToken.tokenOffset();
 }
 
-uint32_t Ir::size() const
+int32_t Ir::size() const
 {
-    return ((struct IrToken *)(buffer_ + cursorOffset_))->size;
+    return impl_->serializedToken.tokenSize();
 }
 
 Ir::TokenSignal Ir::signal() const
 {
-    return (Ir::TokenSignal)((struct IrToken *)(buffer_ + cursorOffset_))->signal;
+    // the serialized IR and the Ir::TokenSignal enums MUST be kept in sync!
+    return (Ir::TokenSignal)impl_->serializedToken.signal();
 }
 
 Ir::TokenByteOrder Ir::byteOrder() const
 {
-    return (Ir::TokenByteOrder)((struct IrToken *)(buffer_ + cursorOffset_))->byteOrder;
+    // the serialized IR and the Ir::TokenByteOrder enums MUST be kept in sync!
+    return (Ir::TokenByteOrder)impl_->serializedToken.byteOrder();
 }
 
 Ir::TokenPrimitiveType Ir::primitiveType() const
 {
-    return (Ir::TokenPrimitiveType)((struct IrToken *)(buffer_ + cursorOffset_))->primitiveType;
+    // the serialized IR and the Ir::TokenPrimitiveType enums MUST be kept in sync!
+    return (Ir::TokenPrimitiveType)impl_->serializedToken.primitiveType();
 }
 
-uint16_t Ir::schemaId() const
+int32_t Ir::schemaId() const
 {
-    return ((struct IrToken *)(buffer_ + cursorOffset_))->schemaId;    
+    return impl_->serializedToken.schemaID();
 }
 
-// reuse schemaId for validValue and choice const values - this will probably change for the real IR format
 uint64_t Ir::validValue() const
 {
-    return ((struct IrToken *)(buffer_ + cursorOffset_))->schemaId;
+    // constVal holds the validValue. primitiveType holds the type
+    switch (primitiveType())
+    {
+        case Ir::CHAR:
+            return impl_->constVal[0];
+            break;
+
+        case Ir::UINT8:
+            return impl_->constVal[0];
+            break;
+
+        default:
+            throw "do not know validValue primitiveType";
+            break;
+    }
 }
 
 uint64_t Ir::choiceValue() const
 {
-    return ((struct IrToken *)(buffer_ + cursorOffset_))->schemaId;
+    // constVal holds the validValue. primitiveType holds the type
+    switch (primitiveType())
+    {
+        case Ir::UINT8:
+            return impl_->constVal[0];
+            break;
+
+        case Ir::UINT16:
+            return *(uint16_t *)(impl_->constVal);
+            break;
+
+        case Ir::UINT32:
+            return *(uint32_t *)(impl_->constVal);
+            break;
+
+        case Ir::UINT64:
+            return *(uint64_t *)(impl_->constVal);
+            break;
+
+        default:
+            throw "do not know choice primitiveType";
+            break;
+    }
 }
 
 uint8_t Ir::nameLen() const
 {
-    return ((struct IrToken *)(buffer_ + cursorOffset_))->nameLen;
+    return impl_->nameLength;
 }
 
 std::string Ir::name() const
 {
-    return std::string((buffer_ + cursorOffset_ + sizeof(struct IrToken)), nameLen());
+    return std::string(impl_->name, nameLen());
 }
 
 uint64_t Ir::constLen() const
 {
-    return *(uint8_t *)(buffer_ + cursorOffset_ + sizeof(struct IrToken) + nameLen());
+    return impl_->constValLength;
 }
 
 const char *Ir::constVal() const
@@ -135,7 +206,7 @@ const char *Ir::constVal() const
         return NULL;
     }
 
-    return (buffer_ + cursorOffset_ + sizeof(struct IrToken) + nameLen() + 1);
+    return impl_->constVal;
 }
 
 int Ir::position() const
@@ -146,6 +217,7 @@ int Ir::position() const
 void Ir::position(const int pos)
 {
     cursorOffset_ = pos;
+    readTokenAtCurrentPosition();
 }
 
 void Ir::addToken(uint32_t offset,
@@ -155,34 +227,35 @@ void Ir::addToken(uint32_t offset,
                   TokenPrimitiveType primitiveType,
                   uint16_t schemaId,
                   const std::string &name,
-                  const char *constVal)
+                  const char *constVal,
+                  int constValLength)
 {
+    SerializedToken serializedToken;
+
     if (buffer_ == NULL)
     {
-        buffer_ = new char[2048];
+        buffer_ = new char[4098];
     }
 
-    struct IrToken *token = (struct IrToken *)(buffer_ + cursorOffset_);
-    token->tokenLen = sizeof(struct IrToken) + name.size();
-    token->offset = offset;
-    token->size = size;
-    token->signal = signal;
-    token->byteOrder = byteOrder;
-    token->primitiveType = primitiveType;
-    token->schemaId = schemaId;
-    token->nameLen = name.size();
-    ::strncpy((char *)(buffer_ + cursorOffset_ + sizeof(struct IrToken)), name.c_str(), name.size());
-    if (constVal != NULL)
-    {
-        *(uint8_t *)(buffer_ + cursorOffset_ + token->tokenLen) = size;
-        ::memcpy((void *)(buffer_ + cursorOffset_ + token->tokenLen + 1), constVal, size);
-        token->tokenLen += 1 + size;
-    }
-    else
-    {
-        *(uint8_t *)(buffer_ + cursorOffset_ + token->tokenLen) = 0;
-        token->tokenLen += 1;
-    }
-    cursorOffset_ += token->tokenLen;
+    //printf("buffer_ %p offset %d\n", buffer_, cursorOffset_);
+
+    serializedToken.reset((char *)buffer_, cursorOffset_);
+
+    serializedToken.tokenOffset(offset)
+                   .tokenSize(size)
+                   .schemaID(schemaId)
+                   .tokenVersion(0)
+                   .signal((SerializedSignal::Value)signal)
+                   .primitiveType((SerializedPrimitiveType::Value)primitiveType)
+                   .byteOrder((SerializedByteOrder::Value)byteOrder);
+
+    serializedToken.putName(name.c_str(), name.size());
+    serializedToken.putConstVal(constVal, constValLength);
+    serializedToken.putMinVal(NULL, 0);
+    serializedToken.putMaxVal(NULL, 0);
+    serializedToken.putNullVal(NULL, 0);
+    serializedToken.putCharacterEncoding(NULL, 0);
+
+    cursorOffset_ += serializedToken.size();
     len_ = cursorOffset_;
 }

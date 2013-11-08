@@ -24,11 +24,6 @@ public class VarDataEncoding implements FixedFlyweight
 
     public short length()
     {
-        if (actingVersion < 0)
-        {
-            return (byte)0;
-        }
-
         return CodecUtil.uint8Get(buffer, offset + 0);
     }
 

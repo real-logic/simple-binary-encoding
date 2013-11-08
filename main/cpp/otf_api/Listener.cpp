@@ -489,6 +489,8 @@ uint64_t Listener::processEncoding(const Ir *ir, const uint64_t value)
 {
     cachedField_.addEncoding(ir->name(), ir->primitiveType(), value);
 
+    //printf("encoding %s %d %u\n", ir->name().c_str(), ir->primitiveType(), value);
+
     if (irCallback_ != NULL && headerEncodingName_ == ir->name())
     {
         templateId_ = value;

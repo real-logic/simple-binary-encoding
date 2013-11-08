@@ -5,9 +5,9 @@ import uk.co.real_logic.sbe.generation.java.*;
 
 public class SerializedFrame implements MessageFlyweight
 {
-    private static final int BLOCK_LENGTH = 8;
-    private static final long TEMPLATE_ID = 1;
+    private static final long TEMPLATE_ID = 1L;
     private static final int TEMPLATE_VERSION = 0;
+    private static final int BLOCK_LENGTH = 8;
 
     private DirectBuffer buffer;
     private int offset;
@@ -42,6 +42,7 @@ public class SerializedFrame implements MessageFlyweight
         this.actingBlockLength = BLOCK_LENGTH;
         this.actingVersion = TEMPLATE_VERSION;
         position(offset + actingBlockLength);
+
         return this;
     }
 
@@ -53,6 +54,7 @@ public class SerializedFrame implements MessageFlyweight
         this.actingBlockLength = actingBlockLength;
         this.actingVersion = actingVersion;
         position(offset + actingBlockLength);
+
         return this;
     }
 
@@ -74,16 +76,11 @@ public class SerializedFrame implements MessageFlyweight
 
     public long sbeIrVersionId()
     {
-        return 1;
+        return 1L;
     }
 
     public int sbeIrVersion()
     {
-        if (actingVersion < 0)
-        {
-            return (byte)0;
-        }
-
         return CodecUtil.int32Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -95,16 +92,11 @@ public class SerializedFrame implements MessageFlyweight
 
     public long schemaVersionId()
     {
-        return 2;
+        return 2L;
     }
 
     public int schemaVersion()
     {
-        if (actingVersion < 0)
-        {
-            return (byte)0;
-        }
-
         return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -114,14 +106,14 @@ public class SerializedFrame implements MessageFlyweight
         return this;
     }
 
+    public long packageValId()
+    {
+        return 4L;
+    }
+
     public String packageValCharacterEncoding()
     {
         return "UTF-8";
-    }
-
-    public long packageValId()
-    {
-        return 4;
     }
 
     public int getPackageVal(final byte[] dst, final int dstOffset, final int length)
@@ -133,6 +125,7 @@ public class SerializedFrame implements MessageFlyweight
         final int bytesCopied = Math.min(length, dataLength);
         CodecUtil.int8sGet(buffer, position(), dst, dstOffset, bytesCopied);
         position(position() + dataLength);
+
         return bytesCopied;
     }
 
@@ -144,6 +137,7 @@ public class SerializedFrame implements MessageFlyweight
         position(lengthPosition + sizeOfLengthField);
         CodecUtil.int8sPut(buffer, position(), src, srcOffset, length);
         position(position() + length);
+
         return length;
     }
 }

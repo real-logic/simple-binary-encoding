@@ -31,20 +31,20 @@ public class SerializationUtils
     {
         if (byteOrder == ByteOrder.BIG_ENDIAN)
         {
-            return SerializedByteOrder.BIG_ENDIAN;
+            return SerializedByteOrder.SBE_BIG_ENDIAN;
         }
 
-        return SerializedByteOrder.LITTLE_ENDIAN;
+        return SerializedByteOrder.SBE_LITTLE_ENDIAN;
     }
 
     public static ByteOrder byteOrder(final SerializedByteOrder byteOrder)
     {
         switch (byteOrder)
         {
-            case LITTLE_ENDIAN:
+            case SBE_LITTLE_ENDIAN:
                 return ByteOrder.LITTLE_ENDIAN;
 
-            case BIG_ENDIAN:
+            case SBE_BIG_ENDIAN:
                 return ByteOrder.BIG_ENDIAN;
         }
 

@@ -159,7 +159,7 @@ protected:
 
         ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
-        ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::ENCODING, byteOrder, Ir::CHAR, 0xFFFF, std::string("char"), constStr);
+        ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::ENCODING, byteOrder, Ir::CHAR, 0xFFFF, std::string("char"), constStr, strlen(constStr));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
         ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
     };

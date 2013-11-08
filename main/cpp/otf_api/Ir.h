@@ -61,6 +61,7 @@ public:
 
     enum TokenPrimitiveType
     {
+        NONE = 0,
         CHAR = 1,
         INT8 = 2,
         INT16 = 3,
@@ -71,8 +72,7 @@ public:
         UINT32 = 8,
         UINT64 = 9,
         FLOAT = 10,
-        DOUBLE = 11,
-        NONE = 255
+        DOUBLE = 11
     };
 
     /**
@@ -105,12 +105,12 @@ public:
 
     /// access methods for current IR Token
 
-    uint32_t offset() const;
-    uint32_t size() const;
+    int32_t offset() const;
+    int32_t size() const;
     TokenSignal signal() const;
     TokenByteOrder byteOrder() const;
     TokenPrimitiveType primitiveType() const;
-    uint16_t schemaId() const;
+    int32_t schemaId() const;
     uint64_t validValue() const;
     uint64_t choiceValue() const;
     uint8_t nameLen() const;
@@ -130,7 +130,9 @@ public:
                   TokenPrimitiveType primitiveType,
                   uint16_t schemaId,
                   const std::string &name,
-                  const char *constVal = NULL);
+                  const char *constVal = NULL,
+                  int constValLength = 0);
+
 
     static unsigned int size(TokenPrimitiveType type)
     {
@@ -163,9 +165,15 @@ public:
     }
 
 private:
+    void readTokenAtCurrentPosition();
+
     const char *buffer_;
     int len_;
     int cursorOffset_;
+
+    struct Impl;
+
+    struct Impl *impl_;
 };
 
 } // namespace on_the_fly

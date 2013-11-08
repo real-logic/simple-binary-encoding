@@ -5,9 +5,9 @@ import uk.co.real_logic.sbe.generation.java.*;
 
 public class SerializedToken implements MessageFlyweight
 {
-    private static final int BLOCK_LENGTH = 19;
-    private static final long TEMPLATE_ID = 2;
+    private static final long TEMPLATE_ID = 2L;
     private static final int TEMPLATE_VERSION = 0;
+    private static final int BLOCK_LENGTH = 19;
 
     private DirectBuffer buffer;
     private int offset;
@@ -42,6 +42,7 @@ public class SerializedToken implements MessageFlyweight
         this.actingBlockLength = BLOCK_LENGTH;
         this.actingVersion = TEMPLATE_VERSION;
         position(offset + actingBlockLength);
+
         return this;
     }
 
@@ -53,6 +54,7 @@ public class SerializedToken implements MessageFlyweight
         this.actingBlockLength = actingBlockLength;
         this.actingVersion = actingVersion;
         position(offset + actingBlockLength);
+
         return this;
     }
 
@@ -74,16 +76,11 @@ public class SerializedToken implements MessageFlyweight
 
     public long tokenOffsetId()
     {
-        return 11;
+        return 11L;
     }
 
     public int tokenOffset()
     {
-        if (actingVersion < 0)
-        {
-            return (byte)0;
-        }
-
         return CodecUtil.int32Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -95,16 +92,11 @@ public class SerializedToken implements MessageFlyweight
 
     public long tokenSizeId()
     {
-        return 12;
+        return 12L;
     }
 
     public int tokenSize()
     {
-        if (actingVersion < 0)
-        {
-            return (byte)0;
-        }
-
         return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -116,16 +108,11 @@ public class SerializedToken implements MessageFlyweight
 
     public long schemaIDId()
     {
-        return 13;
+        return 13L;
     }
 
     public int schemaID()
     {
-        if (actingVersion < 0)
-        {
-            return (byte)0;
-        }
-
         return CodecUtil.int32Get(buffer, offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -137,16 +124,11 @@ public class SerializedToken implements MessageFlyweight
 
     public long tokenVersionId()
     {
-        return 17;
+        return 17L;
     }
 
     public int tokenVersion()
     {
-        if (actingVersion < 0)
-        {
-            return (byte)0;
-        }
-
         return CodecUtil.int32Get(buffer, offset + 12, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -158,7 +140,7 @@ public class SerializedToken implements MessageFlyweight
 
     public long signalId()
     {
-        return 14;
+        return 14L;
     }
 
     public SerializedSignal signal()
@@ -174,7 +156,7 @@ public class SerializedToken implements MessageFlyweight
 
     public long primitiveTypeId()
     {
-        return 15;
+        return 15L;
     }
 
     public SerializedPrimitiveType primitiveType()
@@ -190,7 +172,7 @@ public class SerializedToken implements MessageFlyweight
 
     public long byteOrderId()
     {
-        return 16;
+        return 16L;
     }
 
     public SerializedByteOrder byteOrder()
@@ -204,14 +186,14 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
+    public long nameId()
+    {
+        return 18L;
+    }
+
     public String nameCharacterEncoding()
     {
         return "UTF-8";
-    }
-
-    public long nameId()
-    {
-        return 18;
     }
 
     public int getName(final byte[] dst, final int dstOffset, final int length)
@@ -223,6 +205,7 @@ public class SerializedToken implements MessageFlyweight
         final int bytesCopied = Math.min(length, dataLength);
         CodecUtil.int8sGet(buffer, position(), dst, dstOffset, bytesCopied);
         position(position() + dataLength);
+
         return bytesCopied;
     }
 
@@ -234,17 +217,18 @@ public class SerializedToken implements MessageFlyweight
         position(lengthPosition + sizeOfLengthField);
         CodecUtil.int8sPut(buffer, position(), src, srcOffset, length);
         position(position() + length);
+
         return length;
+    }
+
+    public long constValId()
+    {
+        return 19L;
     }
 
     public String constValCharacterEncoding()
     {
         return "UTF-8";
-    }
-
-    public long constValId()
-    {
-        return 19;
     }
 
     public int getConstVal(final byte[] dst, final int dstOffset, final int length)
@@ -256,6 +240,7 @@ public class SerializedToken implements MessageFlyweight
         final int bytesCopied = Math.min(length, dataLength);
         CodecUtil.int8sGet(buffer, position(), dst, dstOffset, bytesCopied);
         position(position() + dataLength);
+
         return bytesCopied;
     }
 
@@ -267,17 +252,18 @@ public class SerializedToken implements MessageFlyweight
         position(lengthPosition + sizeOfLengthField);
         CodecUtil.int8sPut(buffer, position(), src, srcOffset, length);
         position(position() + length);
+
         return length;
+    }
+
+    public long minValId()
+    {
+        return 20L;
     }
 
     public String minValCharacterEncoding()
     {
         return "UTF-8";
-    }
-
-    public long minValId()
-    {
-        return 20;
     }
 
     public int getMinVal(final byte[] dst, final int dstOffset, final int length)
@@ -289,6 +275,7 @@ public class SerializedToken implements MessageFlyweight
         final int bytesCopied = Math.min(length, dataLength);
         CodecUtil.int8sGet(buffer, position(), dst, dstOffset, bytesCopied);
         position(position() + dataLength);
+
         return bytesCopied;
     }
 
@@ -300,17 +287,18 @@ public class SerializedToken implements MessageFlyweight
         position(lengthPosition + sizeOfLengthField);
         CodecUtil.int8sPut(buffer, position(), src, srcOffset, length);
         position(position() + length);
+
         return length;
+    }
+
+    public long maxValId()
+    {
+        return 21L;
     }
 
     public String maxValCharacterEncoding()
     {
         return "UTF-8";
-    }
-
-    public long maxValId()
-    {
-        return 21;
     }
 
     public int getMaxVal(final byte[] dst, final int dstOffset, final int length)
@@ -322,6 +310,7 @@ public class SerializedToken implements MessageFlyweight
         final int bytesCopied = Math.min(length, dataLength);
         CodecUtil.int8sGet(buffer, position(), dst, dstOffset, bytesCopied);
         position(position() + dataLength);
+
         return bytesCopied;
     }
 
@@ -333,17 +322,18 @@ public class SerializedToken implements MessageFlyweight
         position(lengthPosition + sizeOfLengthField);
         CodecUtil.int8sPut(buffer, position(), src, srcOffset, length);
         position(position() + length);
+
         return length;
+    }
+
+    public long nullValId()
+    {
+        return 22L;
     }
 
     public String nullValCharacterEncoding()
     {
         return "UTF-8";
-    }
-
-    public long nullValId()
-    {
-        return 22;
     }
 
     public int getNullVal(final byte[] dst, final int dstOffset, final int length)
@@ -355,6 +345,7 @@ public class SerializedToken implements MessageFlyweight
         final int bytesCopied = Math.min(length, dataLength);
         CodecUtil.int8sGet(buffer, position(), dst, dstOffset, bytesCopied);
         position(position() + dataLength);
+
         return bytesCopied;
     }
 
@@ -366,17 +357,18 @@ public class SerializedToken implements MessageFlyweight
         position(lengthPosition + sizeOfLengthField);
         CodecUtil.int8sPut(buffer, position(), src, srcOffset, length);
         position(position() + length);
+
         return length;
+    }
+
+    public long characterEncodingId()
+    {
+        return 23L;
     }
 
     public String characterEncodingCharacterEncoding()
     {
         return "UTF-8";
-    }
-
-    public long characterEncodingId()
-    {
-        return 23;
     }
 
     public int getCharacterEncoding(final byte[] dst, final int dstOffset, final int length)
@@ -388,6 +380,7 @@ public class SerializedToken implements MessageFlyweight
         final int bytesCopied = Math.min(length, dataLength);
         CodecUtil.int8sGet(buffer, position(), dst, dstOffset, bytesCopied);
         position(position() + dataLength);
+
         return bytesCopied;
     }
 
@@ -399,6 +392,7 @@ public class SerializedToken implements MessageFlyweight
         position(lengthPosition + sizeOfLengthField);
         CodecUtil.int8sPut(buffer, position(), src, srcOffset, length);
         position(position() + length);
+
         return length;
     }
 }

@@ -172,6 +172,17 @@
         </java>
     </target>
 
+    <target name="generate:cpp99:sbeir" depends="dist" description="Generate serialized IR code">
+        <java classname="uk.co.real_logic.sbe.SbeTool">
+            <classpath refid="sbetool.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.main.cpp.src}"/>
+            <sysproperty key="sbe.target.language" value="Cpp99"/>
+            <arg value="${dir.main.resources}/sbe-ir.xml"/>
+        </java>
+    </target>
+
+    <target name="generate:sbeir" depends="generate:java:sbeir, generate:cpp99:sbeir"/>
+
     <!-- SBE Examples targets -->
 
     <property name="dir.examples.src" value="examples/java"/>

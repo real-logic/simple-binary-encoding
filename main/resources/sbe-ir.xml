@@ -56,8 +56,8 @@
             <validValue name="ENCODING">17</validValue>
         </enum>
         <enum name="SerializedByteOrder" encodingType="uint8">
-            <validValue name="LITTLE_ENDIAN">0</validValue>
-            <validValue name="BIG_ENDIAN">1</validValue>
+            <validValue name="SBE_LITTLE_ENDIAN">0</validValue>
+            <validValue name="SBE_BIG_ENDIAN">1</validValue>
         </enum>
     </types>
 

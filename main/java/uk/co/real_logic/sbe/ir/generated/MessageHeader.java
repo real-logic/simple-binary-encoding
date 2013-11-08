@@ -24,11 +24,6 @@ public class MessageHeader implements FixedFlyweight
 
     public int blockLength()
     {
-        if (actingVersion < 0)
-        {
-            return (byte)0;
-        }
-
         return CodecUtil.uint16Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -40,11 +35,6 @@ public class MessageHeader implements FixedFlyweight
 
     public int templateId()
     {
-        if (actingVersion < 0)
-        {
-            return (byte)0;
-        }
-
         return CodecUtil.uint16Get(buffer, offset + 2, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -56,11 +46,6 @@ public class MessageHeader implements FixedFlyweight
 
     public short version()
     {
-        if (actingVersion < 0)
-        {
-            return (byte)0;
-        }
-
         return CodecUtil.uint8Get(buffer, offset + 4);
     }
 
@@ -72,11 +57,6 @@ public class MessageHeader implements FixedFlyweight
 
     public short reserved()
     {
-        if (actingVersion < 0)
-        {
-            return (byte)0;
-        }
-
         return CodecUtil.uint8Get(buffer, offset + 5);
     }
 
