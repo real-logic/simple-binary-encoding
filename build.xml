@@ -192,6 +192,7 @@
 
     <property name="dir.gen.cpp99" value="target/gen/cpp99"/>
     <property name="exec.example.cpp99" location="target/gen/cpp99/SbeExample"/>
+    <property name="exec.example.otf.cpp99" location="target/gen/cpp99/SbeOtfDecoder"/>
     <property name="dir.examples.cpp99.src" location="examples/cpp99"/>
     <property name="dir.examples.cpp99.include" location="main/cpp"/>
 
@@ -245,7 +246,33 @@
         <exec executable="${exec.example.cpp99}" failonerror="true"/>
     </target>
 
-    <target name="cpp:compile" depends="clean, init">
+    <target name="cpp:examples:otf" depends="dist, cpp:compile">
+        <mkdir dir="${dir.gen.cpp99}"/>
+        <cc outtype="executable"
+            debug="true"
+            subsystem="console"
+            outfile="${exec.example.otf.cpp99}">
+            <includepath path="${dir.examples.cpp99.src}"/>
+            <includepath path="${dir.gen.cpp99}"/>
+            <includepath path="${dir.examples.cpp99.include}"/>
+            <compilerarg value="-std=c++98"/>
+            <libset libs="stdc++"/>
+            <fileset dir="${dir.main.cpp.build}" includes="*.o"/>
+            <fileset dir="${dir.examples.cpp99.src}" includes="SbeOtfDecoder.cpp"/>
+        </cc>
+        <java classname="uk.co.real_logic.sbe.SbeTool">
+            <classpath refid="examples.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.gen.cpp99}"/>
+            <sysproperty key="sbe.should.generate" value="false"/>
+            <sysproperty key="sbe.ir.filename" value="Car.sbeir"/>
+            <arg value="${dir.examples.resources}/TestSchema.xml"/>
+        </java>
+        <exec executable="${exec.example.otf.cpp99}" failonerror="true">
+            <arg value="${dir.gen.cpp99}/Car.sbeir"/>
+        </exec>
+    </target>
+
+    <target name="cpp:compile" depends="">
         <cc outtype="static"
             debug="true"
             subsystem="console"
@@ -257,7 +284,7 @@
         </cc>
     </target>
 
-    <target name="cpp:test" depends="cpp:compile">
+    <target name="cpp:test" depends="clean, init, cpp:compile">
         <sequential>
             <!-- gtest compile -->
             <cc outtype="static"
