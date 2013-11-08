@@ -74,8 +74,8 @@ public class SbeTool
     /** Output directory for generated code */
     public static final String OUTPUT_DIR = "sbe.output.dir";
 
-    /** Boolean system property to turn on or off serialization of IR. */
-    public static final String SHOULD_SERIALIZE = "sbe.should.serialize";
+    /** String system property to hold filename for serialization of IR. */
+    public static final String SERIALIZED_IR_FILENAME = "sbe.ir.filename";
 
     /**
      * Main entry point for the SBE Tool.
@@ -116,12 +116,12 @@ public class SbeTool
             generate(ir, outputDirName, targetLanguage);
         }
 
-        final boolean shouldSerialize = Boolean.parseBoolean(System.getProperty(SHOULD_SERIALIZE, "false"));
-        if (shouldSerialize)
+        final String serializedIrFilename = System.getProperty(SERIALIZED_IR_FILENAME);
+        if (serializedIrFilename != null)
         {
             final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
-            final String serializedFileName = new File(fileName).getName().replace(".xml", ".sbeir");
-            final Serializer serializer = new Serializer(outputDirName + File.separatorChar + serializedFileName, ir);
+            final File fullPath = new File(outputDirName, serializedIrFilename);
+            final Serializer serializer = new Serializer(fullPath.getAbsolutePath(), ir);
 
             serializer.serialize();
         }
