@@ -29,7 +29,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class SerializedIRTest
+public class SerializedIrTest
 {
     private static final int CAPACITY = 8192;
 
@@ -100,18 +100,18 @@ public class SerializedIRTest
         Deserializer deserializer = new Deserializer(buffer);
         IntermediateRepresentation deserIr = deserializer.deserialize();
 
-        assertThat(deserIr.version(), is(serIr.version()));
+        assertThat(Integer.valueOf(deserIr.version()), is(Integer.valueOf(serIr.version())));
         assertThat(deserIr.packageName(), is(serIr.packageName()));
     }
 
     private void checkTokenEquality(final Token lhs, final Token rhs)
     {
         assertThat(lhs.name(), is(rhs.name()));
-        assertThat(lhs.version(), is(rhs.version()));
-        assertThat(lhs.offset(), is(rhs.offset()));
-        assertThat(lhs.schemaId(), is(rhs.schemaId()));
+        assertThat(Integer.valueOf(lhs.version()), is(Integer.valueOf(rhs.version())));
+        assertThat(Integer.valueOf(lhs.offset()), is(Integer.valueOf(rhs.offset())));
+        assertThat(Long.valueOf(lhs.schemaId()), is(Long.valueOf(rhs.schemaId())));
         assertThat(lhs.signal(), is(rhs.signal()));
-        assertThat(lhs.size(), is(rhs.size()));
+        assertThat(Integer.valueOf(lhs.size()), is(Integer.valueOf(rhs.size())));
 
         assertThat(lhs.encoding().byteOrder(), is(rhs.encoding().byteOrder()));
         assertThat(lhs.encoding().primitiveType(), is(rhs.encoding().primitiveType()));
@@ -138,7 +138,7 @@ public class SerializedIRTest
         Deserializer deserializer = new Deserializer(buffer);
         IntermediateRepresentation deserIr = deserializer.deserialize();
 
-        assertThat(deserIr.header().size(), is(serIr.header().size()));
+        assertThat(Integer.valueOf(deserIr.header().size()), is(Integer.valueOf(serIr.header().size())));
         for (int i = 0, size = deserIr.header().size(); i < size; i++)
         {
             checkTokenEquality(deserIr.header().get(i), serIr.header().get(i));
@@ -161,12 +161,12 @@ public class SerializedIRTest
         Deserializer deserializer = new Deserializer(buffer);
         IntermediateRepresentation deserIr = deserializer.deserialize();
 
-        assertThat(deserIr.messages().size(), is(serIr.messages().size()));
+        assertThat(Integer.valueOf(deserIr.messages().size()), is(Integer.valueOf(serIr.messages().size())));
         for (final List<Token> deserTokenList : deserIr.messages())
         {
             final List<Token> serTokenList = serIr.getMessage(deserTokenList.get(0).schemaId());
 
-            assertThat(deserTokenList.size(), is(serTokenList.size()));
+            assertThat(Integer.valueOf(deserTokenList.size()), is(Integer.valueOf(serTokenList.size())));
             for (int i = 0, size = deserTokenList.size(); i < size; i++)
             {
                 checkTokenEquality(deserTokenList.get(i), serTokenList.get(i));

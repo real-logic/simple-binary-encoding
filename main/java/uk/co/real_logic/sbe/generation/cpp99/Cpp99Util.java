@@ -111,10 +111,13 @@ public class Cpp99Util
         {
             case 2:
                 return "SBE_" + byteOrder + "_ENCODE_16";
+
             case 4:
                 return "SBE_" + byteOrder + "_ENCODE_32";
+
             case 8:
                 return "SBE_" + byteOrder + "_ENCODE_64";
+
             default:
                 return "";
         }
