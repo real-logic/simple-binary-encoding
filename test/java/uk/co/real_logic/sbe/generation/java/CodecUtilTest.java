@@ -34,7 +34,7 @@ public class CodecUtilTest
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowExceptionForPositionAboveCapacity()
     {
-        final int position = BUFFER_CAPACITY;
+        final int position = BUFFER_CAPACITY + 1;
 
         CodecUtil.checkPosition(position, BUFFER_CAPACITY);
     }

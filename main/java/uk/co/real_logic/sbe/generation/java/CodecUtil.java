@@ -27,7 +27,7 @@ public class CodecUtil
      */
     public static void checkPosition(final int position, final int capacity)
     {
-        if (position >= capacity)
+        if (position > capacity)
         {
             final String msg = String.format("position=%d is beyond capacity=%d",
                                              Integer.valueOf(position),

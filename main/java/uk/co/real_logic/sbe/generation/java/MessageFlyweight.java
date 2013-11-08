@@ -70,16 +70,16 @@ public interface MessageFlyweight
                                     final int actingBlockLength, final int actingVersion);
 
     /**
-     * The position for the end of the currently accessed block in the underlying buffer.
+     * The position for the first byte of the next block in the buffer.
      *
-     * @param position for the end of the currently access block in the underlying buffer.
+     * @param position for the first byte of the next block in the buffer.
      */
     void position(final int position);
 
     /**
-     * The position for the end of the currently access block in the underlying buffer.
+     * The position for the first byte of the next block in the buffer.
      *
-     * @return the position for the end of the currently access block in the underlying buffer.
+     * @return the position for the first byte of the next block in the buffer.
      */
     int position();
 }

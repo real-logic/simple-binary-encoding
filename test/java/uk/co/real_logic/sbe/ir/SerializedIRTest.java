@@ -16,7 +16,6 @@
  */
 package uk.co.real_logic.sbe.ir;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.xml.IrGenerator;
@@ -35,7 +34,7 @@ public class SerializedIrTest
 
     @Test
     public void shouldSerializeIr()
-            throws Exception
+        throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
@@ -63,7 +62,7 @@ public class SerializedIrTest
         IntermediateRepresentation deserIr = deserializer.deserialize();
     }
 
-    @Test @Ignore("will fail on checkPosition at end of buffer")
+    @Test
     public void shouldHandleRightSizedBuffer()
         throws Exception
     {
@@ -86,7 +85,7 @@ public class SerializedIrTest
 
     @Test
     public void shouldDeserializeCorrectFrame()
-            throws Exception
+        throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         IrGenerator irg = new IrGenerator();
@@ -124,7 +123,7 @@ public class SerializedIrTest
 
     @Test
     public void shouldDeserializeCorrectHeader()
-            throws Exception
+        throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         IrGenerator irg = new IrGenerator();
@@ -147,7 +146,7 @@ public class SerializedIrTest
 
     @Test
     public void shouldDeserializeCorrectMessages()
-            throws Exception
+        throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         IrGenerator irg = new IrGenerator();
