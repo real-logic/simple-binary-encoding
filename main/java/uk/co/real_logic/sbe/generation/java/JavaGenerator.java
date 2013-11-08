@@ -350,7 +350,8 @@ public class JavaGenerator implements CodeGenerator
             final Token token = tokens.get(i);
             if (token.signal() == Signal.BEGIN_VAR_DATA)
             {
-                final String propertyName = toUpperFirstChar(token.name());
+                generateFieldIdMethod(sb, token, BASE_INDENT);
+
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
 
                 sb.append(String.format(
@@ -359,19 +360,11 @@ public class JavaGenerator implements CodeGenerator
                     "    {\n" +
                     "        return \"%s\";\n" +
                     "    }\n\n",
-                    formatPropertyName(propertyName),
+                    formatPropertyName(token.name()),
                     characterEncoding
                 ));
 
-                sb.append(String.format(
-                    "    public long %sId()\n" +
-                    "    {\n" +
-                    "        return %d;\n" +
-                    "    }\n\n",
-                    formatPropertyName(propertyName),
-                    Long.valueOf(token.schemaId())
-                ));
-
+                final String propertyName = toUpperFirstChar(token.name());
                 final Token lengthToken = tokens.get(i + 2);
                 final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
                 final Encoding lengthEncoding = lengthToken.encoding();
@@ -383,16 +376,18 @@ public class JavaGenerator implements CodeGenerator
                 sb.append(String.format(
                     "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
                     "    {\n" +
+                    "%s" +
                     "        final int sizeOfLengthField = %d;\n" +
                     "        final int lengthPosition = position();\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
                     "        final int dataLength = CodecUtil.%sGet(buffer, lengthPosition%s);\n" +
                     "        final int bytesCopied = Math.min(length, dataLength);\n" +
                     "        CodecUtil.int8sGet(buffer, position(), dst, dstOffset, bytesCopied);\n" +
-                    "        position(position() + dataLength);\n" +
+                    "        position(position() + dataLength);\n\n" +
                     "        return bytesCopied;\n" +
                     "    }\n\n",
                     propertyName,
+                    generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
                     sizeOfLengthField,
                     lengthTypePrefix,
                     byteOrderStr
@@ -406,7 +401,7 @@ public class JavaGenerator implements CodeGenerator
                     "        CodecUtil.%sPut(buffer, lengthPosition, (%s)length%s);\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
                     "        CodecUtil.int8sPut(buffer, position(), src, srcOffset, length);\n" +
-                    "        position(position() + length);\n" +
+                    "        position(position() + length);\n\n" +
                     "        return length;\n" +
                     "    }\n",
                     propertyName,
@@ -678,7 +673,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n\n",
             javaTypeName,
             propertyName,
-            generateNotPresentCondition(token, indent),
+            generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
             typePrefix,
             offset,
             byteOrderStr
@@ -701,18 +696,52 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private String generateNotPresentCondition(final Token token, final String indent)
+    private CharSequence generateFieldNotPresentCondition(final int fieldVersion, final Encoding encoding, final String indent)
     {
-        final String notPresentValue =
-            token.version() > 0 ?  generateLiteral(token.encoding().primitiveType(), token.encoding().nullVal()) : "(byte)0";
+        if (0 == fieldVersion)
+        {
+            return "";
+        }
 
         return String.format(
             indent + "        if (actingVersion < %d)\n" +
             indent + "        {\n" +
             indent + "            return %s;\n" +
             indent + "        }\n\n",
-            Integer.valueOf(token.version()),
-            notPresentValue
+            Integer.valueOf(fieldVersion),
+            fieldVersion > 0 ?  generateLiteral(encoding.primitiveType(), encoding.nullVal()) : "(byte)0"
+        );
+    }
+
+    private CharSequence generateArrayFieldNotPresentCondition(final int fieldVersion, final String indent)
+    {
+        if (0 == fieldVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            indent + "        if (actingVersion < %d)\n" +
+            indent + "        {\n" +
+            indent + "            return 0;\n" +
+            indent + "        }\n\n",
+            Integer.valueOf(fieldVersion)
+        );
+    }
+
+    private CharSequence generateTypeFieldNotPresentCondition(final int fieldVersion, final String indent)
+    {
+        if (0 == fieldVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            indent + "        if (actingVersion < %d)\n" +
+            indent + "        {\n" +
+            indent + "            return null;\n" +
+            indent + "        }\n\n",
+            Integer.valueOf(fieldVersion)
         );
     }
 
@@ -754,7 +783,7 @@ public class JavaGenerator implements CodeGenerator
             javaTypeName,
             propertyName,
             fieldLength,
-            generateNotPresentCondition(token, indent),
+            generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
             typePrefix,
             offset,
             typeSize,
@@ -790,11 +819,13 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
+                         "%s" +
                 indent + "        CodecUtil.charsGet(buffer, this.offset + %d, dst, dstOffset, length);\n" +
                 indent + "        return length;\n" +
                 indent + "    }\n\n",
                 toUpperFirstChar(propertyName),
                 fieldLength,
+                generateArrayFieldNotPresentCondition(token.version(), indent),
                 offset
             ));
 
@@ -821,17 +852,15 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateConstPropertyMethods(final String propertyName, final Token token, final String indent)
     {
-        final String javaTypeName = javaTypeName(token.encoding().primitiveType());
-
         if (token.encoding().primitiveType() != PrimitiveType.CHAR)
         {
             return String.format(
                 "\n" +
-                indent + "    public %s %s()\n" +
-                indent + "    {\n" +
-                indent + "        return %s;\n" +
-                indent + "    }\n",
-                javaTypeName,
+                    indent + "    public %s %s()\n" +
+                    indent + "    {\n" +
+                    indent + "        return %s;\n" +
+                    indent + "    }\n",
+                javaTypeName(token.encoding().primitiveType()),
                 propertyName,
                 generateLiteral(token.encoding().primitiveType(), token.encoding().constVal())
             );
@@ -839,16 +868,9 @@ public class JavaGenerator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
 
+        final String javaTypeName = javaTypeName(token.encoding().primitiveType());
         final byte[] constantValue = token.encoding().constVal().byteArrayValue();
-        final StringBuilder values = new StringBuilder();
-        for (final byte b : constantValue)
-        {
-            values.append(b).append(", ");
-        }
-        if (values.length() > 0)
-        {
-            values.setLength(values.length() - 2);
-        }
+        final CharSequence values = generateByteLiteralList(token.encoding().constVal().byteArrayValue());
 
         sb.append(String.format(
             "\n" +
@@ -892,6 +914,22 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
+    private CharSequence generateByteLiteralList(final byte[] bytes)
+    {
+        final StringBuilder values = new StringBuilder();
+        for (final byte b : bytes)
+        {
+            values.append(b).append(", ");
+        }
+
+        if (values.length() > 0)
+        {
+            values.setLength(values.length() - 2);
+        }
+
+        return values;
+    }
+
     private CharSequence generateFixedFlyweightCode(final String className, final int size)
     {
         return String.format(
@@ -914,14 +952,15 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateMessageFlyweightCode(final String className, final int blockLength,
+    private CharSequence generateMessageFlyweightCode(final String className,
+                                                      final int blockLength,
                                                       final int version,
                                                       final long schemaId)
     {
         return String.format(
-            "    private static final int BLOCK_LENGTH = %d;\n" +
-            "    private static final long TEMPLATE_ID = %d;\n" +
-            "    private static final int TEMPLATE_VERSION = %d;\n\n" +
+            "    private static final long TEMPLATE_ID = %dL;\n" +
+            "    private static final int TEMPLATE_VERSION = %d;\n" +
+            "    private static final int BLOCK_LENGTH = %d;\n\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
             "    private int position;\n" +
@@ -950,7 +989,7 @@ public class JavaGenerator implements CodeGenerator
             "        this.offset = offset;\n" +
             "        this.actingBlockLength = BLOCK_LENGTH;\n" +
             "        this.actingVersion = TEMPLATE_VERSION;\n" +
-            "        position(offset + actingBlockLength);\n" +
+            "        position(offset + actingBlockLength);\n\n" +
             "        return this;\n" +
             "    }\n\n" +
             "    public %s resetForDecode(final DirectBuffer buffer, final int offset,\n" +
@@ -960,7 +999,7 @@ public class JavaGenerator implements CodeGenerator
             "        this.offset = offset;\n" +
             "        this.actingBlockLength = actingBlockLength;\n" +
             "        this.actingVersion = actingVersion;\n" +
-            "        position(offset + actingBlockLength);\n" +
+            "        position(offset + actingBlockLength);\n\n" +
             "        return this;\n" +
             "    }\n\n" +
             "    public int size()\n" +
@@ -976,9 +1015,9 @@ public class JavaGenerator implements CodeGenerator
             "        CodecUtil.checkPosition(position, buffer.capacity());\n" +
             "        this.position = position;\n" +
             "    }\n",
-            Integer.valueOf(blockLength),
             Long.valueOf(schemaId),
             Integer.valueOf(version),
+            Integer.valueOf(blockLength),
             className,
             className
         );
@@ -996,7 +1035,7 @@ public class JavaGenerator implements CodeGenerator
                 final Token encodingToken = tokens.get(i + 1);
                 final String propertyName = signalToken.name();
 
-                generateFieldIdMethod(indent, sb, signalToken, propertyName);
+                generateFieldIdMethod(sb, signalToken, indent);
 
                 switch (encodingToken.signal())
                 {
@@ -1009,7 +1048,7 @@ public class JavaGenerator implements CodeGenerator
                         break;
 
                     case BEGIN_SET:
-                        sb.append(generateBitsetProperty(propertyName, encodingToken, indent));
+                        sb.append(generateBitSetProperty(propertyName, encodingToken, indent));
                         break;
 
                     case BEGIN_COMPOSITE:
@@ -1022,19 +1061,16 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private void generateFieldIdMethod(final String indent,
-                                       final StringBuilder sb,
-                                       final Token signalToken,
-                                       final String propertyName)
+    private void generateFieldIdMethod(final StringBuilder sb, final Token token, final String indent)
     {
         sb.append(String.format(
             "\n" +
             indent + "    public long %sId()\n" +
             indent + "    {\n" +
-            indent + "        return %d;\n" +
+            indent + "        return %dL;\n" +
             indent + "    }\n",
-            propertyName,
-            Long.valueOf(signalToken.schemaId())
+            formatPropertyName(token.name()),
+            Long.valueOf(token.schemaId())
         ));
     }
 
@@ -1055,10 +1091,12 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
+                     "%s" +
             indent + "        return %s.get(CodecUtil.%sGet(buffer, offset + %d)%s);\n" +
             indent + "    }\n\n",
             enumName,
             propertyName,
+            generateTypeFieldNotPresentCondition(token.version(), indent),
             enumName,
             typePrefix,
             offset,
@@ -1082,31 +1120,33 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private Object generateBitsetProperty(final String propertyName, final Token token, final String indent)
+    private Object generateBitSetProperty(final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
-        final String bitsetName = formatClassName(token.name());
+        final String bitSetName = formatClassName(token.name());
         final String formattedPropertyName = formatPropertyName(propertyName);
         final Integer offset = Integer.valueOf(token.offset());
 
         sb.append(String.format(
             "\n" +
             indent + "    private final %s %s = new %s();\n",
-            bitsetName,
+            bitSetName,
             formattedPropertyName,
-            bitsetName
+            bitSetName
         ));
 
         sb.append(String.format(
             "\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
+                     "%s" +
             indent + "        %s.reset(buffer, offset + %d, actingVersion);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
-            bitsetName,
+            bitSetName,
             formattedPropertyName,
+            generateTypeFieldNotPresentCondition(token.version(), indent),
             formattedPropertyName,
             offset,
             formattedPropertyName
@@ -1134,11 +1174,13 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
+                     "%s" +
             indent + "        %s.reset(buffer, offset + %d, actingVersion);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
             compositeName,
             propertyName,
+            generateTypeFieldNotPresentCondition(token.version(), indent),
             propertyName,
             offset,
             propertyName
