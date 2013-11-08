@@ -49,6 +49,7 @@ import java.io.FileInputStream;
  *     <li><code>sbe.should.generate</code>: Generate or not. Defaults to true</li>
  *     <li><code>sbe.target.language</code>: Target language for code generation, defaults to Java.</li>
  *     <li><code>sbe.output.dir</code>: Target directory for code generation, defaults to current directory.</li>
+ *     <li><code>sbe.ir.filename</code>: Filename to serialize IR to within the output directory.</li>
  * </ul>
  */
 public class SbeTool
