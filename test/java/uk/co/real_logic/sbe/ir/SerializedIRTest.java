@@ -23,7 +23,10 @@ import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class SerializedIRTest
@@ -60,7 +63,7 @@ public class SerializedIRTest
         IntermediateRepresentation deserIr = deserializer.deserialize();
     }
 
-    @Test @Ignore
+    @Test @Ignore("will fail on checkPosition at end of buffer")
     public void shouldHandleRightSizedBuffer()
         throws Exception
     {
@@ -79,5 +82,95 @@ public class SerializedIRTest
 
         Deserializer deserializer = new Deserializer(readBuffer);
         IntermediateRepresentation deserIr = deserializer.deserialize();
+    }
+
+    @Test
+    public void shouldDeserializeCorrectFrame()
+            throws Exception
+    {
+        MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
+        IrGenerator irg = new IrGenerator();
+        IntermediateRepresentation serIr = irg.generate(schema);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
+        Serializer serializer = new Serializer(buffer, serIr);
+
+        serializer.serialize();
+        buffer.flip();
+
+        Deserializer deserializer = new Deserializer(buffer);
+        IntermediateRepresentation deserIr = deserializer.deserialize();
+
+        assertThat(deserIr.version(), is(serIr.version()));
+        assertThat(deserIr.packageName(), is(serIr.packageName()));
+    }
+
+    private void checkTokenEquality(final Token lhs, final Token rhs)
+    {
+        assertThat(lhs.name(), is(rhs.name()));
+        assertThat(lhs.version(), is(rhs.version()));
+        assertThat(lhs.offset(), is(rhs.offset()));
+        assertThat(lhs.schemaId(), is(rhs.schemaId()));
+        assertThat(lhs.signal(), is(rhs.signal()));
+        assertThat(lhs.size(), is(rhs.size()));
+
+        assertThat(lhs.encoding().byteOrder(), is(rhs.encoding().byteOrder()));
+        assertThat(lhs.encoding().primitiveType(), is(rhs.encoding().primitiveType()));
+        assertThat(lhs.encoding().constVal(), is(rhs.encoding().constVal()));
+        assertThat(lhs.encoding().minVal(), is(rhs.encoding().minVal()));
+        assertThat(lhs.encoding().maxVal(), is(rhs.encoding().maxVal()));
+        assertThat(lhs.encoding().nullVal(), is(rhs.encoding().nullVal()));
+        assertThat(lhs.encoding().characterEncoding(), is(rhs.encoding().characterEncoding()));
+    }
+
+    @Test
+    public void shouldDeserializeCorrectHeader()
+            throws Exception
+    {
+        MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
+        IrGenerator irg = new IrGenerator();
+        IntermediateRepresentation serIr = irg.generate(schema);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
+        Serializer serializer = new Serializer(buffer, serIr);
+
+        serializer.serialize();
+        buffer.flip();
+
+        Deserializer deserializer = new Deserializer(buffer);
+        IntermediateRepresentation deserIr = deserializer.deserialize();
+
+        assertThat(deserIr.header().size(), is(serIr.header().size()));
+        for (int i = 0, size = deserIr.header().size(); i < size; i++)
+        {
+            checkTokenEquality(deserIr.header().get(i), serIr.header().get(i));
+        }
+    }
+
+    @Test
+    public void shouldDeserializeCorrectMessages()
+            throws Exception
+    {
+        MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
+        IrGenerator irg = new IrGenerator();
+        IntermediateRepresentation serIr = irg.generate(schema);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
+        Serializer serializer = new Serializer(buffer, serIr);
+
+        serializer.serialize();
+        buffer.flip();
+
+        Deserializer deserializer = new Deserializer(buffer);
+        IntermediateRepresentation deserIr = deserializer.deserialize();
+
+        assertThat(deserIr.messages().size(), is(serIr.messages().size()));
+        for (final List<Token> deserTokenList : deserIr.messages())
+        {
+            final List<Token> serTokenList = serIr.getMessage(deserTokenList.get(0).schemaId());
+
+            assertThat(deserTokenList.size(), is(serTokenList.size()));
+            for (int i = 0, size = deserTokenList.size(); i < size; i++)
+            {
+                checkTokenEquality(deserTokenList.get(i), serTokenList.get(i));
+            }
+        }
     }
 }

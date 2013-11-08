@@ -248,8 +248,11 @@ public class SerializationUtils
                 return PrimitiveType.DOUBLE;
 
             case CHAR:
-            default:
                 return PrimitiveType.CHAR;
+
+            case NONE:
+            default:
+                return null;
         }
     }
 
