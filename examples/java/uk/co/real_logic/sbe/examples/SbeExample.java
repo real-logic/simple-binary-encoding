@@ -68,12 +68,11 @@ public class SbeExample
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
         final int templateId = MESSAGE_HEADER.templateId();
-
-        final int version = MESSAGE_HEADER.version();
-        final int blockLength = MESSAGE_HEADER.blockLength();
+        final int actingVersion = MESSAGE_HEADER.version();
+        final int actingBlockLength = MESSAGE_HEADER.blockLength();
 
         bufferOffset += MESSAGE_HEADER.size();
-        decode(CAR, directBuffer, bufferOffset, blockLength, version);
+        decode(CAR, directBuffer, bufferOffset, actingBlockLength, actingVersion);
     }
 
     private static void encode(final Car car, final DirectBuffer directBuffer, final int bufferOffset)
