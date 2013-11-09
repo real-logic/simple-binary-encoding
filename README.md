@@ -48,3 +48,9 @@ Run the Java examples
 
     $ ant examples:java
 
+Distribution
+------------
+
+Jars for the executable, source, and javadoc can be found in
+
+    target/dist
