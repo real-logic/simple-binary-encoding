@@ -17,11 +17,14 @@ package uk.co.real_logic.sbe.examples;
 
 import uk.co.real_logic.sbe.generation.java.DirectBuffer;
 
+import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 public class SbeExample
 {
+    private static final String ENCODING_FILENAME = "sbe.encoding.filename";
     private static final byte[] VEHICLE_CODE = {'a', 'b', 'c', 'd', 'e', 'f'};
     private static final byte[] MANUFACTURER_CODE = {'1', '2', '3'};
     private static final byte[] MAKE;
@@ -49,6 +52,7 @@ public class SbeExample
         final DirectBuffer directBuffer = new DirectBuffer(byteBuffer);
         final int messageTemplateVersion = 0;
         int bufferOffset = 0;
+        int encodingLength = 0;
 
         // Setup for encoding a message
 
@@ -59,7 +63,20 @@ public class SbeExample
             .version((short)CAR.templateVersion());
 
         bufferOffset += MESSAGE_HEADER.size();
-        encode(CAR, directBuffer, bufferOffset);
+        encodingLength = MESSAGE_HEADER.size();
+        encodingLength += encode(CAR, directBuffer, bufferOffset);
+
+        // Optionally write the encoded buffer to a file for decoding by the On-The-Fly decoder
+
+        final String encodingFilename = System.getProperty(ENCODING_FILENAME);
+        if (encodingFilename != null)
+        {
+            FileChannel channel = new FileOutputStream(encodingFilename).getChannel();
+
+            byteBuffer.limit(encodingLength);
+            channel.write(byteBuffer);
+            channel.close();
+        }
 
         // Decode the encoded message
 
@@ -75,7 +92,7 @@ public class SbeExample
         decode(CAR, directBuffer, bufferOffset, actingBlockLength, actingVersion);
     }
 
-    private static void encode(final Car car, final DirectBuffer directBuffer, final int bufferOffset)
+    private static int encode(final Car car, final DirectBuffer directBuffer, final int bufferOffset)
     {
         final int srcOffset = 0;
 
@@ -122,6 +139,8 @@ public class SbeExample
 
         car.putMake(MAKE, srcOffset, MAKE.length);
         car.putModel(MODEL, srcOffset, MODEL.length);
+
+        return car.size();
     }
 
     private static void decode(final Car car,

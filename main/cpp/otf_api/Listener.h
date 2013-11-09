@@ -56,7 +56,7 @@ private:
     Ir *ir_;
 
     /*
-     * The data buffer that we want to decode and asscoiated state of it
+     * The data buffer that we want to decode and associated state of it
      */
     const char *buffer_;
     int bufferLen_;

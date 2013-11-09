@@ -67,9 +67,9 @@ public:
         return 0;
     };
 
-    const Ir *header(void) const
+    Ir &header(void) const
     {
-        return header_;
+        return *header_;
     };
 
     const Ir *message(int id) const
