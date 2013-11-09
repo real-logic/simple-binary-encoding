@@ -30,11 +30,16 @@ using namespace uk_co_real_logic_sbe_ir_generated;
 class IrRepo : public IrCollection, public Ir::Callback
 {
 public:
+    IrRepo(Listener &listener) : listener_(listener) {};
 
     virtual Ir *irForTemplateId(const int templateId)
     {
+        std::cout << "Message lookup id=" << templateId << " offset " << listener_.bufferOffset() << std::endl;
         return (Ir *)IrCollection::message(templateId);
     };
+
+private:
+    Listener &listener_;
 };
 
 class CarCallbacks : public OnNext, public OnError, public OnCompleted
@@ -59,18 +64,25 @@ public:
         }
         else if (f.isSet())
         {
-            std::cout << " Set [";
+            std::cout << " Set ";
             for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
             {
-                std::cout << *it << " ";
+                std::cout << "[" << *it << "]";
             }
-            std::cout << "]";
 
             printEncoding(f, 0);
         }
         else if (f.isVariableData())
         {
-            std::cout << " Variable Data length=" << f.length();
+            // index 0 is the length field type, value, etc.
+            // index 1 is the actual variable length data
+
+            std::cout << " Variable Data length=" << f.length(1);
+
+            char tmp[256];
+            f.getArray(1, tmp, 0, f.length(1));
+            std::cout << " value=\"" << std::string(tmp, f.length(1)) << "\"";
+
             std::cout << std::endl;
         }
         else
@@ -122,13 +134,24 @@ public:
     };
 
 protected:
+
     void printEncoding(const Field &f, int index)
     {
         std::cout << " name=\"" << f.encodingName(index) << "\" length=" << f.length(index);
         switch (f.primitiveType(index))
         {
             case Ir::CHAR:
-                std::cout << " type=CHAR value=\'" << (char)f.getInt(index) << "\'";
+                if (f.length(index) == 1)
+                {
+                    std::cout << " type=CHAR value=\"" << (char)f.getUInt(index) << "\"";
+                }
+                else
+                {
+                    char tmp[1024];
+
+                    f.getArray(index, tmp, 0, f.length(index));
+                    std::cout << " type=CHAR value=\"" << std::string(tmp, f.length(index)) << "\"";
+                }
                 break;
             case Ir::INT8:
                 std::cout << " type=INT8 value=\"" << f.getInt(index) << "\"";
@@ -137,7 +160,21 @@ protected:
                 std::cout << " type=INT16 value=\"" << f.getInt(index) << "\"";
                 break;
             case Ir::INT32:
-                std::cout << " type=INT32 value=\"" << f.getInt(index) << "\"";
+                if (f.length() == 1)
+                {
+                    std::cout << " type=INT32 value=\"" << f.getInt(index) << "\"";
+                }
+                else
+                {
+                    char tmp[1024];
+
+                    f.getArray(index, tmp, 0, f.length(index));
+                    std::cout << " type=INT32 value=";
+                    for (int i = 0, size = f.length(index); i < size; i++)
+                    {
+                        std::cout << "{" << *((int32_t *)(tmp + (sizeof(int32_t) * i))) << "}";
+                    }
+                }
                 break;
             case Ir::INT64:
                 std::cout << " type=INT64 value=\"" << f.getInt(index) << "\"";
@@ -181,6 +218,9 @@ char *readFileIntoBuffer(const char *filename, int *length)
     }
 
     *length = fileStat.st_size;
+
+    std::cout << "Encoded filename " << filename << " length " << *length << std::endl;
+
     char *buffer = new char[*length];
 
     FILE *fptr = ::fopen(filename, "r");
@@ -214,7 +254,7 @@ void usage(const char *argv0)
 int main(int argc, char * const argv[])
 {
     Listener listener;
-    IrRepo repo;
+    IrRepo repo(listener);
     CarCallbacks carCbs(listener);
     char *buffer = NULL;
     int length = 0, ch, justHeader = 0;
@@ -247,7 +287,7 @@ int main(int argc, char * const argv[])
         exit(-1);
     }
 
-    std::cout << "Loaded encoding, length " << length << std::endl;
+    std::cout << "Decoding..." << std::endl;
 
     if (justHeader)
     {

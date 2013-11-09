@@ -273,9 +273,10 @@ int Listener::process(void)
                 }
 
                 // if this is an array or variable size field (0xFFFFFFFF size), then handle it
-                if (ir->size() > Ir::size(ir->primitiveType()))
+                if (ir->size() > Ir::size(ir->primitiveType()) || ir->constLen() > Ir::size(ir->primitiveType()))
                 {
-                    *calculatedOffset += processEncoding(ir, valuePosition, ir->size());
+                    *calculatedOffset += processEncoding(ir, valuePosition,
+                                                         (ir->size() < ir->constLen()) ? ir->constLen() : ir->size());
                     break;
                 }
 
