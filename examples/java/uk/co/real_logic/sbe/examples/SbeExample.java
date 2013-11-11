@@ -71,11 +71,11 @@ public class SbeExample
         final String encodingFilename = System.getProperty(ENCODING_FILENAME);
         if (encodingFilename != null)
         {
-            FileChannel channel = new FileOutputStream(encodingFilename).getChannel();
-
-            byteBuffer.limit(encodingLength);
-            channel.write(byteBuffer);
-            channel.close();
+            try (final FileChannel channel = new FileOutputStream(encodingFilename).getChannel())
+            {
+                byteBuffer.limit(encodingLength);
+                channel.write(byteBuffer);
+            }
         }
 
         // Decode the encoded message
