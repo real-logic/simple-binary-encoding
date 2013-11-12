@@ -22,7 +22,8 @@
     <property name="checkstyle.config.file" location="test/conf/checkstyle.xml"/>
     <property name="checkstyle.output.file" location="${dir.reports.checkstyle}/results.xml"/>
 
-    <property name="dir.docs" value="target/docs"/>
+    <property name="dir.docs.java" value="target/docs/java"/>
+    <property name="dir.docs.cpp" value="target/docs/cpp"/>
 
     <property name="cpptasks.lib" location="main/lib/cpptasks-1.0b5.jar"/>
     <property name="dir.main.cpp.src" location="main/cpp"/>
@@ -54,7 +55,8 @@
         <mkdir dir="${dir.main.build}"/>
         <mkdir dir="${dir.test.build}"/>
         <mkdir dir="${dir.dist}"/>
-        <mkdir dir="${dir.docs}"/>
+        <mkdir dir="${dir.docs.java}"/>
+        <mkdir dir="${dir.docs.cpp}"/>
         <mkdir dir="${dir.reports}"/>
         <mkdir dir="${dir.reports.unit}"/>
         <mkdir dir="${dir.reports.checkstyle}"/>
@@ -126,7 +128,7 @@
 
     <target name="javadoc" depends="build">
         <javadoc sourcepath="${dir.main.src}"
-                 destdir="${dir.docs}"
+                 destdir="${dir.docs.java}"
                  overview="${dir.main.src}/overview.html"
                  author="true"
                  version="true"
@@ -146,7 +148,7 @@
             <fileset dir="${dir.main.build}"/>
         </jar>
         <jar destfile="${dir.dist}/${module.name}-api-${build.version}-${DSTAMP}.jar">
-            <fileset dir="${dir.docs}"/>
+            <fileset dir="${dir.docs.java}"/>
         </jar>
         <jar destfile="${dir.dist}/${module.name}-src-${build.version}-${DSTAMP}.jar">
             <fileset dir="${dir.main.src}"/>
