@@ -26,6 +26,8 @@
     <property name="dir.docs.cpp" value="target/docs/cpp"/>
 
     <property name="cpptasks.lib" location="main/lib/cpptasks-1.0b5.jar"/>
+    <property name="doxygen.lib" location="main/lib/ant-doxygen-1.6.1.jar"/>
+
     <property name="dir.main.cpp.src" location="main/cpp"/>
     <property name="dir.main.cpp.build" location="target/main/cpp/obj"/>
     <property name="dir.gtest.src" location="test/cpp/gtest"/>
@@ -49,6 +51,8 @@
     <taskdef resource="checkstyletask.properties" classpath="${checkstyle.lib}"/>
     <taskdef resource="cpptasks.tasks" classpath="${cpptasks.lib}"/>
     <taskdef resource="cpptasks.types" classpath="${cpptasks.lib}"/>
+    <taskdef resource="org/doxygen/tools/antlib.xml" classpath="${doxygen.lib}"/>
+
 
     <target name="init">
         <tstamp/>
@@ -138,6 +142,16 @@
             <doctitle><![CDATA[<h1>Simple Binary Encoding</h1>]]></doctitle>
             <bottom><![CDATA[<i>Copyright &#169; 2013 Real Logic Ltd. All Rights Reserved.</i>]]></bottom>
         </javadoc>
+    </target>
+
+    <target name="cpp:doc" depends="build">
+        <doxygen>
+            <property name="INPUT" value="${dir.main.cpp.src}"/>
+            <property name="OUTPUT_DIRECTORY" value="${dir.docs.cpp}"/>
+            <property name="RECURSIVE" value="yes" />
+            <property name="GENERATE_LATEX" value="false" />
+            <property name="PROJECT_NAME" value="Simple Binary Encoding" />
+        </doxygen>
     </target>
         
     <target name="dist" depends="build, javadoc" description="Generate the distribution">
