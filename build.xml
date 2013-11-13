@@ -341,5 +341,7 @@
             </exec>
         </sequential>
     </target>
-	
+
+    <target name="cpp" depends="cpp:test, cpp:doc"/>
+
 </project>
