@@ -151,6 +151,7 @@
             <property name="RECURSIVE" value="YES"/>
             <property name="GENERATE_LATEX" value="false"/>
             <property name="PROJECT_NAME" value="Simple Binary Encoding"/>
+            <property name="PROJECT_NUMBER" value="${build.version}"/>
             <property name="EXAMPLE_PATH" value="${dir.examples.cpp99.src}/SbeOtfDecoder.cpp"/>
             <property name="WARNINGS" value="YES"/>
             <property name="FILE_PATTERNS" value="*.h"/>
