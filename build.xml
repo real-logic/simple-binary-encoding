@@ -152,11 +152,12 @@
             <property name="GENERATE_LATEX" value="false"/>
             <property name="PROJECT_NAME" value="Simple Binary Encoding"/>
             <property name="EXAMPLE_PATH" value="${dir.examples.cpp99.src}/SbeOtfDecoder.cpp"/>
-            <!-- <property name="WARNINGS" value="YES"/> -->
+            <property name="WARNINGS" value="YES"/>
             <property name="FILE_PATTERNS" value="*.h"/>
             <property name="OPTIMIZE_OUTPUT_FOR_C" value="YES"/>
             <property name="OPTIMIZE_OUTPUT_FOR_JAVA" value="NO"/>
             <property name="FULL_PATH_NAMES" value="NO"/>
+            <property name="HTML_OUTPUT" value="${module.name}-otfcpp-doc-${build.version}"/>
         </doxygen>
     </target>
         
@@ -173,6 +174,12 @@
         <jar destfile="${dir.dist}/${module.name}-src-${build.version}-${DSTAMP}.jar">
             <fileset dir="${dir.main.src}"/>
         </jar>
+    </target>
+
+    <target name="cpp:dist" depends="cpp:compile, cpp:doc">
+        <zip destfile="${dir.dist}/${module.name}-otfcpp-doc-${build.version}-${DSTAMP}.zip">
+            <fileset dir="${dir.docs.cpp}"/>
+        </zip>
     </target>
 
     <target name="all" depends="clean, checkstyle, build, test, javadoc, dist"/>
@@ -348,6 +355,6 @@
         </sequential>
     </target>
 
-    <target name="cpp" depends="cpp:test, cpp:doc"/>
+    <target name="cpp" depends="cpp:test, cpp:doc, cpp:dist"/>
 
 </project>

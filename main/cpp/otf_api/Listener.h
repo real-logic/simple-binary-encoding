@@ -27,7 +27,13 @@
 #include "otf_api/Ir.h"
 
 /**
- * Example of the SBE On-The-Fly (OTF) Decoder.
+ * \mainpage Simple Binary Encoding
+ *
+ * \section intro Introduction
+ * Simple Binary Encoding (SBE) is an implementation of the FIX/SBE specification.
+ *
+ * \section arch Architecture
+ *
  * \example SbeOtfDecoder.cpp
  */
 namespace sbe {
