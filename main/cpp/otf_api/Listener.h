@@ -26,8 +26,9 @@
 #include "otf_api/Group.h"
 #include "otf_api/Ir.h"
 
-/*
- * The SBE On-The-Fly Decoder
+/**
+ * Example of the SBE On-The-Fly (OTF) Decoder.
+ * \example SbeOtfDecoder.cpp
  */
 namespace sbe {
 namespace on_the_fly {
@@ -39,6 +40,7 @@ namespace on_the_fly {
  * Ir &ir = new Ir(irBuffer, irLen);
  * listener.resetForDecode(buffer, len).ir(&ir).subscribe(...);
  * \endcode
+ *
  */
 class Listener
 {

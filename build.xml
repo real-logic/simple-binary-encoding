@@ -146,11 +146,17 @@
 
     <target name="cpp:doc" depends="build">
         <doxygen>
-            <property name="INPUT" value="${dir.main.cpp.src}"/>
+            <property name="INPUT" value="${dir.main.cpp.src}/otf_api"/>
             <property name="OUTPUT_DIRECTORY" value="${dir.docs.cpp}"/>
-            <property name="RECURSIVE" value="yes" />
-            <property name="GENERATE_LATEX" value="false" />
-            <property name="PROJECT_NAME" value="Simple Binary Encoding" />
+            <property name="RECURSIVE" value="YES"/>
+            <property name="GENERATE_LATEX" value="false"/>
+            <property name="PROJECT_NAME" value="Simple Binary Encoding"/>
+            <property name="EXAMPLE_PATH" value="${dir.examples.cpp99.src}/SbeOtfDecoder.cpp"/>
+            <!-- <property name="WARNINGS" value="YES"/> -->
+            <property name="FILE_PATTERNS" value="*.h"/>
+            <property name="OPTIMIZE_OUTPUT_FOR_C" value="YES"/>
+            <property name="OPTIMIZE_OUTPUT_FOR_JAVA" value="NO"/>
+            <property name="FULL_PATH_NAMES" value="NO"/>
         </doxygen>
     </target>
         

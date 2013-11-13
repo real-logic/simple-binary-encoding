@@ -23,6 +23,9 @@
 namespace sbe {
 namespace on_the_fly {
 
+/**
+ * A class that encapsulates an SBE field.
+ */
 class Field
 {
 public:
