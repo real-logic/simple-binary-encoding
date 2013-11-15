@@ -34,9 +34,8 @@
  * Simple Binary Encoding (SBE) is an implementation of the FIX/SBE specification.
  *
  * \todo Document Listener.h
- * \todo Document IrCollection
  * \todo Document SbeOtfDecoder.cpp
- * \todo Document Field, Group, OnNext, OnError, and OnCompleted
+ * \todo Document Field, Group
  *
  * \section arch Architecture
  *

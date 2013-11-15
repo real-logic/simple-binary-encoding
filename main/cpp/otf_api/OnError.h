@@ -21,20 +21,36 @@
 namespace sbe {
 namespace on_the_fly {
 
+/**
+ * \brief Encapsulation of an error encountered while decoding
+ */
 class Error
 {
 public:
+    /// Construct an error object with given error message string
     Error(const char *errorMsg) : errorMsg_(errorMsg) {};
+    /// Construct an error object with given error message string as std::string
     Error(const std::string errorMsg) : errorMsg_(errorMsg) {};
     virtual ~Error() {};
+    /// Return error message
     const std::string &message() const { return errorMsg_; };
 private:
     std::string errorMsg_;
 };
 
+/**
+ * \brief Interface used for indicating an error condition while decoding. Ends decoding of current message.
+ */
 class OnError
 {
 public:
+    /**
+     * \brief Method called when Listener encounters an error while decoding
+     *
+     * \param error encountered while decoding
+     * \return 0 for success and -1 for failure
+     * \sa Error
+     */
     virtual int onError(const Error &error) = 0;
 };
 

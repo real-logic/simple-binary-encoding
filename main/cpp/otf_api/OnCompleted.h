@@ -19,9 +19,17 @@
 namespace sbe {
 namespace on_the_fly {
 
+/**
+ * \brief Interface used for indicating completion of decoding a message
+ */
 class OnCompleted
 {
 public:
+    /**
+     * \brief Method called when Listener successfully completes decoding a message
+     *
+     * \return 0 for success and -1 for failure
+     */
     virtual int onCompleted(void) = 0;
 };
 

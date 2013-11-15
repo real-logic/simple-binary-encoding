@@ -22,10 +22,28 @@
 namespace sbe {
 namespace on_the_fly {
 
+/**
+ * \brief Interface used for indicating decoding of a field and/or a group indication
+ */
 class OnNext
 {
 public:
+    /**
+     * \brief Method called when Listener finishes decoding a field
+     *
+     * \param field encountered while decoding
+     * \return 0 for success and -1 for failure
+     * \sa Field
+     */
     virtual int onNext(const Field &field) = 0;
+
+    /**
+     * \brief Method called when Listener encounters a group element
+     *
+     * \param group encountered while decoding
+     * \return 0 for success and -1 for failure
+     * \sa Group
+     */
     virtual int onNext(const Group &group) = 0;
 };
 
