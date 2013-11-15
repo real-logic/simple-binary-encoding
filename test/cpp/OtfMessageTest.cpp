@@ -185,19 +185,19 @@ protected:
 
         ir.addToken(0, 43, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
-        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
-        ir.addToken(0, 1, Ir::ENCODING, byteOrder, Ir::CHAR, 0xFFFF, std::string("char"));
-        ir.addToken(1, 1, Ir::ENCODING, byteOrder, Ir::INT8, 0xFFFF, std::string("int8"));
-        ir.addToken(2, 2, Ir::ENCODING, byteOrder, Ir::INT16, 0xFFFF, std::string("int16"));
-        ir.addToken(4, 4, Ir::ENCODING, byteOrder, Ir::INT32, 0xFFFF, std::string("int32"));
-        ir.addToken(8, 8, Ir::ENCODING, byteOrder, Ir::INT64, 0xFFFF, std::string("int64"));
-        ir.addToken(16, 1, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8"));
-        ir.addToken(17, 2, Ir::ENCODING, byteOrder, Ir::UINT16, 0xFFFF, std::string("uint16"));
-        ir.addToken(19, 4, Ir::ENCODING, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"));
-        ir.addToken(23, 8, Ir::ENCODING, byteOrder, Ir::UINT64, 0xFFFF, std::string("uint64"));
-        ir.addToken(31, 4, Ir::ENCODING, byteOrder, Ir::FLOAT, 0xFFFF, std::string("float"));
-        ir.addToken(35, 8, Ir::ENCODING, byteOrder, Ir::DOUBLE, 0xFFFF, std::string("double"));
-        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
+        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, Field::INVALID_ID, compositeStr);
+        ir.addToken(0, 1, Ir::ENCODING, byteOrder, Ir::CHAR, Field::INVALID_ID, std::string("char"));
+        ir.addToken(1, 1, Ir::ENCODING, byteOrder, Ir::INT8, Field::INVALID_ID, std::string("int8"));
+        ir.addToken(2, 2, Ir::ENCODING, byteOrder, Ir::INT16, Field::INVALID_ID, std::string("int16"));
+        ir.addToken(4, 4, Ir::ENCODING, byteOrder, Ir::INT32, Field::INVALID_ID, std::string("int32"));
+        ir.addToken(8, 8, Ir::ENCODING, byteOrder, Ir::INT64, Field::INVALID_ID, std::string("int64"));
+        ir.addToken(16, 1, Ir::ENCODING, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8"));
+        ir.addToken(17, 2, Ir::ENCODING, byteOrder, Ir::UINT16, Field::INVALID_ID, std::string("uint16"));
+        ir.addToken(19, 4, Ir::ENCODING, byteOrder, Ir::UINT32, Field::INVALID_ID, std::string("uint32"));
+        ir.addToken(23, 8, Ir::ENCODING, byteOrder, Ir::UINT64, Field::INVALID_ID, std::string("uint64"));
+        ir.addToken(31, 4, Ir::ENCODING, byteOrder, Ir::FLOAT, Field::INVALID_ID, std::string("float"));
+        ir.addToken(35, 8, Ir::ENCODING, byteOrder, Ir::DOUBLE, Field::INVALID_ID, std::string("double"));
+        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, Field::INVALID_ID, compositeStr);
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
         ir.addToken(0, 43, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
     };
@@ -302,22 +302,22 @@ protected:
 
         ir.addToken(0, 3, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
-        ir.addToken(0, 1, Ir::BEGIN_ENUM, byteOrder, Ir::CHAR, 0xFFFF, std::string("char"));
-        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::CHAR, 0xFFFF, std::string("charValue1"), &charValue1, 1);
-        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::CHAR, 0xFFFF, std::string("charValue2"), &charValue2, 1);
-        ir.addToken(0, 0, Ir::END_ENUM, byteOrder, Ir::NONE, 0xFFFF, std::string("char"));
+        ir.addToken(0, 1, Ir::BEGIN_ENUM, byteOrder, Ir::CHAR, Field::INVALID_ID, std::string("char"));
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::CHAR, Field::INVALID_ID, std::string("charValue1"), &charValue1, 1);
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::CHAR, Field::INVALID_ID, std::string("charValue2"), &charValue2, 1);
+        ir.addToken(0, 0, Ir::END_ENUM, byteOrder, Ir::NONE, Field::INVALID_ID, std::string("char"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 1, uint8FieldStr);
-        ir.addToken(1, 1, Ir::BEGIN_ENUM, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8"));
-        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8Value1"), &uint8Value1, 1);
-        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8Value2"), &uint8Value2, 1);
-        ir.addToken(0, 0, Ir::END_ENUM, byteOrder, Ir::NONE, 0xFFFF, std::string("uint8"));
+        ir.addToken(1, 1, Ir::BEGIN_ENUM, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8"));
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8Value1"), &uint8Value1, 1);
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8Value2"), &uint8Value2, 1);
+        ir.addToken(0, 0, Ir::END_ENUM, byteOrder, Ir::NONE, Field::INVALID_ID, std::string("uint8"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 1, uint8FieldStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 2, noValidValueFieldStr);
-        ir.addToken(2, 1, Ir::BEGIN_ENUM, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8"));
-        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8Value1"), &uint8Value1, 1);
-        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8Value2"), &uint8Value2, 1);
-        ir.addToken(0, 0, Ir::END_ENUM, byteOrder, Ir::NONE, 0xFFFF, std::string("uint8"));
+        ir.addToken(2, 1, Ir::BEGIN_ENUM, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8"));
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8Value1"), &uint8Value1, 1);
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8Value2"), &uint8Value2, 1);
+        ir.addToken(0, 0, Ir::END_ENUM, byteOrder, Ir::NONE, Field::INVALID_ID, std::string("uint8"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 2, noValidValueFieldStr);
         ir.addToken(0, 3, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
     };
@@ -407,34 +407,34 @@ protected:
 
         ir.addToken(0, 23, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, uint8FieldStr);
-        ir.addToken(0, 1, Ir::BEGIN_SET, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8"));
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8Choice0"), (const char *)&uint8Choice0, 1);
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8Choice1"), (const char *)&uint8Choice1, 1);
-        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, 0xFFFF, std::string("uint8"));
+        ir.addToken(0, 1, Ir::BEGIN_SET, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8"));
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8Choice0"), (const char *)&uint8Choice0, 1);
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8Choice1"), (const char *)&uint8Choice1, 1);
+        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, Field::INVALID_ID, std::string("uint8"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, uint8FieldStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 1, uint16FieldStr);
-        ir.addToken(1, 2, Ir::BEGIN_SET, byteOrder, Ir::UINT16, 0xFFFF, std::string("uint16"));
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT16, 0xFFFF, std::string("uint16Choice9"), (const char *)&uint16Choice9, 2);
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT16, 0xFFFF, std::string("uint16Choice1"), (const char *)&uint16Choice1, 2);
-        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, 0xFFFF, std::string("uint16"));
+        ir.addToken(1, 2, Ir::BEGIN_SET, byteOrder, Ir::UINT16, Field::INVALID_ID, std::string("uint16"));
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT16, Field::INVALID_ID, std::string("uint16Choice9"), (const char *)&uint16Choice9, 2);
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT16, Field::INVALID_ID, std::string("uint16Choice1"), (const char *)&uint16Choice1, 2);
+        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, Field::INVALID_ID, std::string("uint16"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 1, uint16FieldStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 2, uint32FieldStr);
-        ir.addToken(3, 4, Ir::BEGIN_SET, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"));
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32Choice0"), (const char *)&uint32Choice0, 4);
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32Choice16"), (const char *)&uint32Choice16, 4);
-        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, 0xFFFF, std::string("uint32"));
+        ir.addToken(3, 4, Ir::BEGIN_SET, byteOrder, Ir::UINT32, Field::INVALID_ID, std::string("uint32"));
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT32, Field::INVALID_ID, std::string("uint32Choice0"), (const char *)&uint32Choice0, 4);
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT32, Field::INVALID_ID, std::string("uint32Choice16"), (const char *)&uint32Choice16, 4);
+        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, Field::INVALID_ID, std::string("uint32"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 2, uint32FieldStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 3, uint64FieldStr);
-        ir.addToken(7, 8, Ir::BEGIN_SET, byteOrder, Ir::UINT64, 0xFFFF, std::string("uint64"));
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT64, 0xFFFF, std::string("uint64Choice32"), (const char *)&uint64Choice32, 8);
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT64, 0xFFFF, std::string("uint64Choice1"), (const char *)&uint64Choice1, 8);
-        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, 0xFFFF, std::string("uint64"));
+        ir.addToken(7, 8, Ir::BEGIN_SET, byteOrder, Ir::UINT64, Field::INVALID_ID, std::string("uint64"));
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT64, Field::INVALID_ID, std::string("uint64Choice32"), (const char *)&uint64Choice32, 8);
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT64, Field::INVALID_ID, std::string("uint64Choice1"), (const char *)&uint64Choice1, 8);
+        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, Field::INVALID_ID, std::string("uint64"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 3, uint64FieldStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 4, noChoicesFieldStr);
-        ir.addToken(15, 8, Ir::BEGIN_SET, byteOrder, Ir::UINT64, 0xFFFF, std::string("uint64"));
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT64, 0xFFFF, std::string("uint64Choice32"), (const char *)&uint64Choice32, 8);
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT64, 0xFFFF, std::string("uint64Choice1"), (const char *)&uint64Choice1, 8);
-        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, 0xFFFF, std::string("uint64"));
+        ir.addToken(15, 8, Ir::BEGIN_SET, byteOrder, Ir::UINT64, Field::INVALID_ID, std::string("uint64"));
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT64, Field::INVALID_ID, std::string("uint64Choice32"), (const char *)&uint64Choice32, 8);
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT64, Field::INVALID_ID, std::string("uint64Choice1"), (const char *)&uint64Choice1, 8);
+        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, Field::INVALID_ID, std::string("uint64"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 4, noChoicesFieldStr);
         ir.addToken(0, 23, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
     };
@@ -560,19 +560,19 @@ protected:
 
         ir.addToken(0, 43, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
-        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
-        ir.addToken(0, 1, Ir::ENCODING, byteOrder, Ir::CHAR, 0xFFFF, std::string("char"), (const char *)&constChar, 1);
-        ir.addToken(1, 1, Ir::ENCODING, byteOrder, Ir::INT8, 0xFFFF, std::string("int8"), (const char *)&constInt8, 1);
-        ir.addToken(2, 2, Ir::ENCODING, byteOrder, Ir::INT16, 0xFFFF, std::string("int16"), (const char *)&constInt16, 2);
-        ir.addToken(4, 4, Ir::ENCODING, byteOrder, Ir::INT32, 0xFFFF, std::string("int32"), (const char *)&constInt32, 4);
-        ir.addToken(8, 8, Ir::ENCODING, byteOrder, Ir::INT64, 0xFFFF, std::string("int64"), (const char *)&constInt64, 8);
-        ir.addToken(16, 1, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8"), (const char *)&constUInt8, 1);
-        ir.addToken(17, 2, Ir::ENCODING, byteOrder, Ir::UINT16, 0xFFFF, std::string("uint16"), (const char *)&constUInt16, 2);
-        ir.addToken(19, 4, Ir::ENCODING, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"), (const char *)&constUInt32, 4);
-        ir.addToken(23, 8, Ir::ENCODING, byteOrder, Ir::UINT64, 0xFFFF, std::string("uint64"), (const char *)&constUInt64, 8);
-        ir.addToken(31, 4, Ir::ENCODING, byteOrder, Ir::FLOAT, 0xFFFF, std::string("float"), (const char *)&constFloat, 4);
-        ir.addToken(35, 8, Ir::ENCODING, byteOrder, Ir::DOUBLE, 0xFFFF, std::string("double"), (const char *)&constDouble, 8);
-        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
+        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, Field::INVALID_ID, compositeStr);
+        ir.addToken(0, 1, Ir::ENCODING, byteOrder, Ir::CHAR, Field::INVALID_ID, std::string("char"), (const char *)&constChar, 1);
+        ir.addToken(1, 1, Ir::ENCODING, byteOrder, Ir::INT8, Field::INVALID_ID, std::string("int8"), (const char *)&constInt8, 1);
+        ir.addToken(2, 2, Ir::ENCODING, byteOrder, Ir::INT16, Field::INVALID_ID, std::string("int16"), (const char *)&constInt16, 2);
+        ir.addToken(4, 4, Ir::ENCODING, byteOrder, Ir::INT32, Field::INVALID_ID, std::string("int32"), (const char *)&constInt32, 4);
+        ir.addToken(8, 8, Ir::ENCODING, byteOrder, Ir::INT64, Field::INVALID_ID, std::string("int64"), (const char *)&constInt64, 8);
+        ir.addToken(16, 1, Ir::ENCODING, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8"), (const char *)&constUInt8, 1);
+        ir.addToken(17, 2, Ir::ENCODING, byteOrder, Ir::UINT16, Field::INVALID_ID, std::string("uint16"), (const char *)&constUInt16, 2);
+        ir.addToken(19, 4, Ir::ENCODING, byteOrder, Ir::UINT32, Field::INVALID_ID, std::string("uint32"), (const char *)&constUInt32, 4);
+        ir.addToken(23, 8, Ir::ENCODING, byteOrder, Ir::UINT64, Field::INVALID_ID, std::string("uint64"), (const char *)&constUInt64, 8);
+        ir.addToken(31, 4, Ir::ENCODING, byteOrder, Ir::FLOAT, Field::INVALID_ID, std::string("float"), (const char *)&constFloat, 4);
+        ir.addToken(35, 8, Ir::ENCODING, byteOrder, Ir::DOUBLE, Field::INVALID_ID, std::string("double"), (const char *)&constDouble, 8);
+        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, Field::INVALID_ID, compositeStr);
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
         ir.addToken(0, 43, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
     };
@@ -658,28 +658,28 @@ protected:
         ir.addToken(0, 68, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
 
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, setFieldStr);
-        ir.addToken(0, 1, Ir::BEGIN_SET, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8"));
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8Choice0"), (const char *)&uint8Choice0, 1);
-        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8Choice1"), (const char *)&uint8Choice1, 1);
-        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, 0xFFFF, std::string("uint8"));
+        ir.addToken(0, 1, Ir::BEGIN_SET, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8"));
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8Choice0"), (const char *)&uint8Choice0, 1);
+        ir.addToken(0, 0, Ir::CHOICE, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8Choice1"), (const char *)&uint8Choice1, 1);
+        ir.addToken(0, 0, Ir::END_SET, byteOrder, Ir::NONE, Field::INVALID_ID, std::string("uint8"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, setFieldStr);
 
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 1, enumFieldStr);
-        ir.addToken(2, 1, Ir::BEGIN_ENUM, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8"));
-        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8Value1"), (const char *)&uint8Value1, 1);
-        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, 0xFFFF, std::string("uint8Value2"), (const char *)&uint8Value2, 1);
-        ir.addToken(0, 0, Ir::END_ENUM, byteOrder, Ir::NONE, 0xFFFF, std::string("uint8"));
+        ir.addToken(2, 1, Ir::BEGIN_ENUM, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8"));
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8Value1"), (const char *)&uint8Value1, 1);
+        ir.addToken(0, 0, Ir::VALID_VALUE, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("uint8Value2"), (const char *)&uint8Value2, 1);
+        ir.addToken(0, 0, Ir::END_ENUM, byteOrder, Ir::NONE, Field::INVALID_ID, std::string("uint8"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 1, enumFieldStr);
 
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 2, compositeFieldStr);
-        ir.addToken(8, 12, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
-        ir.addToken(0, 8, Ir::ENCODING, byteOrder, Ir::UINT64, 0xFFFF, std::string("uint64"));
-        ir.addToken(8, 4, Ir::ENCODING, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"));
-        ir.addToken(8, 12, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr);
+        ir.addToken(8, 12, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, Field::INVALID_ID, compositeStr);
+        ir.addToken(0, 8, Ir::ENCODING, byteOrder, Ir::UINT64, Field::INVALID_ID, std::string("uint64"));
+        ir.addToken(8, 4, Ir::ENCODING, byteOrder, Ir::UINT32, Field::INVALID_ID, std::string("uint32"));
+        ir.addToken(8, 12, Ir::END_COMPOSITE, byteOrder, Ir::NONE, Field::INVALID_ID, compositeStr);
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 2, compositeFieldStr);
 
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID + 3, uint32FieldStr);
-        ir.addToken(64, 4, Ir::ENCODING, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"));
+        ir.addToken(64, 4, Ir::ENCODING, byteOrder, Ir::UINT32, Field::INVALID_ID, std::string("uint32"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID + 3, uint32FieldStr);
 
         ir.addToken(0, 68, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
@@ -763,5 +763,4 @@ TEST_F(OtfMessageOffsetTest, shouldHandleOffsets)
  * TODO: test constants for enum and set
  * TODO: byte order
  * TODO: test reuse of listener
- * TODO: MassQuote
  */

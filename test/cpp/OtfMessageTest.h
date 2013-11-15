@@ -34,7 +34,7 @@ protected:
     {
         Ir::TokenByteOrder byteOrder = Ir::SBE_LITTLE_ENDIAN;
         std::string messageHeaderStr = std::string("messageHeader");
-        uint16_t schemaId = 0xFFFF;
+        int32_t schemaId = Field::INVALID_ID;
 
         // messageHeader
         ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, schemaId, messageHeaderStr);
@@ -53,7 +53,7 @@ protected:
 
         ir.addToken(0, 4, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
-        ir.addToken(0, 4, Ir::ENCODING, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"));
+        ir.addToken(0, 4, Ir::ENCODING, byteOrder, Ir::UINT32, Field::INVALID_ID, std::string("uint32"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
         ir.addToken(0, 4, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
     };

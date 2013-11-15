@@ -277,7 +277,7 @@
         <exec executable="${exec.example.cpp99}" failonerror="true"/>
     </target>
 
-    <target name="cpp:examples:otf" depends="dist, cpp:compile" description="Generate and run OTF C++ example">
+    <target name="cpp:examples:otf" depends="dist, examples:java, cpp:compile" description="Generate and run OTF C++ example">
         <mkdir dir="${dir.gen.cpp99}"/>
         <cc outtype="executable"
             debug="true"

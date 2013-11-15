@@ -42,16 +42,16 @@ protected:
 
         ir.addToken(0, 0xFFFFFFFF, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_VAR_DATA, byteOrder, Ir::NONE, FIELD_ID, varDataStr1);
-        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr1);
-        ir.addToken(0, 1, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("length"));
-        ir.addToken(1, 0xFFFFFFFF, Ir::ENCODING, byteOrder, Ir::CHAR, 0xFFFF, std::string("varData"));
-        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr1);
+        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, Field::INVALID_ID, compositeStr1);
+        ir.addToken(0, 1, Ir::ENCODING, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("length"));
+        ir.addToken(1, 0xFFFFFFFF, Ir::ENCODING, byteOrder, Ir::CHAR, Field::INVALID_ID, std::string("varData"));
+        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, Field::INVALID_ID, compositeStr1);
         ir.addToken(0, 0, Ir::END_VAR_DATA, byteOrder, Ir::NONE, FIELD_ID, varDataStr1);
         ir.addToken(0, 0, Ir::BEGIN_VAR_DATA, byteOrder, Ir::NONE, FIELD_ID + 1, varDataStr2);
-        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr2);
-        ir.addToken(0xFFFFFFFF, 1, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("length"));
-        ir.addToken(0xFFFFFFFF, 0xFFFFFFFF, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("varData"));
-        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, compositeStr2);
+        ir.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, Field::INVALID_ID, compositeStr2);
+        ir.addToken(0xFFFFFFFF, 1, Ir::ENCODING, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("length"));
+        ir.addToken(0xFFFFFFFF, 0xFFFFFFFF, Ir::ENCODING, byteOrder, Ir::UINT8, Field::INVALID_ID, std::string("varData"));
+        ir.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, Field::INVALID_ID, compositeStr2);
         ir.addToken(0, 0, Ir::END_VAR_DATA, byteOrder, Ir::NONE, FIELD_ID + 1, varDataStr2);
         ir.addToken(0, 0xFFFFFFFF, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
     };

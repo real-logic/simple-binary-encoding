@@ -39,12 +39,12 @@ protected:
 
         ir.addToken(0, 0xFFFFFFFF, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_GROUP, byteOrder, Ir::NONE, GROUP_ID, groupStr);
-        ir.addToken(0, 3, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, groupDimensionStr);
-        ir.addToken(0, 2, Ir::ENCODING, byteOrder, Ir::UINT16, 0xFFFF, std::string("blockLength"));
-        ir.addToken(2, 1, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("numInGroup"));
-        ir.addToken(0, 3, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, groupDimensionStr);
+        ir.addToken(0, 3, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, Ir::INVALID_ID, groupDimensionStr);
+        ir.addToken(0, 2, Ir::ENCODING, byteOrder, Ir::UINT16, Ir::INVALID_ID, std::string("blockLength"));
+        ir.addToken(2, 1, Ir::ENCODING, byteOrder, Ir::UINT8, Ir::INVALID_ID, std::string("numInGroup"));
+        ir.addToken(0, 3, Ir::END_COMPOSITE, byteOrder, Ir::NONE, Ir::INVALID_ID, groupDimensionStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
-        ir.addToken(0, 4, Ir::ENCODING, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"));
+        ir.addToken(0, 4, Ir::ENCODING, byteOrder, Ir::UINT32, Ir::INVALID_ID, std::string("uint32"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
         ir.addToken(0, 0, Ir::END_GROUP, byteOrder, Ir::NONE, GROUP_ID, groupStr);
         ir.addToken(0, 0xFFFFFFFF, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
@@ -170,17 +170,17 @@ protected:
 
         ir.addToken(0, 0xFFFFFFFF, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_GROUP, byteOrder, Ir::NONE, GROUP_ID, groupStr1);
-        ir.addToken(0, 3, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, groupDimensionStr);
-        ir.addToken(0, 2, Ir::ENCODING, byteOrder, Ir::UINT16, 0xFFFF, std::string("blockLength"));
-        ir.addToken(2, 1, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("numInGroup"));
-        ir.addToken(0, 3, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, groupDimensionStr);
+        ir.addToken(0, 3, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, Ir::INVALID_ID, groupDimensionStr);
+        ir.addToken(0, 2, Ir::ENCODING, byteOrder, Ir::UINT16, Ir::INVALID_ID, std::string("blockLength"));
+        ir.addToken(2, 1, Ir::ENCODING, byteOrder, Ir::UINT8, Ir::INVALID_ID, std::string("numInGroup"));
+        ir.addToken(0, 3, Ir::END_COMPOSITE, byteOrder, Ir::NONE, Ir::INVALID_ID, groupDimensionStr);
         ir.addToken(0, 0, Ir::BEGIN_GROUP, byteOrder, Ir::NONE, GROUP_ID + 1, groupStr2);
-        ir.addToken(0, 3, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, groupDimensionStr);
-        ir.addToken(0, 2, Ir::ENCODING, byteOrder, Ir::UINT16, 0xFFFF, std::string("blockLength"));
-        ir.addToken(2, 1, Ir::ENCODING, byteOrder, Ir::UINT8, 0xFFFF, std::string("numInGroup"));
-        ir.addToken(0, 3, Ir::END_COMPOSITE, byteOrder, Ir::NONE, 0xFFFF, groupDimensionStr);
+        ir.addToken(0, 3, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, Ir::INVALID_ID, groupDimensionStr);
+        ir.addToken(0, 2, Ir::ENCODING, byteOrder, Ir::UINT16, Ir::INVALID_ID, std::string("blockLength"));
+        ir.addToken(2, 1, Ir::ENCODING, byteOrder, Ir::UINT8, Ir::INVALID_ID, std::string("numInGroup"));
+        ir.addToken(0, 3, Ir::END_COMPOSITE, byteOrder, Ir::NONE, Ir::INVALID_ID, groupDimensionStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
-        ir.addToken(0, 4, Ir::ENCODING, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"));
+        ir.addToken(0, 4, Ir::ENCODING, byteOrder, Ir::UINT32, Ir::INVALID_ID, std::string("uint32"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, fieldStr);
         ir.addToken(0, 0, Ir::END_GROUP, byteOrder, Ir::NONE, GROUP_ID + 1, groupStr2);
         ir.addToken(0, 0, Ir::END_GROUP, byteOrder, Ir::NONE, GROUP_ID, groupStr1);

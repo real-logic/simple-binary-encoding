@@ -37,7 +37,7 @@ protected:
 
         ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
-        ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::ENCODING, byteOrder, Ir::CHAR, 0xFFFF, std::string("char"));
+        ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::ENCODING, byteOrder, Ir::CHAR, Ir::INVALID_ID, std::string("char"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
         ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
     };
@@ -93,7 +93,7 @@ protected:
 
         ir.addToken(0, UINT32_ARRAY_SIZE, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
-        ir.addToken(0, UINT32_ARRAY_SIZE, Ir::ENCODING, byteOrder, Ir::UINT32, 0xFFFF, std::string("uint32"));
+        ir.addToken(0, UINT32_ARRAY_SIZE, Ir::ENCODING, byteOrder, Ir::UINT32, Ir::INVALID_ID, std::string("uint32"));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
         ir.addToken(0, UINT32_ARRAY_SIZE, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
     };
@@ -159,7 +159,7 @@ protected:
 
         ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::BEGIN_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
         ir.addToken(0, 0, Ir::BEGIN_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
-        ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::ENCODING, byteOrder, Ir::CHAR, 0xFFFF, std::string("char"), constStr, strlen(constStr));
+        ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::ENCODING, byteOrder, Ir::CHAR, Ir::INVALID_ID, std::string("char"), constStr, strlen(constStr));
         ir.addToken(0, 0, Ir::END_FIELD, byteOrder, Ir::NONE, FIELD_ID, charFieldStr);
         ir.addToken(0, STR_FIELD_VALUE_SIZE, Ir::END_MESSAGE, byteOrder, Ir::NONE, TEMPLATE_ID, messageStr);
     };

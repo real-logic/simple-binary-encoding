@@ -35,7 +35,7 @@ protected:
     {
         Ir::TokenByteOrder byteOrder = Ir::SBE_LITTLE_ENDIAN;
         std::string messageHeaderStr = std::string("messageHeader");
-        uint16_t schemaId = 0xFFFF;
+        int32_t schemaId = Ir::INVALID_ID;
 
         // messageHeader
         ir_.addToken(0, 0, Ir::BEGIN_COMPOSITE, byteOrder, Ir::NONE, schemaId, messageHeaderStr);
@@ -177,17 +177,3 @@ TEST_F(OtfMessageHeaderTest, shouldHandleTooShortMessageHeaderWithOnCompleted)
     EXPECT_EQ(numErrorsSeen_, 1);
     EXPECT_EQ(numCompletedsSeen_, 0);
 }
-
-/*
- * TODO: byteOrder tests
- * TODO: grab offset of message after messageHeader and be able to save it and hold templateId - use case!
- */
-
-/*
- * TODO: messageHeader + message dispatch - no variable length data, no groups
- * TODO: test every type (encoded data type, composite, enum, and set) in a single message
- * TODO: test every primitiveType
- * TODO: single repeating group
- * TODO: nested repeating group - MassQuote
- * TODO: variable length fields
- */
