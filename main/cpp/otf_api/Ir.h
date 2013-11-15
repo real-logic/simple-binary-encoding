@@ -32,60 +32,107 @@ public:
     /// Value representing a variable length field (size)
     static const uint32_t VARIABLE_SIZE = 0xFFFFFFFF;
 
+    /// Constants used for holding Token signals
     enum TokenSignal
     {
+        /// Begins a message. Is followed by a number of tokens in the message and terminated by an end message.
         BEGIN_MESSAGE = 1,
+        /// Ends a message.
         END_MESSAGE = 2,
+        /// Begins a composite. Is followed by a number of tokens in the composite and terminated by an end composite.
         BEGIN_COMPOSITE = 3,
+        /// Ends a composite.
         END_COMPOSITE = 4,
+        /// Begins a field. Is followed by a number of tokens in the field and terminated by an end field.
         BEGIN_FIELD = 5,
+        /// Ends a field.
         END_FIELD = 6,
+        /// Begins a repeating group. Is followed by a number of tokens in the group and terminated by an end group.
         BEGIN_GROUP = 7,
+        /// Ends a repeating group.
         END_GROUP = 8,
+        /// Begins an enumeration. Is followed by a number of tokens in the enumeration and terminated by an end enum.
         BEGIN_ENUM = 9,
+        /// Indicates a valid value for an enumeration. Must appear between a begin/end enum pair.
         VALID_VALUE = 10,
+        /// Ends an enumeration.
         END_ENUM = 11,
+        /// Begins a bit set. Is followed by a number of tokens in the set and terminated by an end set
         BEGIN_SET = 12,
+        /// Indicates a bit value in the bit set. Must appear between a begin/end set pair.
         CHOICE = 13,
+        /// Ends a bit set.
         END_SET = 14,
+        /// Begins a variable length data element. Is followed by a number of tokens in the element and terminated by an end var data.
         BEGIN_VAR_DATA = 15,
+        /// Ends a variable length data element.
         END_VAR_DATA = 16,
+        /// Indicates an encoding of a primitive element.
         ENCODING = 17
     };
 
+    /// Constants used for representing byte order
     enum TokenByteOrder
     {
+        /// little endian byte order
         SBE_LITTLE_ENDIAN = 0,
+        /// big endian byte order
         SBE_BIG_ENDIAN = 1
     };
 
+    /// Constants used for representing primitive types
     enum TokenPrimitiveType
     {
+        /// Type is undefined or unknown
         NONE = 0,
+        /// Type is a signed character
         CHAR = 1,
+        /// Type is a signed 8-bit value
         INT8 = 2,
+        /// Type is a signed 16-bit value
         INT16 = 3,
+        /// Type is a signed 32-bit value
         INT32 = 4,
+        /// Type is a signed 64-bit value
         INT64 = 5,
+        /// Type is a unsigned 8-bit value
         UINT8 = 6,
+        /// Type is a unsigned 16-bit value
         UINT16 = 7,
+        /// Type is a unsigned 32-bit value
         UINT32 = 8,
+        /// Type is a unsigned 64-bit value
         UINT64 = 9,
+        /// Type is a 32-bit floating point value
         FLOAT = 10,
+        /// Type is a 64-bit double floating point value
         DOUBLE = 11
     };
 
     /**
-     * Interface for returning an IR for a given templateId value
+     * \brief Interface for returning an Ir for a given templateId value.
+     *
+     * This interface is used by the decoder when it finds a field designated
+     * by the user to be the dispatch point for messages. The value of the field
+     * is passed to the Callback::irForTemplateId method and the overloaded
+     * method must return an Ir for that message template ID.
      */
     class Callback
     {
     public:
+        /**
+         * \brief Method to be overloaded by subclasses that should return an Ir for
+         * a given message template ID.
+         *
+         * \param templateId of the message
+         * \return Ir for the message
+         */
         virtual Ir *irForTemplateId(const int templateId) = 0;
     };
 
     // constructors and destructors
 
+    /// Construct an Ir from a buffer with serialized tokens of len total size.
     Ir(const char *buffer = NULL, const int len = 0);
 
     virtual ~Ir()
@@ -97,29 +144,45 @@ public:
         }
     };
 
-    /// iterator methods for IrTokens
+    // iterator methods for IrTokens
 
+    /// Rewind Ir to beginning
     void begin();
+    /// Increment Ir to next token in the list
     void next();
+    /// Is the Ir setting at the end of the token list?
     bool end() const;
 
-    /// access methods for current IR Token
+    // access methods for current IR Token
 
+    /// Retrieve the offset value of the current token
     int32_t offset() const;
+    /// Retrieve the size value of the current token
     int32_t size() const;
+    /// Retrieve the Ir::TokenSignal of the current token
     TokenSignal signal() const;
+    /// Retrieve the Ir::TokenByteOrder of the current token
     TokenByteOrder byteOrder() const;
+    /// Retrieve the Ir::TokenPrimitiveType of the current token
     TokenPrimitiveType primitiveType() const;
+    /// Retrieve the ID set by the schema of the current token
     int32_t schemaId() const;
+    /// Return the Ir::VALID_VALUE of an enumeration for the current token
     uint64_t validValue() const;
+    /// Return the value of the current tokens bit set Ir::CHOICE value
     uint64_t choiceValue() const;
+    /// Return the length of the name of the current token
     uint8_t nameLen() const;
+    /// Return the name of the current token
     std::string name() const;
+    /// Return the length of the current tokens constant value in bytes
     uint64_t constLen() const;
+    /// Retrieve the current tokens constant value or NULL if not present
     const char *constVal() const;
-    int position() const;
 
-    /// rewind or fast-forward IR to given position
+    /// Retrieve position of current token
+    int position() const;
+    /// Rewind or fast-forward Ir to given position
     void position(int pos);
 
     // used by test fixtures to generate IR for tests - initial call allocates max sized buffer
@@ -133,7 +196,7 @@ public:
                   const char *constVal = NULL,
                   int constValLength = 0);
 
-
+    // used to retrieve what would be the nominal size of a single element of a primitive type
     static unsigned int size(TokenPrimitiveType type)
     {
         switch (type)
