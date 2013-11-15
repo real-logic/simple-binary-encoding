@@ -22,7 +22,7 @@ namespace sbe {
 namespace on_the_fly {
 
 /**
- * Class that acts as an iterator and accessor over a serialized IR token list
+ * \brief Class that acts as an iterator and accessor over a serialized IR token list
  */
 class Ir
 {

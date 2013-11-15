@@ -35,7 +35,7 @@ namespace sbe {
 namespace on_the_fly {
 
 /**
- * Collection that holds the Ir for several message template IDs as well as a header for
+ * \brief Collection that holds the Ir for several message template IDs as well as a header for
  * dispatching them. Equivalent to the Java IntermediateRepresentation class.
  */
 class IrCollection
