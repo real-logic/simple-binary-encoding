@@ -27,14 +27,18 @@
 using namespace sbe::on_the_fly;
 using namespace uk_co_real_logic_sbe_ir_generated;
 
+// class to encapsulate Ir repository as well as Ir callback for dispatch
 class IrRepo : public IrCollection, public Ir::Callback
 {
 public:
+    // save a reference to the Listener so we can print out the offset
     IrRepo(Listener &listener) : listener_(listener) {};
 
     virtual Ir *irForTemplateId(const int templateId)
     {
         std::cout << "Message lookup id=" << templateId << " offset " << listener_.bufferOffset() << std::endl;
+
+        // lookup in IrCollection the IR for the template ID
         return (Ir *)IrCollection::message(templateId);
     };
 
@@ -42,11 +46,14 @@ private:
     Listener &listener_;
 };
 
+// class to encapsulate all the callbacks
 class CarCallbacks : public OnNext, public OnError, public OnCompleted
 {
 public:
+    // save reference to listener for printing offset
     CarCallbacks(Listener &listener) : listener_(listener) , indent_(0) {};
 
+    // callback for when a field is encountered
     virtual int onNext(const Field &f)
     {
         std::cout << "Field name=\"" << f.fieldName() << "\" id=" << f.schemaId();
@@ -60,17 +67,18 @@ public:
         if (f.isEnum())
         {
             std::cout << " Enum [" << f.validValue() << "]";
-            printEncoding(f, 0);
+            printEncoding(f, 0); // print the encoding. Index is 0.
         }
         else if (f.isSet())
         {
             std::cout << " Set ";
+            // print the various names for the bits that are set
             for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
             {
                 std::cout << "[" << *it << "]";
             }
 
-            printEncoding(f, 0);
+            printEncoding(f, 0); // print the encoding. Index is 0.
         }
         else if (f.isVariableData())
         {
@@ -80,12 +88,12 @@ public:
             std::cout << " Variable Data length=" << f.length(1);
 
             char tmp[256];
-            f.getArray(1, tmp, 0, f.length(1));
+            f.getArray(1, tmp, 0, f.length(1));  // copy the data
             std::cout << " value=\"" << std::string(tmp, f.length(1)) << "\"";
 
             std::cout << std::endl;
         }
-        else
+        else // if not enum, set, or var data, then just normal encodings, but could be composite
         {
             for (int i = 0, size = f.numEncodings(); i < size; i++)
             {
@@ -96,8 +104,10 @@ public:
         return 0;
     };
 
+    // callback for when a group is encountered
     virtual int onNext(const Group &g)
     {
+        // group started
         if (g.event() == Group::START)
         {
             std::cout << "Group name=\"" << g.name() << "\" start (";
@@ -108,7 +118,7 @@ public:
                 indent_++;
             }
         }
-        else if (g.event() == Group::END)
+        else if (g.event() == Group::END)  // group ended
         {
             std::cout << "Group name=\"" << g.name() << "\" end (";
             std::cout << g.iteration() << "/" << g.numInGroup() - 1 << "):" << "\n";
@@ -121,12 +131,14 @@ public:
         return 0;
     };
 
+    // callback for when an error is encountered
     virtual int onError(const Error &e)
     {
         std::cout << "Error " << e.message() << " at offset " << listener_.bufferOffset() << "\n";
         return 0;
     };
 
+    // callback for when decoding is completed
     virtual int onCompleted()
     {
         std::cout << "Completed" << "\n";
@@ -135,6 +147,7 @@ public:
 
 protected:
 
+    // print out details of an encoding
     void printEncoding(const Field &f, int index)
     {
         std::cout << " name=\"" << f.encodingName(index) << "\" length=" << f.length(index);
@@ -149,6 +162,7 @@ protected:
                 {
                     char tmp[1024];
 
+                    // copy data to temp array and print it out.
                     f.getArray(index, tmp, 0, f.length(index));
                     std::cout << " type=CHAR value=\"" << std::string(tmp, f.length(index)) << "\"";
                 }
@@ -168,6 +182,7 @@ protected:
                 {
                     char tmp[1024];
 
+                    // copy data to temp array and print it out.
                     f.getArray(index, tmp, 0, f.length(index));
                     std::cout << " type=INT32 value=";
                     for (int i = 0, size = f.length(index); i < size; i++)
@@ -208,6 +223,7 @@ private:
     int indent_;
 };
 
+// helper function to read in file and save to a buffer
 char *readFileIntoBuffer(const char *filename, int *length)
 {
     struct stat fileStat;
@@ -275,12 +291,14 @@ int main(int argc, char * const argv[])
 
     }
 
+    // load IR from .sbeir file
     if (repo.loadFromFile(argv[optind]) < 0)
     {
         std::cout << "could not load IR" << std::endl;
         exit(-1);
     }
 
+    // load data from file into a buffer
     if ((buffer = ::readFileIntoBuffer(argv[optind+1], &length)) == NULL)
     {
         std::cout << "could not load encoding" << std::endl;
@@ -289,6 +307,7 @@ int main(int argc, char * const argv[])
 
     std::cout << "Decoding..." << std::endl;
 
+    // if all we want is header, then set up IR for header, decode, and print out offset and header fields
     if (justHeader)
     {
         listener.ir(repo.header())
@@ -300,6 +319,7 @@ int main(int argc, char * const argv[])
         return 0;
     }
 
+    // set up listener and kick off decoding with subscribe
     listener.dispatchMessageByHeader(std::string("templateId"), repo.header(), &repo)
             .resetForDecode(buffer, length)
             .subscribe(&carCbs, &carCbs, &carCbs);

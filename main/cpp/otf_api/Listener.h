@@ -47,8 +47,6 @@
  * the data to decode as well as the schema. The schema is represented in a "compiled"
  * form called Intermediate Representation, or IR.
  *
- * \todo Document SbeOtfDecoder.cpp
- *
  * \example SbeOtfDecoder.cpp
  */
 namespace sbe {
