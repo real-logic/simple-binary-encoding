@@ -40,7 +40,7 @@ using namespace sbe::on_the_fly;
 using ::std::cout;
 using ::std::endl;
 
-const uint16_t Field::INVALID_ID;
+const int32_t Field::INVALID_ID;
 const int Field::FIELD_INDEX;
 
 Listener::Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL),

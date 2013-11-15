@@ -35,7 +35,7 @@
  *
  * \todo Document Listener.h
  * \todo Document SbeOtfDecoder.cpp
- * \todo Document Field, Group
+ * \todo Fix unit tests for Field::INVALID_ID
  *
  * \section arch Architecture
  *

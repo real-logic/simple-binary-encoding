@@ -24,22 +24,32 @@ namespace sbe {
 namespace on_the_fly {
 
 /**
- * A class that encapsulates an SBE field.
+ * \brief Encapsulation of a field
+ *
+ * During decoding a Listener will call OnNext::onNext(const Field &) and pass encountered fields to the
+ * application. These fields may be of varying types, including composites (or structs), enumerations,
+ * bit sets, or variable length data. All of these types may be accessed via this class.
  */
 class Field
 {
 public:
-    /// invalid Schema ID value
-    static const uint16_t INVALID_ID = 0xFFFF;
-    /// index for field name
+    /// Invalid Schema ID value
+    static const int32_t INVALID_ID = -1;
+    /// Index for the Field itself
     static const int FIELD_INDEX = -1;
 
+    /// Type of Field
     enum Type
     {
+        /// Field is a composite
         COMPOSITE = 1,
+        /// Field is an encoding of a primitive type
         ENCODING = 2,
+        /// Field is an enumeration
         ENUM = 3,
+        /// Field is a bit set
         SET = 4,
+        /// Field is variable length data
         VAR_DATA = 5
     };
 
@@ -64,49 +74,70 @@ public:
 
     virtual ~Field() {};
 
+    /// Retrieve the type of Field this is. \sa Field::Type
     Type type() const
     {
         return type_;
     };
 
-    // composite has > 1 encodings
+    /// Return the number of encodings this Field contains. This is usually 1. However, Field::COMPOSITE can have more than one.
     int numEncodings() const
     {
         return numEncodings_;
     };
 
+    /// Return whether the Field is a Field::COMPOSITE or not
     bool isComposite() const { return (COMPOSITE == type_) ? true : false; };
+    /// Return whether the Field is a Field::ENUM or not
     bool isEnum() const { return (ENUM == type_) ? true : false; };
+    /// Return whether the Field is a Field::SET or not
     bool isSet() const {return (SET == type_) ? true : false; };
+    /// Return whether the Field is a Field::VAR_DATA or not
     bool isVariableData() const { return (VAR_DATA == type_) ? true : false; };
 
-    // query on overall field properties
-    uint16_t schemaId() const
+    /// Return the ID assigned by the schema for this Field. May be set to Ir::INVALID_ID to indicate no ID assigned.
+    int32_t schemaId() const
     {
         return schemaId_;
     };
 
+    /// Return the name of the Field. Can be empty if field has no name.
     const std::string &fieldName() const
     {
         return name_;
     };
 
+    /// Return the name of the composite if Field is a Field::COMPOSITE or empty if not.
     const std::string &compositeName() const
     {
         return compositeName_;
     };
 
+    /** \brief Return the name of the encoding for the given index
+     *
+     * \param index of the encoding to return the name of
+     * \return the name of the encoding for the given index
+     */
     const std::string &encodingName(const int index) const
     {
         return encodingNames_[index];
     };
 
-    // query on specific composite piece and encoding
+    /** \brief Return the Ir::TokenPrimitiveType of the encoding for the given index
+     *
+     * \param index of the encoding to return the primitive type of. May be Field::FIELD_INDEX if only a single encoding.
+     * \return the primitive type of the encoding
+     */
     Ir::TokenPrimitiveType primitiveType(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? primitiveTypes_[0] : primitiveTypes_[index];
     };
 
+    /** \brief Return the length in primitive type units of the encoding for the given index
+     *
+     * \param index of the encoding to return the length of. May be Field::FIELD_INDEX if only a single encoding.
+     * \return the length in primitive type units of the encoding
+     */
     int length(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingLengths_[0] : encodingLengths_[index];
@@ -115,36 +146,86 @@ public:
     // encoding values. index = -1 means only 1 encoding (for set, enum, encoding) and exceptions on composite
     // enums and sets can have values as well. So, could grab encoding values.
 
+    /** \brief Return the signed integer value of the encoding for the given index
+     *
+     * \warning
+     * If the encoding is not a signed integer type, this value may be garbage.
+     *
+     * \param index of the encoding to return the value of. May be Field::FIELD_INDEX if only a single encoding.
+     * \return the signed integer value of the encoding
+     */
     int64_t getInt(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingValues_[0].int64Value_ : encodingValues_[index].int64Value_;
     };
 
+    /** \brief Return the unsigned integer value of the encoding for the given index
+     *
+     * \warning
+     * If the encoding is not an unsigned integer type, this value may be garbage.
+     *
+     * \param index of the encoding to return the value of. May be Field::FIELD_INDEX if only a single encoding.
+     * \return the unsigned integer value of the encoding
+     */
     uint64_t getUInt(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingValues_[0].uint64Value_ : encodingValues_[index].uint64Value_;
     };
 
+    /** \brief Return the floating point value of the encoding for the given index
+     *
+     * \warning
+     * If the encoding is not a floating point type, this value may be garbage.
+     *
+     * \param index of the encoding to return the value of. May be Field::FIELD_INDEX if only a single encoding.
+     * \return the floating point value of the encoding
+     */
     double getDouble(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingValues_[0].doubleValue_ : encodingValues_[index].doubleValue_;
     };
 
-    // variable length and static arrays handled the same
+    /** \brief Retrieve the byte array value of the encoding for the given index
+     *
+     * \warning
+     * If the encoding is not a variable length data type or static array, this value may be garbage.
+     * This method does not bounds check.
+     *
+     * \param index of the encoding to return the value of. May be Field::FIELD_INDEX if only a single encoding.
+     * \param dst to copy the byte array into
+     * \param offset in primitive type units to start the copy from
+     * \param length in primitive type units to copy
+     */
     void getArray(const int index, char *dst, const int offset, const int length) const
     {
-        // TODO: bounds check, etc.
         ::memcpy(dst,
                  encodingValues_[index].arrayValue_ + (Ir::size(primitiveTypes_[index]) * offset),
                  Ir::size(primitiveTypes_[index]) * length);
     };
 
-    // TODO: set and enum - exception on incorrect type of field
+    /** \brief Retrieve the name of the valid value that matches the value of this enumeration
+     *
+     * This field may be empty to signify that no valid value matches.
+     *
+     * \warning
+     * This string will be empty if the Field is not an enumeration.
+     *
+     * \return the name of the valid value
+     */
     const std::string &validValue() const
     {
         return validValue_;
     };
 
+    /** \brief Retrieve the list of names of the set bits in the bit set
+     *
+     * This list may be empty if no bits matched.
+     *
+     * \warning
+     * This list will be empty if the Field is not a bit set.
+     *
+     * \return vector of strings matching set bits in the bit set.
+     */
     const std::vector<std::string> &choices() const
     {
         return choiceValues_;
@@ -272,7 +353,7 @@ private:
     std::string name_;
     std::string compositeName_;
     std::string validValue_;
-    uint16_t schemaId_;
+    int32_t schemaId_;
     uint16_t numEncodings_;
     uint64_t varDataLength_;
 
