@@ -24,6 +24,7 @@ using namespace uk_co_real_logic_sbe_examples;
 
 void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset)
 {
+    // encode the header
     hdr.reset(buffer, offset)
        .blockLength(car.blockLength())
        .templateId(car.templateId())
@@ -35,6 +36,7 @@ void decodeHdr(MessageHeader &hdr, char *buffer, int offset)
 {
     hdr.reset(buffer, offset);
 
+    // decode the header
     cout << "messageHeader.blockLength=" << hdr.blockLength() << endl;
     cout << "messageHeader.templateId=" << hdr.templateId() << endl;
     cout << "messageHeader.version=" << (sbe_uint32_t)hdr.version() << endl;

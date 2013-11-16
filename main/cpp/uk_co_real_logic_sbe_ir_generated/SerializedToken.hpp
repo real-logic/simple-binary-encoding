@@ -199,6 +199,18 @@ public:
         return 18;
     };
 
+    sbe_int64_t nameLength(void) const
+    {
+        return (*((sbe_uint8_t *)(buffer_ + position())));
+    };
+
+    const char *name(void)
+    {
+         const char *fieldPtr = (buffer_ + position() + 1);
+         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         return fieldPtr;
+    };
+
     int getName(char *dst, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
@@ -230,6 +242,18 @@ public:
     int constValId(void) const
     {
         return 19;
+    };
+
+    sbe_int64_t constValLength(void) const
+    {
+        return (*((sbe_uint8_t *)(buffer_ + position())));
+    };
+
+    const char *constVal(void)
+    {
+         const char *fieldPtr = (buffer_ + position() + 1);
+         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         return fieldPtr;
     };
 
     int getConstVal(char *dst, const int length)
@@ -265,6 +289,18 @@ public:
         return 20;
     };
 
+    sbe_int64_t minValLength(void) const
+    {
+        return (*((sbe_uint8_t *)(buffer_ + position())));
+    };
+
+    const char *minVal(void)
+    {
+         const char *fieldPtr = (buffer_ + position() + 1);
+         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         return fieldPtr;
+    };
+
     int getMinVal(char *dst, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
@@ -296,6 +332,18 @@ public:
     int maxValId(void) const
     {
         return 21;
+    };
+
+    sbe_int64_t maxValLength(void) const
+    {
+        return (*((sbe_uint8_t *)(buffer_ + position())));
+    };
+
+    const char *maxVal(void)
+    {
+         const char *fieldPtr = (buffer_ + position() + 1);
+         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         return fieldPtr;
     };
 
     int getMaxVal(char *dst, const int length)
@@ -331,6 +379,18 @@ public:
         return 22;
     };
 
+    sbe_int64_t nullValLength(void) const
+    {
+        return (*((sbe_uint8_t *)(buffer_ + position())));
+    };
+
+    const char *nullVal(void)
+    {
+         const char *fieldPtr = (buffer_ + position() + 1);
+         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         return fieldPtr;
+    };
+
     int getNullVal(char *dst, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
@@ -362,6 +422,18 @@ public:
     int characterEncodingId(void) const
     {
         return 23;
+    };
+
+    sbe_int64_t characterEncodingLength(void) const
+    {
+        return (*((sbe_uint8_t *)(buffer_ + position())));
+    };
+
+    const char *characterEncoding(void)
+    {
+         const char *fieldPtr = (buffer_ + position() + 1);
+         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         return fieldPtr;
     };
 
     int getCharacterEncoding(char *dst, const int length)

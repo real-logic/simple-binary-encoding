@@ -382,6 +382,29 @@ public class Cpp99Generator implements CodeGenerator
                 final String lengthCpp99Type = cpp99TypeName(lengthToken.encoding().primitiveType());
 
                 sb.append(String.format(
+                    "    sbe_int64_t %sLength(void) const\n" +
+                    "    {\n" +
+                    "        return %s(*((%s *)(buffer_ + position())));\n" +
+                    "    };\n\n",
+                    formatPropertyName(propertyName),
+                    formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
+                    lengthCpp99Type
+                ));
+
+                sb.append(String.format(
+                    "    const char *%s(void)\n" +
+                    "    {\n" +
+                    "         const char *fieldPtr = (buffer_ + position() + %d);\n" +
+                    "         position(position() + %d + *((%s *)(buffer_ + position())));\n" +
+                    "         return fieldPtr;\n" +
+                    "    };\n\n",
+                    formatPropertyName(propertyName),
+                    sizeOfLengthField,
+                    sizeOfLengthField,
+                    lengthCpp99Type
+                ));
+
+                sb.append(String.format(
                     "    int get%s(char *dst, const int length)\n" +
                     "    {\n" +
                     "        sbe_uint64_t sizeOfLengthField = %d;\n" +
@@ -733,6 +756,15 @@ public class Cpp99Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
+            indent + "    const char *%s(void) const\n" +
+            indent + "    {\n" +
+            indent + "        return (buffer_ + offset_ + %d);\n" +
+            indent + "    };\n\n",
+            propertyName,
+            offset
+        ));
+
+        sb.append(String.format(
             indent + "    %s %s(const int index) const\n" +
             indent + "    {\n" +
             indent + "        if (index < 0 || index >= %d)\n" +
@@ -840,6 +872,18 @@ public class Cpp99Generator implements CodeGenerator
             indent + "    };\n\n",
             propertyName,
             Integer.valueOf(constantValue.length)
+        ));
+
+        sb.append(String.format(
+            indent + "    const char *%s(void) const\n" +
+            indent + "    {\n" +
+            indent + "        static sbe_uint8_t %sValues[] = {%s};\n\n" +
+            indent + "        return (const char *)%sValues;\n" +
+            indent + "    };\n\n",
+            propertyName,
+            propertyName,
+            values,
+            propertyName
         ));
 
         sb.append(String.format(

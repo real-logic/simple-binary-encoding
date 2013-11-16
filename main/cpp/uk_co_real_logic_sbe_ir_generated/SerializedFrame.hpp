@@ -114,6 +114,18 @@ public:
         return 4;
     };
 
+    sbe_int64_t packageValLength(void) const
+    {
+        return (*((sbe_uint8_t *)(buffer_ + position())));
+    };
+
+    const char *packageVal(void)
+    {
+         const char *fieldPtr = (buffer_ + position() + 1);
+         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         return fieldPtr;
+    };
+
     int getPackageVal(char *dst, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
