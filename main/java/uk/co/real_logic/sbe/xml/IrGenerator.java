@@ -80,7 +80,7 @@ public class IrGenerator
 
     private void addMessageSignal(final Message msg, final Signal signal)
     {
-        Token token = new Token.Builder()
+        final Token token = new Token.Builder()
             .signal(signal)
             .name(msg.name())
             .size(msg.blockLength())
@@ -93,7 +93,7 @@ public class IrGenerator
 
     private void addFieldSignal(final Field field, final Signal signal)
     {
-        Token token = new Token.Builder()
+        final Token token = new Token.Builder()
             .signal(signal)
             .size(field.computedBlockLength())
             .name(field.name())
@@ -155,7 +155,7 @@ public class IrGenerator
 
     private void add(final CompositeType type, final int currOffset, final Field field)
     {
-        Token.Builder builder = new Token.Builder()
+        final Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_COMPOSITE)
             .name(type.name())
             .offset(currOffset)
@@ -180,8 +180,8 @@ public class IrGenerator
 
     private void add(final EnumType type, final int offset, final Field field)
     {
-        PrimitiveType encodingType = type.encodingType();
-        Encoding.Builder encodingBuilder = new Encoding.Builder()
+        final PrimitiveType encodingType = type.encodingType();
+        final Encoding.Builder encodingBuilder = new Encoding.Builder()
             .primitiveType(encodingType)
             .byteOrder(byteOrder);
 
@@ -190,7 +190,7 @@ public class IrGenerator
             encodingBuilder.nullVal(encodingType.nullVal());
         }
 
-        Token.Builder builder = new Token.Builder()
+        final Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_ENUM)
             .name(type.name())
             .size(encodingType.size())
@@ -216,7 +216,7 @@ public class IrGenerator
 
     private void add(final EnumType.ValidValue value, final PrimitiveType encodingType, final Field field)
     {
-        Token.Builder builder = new Token.Builder()
+        final Token.Builder builder = new Token.Builder()
             .signal(Signal.VALID_VALUE)
             .name(value.name())
             .encoding(new Encoding.Builder()
@@ -235,9 +235,9 @@ public class IrGenerator
 
     private void add(final SetType type, final int offset, final Field field)
     {
-        PrimitiveType encodingType = type.encodingType();
+        final PrimitiveType encodingType = type.encodingType();
 
-        Token.Builder builder = new Token.Builder()
+        final Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_SET)
             .name(type.name())
             .size(encodingType.size())
@@ -265,7 +265,7 @@ public class IrGenerator
 
     private void add(final SetType.Choice value, final PrimitiveType encodingType, final Field field)
     {
-        Token.Builder builder = new Token.Builder()
+        final Token.Builder builder = new Token.Builder()
             .signal(Signal.CHOICE)
             .name(value.name())
             .encoding(new Encoding.Builder()
@@ -284,12 +284,12 @@ public class IrGenerator
 
     private void add(final EncodedDataType type, final int offset, final Field field)
     {
-        Encoding.Builder encodingBuilder = new Encoding.Builder()
+        final Encoding.Builder encodingBuilder = new Encoding.Builder()
             .primitiveType(type.primitiveType())
             .byteOrder(byteOrder)
             .characterEncoding(type.characterEncoding());
 
-        Token.Builder tokenBuilder = new Token.Builder()
+        final Token.Builder tokenBuilder = new Token.Builder()
             .signal(Signal.ENCODING)
             .name(type.name())
             .size(type.size())
@@ -318,8 +318,8 @@ public class IrGenerator
                 break;
         }
 
-        Token token = tokenBuilder.encoding(encodingBuilder.build())
-                                  .build();
+        final Token token = tokenBuilder.encoding(encodingBuilder.build())
+                                        .build();
 
         tokenList.add(token);
     }
