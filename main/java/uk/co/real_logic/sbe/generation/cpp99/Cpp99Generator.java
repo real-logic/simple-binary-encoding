@@ -102,13 +102,13 @@ public class Cpp99Generator implements CodeGenerator
         for (final List<Token> tokens : ir.messages())
         {
             final Token msgToken = tokens.get(0);
-            final String className = formatClassName(tokens.get(0).name());
+            final String className = formatClassName(msgToken.name());
 
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), className, typesToInclude));
                 out.append(generateClassDeclaration(className, "MessageFlyweight"));
-                out.append(generateMessageFlyweightCode(tokens.get(0).size(), className, msgToken.version(), msgToken.schemaId()));
+                out.append(generateMessageFlyweightCode(msgToken.size(), className, msgToken.version(), msgToken.schemaId()));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -597,7 +597,7 @@ public class Cpp99Generator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-            "/* Generated class message */\n"
+            "/* Generated SBE (Simple Binary Encoding) message codec */\n"
         ));
 
         sb.append(String.format(
@@ -1023,6 +1023,16 @@ public class Cpp99Generator implements CodeGenerator
             {
                 final Token encodingToken = tokens.get(i + 1);
                 final String propertyName = signalToken.name();
+
+                sb.append(String.format(
+                    "\n" +
+                    indent + "    int %sSinceVersion(void) const\n" +
+                    indent + "    {\n" +
+                    indent + "         return %d;\n" +
+                    indent + "    };\n\n",
+                    propertyName,
+                    Long.valueOf(signalToken.version())
+                ));
 
                 sb.append(String.format(
                     "\n" +
