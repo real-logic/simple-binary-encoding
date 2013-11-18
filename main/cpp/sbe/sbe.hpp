@@ -75,6 +75,7 @@ public:
     virtual char *buffer(void) = 0;
     virtual int size(void) const = 0;
     virtual int templateId(void) const = 0;
+    virtual int templateVersion(void) const = 0;
 };
 
 /// Interface for GroupFlyweight

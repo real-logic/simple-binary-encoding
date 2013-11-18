@@ -101,13 +101,14 @@ public class Cpp99Generator implements CodeGenerator
 
         for (final List<Token> tokens : ir.messages())
         {
+            final Token msgToken = tokens.get(0);
             final String className = formatClassName(tokens.get(0).name());
 
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), className, typesToInclude));
                 out.append(generateClassDeclaration(className, "MessageFlyweight"));
-                out.append(generateMessageFlyweightCode(tokens.get(0).size(), className, tokens.get(0).schemaId()));
+                out.append(generateMessageFlyweightCode(tokens.get(0).size(), className, msgToken.version(), msgToken.schemaId()));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -943,6 +944,7 @@ public class Cpp99Generator implements CodeGenerator
 
     private CharSequence generateMessageFlyweightCode(final int blockLength,
                                                       final String className,
+                                                      final int version,
                                                       final long schemaId)
     {
         final StringBuilder sb = new StringBuilder();
@@ -987,6 +989,10 @@ public class Cpp99Generator implements CodeGenerator
             "    {\n" +
             "        return %d;\n" +
             "    };\n\n" +
+            "    int templateVersion(void) const\n" +
+            "    {\n" +
+            "        return %d;\n" +
+            "    };\n\n" +
             "    char *buffer(void)\n" +
             "    {\n" +
             "        return buffer_;\n" +
@@ -997,7 +1003,8 @@ public class Cpp99Generator implements CodeGenerator
             "    };\n",
             Integer.valueOf(blockLength),
             className,
-            Long.valueOf(schemaId)
+            Long.valueOf(schemaId),
+            Long.valueOf(version)
         ));
 
         return sb;
