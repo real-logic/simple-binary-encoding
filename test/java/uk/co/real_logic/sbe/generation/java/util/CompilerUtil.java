@@ -31,6 +31,11 @@ public class CompilerUtil
         throws Exception
     {
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        if (null == compiler)
+        {
+            throw new IllegalStateException("JDK required to run tests. JRE is not sufficient.");
+        }
+
         final JavaFileManager fileManager = new ClassFileManager<>(compiler.getStandardFileManager(null, null, null));
         final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
@@ -59,6 +64,11 @@ public class CompilerUtil
         throws Exception
     {
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        if (null == compiler)
+        {
+            throw new IllegalStateException("JDK required to run tests. JRE is not sufficient.");
+        }
+
         final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
@@ -108,7 +118,7 @@ public class CompilerUtil
                 className = fqClassName.substring(indexOfLastDot + 1, fqClassName.length());
 
                 path = Paths.get(TEMP_DIR_NAME + File.separatorChar +
-                                 fqClassName.substring(0, indexOfLastDot).replace('.', File.separatorChar));
+                                     fqClassName.substring(0, indexOfLastDot).replace('.', File.separatorChar));
                 Files.createDirectories(path);
             }
 
