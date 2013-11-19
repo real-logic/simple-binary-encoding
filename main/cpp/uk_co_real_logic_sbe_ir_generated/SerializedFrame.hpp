@@ -1,4 +1,4 @@
-/* Generated class message */
+/* Generated SBE (Simple Binary Encoding) message codec */
 #ifndef _SERIALIZEDFRAME_HPP_
 #define _SERIALIZEDFRAME_HPP_
 
@@ -60,6 +60,11 @@ public:
         return 1;
     };
 
+    int templateVersion(void) const
+    {
+        return 0;
+    };
+
     char *buffer(void)
     {
         return buffer_;
@@ -69,6 +74,12 @@ public:
     {
         return this;
     };
+
+    int sbeIrVersionSinceVersion(void) const
+    {
+         return 0;
+    };
+
 
     int sbeIrVersionId(void) const
     {
@@ -86,6 +97,12 @@ public:
         *((sbe_int32_t *)(buffer_ + offset_ + 0)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;
     };
+
+    int schemaVersionSinceVersion(void) const
+    {
+         return 0;
+    };
+
 
     int schemaVersionId(void) const
     {

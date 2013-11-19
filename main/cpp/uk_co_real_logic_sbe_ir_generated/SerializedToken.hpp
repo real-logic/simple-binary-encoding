@@ -1,4 +1,4 @@
-/* Generated class message */
+/* Generated SBE (Simple Binary Encoding) message codec */
 #ifndef _SERIALIZEDTOKEN_HPP_
 #define _SERIALIZEDTOKEN_HPP_
 
@@ -60,6 +60,11 @@ public:
         return 2;
     };
 
+    int templateVersion(void) const
+    {
+        return 0;
+    };
+
     char *buffer(void)
     {
         return buffer_;
@@ -69,6 +74,12 @@ public:
     {
         return this;
     };
+
+    int tokenOffsetSinceVersion(void) const
+    {
+         return 0;
+    };
+
 
     int tokenOffsetId(void) const
     {
@@ -87,6 +98,12 @@ public:
         return *this;
     };
 
+    int tokenSizeSinceVersion(void) const
+    {
+         return 0;
+    };
+
+
     int tokenSizeId(void) const
     {
         return 12;
@@ -103,6 +120,12 @@ public:
         *((sbe_int32_t *)(buffer_ + offset_ + 4)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;
     };
+
+    int schemaIDSinceVersion(void) const
+    {
+         return 0;
+    };
+
 
     int schemaIDId(void) const
     {
@@ -121,6 +144,12 @@ public:
         return *this;
     };
 
+    int tokenVersionSinceVersion(void) const
+    {
+         return 0;
+    };
+
+
     int tokenVersionId(void) const
     {
         return 17;
@@ -137,6 +166,12 @@ public:
         *((sbe_int32_t *)(buffer_ + offset_ + 12)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;
     };
+
+    int signalSinceVersion(void) const
+    {
+         return 0;
+    };
+
 
     int signalId(void) const
     {
@@ -155,6 +190,12 @@ public:
         return *this;
     };
 
+    int primitiveTypeSinceVersion(void) const
+    {
+         return 0;
+    };
+
+
     int primitiveTypeId(void) const
     {
         return 15;
@@ -171,6 +212,12 @@ public:
         *((sbe_uint8_t *)(buffer_ + offset_ + 17)) = (value);
         return *this;
     };
+
+    int byteOrderSinceVersion(void) const
+    {
+         return 0;
+    };
+
 
     int byteOrderId(void) const
     {
