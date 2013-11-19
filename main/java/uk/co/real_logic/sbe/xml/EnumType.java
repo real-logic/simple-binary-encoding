@@ -55,13 +55,47 @@ public class EnumType extends Type
     {
         super(node);
 
-        encodingType = PrimitiveType.get(getAttributeValue(node, "encodingType"));
-        if (encodingType != PrimitiveType.CHAR && encodingType != PrimitiveType.UINT8)
+        final XPath xPath = XPathFactory.newInstance().newXPath();
+        final String encodingTypeStr = getAttributeValue(node, "encodingType");
+        String nullValueStr = getAttributeValueOrNull(node, "nullVal");
+
+        switch (encodingTypeStr)
         {
-            throw new IllegalArgumentException("illegal encodingType " + encodingType);
+            case "char":
+            case "uint8":
+                encodingType = PrimitiveType.get(encodingTypeStr);
+                break;
+            default:
+                // might not have ran into this type yet, so look for the xpath
+                final Node encodingTypeNode = (Node)xPath.compile(
+                        String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
+                        .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
+
+                if (encodingTypeNode == null)
+                {
+                    encodingType = null;
+                }
+                else if (Integer.parseInt(getAttributeValue(encodingTypeNode, "length", "1")) != 1)
+                {
+                    encodingType = null;
+                }
+                else
+                {
+                    encodingType = PrimitiveType.get(getAttributeValue(encodingTypeNode, "primitiveType"));
+
+                    if (nullValueStr == null)
+                    {
+                        nullValueStr = getAttributeValueOrNull(encodingTypeNode, "nullVal");
+                    }
+                }
+                break;
         }
 
-        String nullValueStr = getAttributeValueOrNull(node, "nullVal");
+        if (encodingType == null)
+        {
+            throw new IllegalArgumentException("illegal encodingType " + encodingTypeStr);
+        }
+
         if (nullValueStr != null)
         {
             if (presence() != Presence.OPTIONAL)
@@ -79,7 +113,6 @@ public class EnumType extends Type
             nullValue = null;
         }
 
-        XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList list = (NodeList)xPath.compile("validValue").evaluate(node, XPathConstants.NODESET);
 
         for (int i = 0, size = list.getLength(); i < size; i++)

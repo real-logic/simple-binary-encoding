@@ -45,12 +45,12 @@ public class XmlSchemaParser
     /** Key for storing {@link ErrorHandler} as user data in XML document */
     public static final String ERROR_HANDLER_KEY = "SbeErrorHandler";
 
-    private static final String TYPE_XPATH_EXPR = "/messageSchema/types/type";
-    private static final String COMPOSITE_XPATH_EXPR = "/messageSchema/types/composite";
-    private static final String ENUM_XPATH_EXPR = "/messageSchema/types/enum";
-    private static final String SET_XPATH_EXPR = "/messageSchema/types/set";
-    private static final String MESSAGE_XPATH_EXPR = "/messageSchema/message";
-    private static final String MESSAGE_SCHEMA_XPATH_EXPR = "/messageSchema";
+    public static final String TYPE_XPATH_EXPR = "/messageSchema/types/type";
+    public static final String COMPOSITE_XPATH_EXPR = "/messageSchema/types/composite";
+    public static final String ENUM_XPATH_EXPR = "/messageSchema/types/enum";
+    public static final String SET_XPATH_EXPR = "/messageSchema/types/set";
+    public static final String MESSAGE_XPATH_EXPR = "/messageSchema/message";
+    public static final String MESSAGE_SCHEMA_XPATH_EXPR = "/messageSchema";
 
     /**
      * Take an {@link InputStream} and parse it generating map of template ID to Message objects, types, and schema
