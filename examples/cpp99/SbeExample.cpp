@@ -50,7 +50,7 @@ const char *MODEL = "Civic VTi";
 
 void encodeCar(Car &car, char *buffer, int offset)
 {
-    car.reset(buffer, offset)
+    car.resetForEncode(buffer, offset)
        .serialNumber(1234)
        .modelYear(2013)
        .available(BooleanType::TRUE)
@@ -155,9 +155,9 @@ const char *format(bool value)
     }
 }
 
-void decodeCar(Car &car, char *buffer, int offset)
+void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int actingVersion)
 {
-    car.reset(buffer, offset);
+    car.resetForDecode(buffer, offset, actingBlockLength, actingVersion);
     std::string sb;
 
     sb.append("\ncar.serialNumberId=").append(format(car.serialNumberId()));
@@ -268,6 +268,6 @@ int main(int argc, const char* argv[])
     cout << "Encoding size is " << hdr.size() << " + " << car.size() << endl;
 
     decodeHdr(hdr, buffer, 0);
-    decodeCar(car, buffer, hdr.size());
+    decodeCar(car, buffer, hdr.size(), hdr.blockLength(), hdr.version());
     return 0;
 }

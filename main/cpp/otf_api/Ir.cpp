@@ -54,7 +54,8 @@ void Ir::readTokenAtCurrentPosition()
 
     //printf("read buffer_ %p offset %d\n", buffer_, cursorOffset_);
 
-    impl_->serializedToken.reset((char *)buffer_, cursorOffset_);
+    impl_->serializedToken.resetForDecode((char *)buffer_, cursorOffset_,
+        impl_->serializedToken.blockLength(), impl_->serializedToken.templateVersion());
 
     // read all the var data and save in Impl then save size
 
@@ -239,7 +240,7 @@ void Ir::addToken(uint32_t offset,
 
     //printf("buffer_ %p offset %d\n", buffer_, cursorOffset_);
 
-    serializedToken.reset((char *)buffer_, cursorOffset_);
+    serializedToken.resetForEncode((char *)buffer_, cursorOffset_);
 
     serializedToken.tokenOffset(offset)
                    .tokenSize(size)

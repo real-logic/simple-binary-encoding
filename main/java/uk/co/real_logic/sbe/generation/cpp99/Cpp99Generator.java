@@ -953,7 +953,9 @@ public class Cpp99Generator implements CodeGenerator
             "private:\n" +
             "    char *buffer_;\n" +
             "    int offset_;\n" +
-            "    int position_;\n\n"
+            "    int position_;\n" +
+            "    int actingBlockLength_;\n" +
+            "    int actingVersion_;\n\n"
         ));
 
         sb.append(String.format(
@@ -966,11 +968,23 @@ public class Cpp99Generator implements CodeGenerator
             "    {\n" +
             "        return offset_;\n" +
             "    };\n\n" +
-            "    %s &reset(char *buffer, const int offset)\n" +
+            "    %s &resetForEncode(char *buffer, const int offset)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
-            "        position(offset + blockLength());\n" +
+            "        actingBlockLength_ = blockLength();\n" +
+            "        actingVersion_ = templateVersion();\n" +
+            "        position(offset + actingBlockLength_);\n" +
+            "        return *this;\n" +
+            "    };\n\n" +
+            "    %s &resetForDecode(char *buffer, const int offset,\n" +
+            "                       const int actingBlockLength, const int actingVersion)\n" +
+            "    {\n" +
+            "        buffer_ = buffer;\n" +
+            "        offset_ = offset;\n" +
+            "        actingBlockLength_ = actingBlockLength;\n" +
+            "        actingVersion_ = actingVersion;\n" +
+            "        position(offset + actingBlockLength_);\n" +
             "        return *this;\n" +
             "    };\n\n" +
             "    sbe_uint64_t position(void) const\n" +
@@ -1002,6 +1016,7 @@ public class Cpp99Generator implements CodeGenerator
             "        return this;\n" +
             "    };\n",
             Integer.valueOf(blockLength),
+            className,
             className,
             Long.valueOf(schemaId),
             Long.valueOf(version)

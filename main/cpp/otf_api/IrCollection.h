@@ -143,7 +143,7 @@ protected:
         int offset = 0, tmpLen = 0;
         char tmp[256];
 
-        frame.reset(buffer_, offset);
+        frame.resetForDecode(buffer_, offset, frame.blockLength(), frame.templateVersion());
         tmpLen = frame.getPackageVal(tmp, sizeof(tmp));
 
         ::std::cout << "Reading IR package=\"" << std::string(tmp, tmpLen) << "\"" << ::std::endl;
@@ -172,7 +172,7 @@ protected:
             char tmp[256], name[256];
             int nameLen = 0;
 
-            token.reset(buffer_, offset + size);
+            token.resetForDecode(buffer_, offset + size, token.blockLength(), token.templateVersion());
 
             nameLen = token.getName(name, sizeof(name));
             token.getConstVal(tmp, sizeof(tmp));
@@ -211,7 +211,7 @@ protected:
             char tmp[256], name[256];
             int nameLen = 0;
 
-            token.reset(buffer_, offset + size);
+            token.resetForDecode(buffer_, offset + size, token.blockLength(), token.templateVersion());
 
             nameLen = token.getName(name, sizeof(name));
             token.getConstVal(tmp, sizeof(tmp));

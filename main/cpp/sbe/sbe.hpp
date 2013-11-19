@@ -67,7 +67,8 @@ public:
 class MessageFlyweight
 {
 public:
-    virtual MessageFlyweight &reset(char *buffer, const int offset) = 0;
+    virtual MessageFlyweight &resetForEncode(char *buffer, const int offset) = 0;
+    virtual MessageFlyweight &resetForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion) = 0;
     virtual uint64_t blockLength(void) const = 0;
     virtual uint64_t offset(void) const = 0;
     virtual uint64_t position(void) const = 0;

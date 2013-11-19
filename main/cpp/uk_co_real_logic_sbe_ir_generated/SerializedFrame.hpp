@@ -19,6 +19,8 @@ private:
     char *buffer_;
     int offset_;
     int position_;
+    int actingBlockLength_;
+    int actingVersion_;
 
 public:
 
@@ -32,11 +34,24 @@ public:
         return offset_;
     };
 
-    SerializedFrame &reset(char *buffer, const int offset)
+    SerializedFrame &resetForEncode(char *buffer, const int offset)
     {
         buffer_ = buffer;
         offset_ = offset;
-        position(offset + blockLength());
+        actingBlockLength_ = blockLength();
+        actingVersion_ = templateVersion();
+        position(offset + actingBlockLength_);
+        return *this;
+    };
+
+    SerializedFrame &resetForDecode(char *buffer, const int offset,
+                       const int actingBlockLength, const int actingVersion)
+    {
+        buffer_ = buffer;
+        offset_ = offset;
+        actingBlockLength_ = actingBlockLength;
+        actingVersion_ = actingVersion;
+        position(offset + actingBlockLength_);
         return *this;
     };
 
