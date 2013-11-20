@@ -59,7 +59,7 @@ namespace sbe {
 class FixedFlyweight
 {
 public:
-    virtual FixedFlyweight &reset(char *buffer, const int offset) = 0;
+    virtual FixedFlyweight &reset(char *buffer, const int offset, const int actingVersion) = 0;
     virtual int size(void) const = 0;
 };
 
@@ -77,13 +77,14 @@ public:
     virtual int size(void) const = 0;
     virtual int templateId(void) const = 0;
     virtual int templateVersion(void) const = 0;
+    virtual int actingVersion(void) const = 0;
 };
 
 /// Interface for GroupFlyweight
 class GroupFlyweight
 {
 public:
-    virtual void resetForDecode(MessageFlyweight *message) = 0;
+    virtual void resetForDecode(MessageFlyweight *message, const int actingVersion) = 0;
     virtual void resetForEncode(MessageFlyweight *message, const int count) = 0;
     virtual int count(void) const = 0;
     virtual bool hasNext(void) const = 0;

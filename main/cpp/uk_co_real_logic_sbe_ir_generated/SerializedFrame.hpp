@@ -90,6 +90,11 @@ public:
         return this;
     };
 
+    int actingVersion(void) const
+    {
+        return actingVersion_;
+    };
+
     int sbeIrVersionSinceVersion(void) const
     {
          return 0;

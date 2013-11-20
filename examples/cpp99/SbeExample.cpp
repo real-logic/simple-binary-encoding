@@ -22,10 +22,16 @@
 using namespace std;
 using namespace uk_co_real_logic_sbe_examples;
 
+char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
+char MANUFACTURER_CODE[] = {'1', '2', '3'};
+const char *MAKE = "Honda";
+const char *MODEL = "Civic VTi";
+const int messageHeaderVersion = 0;
+
 void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset)
 {
     // encode the header
-    hdr.reset(buffer, offset)
+    hdr.reset(buffer, offset, messageHeaderVersion)
        .blockLength(car.blockLength())
        .templateId(car.templateId())
        .version(car.templateVersion())
@@ -34,7 +40,7 @@ void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset)
 
 void decodeHdr(MessageHeader &hdr, char *buffer, int offset)
 {
-    hdr.reset(buffer, offset);
+    hdr.reset(buffer, offset, messageHeaderVersion);
 
     // decode the header
     cout << "messageHeader.blockLength=" << hdr.blockLength() << endl;
@@ -42,11 +48,6 @@ void decodeHdr(MessageHeader &hdr, char *buffer, int offset)
     cout << "messageHeader.version=" << (sbe_uint32_t)hdr.version() << endl;
     cout << "messageHeader.reserved=" << (sbe_uint32_t)hdr.reserved() << endl;
 }
-
-char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
-char MANUFACTURER_CODE[] = {'1', '2', '3'};
-const char *MAKE = "Honda";
-const char *MODEL = "Civic VTi";
 
 void encodeCar(Car &car, char *buffer, int offset)
 {
@@ -140,6 +141,7 @@ const char *format(Model::Value value)
     case Model::A: return "A";
     case Model::B: return "B";
     case Model::C: return "C";
+    case Model::NULL_VALUE: return "NULL";
     }
 }
 

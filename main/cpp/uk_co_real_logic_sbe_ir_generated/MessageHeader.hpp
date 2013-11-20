@@ -13,13 +13,14 @@ class MessageHeader : public FixedFlyweight
 private:
     char *buffer_;
     int offset_;
+    int actingVersion_;
 
 public:
-    MessageHeader &reset(char *buffer, const int offset)
+    MessageHeader &reset(char *buffer, const int offset, const int actingVersion)
     {
         buffer_ = buffer;
         offset_ = offset;
-        return *this;
+        actingVersion_ = actingVersion;        return *this;
     };
 
     int size(void) const
