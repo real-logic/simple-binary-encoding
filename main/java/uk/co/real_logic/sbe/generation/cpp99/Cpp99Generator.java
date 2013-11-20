@@ -521,6 +521,22 @@ public class Cpp99Generator implements CodeGenerator
         }
     }
 
+    private CharSequence generateChoiceNotPresentCondition(final int sinceVersion, final String indent)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            indent + "        if (actingVersion_ < %d)\n" +
+            indent + "        {\n" +
+            indent + "            return false;\n" +
+            indent + "        }\n\n",
+            Integer.valueOf(sinceVersion)
+        );
+    }
+
     private CharSequence generateChoices(final String bitsetClassName, final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
@@ -537,9 +553,11 @@ public class Cpp99Generator implements CodeGenerator
                     "\n" +
                     "    bool %s(void) const\n" +
                     "    {\n" +
+                            "%s" +
                     "        return (%s(*((%s *)(buffer_ + offset_))) & ((uint64_t)0x1 << %s)) ? true : false;\n" +
                     "    };\n\n",
                     choiceName,
+                    generateChoiceNotPresentCondition(token.version(), BASE_INDENT),
                     formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
                     typeName,
                     choiceBitPosition
@@ -637,7 +655,7 @@ public class Cpp99Generator implements CodeGenerator
         }
 
         return String.format(
-            indent + "        if (actingVersion < %d)\n" +
+            indent + "        if (actingVersion_ < %d)\n" +
             indent + "        {\n" +
             indent + "            return %s;\n" +
             indent + "        }\n\n",
@@ -654,7 +672,7 @@ public class Cpp99Generator implements CodeGenerator
         }
 
         return String.format(
-            indent + "        if (actingVersion < %d)\n" +
+            indent + "        if (actingVersion_ < %d)\n" +
             indent + "        {\n" +
             indent + "            return 0;\n" +
             indent + "        }\n\n",
@@ -670,7 +688,7 @@ public class Cpp99Generator implements CodeGenerator
         }
 
         return String.format(
-            indent + "        if (actingVersion < %d)\n" +
+            indent + "        if (actingVersion_ < %d)\n" +
             indent + "        {\n" +
             indent + "            return NULL;\n" +
             indent + "        }\n\n",
@@ -798,10 +816,12 @@ public class Cpp99Generator implements CodeGenerator
             "\n" +
             indent + "    %s %s(void) const\n" +
             indent + "    {\n" +
+                              "%s" +
             indent + "        return %s(*((%s *)(buffer_ + offset_ + %d)));\n" +
             indent + "    };\n\n",
             cpp99TypeName,
             propertyName,
+            generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
             formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
             cpp99TypeName,
             offset
@@ -838,18 +858,22 @@ public class Cpp99Generator implements CodeGenerator
             "\n" +
             indent + "    int %sLength(void) const\n" +
             indent + "    {\n" +
+                              "%s" +
             indent + "        return %d;\n" +
             indent + "    };\n\n",
             propertyName,
+            generateArrayFieldNotPresentCondition(token.version(), indent),
             Integer.valueOf(token.arrayLength())
         ));
 
         sb.append(String.format(
             indent + "    const char *%s(void) const\n" +
             indent + "    {\n" +
+                              "%s" +
             indent + "        return (buffer_ + offset_ + %d);\n" +
             indent + "    };\n\n",
             propertyName,
+            generateTypeFieldNotPresentCondition(token.version(), indent),
             offset
         ));
 
@@ -860,12 +884,14 @@ public class Cpp99Generator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw \"index out of range for %s\";\n" +
             indent + "        }\n\n" +
+                             "%s" +
             indent + "        return %s(*((%s *)(buffer_ + offset_ + %d + (index * %d))));\n" +
             indent + "    };\n\n",
             cpp99TypeName,
             propertyName,
             Integer.valueOf(token.arrayLength()),
             propertyName,
+            generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
             formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
             cpp99TypeName,
             offset,
@@ -898,12 +924,14 @@ public class Cpp99Generator implements CodeGenerator
             indent + "        {\n" +
             indent + "             throw \"length too large for get%s\";\n" +
             indent + "        }\n\n" +
+                             "%s" +
             indent + "        ::memcpy(dst, buffer_ + offset_ + %d, length);\n" +
             indent + "        return length;\n" +
             indent + "    };\n\n",
             toUpperFirstChar(propertyName),
             Integer.valueOf(token.arrayLength()),
             toUpperFirstChar(propertyName),
+            generateArrayFieldNotPresentCondition(token.version(), indent),
             offset
         ));
 
@@ -1182,6 +1210,23 @@ public class Cpp99Generator implements CodeGenerator
         return sb;
     }
 
+    private CharSequence generateEnumFieldNotPresentCondition(final int sinceVersion, final String enumName, final String indent)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            indent + "        if (actingVersion_ < %d)\n" +
+            indent + "        {\n" +
+            indent + "            return %s::NULL_VALUE;\n" +
+            indent + "        }\n\n",
+            Integer.valueOf(sinceVersion),
+            enumName
+        );
+    }
+
     private CharSequence generateEnumProperty(final String containingClassName,
                                               final String propertyName,
                                               final Token token,
@@ -1197,10 +1242,12 @@ public class Cpp99Generator implements CodeGenerator
             "\n" +
             indent + "    %s::Value %s(void) const\n" +
             indent + "    {\n" +
+                             "%s" +
             indent + "        return %s::get(%s(*((%s *)(buffer_ + offset_ + %d))));\n" +
             indent + "    };\n\n",
             enumName,
             propertyName,
+            generateEnumFieldNotPresentCondition(token.version(), enumName, indent),
             enumName,
             formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
             typeName,
