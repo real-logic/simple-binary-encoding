@@ -377,7 +377,13 @@ public class Cpp99Generator implements CodeGenerator
                     "    int %sSinceVersion(void) const\n" +
                     "    {\n" +
                     "         return %d;\n" +
+                    "    };\n\n" +
+                    "    bool %sInActingVersion(void)\n" +
+                    "    {\n" +
+                    "        return (actingVersion_ >= %s) ? true : false;\n" +
                     "    };\n\n",
+                    formatPropertyName(propertyName),
+                    Long.valueOf(token.version()),
                     formatPropertyName(propertyName),
                     Long.valueOf(token.version())
                 ));
@@ -389,15 +395,6 @@ public class Cpp99Generator implements CodeGenerator
                     "    };\n\n",
                     formatPropertyName(propertyName),
                     Long.valueOf(token.schemaId())
-                ));
-
-                sb.append(String.format(
-                    "    bool %sInActingVersion(void)\n" +
-                    "    {\n" +
-                    "        return (actingVersion_ >= %s) ? true : false;\n" +
-                    "    };\n\n",
-                    formatPropertyName(propertyName),
-                    Long.valueOf(token.version())
                 ));
 
                 final Token lengthToken = tokens.get(i + 2);
