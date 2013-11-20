@@ -287,6 +287,7 @@
             <includepath path="${dir.gen.cpp99}"/>
             <includepath path="${dir.examples.cpp99.include}"/>
             <compilerarg value="-std=c++98"/>
+            <compilerarg value="-Wall"/>
             <libset libs="stdc++"/>
             <fileset dir="${dir.main.cpp.build}" includes="*.o"/>
             <fileset dir="${dir.examples.cpp99.src}" includes="SbeOtfDecoder.cpp"/>
@@ -341,6 +342,7 @@
             <cc outtype="executable"
                 subsystem="console"
                 debug="true"
+                multithreaded="true"
                 outfile="${exec.test.cpp}">
                 <compilerarg value="-Wall"/>
                 <includepath path="${dir.gtest.include}"/>

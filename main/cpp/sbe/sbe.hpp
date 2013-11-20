@@ -16,6 +16,9 @@
 #ifndef _SBE_HPP_
 #define _SBE_HPP_
 
+#include <string.h>
+#include <stdint.h>
+
 /*
  * Types used by C++ codec. Might have to be platform specific at some stage.
  */

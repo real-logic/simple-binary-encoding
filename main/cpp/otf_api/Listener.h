@@ -17,6 +17,9 @@
 #ifndef _LISTENER_H_
 #define _LISTENER_H_
 
+#include <stdint.h>
+#include <string.h>
+
 #include <stack>
 
 #include "otf_api/OnNext.h"

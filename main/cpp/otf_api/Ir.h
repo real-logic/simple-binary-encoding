@@ -16,6 +16,9 @@
 #ifndef _IR_H_
 #define _IR_H_
 
+#include <stdint.h>
+#include <string.h>
+
 #include <string>
 
 namespace sbe {
