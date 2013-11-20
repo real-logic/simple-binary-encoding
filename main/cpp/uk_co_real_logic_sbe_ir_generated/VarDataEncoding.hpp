@@ -1,4 +1,4 @@
-/* Generated class message */
+/* Generated SBE (Simple Binary Encoding) message codec */
 #ifndef _VARDATAENCODING_HPP_
 #define _VARDATAENCODING_HPP_
 

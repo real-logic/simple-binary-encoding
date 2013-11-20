@@ -102,13 +102,14 @@ public class Cpp99Generator implements CodeGenerator
 
         for (final List<Token> tokens : ir.messages())
         {
-            final String className = formatClassName(tokens.get(0).name());
+            final Token msgToken = tokens.get(0);
+            final String className = formatClassName(msgToken.name());
 
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), className, typesToInclude));
                 out.append(generateClassDeclaration(className, "MessageFlyweight"));
-                out.append(generateMessageFlyweightCode(tokens.get(0).size(), className, tokens.get(0).schemaId(), tokens.get(0).version()));
+                out.append(generateMessageFlyweightCode(msgToken.size(), className, msgToken.schemaId(), msgToken.version()));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -684,7 +685,7 @@ public class Cpp99Generator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-            "/* Generated class message */\n"
+            "/* Generated SBE (Simple Binary Encoding) message codec */\n"
         ));
 
         sb.append(String.format(
@@ -1143,10 +1144,16 @@ public class Cpp99Generator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
+                    indent + "    int %sSinceVersion(void) const\n" +
+                    indent + "    {\n" +
+                    indent + "         return %d;\n" +
+                    indent + "    };\n\n" +
                     indent + "    bool %sInActingVersion(void)\n" +
                     indent + "    {\n" +
                     indent + "        return (actingVersion_ >= %s) ? true : false;\n" +
                     indent + "    };\n\n",
+                    propertyName,
+                    Long.valueOf(signalToken.version()),
                     propertyName,
                     Long.valueOf(signalToken.version())
                 ));

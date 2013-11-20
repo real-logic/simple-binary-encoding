@@ -1,4 +1,4 @@
-/* Generated class message */
+/* Generated SBE (Simple Binary Encoding) message codec */
 #ifndef _SERIALIZEDPRIMITIVETYPE_HPP_
 #define _SERIALIZEDPRIMITIVETYPE_HPP_
 

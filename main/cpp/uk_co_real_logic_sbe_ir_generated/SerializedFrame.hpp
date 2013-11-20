@@ -1,4 +1,4 @@
-/* Generated class message */
+/* Generated SBE (Simple Binary Encoding) message codec */
 #ifndef _SERIALIZEDFRAME_HPP_
 #define _SERIALIZEDFRAME_HPP_
 
@@ -100,6 +100,11 @@ public:
         return 1;
     };
 
+    int sbeIrVersionSinceVersion(void) const
+    {
+         return 0;
+    };
+
     bool sbeIrVersionInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
@@ -120,6 +125,11 @@ public:
     int schemaVersionId(void) const
     {
         return 2;
+    };
+
+    int schemaVersionSinceVersion(void) const
+    {
+         return 0;
     };
 
     bool schemaVersionInActingVersion(void)

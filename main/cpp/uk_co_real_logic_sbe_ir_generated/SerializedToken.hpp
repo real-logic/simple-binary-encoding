@@ -1,4 +1,4 @@
-/* Generated class message */
+/* Generated SBE (Simple Binary Encoding) message codec */
 #ifndef _SERIALIZEDTOKEN_HPP_
 #define _SERIALIZEDTOKEN_HPP_
 
@@ -100,6 +100,11 @@ public:
         return 11;
     };
 
+    int tokenOffsetSinceVersion(void) const
+    {
+         return 0;
+    };
+
     bool tokenOffsetInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
@@ -120,6 +125,11 @@ public:
     int tokenSizeId(void) const
     {
         return 12;
+    };
+
+    int tokenSizeSinceVersion(void) const
+    {
+         return 0;
     };
 
     bool tokenSizeInActingVersion(void)
@@ -144,6 +154,11 @@ public:
         return 13;
     };
 
+    int schemaIDSinceVersion(void) const
+    {
+         return 0;
+    };
+
     bool schemaIDInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
@@ -164,6 +179,11 @@ public:
     int tokenVersionId(void) const
     {
         return 17;
+    };
+
+    int tokenVersionSinceVersion(void) const
+    {
+         return 0;
     };
 
     bool tokenVersionInActingVersion(void)
@@ -188,6 +208,11 @@ public:
         return 14;
     };
 
+    int signalSinceVersion(void) const
+    {
+         return 0;
+    };
+
     bool signalInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
@@ -210,6 +235,11 @@ public:
         return 15;
     };
 
+    int primitiveTypeSinceVersion(void) const
+    {
+         return 0;
+    };
+
     bool primitiveTypeInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
@@ -230,6 +260,11 @@ public:
     int byteOrderId(void) const
     {
         return 16;
+    };
+
+    int byteOrderSinceVersion(void) const
+    {
+         return 0;
     };
 
     bool byteOrderInActingVersion(void)

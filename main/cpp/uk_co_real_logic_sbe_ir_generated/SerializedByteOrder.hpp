@@ -1,4 +1,4 @@
-/* Generated class message */
+/* Generated SBE (Simple Binary Encoding) message codec */
 #ifndef _SERIALIZEDBYTEORDER_HPP_
 #define _SERIALIZEDBYTEORDER_HPP_
 

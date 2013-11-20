@@ -1,4 +1,4 @@
-/* Generated class message */
+/* Generated SBE (Simple Binary Encoding) message codec */
 #ifndef _MESSAGEHEADER_HPP_
 #define _MESSAGEHEADER_HPP_
 
