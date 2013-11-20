@@ -47,7 +47,7 @@ public class JavaGenerator implements CodeGenerator
     public JavaGenerator(final IntermediateRepresentation ir, final OutputManager outputManager)
         throws IOException
     {
-        Verify.notNull(ir, "ir)");
+        Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
 
         this.ir = ir;
