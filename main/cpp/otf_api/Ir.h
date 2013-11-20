@@ -31,9 +31,9 @@ class Ir
 {
 public:
     /// Invalid message template ID
-    static const int32_t INVALID_ID = 0xFFFF;
+    static const int32_t INVALID_ID = -1;
     /// Value representing a variable length field (size)
-    static const uint32_t VARIABLE_SIZE = 0xFFFFFFFF;
+    static const uint32_t VARIABLE_SIZE = -1;
 
     /// Constants used for holding Token signals
     enum TokenSignal

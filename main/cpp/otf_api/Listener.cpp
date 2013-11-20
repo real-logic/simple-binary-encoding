@@ -115,7 +115,7 @@ inline void Listener::updateBufferOffsetFromIr(const Ir *ir)
     int newOffset = relativeOffsetAnchor_;
 
     // constants don't move the offset as they are only held in the IR and variable lengths can't be used either
-    if (ir->constLen() == 0 && ir->offset() != 0xFFFFFFFF)
+    if (ir->constLen() == 0 && ir->offset() != -1)
     {
         newOffset += ir->offset();
     }
@@ -272,8 +272,8 @@ int Listener::process(void)
                     calculatedOffset = &constOffset;  // use a dummy variable for offset as constant comes from IR
                 }
 
-                // if this is an array or variable size field (0xFFFFFFFF size), then handle it
-                if (ir->size() > Ir::size(ir->primitiveType()) || ir->constLen() > Ir::size(ir->primitiveType()))
+                // if this is an array or variable size field (-1 size), then handle it
+                if (ir->size() != Ir::size(ir->primitiveType()) || ir->constLen() > Ir::size(ir->primitiveType()))
                 {
                     *calculatedOffset += processEncoding(ir, valuePosition,
                                                          (ir->size() < ir->constLen()) ? ir->constLen() : ir->size());
@@ -546,8 +546,6 @@ void Listener::processBeginGroup(const Ir *ir)
 
 void Listener::processEndGroup(void)
 {
-    bool popped = false;
-
     //cout << "END_GROUP " << stack_.top().scopeName_ << endl;
     cachedGroup_.name(stack_.top().scopeName_)
                 .iteration(stack_.top().iteration_)
@@ -573,7 +571,6 @@ void Listener::processEndGroup(void)
     {
         // pop frame
         stack_.pop();
-        popped = true;
     }
 
     //cout << "IR position " << ir_->position() << endl;
