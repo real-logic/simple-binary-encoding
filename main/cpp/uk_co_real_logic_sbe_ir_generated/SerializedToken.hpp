@@ -1,4 +1,4 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated class message */
 #ifndef _SERIALIZEDTOKEN_HPP_
 #define _SERIALIZEDTOKEN_HPP_
 
@@ -95,15 +95,14 @@ public:
         return actingVersion_;
     };
 
-    int tokenOffsetSinceVersion(void) const
-    {
-         return 0;
-    };
-
-
     int tokenOffsetId(void) const
     {
         return 11;
+    };
+
+    bool tokenOffsetInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
 
@@ -118,15 +117,14 @@ public:
         return *this;
     };
 
-    int tokenSizeSinceVersion(void) const
-    {
-         return 0;
-    };
-
-
     int tokenSizeId(void) const
     {
         return 12;
+    };
+
+    bool tokenSizeInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
 
@@ -141,15 +139,14 @@ public:
         return *this;
     };
 
-    int schemaIDSinceVersion(void) const
-    {
-         return 0;
-    };
-
-
     int schemaIDId(void) const
     {
         return 13;
+    };
+
+    bool schemaIDInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
 
@@ -164,15 +161,14 @@ public:
         return *this;
     };
 
-    int tokenVersionSinceVersion(void) const
-    {
-         return 0;
-    };
-
-
     int tokenVersionId(void) const
     {
         return 17;
+    };
+
+    bool tokenVersionInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
 
@@ -187,15 +183,14 @@ public:
         return *this;
     };
 
-    int signalSinceVersion(void) const
-    {
-         return 0;
-    };
-
-
     int signalId(void) const
     {
         return 14;
+    };
+
+    bool signalInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
 
@@ -210,15 +205,14 @@ public:
         return *this;
     };
 
-    int primitiveTypeSinceVersion(void) const
-    {
-         return 0;
-    };
-
-
     int primitiveTypeId(void) const
     {
         return 15;
+    };
+
+    bool primitiveTypeInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
 
@@ -233,15 +227,14 @@ public:
         return *this;
     };
 
-    int byteOrderSinceVersion(void) const
-    {
-         return 0;
-    };
-
-
     int byteOrderId(void) const
     {
         return 16;
+    };
+
+    bool byteOrderInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
 
@@ -259,6 +252,16 @@ public:
     const char *nameCharacterEncoding()
     {
         return "UTF-8";
+    };
+
+    int nameSinceVersion(void) const
+    {
+         return 0;
+    };
+
+    bool nameInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
     int nameId(void) const
@@ -306,6 +309,16 @@ public:
         return "UTF-8";
     };
 
+    int constValSinceVersion(void) const
+    {
+         return 0;
+    };
+
+    bool constValInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
+    };
+
     int constValId(void) const
     {
         return 19;
@@ -349,6 +362,16 @@ public:
     const char *minValCharacterEncoding()
     {
         return "UTF-8";
+    };
+
+    int minValSinceVersion(void) const
+    {
+         return 0;
+    };
+
+    bool minValInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
     int minValId(void) const
@@ -396,6 +419,16 @@ public:
         return "UTF-8";
     };
 
+    int maxValSinceVersion(void) const
+    {
+         return 0;
+    };
+
+    bool maxValInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
+    };
+
     int maxValId(void) const
     {
         return 21;
@@ -441,6 +474,16 @@ public:
         return "UTF-8";
     };
 
+    int nullValSinceVersion(void) const
+    {
+         return 0;
+    };
+
+    bool nullValInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
+    };
+
     int nullValId(void) const
     {
         return 22;
@@ -484,6 +527,16 @@ public:
     const char *characterEncodingCharacterEncoding()
     {
         return "UTF-8";
+    };
+
+    int characterEncodingSinceVersion(void) const
+    {
+         return 0;
+    };
+
+    bool characterEncodingInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
     int characterEncodingId(void) const

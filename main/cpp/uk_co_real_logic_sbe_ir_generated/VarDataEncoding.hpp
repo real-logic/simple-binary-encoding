@@ -1,4 +1,4 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated class message */
 #ifndef _VARDATAENCODING_HPP_
 #define _VARDATAENCODING_HPP_
 
@@ -20,7 +20,8 @@ public:
     {
         buffer_ = buffer;
         offset_ = offset;
-        actingVersion_ = actingVersion;        return *this;
+        actingVersion_ = actingVersion;
+        return *this;
     };
 
     int size(void) const

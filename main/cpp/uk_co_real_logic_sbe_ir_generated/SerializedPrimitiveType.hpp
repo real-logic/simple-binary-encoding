@@ -1,4 +1,4 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated class message */
 #ifndef _SERIALIZEDPRIMITIVETYPE_HPP_
 #define _SERIALIZEDPRIMITIVETYPE_HPP_
 
@@ -25,7 +25,8 @@ public:
         UINT64 = (sbe_uint8_t)9,
         NONE = (sbe_uint8_t)0,
         UINT16 = (sbe_uint8_t)7,
-        INT16 = (sbe_uint8_t)3
+        INT16 = (sbe_uint8_t)3,
+        NULL_VALUE = (sbe_uint8_t)255
     };
 
     static SerializedPrimitiveType::Value get(const sbe_uint8_t value)
@@ -44,6 +45,7 @@ public:
             case 0: return NONE;
             case 7: return UINT16;
             case 3: return INT16;
+            case 255: return NULL_VALUE;
         }
 
         throw "unknown value for enum SerializedPrimitiveType";

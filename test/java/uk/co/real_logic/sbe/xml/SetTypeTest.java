@@ -24,7 +24,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.TestUtil;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,14 +34,11 @@ import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class SetTypeTest
 {
@@ -172,23 +168,6 @@ public class SetTypeTest
             "</types>";
 
         parseTestXmlWithMap("/types/set", testXmlString);
-    }
-
-    @Test
-    public void shouldHandleEncodingTypesWithNamedTypes()
-        throws Exception
-    {
-        MessageSchema schema = parse(TestUtil.getLocalResource("EncodingTypesFileTest.xml"));
-        List<Field> fields = schema.getMessage(1).fields();
-        assertNotNull(fields);
-        SetType type = (SetType)fields.get(3).type();
-        assertThat(type.encodingType(), is(PrimitiveType.UINT8));
-        type = (SetType)fields.get(4).type();
-        assertThat(type.encodingType(), is(PrimitiveType.UINT16));
-        type = (SetType)fields.get(5).type();
-        assertThat(type.encodingType(), is(PrimitiveType.UINT32));
-        type = (SetType)fields.get(6).type();
-        assertThat(type.encodingType(), is(PrimitiveType.UINT64));
     }
 
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)

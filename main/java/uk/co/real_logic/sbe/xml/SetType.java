@@ -50,43 +50,14 @@ public class SetType extends Type
     {
         super(node);
 
+        encodingType = PrimitiveType.get(getAttributeValue(node, "encodingType"));
+        if (encodingType != PrimitiveType.UINT8 && encodingType != PrimitiveType.UINT16 &&
+            encodingType != PrimitiveType.UINT32 && encodingType != PrimitiveType.UINT64)
+        {
+            throw new IllegalArgumentException("Illegal encodingType " + encodingType);
+        }
+
         final XPath xPath = XPathFactory.newInstance().newXPath();
-        final String encodingTypeStr = getAttributeValue(node, "encodingType");
-
-        switch (encodingTypeStr)
-        {
-            case "uint8":
-            case "uint16":
-            case "uint32":
-            case "uint64":
-                encodingType = PrimitiveType.get(encodingTypeStr);
-                break;
-            default:
-                // might not have ran into this type yet, so look for the xpath
-                final Node encodingTypeNode = (Node)xPath.compile(
-                        String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
-                        .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
-
-                if (encodingTypeNode == null)
-                {
-                    encodingType = null;
-                }
-                else if (Integer.parseInt(getAttributeValue(encodingTypeNode, "length", "1")) != 1)
-                {
-                    encodingType = null;
-                }
-                else
-                {
-                    encodingType = PrimitiveType.get(getAttributeValue(encodingTypeNode, "primitiveType"));
-                }
-                break;
-        }
-
-        if (encodingType == null)
-        {
-            throw new IllegalArgumentException("illegal encodingType " + encodingTypeStr);
-        }
-
         final NodeList list = (NodeList)xPath.compile("choice").evaluate(node, XPathConstants.NODESET);
 
         for (int i = 0, size = list.getLength(); i < size; i++)

@@ -1,4 +1,4 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated class message */
 #ifndef _SERIALIZEDFRAME_HPP_
 #define _SERIALIZEDFRAME_HPP_
 
@@ -95,15 +95,14 @@ public:
         return actingVersion_;
     };
 
-    int sbeIrVersionSinceVersion(void) const
-    {
-         return 0;
-    };
-
-
     int sbeIrVersionId(void) const
     {
         return 1;
+    };
+
+    bool sbeIrVersionInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
 
@@ -118,15 +117,14 @@ public:
         return *this;
     };
 
-    int schemaVersionSinceVersion(void) const
-    {
-         return 0;
-    };
-
-
     int schemaVersionId(void) const
     {
         return 2;
+    };
+
+    bool schemaVersionInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
 
@@ -144,6 +142,16 @@ public:
     const char *packageValCharacterEncoding()
     {
         return "UTF-8";
+    };
+
+    int packageValSinceVersion(void) const
+    {
+         return 0;
+    };
+
+    bool packageValInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
     };
 
     int packageValId(void) const

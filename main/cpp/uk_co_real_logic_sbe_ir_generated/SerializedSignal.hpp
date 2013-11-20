@@ -1,4 +1,4 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated class message */
 #ifndef _SERIALIZEDSIGNAL_HPP_
 #define _SERIALIZEDSIGNAL_HPP_
 
@@ -30,7 +30,8 @@ public:
         END_ENUM = (sbe_uint8_t)11,
         BEGIN_SET = (sbe_uint8_t)12,
         CHOICE = (sbe_uint8_t)13,
-        BEGIN_MESSAGE = (sbe_uint8_t)1
+        BEGIN_MESSAGE = (sbe_uint8_t)1,
+        NULL_VALUE = (sbe_uint8_t)255
     };
 
     static SerializedSignal::Value get(const sbe_uint8_t value)
@@ -54,6 +55,7 @@ public:
             case 12: return BEGIN_SET;
             case 13: return CHOICE;
             case 1: return BEGIN_MESSAGE;
+            case 255: return NULL_VALUE;
         }
 
         throw "unknown value for enum SerializedSignal";

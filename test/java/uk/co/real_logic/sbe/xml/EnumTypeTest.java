@@ -16,14 +16,14 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import uk.co.real_logic.sbe.SbeTool;
+
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.SbeTool;
-import uk.co.real_logic.sbe.TestUtil;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,14 +34,11 @@ import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class EnumTypeTest
 {
@@ -224,19 +221,6 @@ public class EnumTypeTest
             "</types>";
 
         parseTestXmlWithMap("/types/enum", testXmlString);
-    }
-
-    @Test
-    public void shouldHandleEncodingTypesWithNamedTypes()
-        throws Exception
-    {
-        MessageSchema schema = parse(TestUtil.getLocalResource("EncodingTypesFileTest.xml"));
-        List<Field> fields = schema.getMessage(1).fields();
-        assertNotNull(fields);
-        EnumType type = (EnumType)fields.get(1).type();
-        assertThat(type.encodingType(), is(PrimitiveType.CHAR));
-        type = (EnumType)fields.get(2).type();
-        assertThat(type.encodingType(), is(PrimitiveType.UINT8));
     }
 
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
