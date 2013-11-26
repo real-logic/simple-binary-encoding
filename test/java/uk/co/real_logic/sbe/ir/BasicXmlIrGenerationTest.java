@@ -26,7 +26,6 @@ import java.nio.ByteOrder;
 import java.util.List;
 
 import static java.lang.Integer.valueOf;
-import static java.lang.Long.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
@@ -111,14 +110,14 @@ public class BasicXmlIrGenerationTest
         /* assert all elements of node 0 */
         assertThat(tokens.get(0).signal(), is(Signal.BEGIN_MESSAGE));
         assertThat(tokens.get(0).name(), is("TestMessage50001"));
-        assertThat(valueOf(tokens.get(0).schemaId()), is(valueOf(50001L)));
+        assertThat(valueOf(tokens.get(0).schemaId()), is(valueOf(50001)));
         assertThat(valueOf(tokens.get(0).size()), is(valueOf(16)));
         assertThat(valueOf(tokens.get(0).offset()), is(valueOf(0)));
 
         /* assert all elements of node 1 */
         assertThat(tokens.get(1).signal(), is(Signal.BEGIN_FIELD));
         assertThat(tokens.get(1).name(), is("Tag40001"));
-        assertThat(valueOf(tokens.get(1).schemaId()), is(valueOf(40001L)));
+        assertThat(valueOf(tokens.get(1).schemaId()), is(valueOf(40001)));
         assertThat(valueOf(tokens.get(1).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(1).offset()), is(valueOf(0)));
 
@@ -134,14 +133,14 @@ public class BasicXmlIrGenerationTest
         /* assert all elements of node 3 */
         assertThat(tokens.get(3).signal(), is(Signal.END_FIELD));
         assertThat(tokens.get(3).name(), is("Tag40001"));
-        assertThat(valueOf(tokens.get(3).schemaId()), is(valueOf(40001L)));
+        assertThat(valueOf(tokens.get(3).schemaId()), is(valueOf(40001)));
         assertThat(valueOf(tokens.get(3).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(3).offset()), is(valueOf(0)));
 
         /* assert all elements of node 4 */
         assertThat(tokens.get(4).signal(), is(Signal.END_MESSAGE));
         assertThat(tokens.get(4).name(), is("TestMessage50001"));
-        assertThat(valueOf(tokens.get(4).schemaId()), is(valueOf(50001L)));
+        assertThat(valueOf(tokens.get(4).schemaId()), is(valueOf(50001)));
         assertThat(valueOf(tokens.get(4).size()), is(valueOf(16)));
         assertThat(valueOf(tokens.get(4).offset()), is(valueOf(0)));
     }
@@ -160,13 +159,13 @@ public class BasicXmlIrGenerationTest
 
         assertThat(tokens.get(0).signal(), is(Signal.BEGIN_MESSAGE));
         assertThat(tokens.get(0).name(), is("TestMessage1"));
-        assertThat(valueOf(tokens.get(0).schemaId()), is(valueOf(1L)));
+        assertThat(valueOf(tokens.get(0).schemaId()), is(valueOf(1)));
         assertThat(valueOf(tokens.get(0).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(0).offset()), is(valueOf(0)));
 
         assertThat(tokens.get(1).signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(tokens.get(1).name(), is("encryptedNewPassword"));
-        assertThat(valueOf(tokens.get(1).schemaId()), is(valueOf(1404L)));
+        assertThat(valueOf(tokens.get(1).schemaId()), is(valueOf(1404)));
         assertThat(valueOf(tokens.get(1).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(1).offset()), is(valueOf(0)));
 
@@ -198,13 +197,13 @@ public class BasicXmlIrGenerationTest
 
         assertThat(tokens.get(6).signal(), is(Signal.END_VAR_DATA));
         assertThat(tokens.get(6).name(), is("encryptedNewPassword"));
-        assertThat(valueOf(tokens.get(6).schemaId()), is(valueOf(1404L)));
+        assertThat(valueOf(tokens.get(6).schemaId()), is(valueOf(1404)));
         assertThat(valueOf(tokens.get(6).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(6).offset()), is(valueOf(0)));
 
         assertThat(tokens.get(7).signal(), is(Signal.END_MESSAGE));
         assertThat(tokens.get(7).name(), is("TestMessage1"));
-        assertThat(valueOf(tokens.get(7).schemaId()), is(valueOf(1L)));
+        assertThat(valueOf(tokens.get(7).schemaId()), is(valueOf(1)));
         assertThat(valueOf(tokens.get(7).size()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(7).offset()), is(valueOf(0)));
     }
@@ -227,7 +226,7 @@ public class BasicXmlIrGenerationTest
         /* assert on the group token */
         assertThat(tokens.get(groupIdx).signal(), is(Signal.BEGIN_GROUP));
         assertThat(tokens.get(groupIdx).name(), is("Entries"));
-        assertThat(valueOf(tokens.get(groupIdx).schemaId()), is(valueOf(2L)));
+        assertThat(valueOf(tokens.get(groupIdx).schemaId()), is(valueOf(2)));
 
         /* assert on the comp token for dimensions */
         assertThat(tokens.get(dimensionsCompIdx).signal(), is(Signal.BEGIN_COMPOSITE));
@@ -258,7 +257,7 @@ public class BasicXmlIrGenerationTest
 
         assertThat(tokens.get(groupIdx).signal(), is(Signal.BEGIN_GROUP));
         assertThat(tokens.get(groupIdx).name(), is("ListOrdGrp"));
-        assertThat(valueOf(tokens.get(groupIdx).schemaId()), is(valueOf(73L)));
+        assertThat(valueOf(tokens.get(groupIdx).schemaId()), is(valueOf(73)));
 
         assertThat(tokens.get(dimensionsCompIdx).signal(), is(Signal.BEGIN_COMPOSITE));
         assertThat(tokens.get(dimensionsCompIdx).name(), is("groupSizeEncoding"));
@@ -284,7 +283,7 @@ public class BasicXmlIrGenerationTest
         /* assert the varDataEncoding field node is formed correctly */
         assertThat(tokens.get(lengthFieldIdx).signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(tokens.get(lengthFieldIdx).name(), is("EncryptedPassword"));
-        assertThat(valueOf(tokens.get(lengthFieldIdx).schemaId()), is(valueOf(1402L)));
+        assertThat(valueOf(tokens.get(lengthFieldIdx).schemaId()), is(valueOf(1402)));
 
         /* assert the length node has correct values */
         assertThat(tokens.get(lengthEncIdx).signal(), is(Signal.ENCODING));

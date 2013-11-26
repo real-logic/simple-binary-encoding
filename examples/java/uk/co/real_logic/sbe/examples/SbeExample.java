@@ -59,7 +59,7 @@ public class SbeExample
         MESSAGE_HEADER
             .reset(directBuffer, bufferOffset, messageTemplateVersion)
             .blockLength(CAR.blockLength())
-            .templateId((int)CAR.templateId())
+            .templateId(CAR.templateId())
             .version((short)CAR.templateVersion());
 
         bufferOffset += MESSAGE_HEADER.size();

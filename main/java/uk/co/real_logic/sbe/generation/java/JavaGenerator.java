@@ -304,12 +304,12 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public long %sId()\n" +
+            indent + "    public long %sSchemaId()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n\n",
             groupName,
-            Long.valueOf(token.schemaId())
+            Integer.valueOf(token.schemaId())
         ));
 
         sb.append(String.format(
@@ -961,12 +961,12 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateMessageFlyweightCode(final String className,
                                                       final int blockLength,
                                                       final int version,
-                                                      final long schemaId)
+                                                      final int schemaId)
     {
         return String.format(
-            "    private static final long TEMPLATE_ID = %dL;\n" +
-            "    private static final int TEMPLATE_VERSION = %d;\n" +
-            "    private static final int BLOCK_LENGTH = %d;\n\n" +
+            "    public static final int TEMPLATE_ID = %d;\n" +
+            "    public static final int TEMPLATE_VERSION = %d;\n" +
+            "    public static final int BLOCK_LENGTH = %d;\n\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
             "    private int position;\n" +
@@ -977,7 +977,7 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        return BLOCK_LENGTH;\n" +
             "    }\n\n" +
-            "    public long templateId()\n" +
+            "    public int templateId()\n" +
             "    {\n" +
             "        return TEMPLATE_ID;\n" +
             "    }\n\n" +
@@ -1021,7 +1021,7 @@ public class JavaGenerator implements CodeGenerator
             "        CodecUtil.checkPosition(position, buffer.capacity());\n" +
             "        this.position = position;\n" +
             "    }\n",
-            Long.valueOf(schemaId),
+            Integer.valueOf(schemaId),
             Integer.valueOf(version),
             Integer.valueOf(blockLength),
             className,
@@ -1071,12 +1071,12 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-            indent + "    public long %sId()\n" +
+            indent + "    public int %sSchemaId()\n" +
             indent + "    {\n" +
-            indent + "        return %dL;\n" +
+            indent + "        return %d;\n" +
             indent + "    }\n",
             formatPropertyName(token.name()),
-            Long.valueOf(token.schemaId())
+            Integer.valueOf(token.schemaId())
         ));
     }
 

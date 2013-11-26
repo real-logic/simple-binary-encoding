@@ -46,7 +46,7 @@ public class Message
 {
     private static final String FIELD_OR_GROUP_OR_DATA_EXPR = "field|group|data";
 
-    private final long id;
+    private final int id;
     private final String name;
     private final String description;
     private final int blockLength;
@@ -65,7 +65,7 @@ public class Message
     public Message(final Node messageNode, final Map<String, Type> typeByNameMap)
         throws XPathExpressionException, IllegalArgumentException
     {
-        id = Long.parseLong(getAttributeValue(messageNode, "id"));                          // required
+        id = Integer.parseInt(getAttributeValue(messageNode, "id"));                        // required
         name = getAttributeValue(messageNode, "name");                                      // required
         description = getAttributeValueOrNull(messageNode, "description");                  // optional
         blockLength = Integer.parseInt(getAttributeValue(messageNode, "blockLength", "0")); // 0 means not set
@@ -85,7 +85,7 @@ public class Message
      *
      * @return schemaId of the message
      */
-    public long id()
+    public int id()
     {
         return id;
     }

@@ -73,7 +73,7 @@ public class Token
     }
 
     /** Invalid ID value. */
-    public static final long INVALID_ID = -1;
+    public static final int INVALID_ID = -1;
 
     /** Size not determined */
     public static final int VARIABLE_SIZE = -1;
@@ -83,7 +83,7 @@ public class Token
 
     private final Signal signal;
     private final String name;
-    private final long schemaId;
+    private final int schemaId;
     private final int version;
     private final int size;
     private final int offset;
@@ -102,7 +102,7 @@ public class Token
      */
     public Token(final Signal signal,
                  final String name,
-                 final long schemaId,
+                 final int schemaId,
                  final int version,
                  final int size,
                  final int offset,
@@ -146,7 +146,7 @@ public class Token
      *
      * @return ID of the token assigned by the specification
      */
-    public long schemaId()
+    public int schemaId()
     {
         return schemaId;
     }
@@ -244,7 +244,7 @@ public class Token
     {
         private Signal signal;
         private String name;
-        private long schemaId = INVALID_ID;
+        private int schemaId = INVALID_ID;
         private int version = 0;
         private int size = 0;
         private int offset = 0;
@@ -262,7 +262,7 @@ public class Token
             return this;
         }
 
-        public Builder schemaId(final long schemaId)
+        public Builder schemaId(final int schemaId)
         {
             this.schemaId = schemaId;
             return this;

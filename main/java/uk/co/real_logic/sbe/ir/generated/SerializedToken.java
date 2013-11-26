@@ -5,9 +5,9 @@ import uk.co.real_logic.sbe.generation.java.*;
 
 public class SerializedToken implements MessageFlyweight
 {
-    private static final long TEMPLATE_ID = 2L;
-    private static final int TEMPLATE_VERSION = 0;
-    private static final int BLOCK_LENGTH = 19;
+    public static final int TEMPLATE_ID = 2;
+    public static final int TEMPLATE_VERSION = 0;
+    public static final int BLOCK_LENGTH = 19;
 
     private DirectBuffer buffer;
     private int offset;
@@ -20,7 +20,7 @@ public class SerializedToken implements MessageFlyweight
         return BLOCK_LENGTH;
     }
 
-    public long templateId()
+    public int templateId()
     {
         return TEMPLATE_ID;
     }
@@ -74,9 +74,9 @@ public class SerializedToken implements MessageFlyweight
         this.position = position;
     }
 
-    public long tokenOffsetId()
+    public int tokenOffsetSchemaId()
     {
-        return 11L;
+        return 11;
     }
 
     public int tokenOffset()
@@ -90,9 +90,9 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public long tokenSizeId()
+    public int tokenSizeSchemaId()
     {
-        return 12L;
+        return 12;
     }
 
     public int tokenSize()
@@ -106,9 +106,9 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public long schemaIDId()
+    public int schemaIDSchemaId()
     {
-        return 13L;
+        return 13;
     }
 
     public int schemaID()
@@ -122,9 +122,9 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public long tokenVersionId()
+    public int tokenVersionSchemaId()
     {
-        return 17L;
+        return 17;
     }
 
     public int tokenVersion()
@@ -138,9 +138,9 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public long signalId()
+    public int signalSchemaId()
     {
-        return 14L;
+        return 14;
     }
 
     public SerializedSignal signal()
@@ -154,9 +154,9 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public long primitiveTypeId()
+    public int primitiveTypeSchemaId()
     {
-        return 15L;
+        return 15;
     }
 
     public SerializedPrimitiveType primitiveType()
@@ -170,9 +170,9 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public long byteOrderId()
+    public int byteOrderSchemaId()
     {
-        return 16L;
+        return 16;
     }
 
     public SerializedByteOrder byteOrder()
@@ -186,9 +186,9 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public long nameId()
+    public int nameSchemaId()
     {
-        return 18L;
+        return 18;
     }
 
     public String nameCharacterEncoding()
@@ -221,9 +221,9 @@ public class SerializedToken implements MessageFlyweight
         return length;
     }
 
-    public long constValId()
+    public int constValSchemaId()
     {
-        return 19L;
+        return 19;
     }
 
     public String constValCharacterEncoding()
@@ -256,9 +256,9 @@ public class SerializedToken implements MessageFlyweight
         return length;
     }
 
-    public long minValId()
+    public int minValSchemaId()
     {
-        return 20L;
+        return 20;
     }
 
     public String minValCharacterEncoding()
@@ -291,9 +291,9 @@ public class SerializedToken implements MessageFlyweight
         return length;
     }
 
-    public long maxValId()
+    public int maxValSchemaId()
     {
-        return 21L;
+        return 21;
     }
 
     public String maxValCharacterEncoding()
@@ -326,9 +326,9 @@ public class SerializedToken implements MessageFlyweight
         return length;
     }
 
-    public long nullValId()
+    public int nullValSchemaId()
     {
-        return 22L;
+        return 22;
     }
 
     public String nullValCharacterEncoding()
@@ -361,9 +361,9 @@ public class SerializedToken implements MessageFlyweight
         return length;
     }
 
-    public long characterEncodingId()
+    public int characterEncodingSchemaId()
     {
-        return 23L;
+        return 23;
     }
 
     public String characterEncodingCharacterEncoding()

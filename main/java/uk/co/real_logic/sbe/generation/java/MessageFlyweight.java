@@ -32,7 +32,7 @@ public interface MessageFlyweight
      *
      * @return the identifier fo the template for this codec.
      */
-    long templateId();
+    int templateId();
 
     /**
      * Get the version up to which this template supports.

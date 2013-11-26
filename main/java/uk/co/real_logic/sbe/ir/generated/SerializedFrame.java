@@ -5,9 +5,9 @@ import uk.co.real_logic.sbe.generation.java.*;
 
 public class SerializedFrame implements MessageFlyweight
 {
-    private static final long TEMPLATE_ID = 1L;
-    private static final int TEMPLATE_VERSION = 0;
-    private static final int BLOCK_LENGTH = 8;
+    public static final int TEMPLATE_ID = 1;
+    public static final int TEMPLATE_VERSION = 0;
+    public static final int BLOCK_LENGTH = 8;
 
     private DirectBuffer buffer;
     private int offset;
@@ -20,7 +20,7 @@ public class SerializedFrame implements MessageFlyweight
         return BLOCK_LENGTH;
     }
 
-    public long templateId()
+    public int templateId()
     {
         return TEMPLATE_ID;
     }
@@ -74,9 +74,9 @@ public class SerializedFrame implements MessageFlyweight
         this.position = position;
     }
 
-    public long sbeIrVersionId()
+    public int sbeIrVersionSchemaId()
     {
-        return 1L;
+        return 1;
     }
 
     public int sbeIrVersion()
@@ -90,9 +90,9 @@ public class SerializedFrame implements MessageFlyweight
         return this;
     }
 
-    public long schemaVersionId()
+    public int schemaVersionSchemaId()
     {
-        return 2L;
+        return 2;
     }
 
     public int schemaVersion()
@@ -106,9 +106,9 @@ public class SerializedFrame implements MessageFlyweight
         return this;
     }
 
-    public long packageValId()
+    public int packageValSchemaId()
     {
-        return 4L;
+        return 4;
     }
 
     public String packageValCharacterEncoding()
