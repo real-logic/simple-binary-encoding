@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<messageSchema package="uk.co.real_logic.sbe.samples"
+<messageSchema package="uk.co.real_logic.sbe.samples.fix"
                fixVersion="5.2"
-               description="Order Types Examples"
+               description="Order Types and Quote Examples"
                byteOrder="littleEndian">
   <!--
       Inspired from:
@@ -23,86 +23,86 @@
         <type name="timestamp" primitiveType="uint64" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
         <type name="LocalMktDate" primitiveType="uint16" semanticType="LocalMktDate"/>
         <type name="optionalInt64" primitiveType="int64" presence="optional" semanticType="int"/>
-        <composite name="messageHeader" description="Template ID and length of message root" semanticType="Length">
+        <composite name="messageHeader" semanticType="Length">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>
-        <composite name="intQty32" semanticType="Qty">
+        <composite name="IntQty32" semanticType="Qty">
             <type name="mantissa" primitiveType="int32"/>
             <type name="exponent" primitiveType="int8" presence="constant">0</type>
         </composite>
-        <composite name="optionalPrice" >
+        <composite name="OptionalPrice" >
             <type name="mantissa" primitiveType="int64" presence="optional" />
             <type name="exponent" primitiveType="int8"/>
         </composite>
-        <composite name="groupSize" description="Repeating group dimensions" semanticType="NumInGroup">
+        <composite name="groupSizeEncoding" semanticType="NumInGroup">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="numInGroup" primitiveType="uint8"/>
         </composite>
         <enum name="HandInst" encodingType="char">
-            <validValue name="Automated Execution">1</validValue>
+            <validValue name="AUTOMATED_EXECUTION">1</validValue>
         </enum>
         <enum name="CustOrderHandlingInst" encodingType="char" presence="optional">
-            <validValue name="Phone simple">A</validValue>
-            <validValue name="Phone complex">B</validValue>
-            <validValue name="FCM-provided screen">C</validValue>
-            <validValue name="Other-provided screen">D</validValue>
-            <validValue name="Client-provided platform controlled by FCM">E</validValue>
-            <validValue name="Client-provided platform direct to exchange">F</validValue>
-            <validValue name="FCM API or FIX">G</validValue>
-            <validValue name="Algo Engine">H</validValue>
-            <validValue name="Price at Execution (price added at initial order entry, trading, middle office or time of give-up)">J</validValue>
-            <validValue name="Desk, Electronic">W</validValue>
-            <validValue name="Desk, Pit">X</validValue>
-            <validValue name="Client, Electronic">Y</validValue>
-            <validValue name="Client, Pit">Z</validValue>
+            <validValue name="PHONE_SIMPLE">A</validValue>
+            <validValue name="PHONE_COMPLEX">B</validValue>
+            <validValue name="FCM_PROVIDED_SCREEN">C</validValue>
+            <validValue name="OTHER_PROVIDED_SCREEN">D</validValue>
+            <validValue name="CLIENT_PROVIDED_PLATFORM_CONTROLLED_BY_FCM">E</validValue>
+            <validValue name="CLIENT_PROVIDED_PLATFORM_DIRECT_TO_EXCHANGE">F</validValue>
+            <validValue name="FCM_API_OR_FIX">G</validValue>
+            <validValue name="ALGO_ENGINE">H</validValue>
+            <validValue name="PRICE_AT_EXECUTION">J</validValue>
+            <validValue name="DESK_ELECTRONIC">W</validValue>
+            <validValue name="DESK_PIT">X</validValue>
+            <validValue name="CLIENT_ELECTRONIC">Y</validValue>
+            <validValue name="CLIENT_PIT">Z</validValue>
         </enum>
         <enum name="OrdType" encodingType="char">
-            <validValue name="Market order (with protection)">1</validValue>
-            <validValue name="Limit order">2</validValue>
-            <validValue name="Stop order (with protection)">3</validValue>
-            <validValue name="Stop-Limit order">4</validValue>
-            <validValue name="Market-Limit order">K</validValue>
+            <validValue name="MARKET_ORDER">1</validValue>
+            <validValue name="LIMIT_ORDER">2</validValue>
+            <validValue name="STOP_ORDER">3</validValue>
+            <validValue name="STOP_LIMIT_ORDER">4</validValue>
+            <validValue name="MARKET_LIMIT_ORDER">K</validValue>
         </enum>
         <enum name="Side" encodingType="char">
-            <validValue name="Buy">1</validValue>
-            <validValue name="Side">2</validValue>
+            <validValue name="BUY">1</validValue>
+            <validValue name="SELL">2</validValue>
         </enum>
         <enum name="TimeInForce" encodingType="char" presence="optional">
-            <validValue name="Day">0</validValue>
-            <validValue name="Good Till Cancel (GTC)">1</validValue>
-            <validValue name="Fill and Kill">3</validValue>
-            <validValue name="Good Till Date">6</validValue>
+            <validValue name="DAY">0</validValue>
+            <validValue name="GOOD_TILL_CANCEL">1</validValue>
+            <validValue name="FILL_AND_KILL">3</validValue>
+            <validValue name="GOOD_TILL_DATE">6</validValue>
         </enum>
-        <enum name="boolean" encodingType="uint8" semanticType="Boolean">
-            <validValue name="false">0</validValue>
-            <validValue name="true">1</validValue>
+        <enum name="BooleanType" encodingType="uint8" semanticType="Boolean">
+            <validValue name="FIX_FALSE">0</validValue>
+            <validValue name="FIX_TRUE">1</validValue>
         </enum>
         <enum name="CustomerOrFirm" encodingType="uint8" semanticType="int">
-            <validValue name="Customer">0</validValue>
-            <validValue name="Firm">1</validValue>
+            <validValue name="CUSTOMER">0</validValue>
+            <validValue name="FIRM">1</validValue>
         </enum>
         <enum name="CtiCode" encodingType="char" semanticType="char">
-            <validValue name="Broker/trader">1</validValue>
-            <validValue name="Broker/trader trading for clearing member firm's house account">2</validValue>
-            <validValue name="Broker/trader trading for the account of another broker/trader present on the trading floor or controller by such broker/trader">3</validValue>
-            <validValue name="Broker/trader trading for other customer's account or for the account of a broker/trader not present on the floor">4</validValue>
+            <validValue name="OWN">1</validValue>
+            <validValue name="HOUSE">2</validValue>
+            <validValue name="ON_FLOOR">3</validValue>
+            <validValue name="NOT_ON_FLOOR">4</validValue>
         </enum>
         <enum name="NoAllocs" encodingType="char" presence="optional" semanticType="char">
-            <validValue name="1">1</validValue>
+            <validValue name="ONE">1</validValue>
         </enum>
         <enum name="OFMOverride" encodingType="char" semanticType="char">
-            <validValue name="Enabled">Y</validValue>
-            <validValue name="Disabled (default)">N</validValue>
+            <validValue name="ENABLED">Y</validValue>
+            <validValue name="DISABLED">N</validValue>
         </enum>
         <enum name="MMProtectionReset" encodingType="char" presence="optional" semanticType="char">
-            <validValue name="Reset">Y</validValue>
-            <validValue name="Do not reset">N</validValue>
+            <validValue name="RESET">Y</validValue>
+            <validValue name="DO_NOT_RESET">N</validValue>
         </enum>
         <enum name="SecurityIDSource" encodingType="char" presence="optional" semanticType="char">
-            <validValue name="Exchange symbol">8</validValue>
+            <validValue name="EXCHANGE_SYMBOL">8</validValue>
         </enum>
     </types>
 
@@ -114,21 +114,21 @@
         <field name="ClOrdID" id="11" type="string20" semanticType="String"/>
         <field name="HandInst" id="21" type="HandInst" semanticType="char"/>
         <field name="CustOrderHandlingInst" id="1031" type="CustOrderHandlingInst" semanticType="char"/>
-        <field name="OrderQty" id="38" type="intQty32" semanticType="Qty"/>
+        <field name="OrderQty" id="38" type="IntQty32" semanticType="Qty"/>
         <field name="OrdType" id="40" type="OrdType" semanticType="char"/>
-        <field name="Price" id="44" type="optionalPrice" semanticType="Price"/>
+        <field name="Price" id="44" type="OptionalPrice" semanticType="Price"/>
         <field name="Side" id="54" type="Side" semanticType="char"/>
         <field name="Symbol" id="55" type="Symbol" semanticType="String"/>
         <field name="TimeInForce" id="59" type="TimeInForce" semanticType="char"/>
         <field name="TransactTime" id="60" type="timestamp" semanticType="UTCTimestamp"/>
-        <field name="ManualOrderIndicator" id="1028" type="boolean"/>
+        <field name="ManualOrderIndicator" id="1028" type="BooleanType"/>
         <field name="AllocAccount" id="79" type="string10" semanticType="String"/>
-        <field name="StopPx" id="99" type="optionalPrice" semanticType="Price"/>
+        <field name="StopPx" id="99" type="OptionalPrice" semanticType="Price"/>
         <field name="SecurityDesc" id="107" type="string20" semanticType="String"/>
-        <field name="MinQty" id="110" type="intQty32" semanticType="Qty"/>
+        <field name="MinQty" id="110" type="IntQty32" semanticType="Qty"/>
         <field name="SecurityType" id="167" type="string3" semanticType="String"/>
         <field name="CustomerOrFirm" id="204" type="CustomerOrFirm"/>
-        <field name="MaxShow" id="210" type="intQty32" semanticType="Qty"/>
+        <field name="MaxShow" id="210" type="IntQty32" semanticType="Qty"/>
         <field name="ExpireDate" id="432" type="LocalMktDate"/>
         <field name="SelfMatchPreventionID" id="7928" type="string12" semanticType="String"/>
         <field name="CtiCode" id="9702" type="CtiCode"/>
@@ -145,7 +145,7 @@
         <field name="Side" id="54" type="Side" semanticType="char"/>
         <field name="Symbol" id="55" type="Symbol" semanticType="String"/>
         <field name="TransactTime" id="60" type="timestamp" semanticType="UTCTimestamp"/>
-        <field name="ManualOrderIndicator" id="1028" type="boolean"/>
+        <field name="ManualOrderIndicator" id="1028" type="BooleanType"/>
         <field name="SecurityDesc" id="107" type="string20" semanticType="String"/>
         <field name="SecurityType" id="167" type="string3" semanticType="String"/>
         <field name="CorrelationClOrdID" id="9717" type="string20" semanticType="String"/>
@@ -156,25 +156,25 @@
         <field name="ClOrdID" id="11" type="string20" semanticType="String"/>
         <field name="OrderID" id="37" type="int64" semanticType="int"/>
         <field name="HandInst" id="21" type="HandInst" semanticType="char"/>
-        <field name="OrderQty" id="38" type="intQty32" semanticType="Qty"/>
+        <field name="OrderQty" id="38" type="IntQty32" semanticType="Qty"/>
         <field name="CustOrderHandlingInst" id="1031" type="CustOrderHandlingInst" semanticType="char"/>
         <field name="OrdType" id="40" type="OrdType" semanticType="char"/>
         <field name="OrigClOrdID" id="41" type="string20" semanticType="String"/>
-        <field name="Price" id="44" type="optionalPrice" semanticType="Price"/>
+        <field name="Price" id="44" type="OptionalPrice" semanticType="Price"/>
         <field name="Side" id="54" type="Side" semanticType="char"/>
         <field name="Symbol" id="55" type="Symbol" semanticType="String"/>
         <field name="Test" id="58" type="string18" semanticType="String"/>
         <field name="TimeInForce" id="59" type="TimeInForce" semanticType="char"/>
-        <field name="ManualOrderIndicator" id="1028" type="boolean"/>
+        <field name="ManualOrderIndicator" id="1028" type="BooleanType"/>
         <field name="TransactTime" id="60" type="timestamp" semanticType="UTCTimestamp"/>
         <field name="NoAllocs" id="78" type="NoAllocs"/>
         <field name="AllocAccount" id="79" type="string10" semanticType="String"/>
-        <field name="StopPx" id="99" type="optionalPrice" semanticType="Price"/>
+        <field name="StopPx" id="99" type="OptionalPrice" semanticType="Price"/>
         <field name="SecurityDesc" id="107" type="string20" semanticType="String"/>
-        <field name="MinQty" id="110" type="intQty32" semanticType="Qty"/>
+        <field name="MinQty" id="110" type="IntQty32" semanticType="Qty"/>
         <field name="SecurityType" id="167" type="string3" semanticType="String"/>
         <field name="CustomerOrFirm" id="204" type="CustomerOrFirm"/>
-        <field name="MaxShow" id="210" type="intQty32" semanticType="Qty"/>
+        <field name="MaxShow" id="210" type="IntQty32" semanticType="Qty"/>
         <field name="ExpireDate" id="432" type="LocalMktDate"/>
         <field name="SelfMatchPreventionID" id="7928" type="string12" semanticType="String"/>
         <field name="CtiCode" id="9702" type="CtiCode"/>
@@ -188,19 +188,19 @@
         <field name="QuoteReqID" id="131" type="string23" semanticType="String"/>
         <field name="QuoteID" id="117" type="string10" semanticType="String"/>
         <field name="MMAccount" id="9771" type="string12" semanticType="String"/>
-        <field name="ManualOrderIndicator" id="1028" type="boolean"/>
+        <field name="ManualOrderIndicator" id="1028" type="BooleanType"/>
         <field name="CustOrderHandlingInst" id="1031" type="CustOrderHandlingInst" semanticType="char"/>
         <field name="CustomerOrFirm" id="204" type="CustomerOrFirm"/>
         <field name="SelfMatchPreventionID" id="7928" type="string12" semanticType="String"/>
         <field name="CtiCode" id="9702" type="CtiCode"/>
         <field name="MMProtectionReset" id="9773" type="MMProtectionReset"/>
-        <field name="NoQuoteSets" id="296" type="groupSize" groupName="QuoteSets"/>
-        <group name="QuoteSets">
+        <!-- <field name="NoQuoteSets" id="296" type="groupSize" groupName="QuoteSets"/> -->
+        <group name="QuoteSets" id="296">
             <field name="QuoteSetID" id="302" type="string3" semanticType="String"/>
             <field name="UnderlyingSecurityDesc" id="307" type="string20" semanticType="String"/>
             <field name="TotQuoteEntries" id="304" type="uint8" semanticType="int"/>
-            <field name="NoQuoteEntries" id="295" type="groupSize" groupName="QuoteEntries"/>
-            <group name="QuoteEntries">
+            <!-- <field name="NoQuoteEntries" id="295" type="groupSize" groupName="QuoteEntries"/> -->
+            <group name="QuoteEntries" id="295">
                 <field name="QuoteEntryID" id="299" type="string10" semanticType="String"/>
                 <field name="Symbol" id="55" type="Symbol" semanticType="String"/>
                 <field name="SecurityDesc" id="107" type="string20" semanticType="String"/>
@@ -208,9 +208,9 @@
                 <field name="SecurityID" id="48" type="optionalInt64" semanticType="int"/>
                 <field name="SecurityIDSource" id="22" type="SecurityIDSource"/>
                 <field name="TransactTime" id="60" type="timestamp" semanticType="UTCTimestamp"/>
-                <field name="BidPx" id="132" type="optionalPrice" semanticType="Price"/>
+                <field name="BidPx" id="132" type="OptionalPrice" semanticType="Price"/>
                 <field name="BidSize" id="134" type="optionalInt64" semanticType="int"/>
-                <field name="OfferPx" id="133" type="optionalPrice" semanticType="Price"/>
+                <field name="OfferPx" id="133" type="OptionalPrice" semanticType="Price"/>
                 <field name="OfferSize" id="135" type="optionalInt64" semanticType="int"/>                
             </group>
         </group>
