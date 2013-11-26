@@ -162,12 +162,12 @@ void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int ac
     car.resetForDecode(buffer, offset, actingBlockLength, actingVersion);
     std::string sb;
 
-    sb.append("\ncar.serialNumberId=").append(format(car.serialNumberId()));
-    sb.append("\ncar.modelYearId=").append(format(car.modelYearId()));
-    sb.append("\ncar.availableId=").append(format(car.availableId()));
-    sb.append("\ncar.codeId=").append(format(car.codeId()));
-    sb.append("\ncar.someNumbersId=").append(format(car.someNumbersId()));
-    sb.append("\ncar.vehicleCodeId=").append(format(car.vehicleCodeId()));
+    sb.append("\ncar.serialNumberId=").append(format(car.serialNumberSchemaId()));
+    sb.append("\ncar.modelYearId=").append(format(car.modelYearSchemaId()));
+    sb.append("\ncar.availableId=").append(format(car.availableSchemaId()));
+    sb.append("\ncar.codeId=").append(format(car.codeSchemaId()));
+    sb.append("\ncar.someNumbersId=").append(format(car.someNumbersSchemaId()));
+    sb.append("\ncar.vehicleCodeId=").append(format(car.vehicleCodeSchemaId()));
 
     sb.append("\n");
 
@@ -190,13 +190,13 @@ void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int ac
     }
 
     OptionalExtras &extras = car.extras();
-    sb.append("\ncar.extrasId=").append(format(car.extrasId()));
+    sb.append("\ncar.extrasId=").append(format(car.extrasSchemaId()));
     sb.append("\ncar.extras.cruiseControl=").append(format(extras.cruiseControl()));
     sb.append("\ncar.extras.sportsPack=").append(format(extras.sportsPack()));
     sb.append("\ncar.extras.sunRoof=").append(format(extras.sunRoof()));
 
     Engine &engine = car.engine();
-    sb.append("\ncar.engineId=").append(format(car.engineId()));
+    sb.append("\ncar.engineId=").append(format(car.engineSchemaId()));
     sb.append("\ncar.engine.capacity=").append(format((int)engine.capacity()));
     sb.append("\ncar.engine.numCylinders=").append(format((int)engine.numCylinders()));
     sb.append("\ncar.engine.maxRpm=").append(format((int)engine.maxRpm()));
@@ -213,9 +213,9 @@ void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int ac
     sb.append("\ncar.engine.fuel=").append(tmp, bytesCopied);
 
     Car::FuelFigures &fuelFigures = car.fuelFigures();
-    sb.append("\ncar.fuelFiguresId=").append(format(car.fuelFiguresId()));
-    sb.append("\ncar.fuelFigures.speedId=").append(format(fuelFigures.speedId()));
-    sb.append("\ncar.fuelFigures.mpgId=").append(format(fuelFigures.mpgId()));
+    sb.append("\ncar.fuelFiguresId=").append(format(car.fuelFiguresSchemaId()));
+    sb.append("\ncar.fuelFigures.speedId=").append(format(fuelFigures.speedSchemaId()));
+    sb.append("\ncar.fuelFigures.mpgId=").append(format(fuelFigures.mpgSchemaId()));
     while (fuelFigures.hasNext())
     {
         fuelFigures.next();
@@ -224,17 +224,17 @@ void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int ac
     }
 
     Car::PerformanceFigures &performanceFigures = car.performanceFigures();
-    sb.append("\ncar.performanceFiguresId=").append(format(car.performanceFiguresId()));
-    sb.append("\ncar.performanceFigures.octaneRatingId=").append(format(performanceFigures.octaneRatingId()));
-    sb.append("\ncar.performanceFigures.accelerationId=").append(format(performanceFigures.accelerationId()));
+    sb.append("\ncar.performanceFiguresId=").append(format(car.performanceFiguresSchemaId()));
+    sb.append("\ncar.performanceFigures.octaneRatingId=").append(format(performanceFigures.octaneRatingSchemaId()));
+    sb.append("\ncar.performanceFigures.accelerationId=").append(format(performanceFigures.accelerationSchemaId()));
     while (performanceFigures.hasNext())
     {
         performanceFigures.next();
         sb.append("\ncar.performanceFigures.octaneRating=").append(format((int)performanceFigures.octaneRating()));
 
         Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
-        sb.append("\ncar.performanceFigures.acceleration.mphId=").append(format(acceleration.mphId()));
-        sb.append("\ncar.performanceFigures.acceleration.secondsId=").append(format(acceleration.secondsId()));
+        sb.append("\ncar.performanceFigures.acceleration.mphId=").append(format(acceleration.mphSchemaId()));
+        sb.append("\ncar.performanceFigures.acceleration.secondsId=").append(format(acceleration.secondsSchemaId()));
         while (acceleration.hasNext())
         {
             acceleration.next();
@@ -244,13 +244,13 @@ void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int ac
     }
 
     bytesCopied = car.getMake(tmp, sizeof(tmp));
-    sb.append("\ncar.makeId=").append(format(car.makeId()));
+    sb.append("\ncar.makeId=").append(format(car.makeSchemaId()));
     sb.append("\ncar.makeLength=").append(format((int)bytesCopied));
     sb.append("\ncar.make=").append(tmp, bytesCopied);
     sb.append("\ncar.makeCharacterEncoding=").append(car.makeCharacterEncoding());
 
     bytesCopied = car.getModel(tmp, sizeof(tmp));
-    sb.append("\ncar.modelId=").append(format(car.modelId()));
+    sb.append("\ncar.modelId=").append(format(car.modelSchemaId()));
     sb.append("\ncar.modelLength=").append(format((int)bytesCopied));
     sb.append("\ncar.model=").append(tmp, bytesCopied);
     sb.append("\ncar.modelCharacterEncoding=").append(car.modelCharacterEncoding());

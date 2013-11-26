@@ -95,7 +95,7 @@ public:
         return actingVersion_;
     };
 
-    int tokenOffsetId(void) const
+    int tokenOffsetSchemaId(void) const
     {
         return 11;
     };
@@ -122,7 +122,7 @@ public:
         return *this;
     };
 
-    int tokenSizeId(void) const
+    int tokenSizeSchemaId(void) const
     {
         return 12;
     };
@@ -149,7 +149,7 @@ public:
         return *this;
     };
 
-    int schemaIDId(void) const
+    int schemaIDSchemaId(void) const
     {
         return 13;
     };
@@ -176,7 +176,7 @@ public:
         return *this;
     };
 
-    int tokenVersionId(void) const
+    int tokenVersionSchemaId(void) const
     {
         return 17;
     };
@@ -203,7 +203,7 @@ public:
         return *this;
     };
 
-    int signalId(void) const
+    int signalSchemaId(void) const
     {
         return 14;
     };
@@ -230,7 +230,7 @@ public:
         return *this;
     };
 
-    int primitiveTypeId(void) const
+    int primitiveTypeSchemaId(void) const
     {
         return 15;
     };
@@ -257,7 +257,7 @@ public:
         return *this;
     };
 
-    int byteOrderId(void) const
+    int byteOrderSchemaId(void) const
     {
         return 16;
     };
@@ -299,7 +299,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int nameId(void) const
+    int nameSchemaId(void) const
     {
         return 18;
     };
@@ -354,7 +354,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int constValId(void) const
+    int constValSchemaId(void) const
     {
         return 19;
     };
@@ -409,7 +409,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int minValId(void) const
+    int minValSchemaId(void) const
     {
         return 20;
     };
@@ -464,7 +464,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int maxValId(void) const
+    int maxValSchemaId(void) const
     {
         return 21;
     };
@@ -519,7 +519,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int nullValId(void) const
+    int nullValSchemaId(void) const
     {
         return 22;
     };
@@ -574,7 +574,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int characterEncodingId(void) const
+    int characterEncodingSchemaId(void) const
     {
         return 23;
     };

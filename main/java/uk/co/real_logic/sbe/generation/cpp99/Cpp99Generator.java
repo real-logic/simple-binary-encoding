@@ -314,7 +314,7 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    int %sId(void) const\n" +
+            indent + "    int %sSchemaId(void) const\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    };\n\n",
@@ -389,12 +389,12 @@ public class Cpp99Generator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    "    int %sId(void) const\n" +
+                    "    int %sSchemaId(void) const\n" +
                     "    {\n" +
                     "        return %d;\n" +
                     "    };\n\n",
                     formatPropertyName(propertyName),
-                    Long.valueOf(token.schemaId())
+                    Integer.valueOf(token.schemaId())
                 ));
 
                 final Token lengthToken = tokens.get(i + 2);
@@ -1062,7 +1062,7 @@ public class Cpp99Generator implements CodeGenerator
 
     private CharSequence generateMessageFlyweightCode(final int blockLength,
                                                       final String className,
-                                                      final long schemaId,
+                                                      final int schemaId,
                                                       final int version)
     {
         final StringBuilder sb = new StringBuilder();
@@ -1140,7 +1140,7 @@ public class Cpp99Generator implements CodeGenerator
             Integer.valueOf(blockLength),
             className,
             className,
-            Long.valueOf(schemaId),
+            Integer.valueOf(schemaId),
             Long.valueOf(version)
         ));
 
@@ -1163,12 +1163,12 @@ public class Cpp99Generator implements CodeGenerator
 
                 sb.append(String.format(
                     "\n" +
-                    indent + "    int %sId(void) const\n" +
+                    indent + "    int %sSchemaId(void) const\n" +
                     indent + "    {\n" +
                     indent + "        return %d;\n" +
                     indent + "    };\n\n",
                     propertyName,
-                    Long.valueOf(signalToken.schemaId())
+                    Integer.valueOf(signalToken.schemaId())
                 ));
 
                 sb.append(String.format(

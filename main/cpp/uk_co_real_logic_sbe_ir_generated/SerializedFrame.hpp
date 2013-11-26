@@ -95,7 +95,7 @@ public:
         return actingVersion_;
     };
 
-    int sbeIrVersionId(void) const
+    int sbeIrVersionSchemaId(void) const
     {
         return 1;
     };
@@ -122,7 +122,7 @@ public:
         return *this;
     };
 
-    int schemaVersionId(void) const
+    int schemaVersionSchemaId(void) const
     {
         return 2;
     };
@@ -164,7 +164,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int packageValId(void) const
+    int packageValSchemaId(void) const
     {
         return 4;
     };
