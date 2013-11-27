@@ -230,7 +230,8 @@ public class XmlSchemaParser
 
         if (attrNode == null || "".equals(attrNode.getNodeValue()))
         {
-            throw new IllegalStateException("Element attribute is not present or is empty: " + attrName);
+            throw new IllegalStateException("Element '" + elementNode.getNodeName() +
+                                             "' has empty or missing attribute: " + attrName);
         }
 
         return attrNode.getNodeValue();
