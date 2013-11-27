@@ -1163,7 +1163,7 @@ public class JavaGenerator implements CodeGenerator
 
     private Object generateCompositeProperty(final String propertyName, final Token token, final String indent)
     {
-        final String compositeName = token.name();
+        final String compositeName = formatClassName(token.name());
         final Integer offset = Integer.valueOf(token.offset());
 
         final StringBuilder sb = new StringBuilder();
