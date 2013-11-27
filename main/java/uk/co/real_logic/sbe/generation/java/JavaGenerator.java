@@ -1098,7 +1098,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
                      "%s" +
-            indent + "        return %s.get(CodecUtil.%sGet(buffer, offset + %d)%s);\n" +
+            indent + "        return %s.get(CodecUtil.%sGet(buffer, offset + %d%s));\n" +
             indent + "    }\n\n",
             enumName,
             propertyName,
