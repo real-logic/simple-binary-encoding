@@ -281,7 +281,7 @@ public class SerializationUtils
                 }
 
             case INT8:
-                CodecUtil.int8sPut(buffer, 0, (byte)value.longValue());
+                CodecUtil.int8Put(buffer, 0, (byte)value.longValue());
                 return 1;
 
             case INT16:

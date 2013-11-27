@@ -76,9 +76,9 @@ public class CodecUtil
      * @param index from which to begin writing.
      * @param value to be be written.
      */
-    public static void int8sPut(final DirectBuffer buffer,
-                                final int index,
-                                final byte value)
+    public static void int8Put(final DirectBuffer buffer,
+                               final int index,
+                               final byte value)
     {
         buffer.putByte(index, value);
     }
