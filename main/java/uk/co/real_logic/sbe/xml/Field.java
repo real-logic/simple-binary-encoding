@@ -42,8 +42,8 @@ public class Field
     private final boolean variableLength;      // true for data (false for field/group)
     private final int sinceVersion;            // optional
     private List<Field> groupFieldList;        // used by group fields as the list of child fields in the group
-    private int computedOffset;              // used to hold the calculated offset of this field from top level <message> or <group>
-    private int computedBlockLength;         // used to hold the calculated block length of this group
+    private int computedOffset;                // used to hold the calculated offset of this field from top level <message> or <group>
+    private int computedBlockLength;           // used to hold the calculated block length of this group
 
     /** Builder constructor */
     public Field(final String name,
@@ -78,12 +78,7 @@ public class Field
     {
         if (type != null)
         {
-            // must be present or must be on the type. If on both, they must agree.
-            if (semanticType == null && type.semanticType() == null)
-            {
-                handleError(node, "Missing semanticType on type and field: " + name);
-            }
-            else if (semanticType != null && type.semanticType() != null && !semanticType.equals(type.semanticType()))
+            if (semanticType != null && type.semanticType() != null && !semanticType.equals(type.semanticType()))
             {
                 handleError(node, "Mismatched semanticType on type and field: " + name);
             }
