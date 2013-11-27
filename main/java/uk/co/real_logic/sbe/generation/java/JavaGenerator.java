@@ -801,7 +801,7 @@ public class JavaGenerator implements CodeGenerator
 
         if (token.encoding().primitiveType() == PrimitiveType.CHAR)
         {
-            generateCharacterEncodingMethod(sb, token.name(), token.encoding().characterEncoding());
+            generateCharacterEncodingMethod(sb, propertyName, token.encoding().characterEncoding());
 
             sb.append(String.format(
                 "\n" +
