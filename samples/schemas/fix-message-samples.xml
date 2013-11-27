@@ -3,13 +3,13 @@
                fixVersion="5.2"
                description="Order Types and Quote Examples"
                byteOrder="littleEndian">
-  <!--
-      Inspired from:
-      New Order - http://www.cmegroup.com/confluence/display/EPICSANDBOX/New+Order
-      Cancel Order - http://www.cmegroup.com/confluence/display/EPICSANDBOX/Order+Cancel+Request
-      Cancel and Replace Order - http://www.cmegroup.com/confluence/display/EPICSANDBOX/Order+Cancel-Replace+Request
-      Mass Quote (with repeating groups) - http://www.cmegroup.com/confluence/display/EPICSANDBOX/Mass+Quote
-  -->
+    <!--
+        Inspired from:
+        New Order - http://www.cmegroup.com/confluence/display/EPICSANDBOX/New+Order
+        Cancel Order - http://www.cmegroup.com/confluence/display/EPICSANDBOX/Order+Cancel+Request
+        Cancel and Replace Order - http://www.cmegroup.com/confluence/display/EPICSANDBOX/Order+Cancel-Replace+Request
+        Mass Quote (with repeating groups) - http://www.cmegroup.com/confluence/display/EPICSANDBOX/Mass+Quote
+    -->
 
     <types>
         <type name="string2" length="2" primitiveType="char"/>
@@ -33,8 +33,12 @@
             <type name="mantissa" primitiveType="int32"/>
             <type name="exponent" primitiveType="int8" presence="constant">0</type>
         </composite>
-        <composite name="OptionalPrice" >
-            <type name="mantissa" primitiveType="int64" presence="optional" />
+        <composite name="decimal64">
+            <type name="mantissa" primitiveType="int64"/>
+            <type name="exponent" primitiveType="int8" presence="constant">5</type>
+        </composite>
+        <composite name="OptionalPrice">
+            <type name="mantissa" primitiveType="int64"/>
             <type name="exponent" primitiveType="int8"/>
         </composite>
         <composite name="groupSizeEncoding" semanticType="NumInGroup">
@@ -104,6 +108,62 @@
         <enum name="SecurityIDSource" encodingType="char" presence="optional" semanticType="char">
             <validValue name="EXCHANGE_SYMBOL">8</validValue>
         </enum>
+        <enum name="MDUpdateAction" encodingType="uint8" semanticType="int">
+            <validValue name="NEW">0</validValue>
+            <validValue name="CHANGE">1</validValue>
+            <validValue name="DELETE">2</validValue>
+            <validValue name="OVERLAY">5</validValue>
+        </enum>
+        <enum name="MDEntryType" encodingType="char" semanticType="char">
+            <validValue name="BID">0</validValue>
+            <validValue name="OFFER">1</validValue>
+            <validValue name="TRADE">2</validValue>
+            <validValue name="OPENING_PRICE">4</validValue>
+            <validValue name="SETTLEMENT_PRICE">6</validValue>
+            <validValue name="TRADING_SESSION_HIGH_PRICE">7</validValue>
+            <validValue name="TRADING_SESSION_LOW_PRICE">8</validValue>
+            <validValue name="TRADE_VOLUME">B</validValue>
+            <validValue name="OPEN_INTEREST">C</validValue>
+            <validValue name="SIMULATED_SELL">E</validValue>
+            <validValue name="SIMULATED_BUY">F</validValue>
+            <validValue name="EMPTY_THE_BOOK">J</validValue>
+            <validValue name="SESSION_HIGH_BID">N</validValue>
+            <validValue name="SESSION_LOW_OFFER">O</validValue>
+            <validValue name="FIXING_PRICE">W</validValue>
+            <validValue name="CASH_NOTE">X</validValue>
+        </enum>
+        <enum name="MarketStateIdentifier" encodingType="uint8" semanticType="int">
+            <validValue name="PRE_OPENING">0</validValue>
+            <validValue name="OPENING_MODE">1</validValue>
+            <validValue name="CONTINUOUS_TRADING_MODE">2</validValue>
+        </enum>
+        <enum name="TickDirection" encodingType="uint8" semanticType="int">
+            <validValue name="PLUS_TICK">0</validValue>
+            <validValue name="MINUS_TICK">1</validValue>
+        </enum>
+        <enum name="OpenCloseSettleFlag" encodingType="uint16" semanticType="int">
+            <validValue name="THEORETICAL_PRICE_VALUE">5</validValue>
+            <validValue name="ACTUAL_PRELIMINARY_NOT_ROUNDED">100</validValue>
+            <validValue name="ACTUAL_PRELIMINARY_ROUNDED">101</validValue>
+        </enum>
+        <enum name="MDQuoteType" encodingType="uint8" semanticType="int">
+            <validValue name="TRADABLE">1</validValue>
+        </enum>
+        <enum name="MatchEventIndicator" encodingType="char" semanticType="MatchEventIndicator">
+            <validValue name="MID_EVENT">0</validValue>
+            <validValue name="BEGINNING_EVENT">1</validValue>
+            <validValue name="END_EVENT">2</validValue>
+            <validValue name="BEGINNING_AND_END_EVENT">3</validValue>
+        </enum>
+
+        <set name="QuoteCondition" encodingType="uint8" semanticType="QuoteCondition">
+            <choice name="Implied">0</choice>
+            <choice name="ExchangeBest">1</choice>
+        </set>
+        <set name="TradeCondition" encodingType="uint8" semanticType="TradeCondition">
+            <choice name="OpeningTrade">0</choice>
+            <choice name="CmeGlobexPrice">1</choice>
+        </set>
     </types>
 
     <!-- Each message is ordered based on the order of fields in the spec. They do NOT fall onto nice boundaries. -->
@@ -184,6 +244,35 @@
         <field name="OFMOverride" id="9768" type="OFMOverride"/>
     </message>
 
+    <message name="MarketDataIncrementalRefresh" id="88" semanticType="X">
+        <field name="TradeDate" id="75" type="LocalMktDate"/>
+        <group name="Entries" id="268">
+            <field name="MDUpdateAction" id="279" type="MDUpdateAction"/>
+            <field name="MDPriceLevel" id="1023" type="uint8" semanticType="MDPriceLevel"/>
+            <field name="MDEntryType" id="269" type="MDEntryType"/>
+            <field name="SecurityIDSource" id="22" type="char" semanticType="SecurityID"/>
+            <field name="SecurityID" id="48" type="uint64" semanticType="InstrumentID"/>
+            <field name="RptSeq" id="83" type="uint8" semanticType="SequenceNumber"/>
+            <field name="QuoteCondition" id="276" type="QuoteCondition"/>
+            <field name="MDEntryPx" id="270" type="decimal64" semanticType="Price"/>
+            <field name="NumberOfOrders" id="346" type="uint32" semanticType="NumberOfOrders"/>
+            <field name="MDEntryTime" id="273" type="timestamp"/>
+            <field name="MDEntrySize" id="271" type="IntQty32"/>
+            <field name="TradingSessionID" id="336" type="MarketStateIdentifier"/>
+            <field name="NetChgPrevDay" id="451" type="decimal64"/>
+            <field name="TickDirection" id="274" type="TickDirection"/>
+            <field name="OpenCloseSettleFlag" id="286" type="OpenCloseSettleFlag"/>
+            <field name="SettlDate" id="64" type="timestamp"/>
+            <field name="TradeCondition" id="277" type="TradeCondition"/>
+            <field name="TradeVolume" id="1020" type="IntQty32"/>
+            <field name="MDQuoteType" id="1070" type="MDQuoteType"/>
+            <field name="FixingBracket" id="5790" type="timestamp"/>
+            <field name="AggressorSide" id="5797" type="Side"/>
+            <field name="MatchEventIndicator" id="5799" type="MatchEventIndicator"/>
+            <field name="TradeID" id="1003" type="uint64" semanticType="ExecID"/>
+        </group>
+    </message>
+
     <message name="MassQuote" id="105" semanticType="i">
         <field name="QuoteReqID" id="131" type="string23" semanticType="String"/>
         <field name="QuoteID" id="117" type="string10" semanticType="String"/>
@@ -211,7 +300,7 @@
                 <field name="BidPx" id="132" type="OptionalPrice" semanticType="Price"/>
                 <field name="BidSize" id="134" type="optionalInt64" semanticType="int"/>
                 <field name="OfferPx" id="133" type="OptionalPrice" semanticType="Price"/>
-                <field name="OfferSize" id="135" type="optionalInt64" semanticType="int"/>                
+                <field name="OfferSize" id="135" type="optionalInt64" semanticType="int"/>
             </group>
         </group>
     </message>
