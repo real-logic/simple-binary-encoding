@@ -63,12 +63,17 @@ public class EnumType extends Type
         {
             case "char":
             case "uint8":
+            case "int8":
+            case "int16":
+            case "uint16":
+            case "int32":
                 encodingType = PrimitiveType.get(encodingTypeStr);
                 break;
+
             default:
                 // might not have ran into this type yet, so look for the xpath
-                final Node encodingTypeNode = (Node)xPath.compile(
-                String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
+                final Node encodingTypeNode =
+                    (Node)xPath.compile(String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
                     .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
 
                 if (encodingTypeNode == null)
@@ -93,7 +98,7 @@ public class EnumType extends Type
 
         if (encodingType == null)
         {
-            throw new IllegalArgumentException("illegal encodingType " + encodingTypeStr);
+            throw new IllegalArgumentException("illegal encodingType for enum " + encodingTypeStr);
         }
 
         if (nullValueStr != null)
@@ -113,11 +118,11 @@ public class EnumType extends Type
             nullValue = null;
         }
 
-        NodeList list = (NodeList)xPath.compile("validValue").evaluate(node, XPathConstants.NODESET);
+        final NodeList list = (NodeList)xPath.compile("validValue").evaluate(node, XPathConstants.NODESET);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            ValidValue v = new ValidValue(list.item(i), encodingType);
+            final ValidValue v = new ValidValue(list.item(i), encodingType);
 
             if (validValueByPrimitiveValueMap.get(v.primitiveValue()) != null)
             {
