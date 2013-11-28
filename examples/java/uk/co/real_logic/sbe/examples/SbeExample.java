@@ -64,7 +64,7 @@ public class SbeExample
                       .version((short)CAR.templateVersion());
 
         bufferOffset += MESSAGE_HEADER.size();
-        encodingLength = MESSAGE_HEADER.size();
+        encodingLength += MESSAGE_HEADER.size();
         encodingLength += encode(CAR, directBuffer, bufferOffset);
 
         // Optionally write the encoded buffer to a file for decoding by the On-The-Fly decoder
