@@ -847,7 +847,7 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-            "    public String %sCharacterEncoding()\n" +
+            "    public static String %sCharacterEncoding()\n" +
             "    {\n" +
             "        return \"%s\";\n" +
             "    }\n\n",
