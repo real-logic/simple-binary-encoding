@@ -37,10 +37,10 @@ public class SbeExample
     {
         try
         {
-            VEHICLE_CODE = "abcdef".getBytes(Car.vehicleCodeCharacterEncoding());
-            MANUFACTURER_CODE = "123".getBytes(Engine.manufacturerCodeCharacterEncoding());
-            MAKE = "Honda".getBytes(Car.makeCharacterEncoding());
-            MODEL = "Civic VTi".getBytes(Car.modelCharacterEncoding());
+            VEHICLE_CODE = "abcdef".getBytes(CAR.vehicleCodeCharacterEncoding());
+            MANUFACTURER_CODE = "123".getBytes(CAR.engine().manufacturerCodeCharacterEncoding());
+            MAKE = "Honda".getBytes(CAR.makeCharacterEncoding());
+            MODEL = "Civic VTi".getBytes(CAR.modelCharacterEncoding());
         }
         catch (final UnsupportedEncodingException ex)
         {
@@ -201,8 +201,8 @@ public class SbeExample
             }
         }
 
-        sb.append("\ncar.make=").append(new String(buffer, 0, car.getMake(buffer, 0, buffer.length), Car.makeCharacterEncoding()));
-        sb.append("\ncar.model=").append(new String(buffer, 0, car.getModel(buffer, 0, buffer.length), Car.modelCharacterEncoding()));
+        sb.append("\ncar.make=").append(new String(buffer, 0, car.getMake(buffer, 0, buffer.length), CAR.makeCharacterEncoding()));
+        sb.append("\ncar.model=").append(new String(buffer, 0, car.getModel(buffer, 0, buffer.length), CAR.modelCharacterEncoding()));
 
         sb.append("\ncar.size=").append(car.size());
 
