@@ -200,9 +200,11 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "public class %s implements GroupFlyweight<%s>\n" +
+            indent + "public static class %s implements GroupFlyweight<%s>\n" +
             indent + "{\n" +
             indent + "    private final %s dimensions = new %s();\n" +
+            indent + "    private MessageFlyweight parentMessage;\n" +
+            indent + "    private DirectBuffer buffer;\n" +
             indent + "    private int blockLength;\n" +
             indent + "    private int actingVersion;\n" +
             indent + "    private int count;\n" +
@@ -215,15 +217,17 @@ public class JavaGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public void resetForDecode(final int actingVersion)\n" +
+            indent + "    public void resetForDecode(final MessageFlyweight parentMessage, final DirectBuffer buffer, final int actingVersion)\n" +
             indent + "    {\n" +
-            indent + "        dimensions.reset(buffer, position(), actingVersion);\n" +
+            indent + "        this.parentMessage = parentMessage;\n" +
+            indent + "        this.buffer = buffer;\n" +
+            indent + "        dimensions.reset(buffer, parentMessage.position(), actingVersion);\n" +
             indent + "        count = dimensions.numInGroup();\n" +
             indent + "        blockLength = dimensions.blockLength();\n" +
             indent + "        this.actingVersion = actingVersion;\n" +
             indent + "        index = -1;\n" +
             indent + "        final int dimensionsHeaderSize = %d;\n" +
-            indent + "        position(position() + dimensionsHeaderSize);\n" +
+            indent + "        parentMessage.position(parentMessage.position() + dimensionsHeaderSize);\n" +
             indent + "    }\n\n",
             dimensionHeaderSize
         ));
@@ -233,16 +237,18 @@ public class JavaGenerator implements CodeGenerator
         final String javaTypeForNumInGroup = javaTypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    public void resetForEncode(final int count)\n" +
+            indent + "    public void resetForEncode(final MessageFlyweight parentMessage, final DirectBuffer buffer, final int count)\n" +
             indent + "    {\n" +
-            indent + "        dimensions.reset(buffer, position(), actingVersion);\n" +
+            indent + "        this.parentMessage = parentMessage;\n" +
+            indent + "        this.buffer = buffer;\n" +
+            indent + "        dimensions.reset(buffer, parentMessage.position(), actingVersion);\n" +
             indent + "        dimensions.numInGroup((%s)count);\n" +
             indent + "        dimensions.blockLength((%s)%d);\n" +
             indent + "        index = -1;\n" +
             indent + "        this.count = count;\n" +
             indent + "        blockLength = %d;\n" +
             indent + "        final int dimensionsHeaderSize = %d;\n" +
-            indent + "        position(position() + dimensionsHeaderSize);\n" +
+            indent + "        parentMessage.position(parentMessage.position() + dimensionsHeaderSize);\n" +
             indent + "    }\n\n",
             javaTypeForNumInGroup,
             javaTypeForBlockLength,
@@ -278,8 +284,8 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new java.util.NoSuchElementException();\n" +
             indent + "        }\n\n" +
-            indent + "        offset = position();\n" +
-            indent + "        position(offset + blockLength);\n" +
+            indent + "        offset = parentMessage.position();\n" +
+            indent + "        parentMessage.position(offset + blockLength);\n" +
             indent + "        ++index;\n\n" +
             indent + "        return this;\n" +
             indent + "    }\n",
@@ -304,7 +310,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public long %sSchemaId()\n" +
+            indent + "    public static long %sSchemaId()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n\n",
@@ -316,7 +322,7 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
-            indent + "        %s.resetForDecode(actingVersion);\n" +
+            indent + "        %s.resetForDecode(parentMessage, buffer, actingVersion);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
             className,
@@ -329,7 +335,7 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %s %sCount(final int count)\n" +
             indent + "    {\n" +
-            indent + "        %s.resetForEncode(count);\n" +
+            indent + "        %s.resetForEncode(parentMessage, buffer, count);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
             className,
@@ -753,7 +759,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public int %sLength()\n" +
+            indent + "    public static int %sLength()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n\n",
@@ -847,7 +853,7 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-            "    public String %sCharacterEncoding()\n" +
+            "    public static String %sCharacterEncoding()\n" +
             "    {\n" +
             "        return \"%s\";\n" +
             "    }\n\n",
@@ -880,14 +886,14 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    private final byte[] %sValue = {%s};\n",
+            indent + "    private static final byte[] %sValue = {%s};\n",
             propertyName,
             values
         ));
 
         sb.append(String.format(
             "\n" +
-            indent + "    public int %sLength()\n" +
+            indent + "    public static int %sLength()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n\n",
@@ -967,6 +973,7 @@ public class JavaGenerator implements CodeGenerator
             "    public static final int TEMPLATE_ID = %d;\n" +
             "    public static final int TEMPLATE_VERSION = %d;\n" +
             "    public static final int BLOCK_LENGTH = %d;\n\n" +
+            "    private MessageFlyweight parentMessage = this;\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
             "    private int position;\n" +
@@ -1071,7 +1078,7 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-            indent + "    public int %sSchemaId()\n" +
+            indent + "    public static int %sSchemaId()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n",

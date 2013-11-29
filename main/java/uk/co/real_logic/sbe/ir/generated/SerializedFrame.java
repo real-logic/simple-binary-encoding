@@ -74,7 +74,7 @@ public class SerializedFrame implements MessageFlyweight
         this.position = position;
     }
 
-    public int sbeIrVersionSchemaId()
+    public static int sbeIrVersionSchemaId()
     {
         return 1;
     }
@@ -90,7 +90,7 @@ public class SerializedFrame implements MessageFlyweight
         return this;
     }
 
-    public int schemaVersionSchemaId()
+    public static int schemaVersionSchemaId()
     {
         return 2;
     }
@@ -106,12 +106,12 @@ public class SerializedFrame implements MessageFlyweight
         return this;
     }
 
-    public int packageValSchemaId()
+    public static int packageValSchemaId()
     {
         return 4;
     }
 
-    public String packageValCharacterEncoding()
+    public static String packageValCharacterEncoding()
     {
         return "UTF-8";
     }

@@ -37,10 +37,10 @@ public class SbeExample
     {
         try
         {
-            VEHICLE_CODE = "abcdef".getBytes(CAR.vehicleCodeCharacterEncoding());
-            MANUFACTURER_CODE = "123".getBytes(CAR.engine().manufacturerCodeCharacterEncoding());
-            MAKE = "Honda".getBytes(CAR.makeCharacterEncoding());
-            MODEL = "Civic VTi".getBytes(CAR.modelCharacterEncoding());
+            VEHICLE_CODE = "abcdef".getBytes(Car.vehicleCodeCharacterEncoding());
+            MANUFACTURER_CODE = "123".getBytes(Engine.manufacturerCodeCharacterEncoding());
+            MAKE = "Honda".getBytes(Car.makeCharacterEncoding());
+            MODEL = "Civic VTi".getBytes(Car.modelCharacterEncoding());
         }
         catch (final UnsupportedEncodingException ex)
         {
@@ -104,7 +104,7 @@ public class SbeExample
            .code(Model.A)
            .putVehicleCode(VEHICLE_CODE, srcOffset);
 
-        for (int i = 0, size = car.someNumbersLength(); i < size; i++)
+        for (int i = 0, size = Car.someNumbersLength(); i < size; i++)
         {
             car.someNumbers(i, i);
         }
@@ -156,13 +156,13 @@ public class SbeExample
         sb.append("\ncar.code=").append(car.code());
 
         sb.append("\ncar.someNumbers=");
-        for (int i = 0, size = car.someNumbersLength(); i < size; i++)
+        for (int i = 0, size = Car.someNumbersLength(); i < size; i++)
         {
             sb.append(car.someNumbers(i)).append(", ");
         }
 
         sb.append("\ncar.vehicleCode=");
-        for (int i = 0, size = car.vehicleCodeLength(); i < size; i++)
+        for (int i = 0, size = Car.vehicleCodeLength(); i < size; i++)
         {
             sb.append((char)car.vehicleCode(i));
         }
@@ -177,7 +177,7 @@ public class SbeExample
         sb.append("\ncar.engine.numCylinders=").append(engine.numCylinders());
         sb.append("\ncar.engine.maxRpm=").append(engine.maxRpm());
         sb.append("\ncar.engine.manufacturerCode=");
-        for (int i = 0, size = engine.manufacturerCodeLength(); i < size; i++)
+        for (int i = 0, size = Engine.manufacturerCodeLength(); i < size; i++)
         {
             sb.append((char)engine.manufacturerCode(i));
         }
@@ -201,8 +201,8 @@ public class SbeExample
             }
         }
 
-        sb.append("\ncar.make=").append(new String(buffer, 0, car.getMake(buffer, 0, buffer.length), CAR.makeCharacterEncoding()));
-        sb.append("\ncar.model=").append(new String(buffer, 0, car.getModel(buffer, 0, buffer.length), CAR.modelCharacterEncoding()));
+        sb.append("\ncar.make=").append(new String(buffer, 0, car.getMake(buffer, 0, buffer.length), Car.makeCharacterEncoding()));
+        sb.append("\ncar.model=").append(new String(buffer, 0, car.getModel(buffer, 0, buffer.length), Car.modelCharacterEncoding()));
 
         sb.append("\ncar.size=").append(car.size());
 

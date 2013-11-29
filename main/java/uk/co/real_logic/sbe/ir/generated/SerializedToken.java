@@ -74,7 +74,7 @@ public class SerializedToken implements MessageFlyweight
         this.position = position;
     }
 
-    public int tokenOffsetSchemaId()
+    public static int tokenOffsetSchemaId()
     {
         return 11;
     }
@@ -90,7 +90,7 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public int tokenSizeSchemaId()
+    public static int tokenSizeSchemaId()
     {
         return 12;
     }
@@ -122,7 +122,7 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public int tokenVersionSchemaId()
+    public static int tokenVersionSchemaId()
     {
         return 17;
     }
@@ -138,7 +138,7 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public int signalSchemaId()
+    public static int signalSchemaId()
     {
         return 14;
     }
@@ -154,7 +154,7 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public int primitiveTypeSchemaId()
+    public static int primitiveTypeSchemaId()
     {
         return 15;
     }
@@ -170,7 +170,7 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public int byteOrderSchemaId()
+    public static int byteOrderSchemaId()
     {
         return 16;
     }
@@ -186,12 +186,12 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public int nameSchemaId()
+    public static int nameSchemaId()
     {
         return 18;
     }
 
-    public String nameCharacterEncoding()
+    public static String nameCharacterEncoding()
     {
         return "UTF-8";
     }
@@ -221,12 +221,12 @@ public class SerializedToken implements MessageFlyweight
         return length;
     }
 
-    public int constValSchemaId()
+    public static int constValSchemaId()
     {
         return 19;
     }
 
-    public String constValCharacterEncoding()
+    public static String constValCharacterEncoding()
     {
         return "UTF-8";
     }
@@ -256,12 +256,12 @@ public class SerializedToken implements MessageFlyweight
         return length;
     }
 
-    public int minValSchemaId()
+    public static int minValSchemaId()
     {
         return 20;
     }
 
-    public String minValCharacterEncoding()
+    public static String minValCharacterEncoding()
     {
         return "UTF-8";
     }
@@ -291,12 +291,12 @@ public class SerializedToken implements MessageFlyweight
         return length;
     }
 
-    public int maxValSchemaId()
+    public static int maxValSchemaId()
     {
         return 21;
     }
 
-    public String maxValCharacterEncoding()
+    public static String maxValCharacterEncoding()
     {
         return "UTF-8";
     }
@@ -326,12 +326,12 @@ public class SerializedToken implements MessageFlyweight
         return length;
     }
 
-    public int nullValSchemaId()
+    public static int nullValSchemaId()
     {
         return 22;
     }
 
-    public String nullValCharacterEncoding()
+    public static String nullValCharacterEncoding()
     {
         return "UTF-8";
     }
@@ -361,12 +361,12 @@ public class SerializedToken implements MessageFlyweight
         return length;
     }
 
-    public int characterEncodingSchemaId()
+    public static int characterEncodingSchemaId()
     {
         return 23;
     }
 
-    public String characterEncodingCharacterEncoding()
+    public static String characterEncodingCharacterEncoding()
     {
         return "UTF-8";
     }
