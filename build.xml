@@ -224,6 +224,8 @@
     <property name="dir.examples.cpp99.src" location="examples/cpp99"/>
     <property name="dir.examples.cpp99.include" location="main/cpp"/>
 
+    <property name="dir.gen.csharp" value="target/gen/csharp"/>
+
     <path id="examples.classpath">
         <pathelement path="${dir.examples.build}"/>
         <fileset dir="${dir.dist}">
@@ -250,6 +252,20 @@
             <classpath refid="examples.classpath"/>
         </java>
 
+    </target>
+
+    <target name="examples:csharp" depends="dist" description="Generate and run CSHarp generated code example">
+        <mkdir dir="${dir.gen.csharp}"/>
+        <java classname="uk.co.real_logic.sbe.SbeTool">
+            <classpath refid="examples.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.gen.csharp}"/>
+            <sysproperty key="sbe.target.language" value="CSharp"/>
+            <arg value="${dir.examples.resources}/TestSchema.xml"/>
+        </java>
+
+        <copy todir="examples/csharp/SbeExample">
+            <fileset dir="${dir.gen.csharp}"/>
+        </copy>
     </target>
 
     <target name="cpp:examples:gen" depends="dist" description="Generate and run C++ generated code example">
