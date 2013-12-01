@@ -43,11 +43,16 @@
     <Compile Include="Car.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="GroupSizeEncoding.cs" />
+    <Compile Include="IFixedFlyweight.cs" />
+    <Compile Include="IMessageFlyweight.cs" />
     <Compile Include="MessageHeader.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="OptionalExtras.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VarDataEncoding.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DotNetPort-Notes.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

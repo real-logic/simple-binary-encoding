@@ -1,5 +1,14 @@
 *.user
 *.suo
-*.cs
 obj/
 bin/
+
+BooleanType.cs
+Car.cs
+Engine.cs
+GroupSizeEncoding.cs
+MessageHeader.cs
+Model.cs
+OptionalExtras.cs
+Test.cs
+VarDataEncoding.cs
