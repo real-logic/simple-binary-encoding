@@ -16,6 +16,8 @@
 #include <iostream>
 #include <string>
 
+#include <stdio.h>
+
 #include "uk_co_real_logic_sbe_examples/MessageHeader.hpp"
 #include "uk_co_real_logic_sbe_examples/Car.hpp"
 
