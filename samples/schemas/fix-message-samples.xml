@@ -33,9 +33,9 @@
             <type name="mantissa" primitiveType="int32"/>
             <type name="exponent" primitiveType="int8" presence="constant">0</type>
         </composite>
-        <composite name="decimal64">
+        <composite name="Decimal64">
             <type name="mantissa" primitiveType="int64"/>
-            <type name="exponent" primitiveType="int8" presence="constant">5</type>
+            <type name="exponent" primitiveType="int8" presence="constant">7</type>
         </composite>
         <composite name="OptionalPrice">
             <type name="mantissa" primitiveType="int64"/>
@@ -247,29 +247,46 @@
     <message name="MarketDataIncrementalRefresh" id="88" semanticType="X">
         <field name="TradeDate" id="75" type="LocalMktDate"/>
         <group name="Entries" id="268">
-            <field name="MDUpdateAction" id="279" type="MDUpdateAction"/>
-            <field name="MDPriceLevel" id="1023" type="uint8" semanticType="MDPriceLevel"/>
-            <field name="MDEntryType" id="269" type="MDEntryType"/>
-            <field name="SecurityIDSource" id="22" type="char" semanticType="SecurityID"/>
-            <field name="SecurityID" id="48" type="uint64" semanticType="InstrumentID"/>
+            <field name="MdUpdateAction" id="279" type="MDUpdateAction"/>
+            <field name="MdPriceLevel" id="1023" type="uint8" semanticType="MDPriceLevel"/>
+            <field name="MdEntryType" id="269" type="MDEntryType"/>
+            <field name="SecurityIdSource" id="22" type="char" semanticType="SecurityID"/>
+            <field name="SecurityId" id="48" type="uint64" semanticType="InstrumentID"/>
             <field name="RptSeq" id="83" type="uint8" semanticType="SequenceNumber"/>
             <field name="QuoteCondition" id="276" type="QuoteCondition"/>
-            <field name="MDEntryPx" id="270" type="decimal64" semanticType="Price"/>
+            <field name="MdEntryPx" id="270" type="Decimal64" semanticType="Price"/>
             <field name="NumberOfOrders" id="346" type="uint32" semanticType="NumberOfOrders"/>
-            <field name="MDEntryTime" id="273" type="timestamp"/>
-            <field name="MDEntrySize" id="271" type="IntQty32"/>
-            <field name="TradingSessionID" id="336" type="MarketStateIdentifier"/>
-            <field name="NetChgPrevDay" id="451" type="decimal64"/>
+            <field name="MdEntryTime" id="273" type="timestamp"/>
+            <field name="MdEntrySize" id="271" type="IntQty32"/>
+            <field name="TradingSessionId" id="336" type="MarketStateIdentifier"/>
+            <field name="NetChgPrevDay" id="451" type="Decimal64"/>
             <field name="TickDirection" id="274" type="TickDirection"/>
             <field name="OpenCloseSettleFlag" id="286" type="OpenCloseSettleFlag"/>
-            <field name="SettlDate" id="64" type="timestamp"/>
+            <field name="SettleDate" id="64" type="timestamp"/>
             <field name="TradeCondition" id="277" type="TradeCondition"/>
             <field name="TradeVolume" id="1020" type="IntQty32"/>
-            <field name="MDQuoteType" id="1070" type="MDQuoteType"/>
+            <field name="MdQuoteType" id="1070" type="MDQuoteType"/>
             <field name="FixingBracket" id="5790" type="timestamp"/>
             <field name="AggressorSide" id="5797" type="Side"/>
             <field name="MatchEventIndicator" id="5799" type="MatchEventIndicator"/>
-            <field name="TradeID" id="1003" type="uint64" semanticType="ExecID"/>
+            <field name="TradeId" id="1003" type="uint64" semanticType="ExecID"/>
+        </group>
+    </message>
+
+    <message name="MarketDataIncrementalRefreshTrades" id="2" semanticType="X" description="Trade">
+        <field name="TransactTime" id="60" type="timestamp" timeUnit="nanossecond"/>
+        <field name="EventTimeDelta" id="37704" type="uint16"/>
+        <field name="MatchEventIndicator" id="5799" type="MatchEventIndicator"/>
+        <group name="MdIncGrp" id="268">
+            <field name="TradeId" id="1003" type="uint64"/>
+            <field name="SecurityId" id="48" type="uint64"/>
+            <field name="MdEntryPx" id="270" type="Decimal64"/>
+            <field name="MdEntrySize" id="271" type="IntQty32"/>
+            <field name="NumberOfOrders" id="346" type="uint16"/>
+            <field name="MdUpdateAction" id="279" type="MDUpdateAction"/>
+            <field name="RptSeq" id="83" type="uint8"/>
+            <field name="AggressorSide" id="5797" type="Side"/>
+            <field name="MdEntryType" id="269" type="MDEntryType" constant="2"/>
         </group>
     </message>
 
