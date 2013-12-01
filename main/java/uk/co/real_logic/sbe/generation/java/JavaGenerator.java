@@ -669,7 +669,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return CodecUtil.%sGet(buffer, offset + %d%s);\n" +
             indent + "    }\n\n",
             javaTypeName,
-            formatPropertyName(propertyName),
+            propertyName,
             generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
             typePrefix,
             offset,
@@ -683,7 +683,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return this;\n" +
             indent + "    }\n",
             formatClassName(containingClassName),
-            formatPropertyName(propertyName),
+            propertyName,
             javaTypeName,
             typePrefix,
             offset,
@@ -763,7 +763,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n\n",
-            formatPropertyName(propertyName),
+            propertyName,
             fieldLength
         ));
 
@@ -778,7 +778,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return CodecUtil.%sGet(buffer, this.offset + %d + (index * %d)%s);\n" +
             indent + "    }\n\n",
             javaTypeName,
-            formatPropertyName(propertyName),
+            propertyName,
             fieldLength,
             generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
             typePrefix,
@@ -796,7 +796,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        }\n\n" +
             indent + "        CodecUtil.%sPut(buffer, this.offset + %d + (index * %d), value%s);\n" +
             indent + "    }\n",
-            formatPropertyName(propertyName),
+            propertyName,
             javaTypeName,
             fieldLength,
             typePrefix,
@@ -873,7 +873,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "        return %s;\n" +
                     indent + "    }\n",
                 javaTypeName(token.encoding().primitiveType()),
-                formatPropertyName(propertyName),
+                propertyName,
                 generateLiteral(token.encoding().primitiveType(), token.encoding().constVal())
             );
         }
@@ -897,7 +897,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n\n",
-            formatPropertyName(propertyName),
+            propertyName,
             Integer.valueOf(constantValue.length)
         ));
 
@@ -907,8 +907,8 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return %sValue[index];\n" +
             indent + "    }\n\n",
             javaTypeName,
-            formatPropertyName(propertyName),
-            formatPropertyName(propertyName)
+            propertyName,
+            propertyName
         ));
 
         sb.append(String.format(
@@ -920,7 +920,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             toUpperFirstChar(propertyName),
             Integer.valueOf(constantValue.length),
-            formatPropertyName(propertyName)
+            propertyName
         ));
 
         return sb;
@@ -1046,7 +1046,7 @@ public class JavaGenerator implements CodeGenerator
             if (signalToken.signal() == Signal.BEGIN_FIELD)
             {
                 final Token encodingToken = tokens.get(i + 1);
-                final String propertyName = signalToken.name();
+                final String propertyName = formatPropertyName(signalToken.name());
 
                 generateFieldIdMethod(sb, signalToken, indent);
 
@@ -1082,7 +1082,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n",
-            formatPropertyName(token.name()),
+            token.name(),
             Integer.valueOf(token.schemaId())
         ));
     }
@@ -1138,14 +1138,13 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         final String bitSetName = formatClassName(token.name());
-        final String formattedPropertyName = formatPropertyName(propertyName);
         final Integer offset = Integer.valueOf(token.offset());
 
         sb.append(String.format(
             "\n" +
             indent + "    private final %s %s = new %s();\n",
             bitSetName,
-            formattedPropertyName,
+            propertyName,
             bitSetName
         ));
 
@@ -1158,11 +1157,11 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return %s;\n" +
             indent + "    }\n",
             bitSetName,
-            formattedPropertyName,
+            propertyName,
             generateTypeFieldNotPresentCondition(token.version(), indent),
-            formattedPropertyName,
+            propertyName,
             offset,
-            formattedPropertyName
+            propertyName
         ));
 
         return sb;
