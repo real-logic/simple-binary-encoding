@@ -435,15 +435,16 @@ public class CSharpGenerator implements CodeGenerator
 
     private void generateEnum(final List<Token> tokens) throws IOException
     {
-        final String enumName = CSharpUtil.formatClassName(tokens.get(0).name());
+        Token enumToken = tokens.get(0);
+        final String enumName = CSharpUtil.formatClassName(enumToken.name());
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
             out.append(generateFileHeader(ir.packageName()));
-            String enumPrimitiveType = cSharpTypeName(tokens.get(0).encoding().primitiveType());
+            String enumPrimitiveType = cSharpTypeName(enumToken.encoding().primitiveType());
             out.append(generateEnumDeclaration(enumName, enumPrimitiveType));
 
-            out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1)));
+            out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumToken));
 
             out.append(INDENT).append("}\n");
 
@@ -508,14 +509,19 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateEnumValues(final List<Token> tokens)
+    private CharSequence generateEnumValues(final List<Token> tokens, final Token encodingToken)
     {
         final StringBuilder sb = new StringBuilder();
+        final Encoding encoding = encodingToken.encoding();
 
         for (final Token token : tokens)
         {
             sb.append(INDENT).append(INDENT).append(token.name()).append(" = ").append(token.encoding().constVal()).append(",\n");
         }
+
+        final PrimitiveValue nullVal = (encoding.nullVal() != null) ? encoding.nullVal() : encoding.primitiveType().nullVal();
+
+        sb.append(INDENT).append(INDENT).append("NULL_VALUE = ").append(nullVal).append("\n");
 
         return sb;
     }
