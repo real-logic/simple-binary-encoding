@@ -331,6 +331,7 @@
                 exceptions="true"
                 objdir="${dir.gtest.build}">
                 <compilerarg value="-Wall"/>
+                <compilerarg value="-pthread"/>
                 <includepath path="${dir.gtest.include}"/>
                 <includepath path="${dir.gtest.src}"/>
                 <fileset dir="${dir.gtest.src}">
@@ -345,13 +346,14 @@
                 multithreaded="true"
                 outfile="${exec.test.cpp}">
                 <compilerarg value="-Wall"/>
+                <compilerarg value="-pthread"/>
                 <includepath path="${dir.gtest.include}"/>
                 <includepath path="${dir.main.cpp.src}"/>
                 <includepath path="${dir.test.cpp.include}"/>
                 <fileset dir="${dir.main.cpp.build}" includes="*.o"/>
                 <fileset dir="${dir.gtest.build}" includes="*.o"/>
                 <fileset dir="${dir.test.cpp.src}" includes="**/*Test.cpp"/>
-                <libset libs="stdc++"/>
+                <syslibset libs="pthread, stdc++"/>
             </cc>
             <exec executable="${exec.test.cpp}" failonerror="true">
                 <arg value="--gtest_color=no"/>
