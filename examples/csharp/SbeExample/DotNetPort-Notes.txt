@@ -1,3 +1,0 @@
-﻿Questions:
- - which .NET Framework to target? is .NET 2 enough? 
- - little endian: http://stackoverflow.com/questions/217980/c-sharp-little-endian-or-big-endian

@@ -424,7 +424,7 @@ public class CSharpGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
             out.append(generateFileHeader(ir.packageName()));
-            out.append(generateClassDeclaration(bitSetName, "FixedFlyweight"));
+            out.append(generateClassDeclaration(bitSetName, FIXED_FLYWEIGHT_TYPE));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
@@ -540,7 +540,7 @@ public class CSharpGenerator implements CodeGenerator
     private CharSequence generateClassDeclaration(final String className, final String implementedInterface)
     {
         return String.format(
-                "public class %s implements %s\n" +
+                "public class %s : %s\n" +
                         "{\n",
                 className,
                 implementedInterface
