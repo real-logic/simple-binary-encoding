@@ -321,7 +321,7 @@
         </cc>
     </target>
 
-    <target name="cpp:test" depends="clean, init, cpp:compile">
+    <target name="cpp:test" depends="init, cpp:compile">
         <sequential>
             <!-- gtest compile -->
             <cc outtype="static"
