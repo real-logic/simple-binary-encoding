@@ -253,7 +253,7 @@ char *readFileIntoBuffer(const char *filename, int *length)
     int fd = fileno(fptr);
     while (remaining > 0)
     {
-        int sz = ::read(fd, buffer + (*length - remaining), 4098);
+        int sz = ::read(fd, buffer + (*length - remaining), (4098 < remaining) ? 4098 : remaining);
         remaining -= sz;
         if (sz < 0)
         {

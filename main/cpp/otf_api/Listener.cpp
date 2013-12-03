@@ -272,8 +272,8 @@ int Listener::process(void)
                     calculatedOffset = &constOffset;  // use a dummy variable for offset as constant comes from IR
                 }
 
-                // if this is an array or variable size field (-1 size), then handle it
-                if (ir->size() != Ir::size(ir->primitiveType()) || ir->constLen() > Ir::size(ir->primitiveType()))
+                // if this is an array or variable size field (-1 size), or constant array then handle it
+                if (ir->size() == -1 || ir->size() > Ir::size(ir->primitiveType()) || ir->constLen() > Ir::size(ir->primitiveType()))
                 {
                     *calculatedOffset += processEncoding(ir, valuePosition,
                                                          (ir->size() < ir->constLen()) ? ir->constLen() : ir->size());
