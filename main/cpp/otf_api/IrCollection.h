@@ -96,7 +96,11 @@ public:
      */
     const Ir *message(int id) const
     {
-        return map_.find(id)->second;
+        if (map_.count(id) > 0)
+        {
+            return map_.find(id)->second;
+        }
+        return NULL;
     };
 
 protected:
