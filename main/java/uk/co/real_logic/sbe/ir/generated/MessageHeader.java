@@ -9,7 +9,7 @@ public class MessageHeader implements FixedFlyweight
     private int offset;
     private int actingVersion;
 
-    public MessageHeader reset(final DirectBuffer buffer, final int offset, final int actingVersion)
+    public MessageHeader wrap(final DirectBuffer buffer, final int offset, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;

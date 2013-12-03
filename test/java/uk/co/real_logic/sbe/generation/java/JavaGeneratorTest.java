@@ -72,7 +72,7 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
-        flyweight.reset(mockBuffer, bufferOffset, actingVersion);
+        flyweight.wrap(mockBuffer, bufferOffset, actingVersion);
 
         final Integer result = (Integer)clazz.getDeclaredMethod("templateId").invoke(flyweight);
         assertThat(result, is(Integer.valueOf(templateId.intValue())));
@@ -134,7 +134,7 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
-        flyweight.reset(mockBuffer, bufferOffset, actingVersion);
+        flyweight.wrap(mockBuffer, bufferOffset, actingVersion);
 
         final Object result = clazz.getDeclaredMethod("cruiseControl").invoke(flyweight);
 
@@ -164,7 +164,7 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
-        flyweight.reset(mockBuffer, bufferOffset, actingVersion);
+        flyweight.wrap(mockBuffer, bufferOffset, actingVersion);
 
         final Integer capacityResult = (Integer)clazz.getDeclaredMethod("capacity").invoke(flyweight);
         assertThat(capacityResult, is(Integer.valueOf(expectedEngineCapacity)));
@@ -196,7 +196,7 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final MessageFlyweight messageFlyweight = (MessageFlyweight)clazz.newInstance();
-        messageFlyweight.resetForEncode(buffer, 0);
+        messageFlyweight.wrapForEncode(buffer, 0);
 
         final int initialPosition = messageFlyweight.position();
         assertThat(Integer.valueOf(messageFlyweight.blockLength()), is(Integer.valueOf(initialPosition)));

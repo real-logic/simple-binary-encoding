@@ -58,7 +58,7 @@ public class SbeExample
 
         // Setup for encoding a message
 
-        MESSAGE_HEADER.reset(directBuffer, bufferOffset, messageTemplateVersion)
+        MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion)
                       .blockLength(CAR.blockLength())
                       .templateId(CAR.templateId())
                       .version((short)CAR.templateVersion());
@@ -82,7 +82,7 @@ public class SbeExample
         // Decode the encoded message
 
         bufferOffset = 0;
-        MESSAGE_HEADER.reset(directBuffer, bufferOffset, messageTemplateVersion);
+        MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion);
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
         final int templateId = MESSAGE_HEADER.templateId();
@@ -97,7 +97,7 @@ public class SbeExample
     {
         final int srcOffset = 0;
 
-        car.resetForEncode(directBuffer, bufferOffset)
+        car.wrapForEncode(directBuffer, bufferOffset)
            .serialNumber(1234)
            .modelYear(2013)
            .available(BooleanType.TRUE)
@@ -147,7 +147,7 @@ public class SbeExample
         final byte[] buffer = new byte[128];
         final StringBuilder sb = new StringBuilder();
 
-        car.resetForDecode(directBuffer, bufferOffset, actingBlockLength, actingVersion);
+        car.wrapForDecode(directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
         sb.append("\ncar.templateId=").append(car.templateId());
         sb.append("\ncar.serialNumber=").append(car.serialNumber());

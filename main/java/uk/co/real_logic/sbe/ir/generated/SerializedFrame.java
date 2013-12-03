@@ -35,7 +35,7 @@ public class SerializedFrame implements MessageFlyweight
         return offset;
     }
 
-    public SerializedFrame resetForEncode(final DirectBuffer buffer, final int offset)
+    public SerializedFrame wrapForEncode(final DirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
         this.offset = offset;
@@ -46,8 +46,8 @@ public class SerializedFrame implements MessageFlyweight
         return this;
     }
 
-    public SerializedFrame resetForDecode(final DirectBuffer buffer, final int offset,
-                             final int actingBlockLength, final int actingVersion)
+    public SerializedFrame wrapForDecode(final DirectBuffer buffer, final int offset,
+                                         final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;

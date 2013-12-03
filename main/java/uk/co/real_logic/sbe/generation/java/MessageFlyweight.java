@@ -49,16 +49,16 @@ public interface MessageFlyweight
     int offset();
 
     /**
-     * Reset the flyweight to a new index in a buffer to overlay a message for encoding.
+     * Wrap the flyweight over a buffer for encoding.
      *
      * @param buffer underlying the message.
      * @param offset at which the message body begins.
      * @return the flyweight as a sub classed covariant type to provide a fluent API.
      */
-    MessageFlyweight resetForEncode(final DirectBuffer buffer, final int offset);
+    MessageFlyweight wrapForEncode(final DirectBuffer buffer, final int offset);
 
     /**
-     * Reset the flyweight to a new index in a buffer to overlay a message for decoding.
+     * Wrap the flyweight over a buffer for decoding.
      *
      * @param buffer underlying the message.
      * @param offset at which the message body begins.
@@ -66,8 +66,8 @@ public interface MessageFlyweight
      * @param actingVersion of the template to be used with decoding the message.
      * @return the flyweight as a sub classed covariant type to provide a fluent API.
      */
-    MessageFlyweight resetForDecode(final DirectBuffer buffer, final int offset,
-                                    final int actingBlockLength, final int actingVersion);
+    MessageFlyweight wrapForDecode(final DirectBuffer buffer, final int offset,
+                                   final int actingBlockLength, final int actingVersion);
 
     /**
      * The position for the first byte of the next block in the buffer.

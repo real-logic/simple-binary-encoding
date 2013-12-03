@@ -118,7 +118,7 @@ public class Serializer implements Closeable
 
     private int serializeFrame()
     {
-        serializedFrame.resetForEncode(directBuffer, 0)
+        serializedFrame.wrapForEncode(directBuffer, 0)
                        .sbeIrVersion(0)
                        .schemaVersion(ir.version());
 
@@ -131,10 +131,10 @@ public class Serializer implements Closeable
     {
         final PrimitiveType type = token.encoding().primitiveType();
 
-        serializedToken.resetForEncode(directBuffer, 0)
+        serializedToken.wrapForEncode(directBuffer, 0)
                        .tokenOffset(token.offset())
                        .tokenSize(token.size())
-                       .schemaID((int) token.schemaId())
+                       .schemaID(token.schemaId())
                        .tokenVersion(token.version())
                        .signal(SerializationUtils.signal(token.signal()))
                        .primitiveType(SerializationUtils.primitiveType(type))
@@ -142,14 +142,10 @@ public class Serializer implements Closeable
 
         serializedToken.putName(token.name().getBytes(), 0, token.name().getBytes().length);
 
-        serializedToken.putConstVal(valArray, 0,
-                                    SerializationUtils.putVal(valBuffer, token.encoding().constVal(), type));
-        serializedToken.putMinVal(valArray, 0,
-                                  SerializationUtils.putVal(valBuffer, token.encoding().minVal(), type));
-        serializedToken.putMaxVal(valArray, 0,
-                                  SerializationUtils.putVal(valBuffer, token.encoding().maxVal(), type));
-        serializedToken.putNullVal(valArray, 0,
-                                   SerializationUtils.putVal(valBuffer, token.encoding().nullVal(), type));
+        serializedToken.putConstVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().constVal(), type));
+        serializedToken.putMinVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().minVal(), type));
+        serializedToken.putMaxVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().maxVal(), type));
+        serializedToken.putNullVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().nullVal(), type));
 
         serializedToken.putCharacterEncoding(token.encoding().characterEncoding().getBytes(), 0,
                                              token.encoding().characterEncoding().getBytes().length);

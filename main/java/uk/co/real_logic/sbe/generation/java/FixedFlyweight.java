@@ -21,12 +21,12 @@ package uk.co.real_logic.sbe.generation.java;
 public interface FixedFlyweight
 {
     /**
-     * Reset this flyweight to window over the buffer from a given offset.
+     * Wrap this flyweight over a buffer to window it.
      *
      * @param buffer from which to read and write.
      * @param offset at which the flyweight starts.
      * @param actingVersion of the containing template being decoded
      * @return covariant subclass for fluent API support.
      */
-    FixedFlyweight reset(final DirectBuffer buffer, final int offset, final int actingVersion);
+    FixedFlyweight wrap(final DirectBuffer buffer, final int offset, final int actingVersion);
 }

@@ -217,11 +217,11 @@ public class JavaGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public void resetForDecode(final MessageFlyweight parentMessage, final DirectBuffer buffer, final int actingVersion)\n" +
+            indent + "    public void wrapForDecode(final MessageFlyweight parentMessage, final DirectBuffer buffer, final int actingVersion)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
-            indent + "        dimensions.reset(buffer, parentMessage.position(), actingVersion);\n" +
+            indent + "        dimensions.wrap(buffer, parentMessage.position(), actingVersion);\n" +
             indent + "        count = dimensions.numInGroup();\n" +
             indent + "        blockLength = dimensions.blockLength();\n" +
             indent + "        this.actingVersion = actingVersion;\n" +
@@ -237,11 +237,11 @@ public class JavaGenerator implements CodeGenerator
         final String javaTypeForNumInGroup = javaTypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    public void resetForEncode(final MessageFlyweight parentMessage, final DirectBuffer buffer, final int count)\n" +
+            indent + "    public void wrapForEncode(final MessageFlyweight parentMessage, final DirectBuffer buffer, final int count)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
-            indent + "        dimensions.reset(buffer, parentMessage.position(), actingVersion);\n" +
+            indent + "        dimensions.wrap(buffer, parentMessage.position(), actingVersion);\n" +
             indent + "        dimensions.numInGroup((%s)count);\n" +
             indent + "        dimensions.blockLength((%s)%d);\n" +
             indent + "        index = -1;\n" +
@@ -322,7 +322,7 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
-            indent + "        %s.resetForDecode(parentMessage, buffer, actingVersion);\n" +
+            indent + "        %s.wrapForDecode(parentMessage, buffer, actingVersion);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
             className,
@@ -335,7 +335,7 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %s %sCount(final int count)\n" +
             indent + "    {\n" +
-            indent + "        %s.resetForEncode(parentMessage, buffer, count);\n" +
+            indent + "        %s.wrapForEncode(parentMessage, buffer, count);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
             className,
@@ -948,7 +948,7 @@ public class JavaGenerator implements CodeGenerator
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
             "    private int actingVersion;\n\n" +
-            "    public %s reset(final DirectBuffer buffer, final int offset, final int actingVersion)\n" +
+            "    public %s wrap(final DirectBuffer buffer, final int offset, final int actingVersion)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
@@ -996,7 +996,7 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        return offset;\n" +
             "    }\n\n" +
-            "    public %s resetForEncode(final DirectBuffer buffer, final int offset)\n" +
+            "    public %s wrapForEncode(final DirectBuffer buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
@@ -1005,8 +1005,8 @@ public class JavaGenerator implements CodeGenerator
             "        position(offset + actingBlockLength);\n\n" +
             "        return this;\n" +
             "    }\n\n" +
-            "    public %s resetForDecode(final DirectBuffer buffer, final int offset,\n" +
-            "                             final int actingBlockLength, final int actingVersion)\n" +
+            "    public %s wrapForDecode(final DirectBuffer buffer, final int offset,\n" +
+            "                            final int actingBlockLength, final int actingVersion)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
@@ -1153,7 +1153,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
                      "%s" +
-            indent + "        %s.reset(buffer, offset + %d, actingVersion);\n" +
+            indent + "        %s.wrap(buffer, offset + %d, actingVersion);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
             bitSetName,
@@ -1187,7 +1187,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
                      "%s" +
-            indent + "        %s.reset(buffer, offset + %d, actingVersion);\n" +
+            indent + "        %s.wrap(buffer, offset + %d, actingVersion);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
             compositeName,

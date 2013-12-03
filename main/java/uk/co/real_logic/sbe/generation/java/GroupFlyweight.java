@@ -27,14 +27,14 @@ public interface GroupFlyweight<T> extends Iterable<T>, Iterator<T>
      *
      * @param actingVersion of the containing template being decoded.
      */
-    void resetForDecode(MessageFlyweight parentMessage, DirectBuffer buffer, int actingVersion);
+    void wrapForDecode(MessageFlyweight parentMessage, DirectBuffer buffer, int actingVersion);
 
     /**
      * Reset the flyweight to begin encoding for the current position for a repeat count.
      *
      * @param count of the the times the groups will repeat.
      */
-    void resetForEncode(MessageFlyweight parentMessage, DirectBuffer buffer, int count);
+    void wrapForEncode(MessageFlyweight parentMessage, DirectBuffer buffer, int count);
 
     /**
      * Count of the times the group repeats.

@@ -9,7 +9,7 @@ public class VarDataEncoding implements FixedFlyweight
     private int offset;
     private int actingVersion;
 
-    public VarDataEncoding reset(final DirectBuffer buffer, final int offset, final int actingVersion)
+    public VarDataEncoding wrap(final DirectBuffer buffer, final int offset, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;

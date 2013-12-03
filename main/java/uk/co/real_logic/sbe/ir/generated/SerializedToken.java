@@ -35,7 +35,7 @@ public class SerializedToken implements MessageFlyweight
         return offset;
     }
 
-    public SerializedToken resetForEncode(final DirectBuffer buffer, final int offset)
+    public SerializedToken wrapForEncode(final DirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
         this.offset = offset;
@@ -46,8 +46,8 @@ public class SerializedToken implements MessageFlyweight
         return this;
     }
 
-    public SerializedToken resetForDecode(final DirectBuffer buffer, final int offset,
-                             final int actingBlockLength, final int actingVersion)
+    public SerializedToken wrapForDecode(final DirectBuffer buffer, final int offset,
+                                         final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;

@@ -142,7 +142,7 @@ public class Deserializer implements Closeable
 
     private void deserializeFrame()
     {
-        serializedFrame.resetForDecode(directBuffer, offset, serializedFrame.blockLength(), 0);
+        serializedFrame.wrapForDecode(directBuffer, offset, serializedFrame.blockLength(), 0);
 
         if (serializedFrame.sbeIrVersion() != 0)
         {
@@ -165,7 +165,7 @@ public class Deserializer implements Closeable
 
         final byte[] byteArray = new byte[1024];
 
-        serializedToken.resetForDecode(directBuffer, offset, serializedToken.blockLength(), 0);
+        serializedToken.wrapForDecode(directBuffer, offset, serializedToken.blockLength(), 0);
 
         builder.offset(serializedToken.tokenOffset())
                .size(serializedToken.tokenSize())
