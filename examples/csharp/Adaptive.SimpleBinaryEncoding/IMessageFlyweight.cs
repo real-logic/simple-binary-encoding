@@ -1,4 +1,4 @@
-﻿namespace uk.co.real_logic.sbe.examples
+﻿namespace Adaptive.SimpleBinaryEncoding
 {
     /// <summary>
     ///     Interface for locating a variable length flyweight over a<see>

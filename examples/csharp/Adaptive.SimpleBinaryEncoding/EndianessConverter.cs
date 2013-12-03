@@ -11,21 +11,21 @@ namespace Adaptive.SimpleBinaryEncoding
             ? ByteOrder.LittleEndian
             : ByteOrder.BigEndian;
 
-        public static short Apply(short value, ByteOrder byteOrder)
+        public static short ApplyInt16(ByteOrder byteOrder, short value)
         {
             if (byteOrder == NativeByteOrder) return value;
 
             return (short)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
         }
 
-        public static ushort Apply(ushort value, ByteOrder byteOrder)
+        public static ushort ApplyUInt16(ByteOrder byteOrder, ushort value)
         {
             if (byteOrder == NativeByteOrder) return value;
 
             return (ushort)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
         }
 
-        public static int Apply(int value, ByteOrder byteOrder)
+        public static int ApplyInt32(ByteOrder byteOrder, int value)
         {
             if (byteOrder == NativeByteOrder) return value;
 
@@ -33,7 +33,7 @@ namespace Adaptive.SimpleBinaryEncoding
                    (value & 0x00FF0000U) >> 8 | (value & 0xFF000000U) >> 24);
         }
 
-        public static uint Apply(uint value, ByteOrder byteOrder)
+        public static uint ApplyUInt32(ByteOrder byteOrder, uint value)
         {
             if (byteOrder == NativeByteOrder) return value;
 
@@ -41,7 +41,7 @@ namespace Adaptive.SimpleBinaryEncoding
                    (value & 0x00FF0000U) >> 8 | (value & 0xFF000000U) >> 24;
         }
 
-        public static ulong Apply(ulong value, ByteOrder byteOrder)
+        public static ulong ApplyUInt64(ByteOrder byteOrder, ulong value)
         {
             if (byteOrder == NativeByteOrder) return value;
 
@@ -51,26 +51,26 @@ namespace Adaptive.SimpleBinaryEncoding
                     (value & 0x00FF000000000000UL) >> 40 | (value & 0xFF00000000000000UL) >> 56;
         }
 
-        public static long Apply(long value, ByteOrder byteOrder)
+        public static long ApplyInt64(ByteOrder byteOrder, long value)
         {
             if (byteOrder == NativeByteOrder) return value;
 
             return IPAddress.HostToNetworkOrder(value);
         }
 
-        public static double Apply(double value, ByteOrder byteOrder)
+        public static double ApplyDouble(ByteOrder byteOrder, double value)
         {
             if (byteOrder == NativeByteOrder) return value;
 
             return BitConverter.Int64BitsToDouble(IPAddress.HostToNetworkOrder(BitConverter.DoubleToInt64Bits(value)));
         }
 
-        public unsafe static double Apply(float value, ByteOrder byteOrder)
+        public unsafe static float ApplyFloat(ByteOrder byteOrder, float value)
         {
             if (byteOrder == NativeByteOrder) return value;
 
             int valueInt = *(int*) &value;
-            int applied = Apply(valueInt, byteOrder);
+            int applied = ApplyInt32(byteOrder, valueInt);
 
             return *(float*) &applied;
         }

@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,6 +49,12 @@
     <Compile Include="OptionalExtras.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VarDataEncoding.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Adaptive.SimpleBinaryEncoding\Adaptive.SimpleBinaryEncoding.csproj">
+      <Project>{CE883FD9-14A5-409C-AEBC-86BEA4E3C502}</Project>
+      <Name>Adaptive.SimpleBinaryEncoding</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

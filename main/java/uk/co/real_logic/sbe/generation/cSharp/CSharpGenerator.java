@@ -37,8 +37,8 @@ public class CSharpGenerator implements CodeGenerator
 {
     /** Class name to be used for visitor pattern that accesses the message header. */
     public static final String MESSAGE_HEADER_TYPE = "MessageHeader";
-    public static final String FIXED_FLYWEIGHT_TYPE = "FixedFlyweight";
-    public static final String MESSAGE_FLYWEIGHT_TYPE = "MessageFlyweight";
+    public static final String FIXED_FLYWEIGHT_TYPE = "IFixedFlyweight";
+    public static final String MESSAGE_FLYWEIGHT_TYPE = "IMessageFlyweight";
 
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
@@ -62,7 +62,7 @@ public class CSharpGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.packageName()));  // TODO ODE review generated namespace
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE, FIXED_FLYWEIGHT_TYPE));
-            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, ir.header().get(0).size()));
+            out.append(generateFixedFlyweightCode(ir.header().get(0).size()));
 
             final List<Token> tokens = ir.header();
             out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
@@ -193,6 +193,7 @@ public class CSharpGenerator implements CodeGenerator
         return index;
     }
 
+    // TODO port
     private void generateGroupClassHeader(final StringBuilder sb,
                                           final String groupName,
                                           final List<Token> tokens,
@@ -297,6 +298,7 @@ public class CSharpGenerator implements CodeGenerator
         ));
     }
 
+    // TODO port
     private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
@@ -351,6 +353,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
+    // TODO port
     private CharSequence generateVarData(final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
@@ -417,6 +420,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
+    // TODO port
     private void generateBitSet(final List<Token> tokens) throws IOException
     {
         final String bitSetName = CSharpUtil.formatClassName(tokens.get(0).name());
@@ -425,10 +429,11 @@ public class CSharpGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(bitSetName, FIXED_FLYWEIGHT_TYPE));
-            out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
+            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
+            out.append("    }\n");
             out.append("}\n");
         }
     }
@@ -452,6 +457,7 @@ public class CSharpGenerator implements CodeGenerator
         }
     }
 
+    // TODO port
     private void generateComposite(final List<Token> tokens) throws IOException
     {
         final String compositeName = CSharpUtil.formatClassName(tokens.get(0).name());
@@ -460,7 +466,7 @@ public class CSharpGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(compositeName, FIXED_FLYWEIGHT_TYPE));
-            out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size()));
+            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
 
             out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
@@ -468,7 +474,20 @@ public class CSharpGenerator implements CodeGenerator
         }
     }
 
-    private CharSequence generateChoices(final String bitSetClassName, final List<Token> tokens)
+    private CharSequence generateChoiceNotPresentCondition(final int sinceVersion, final String indent)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+                indent + "            if (_actingVersion < %d) return false;\n",
+                Integer.valueOf(sinceVersion)
+        );
+    }
+
+    private CharSequence generateChoices(final String bitsetClassName, final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -476,32 +495,39 @@ public class CSharpGenerator implements CodeGenerator
         {
             if (token.signal() == Signal.CHOICE)
             {
-                final String choiceName = token.name();
-                final String typePrefix = token.encoding().primitiveType().primitiveName();
+                final String choiceName = toUpperFirstChar(token.name());
+                final String typeName = cSharpTypeName(token.encoding().primitiveType());
                 final String choiceBitPosition = token.encoding().constVal().toString();
-                final ByteOrder byteOrder = token.encoding().byteOrder();
-                final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
                 sb.append(String.format(
                         "\n" +
-                                "    public boolean %s()\n" +
-                                "    {\n" +
-                                "        return CodecUtil.%sGetChoice(buffer, offset, %s%s);\n" +
-                                "    }\n\n" +
-                                "    public %s %s(final boolean value)\n" +
-                                "    {\n" +
-                                "        CodecUtil.%sPutChoice(buffer, offset, %s, value%s);\n" +
-                                "        return this;\n" +
-                                "    }\n",
+                        "        bool %s \n" +
+                        "        {\n" +
+                        "            get\n" +
+                        "            {\n" +
+                        "%s" +
+                        "                return (%s*((%s *)(_pBuffer + _offset))) & (0x1UL << %s)) == 1;\n" +
+                        "            }\n" +
+                        "        }\n\n",
                         choiceName,
-                        typePrefix,
-                        choiceBitPosition,
-                        byteOrderStr,
-                        bitSetClassName,
+                        generateChoiceNotPresentCondition(token.version(), BASE_INDENT + BASE_INDENT),
+                        formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
+                        typeName,
+                        choiceBitPosition
+                ));
+
+                sb.append(String.format(
+                        "        public %s Set%s(bool value)\n" +
+                        "        {\n" +
+                        "            *((%s *)(_pBuffer + _offset)) |= (%s)%s*(ulong*)&value << %s);\n" +
+                        "            return this;\n" +
+                        "        }\n",
+                        bitsetClassName,
                         choiceName,
-                        typePrefix,
-                        choiceBitPosition,
-                        byteOrderStr
+                        typeName,
+                        typeName,
+                        formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
+                        choiceBitPosition
                 ));
             }
         }
@@ -526,11 +552,13 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
+    // TODO port
     private CharSequence generateFileHeader(final String packageName)
     {
         // TODO ODE: uppercase first letters of namespace
         return String.format(
-                "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
+                "/* Generated SBE (Simple Binary Encoding) message codec */\n\n" +
+                        "using Adaptive.SimpleBinaryEncoding;\n\n" +
                         "namespace %s\n" +
                         "{\n",
                 packageName
@@ -540,8 +568,8 @@ public class CSharpGenerator implements CodeGenerator
     private CharSequence generateClassDeclaration(final String className, final String implementedInterface)
     {
         return String.format(
-                "public class %s : %s\n" +
-                        "{\n",
+                "    public unsafe class %s : %s\n" +
+                        "    {\n",
                 className,
                 implementedInterface
         );
@@ -553,6 +581,7 @@ public class CSharpGenerator implements CodeGenerator
                INDENT + "{\n";
     }
 
+    // TODO port
     private CharSequence generatePrimitivePropertyEncodings(final String containingClassName,
                                                             final List<Token> tokens,
                                                             final String indent)
@@ -570,6 +599,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
+    // TODO port
     private CharSequence generatePrimitiveProperty(final String containingClassName,
                                                    final String propertyName,
                                                    final Token token,
@@ -585,6 +615,7 @@ public class CSharpGenerator implements CodeGenerator
         }
     }
 
+    // TODO port
     private CharSequence generatePrimitivePropertyMethods(final String containingClassName,
                                                           final String propertyName,
                                                           final Token token,
@@ -604,6 +635,7 @@ public class CSharpGenerator implements CodeGenerator
         return "";
     }
 
+    // TODO port
     private CharSequence generateSingleValueProperty(final String containingClassName,
                                                      final String propertyName,
                                                      final Token token,
@@ -649,6 +681,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
+    // TODO port
     private CharSequence generateFieldNotPresentCondition(final int sinceVersion, final Encoding encoding, final String indent)
     {
         if (0 == sinceVersion)
@@ -666,6 +699,7 @@ public class CSharpGenerator implements CodeGenerator
         );
     }
 
+    // TODO port
     private CharSequence generateArrayFieldNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
@@ -682,6 +716,7 @@ public class CSharpGenerator implements CodeGenerator
         );
     }
 
+    // TODO port
     private CharSequence generateTypeFieldNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
@@ -698,6 +733,7 @@ public class CSharpGenerator implements CodeGenerator
         );
     }
 
+    // TODO port
     private CharSequence generateArrayProperty(final String containingClassName,
                                                final String propertyName,
                                                final Token token,
@@ -805,6 +841,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
+    // TODO port
     private void generateCharacterEncodingMethod(final StringBuilder sb, final String propertyName, final String encoding)
     {
         sb.append(String.format(
@@ -818,6 +855,7 @@ public class CSharpGenerator implements CodeGenerator
         ));
     }
 
+    // TODO port
     private CharSequence generateConstPropertyMethods(final String propertyName, final Token token, final String indent)
     {
         if (token.encoding().primitiveType() != PrimitiveType.CHAR)
@@ -882,6 +920,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
+    // TODO port
     private CharSequence generateByteLiteralList(final byte[] bytes)
     {
         final StringBuilder values = new StringBuilder();
@@ -898,28 +937,24 @@ public class CSharpGenerator implements CodeGenerator
         return values;
     }
 
-    private CharSequence generateFixedFlyweightCode(final String className, final int size)
+    private CharSequence generateFixedFlyweightCode(final int size)
     {
         return String.format(
-                "    private DirectBuffer buffer;\n" +
-                        "    private int offset;\n" +
-                        "    private int actingVersion;\n\n" +
-                        "    public %s reset(final DirectBuffer buffer, final int offset, final int actingVersion)\n" +
-                        "    {\n" +
-                        "        this.buffer = buffer;\n" +
-                        "        this.offset = offset;\n" +
-                        "        this.actingVersion = actingVersion;\n" +
-                        "        return this;\n" +
-                        "    }\n\n" +
-                        "    public int size()\n" +
-                        "    {\n" +
-                        "        return %d;\n" +
-                        "    }\n",
-                className,
+                "        private byte* _pBuffer;\n" +
+                "        private int _offset;\n" +
+                "        private int _actingVersion;\n\n" +
+                "        public void Reset(DirectBuffer buffer, int offset, int actingVersion)\n" +
+                "        {\n" +
+                "            _pBuffer = buffer.BufferPtr;\n" +
+                "            _offset = offset;\n" +
+                "            _actingVersion = actingVersion;\n" +
+                "        }\n\n" +
+                "        public int Size { get { return %d; } }\n",
                 Integer.valueOf(size)
         );
     }
 
+    // TODO port
     private CharSequence generateMessageFlyweightCode(final String className,
                                                       final int blockLength,
                                                       final int version,
@@ -992,6 +1027,7 @@ public class CSharpGenerator implements CodeGenerator
         );
     }
 
+    // TODO port
     private CharSequence generateFields(final String containingClassName, final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
@@ -1030,6 +1066,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
+    // TODO port
     private void generateFieldIdMethod(final StringBuilder sb, final Token token, final String indent)
     {
         sb.append(String.format(
@@ -1043,6 +1080,7 @@ public class CSharpGenerator implements CodeGenerator
         ));
     }
 
+    // TODO port
     private CharSequence generateEnumProperty(final String containingClassName,
                                               final String propertyName,
                                               final Token token,
@@ -1089,6 +1127,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
+    // TODO port
     private Object generateBitSetProperty(final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
@@ -1124,6 +1163,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
+    // TODO port
     private Object generateCompositeProperty(final String propertyName, final Token token, final String indent)
     {
         final String compositeName = CSharpUtil.formatClassName(token.name());
@@ -1158,6 +1198,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
+    // TODO port
     private String generateLiteral(final PrimitiveType type, final PrimitiveValue value)
     {
         String literal = "";

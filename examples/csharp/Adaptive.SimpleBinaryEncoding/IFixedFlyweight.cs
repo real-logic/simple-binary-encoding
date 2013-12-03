@@ -1,4 +1,4 @@
-﻿namespace uk.co.real_logic.sbe.examples
+﻿namespace Adaptive.SimpleBinaryEncoding
 {
     /// <summary>
     ///     Interface for locating a fixed length flyweight over a <see>
@@ -13,7 +13,6 @@
         /// <param name="buffer">buffer from which to read and write.</param>
         /// <param name="offset">offset at which the flyweight starts.</param>
         /// <param name="actingVersion">actingVersion of the containing template being decoded</param>
-        /// <returns>covariant subclass for fluent API support.</returns>
-        IFixedFlyweight Reset(byte[] buffer, int offset, int actingVersion);
+        void Reset(DirectBuffer buffer, int offset, int actingVersion);
     }
 }

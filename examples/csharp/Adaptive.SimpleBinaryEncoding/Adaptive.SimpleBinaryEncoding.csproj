@@ -46,6 +46,7 @@
     <Compile Include="IFixedFlyweight.cs" />
     <Compile Include="IMessageFlyweight.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleFixedFlyweight.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="DotNetPort-Notes.txt" />

@@ -17,6 +17,7 @@ package uk.co.real_logic.sbe.generation.cSharp;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 
+import java.nio.ByteOrder;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -98,5 +99,21 @@ public class CSharpUtil
     public static String formatClassName(final String str)
     {
         return toUpperFirstChar(str);
+    }
+
+    /**
+     * Return the C# formatted byte order encoding string to use for a given byte order and primitiveType
+     *
+     * @param byteOrder of the {@link uk.co.real_logic.sbe.ir.Token}
+     * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}
+     * @return the string formatted as the byte ordering encoding
+     */
+    public static String  formatByteOrderEncoding(final ByteOrder byteOrder, final PrimitiveType primitiveType)
+    {
+        if(primitiveType.size() == 1) return "(";
+
+        String order = byteOrder == ByteOrder.LITTLE_ENDIAN ? "ByteOrder.LittleEndian" : "ByteOrder.BigEndian";
+
+        return "EndianessConverter.Apply" + toUpperFirstChar(primitiveType.primitiveName()) + "(" + order + ", ";
     }
 }
