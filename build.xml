@@ -51,7 +51,6 @@
     <taskdef resource="cpptasks.types" classpath="${cpptasks.lib}"/>
     <taskdef resource="org/doxygen/tools/antlib.xml" classpath="${doxygen.lib}"/>
 
-
     <target name="init">
         <tstamp/>
         <mkdir dir="${dir.main.build}"/>

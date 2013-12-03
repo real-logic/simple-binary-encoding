@@ -24,7 +24,11 @@
  * builtins for GCC. MSVC has similar ones.
  */
 
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#if defined(WIN32)
+    #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ushort((uint16_t)v))
+    #define BSWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ulong((uint32_t)v))
+    #define BSWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_uint64((uint64_t)v))
+#elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap16((uint16_t)v))
     #define BSWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap32((uint32_t)v))
     #define BSWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap64((uint64_t)v))
