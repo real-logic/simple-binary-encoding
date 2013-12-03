@@ -16,7 +16,6 @@
 package uk.co.real_logic.sbe.generation.java;
 
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.ir.*;
@@ -506,7 +505,7 @@ public class JavaGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            final CharSequence constVal = generateLiteral(token.encoding().primitiveType(), token.encoding().constVal());
+            final CharSequence constVal = generateLiteral(token.encoding().primitiveType(), token.encoding().constVal().toString());
             sb.append("    ").append(token.name()).append('(').append(constVal).append("),\n");
         }
 
@@ -702,7 +701,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            return %s;\n" +
             indent + "        }\n\n",
             Integer.valueOf(sinceVersion),
-            sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.nullVal()) : "(byte)0"
+            sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.nullVal().toString()) : "(byte)0"
         );
     }
 
@@ -870,7 +869,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "    }\n",
                 javaTypeName(token.encoding().primitiveType()),
                 propertyName,
-                generateLiteral(token.encoding().primitiveType(), token.encoding().constVal())
+                generateLiteral(token.encoding().primitiveType(), token.encoding().constVal().toString())
             );
         }
 
@@ -965,10 +964,14 @@ public class JavaGenerator implements CodeGenerator
                                                       final int version,
                                                       final int schemaId)
     {
+        final String blockLengthType = javaTypeName(ir.messageHeader().blockLengthType());
+        final String templateIdType = javaTypeName(ir.messageHeader().templateIdType());
+        final String templateVersionType = javaTypeName(ir.messageHeader().templateVersionType());
+
         return String.format(
-            "    public static final int TEMPLATE_ID = %d;\n" +
-            "    public static final int TEMPLATE_VERSION = %d;\n" +
-            "    public static final int BLOCK_LENGTH = %d;\n\n" +
+            "    public static final %s TEMPLATE_ID = %s;\n" +
+            "    public static final %s TEMPLATE_VERSION = %s;\n" +
+            "    public static final %s BLOCK_LENGTH = %s;\n\n" +
             "    private MessageFlyweight parentMessage = this;\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
@@ -976,15 +979,15 @@ public class JavaGenerator implements CodeGenerator
             "    private int actingBlockLength;\n" +
             "    private int actingVersion;\n" +
             "\n" +
-            "    public int blockLength()\n" +
+            "    public %s blockLength()\n" +
             "    {\n" +
             "        return BLOCK_LENGTH;\n" +
             "    }\n\n" +
-            "    public int templateId()\n" +
+            "    public %s templateId()\n" +
             "    {\n" +
             "        return TEMPLATE_ID;\n" +
             "    }\n\n" +
-            "    public int templateVersion()\n" +
+            "    public %s templateVersion()\n" +
             "    {\n" +
             "        return TEMPLATE_VERSION;\n" +
             "    }\n\n" +
@@ -1024,9 +1027,15 @@ public class JavaGenerator implements CodeGenerator
             "        CodecUtil.checkPosition(position, buffer.capacity());\n" +
             "        this.position = position;\n" +
             "    }\n",
-            Integer.valueOf(schemaId),
-            Integer.valueOf(version),
-            Integer.valueOf(blockLength),
+            templateIdType,
+            generateLiteral(ir.messageHeader().templateIdType(), Integer.toString(schemaId)),
+            templateVersionType,
+            generateLiteral(ir.messageHeader().templateVersionType(), Integer.toString(version)),
+            blockLengthType,
+            generateLiteral(ir.messageHeader().blockLengthType(), Integer.toString(blockLength)),
+            blockLengthType,
+            templateIdType,
+            templateVersionType,
             className,
             className
         );
@@ -1197,7 +1206,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private String generateLiteral(final PrimitiveType type, final PrimitiveValue value)
+    private String generateLiteral(final PrimitiveType type, final String value)
     {
         String literal = "";
 
@@ -1206,15 +1215,15 @@ public class JavaGenerator implements CodeGenerator
         {
             case CHAR:
             case UINT8:
-            case UINT16:
             case INT8:
             case INT16:
                 literal = "(" + castType + ")" + value;
                 break;
 
+            case UINT16:
             case UINT32:
             case INT32:
-                literal = value.toString();
+                literal = value;
                 break;
 
             case FLOAT:

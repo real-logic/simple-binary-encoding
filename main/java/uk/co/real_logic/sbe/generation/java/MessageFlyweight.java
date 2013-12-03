@@ -21,27 +21,6 @@ package uk.co.real_logic.sbe.generation.java;
 public interface MessageFlyweight
 {
     /**
-     * Get the root block length for the message type.
-     *
-     * @return the root block length for the message type.
-     */
-    int blockLength();
-
-    /**
-     * Get the identifier fo the template for this codec.
-     *
-     * @return the identifier fo the template for this codec.
-     */
-    int templateId();
-
-    /**
-     * Get the version up to which this template supports.
-     *
-     * @return the version up to which this template supports.
-     */
-    int templateVersion();
-
-    /**
      * Offset in the underlying buffer at which the message starts.
      *
      * @return offset in the underlying buffer at which the message starts.

@@ -52,7 +52,7 @@ public class SbeExample
     {
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
         final DirectBuffer directBuffer = new DirectBuffer(byteBuffer);
-        final int messageTemplateVersion = 0;
+        final short messageTemplateVersion = 0;
         int bufferOffset = 0;
         int encodingLength = 0;
 
@@ -86,7 +86,7 @@ public class SbeExample
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
         final int templateId = MESSAGE_HEADER.templateId();
-        final int actingVersion = MESSAGE_HEADER.version();
+        final short actingVersion = MESSAGE_HEADER.version();
         final int actingBlockLength = MESSAGE_HEADER.blockLength();
 
         bufferOffset += MESSAGE_HEADER.size();
