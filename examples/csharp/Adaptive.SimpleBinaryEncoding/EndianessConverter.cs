@@ -18,7 +18,7 @@ namespace Adaptive.SimpleBinaryEncoding
             return (short)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
         }
 
-        public static ushort ApplyUInt16(ByteOrder byteOrder, ushort value)
+        public static ushort ApplyUint16(ByteOrder byteOrder, ushort value)
         {
             if (byteOrder == NativeByteOrder) return value;
 
@@ -33,7 +33,7 @@ namespace Adaptive.SimpleBinaryEncoding
                    (value & 0x00FF0000U) >> 8 | (value & 0xFF000000U) >> 24);
         }
 
-        public static uint ApplyUInt32(ByteOrder byteOrder, uint value)
+        public static uint ApplyUint32(ByteOrder byteOrder, uint value)
         {
             if (byteOrder == NativeByteOrder) return value;
 
@@ -41,7 +41,7 @@ namespace Adaptive.SimpleBinaryEncoding
                    (value & 0x00FF0000U) >> 8 | (value & 0xFF000000U) >> 24;
         }
 
-        public static ulong ApplyUInt64(ByteOrder byteOrder, ulong value)
+        public static ulong ApplyUint64(ByteOrder byteOrder, ulong value)
         {
             if (byteOrder == NativeByteOrder) return value;
 

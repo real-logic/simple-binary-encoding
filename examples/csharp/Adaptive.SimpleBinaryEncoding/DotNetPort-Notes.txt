@@ -4,7 +4,7 @@
  - CME spec: http://www.cmegroup.com/confluence/display/EPICSANDBOX/MDP3#MDP3-FPLSimpleBinaryEncoding
 
 
-
+ - optional fields as nullable?	
  - codegen
    - unsafe
    - managed? 
