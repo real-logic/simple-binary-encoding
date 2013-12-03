@@ -41,6 +41,7 @@ public:
     /// Type of Field
     enum Type
     {
+        NOTSET = 0,
         /// Field is a composite
         COMPOSITE = 1,
         /// Field is an encoding of a primitive type
@@ -334,6 +335,7 @@ protected:
 
     Field &reset()
     {
+        type_ = Field::NOTSET;
         name_ = "";
         compositeName_ = "";
         schemaId_ = INVALID_ID;
