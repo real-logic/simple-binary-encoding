@@ -30,13 +30,11 @@
 
     <property name="dir.main.cpp.src" location="main/cpp"/>
     <property name="dir.main.cpp.build" location="target/main/cpp/obj"/>
-    <property name="dir.gtest.src" location="test/cpp/gtest"/>
-    <property name="dir.gtest.include" location="test/cpp/gtest/include"/>
+    <property name="dir.gtest.src" location="target/test/cpp/gtest-1.7.0"/>
+    <property name="dir.gtest.include" location="target/test/cpp/gtest-1.7.0/include"/>
     <property name="dir.gtest.build" location="target/test/cpp/gtest/obj"/>
     <property name="dir.test.cpp.src" location="test/cpp"/>
     <property name="dir.test.cpp.include" location="test/cpp"/>
-    <property name="lib.gtest.name" location="gtest"/>
-    <property name="lib.gtest.path" location="target/test/cpp"/>
     <property name="exec.test.cpp" location="target/test/cpp/gtest-runner"/>
 
     <path id="test.classpath">
@@ -309,7 +307,47 @@
         </exec>
     </target>
 
-    <target name="cpp:compile" depends="">
+    <target name="update:gtest" depends="">
+        <sequential>
+            <local name="gtest.name"/>
+            <local name="sha.fail"/>
+            <local name="cksum.fail"/>
+            <property name="gtest.name" value="gtest-1.7.0.zip"/>
+            <get dest="/tmp">
+                <url url="https://googletest.googlecode.com/files/${gtest.name}"/>
+            </get>
+            <checksum file="/tmp/${gtest.name}" algorithm="sha1" property="f85f6d2481e2c6c4a18539e391aa4ea8ab0394af" verifyproperty="sha.fail"/>
+            <condition property="cksum.fail">
+                <equals arg1="${sha.fail}" arg2="false"/>
+            </condition>
+            <fail if="cksum.fail">Checksum failed</fail>
+            <copy file="/tmp/${gtest.name}" todir="test/lib"/>
+        </sequential>
+    </target>
+
+    <target name="gtest:unzip" depends="init">
+        <unzip src="test/lib/gtest-1.7.0.zip" dest="target/test/cpp"/>
+    </target>
+
+    <target name="gtest:compile" depends="gtest:unzip">
+        <cc outtype="static"
+            subsystem="console"
+            debug="true"
+            multithreaded="true"
+            exceptions="true"
+            objdir="${dir.gtest.build}">
+            <compilerarg value="-Wall"/>
+            <compilerarg value="-pthread"/>
+            <includepath path="${dir.gtest.include}"/>
+            <includepath path="${dir.gtest.src}"/>
+            <fileset dir="${dir.gtest.src}">
+                <include name="src/gtest-all.cc"/>
+                <include name="src/gtest_main.cc"/>
+            </fileset>
+        </cc>
+    </target>
+
+    <target name="cpp:compile" depends="init">
         <cc outtype="static"
             debug="true"
             subsystem="console"
@@ -321,44 +359,26 @@
         </cc>
     </target>
 
-    <target name="cpp:test" depends="init, cpp:compile">
-        <sequential>
-            <!-- gtest compile -->
-            <cc outtype="static"
-                subsystem="console"
-                debug="true"
-                multithreaded="true"
-                exceptions="true"
-                objdir="${dir.gtest.build}">
-                <compilerarg value="-Wall"/>
-                <compilerarg value="-pthread"/>
-                <includepath path="${dir.gtest.include}"/>
-                <includepath path="${dir.gtest.src}"/>
-                <fileset dir="${dir.gtest.src}">
-                    <include name="src/gtest-all.cc"/>
-                    <include name="src/gtest_main.cc"/>
-                </fileset>
-            </cc>
-            <!-- all tests are placed in the main runner -->
-            <cc outtype="executable"
-                subsystem="console"
-                debug="true"
-                multithreaded="true"
-                outfile="${exec.test.cpp}">
-                <compilerarg value="-Wall"/>
-                <compilerarg value="-pthread"/>
-                <includepath path="${dir.gtest.include}"/>
-                <includepath path="${dir.main.cpp.src}"/>
-                <includepath path="${dir.test.cpp.include}"/>
-                <fileset dir="${dir.main.cpp.build}" includes="*.o"/>
-                <fileset dir="${dir.gtest.build}" includes="*.o"/>
-                <fileset dir="${dir.test.cpp.src}" includes="**/*Test.cpp"/>
-                <syslibset libs="pthread, stdc++"/>
-            </cc>
-            <exec executable="${exec.test.cpp}" failonerror="true">
-                <arg value="--gtest_color=no"/>
-            </exec>
-        </sequential>
+    <target name="cpp:test" depends="init, cpp:compile, gtest:compile">
+        <!-- all tests are placed in the main runner -->
+        <cc outtype="executable"
+            subsystem="console"
+            debug="true"
+            multithreaded="true"
+            outfile="${exec.test.cpp}">
+            <compilerarg value="-Wall"/>
+            <compilerarg value="-pthread"/>
+            <includepath path="${dir.gtest.include}"/>
+            <includepath path="${dir.main.cpp.src}"/>
+            <includepath path="${dir.test.cpp.include}"/>
+            <fileset dir="${dir.main.cpp.build}" includes="*.o"/>
+            <fileset dir="${dir.gtest.build}" includes="*.o"/>
+            <fileset dir="${dir.test.cpp.src}" includes="**/*Test.cpp"/>
+            <syslibset libs="pthread, stdc++"/>
+        </cc>
+        <exec executable="${exec.test.cpp}" failonerror="true">
+            <arg value="--gtest_color=no"/>
+        </exec>
     </target>
 
     <target name="cpp" depends="cpp:test, cpp:doc, cpp:dist"/>
