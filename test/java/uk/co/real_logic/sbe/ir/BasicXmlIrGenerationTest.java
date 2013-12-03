@@ -36,11 +36,11 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageHeader()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
-        IrGenerator irg = new IrGenerator();
+        final MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
+        final IrGenerator irg = new IrGenerator();
 
-        IntermediateRepresentation ir = irg.generate(schema);
-        List<Token> tokens = ir.header();
+        final IntermediateRepresentation ir = irg.generate(schema);
+        final List<Token> tokens = ir.messageHeader().tokens();
 
         assertThat(valueOf(tokens.size()), is(valueOf(6)));
 

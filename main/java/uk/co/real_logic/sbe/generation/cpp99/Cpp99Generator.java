@@ -57,11 +57,10 @@ public class Cpp99Generator implements CodeGenerator
     {
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_VISITOR))
         {
+            final List<Token> tokens = ir.messageHeader().tokens();
             out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), MESSAGE_HEADER_VISITOR, null));
             out.append(generateClassDeclaration(MESSAGE_HEADER_VISITOR, "FixedFlyweight"));
-            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_VISITOR, ir.header().get(0).size()));
-
-            final List<Token> tokens = ir.header();
+            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_VISITOR, tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_VISITOR, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("};\n}\n#endif\n");

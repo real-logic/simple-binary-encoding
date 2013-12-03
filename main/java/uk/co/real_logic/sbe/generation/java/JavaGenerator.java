@@ -19,10 +19,7 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
-import uk.co.real_logic.sbe.ir.Encoding;
-import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
-import uk.co.real_logic.sbe.ir.Signal;
-import uk.co.real_logic.sbe.ir.Token;
+import uk.co.real_logic.sbe.ir.*;
 import uk.co.real_logic.sbe.util.Verify;
 
 import java.io.IOException;
@@ -58,11 +55,10 @@ public class JavaGenerator implements CodeGenerator
     {
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
         {
+            final List<Token> tokens = ir.messageHeader().tokens();
             out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE, FixedFlyweight.class.getSimpleName()));
-            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, ir.header().get(0).size()));
-
-            final List<Token> tokens = ir.header();
+            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");

@@ -79,7 +79,7 @@ public class Serializer implements Closeable
 
         write(buffer, serializeFrame());
 
-        serializeTokenList(ir.header());
+        serializeTokenList(ir.messageHeader().tokens());
 
         for (final List<Token> tokenList : ir.messages())
         {

@@ -134,13 +134,14 @@ public class SerializedIrTest
         serializer.serialize();
         buffer.flip();
 
-        Deserializer deserializer = new Deserializer(buffer);
-        IntermediateRepresentation deserIr = deserializer.deserialize();
+        final Deserializer deserializer = new Deserializer(buffer);
+        final IntermediateRepresentation deserIr = deserializer.deserialize();
+        final List<Token> tokens = deserIr.messageHeader().tokens();
 
-        assertThat(Integer.valueOf(deserIr.header().size()), is(Integer.valueOf(serIr.header().size())));
-        for (int i = 0, size = deserIr.header().size(); i < size; i++)
+        assertThat(Integer.valueOf(tokens.size()), is(Integer.valueOf(serIr.messageHeader().tokens().size())));
+        for (int i = 0, size = tokens.size(); i < size; i++)
         {
-            checkTokenEquality(deserIr.header().get(i), serIr.header().get(i));
+            checkTokenEquality(tokens.get(i), serIr.messageHeader().tokens().get(i));
         }
     }
 

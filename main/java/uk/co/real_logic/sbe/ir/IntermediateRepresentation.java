@@ -26,7 +26,7 @@ import java.util.*;
 public class IntermediateRepresentation
 {
     private final String packageName;
-    private final List<Token> headerTokens;
+    private final MessageHeader messageHeader;
     private final Map<Long, List<Token>> messagesByIdMap = new HashMap<>();
     private final Map<String, List<Token>> typesByNameMap = new HashMap<>();
     private final int version;
@@ -43,18 +43,18 @@ public class IntermediateRepresentation
         Verify.notNull(headerTokens, "headerTokens");
 
         this.packageName = packageName;
-        this.headerTokens = Collections.unmodifiableList(new ArrayList<>(headerTokens));
+        this.messageHeader = new MessageHeader(Collections.unmodifiableList(new ArrayList<>(headerTokens)));
         this.version = version;
     }
 
     /**
-     * Return the {@link List} of {@link Token}s representing the message header.
+     * Return the {@link MessageHeader} description for all messages.
      *
-     * @return the {@link List} of {@link Token}s representing the message header.
+     * @return the {@link MessageHeader} description for all messages.
      */
-    public List<Token> header()
+    public MessageHeader messageHeader()
     {
-        return headerTokens;
+        return messageHeader;
     }
 
     /**
