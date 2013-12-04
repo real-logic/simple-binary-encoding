@@ -217,7 +217,6 @@ public class Cpp99Generator implements CodeGenerator
             indent + "    char *buffer_;\n\n" +
             indent + "public:\n\n",
             formatClassName(groupName),
-            dimensionsClassName,
             dimensionsClassName
         ));
 
@@ -231,8 +230,7 @@ public class Cpp99Generator implements CodeGenerator
             indent + "        blockLength_ = dimensions_.blockLength();\n" +
             indent + "        index_ = -1;\n" +
             indent + "        actingVersion_ = actingVersion;\n" +
-            indent + "        int dimensionsHeaderSize = %d;\n" +
-            indent + "        message_->position(message_->position() + dimensionsHeaderSize);\n" +
+            indent + "        message_->position(message_->position() + %d);\n" +
             indent + "    };\n\n",
             dimensionHeaderSize
         ));
@@ -253,8 +251,7 @@ public class Cpp99Generator implements CodeGenerator
             indent + "        count_ = count;\n" +
             indent + "        blockLength_ = %d;\n" +
             indent + "        actingVersion_ = message_->actingVersion();\n" +
-            indent + "        int dimensionsHeaderSize = %d;\n" +
-            indent + "        message_->position(message_->position() + dimensionsHeaderSize);\n" +
+            indent + "        message_->position(message_->position() + %d);\n" +
             indent + "    };\n\n",
             cpp99TypeForNumInGroup,
             cpp99TypeForBlockLength,
@@ -1176,7 +1173,7 @@ public class Cpp99Generator implements CodeGenerator
             if (signalToken.signal() == Signal.BEGIN_FIELD)
             {
                 final Token encodingToken = tokens.get(i + 1);
-                final String propertyName = signalToken.name();
+                final String propertyName = formatPropertyName(signalToken.name());
 
                 sb.append(String.format(
                     "\n" +
