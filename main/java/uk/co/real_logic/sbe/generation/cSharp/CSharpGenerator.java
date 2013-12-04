@@ -480,7 +480,7 @@ public class CSharpGenerator implements CodeGenerator
 
                 sb.append(String.format(
                         "\n" +
-                        "        bool %s \n" +
+                        "        public bool %s \n" +
                         "        {\n" +
                         "            get\n" +
                         "            {\n" +
@@ -1153,7 +1153,7 @@ public class CSharpGenerator implements CodeGenerator
                         indent + "        }\n" +
                         indent + "    }\n",
                 compositeName,
-                propertyName,
+                compositeName,
                 generateTypeFieldNotPresentCondition(token.version(), indent),
                 propertyName,
                 offset,
