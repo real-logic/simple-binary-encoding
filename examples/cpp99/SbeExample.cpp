@@ -65,7 +65,7 @@ void encodeCar(Car &car, char *buffer, int offset)
         car.someNumbers(i, i);
     }
 
-    car.extras()
+    car.extras().clear()
        .cruiseControl(true)
        .sportsPack(true)
        .sunRoof(false);

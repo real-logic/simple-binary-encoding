@@ -480,6 +480,17 @@ public class Cpp99Generator implements CodeGenerator
             out.append(generateClassDeclaration(bitSetName, "FixedFlyweight"));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
 
+            out.append(String.format(
+                "\n" +
+                "    %s &clear(void)\n" +
+                "    {\n" +
+                "        *((%s *)(buffer_ + offset_)) = 0;\n" +
+                "        return *this;\n" +
+                "    };\n\n",
+                bitSetName,
+                cpp99TypeName(tokens.get(0).encoding().primitiveType())
+            ));
+
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
             out.append("};\n}\n#endif\n");
@@ -547,17 +558,18 @@ public class Cpp99Generator implements CodeGenerator
                 final String choiceName = token.name();
                 final String typeName = cpp99TypeName(token.encoding().primitiveType());
                 final String choiceBitPosition = token.encoding().constVal().toString();
+                final String byteOrderStr = formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType());
 
                 sb.append(String.format(
                     "\n" +
                     "    bool %s(void) const\n" +
                     "    {\n" +
                             "%s" +
-                    "        return (%s(*((%s *)(buffer_ + offset_))) & ((uint64_t)0x1 << %s)) ? true : false;\n" +
+                    "        return (%s(*((%s *)(buffer_ + offset_))) & (0x1L << %s)) ? true : false;\n" +
                     "    };\n\n",
                     choiceName,
                     generateChoiceNotPresentCondition(token.version(), BASE_INDENT),
-                    formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
+                    byteOrderStr,
                     typeName,
                     choiceBitPosition
                 ));
@@ -565,14 +577,20 @@ public class Cpp99Generator implements CodeGenerator
                 sb.append(String.format(
                     "    %s &%s(const bool value)\n" +
                     "    {\n" +
-                    "        *((%s *)(buffer_ + offset_)) |= %s((uint64_t)value << %s);\n" +
+                    "        %s bits = %s(*((%s *)(buffer_ + offset_)));\n" +
+                    "        bits = value ? (bits | (0x1L << %s)) : (bits & ~(0x1L << %s));\n" +
+                    "        *((%s *)(buffer_ + offset_)) = %s(bits);\n" +
                     "        return *this;\n" +
                     "    };\n",
                     bitsetClassName,
                     choiceName,
                     typeName,
-                    formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
-                    choiceBitPosition
+                    byteOrderStr,
+                    typeName,
+                    choiceBitPosition,
+                    choiceBitPosition,
+                    typeName,
+                    byteOrderStr
                 ));
             }
         }
