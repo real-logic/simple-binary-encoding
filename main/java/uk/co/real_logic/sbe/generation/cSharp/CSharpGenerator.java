@@ -60,21 +60,19 @@ public class CSharpGenerator implements CodeGenerator
     {
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
         {
-            out.append(generateFileHeader(ir.packageName()));  // TODO ODE review generated namespace
+            final List<Token> tokens = ir.messageHeader().tokens();
+            out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE, FIXED_FLYWEIGHT_TYPE));
-            out.append(generateFixedFlyweightCode(ir.header().get(0).size()));
-
-            final List<Token> tokens = ir.header();
+            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
+            out.append("    }\n");
             out.append("}\n");
         }
     }
 
     public void generateTypeStubs() throws IOException
     {
-        // TODO ODE: CPP returns list of types here, do we need that?
-
         for (final List<Token> tokens : ir.types())
         {
             switch (tokens.get(0).signal())
@@ -102,7 +100,7 @@ public class CSharpGenerator implements CodeGenerator
         for (final List<Token> tokens : ir.messages())
         {
             final Token msgToken = tokens.get(0);
-            final String className = CSharpUtil.formatClassName(msgToken.name());
+            final String className = formatClassName(msgToken.name());
 
             try (final Writer out = outputManager.createOutput(className))
             {
@@ -126,6 +124,7 @@ public class CSharpGenerator implements CodeGenerator
                 final List<Token> varData = messageBody.subList(offset, messageBody.size());
                 out.append(generateVarData(varData));
 
+                out.append("    }\n");
                 out.append("}\n");
             }
         }
@@ -193,167 +192,152 @@ public class CSharpGenerator implements CodeGenerator
         return index;
     }
 
-    // TODO port
     private void generateGroupClassHeader(final StringBuilder sb,
                                           final String groupName,
                                           final List<Token> tokens,
                                           final int index,
                                           final String indent)
     {
-        final String dimensionsClassName = CSharpUtil.formatClassName(tokens.get(index + 1).name());
+        final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
         final Integer dimensionHeaderSize = Integer.valueOf(tokens.get(index + 1).size());
 
         sb.append(String.format(
                 "\n" +
-                        indent + "public static class %s implements GroupFlyweight<%s>\n" +
+                        indent + "public class %sGroup : IGroupFlyweight<%sGroup>\n" +
                         indent + "{\n" +
-                        indent + "    private final %s dimensions = new %s();\n" +
-                        indent + "    private MessageFlyweight parentMessage;\n" +
-                        indent + "    private DirectBuffer buffer;\n" +
-                        indent + "    private int blockLength;\n" +
-                        indent + "    private int actingVersion;\n" +
-                        indent + "    private int count;\n" +
-                        indent + "    private int index;\n" +
-                        indent + "    private int offset;\n\n",
-                CSharpUtil.formatClassName(groupName),
-                CSharpUtil.formatClassName(groupName),
+                        indent + "    private readonly %s _dimensions = new %s();\n" +
+                        indent + "    private IMessageFlyweight _parentMessage;\n" +
+                        indent + "    private DirectBuffer _buffer;\n" +
+                        indent + "    private byte* _pBuffer;\n" +
+                        indent + "    private int _blockLength;\n" +
+                        indent + "    private int _actingVersion;\n" +
+                        indent + "    private int _count;\n" +
+                        indent + "    private int _index;\n" +
+                        indent + "    private int _offset;\n\n",
+                formatClassName(groupName),
+                formatClassName(groupName),
                 dimensionsClassName,
                 dimensionsClassName
         ));
 
         sb.append(String.format(
-            indent + "    public void resetForDecode(final MessageFlyweight parentMessage, final DirectBuffer buffer, final int actingVersion)\n" +
-                    indent + "    {\n" +
-                    indent + "        this.parentMessage = parentMessage;\n" +
-                    indent + "        this.buffer = buffer;\n" +
-                    indent + "        dimensions.reset(buffer, parentMessage.position(), actingVersion);\n" +
-                    indent + "        count = dimensions.numInGroup();\n" +
-                    indent + "        blockLength = dimensions.blockLength();\n" +
-                    indent + "        this.actingVersion = actingVersion;\n" +
-                    indent + "        index = -1;\n" +
-                    indent + "        final int dimensionsHeaderSize = %d;\n" +
-                    indent + "        parentMessage.position(parentMessage.position() + dimensionsHeaderSize);\n" +
-                    indent + "    }\n\n",
-            dimensionHeaderSize
+                indent + "    public void WrapForDecode(IMessageFlyweight parentMessage, DirectBuffer buffer, int actingVersion)\n" +
+                        indent + "    {\n" +
+                        indent + "        _parentMessage = parentMessage;\n" +
+                        indent + "        _buffer = buffer;\n" +
+                        indent + "        _pBuffer = buffer.BufferPtr;\n" +
+                        indent + "        _dimensions.Wrap(buffer, parentMessage.Position, actingVersion);\n" +
+                        indent + "        _count = _dimensions.NumInGroup;\n" +
+                        indent + "        _blockLength = _dimensions.BlockLength;\n" +
+                        indent + "        _actingVersion = actingVersion;\n" +
+                        indent + "        _index = -1;\n" +
+                        indent + "        const int dimensionsHeaderSize = %d;\n" +
+                        indent + "        _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;\n" +
+                        indent + "    }\n\n",
+                dimensionHeaderSize
         ));
 
         final Integer blockLength = Integer.valueOf(tokens.get(index).size());
-        final String javaTypeForBlockLength = cSharpTypeName(tokens.get(index + 2).encoding().primitiveType());
-        final String javaTypeForNumInGroup = cSharpTypeName(tokens.get(index + 3).encoding().primitiveType());
+        final String typeForBlockLength = cSharpTypeName(tokens.get(index + 2).encoding().primitiveType());
+        final String typeForNumInGroup = cSharpTypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-                indent + "    public void resetForEncode(final MessageFlyweight parentMessage, final DirectBuffer buffer, final int count)\n" +
-                        indent + "    {\n" +
-                        indent + "        this.parentMessage = parentMessage;\n" +
-                        indent + "        this.buffer = buffer;\n" +
-                        indent + "        dimensions.reset(buffer, parentMessage.position(), actingVersion);\n" +
-                        indent + "        dimensions.numInGroup((%s)count);\n" +
-                        indent + "        dimensions.blockLength((%s)%d);\n" +
-                        indent + "        index = -1;\n" +
-                        indent + "        this.count = count;\n" +
-                        indent + "        blockLength = %d;\n" +
-                        indent + "        final int dimensionsHeaderSize = %d;\n" +
-                        indent + "        parentMessage.position(parentMessage.position() + dimensionsHeaderSize);\n" +
-                        indent + "    }\n\n",
-                javaTypeForNumInGroup,
-                javaTypeForBlockLength,
+                indent + "    public void WrapForEncode(IMessageFlyweight parentMessage, DirectBuffer buffer, int count)\n" +
+                indent + "    {\n" +
+                indent + "        _parentMessage = parentMessage;\n" +
+                indent + "        _buffer = buffer;\n" +
+                indent + "        _pBuffer = buffer.BufferPtr;\n" +
+                indent + "        _dimensions.Wrap(buffer, parentMessage.Position, _actingVersion);\n" +
+                indent + "        _dimensions.NumInGroup = (%s)count;\n" +
+                indent + "        _dimensions.BlockLength = (%s)%d;\n" +
+                indent + "        _index = -1;\n" +
+                indent + "        _count = count;\n" +
+                indent + "        _blockLength = %d;\n" +
+                indent + "        const int dimensionsHeaderSize = %d;\n" +
+                indent + "        parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;\n" +
+                indent + "    }\n\n",
+                typeForNumInGroup,
+                typeForBlockLength,
                 blockLength,
                 blockLength,
                 dimensionHeaderSize
         ));
 
         sb.append(String.format(
-                indent + "    public int count()\n" +
-                        indent + "    {\n" +
-                        indent + "        return count;\n" +
-                        indent + "    }\n\n" +
-                        indent + "    public java.util.Iterator<%s> iterator()\n" +
-                        indent + "    {\n" +
-                        indent + "        return this;\n" +
-                        indent + "    }\n\n" +
-                        indent + "    public void remove()\n" +
-                        indent + "    {\n" +
-                        indent + "        throw new UnsupportedOperationException();\n" +
-                        indent + "    }\n\n" +
-                        indent + "    public boolean hasNext()\n" +
-                        indent + "    {\n" +
-                        indent + "        return index + 1 < count;\n" +
-                        indent + "    }\n\n",
-                CSharpUtil.formatClassName(groupName)
+                indent + "    public int Count { get { return _count; } }\n\n" +
+                indent + "    public bool HasNext { get { return _index + 1 < _count; } }\n\n",
+                formatClassName(groupName)
         ));
 
         sb.append(String.format(
-                indent + "    public %s next()\n" +
-                        indent + "    {\n" +
-                        indent + "        if (index + 1 >= count)\n" +
-                        indent + "        {\n" +
-                        indent + "            throw new java.util.NoSuchElementException();\n" +
-                        indent + "        }\n\n" +
-                        indent + "        offset = parentMessage.position();\n" +
-                        indent + "        parentMessage.position(offset + blockLength);\n" +
-                        indent + "        ++index;\n\n" +
-                        indent + "        return this;\n" +
-                        indent + "    }\n",
-                CSharpUtil.formatClassName(groupName)
+                indent + "    public %sGroup Next()\n" +
+                indent + "    {\n" +
+                indent + "        if (_index + 1 >= _count)\n" +
+                indent + "        {\n" +
+                indent + "            throw new InvalidOperationException();\n" +
+                indent + "        }\n\n" +
+                indent + "        _offset = _parentMessage.Position;\n" +
+                indent + "        _parentMessage.Position = _offset + _blockLength;\n" +
+                indent + "        ++_index;\n\n" +
+                indent + "        return this;\n" +
+                indent + "    }\n",
+                formatClassName(groupName)
         ));
     }
 
-    // TODO port
     private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
         final String className = CSharpUtil.formatClassName(groupName);
-        final String propertyName = CSharpUtil.formatPropertyName(groupName);
 
         sb.append(String.format(
                 "\n" +
-                        indent + "    private final %s %s = new %s();\n",
+                        indent + "    private readonly %sGroup _%s = new %sGroup();\n",
                 className,
-                propertyName,
+                toLowerFirstChar(groupName),
                 className
         ));
 
         sb.append(String.format(
                 "\n" +
-                        indent + "    public static long %sSchemaId()\n" +
-                        indent + "    {\n" +
-                        indent + "        return %d;\n" +
-                        indent + "    }\n\n",
-                groupName,
+                        indent + "    public const long %sSchemaId = %d;\n\n",
+                toUpperFirstChar(groupName),
                 Integer.valueOf(token.schemaId())
         ));
 
         sb.append(String.format(
                 "\n" +
-                        indent + "    public %s %s()\n" +
+                        indent + "    public %sGroup %s\n" +
                         indent + "    {\n" +
-                        indent + "        %s.resetForDecode(parentMessage, buffer, actingVersion);\n" +
-                        indent + "        return %s;\n" +
+                        indent + "        get\n" +
+                        indent + "        {\n" +
+                        indent + "            _%s.WrapForDecode(_parentMessage, _buffer, _actingVersion);\n" +
+                        indent + "            return _%s;\n" +
+                        indent + "        }\n" +
                         indent + "    }\n",
                 className,
-                propertyName,
-                propertyName,
-                propertyName
+                toUpperFirstChar(groupName),
+                toLowerFirstChar(groupName),
+                toLowerFirstChar(groupName)
         ));
 
         sb.append(String.format(
                 "\n" +
-                        indent + "    public %s %sCount(final int count)\n" +
+                        indent + "    public %sGroup %sCount(int count)\n" +
                         indent + "    {\n" +
-                        indent + "        %s.resetForEncode(parentMessage, buffer, count);\n" +
-                        indent + "        return %s;\n" +
+                        indent + "        _%s.WrapForEncode(_parentMessage, _buffer, count);\n" +
+                        indent + "        return _%s;\n" +
                         indent + "    }\n",
                 className,
-                propertyName,
-                propertyName,
-                propertyName
+                toUpperFirstChar(groupName),
+                toLowerFirstChar(groupName),
+                toLowerFirstChar(groupName)
         ));
 
         return sb;
     }
 
-    // TODO port
     private CharSequence generateVarData(final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
@@ -368,51 +352,47 @@ public class CSharpGenerator implements CodeGenerator
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
                 generateCharacterEncodingMethod(sb, token.name(), characterEncoding);
 
-                final String propertyName = CSharpUtil.toUpperFirstChar(token.name());
+                final String propertyName = toUpperFirstChar(token.name());
                 final Token lengthToken = tokens.get(i + 2);
                 final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
-                final Encoding lengthEncoding = lengthToken.encoding();
-                final String lengthJavaType = cSharpTypeName(lengthEncoding.primitiveType());
-                final String lengthTypePrefix = lengthEncoding.primitiveType().primitiveName();
-                final ByteOrder byteOrder = lengthEncoding.byteOrder();
-                final String byteOrderStr = lengthEncoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
+                final String lengthType = cSharpTypeName(lengthToken.encoding().primitiveType());
                 sb.append(String.format(
-                        "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
+                        "    public int Get%s(byte[] dst, int dstOffset, int length)\n" +
                                 "    {\n" +
                                 "%s" +
-                                "        final int sizeOfLengthField = %d;\n" +
-                                "        final int lengthPosition = position();\n" +
-                                "        position(lengthPosition + sizeOfLengthField);\n" +
-                                "        final int dataLength = CodecUtil.%sGet(buffer, lengthPosition%s);\n" +
-                                "        final int bytesCopied = Math.min(length, dataLength);\n" +
-                                "        CodecUtil.int8sGet(buffer, position(), dst, dstOffset, bytesCopied);\n" +
-                                "        position(position() + dataLength);\n\n" +
+                                "        const int sizeOfLengthField = %d;\n" +
+                                "        int lengthPosition = Position;\n" +
+                                "        Position = lengthPosition + sizeOfLengthField;\n" +
+                                "        int dataLength = %s(*((%s *)(_buffer.BufferPtr + lengthPosition))));\n" +
+                                "        int bytesCopied = Math.Min(length, dataLength);\n" +
+                                "        _buffer.GetBytes(Position, dst, dstOffset, bytesCopied);\n" +
+                                "        Position = Position + dataLength;\n\n" +
                                 "        return bytesCopied;\n" +
                                 "    }\n\n",
                         propertyName,
                         generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
                         sizeOfLengthField,
-                        lengthTypePrefix,
-                        byteOrderStr
+                        formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
+                        lengthType
                 ));
 
                 sb.append(String.format(
-                        "    public int put%s(final byte[] src, final int srcOffset, final int length)\n" +
+                        "    public int Set%s(byte[] src, int srcOffset, int length)\n" +
                                 "    {\n" +
-                                "        final int sizeOfLengthField = %d;\n" +
-                                "        final int lengthPosition = position();\n" +
-                                "        CodecUtil.%sPut(buffer, lengthPosition, (%s)length%s);\n" +
-                                "        position(lengthPosition + sizeOfLengthField);\n" +
-                                "        CodecUtil.int8sPut(buffer, position(), src, srcOffset, length);\n" +
-                                "        position(position() + length);\n\n" +
+                                "        const int sizeOfLengthField = %d;\n" +
+                                "        int lengthPosition = Position;\n" +
+                                "        *((%s *)(_buffer.BufferPtr + lengthPosition)) = %s((%s)length));\n" +
+                                "        Position = lengthPosition + sizeOfLengthField;\n" +
+                                "        _buffer.SetBytes(Position, src, srcOffset, length);\n" +
+                                "        Position = Position + length;\n\n" +
                                 "        return length;\n" +
                                 "    }\n",
                         propertyName,
                         sizeOfLengthField,
-                        lengthTypePrefix,
-                        lengthJavaType,
-                        byteOrderStr
+                        lengthType,
+                        formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
+                        lengthType
                 ));
             }
         }
@@ -552,17 +532,27 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
-    // TODO port
     private CharSequence generateFileHeader(final String packageName)
     {
-        // TODO ODE: uppercase first letters of namespace
+        String[] tokens = packageName.split("\\.");
+        final StringBuilder sb = new StringBuilder();
+        for (final String t : tokens)
+        {
+            sb.append(toUpperFirstChar(t)).append(".");
+        }
+
+        if (sb.length() > 0)
+        {
+            sb.setLength(sb.length() - 1);
+        }
+
         return String.format(
                 "/* Generated SBE (Simple Binary Encoding) message codec */\n\n" +
                         "using System;\n" +
                         "using Adaptive.SimpleBinaryEncoding;\n\n" +
                         "namespace %s\n" +
                         "{\n",
-                packageName
+                sb
         );
     }
 
@@ -681,7 +671,7 @@ public class CSharpGenerator implements CodeGenerator
         return String.format(
                 indent + "        if (actingVersion < %d) return %s;\n\n",
                 Integer.valueOf(sinceVersion),
-                sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.nullVal()) : "(byte)0"
+                sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.nullVal().toString()) : "(byte)0"
         );
     }
 
@@ -706,8 +696,8 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         return String.format(
-        indent + "        if (actingVersion < %d) return null;\n\n",
-        Integer.valueOf(sinceVersion)
+            indent + "        if (actingVersion < %d) return null;\n\n",
+            Integer.valueOf(sinceVersion)
         );
     }
 
@@ -831,7 +821,7 @@ public class CSharpGenerator implements CodeGenerator
                             indent + "    public %s %s { get { return %s; } }\n",
                     cSharpTypeName(token.encoding().primitiveType()),
                     toUpperFirstChar(propertyName),
-                    generateLiteral(token.encoding().primitiveType(), token.encoding().constVal())
+                    generateLiteral(token.encoding().primitiveType(), token.encoding().constVal().toString())
             );
         }
 
@@ -903,7 +893,7 @@ public class CSharpGenerator implements CodeGenerator
                 "        private DirectBuffer _buffer;\n" +
                 "        private int _offset;\n" +
                 "        private int _actingVersion;\n\n" +
-                "        public void Reset(DirectBuffer buffer, int offset, int actingVersion)\n" +
+                "        public void Wrap(DirectBuffer buffer, int offset, int actingVersion)\n" +
                 "        {\n" +
                 "            _pBuffer = buffer.BufferPtr;\n" +
                 "            _offset = offset;\n" +
@@ -915,80 +905,87 @@ public class CSharpGenerator implements CodeGenerator
         );
     }
 
-    // TODO port
     private CharSequence generateMessageFlyweightCode(final String className,
                                                       final int blockLength,
                                                       final int version,
                                                       final int schemaId)
     {
+        final String blockLengthType = cSharpTypeName(ir.messageHeader().blockLengthType());
+        final String templateIdType = cSharpTypeName(ir.messageHeader().templateIdType());
+        final String templateVersionType = cSharpTypeName(ir.messageHeader().templateVersionType());
+
         return String.format(
-                "    public const int TemplateId = %d;\n" +
-                        "    public const int TemplateVersion = %d;\n" +
-                        "    public const int BlockLength = %d;\n\n" +
-                        "    private IMessageFlyweight _parentMessage = this;\n" +
+                "    public const %s TemplateId = %s;\n" +
+                        "    public const %s TemplateVersion = %s;\n" +
+                        "    public const %s BlockLength = %s;\n\n" +
+                        "    private IMessageFlyweight _parentMessage;\n" +
                         "    private DirectBuffer _buffer;\n" +
+                        "    private byte* _pBuffer;\n" +
                         "    private int _offset;\n" +
                         "    private int _position;\n" +
                         "    private int _actingBlockLength;\n" +
                         "    private int _actingVersion;\n" +
                         "\n" +
-                        "    public int blockLength()\n" +
+                        "    public int Offset { get { return _offset; } }\n\n" +
+                        "    public %s()\n" +
                         "    {\n" +
-                        "        return BLOCK_LENGTH;\n" +
+                        "        _parentMessage = this;\n" +
                         "    }\n\n" +
-                        "    public int templateId()\n" +
+                        "    public void WrapForEncode(DirectBuffer buffer, int offset)\n" +
                         "    {\n" +
-                        "        return TEMPLATE_ID;\n" +
+                        "        _buffer = buffer;\n" +
+                        "        _pBuffer = buffer.BufferPtr;\n" +
+                        "        _offset = offset;\n" +
+                        "        _actingBlockLength = BlockLength;\n" +
+                        "        _actingVersion = TemplateVersion;\n" +
+                        "        Position = offset + _actingBlockLength;\n" +
                         "    }\n\n" +
-                        "    public int templateVersion()\n" +
+                        "    public void WrapForDecode(DirectBuffer buffer, int offset,\n" +
+                        "                            int actingBlockLength, int actingVersion)\n" +
                         "    {\n" +
-                        "        return TEMPLATE_VERSION;\n" +
+                        "        _buffer = buffer;\n" +
+                        "        _offset = offset;\n" +
+                        "        _actingBlockLength = actingBlockLength;\n" +
+                        "        _actingVersion = actingVersion;\n" +
+                        "        Position = offset + _actingBlockLength;\n" +
                         "    }\n\n" +
-                        "    public int offset()\n" +
+                        "    public int Size\n" +
                         "    {\n" +
-                        "        return offset;\n" +
+                        "        get\n" +
+                        "        {\n" +
+                        "            return _position - _offset;\n" +
+                        "        }\n" +
                         "    }\n\n" +
-                        "    public %s resetForEncode(final DirectBuffer buffer, final int offset)\n" +
+                        "    public int Position\n" +
                         "    {\n" +
-                        "        this.buffer = buffer;\n" +
-                        "        this.offset = offset;\n" +
-                        "        this.actingBlockLength = BLOCK_LENGTH;\n" +
-                        "        this.actingVersion = TEMPLATE_VERSION;\n" +
-                        "        position(offset + actingBlockLength);\n\n" +
-                        "        return this;\n" +
-                        "    }\n\n" +
-                        "    public %s resetForDecode(final DirectBuffer buffer, final int offset,\n" +
-                        "                             final int actingBlockLength, final int actingVersion)\n" +
-                        "    {\n" +
-                        "        this.buffer = buffer;\n" +
-                        "        this.offset = offset;\n" +
-                        "        this.actingBlockLength = actingBlockLength;\n" +
-                        "        this.actingVersion = actingVersion;\n" +
-                        "        position(offset + actingBlockLength);\n\n" +
-                        "        return this;\n" +
-                        "    }\n\n" +
-                        "    public int size()\n" +
-                        "    {\n" +
-                        "        return position - offset;\n" +
-                        "    }\n\n" +
-                        "    public int position()\n" +
-                        "    {\n" +
-                        "        return position;\n" +
-                        "    }\n\n" +
-                        "    public void position(final int position)\n" +
-                        "    {\n" +
-                        "        CodecUtil.checkPosition(position, buffer.capacity());\n" +
-                        "        this.position = position;\n" +
-                        "    }\n",
-                Integer.valueOf(schemaId),
-                Integer.valueOf(version),
-                Integer.valueOf(blockLength),
+                        "        get\n" +
+                        "        {\n" +
+                        "            return _position;\n" +
+                        "        }\n" +
+                        "        set\n" +
+                        "        {\n" +
+                        "            if (_position > _buffer.Capacity)\n" +
+                        "            {\n" +
+                        "                throw new IndexOutOfRangeException(string.Format(\"position={0} is beyond capacity={1}\", _position, _buffer.Capacity));\n" +
+                        "            }\n" +
+                        "            _position = value;\n" +
+                        "        }\n" +
+                        "    }\n\n",
+                templateIdType,
+                generateLiteral(ir.messageHeader().templateIdType(), Integer.toString(schemaId)),
+                templateVersionType,
+                generateLiteral(ir.messageHeader().templateVersionType(), Integer.toString(version)),
+                blockLengthType,
+                generateLiteral(ir.messageHeader().blockLengthType(), Integer.toString(blockLength)),
+                className,
+                blockLengthType,
+                templateIdType,
+                templateVersionType,
                 className,
                 className
         );
     }
 
-    // TODO
     private CharSequence generateFields(final String containingClassName, final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
@@ -1037,90 +1034,97 @@ public class CSharpGenerator implements CodeGenerator
         ));
     }
 
-    // TODO port
+    private CharSequence generateEnumFieldNotPresentCondition(final int sinceVersion, final String enumName, final String indent)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+                indent + "        if (actingVersion_ < %d) return %s.NULL_VALUE;\n\n",
+                Integer.valueOf(sinceVersion),
+                enumName
+        );
+    }
+
     private CharSequence generateEnumProperty(final String containingClassName,
                                               final String propertyName,
                                               final Token token,
                                               final String indent)
     {
         final String enumName = token.name();
-        final String typePrefix = token.encoding().primitiveType().primitiveName();
+        final String typeName = cSharpTypeName(token.encoding().primitiveType());
         final Integer offset = Integer.valueOf(token.offset());
-        final ByteOrder byteOrder = token.encoding().byteOrder();
-        final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
                 "\n" +
-                        indent + "    public %s %s()\n" +
+                        indent + "    public %s %s\n" +
                         indent + "    {\n" +
+                        indent + "        get\n" +
+                        indent + "        {\n" +
                         "%s" +
-                        indent + "        return %s.get(CodecUtil.%sGet(buffer, offset + %d%s));\n" +
+                        indent + "            return (%s)%s(*((%s *)(_pBuffer + _offset + %d))));\n" +
+                        indent + "        }\n" +
+                        indent + "        set\n" +
+                        indent + "        {\n" +
+                        indent + "            *((%s *)(_pBuffer + _offset + %d)) = %s(value));\n" +
+                        indent + "        }\n" +
                         indent + "    }\n\n",
                 enumName,
-                propertyName,
-                generateTypeFieldNotPresentCondition(token.version(), indent),
+                toUpperFirstChar(propertyName),
+                generateEnumFieldNotPresentCondition(token.version(), enumName, indent),
                 enumName,
-                typePrefix,
+                formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
+                typeName,
                 offset,
-                byteOrderStr
-        ));
-
-        sb.append(String.format(
-                indent + "    public %s %s(final %s value)\n" +
-                        indent + "    {\n" +
-                        indent + "        CodecUtil.%sPut(buffer, offset + %d, value.value()%s);\n" +
-                        indent + "        return this;\n" +
-                        indent + "    }\n",
-                CSharpUtil.formatClassName(containingClassName),
-                propertyName,
                 enumName,
-                typePrefix,
                 offset,
-                byteOrderStr
+                formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())
         ));
 
         return sb;
     }
 
-    // TODO port
     private Object generateBitSetProperty(final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
-        final String bitSetName = CSharpUtil.formatClassName(token.name());
-        final String formattedPropertyName = CSharpUtil.formatPropertyName(propertyName);
+        final String bitSetName = formatClassName(token.name());
         final Integer offset = Integer.valueOf(token.offset());
 
         sb.append(String.format(
                 "\n" +
-                        indent + "    private final %s %s = new %s();\n",
+                        indent + "    private readonly %s _%s = new %s();\n",
                 bitSetName,
-                formattedPropertyName,
+                propertyName,
                 bitSetName
         ));
 
         sb.append(String.format(
                 "\n" +
-                        indent + "    public %s %s()\n" +
+                        indent + "    public %s %s\n" +
                         indent + "    {\n" +
+                        indent + "        get\n" +
+                        indent + "        {\n" +
                         "%s" +
-                        indent + "        %s.reset(buffer, offset + %d, actingVersion);\n" +
-                        indent + "        return %s;\n" +
+                        indent + "            _%s.Wrap(_buffer, _offset + %d, _actingVersion);\n" +
+                        indent + "            return _%s;\n" +
+                        indent + "        }\n" +
                         indent + "    }\n",
                 bitSetName,
-                formattedPropertyName,
+                toUpperFirstChar(propertyName),
                 generateTypeFieldNotPresentCondition(token.version(), indent),
-                formattedPropertyName,
+                propertyName,
                 offset,
-                formattedPropertyName
+                propertyName
         ));
 
         return sb;
     }
 
-    // TODO port
     private Object generateCompositeProperty(final String propertyName, final Token token, final String indent)
     {
         final String compositeName = CSharpUtil.formatClassName(token.name());
@@ -1130,19 +1134,23 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
                 "\n" +
-                        indent + "    private final %s %s = new %s();\n",
+                        indent + "    private readonly %s _%s = new %s();\n",
                 compositeName,
                 propertyName,
                 compositeName
         ));
 
+
         sb.append(String.format(
                 "\n" +
-                        indent + "    public %s %s()\n" +
+                        indent + "    public %s %s\n" +
                         indent + "    {\n" +
+                        indent + "        get\n" +
+                        indent + "        {\n" +
                         "%s" +
-                        indent + "        %s.reset(buffer, offset + %d, actingVersion);\n" +
-                        indent + "        return %s;\n" +
+                        indent + "            _%s.Wrap(_buffer, _offset + %d, _actingVersion);\n" +
+                        indent + "            return _%s;\n" +
+                        indent + "        }\n" +
                         indent + "    }\n",
                 compositeName,
                 propertyName,
@@ -1155,8 +1163,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
-    // TODO port
-    private String generateLiteral(final PrimitiveType type, final PrimitiveValue value)
+    private String generateLiteral(final PrimitiveType type, final String value)
     {
         String literal = "";
 
@@ -1165,15 +1172,18 @@ public class CSharpGenerator implements CodeGenerator
         {
             case CHAR:
             case UINT8:
-            case UINT16:
             case INT8:
             case INT16:
+            case UINT16:
                 literal = "(" + castType + ")" + value;
                 break;
 
-            case UINT32:
             case INT32:
-                literal = value.toString();
+                literal = value;
+                break;
+
+            case UINT32:
+                literal = value + "U";
                 break;
 
             case FLOAT:
@@ -1181,6 +1191,9 @@ public class CSharpGenerator implements CodeGenerator
                 break;
 
             case UINT64:
+                literal = value + "UL";
+                break;
+
             case INT64:
                 literal = value + "L";
                 break;

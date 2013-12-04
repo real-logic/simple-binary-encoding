@@ -13,6 +13,6 @@
         /// <param name="buffer">buffer from which to read and write.</param>
         /// <param name="offset">offset at which the flyweight starts.</param>
         /// <param name="actingVersion">actingVersion of the containing template being decoded</param>
-        void Reset(DirectBuffer buffer, int offset, int actingVersion);
+        void Wrap(DirectBuffer buffer, int offset, int actingVersion);
     }
 }

@@ -44,9 +44,9 @@
     <Compile Include="DirectBuffer.cs" />
     <Compile Include="EndianessConverter.cs" />
     <Compile Include="IFixedFlyweight.cs" />
+    <Compile Include="IGroupFlyweight.cs" />
     <Compile Include="IMessageFlyweight.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SampleFixedFlyweight.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="DotNetPort-Notes.txt" />
