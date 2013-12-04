@@ -4,7 +4,7 @@
                description="Code generation unit test support"
                byteOrder="littleEndian">
     <types>
-        <composite name="messageHeader" description="Template ID and length of message root" semanticType="Length">
+        <composite name="messageHeader" description="Template ID and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint8"/>
@@ -12,16 +12,16 @@
         </composite>
         <composite name="groupSizeEncoding" description="Repeating group dimensions" >
             <type name="blockLength" primitiveType="uint16"/>
-            <type name="numInGroup" primitiveType="uint8" semanticType="NumInGroup"/>
+            <type name="numInGroup" primitiveType="uint8"/>
         </composite>
         <composite name="varDataEncoding">
-            <type name="length" primitiveType="uint8" semanticType="Length"/>
-            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8" semanticType="data"/>
+            <type name="length" primitiveType="uint8"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
         </composite>
     </types>
     <types>
-        <type name="ModelYear" primitiveType="uint16" semanticType="ModelYear"/>
-        <type name="VehicleCode" primitiveType="char" length="6" semanticType="VehicleCode"/>
+        <type name="ModelYear" primitiveType="uint16"/>
+        <type name="VehicleCode" primitiveType="char" length="6"/>
         <composite name="Engine" semanticType="Engine">
             <type name="capacity" primitiveType="uint16"/>
             <type name="numCylinders" primitiveType="uint8"/>
@@ -29,23 +29,23 @@
             <type name="manufacturerCode" primitiveType="char" length="3"/>
             <type name="fuel" primitiveType="char" presence="constant">Petrol</type>
         </composite>
-        <enum name="BooleanType" encodingType="uint8" semanticType="Boolean">
+        <enum name="BooleanType" encodingType="uint8">
             <validValue name="FALSE">0</validValue>
             <validValue name="TRUE">1</validValue>
         </enum>
-        <enum name="Model" encodingType="char" semanticType="Model">
+        <enum name="Model" encodingType="char">
             <validValue name="A">A</validValue>
             <validValue name="B">B</validValue>
             <validValue name="C">C</validValue>
         </enum>
-        <set name="OptionalExtras" encodingType="uint8" semanticType="Extras">
+        <set name="OptionalExtras" encodingType="uint8">
             <choice name="sunRoof">0</choice>
             <choice name="sportsPack">1</choice>
             <choice name="cruiseControl">2</choice>
         </set>
     </types>
     <message name="Car" id="1" description="Description of a basic Car">
-        <field name="serialNumber" id="1" type="uint32" semanticType="SerialNumber"/>
+        <field name="serialNumber" id="1" type="uint32"/>
         <field name="modelYear" id="2" type="ModelYear"/>
         <field name="available" id="3" type="BooleanType"/>
         <field name="code" id="4" type="Model"/>
@@ -53,17 +53,17 @@
         <field name="extras" id="5" type="OptionalExtras"/>
         <field name="engine" id="7" type="Engine"/>
         <group name="fuelFigures" id="8" dimensionType="groupSizeEncoding">
-            <field name="speed" id="9" type="uint16"  semanticType="int"/>
-            <field name="mpg" id="10" type="float" semanticType="int"/>
+            <field name="speed" id="9" type="uint16"/>
+            <field name="mpg" id="10" type="float"/>
         </group>
         <group name="performanceFigures" id="11" dimensionType="groupSizeEncoding">
-            <field name="octaneRating" id="12" type="uint8" semanticType="RON"/>
+            <field name="octaneRating" id="12" type="uint8"/>
             <group name="acceleration" id="13" dimensionType="groupSizeEncoding">
-                <field name="mph" id="14" type="uint16"  semanticType="int"/>
-                <field name="seconds" id="15" type="float" semanticType="int"/>
+                <field name="mph" id="14" type="uint16"/>
+                <field name="seconds" id="15" type="float"/>
             </group>
         </group>
-        <data name="make" id="16" type="varDataEncoding" semanticType="Make"/>
-        <data name="model" id="17" type="varDataEncoding" semanticType="Model"/>
+        <data name="make" id="16" type="varDataEncoding"/>
+        <data name="model" id="17" type="varDataEncoding"/>
     </message>
 </messageSchema>
