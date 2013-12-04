@@ -417,7 +417,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(bitSetName, FixedFlyweight.class.getSimpleName()));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
-
+            out.append(generateChoiceClear(bitSetName, tokens.get(0)));
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
             out.append("}\n");
@@ -456,6 +456,31 @@ public class JavaGenerator implements CodeGenerator
 
             out.append("}\n");
         }
+    }
+
+    private CharSequence generateChoiceClear(final String bitSetClassName, final Token token)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        final String typePrefix = token.encoding().primitiveType().primitiveName();
+        final String literalValue = generateLiteral(token.encoding().primitiveType(), "0");
+        final ByteOrder byteOrder = token.encoding().byteOrder();
+        final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
+
+        sb.append(String.format(
+            "\n" +
+                "    public %s clear()\n" +
+                "    {\n" +
+                "        CodecUtil.%sPut(buffer, offset, %s%s);\n" +
+                "        return this;\n" +
+                "    }\n",
+            bitSetClassName,
+            typePrefix,
+            literalValue,
+            byteOrderStr
+        ));
+
+        return sb;
     }
 
     private CharSequence generateChoices(final String bitSetClassName, final List<Token> tokens)

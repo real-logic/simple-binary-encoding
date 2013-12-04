@@ -109,7 +109,8 @@ public class SbeExample
             car.someNumbers(i, i);
         }
 
-        car.extras().cruiseControl(true)
+        car.extras().clear()
+                    .cruiseControl(true)
                     .sportsPack(true)
                     .sunRoof(false);
 
