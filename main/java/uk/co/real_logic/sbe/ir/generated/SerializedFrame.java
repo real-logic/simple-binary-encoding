@@ -6,9 +6,10 @@ import uk.co.real_logic.sbe.generation.java.*;
 public class SerializedFrame implements MessageFlyweight
 {
     public static final int TEMPLATE_ID = 1;
-    public static final int TEMPLATE_VERSION = 0;
+    public static final short TEMPLATE_VERSION = (short)0;
     public static final int BLOCK_LENGTH = 8;
 
+    private MessageFlyweight parentMessage = this;
     private DirectBuffer buffer;
     private int offset;
     private int position;
@@ -25,7 +26,7 @@ public class SerializedFrame implements MessageFlyweight
         return TEMPLATE_ID;
     }
 
-    public int templateVersion()
+    public short templateVersion()
     {
         return TEMPLATE_VERSION;
     }
@@ -47,7 +48,7 @@ public class SerializedFrame implements MessageFlyweight
     }
 
     public SerializedFrame wrapForDecode(final DirectBuffer buffer, final int offset,
-                                         final int actingBlockLength, final int actingVersion)
+                            final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;

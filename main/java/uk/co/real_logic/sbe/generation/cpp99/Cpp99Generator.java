@@ -222,11 +222,11 @@ public class Cpp99Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    void resetForDecode(MessageFlyweight *message, const int actingVersion)\n" +
+            indent + "    void wrapForDecode(MessageFlyweight *message, const int actingVersion)\n" +
             indent + "    {\n" +
             indent + "        message_ = message;\n" +
             indent + "        buffer_ = message_->buffer();\n" +
-            indent + "        dimensions_.reset(buffer_, message_->position(), actingVersion);\n" +
+            indent + "        dimensions_.wrap(buffer_, message_->position(), actingVersion);\n" +
             indent + "        count_ = dimensions_.numInGroup();\n" +
             indent + "        blockLength_ = dimensions_.blockLength();\n" +
             indent + "        index_ = -1;\n" +
@@ -242,11 +242,11 @@ public class Cpp99Generator implements CodeGenerator
         final String cpp99TypeForNumInGroup = cpp99TypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    void resetForEncode(MessageFlyweight *message, const int count)\n" +
+            indent + "    void wrapForEncode(MessageFlyweight *message, const int count)\n" +
             indent + "    {\n" +
             indent + "        message_ = message;\n" +
             indent + "        buffer_ = message_->buffer();\n" +
-            indent + "        dimensions_.reset(buffer_, message_->position(), message_->actingVersion());\n" +
+            indent + "        dimensions_.wrap(buffer_, message_->position(), message_->actingVersion());\n" +
             indent + "        dimensions_.numInGroup((%s)count);\n" +
             indent + "        dimensions_.blockLength((%s)%d);\n" +
             indent + "        index_ = -1;\n" +
@@ -313,7 +313,7 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    int %sSchemaId(void) const\n" +
+            indent + "    static int %sSchemaId(void)\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    };\n\n",
@@ -325,7 +325,7 @@ public class Cpp99Generator implements CodeGenerator
             "\n" +
             indent + "    %s &%s(void)\n" +
             indent + "    {\n" +
-            indent + "        %s_.resetForDecode(message(), message()->actingVersion());\n" +
+            indent + "        %s_.wrapForDecode(message(), message()->actingVersion());\n" +
             indent + "        return %s_;\n" +
             indent + "    };\n",
             className,
@@ -338,7 +338,7 @@ public class Cpp99Generator implements CodeGenerator
             "\n" +
             indent + "    %s &%sCount(const int count)\n" +
             indent + "    {\n" +
-            indent + "        %s_.resetForEncode(message(), count);\n" +
+            indent + "        %s_.wrapForEncode(message(), count);\n" +
             indent + "        return %s_;\n" +
             indent + "    };\n",
             className,
@@ -364,7 +364,7 @@ public class Cpp99Generator implements CodeGenerator
 
                 sb.append(String.format(
                     "\n"  +
-                    "    const char *%sCharacterEncoding()\n" +
+                    "    static const char *%sCharacterEncoding()\n" +
                     "    {\n" +
                     "        return \"%s\";\n" +
                     "    };\n\n",
@@ -373,7 +373,7 @@ public class Cpp99Generator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    "    int %sSinceVersion(void) const\n" +
+                    "    static int %sSinceVersion(void)\n" +
                     "    {\n" +
                     "         return %d;\n" +
                     "    };\n\n" +
@@ -388,7 +388,7 @@ public class Cpp99Generator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    "    int %sSchemaId(void) const\n" +
+                    "    static int %sSchemaId(void)\n" +
                     "    {\n" +
                     "        return %d;\n" +
                     "    };\n\n",
@@ -873,7 +873,7 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    int %sLength(void) const\n" +
+            indent + "    static int %sLength(void)\n" +
             indent + "    {\n" +
                               "%s" +
             indent + "        return %d;\n" +
@@ -1000,7 +1000,7 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    int %sLength(void) const\n" +
+            indent + "    static int %sLength(void)\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    };\n\n",
@@ -1061,14 +1061,14 @@ public class Cpp99Generator implements CodeGenerator
             "    int offset_;\n" +
             "    int actingVersion_;\n\n" +
             "public:\n" +
-            "    %s &reset(char *buffer, const int offset, const int actingVersion)\n" +
+            "    %s &wrap(char *buffer, const int offset, const int actingVersion)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
             "        actingVersion_ = actingVersion;\n" +
             "        return *this;\n" +
             "    };\n\n" +
-            "    int size(void) const\n" +
+            "    static int size(void)\n" +
             "    {\n" +
             "        return %s;\n" +
             "    };\n\n",
@@ -1095,7 +1095,7 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "public:\n\n" +
-            "    sbe_uint64_t blockLength(void) const\n" +
+            "    static sbe_uint64_t blockLength(void)\n" +
             "    {\n" +
             "        return %d;\n" +
             "    };\n\n" +
@@ -1103,7 +1103,7 @@ public class Cpp99Generator implements CodeGenerator
             "    {\n" +
             "        return offset_;\n" +
             "    };\n\n" +
-            "    %s &resetForEncode(char *buffer, const int offset)\n" +
+            "    %s &wrapForEncode(char *buffer, const int offset)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
@@ -1112,7 +1112,7 @@ public class Cpp99Generator implements CodeGenerator
             "        position(offset + actingBlockLength_);\n" +
             "        return *this;\n" +
             "    };\n\n" +
-            "    %s &resetForDecode(char *buffer, const int offset,\n" +
+            "    %s &wrapForDecode(char *buffer, const int offset,\n" +
             "                       const int actingBlockLength, const int actingVersion)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
@@ -1134,11 +1134,11 @@ public class Cpp99Generator implements CodeGenerator
             "    {\n" +
             "        return position() - offset_;\n" +
             "    };\n\n" +
-            "    int templateId(void) const\n" +
+            "    static int templateId(void)\n" +
             "    {\n" +
             "        return %d;\n" +
             "    };\n\n" +
-            "    int templateVersion(void) const\n" +
+            "    static int templateVersion(void)\n" +
             "    {\n" +
             "        return %d;\n" +
             "    };\n\n" +
@@ -1180,7 +1180,7 @@ public class Cpp99Generator implements CodeGenerator
 
                 sb.append(String.format(
                     "\n" +
-                    indent + "    int %sSchemaId(void) const\n" +
+                    indent + "    static int %sSchemaId(void)\n" +
                     indent + "    {\n" +
                     indent + "        return %d;\n" +
                     indent + "    };\n\n",
@@ -1189,7 +1189,7 @@ public class Cpp99Generator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    indent + "    int %sSinceVersion(void) const\n" +
+                    indent + "    static int %sSinceVersion(void)\n" +
                     indent + "    {\n" +
                     indent + "         return %d;\n" +
                     indent + "    };\n\n" +
@@ -1308,7 +1308,7 @@ public class Cpp99Generator implements CodeGenerator
             "\n" +
             indent + "    %s &%s()\n" +
             indent + "    {\n" +
-            indent + "        %s_.reset(buffer_, offset_ + %d, message()->actingVersion());\n" +
+            indent + "        %s_.wrap(buffer_, offset_ + %d, message()->actingVersion());\n" +
             indent + "        return %s_;\n" +
             indent + "    };\n",
             bitsetName,
@@ -1341,7 +1341,7 @@ public class Cpp99Generator implements CodeGenerator
             "\n" +
             indent + "    %s &%s(void)\n" +
             indent + "    {\n" +
-            indent + "        %s_.reset(buffer_, offset_ + %d, message()->actingVersion());\n" +
+            indent + "        %s_.wrap(buffer_, offset_ + %d, message()->actingVersion());\n" +
             indent + "        return %s_;\n" +
             indent + "    };\n",
             compositeName,

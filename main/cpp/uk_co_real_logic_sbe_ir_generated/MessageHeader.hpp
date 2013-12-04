@@ -16,7 +16,7 @@ private:
     int actingVersion_;
 
 public:
-    MessageHeader &reset(char *buffer, const int offset, const int actingVersion)
+    MessageHeader &wrap(char *buffer, const int offset, const int actingVersion)
     {
         buffer_ = buffer;
         offset_ = offset;
@@ -24,7 +24,7 @@ public:
         return *this;
     };
 
-    int size(void) const
+    static int size(void)
     {
         return 6;
     };

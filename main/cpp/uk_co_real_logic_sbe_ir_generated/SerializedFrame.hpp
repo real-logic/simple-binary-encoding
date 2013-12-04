@@ -24,7 +24,7 @@ private:
 
 public:
 
-    sbe_uint64_t blockLength(void) const
+    static sbe_uint64_t blockLength(void)
     {
         return 8;
     };
@@ -34,7 +34,7 @@ public:
         return offset_;
     };
 
-    SerializedFrame &resetForEncode(char *buffer, const int offset)
+    SerializedFrame &wrapForEncode(char *buffer, const int offset)
     {
         buffer_ = buffer;
         offset_ = offset;
@@ -44,7 +44,7 @@ public:
         return *this;
     };
 
-    SerializedFrame &resetForDecode(char *buffer, const int offset,
+    SerializedFrame &wrapForDecode(char *buffer, const int offset,
                        const int actingBlockLength, const int actingVersion)
     {
         buffer_ = buffer;
@@ -70,12 +70,12 @@ public:
         return position() - offset_;
     };
 
-    int templateId(void) const
+    static int templateId(void)
     {
         return 1;
     };
 
-    int templateVersion(void) const
+    static int templateVersion(void)
     {
         return 0;
     };
@@ -95,12 +95,12 @@ public:
         return actingVersion_;
     };
 
-    int sbeIrVersionSchemaId(void) const
+    static int sbeIrVersionSchemaId(void)
     {
         return 1;
     };
 
-    int sbeIrVersionSinceVersion(void) const
+    static int sbeIrVersionSinceVersion(void)
     {
          return 0;
     };
@@ -122,12 +122,12 @@ public:
         return *this;
     };
 
-    int schemaVersionSchemaId(void) const
+    static int schemaVersionSchemaId(void)
     {
         return 2;
     };
 
-    int schemaVersionSinceVersion(void) const
+    static int schemaVersionSinceVersion(void)
     {
          return 0;
     };
@@ -149,12 +149,12 @@ public:
         return *this;
     };
 
-    const char *packageValCharacterEncoding()
+    static const char *packageValCharacterEncoding()
     {
         return "UTF-8";
     };
 
-    int packageValSinceVersion(void) const
+    static int packageValSinceVersion(void)
     {
          return 0;
     };
@@ -164,7 +164,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int packageValSchemaId(void) const
+    static int packageValSchemaId(void)
     {
         return 4;
     };

@@ -24,7 +24,7 @@ private:
 
 public:
 
-    sbe_uint64_t blockLength(void) const
+    static sbe_uint64_t blockLength(void)
     {
         return 19;
     };
@@ -34,7 +34,7 @@ public:
         return offset_;
     };
 
-    SerializedToken &resetForEncode(char *buffer, const int offset)
+    SerializedToken &wrapForEncode(char *buffer, const int offset)
     {
         buffer_ = buffer;
         offset_ = offset;
@@ -44,7 +44,7 @@ public:
         return *this;
     };
 
-    SerializedToken &resetForDecode(char *buffer, const int offset,
+    SerializedToken &wrapForDecode(char *buffer, const int offset,
                        const int actingBlockLength, const int actingVersion)
     {
         buffer_ = buffer;
@@ -70,12 +70,12 @@ public:
         return position() - offset_;
     };
 
-    int templateId(void) const
+    static int templateId(void)
     {
         return 2;
     };
 
-    int templateVersion(void) const
+    static int templateVersion(void)
     {
         return 0;
     };
@@ -95,12 +95,12 @@ public:
         return actingVersion_;
     };
 
-    int tokenOffsetSchemaId(void) const
+    static int tokenOffsetSchemaId(void)
     {
         return 11;
     };
 
-    int tokenOffsetSinceVersion(void) const
+    static int tokenOffsetSinceVersion(void)
     {
          return 0;
     };
@@ -122,12 +122,12 @@ public:
         return *this;
     };
 
-    int tokenSizeSchemaId(void) const
+    static int tokenSizeSchemaId(void)
     {
         return 12;
     };
 
-    int tokenSizeSinceVersion(void) const
+    static int tokenSizeSinceVersion(void)
     {
          return 0;
     };
@@ -149,12 +149,12 @@ public:
         return *this;
     };
 
-    int schemaIDSchemaId(void) const
+    static int schemaIDSchemaId(void)
     {
         return 13;
     };
 
-    int schemaIDSinceVersion(void) const
+    static int schemaIDSinceVersion(void)
     {
          return 0;
     };
@@ -176,12 +176,12 @@ public:
         return *this;
     };
 
-    int tokenVersionSchemaId(void) const
+    static int tokenVersionSchemaId(void)
     {
         return 17;
     };
 
-    int tokenVersionSinceVersion(void) const
+    static int tokenVersionSinceVersion(void)
     {
          return 0;
     };
@@ -203,12 +203,12 @@ public:
         return *this;
     };
 
-    int signalSchemaId(void) const
+    static int signalSchemaId(void)
     {
         return 14;
     };
 
-    int signalSinceVersion(void) const
+    static int signalSinceVersion(void)
     {
          return 0;
     };
@@ -230,12 +230,12 @@ public:
         return *this;
     };
 
-    int primitiveTypeSchemaId(void) const
+    static int primitiveTypeSchemaId(void)
     {
         return 15;
     };
 
-    int primitiveTypeSinceVersion(void) const
+    static int primitiveTypeSinceVersion(void)
     {
          return 0;
     };
@@ -257,12 +257,12 @@ public:
         return *this;
     };
 
-    int byteOrderSchemaId(void) const
+    static int byteOrderSchemaId(void)
     {
         return 16;
     };
 
-    int byteOrderSinceVersion(void) const
+    static int byteOrderSinceVersion(void)
     {
          return 0;
     };
@@ -284,12 +284,12 @@ public:
         return *this;
     };
 
-    const char *nameCharacterEncoding()
+    static const char *nameCharacterEncoding()
     {
         return "UTF-8";
     };
 
-    int nameSinceVersion(void) const
+    static int nameSinceVersion(void)
     {
          return 0;
     };
@@ -299,7 +299,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int nameSchemaId(void) const
+    static int nameSchemaId(void)
     {
         return 18;
     };
@@ -339,12 +339,12 @@ public:
         return length;
     };
 
-    const char *constValCharacterEncoding()
+    static const char *constValCharacterEncoding()
     {
         return "UTF-8";
     };
 
-    int constValSinceVersion(void) const
+    static int constValSinceVersion(void)
     {
          return 0;
     };
@@ -354,7 +354,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int constValSchemaId(void) const
+    static int constValSchemaId(void)
     {
         return 19;
     };
@@ -394,12 +394,12 @@ public:
         return length;
     };
 
-    const char *minValCharacterEncoding()
+    static const char *minValCharacterEncoding()
     {
         return "UTF-8";
     };
 
-    int minValSinceVersion(void) const
+    static int minValSinceVersion(void)
     {
          return 0;
     };
@@ -409,7 +409,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int minValSchemaId(void) const
+    static int minValSchemaId(void)
     {
         return 20;
     };
@@ -449,12 +449,12 @@ public:
         return length;
     };
 
-    const char *maxValCharacterEncoding()
+    static const char *maxValCharacterEncoding()
     {
         return "UTF-8";
     };
 
-    int maxValSinceVersion(void) const
+    static int maxValSinceVersion(void)
     {
          return 0;
     };
@@ -464,7 +464,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int maxValSchemaId(void) const
+    static int maxValSchemaId(void)
     {
         return 21;
     };
@@ -504,12 +504,12 @@ public:
         return length;
     };
 
-    const char *nullValCharacterEncoding()
+    static const char *nullValCharacterEncoding()
     {
         return "UTF-8";
     };
 
-    int nullValSinceVersion(void) const
+    static int nullValSinceVersion(void)
     {
          return 0;
     };
@@ -519,7 +519,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int nullValSchemaId(void) const
+    static int nullValSchemaId(void)
     {
         return 22;
     };
@@ -559,12 +559,12 @@ public:
         return length;
     };
 
-    const char *characterEncodingCharacterEncoding()
+    static const char *characterEncodingCharacterEncoding()
     {
         return "UTF-8";
     };
 
-    int characterEncodingSinceVersion(void) const
+    static int characterEncodingSinceVersion(void)
     {
          return 0;
     };
@@ -574,7 +574,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
-    int characterEncodingSchemaId(void) const
+    static int characterEncodingSchemaId(void)
     {
         return 23;
     };
