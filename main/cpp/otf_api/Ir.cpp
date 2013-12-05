@@ -37,8 +37,10 @@ struct Ir::Impl
     uint32_t serializedTokenSize;
 };
 
+#if !defined(WIN32)
 const int Ir::INVALID_ID;
 const uint32_t Ir::VARIABLE_SIZE;
+#endif /* WIN32 */
 
 Ir::Ir(const char *buffer, const int len) :
     buffer_(buffer), len_(len)

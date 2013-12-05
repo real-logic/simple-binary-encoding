@@ -44,8 +44,10 @@ using namespace sbe::on_the_fly;
 using ::std::cout;
 using ::std::endl;
 
+#if !defined(WIN32)
 const int32_t Field::INVALID_ID;
 const int Field::FIELD_INDEX;
+#endif /* WIN32 */
 
 Listener::Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL),
                        ir_(NULL), buffer_(NULL), bufferLen_(0), bufferOffset_(0),
