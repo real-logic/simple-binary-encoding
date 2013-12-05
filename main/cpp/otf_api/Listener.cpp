@@ -153,6 +153,12 @@ int Listener::process(void)
             return -1;
         }
 
+        // if group is empty, then skip to END_GROUP
+        if (stack_.top().state_ == Frame::SKIP_TO_END_GROUP && ir->signal() != Ir::END_GROUP)
+        {
+            continue;
+        }
+
         // overloaded method for encoding callback. 1 per primitiveType. Don't need type passed as method has typed value
         switch (ir->signal())
         {
@@ -389,17 +395,24 @@ void Listener::processEndComposite(void)
     {
         cachedField_.reset(); // probably saved some state in the encodings, so reset it out for the fields to follow
 
-        stack_.top().state_ = Frame::BODY_OF_GROUP;
+        if (stack_.top().numInGroup_ > 0)
+        {
+            stack_.top().state_ = Frame::BODY_OF_GROUP;
 
-        stack_.top().irPosition_ = ir_->position();
-        //cout << "save IR position " << stack_.top().irPosition_ << endl;
+            stack_.top().irPosition_ = ir_->position();
+            //cout << "save IR position " << stack_.top().irPosition_ << endl;
 
-        cachedGroup_.name(stack_.top().scopeName_)
-                    .iteration(0)
-                    .numInGroup(stack_.top().numInGroup_)
-                    .event(Group::START);
-        onNext_->onNext(cachedGroup_);
-        cachedGroup_.reset();
+            cachedGroup_.name(stack_.top().scopeName_)
+                        .iteration(0)
+                        .numInGroup(stack_.top().numInGroup_)
+                        .event(Group::START);
+            onNext_->onNext(cachedGroup_);
+            cachedGroup_.reset();
+        }
+        else
+        {
+            stack_.top().state_ = Frame::SKIP_TO_END_GROUP;
+        }
 
         relativeOffsetAnchor_ = bufferOffset_;
     }
@@ -551,12 +564,15 @@ void Listener::processBeginGroup(const Ir *ir)
 void Listener::processEndGroup(void)
 {
     //cout << "END_GROUP " << stack_.top().scopeName_ << endl;
-    cachedGroup_.name(stack_.top().scopeName_)
-                .iteration(stack_.top().iteration_)
-                .numInGroup(stack_.top().numInGroup_)
-                .event(Group::END);
-    onNext_->onNext(cachedGroup_);
-    cachedGroup_.reset();
+    if (stack_.top().numInGroup_ > 0)
+    {
+        cachedGroup_.name(stack_.top().scopeName_)
+                    .iteration(stack_.top().iteration_)
+                    .numInGroup(stack_.top().numInGroup_)
+                    .event(Group::END);
+        onNext_->onNext(cachedGroup_);
+        cachedGroup_.reset();
+    }
 
     if (++stack_.top().iteration_ < stack_.top().numInGroup_)
     {

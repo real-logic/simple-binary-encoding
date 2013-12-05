@@ -263,7 +263,7 @@ private:
     {
         enum State
         {
-            BEGAN_GROUP, DIMENSIONS, BODY_OF_GROUP, MESSAGE
+            BEGAN_GROUP, DIMENSIONS, BODY_OF_GROUP, MESSAGE, SKIP_TO_END_GROUP
         };
 
         std::string scopeName_;

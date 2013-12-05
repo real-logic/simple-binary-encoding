@@ -152,6 +152,43 @@ TEST_F(OtfGroupTest, shouldHandleRepeatingGroup)
     EXPECT_EQ(numGroupsSeen_, 6);
 }
 
+class OtfEmptyGroupTest : public OtfGroupTest
+{
+    virtual void constructMessage()
+    {
+        *((uint16_t *)(buffer_ + bufferLen_)) = 4;
+        bufferLen_ += 2;
+        buffer_[bufferLen_++] = 0;
+    };
+
+    virtual int onNext(const Field &f)
+    {
+        return OtfMessageTestCBs::onNext(f);
+    };
+
+    virtual int onNext(const Group &g)
+    {
+        return OtfMessageTestCBs::onNext(g);
+    };
+
+    virtual int onError(const Error &e)
+    {
+        std::cout << "ERROR: " << e.message() << std::endl;
+        return OtfMessageTestCBs::onError(e);
+    };
+};
+
+TEST_F(OtfEmptyGroupTest, shouldHandleEmptyRepeatingGroup)
+{
+    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+        .resetForDecode(buffer_, bufferLen_)
+        .subscribe(this, this, this);
+    EXPECT_EQ(numFieldsSeen_, 1);
+    EXPECT_EQ(numErrorsSeen_, 0);
+    EXPECT_EQ(numCompletedsSeen_, 1);
+    EXPECT_EQ(numGroupsSeen_, 0);
+}
+
 class OtfNestedGroupTest : public OtfMessageTest, public OtfMessageTestCBs
 {
 protected:
