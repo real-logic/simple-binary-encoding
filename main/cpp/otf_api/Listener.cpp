@@ -57,6 +57,10 @@ Listener::Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL),
 
 Listener &Listener::resetForDecode(const char *data, const int length)
 {
+    onNext_ = NULL;
+    onError_ = NULL;
+    onCompleted_ = NULL;
+    relativeOffsetAnchor_ = 0;
     ir_->begin();
     buffer_ = data;
     bufferLen_ = length;

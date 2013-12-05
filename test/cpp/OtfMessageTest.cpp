@@ -76,6 +76,25 @@ TEST_F(OtfMessageTest, shouldHandleMessageDispatch)
     EXPECT_EQ(cbs.numCompletedsSeen_, 0);
 }
 
+TEST_F(OtfMessageTest, shouldHandleMessageDispatchWithListenerReuse)
+{
+    OtfMessageTestMessage cbs, cbs2;
+
+    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+        .resetForDecode(buffer_, bufferLen_)
+        .subscribe(&cbs, &cbs);
+    EXPECT_EQ(cbs.numFieldsSeen_, 2);
+    EXPECT_EQ(cbs.numErrorsSeen_, 0);
+    EXPECT_EQ(cbs.numCompletedsSeen_, 0);
+
+    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+        .resetForDecode(buffer_, bufferLen_)
+        .subscribe(&cbs2, &cbs2);
+    EXPECT_EQ(cbs2.numFieldsSeen_, 2);
+    EXPECT_EQ(cbs2.numErrorsSeen_, 0);
+    EXPECT_EQ(cbs2.numCompletedsSeen_, 0);
+}
+
 TEST_F(OtfMessageTest, shouldHandleMessageDispatchWithOnCompleted)
 {
     OtfMessageTestMessage cbs;
@@ -281,6 +300,24 @@ TEST_F(OtfMessageAllPrimitiveTypesTest, shouldHandleAllTypes)
     EXPECT_EQ(numErrorsSeen_, 0);
     EXPECT_EQ(numCompletedsSeen_, 1);
 }
+
+TEST_F(OtfMessageAllPrimitiveTypesTest, shouldHandleAllTypesWithListenerReuse)
+{
+    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+             .resetForDecode(buffer_, bufferLen_)
+             .subscribe(this, this, this);
+    EXPECT_EQ(numFieldsSeen_, 2);
+    EXPECT_EQ(numErrorsSeen_, 0);
+    EXPECT_EQ(numCompletedsSeen_, 1);
+
+    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+             .resetForDecode(buffer_, bufferLen_)
+             .subscribe(this, this, this);
+    EXPECT_EQ(numFieldsSeen_, 4);
+    EXPECT_EQ(numErrorsSeen_, 0);
+    EXPECT_EQ(numCompletedsSeen_, 2);
+}
+
 
 class OtfMessageEnumTest : public OtfMessageTest, public OtfMessageTestCBs
 {
