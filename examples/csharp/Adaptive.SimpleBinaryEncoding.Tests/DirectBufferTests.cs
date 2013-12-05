@@ -21,6 +21,21 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
             _pBuffer = (byte*)handle.AddrOfPinnedObject().ToPointer();
         }
 
+        [Test]
+        public void CheckPositionShouldNotThrowWhenPositionIsInRange()
+        {
+            _directBuffer.CheckPosition(0);
+            _directBuffer.CheckPosition(15);
+        }
+
+        [Test]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void CheckPositionShouldThrowWhenPositionIsNotInRange()
+        {
+            _directBuffer.CheckPosition(16);
+        }
+
+
         #region Byte
 
         [TestCase(5, 0)]

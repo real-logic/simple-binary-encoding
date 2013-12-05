@@ -24,17 +24,15 @@ namespace Adaptive.SimpleBinaryEncoding
         }
 
         /// <summary>
-        ///     Capacity of the underlying buffer in bytes.
+        /// Check that a given position is within the capacity of the buffer
         /// </summary>
-        public int Capacity //TODO remove?
+        /// <param name="position">position access is required to.</param>
+        public void CheckPosition(int position)
         {
-            get { return _buffer.Length; }
-        }
-
-        // TODO remove
-        public byte* BufferPtr
-        {
-            get { return _pBuffer; }
+            if (position > _buffer.Length)
+            {
+                 throw new IndexOutOfRangeException(string.Format("position={0} is beyond capacity={1}", position, _buffer.Length));
+            }
         }
 
         /// <summary>

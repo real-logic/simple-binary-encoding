@@ -77,12 +77,10 @@ namespace Uk.Co.Real_logic.Sbe.Examples
 
             for (int i = 0, size = Car.SomeNumbersLength; i < size; i++)
             {
-                car.SomeNumbers(i, i);
+                car.SetSomeNumbers(i, i);
             }
 
-            car.Extras.SetCruiseControl(true);
-            car.Extras.SetSportsPack(true);
-            car.Extras.SetSunRoof(true);
+            car.Extras = OptionalExtras.CruiseControl | OptionalExtras.SunRoof;
 
             car.Engine.Capacity = 2000;
             car.Engine.NumCylinders = 4;
@@ -157,19 +155,19 @@ namespace Uk.Co.Real_logic.Sbe.Examples
             sb.Append("\ncar.someNumbers=");
             for (int i = 0, size = Car.SomeNumbersLength; i < size; i++)
             {
-                sb.Append(car.SomeNumbers(i)).Append(", ");
+                sb.Append(car.GetSomeNumbers(i)).Append(", ");
             }
 
             sb.Append("\ncar.vehicleCode=");
             for (int i = 0, size = Car.VehicleCodeLength; i < size; i++)
             {
-                sb.Append((char) car.VehicleCode(i));
+                sb.Append((char) car.GetVehicleCode(i));
             }
 
             OptionalExtras extras = car.Extras;
-            sb.Append("\ncar.extras.cruiseControl=").Append(extras.CruiseControl);
-            sb.Append("\ncar.extras.sportsPack=").Append(extras.SportsPack);
-            sb.Append("\ncar.extras.sunRoof=").Append(extras.SunRoof);
+            sb.Append("\ncar.extras.cruiseControl=").Append((extras & OptionalExtras.CruiseControl) == OptionalExtras.CruiseControl);
+            sb.Append("\ncar.extras.sportsPack=").Append((extras & OptionalExtras.SportsPack) == OptionalExtras.SportsPack);
+            sb.Append("\ncar.extras.sunRoof=").Append((extras & OptionalExtras.SunRoof) == OptionalExtras.SunRoof);
 
             Engine engine = car.Engine;
             sb.Append("\ncar.engine.capacity=").Append(engine.Capacity);
@@ -178,7 +176,7 @@ namespace Uk.Co.Real_logic.Sbe.Examples
             sb.Append("\ncar.engine.manufacturerCode=");
             for (int i = 0, size = Engine.ManufacturerCodeLength; i < size; i++)
             {
-                sb.Append((char) engine.ManufacturerCode(i));
+                sb.Append((char) engine.GetManufacturerCode(i));
             }
 
             int length = engine.GetFuel(buffer, 0, buffer.Length);
