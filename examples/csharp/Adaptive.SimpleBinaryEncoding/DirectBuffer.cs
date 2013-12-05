@@ -3,12 +3,14 @@ using System.Runtime.InteropServices;
 
 namespace Adaptive.SimpleBinaryEncoding
 {
-    public unsafe class DirectBuffer : IDisposable
+    public unsafe class DirectBuffer : IDisposable, IDirectBuffer
     {
         private readonly byte[] _buffer;
         private readonly byte* _pBuffer;
         private bool _disposed;
         private GCHandle _pinnedGCHandle;
+        // assumes .NET runs only on little endian systems
+        private const ByteOrder NativeByteOrder = ByteOrder.LittleEndian;
 
         public DirectBuffer(byte[] byteArray)
         {
@@ -24,35 +26,342 @@ namespace Adaptive.SimpleBinaryEncoding
         /// <summary>
         ///     Capacity of the underlying buffer in bytes.
         /// </summary>
-        public int Capacity
+        public int Capacity //TODO remove?
         {
             get { return _buffer.Length; }
         }
 
+        // TODO remove
         public byte* BufferPtr
         {
             get { return _pBuffer; }
         }
 
-        public void Dispose()
+        /// <summary>
+        ///  Get the value at a given index.
+        /// </summary>
+        /// <param name="index"> index in bytes from which to get.</param>
+        /// <returns>the value at a given index.</returns>
+        public byte CharGet(int index)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            return *(_pBuffer + index);
         }
 
-        ~DirectBuffer()
+        /// <summary>
+        /// Put a value to a given index.
+        /// </summary>
+        /// <param name="index">index in bytes for where to put.</param>
+        /// <param name="value">value to be written</param>
+        public void CharPut(int index, byte value)
         {
-            Dispose(false);
+            *(_pBuffer + index) = value;
         }
 
-        protected virtual void Dispose(bool disposing)
+        /// <summary>
+        ///  Get the value at a given index.
+        /// </summary>
+        /// <param name="index"> index in bytes from which to get.</param>
+        /// <returns>the value at a given index.</returns>
+        public sbyte Int8Get(int index)
         {
-            if (_disposed)
-                return;
-
-            _pinnedGCHandle.Free();
-            _disposed = true;
+            return *(sbyte*)(_pBuffer + index);
         }
+
+        /// <summary>
+        /// Put a value to a given index.
+        /// </summary>
+        /// <param name="index">index in bytes for where to put.</param>
+        /// <param name="value">value to be written</param>
+        public void Int8Put(int index, sbyte value)
+        {
+            *(sbyte*)(_pBuffer + index) = value;
+        }
+
+        /// <summary>
+        ///  Get the value at a given index.
+        /// </summary>
+        /// <param name="index"> index in bytes from which to get.</param>
+        /// <param name="byteOrder">byte order of the value to be read.</param>
+        /// <returns>the value at a given index.</returns>
+        public short Int16Get(int index, ByteOrder byteOrder)
+        {
+            var data = *(short*)(_pBuffer + index);
+            if (byteOrder != NativeByteOrder)
+            {
+                data = EndianessConverter.ApplyInt16(byteOrder, data);
+            }
+            
+            return data;
+        }
+
+        /// <summary>
+        /// Put a value to a given index.
+        /// </summary>
+        /// <param name="index">index in bytes for where to put.</param>
+        /// <param name="value">value to be written</param>
+        /// <param name="byteOrder">byte order of the value when written</param>
+        public void Int16Put(int index, short value, ByteOrder byteOrder)
+        {
+            if (byteOrder != NativeByteOrder)
+            {
+                value = EndianessConverter.ApplyInt16(byteOrder, value);
+            }
+
+            *(short*)(_pBuffer + index) = value;
+        }
+
+        /// <summary>
+        ///  Get the value at a given index.
+        /// </summary>
+        /// <param name="index"> index in bytes from which to get.</param>
+        /// <param name="byteOrder">byte order of the value to be read.</param>
+        /// <returns>the value at a given index.</returns>
+        public int Int32Get(int index, ByteOrder byteOrder)
+        {
+            var data = *(int*)(_pBuffer + index);
+            if (byteOrder != NativeByteOrder)
+            {
+                data = EndianessConverter.ApplyInt32(byteOrder, data);
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Put a value to a given index.
+        /// </summary>
+        /// <param name="index">index in bytes for where to put.</param>
+        /// <param name="value">value to be written</param>
+        /// <param name="byteOrder">byte order of the value when written</param>
+        public void Int32Put(int index, int value, ByteOrder byteOrder)
+        {
+            if (byteOrder != NativeByteOrder)
+            {
+                value = EndianessConverter.ApplyInt32(byteOrder, value);
+            }
+
+            *(int*)(_pBuffer + index) = value;
+        }
+
+        /// <summary>
+        ///  Get the value at a given index.
+        /// </summary>
+        /// <param name="index"> index in bytes from which to get.</param>
+        /// <param name="byteOrder">byte order of the value to be read.</param>
+        /// <returns>the value at a given index.</returns>
+        public long Int64Get(int index, ByteOrder byteOrder)
+        {
+            var data = *(long*)(_pBuffer + index);
+            if (byteOrder != NativeByteOrder)
+            {
+                data = EndianessConverter.ApplyInt64(byteOrder, data);
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Put a value to a given index.
+        /// </summary>
+        /// <param name="index">index in bytes for where to put.</param>
+        /// <param name="value">value to be written</param>
+        /// <param name="byteOrder">byte order of the value when written</param>
+        public void Int64Put(int index, long value, ByteOrder byteOrder)
+        {
+            if (byteOrder != NativeByteOrder)
+            {
+                value = EndianessConverter.ApplyInt64(byteOrder, value);
+            }
+
+            *(long*)(_pBuffer + index) = value;
+        }
+
+
+        /// <summary>
+        ///  Get the value at a given index.
+        /// </summary>
+        /// <param name="index"> index in bytes from which to get.</param>
+        /// <returns>the value at a given index.</returns>
+        public byte Uint8Get(int index)
+        {
+            return *(_pBuffer + index);
+        }
+
+        /// <summary>
+        /// Put a value to a given index.
+        /// </summary>
+        /// <param name="index">index in bytes for where to put.</param>
+        /// <param name="value">value to be written</param>
+        public void Uint8Put(int index, byte value)
+        {
+            *(_pBuffer + index) = value;
+        }
+
+        /// <summary>
+        ///  Get the value at a given index.
+        /// </summary>
+        /// <param name="index"> index in bytes from which to get.</param>
+        /// <param name="byteOrder">byte order of the value to be read.</param>
+        /// <returns>the value at a given index.</returns>
+        public ushort Uint16Get(int index, ByteOrder byteOrder)
+        {
+            var data = *(ushort*)(_pBuffer + index);
+            if (byteOrder != NativeByteOrder)
+            {
+                data = EndianessConverter.ApplyUint16(byteOrder, data);
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Put a value to a given index.
+        /// </summary>
+        /// <param name="index">index in bytes for where to put.</param>
+        /// <param name="value">value to be written</param>
+        /// <param name="byteOrder">byte order of the value when written</param>
+        public void Uint16Put(int index, ushort value, ByteOrder byteOrder)
+        {
+            if (byteOrder != NativeByteOrder)
+            {
+                value = EndianessConverter.ApplyUint16(byteOrder, value);
+            }
+
+            *(ushort*)(_pBuffer + index) = value;
+        }
+
+        /// <summary>
+        ///  Get the value at a given index.
+        /// </summary>
+        /// <param name="index"> index in bytes from which to get.</param>
+        /// <param name="byteOrder">byte order of the value to be read.</param>
+        /// <returns>the value at a given index.</returns>
+        public uint Uint32Get(int index, ByteOrder byteOrder)
+        {
+            var data = *(uint*)(_pBuffer + index);
+            if (byteOrder != NativeByteOrder)
+            {
+                data = EndianessConverter.ApplyUint32(byteOrder, data);
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Put a value to a given index.
+        /// </summary>
+        /// <param name="index">index in bytes for where to put.</param>
+        /// <param name="value">value to be written</param>
+        /// <param name="byteOrder">byte order of the value when written</param>
+        public void Uint32Put(int index, uint value, ByteOrder byteOrder)
+        {
+            if (byteOrder != NativeByteOrder)
+            {
+                value = EndianessConverter.ApplyUint32(byteOrder, value);
+            }
+
+            *(uint*)(_pBuffer + index) = value;
+        }
+
+        /// <summary>
+        ///  Get the value at a given index.
+        /// </summary>
+        /// <param name="index"> index in bytes from which to get.</param>
+        /// <param name="byteOrder">byte order of the value to be read.</param>
+        /// <returns>the value at a given index.</returns>
+        public ulong Uint64Get(int index, ByteOrder byteOrder)
+        {
+            var data = *(ulong*)(_pBuffer + index);
+            if (byteOrder != NativeByteOrder)
+            {
+                data = EndianessConverter.ApplyUint64(byteOrder, data);
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Put a value to a given index.
+        /// </summary>
+        /// <param name="index">index in bytes for where to put.</param>
+        /// <param name="value">value to be written</param>
+        /// <param name="byteOrder">byte order of the value when written</param>
+        public void Uint64Put(int index, ulong value, ByteOrder byteOrder)
+        {
+            if (byteOrder != NativeByteOrder)
+            {
+                value = EndianessConverter.ApplyUint64(byteOrder, value);
+            }
+
+            *(ulong*)(_pBuffer + index) = value;
+        }
+
+        /// <summary>
+        ///  Get the value at a given index.
+        /// </summary>
+        /// <param name="index"> index in bytes from which to get.</param>
+        /// <param name="byteOrder">byte order of the value to be read.</param>
+        /// <returns>the value at a given index.</returns>
+        public float FloatGet(int index, ByteOrder byteOrder)
+        {
+            var data = *(float*)(_pBuffer + index);
+            if (byteOrder != NativeByteOrder)
+            {
+                data = EndianessConverter.ApplyFloat(byteOrder, data);
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Put a value to a given index.
+        /// </summary>
+        /// <param name="index">index in bytes for where to put.</param>
+        /// <param name="value">value to be written</param>
+        /// <param name="byteOrder">byte order of the value when written</param>
+        public void FloatPut(int index, float value, ByteOrder byteOrder)
+        {
+            if (byteOrder != NativeByteOrder)
+            {
+                value = EndianessConverter.ApplyFloat(byteOrder, value);
+            }
+
+            *(float*)(_pBuffer + index) = value;
+        }
+
+        /// <summary>
+        ///  Get the value at a given index.
+        /// </summary>
+        /// <param name="index"> index in bytes from which to get.</param>
+        /// <param name="byteOrder">byte order of the value to be read.</param>
+        /// <returns>the value at a given index.</returns>
+        public double DoubleGet(int index, ByteOrder byteOrder)
+        {
+            var data = *(double*)(_pBuffer + index);
+            if (byteOrder != NativeByteOrder)
+            {
+                data = EndianessConverter.ApplyDouble(byteOrder, data);
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Put a value to a given index.
+        /// </summary>
+        /// <param name="index">index in bytes for where to put.</param>
+        /// <param name="value">value to be written</param>
+        /// <param name="byteOrder">byte order of the value when written</param>
+        public void DoublePut(int index, double value, ByteOrder byteOrder)
+        {
+            if (byteOrder != NativeByteOrder)
+            {
+                value = EndianessConverter.ApplyDouble(byteOrder, value);
+            }
+
+            *(double*)(_pBuffer + index) = value;
+        }
+
 
         /// <summary>
         ///     Get bytes from the underlying buffer into a supplied byte array.
@@ -83,6 +392,26 @@ namespace Adaptive.SimpleBinaryEncoding
             Buffer.BlockCopy(src, offset, _buffer, index, count);
 
             return count;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~DirectBuffer()
+        {
+            Dispose(false);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            _pinnedGCHandle.Free();
+            _disposed = true;
         }
     }
 }

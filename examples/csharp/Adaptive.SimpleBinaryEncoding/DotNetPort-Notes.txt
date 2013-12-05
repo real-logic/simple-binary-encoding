@@ -4,7 +4,7 @@
  - CME spec: http://www.cmegroup.com/confluence/display/EPICSANDBOX/MDP3#MDP3-FPLSimpleBinaryEncoding
 
 
- - optional fields as nullable?	
+
  - codegen
    - unsafe
    - managed? 
@@ -19,5 +19,7 @@
  - escaping reserved C# keywords
   - global namespaces (global::mynamespace)
 
+Questions:
  - should we codegen headers?
- - encapsulate pointer logic in DirectBuffer
+ - optional fields as nullable?	
+

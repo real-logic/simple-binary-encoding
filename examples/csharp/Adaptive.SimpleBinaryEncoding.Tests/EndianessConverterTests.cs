@@ -33,7 +33,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         {
             const ushort input = 12;
 
-            var result = EndianessConverter.ApplyUInt16(ByteOrder.LittleEndian, input);
+            var result = EndianessConverter.ApplyUint16(ByteOrder.LittleEndian, input);
 
             Assert.AreEqual(input, result);
         }
@@ -43,7 +43,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         {
             const ushort input = 12;
 
-            var result = EndianessConverter.ApplyUInt16(ByteOrder.BigEndian, input);
+            var result = EndianessConverter.ApplyUint16(ByteOrder.BigEndian, input);
 
             ushort expected = BitConverter.ToUInt16(BitConverter.GetBytes(input).Reverse().ToArray(), 0);
             Assert.AreEqual(expected, result);
@@ -75,7 +75,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         {
             const uint input = 12;
 
-            var result = EndianessConverter.ApplyUInt32(ByteOrder.LittleEndian, input);
+            var result = EndianessConverter.ApplyUint32(ByteOrder.LittleEndian, input);
 
             Assert.AreEqual(input, result);
         }
@@ -85,7 +85,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         {
             const uint input = 12;
 
-            var result = EndianessConverter.ApplyUInt32(ByteOrder.BigEndian, input);
+            var result = EndianessConverter.ApplyUint32(ByteOrder.BigEndian, input);
 
             uint expected = BitConverter.ToUInt32(BitConverter.GetBytes(input).Reverse().ToArray(), 0);
             Assert.AreEqual(expected, result);
@@ -96,7 +96,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         {
             const ulong input = 12;
 
-            var result = EndianessConverter.ApplyUInt64(ByteOrder.LittleEndian, input);
+            var result = EndianessConverter.ApplyUint64(ByteOrder.LittleEndian, input);
 
             Assert.AreEqual(input, result);
         }
@@ -106,7 +106,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         {
             const ulong input = 12;
 
-            var result = EndianessConverter.ApplyUInt64(ByteOrder.BigEndian, input);
+            var result = EndianessConverter.ApplyUint64(ByteOrder.BigEndian, input);
             
             ulong expected = BitConverter.ToUInt64(BitConverter.GetBytes(input).Reverse().ToArray(), 0);
             Assert.AreEqual(expected, result);
