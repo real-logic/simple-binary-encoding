@@ -33,7 +33,7 @@ import static uk.co.real_logic.sbe.util.BitUtil.SIZE_OF_BYTE;
 public class DirectBufferTest
 {
     private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
-    private static final int BUFFER_SIZE = 4096;
+    private static final int BUFFER_CAPACITY = 4096;
     private static final int INDEX = 8;
 
     private static final byte BYTE_VALUE = 1;
@@ -44,23 +44,23 @@ public class DirectBufferTest
     private static final double DOUBLE_VALUE = 7.0d;
 
     @DataPoint
-    public static final DirectBuffer BYTE_ARRAY_BACKED = new DirectBuffer(new byte[BUFFER_SIZE]);
+    public static final DirectBuffer BYTE_ARRAY_BACKED = new DirectBuffer(new byte[BUFFER_CAPACITY]);
 
     @DataPoint
-    public static final DirectBuffer HEAP_BYTE_BUFFER = new DirectBuffer(ByteBuffer.allocate(BUFFER_SIZE));
+    public static final DirectBuffer HEAP_BYTE_BUFFER = new DirectBuffer(ByteBuffer.allocate(BUFFER_CAPACITY));
 
     @DataPoint
-    public static final DirectBuffer DIRECT_BYTE_BUFFER = new DirectBuffer(ByteBuffer.allocateDirect(BUFFER_SIZE));
+    public static final DirectBuffer DIRECT_BYTE_BUFFER = new DirectBuffer(ByteBuffer.allocateDirect(BUFFER_CAPACITY));
 
     @DataPoint
     public static final DirectBuffer HEAP_BYTE_BUFFER_SLICE =
-        new DirectBuffer(((ByteBuffer)(ByteBuffer.allocate(BUFFER_SIZE * 2).position(BUFFER_SIZE))).slice());
+        new DirectBuffer(((ByteBuffer)(ByteBuffer.allocate(BUFFER_CAPACITY * 2).position(BUFFER_CAPACITY))).slice());
 
     @Theory
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowExceptionForPositionAboveCapacity(final DirectBuffer buffer)
     {
-        final int position = BUFFER_SIZE + 1;
+        final int position = BUFFER_CAPACITY + 1;
         buffer.checkPosition(position);
     }
 

@@ -96,6 +96,7 @@ public class DirectBuffer
      * Can be overridden in a DirectBuffer subclass to enable an extensible buffer.
      *
      * @param position access is required to.
+     * @throws IndexOutOfBoundsException if position is beyond buffer capacity.
      */
     public void checkPosition(final int position)
     {
