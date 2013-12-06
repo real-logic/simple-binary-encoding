@@ -24,7 +24,7 @@ class OtfMessageTest : public testing::Test, public Ir::Callback
 public:
 #define BLOCKLENGTH 64
 #define TEMPLATE_ID 100
-#define VERSION 1
+#define VERSION 0
 #define CORRECT_MESSAGEHEADER_SIZE 6
 #define FIELD_ID 1001
 #define FIELD_VALUE 0xFEEDBEEF
@@ -99,9 +99,10 @@ protected:
         delete[] buffer_;
     };
 
-    virtual Ir *irForTemplateId(const int templateId)
+    virtual Ir *irForTemplateId(const int templateId, const int version)
     {
         EXPECT_EQ(templateId, TEMPLATE_ID);
+        EXPECT_EQ(version, VERSION);
         return &messageIr_;
     };
 

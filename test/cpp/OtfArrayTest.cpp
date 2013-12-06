@@ -70,7 +70,7 @@ protected:
 
 TEST_F(OtfCharArrayTest, shouldHandleCharArray)
 {
-    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+    listener_.dispatchMessageByHeader(messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 2);
@@ -138,7 +138,7 @@ protected:
 
 TEST_F(OtfUInt32ArrayTest, shouldHandleUInt32Array)
 {
-    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+    listener_.dispatchMessageByHeader(messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 2);
@@ -191,7 +191,7 @@ protected:
 
 TEST_F(OtfConstantCharArrayTest, shouldHandleCharArray)
 {
-    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+    listener_.dispatchMessageByHeader(messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 2);

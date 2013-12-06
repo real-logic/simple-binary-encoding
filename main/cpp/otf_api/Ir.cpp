@@ -42,8 +42,8 @@ const int Ir::INVALID_ID;
 const uint32_t Ir::VARIABLE_SIZE;
 #endif /* WIN32 */
 
-Ir::Ir(const char *buffer, const int len) :
-    buffer_(buffer), len_(len)
+Ir::Ir(const char *buffer, const int len, const int64_t templateId, const int64_t templateVersion) :
+    buffer_(buffer), len_(len), templateId_(templateId), templateVersion_(templateVersion)
 {
     impl_ = new Ir::Impl;
     begin();

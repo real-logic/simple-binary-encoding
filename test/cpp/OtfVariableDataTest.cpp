@@ -122,7 +122,7 @@ protected:
 
 TEST_F(OtfVariableDataTest, shouldHandleVariableData)
 {
-    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+    listener_.dispatchMessageByHeader(messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 3);

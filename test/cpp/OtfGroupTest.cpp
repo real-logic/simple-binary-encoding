@@ -143,7 +143,7 @@ protected:
 
 TEST_F(OtfGroupTest, shouldHandleRepeatingGroup)
 {
-    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+    listener_.dispatchMessageByHeader(messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 4);
@@ -180,7 +180,7 @@ class OtfEmptyGroupTest : public OtfGroupTest
 
 TEST_F(OtfEmptyGroupTest, shouldHandleEmptyRepeatingGroup)
 {
-    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+    listener_.dispatchMessageByHeader(messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 1);
@@ -191,7 +191,7 @@ TEST_F(OtfEmptyGroupTest, shouldHandleEmptyRepeatingGroup)
 
 TEST_F(OtfEmptyGroupTest, shouldHandleEmptyRepeatingGroupWithListenerReuse)
 {
-    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+    listener_.dispatchMessageByHeader(messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 1);
@@ -199,7 +199,7 @@ TEST_F(OtfEmptyGroupTest, shouldHandleEmptyRepeatingGroupWithListenerReuse)
     EXPECT_EQ(numCompletedsSeen_, 1);
     EXPECT_EQ(numGroupsSeen_, 0);
 
-    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+    listener_.dispatchMessageByHeader(messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 2);
@@ -469,7 +469,7 @@ protected:
 
 TEST_F(OtfNestedGroupTest, shouldHandleNestedRepeatingGroup)
 {
-    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+    listener_.dispatchMessageByHeader(messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 7);
@@ -480,7 +480,7 @@ TEST_F(OtfNestedGroupTest, shouldHandleNestedRepeatingGroup)
 
 TEST_F(OtfNestedGroupTest, shouldHandleNestedRepeatingGroupWithListenerReuse)
 {
-    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+    listener_.dispatchMessageByHeader(messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 7);
@@ -488,7 +488,7 @@ TEST_F(OtfNestedGroupTest, shouldHandleNestedRepeatingGroupWithListenerReuse)
     EXPECT_EQ(numCompletedsSeen_, 1);
     EXPECT_EQ(numGroupsSeen_, 18);
 
-    listener_.dispatchMessageByHeader(std::string("templateId"), messageHeaderIr_, this)
+    listener_.dispatchMessageByHeader(messageHeaderIr_, this)
         .resetForDecode(buffer_, bufferLen_)
         .subscribe(this, this, this);
     EXPECT_EQ(numFieldsSeen_, 14);

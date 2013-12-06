@@ -92,13 +92,20 @@ public:
      * \brief Return the Ir for the message with the given id
      *
      * \param id of the message
-     * \return Ir for the message
+     * \param version of the message
+     * \return Ir for the message or NULL if not found
      */
-    const Ir *message(int id) const
+    const Ir *message(int id, int version) const
     {
-        if (map_.count(id) > 0)
+        std::pair<std::multimap<int, Ir *>::const_iterator, std::multimap<int, Ir *>::const_iterator> ret;
+
+        ret = map_.equal_range(id);
+        for (std::multimap<int, Ir *>::const_iterator it = ret.first; it != ret.second; it++)
         {
-            return map_.find(id)->second;
+            if (it->second->templateId() == id && it->second->templateVersion() == version)
+            {
+                return it->second;
+            }
         }
         return NULL;
     };
@@ -243,13 +250,15 @@ protected:
 
         // save buffer_ + offset as start of message and size as length
 
-        map_[token.schemaID()] = new Ir(buffer_ + offset, size);
+        map_.insert(std::pair<int, Ir *>(token.schemaID(), new Ir(buffer_ + offset, size, token.schemaID(), token.tokenVersion())));
+
+        // map_[token.schemaID()] = new Ir(buffer_ + offset, size);
 
         return size;
     };
 
 private:
-    std::map<int, Ir *> map_;
+    std::multimap<int, Ir *> map_;
 
     char *buffer_;
     int length_;

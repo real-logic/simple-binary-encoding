@@ -128,15 +128,16 @@ public:
          * a given message template ID.
          *
          * \param templateId of the message
+         * \param version of the message
          * \return Ir for the message
          */
-        virtual Ir *irForTemplateId(const int templateId) = 0;
+        virtual Ir *irForTemplateId(const int templateId, const int version) = 0;
     };
 
     // constructors and destructors
 
     /// Construct an Ir from a buffer with serialized tokens of len total size.
-    Ir(const char *buffer = NULL, const int len = 0);
+    Ir(const char *buffer = NULL, const int len = 0, const int64_t templateId = -1, const int64_t templateVersion = -1);
 
     virtual ~Ir()
     {
@@ -145,6 +146,16 @@ public:
             delete[] buffer_;
             buffer_ = NULL;
         }
+    };
+
+    int64_t templateId(void) const
+    {
+        return templateId_;
+    };
+
+    int64_t templateVersion(void) const
+    {
+        return templateVersion_;
     };
 
     // iterator methods for IrTokens
@@ -236,6 +247,8 @@ private:
     const char *buffer_;
     int len_;
     int cursorOffset_;
+    int64_t templateId_;
+    int64_t templateVersion_;
 
     struct Impl;
 

@@ -66,6 +66,7 @@ Listener &Listener::resetForDecode(const char *data, const int length)
     bufferLen_ = length;
     bufferOffset_ = 0;
     templateId_ = Ir::INVALID_ID;
+    templateVersion_ = -1;
     while (!stack_.empty())
     {
         stack_.pop();
@@ -95,9 +96,9 @@ int Listener::subscribe(OnNext *onNext,
         if (result != -1)
         {
             // cout << "offset " << bufferOffset_ << "/" << bufferLen_ << endl;
-            if (templateId_ != Ir::INVALID_ID)
+            if (templateId_ != Ir::INVALID_ID || templateVersion_ == -1)
             {
-                ir_ = irCallback_->irForTemplateId(templateId_);
+                ir_ = irCallback_->irForTemplateId(templateId_, templateVersion_);
                 irCallback_ = NULL;
                 if (ir_ != NULL)
                 {
@@ -106,13 +107,16 @@ int Listener::subscribe(OnNext *onNext,
                 }
                 else if (onError_ != NULL)
                 {
-                    onError_->onError(Error("no IR found for message"));
+                    char message[1024];
+
+                    ::snprintf(message, sizeof(message)-1, "no IR found for message with templateId=%lld and version=%lld", templateId_, templateVersion_);
+                    onError_->onError(Error(message));
                     result = -1;
                 }
             }
             else if (onError_ != NULL)
             {
-                onError_->onError(Error("template ID encoding name not found"));
+                onError_->onError(Error("template ID and/or version not found in header"));
                 result = -1;
             }
         }
@@ -515,9 +519,16 @@ uint64_t Listener::processEncoding(const Ir *ir, const uint64_t value)
 
     //printf("encoding %s %d %u\n", ir->name().c_str(), ir->primitiveType(), value);
 
-    if (irCallback_ != NULL && headerEncodingName_ == ir->name())
+    if (irCallback_ != NULL)
     {
-        templateId_ = value;
+        if ("templateId" == ir->name())
+        {
+            templateId_ = value;
+        }
+        else if ("version" == ir->name())
+        {
+            templateVersion_ = value;
+        }
     }
     else if (cachedField_.type() == Field::VAR_DATA && ir->name() == "length")
     {

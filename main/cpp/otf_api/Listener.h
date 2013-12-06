@@ -136,17 +136,14 @@ public:
      * callback is be called when the template ID encoding is encountered. This callback must
      * return the Ir to use for the message.
      *
-     * \param encodingName of the template ID element
      * \param headerIr to use for the header
      * \param irCallback called when the encodingName element is encountered passing the template ID value
      * \return Listener
      */
-    Listener &dispatchMessageByHeader(const std::string &encodingName,
-                                      Ir &headerIr,
+    Listener &dispatchMessageByHeader(Ir &headerIr,
                                       Ir::Callback *irCallback)
     {
         ir_ = &headerIr;
-        headerEncodingName_ = encodingName;
         irCallback_ = irCallback;
         return *this;
     };
@@ -252,9 +249,9 @@ private:
     /*
      * State associated with message dispatching from header
      */
-    std::string headerEncodingName_;
     Ir::Callback *irCallback_;
-    uint64_t templateId_;
+    int64_t templateId_;
+    int64_t templateVersion_;
 
     /*
      * Stack frame to hold the repeating group state
