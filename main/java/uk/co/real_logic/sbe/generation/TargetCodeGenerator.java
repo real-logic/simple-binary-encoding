@@ -15,6 +15,8 @@
  */
 package uk.co.real_logic.sbe.generation;
 
+import uk.co.real_logic.sbe.generation.cSharp.CSharpGenerator;
+import uk.co.real_logic.sbe.generation.cSharp.CSharpNamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.cpp99.Cpp99Generator;
 import uk.co.real_logic.sbe.generation.cpp99.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
@@ -44,7 +46,17 @@ public enum TargetCodeGenerator
         {
             return new Cpp99Generator(ir, new NamespaceOutputManager(outputDir, ir.namespaceName()));
         }
+    },
+
+    CSHARP()
+    {
+        public CodeGenerator newInstance(final IntermediateRepresentation ir, final String outputDir)
+                throws IOException
+        {
+            return new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.namespaceName()));
+        }
     };
+
 
     /**
      * Get a new {@link CodeGenerator} for the given target language.
