@@ -18,11 +18,11 @@
 
 #include <stdio.h>
 
-#include "uk_co_real_logic_sbe_examples/MessageHeader.hpp"
-#include "uk_co_real_logic_sbe_examples/Car.hpp"
+#include "baseline/MessageHeader.hpp"
+#include "baseline/Car.hpp"
 
 using namespace std;
-using namespace uk_co_real_logic_sbe_examples;
+using namespace baseline;
 
 char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
 char MANUFACTURER_CODE[] = {'1', '2', '3'};

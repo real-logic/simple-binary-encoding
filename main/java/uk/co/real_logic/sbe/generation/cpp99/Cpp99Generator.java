@@ -204,10 +204,10 @@ public class Cpp99Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "class %s : public GroupFlyweight\n" +
+            indent + "class %1$s : public GroupFlyweight\n" +
             indent + "{\n" +
             indent + "private:\n" +
-            indent + "    %s dimensions_;\n" +
+            indent + "    %2$s dimensions_;\n" +
             indent + "    int blockLength_;\n" +
             indent + "    int count_;\n" +
             indent + "    int index_;\n" +
@@ -230,7 +230,7 @@ public class Cpp99Generator implements CodeGenerator
             indent + "        blockLength_ = dimensions_.blockLength();\n" +
             indent + "        index_ = -1;\n" +
             indent + "        actingVersion_ = actingVersion;\n" +
-            indent + "        message_->position(message_->position() + %d);\n" +
+            indent + "        message_->position(message_->position() + %1$d);\n" +
             indent + "    };\n\n",
             dimensionHeaderSize
         ));
