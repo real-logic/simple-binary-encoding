@@ -15,8 +15,8 @@
  */
 package uk.co.real_logic.sbe.generation;
 
-import uk.co.real_logic.sbe.generation.cSharp.CSharpGenerator;
-import uk.co.real_logic.sbe.generation.cSharp.CSharpNamespaceOutputManager;
+import uk.co.real_logic.sbe.generation.csharp.CSharpGenerator;
+import uk.co.real_logic.sbe.generation.csharp.CSharpNamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.cpp99.Cpp99Generator;
 import uk.co.real_logic.sbe.generation.cpp99.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
