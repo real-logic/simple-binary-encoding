@@ -484,7 +484,7 @@ public class CSharpGenerator implements CodeGenerator
             sb.append(INDENT).append(INDENT).append(token.name()).append(" = ").append(token.encoding().constVal()).append(",\n");
         }
 
-        final PrimitiveValue nullVal = encoding.nullVal() != null ? encoding.nullVal() : encoding.primitiveType().nullVal();
+        final PrimitiveValue nullVal = encoding.applicableNullVal();
 
         sb.append(INDENT).append(INDENT).append("NULL_VALUE = ").append(nullVal).append("\n");
 

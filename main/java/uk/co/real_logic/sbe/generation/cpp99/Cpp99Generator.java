@@ -611,11 +611,9 @@ public class Cpp99Generator implements CodeGenerator
             sb.append("        ").append(token.name()).append(" = ").append(constVal).append(",\n");
         }
 
-        final PrimitiveValue nullVal = (encoding.nullVal() != null) ? encoding.nullVal() : encoding.primitiveType().nullVal();
-
         sb.append(String.format(
-                "        NULL_VALUE = %s",
-                generateLiteral(encoding.primitiveType(), nullVal)
+            "        NULL_VALUE = %s",
+            generateLiteral(encoding.primitiveType(), encoding.applicableNullVal())
         ));
 
         sb.append("\n    };\n\n");
@@ -646,15 +644,12 @@ public class Cpp99Generator implements CodeGenerator
             );
         }
 
-        final Encoding encoding = encodingToken.encoding();
-        final PrimitiveValue nullVal = (encoding.nullVal() != null) ? encoding.nullVal() : encoding.primitiveType().nullVal();
-
         sb.append(String.format(
             "            case %s: return NULL_VALUE;\n" +
-            "        }\n\n" +
-            "        throw \"unknown value for enum %s\";\n" +
-            "    };\n",
-            nullVal.toString(),
+                "        }\n\n" +
+                "        throw \"unknown value for enum %s\";\n" +
+                "    };\n",
+            encodingToken.encoding().applicableNullVal().toString(),
             enumName
         ));
 
@@ -674,7 +669,7 @@ public class Cpp99Generator implements CodeGenerator
             indent + "            return %s;\n" +
             indent + "        }\n\n",
             Integer.valueOf(sinceVersion),
-            sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.nullVal()) : "(byte)0"
+            generateLiteral(encoding.primitiveType(), encoding.applicableNullVal())
         );
     }
 

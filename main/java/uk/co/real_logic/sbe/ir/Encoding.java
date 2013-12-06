@@ -160,6 +160,52 @@ public class Encoding
     }
 
     /**
+     * The most applicable null value for the encoded type.
+     *
+     * @return most applicable null value for the encoded type.
+     */
+    public PrimitiveValue applicableNullVal()
+    {
+        if (null != nullVal)
+        {
+            return nullVal;
+        }
+
+        return primitiveType.nullVal();
+    }
+
+    /**
+     * The most applicable min value for the encoded type.
+     *
+     * @return most applicable min value for the encoded type.
+     */
+    public PrimitiveValue applicableMinVal()
+    {
+        if (null != minVal)
+        {
+            return minVal;
+        }
+
+        return primitiveType.minVal();
+    }
+
+
+    /**
+     * The most applicable max value for the encoded type.
+     *
+     * @return most applicable max value for the encoded type.
+     */
+    public PrimitiveValue applicableMaxVal()
+    {
+        if (null != maxVal)
+        {
+            return maxVal;
+        }
+
+        return primitiveType.maxVal();
+    }
+
+    /**
      * The character encoding for the token or null if not set.
      *
      * @return the character encoding for the token or null if not set.
