@@ -15,7 +15,6 @@
  */
 package uk.co.real_logic.sbe.examples;
 
-import baseline.*;
 import uk.co.real_logic.sbe.generation.java.DirectBuffer;
 
 import java.io.FileOutputStream;
@@ -23,7 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-public class SbeExample
+public class SbeExtensionExample
 {
     private static final String ENCODING_FILENAME = "sbe.encoding.filename";
     private static final byte[] VEHICLE_CODE;
@@ -31,17 +30,18 @@ public class SbeExample
     private static final byte[] MAKE;
     private static final byte[] MODEL;
 
-    private static final MessageHeader MESSAGE_HEADER = new MessageHeader();
-    private static final Car CAR = new Car();
+    private static final baseline.MessageHeader MESSAGE_HEADER = new baseline.MessageHeader();
+    private static final baseline.Car CAR_0 = new baseline.Car();
+    private static final extension.Car CAR_1 = new extension.Car();
 
     static
     {
         try
         {
-            VEHICLE_CODE = "abcdef".getBytes(Car.vehicleCodeCharacterEncoding());
-            MANUFACTURER_CODE = "123".getBytes(Engine.manufacturerCodeCharacterEncoding());
-            MAKE = "Honda".getBytes(Car.makeCharacterEncoding());
-            MODEL = "Civic VTi".getBytes(Car.modelCharacterEncoding());
+            VEHICLE_CODE = "abcdef".getBytes(baseline.Car.vehicleCodeCharacterEncoding());
+            MANUFACTURER_CODE = "123".getBytes(baseline.Engine.manufacturerCodeCharacterEncoding());
+            MAKE = "Honda".getBytes(baseline.Car.makeCharacterEncoding());
+            MODEL = "Civic VTi".getBytes(baseline.Car.modelCharacterEncoding());
         }
         catch (final UnsupportedEncodingException ex)
         {
@@ -60,13 +60,13 @@ public class SbeExample
         // Setup for encoding a message
 
         MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion)
-                      .blockLength(CAR.blockLength())
-                      .templateId(CAR.templateId())
-                      .version(CAR.templateVersion());
+                      .blockLength(CAR_0.blockLength())
+                      .templateId(CAR_0.templateId())
+                      .version(CAR_0.templateVersion());
 
         bufferOffset += MESSAGE_HEADER.size();
         encodingLength += MESSAGE_HEADER.size();
-        encodingLength += encode(CAR, directBuffer, bufferOffset);
+        encodingLength += encode(CAR_0, directBuffer, bufferOffset);
 
         // Optionally write the encoded buffer to a file for decoding by the On-The-Fly decoder
 
@@ -91,21 +91,23 @@ public class SbeExample
         final int actingBlockLength = MESSAGE_HEADER.blockLength();
 
         bufferOffset += MESSAGE_HEADER.size();
-        decode(CAR, directBuffer, bufferOffset, actingBlockLength, actingVersion);
+        decode(CAR_1, directBuffer, bufferOffset, actingBlockLength, actingVersion);
     }
 
-    private static int encode(final Car car, final DirectBuffer directBuffer, final int bufferOffset)
+    private static int encode(final baseline.Car car,
+                              final DirectBuffer directBuffer,
+                              final int bufferOffset)
     {
         final int srcOffset = 0;
 
         car.wrapForEncode(directBuffer, bufferOffset)
            .serialNumber(1234)
            .modelYear(2013)
-           .available(BooleanType.TRUE)
-           .code(Model.A)
+           .available(baseline.BooleanType.TRUE)
+           .code(baseline.Model.A)
            .putVehicleCode(VEHICLE_CODE, srcOffset);
 
-        for (int i = 0, size = Car.someNumbersLength(); i < size; i++)
+        for (int i = 0, size = baseline.Car.someNumbersLength(); i < size; i++)
         {
             car.someNumbers(i, i);
         }
@@ -123,7 +125,7 @@ public class SbeExample
                                .next().speed(55).mpg(49.0f)
                                .next().speed(75).mpg(40.0f);
 
-        final Car.PerformanceFigures perfFigures = car.performanceFiguresCount(2);
+        final baseline.Car.PerformanceFigures perfFigures = car.performanceFiguresCount(2);
         perfFigures.next().octaneRating((short)95)
                           .accelerationCount(3).next().mph(30).seconds(4.0f)
                                                .next().mph(60).seconds(7.5f)
@@ -139,7 +141,7 @@ public class SbeExample
         return car.size();
     }
 
-    private static void decode(final Car car,
+    private static void decode(final extension.Car car,
                                final DirectBuffer directBuffer,
                                final int bufferOffset,
                                final int actingBlockLength,
@@ -158,53 +160,55 @@ public class SbeExample
         sb.append("\ncar.code=").append(car.code());
 
         sb.append("\ncar.someNumbers=");
-        for (int i = 0, size = Car.someNumbersLength(); i < size; i++)
+        for (int i = 0, size = extension.Car.someNumbersLength(); i < size; i++)
         {
             sb.append(car.someNumbers(i)).append(", ");
         }
 
         sb.append("\ncar.vehicleCode=");
-        for (int i = 0, size = Car.vehicleCodeLength(); i < size; i++)
+        for (int i = 0, size = extension.Car.vehicleCodeLength(); i < size; i++)
         {
             sb.append((char)car.vehicleCode(i));
         }
 
-        final OptionalExtras extras = car.extras();
+        final extension.OptionalExtras extras = car.extras();
         sb.append("\ncar.extras.cruiseControl=").append(extras.cruiseControl());
         sb.append("\ncar.extras.sportsPack=").append(extras.sportsPack());
         sb.append("\ncar.extras.sunRoof=").append(extras.sunRoof());
 
-        final Engine engine = car.engine();
+        final extension.Engine engine = car.engine();
         sb.append("\ncar.engine.capacity=").append(engine.capacity());
         sb.append("\ncar.engine.numCylinders=").append(engine.numCylinders());
         sb.append("\ncar.engine.maxRpm=").append(engine.maxRpm());
         sb.append("\ncar.engine.manufacturerCode=");
-        for (int i = 0, size = Engine.manufacturerCodeLength(); i < size; i++)
+        for (int i = 0, size = extension.Engine.manufacturerCodeLength(); i < size; i++)
         {
             sb.append((char)engine.manufacturerCode(i));
         }
 
         sb.append("\ncar.engine.fuel=").append(new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
 
-        for (final Car.FuelFigures fuelFigures : car.fuelFigures())
+        sb.append("\ncar.cutHolderCount=").append(car.cupHolderCount());
+
+        for (final extension.Car.FuelFigures fuelFigures : car.fuelFigures())
         {
             sb.append("\ncar.fuelFigures.speed=").append(fuelFigures.speed());
             sb.append("\ncar.fuelFigures.mpg=").append(fuelFigures.mpg());
         }
 
-        for (final Car.PerformanceFigures performanceFigures : car.performanceFigures())
+        for (final extension.Car.PerformanceFigures performanceFigures : car.performanceFigures())
         {
             sb.append("\ncar.performanceFigures.octaneRating=").append(performanceFigures.octaneRating());
 
-            for (final Car.PerformanceFigures.Acceleration acceleration : performanceFigures.acceleration())
+            for (final extension.Car.PerformanceFigures.Acceleration acceleration : performanceFigures.acceleration())
             {
                 sb.append("\ncar.performanceFigures.acceleration.mph=").append(acceleration.mph());
                 sb.append("\ncar.performanceFigures.acceleration.seconds=").append(acceleration.seconds());
             }
         }
 
-        sb.append("\ncar.make=").append(new String(buffer, 0, car.getMake(buffer, 0, buffer.length), Car.makeCharacterEncoding()));
-        sb.append("\ncar.model=").append(new String(buffer, 0, car.getModel(buffer, 0, buffer.length), Car.modelCharacterEncoding()));
+        sb.append("\ncar.make=").append(new String(buffer, 0, car.getMake(buffer, 0, buffer.length), extension.Car.makeCharacterEncoding()));
+        sb.append("\ncar.model=").append(new String(buffer, 0, car.getModel(buffer, 0, buffer.length), extension.Car.modelCharacterEncoding()));
 
         sb.append("\ncar.size=").append(car.size());
 

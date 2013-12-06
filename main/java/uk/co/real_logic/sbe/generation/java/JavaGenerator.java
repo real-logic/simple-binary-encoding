@@ -16,6 +16,7 @@
 package uk.co.real_logic.sbe.generation.java;
 
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.ir.*;
@@ -720,13 +721,15 @@ public class JavaGenerator implements CodeGenerator
             return "";
         }
 
+        final PrimitiveValue nullValue = encoding.nullVal() != null ? encoding.nullVal() : encoding.primitiveType().nullVal();
+
         return String.format(
             indent + "        if (actingVersion < %d)\n" +
             indent + "        {\n" +
             indent + "            return %s;\n" +
             indent + "        }\n\n",
             Integer.valueOf(sinceVersion),
-            sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.nullVal().toString()) : "(byte)0"
+            generateLiteral(encoding.primitiveType(), nullValue.toString())
         );
     }
 

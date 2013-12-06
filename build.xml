@@ -224,8 +224,6 @@
     <property name="dir.examples.cpp99.src" location="examples/cpp99"/>
     <property name="dir.examples.cpp99.include" location="main/cpp"/>
 
-
-
     <path id="examples.classpath">
         <pathelement path="${dir.examples.build}"/>
         <fileset dir="${dir.dist}">
@@ -241,6 +239,7 @@
             <sysproperty key="sbe.output.dir" value="${dir.gen.java}"/>
             <sysproperty key="sbe.target.language" value="Java"/>
             <arg value="${dir.examples.resources}/TestSchema.xml"/>
+            <arg value="${dir.examples.resources}/TestExtensionSchema.xml"/>
         </java>
         <javac srcdir="${dir.gen.java}" destdir="${dir.examples.build}" includeAntRuntime="false" debug="true">
             <classpath refid="examples.classpath"/>
@@ -251,7 +250,9 @@
         <java classname="uk.co.real_logic.sbe.examples.SbeExample">
             <classpath refid="examples.classpath"/>
         </java>
-
+        <java classname="uk.co.real_logic.sbe.examples.SbeExtensionExample">
+            <classpath refid="examples.classpath"/>
+        </java>
     </target>
 
     <property name="dir.gen.csharp" value="target/gen/csharp"/>

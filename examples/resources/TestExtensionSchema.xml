@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<messageSchema package="baseline"
+<messageSchema package="extension"
                semanticVersion="5.2"
                description="Code generation unit test support"
                byteOrder="littleEndian">
@@ -54,6 +54,7 @@
         <field name="vehicleCode" id="6" type="VehicleCode"/>
         <field name="extras" id="7" type="OptionalExtras"/>
         <field name="engine" id="8" type="Engine"/>
+        <field name="cupHolderCount" id="100" type="uint8" presence="optional" sinceVersion="1"/>
         <group name="fuelFigures" id="9" dimensionType="groupSizeEncoding">
             <field name="speed" id="10" type="uint16"/>
             <field name="mpg" id="11" type="float"/>
