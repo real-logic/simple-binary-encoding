@@ -86,7 +86,8 @@ namespace Uk.Co.Real_logic.Sbe.Examples
             car.Engine.NumCylinders = 4;
             car.Engine.SetManufacturerCode(_manufacturerCode, srcOffset);
 
-            Car.FuelFiguresGroup fuelFigures = car.FuelFiguresCount(3).Next();
+            var fuelFigures = car.FuelFiguresCount(3);
+            fuelFigures.Next();
             fuelFigures.Speed = 30;
             fuelFigures.Mpg = 35.9f;
 

@@ -13,3 +13,5 @@ MessageHeader.cs
 Model.cs
 OptionalExtras.cs
 VarDataEncoding.cs
+
+FIX/

@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EA794E63-48DE-4BB8-B837-25DE2A0F36DC}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Adaptive.SimpleBinaryEncoding.PerfTests</RootNamespace>
+    <AssemblyName>Adaptive.SimpleBinaryEncoding.PerfTests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Adaptive.SimpleBinaryEncoding.PerfTests.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BenchmarkState.cs" />
+    <Compile Include="FIX\BooleanType.cs" />
+    <Compile Include="FIX\CtiCode.cs" />
+    <Compile Include="FIX\CustomerOrFirm.cs" />
+    <Compile Include="FIX\CustOrderHandlingInst.cs" />
+    <Compile Include="FIX\Decimal64.cs" />
+    <Compile Include="FIX\GroupSizeEncoding.cs" />
+    <Compile Include="FIX\HandInst.cs" />
+    <Compile Include="FIX\IntQty32.cs" />
+    <Compile Include="FIX\MarketDataIncrementalRefresh.cs" />
+    <Compile Include="FIX\MarketDataIncrementalRefreshTrades.cs" />
+    <Compile Include="FIX\MarketStateIdentifier.cs" />
+    <Compile Include="FIX\MassQuote.cs" />
+    <Compile Include="FIX\MatchEventIndicator.cs" />
+    <Compile Include="FIX\MDEntryType.cs" />
+    <Compile Include="FIX\MDQuoteType.cs" />
+    <Compile Include="FIX\MDUpdateAction.cs" />
+    <Compile Include="FIX\MessageHeader.cs" />
+    <Compile Include="FIX\MMProtectionReset.cs" />
+    <Compile Include="FIX\NewOrder.cs" />
+    <Compile Include="FIX\NoAllocs.cs" />
+    <Compile Include="FIX\OFMOverride.cs" />
+    <Compile Include="FIX\OpenCloseSettleFlag.cs" />
+    <Compile Include="FIX\OptionalPrice.cs" />
+    <Compile Include="FIX\OrderCancelReplaceRequest.cs" />
+    <Compile Include="FIX\OrderCancelRequest.cs" />
+    <Compile Include="FIX\OrdType.cs" />
+    <Compile Include="FIX\QuoteCondition.cs" />
+    <Compile Include="FIX\SecurityIDSource.cs" />
+    <Compile Include="FIX\Side.cs" />
+    <Compile Include="FIX\TickDirection.cs" />
+    <Compile Include="FIX\TimeInForce.cs" />
+    <Compile Include="FIX\TradeCondition.cs" />
+    <Compile Include="MarketDataBenchmark.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Adaptive.SimpleBinaryEncoding\Adaptive.SimpleBinaryEncoding.csproj">
+      <Project>{CE883FD9-14A5-409C-AEBC-86BEA4E3C502}</Project>
+      <Name>Adaptive.SimpleBinaryEncoding</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

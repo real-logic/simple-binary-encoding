@@ -755,7 +755,7 @@ public class CSharpGenerator implements CodeGenerator
             ));
 
             sb.append(String.format(
-                    indent + "    public %s Set%s(byte[] src, int srcOffset)\n" +
+                    indent + "    public void Set%s(byte[] src, int srcOffset)\n" +
                             indent + "    {\n" +
                             indent + "        const int length = %d;\n" +
                             indent + "        if (srcOffset < 0 || srcOffset > (src.Length - length))\n" +
@@ -763,9 +763,7 @@ public class CSharpGenerator implements CodeGenerator
                             indent + "            throw new IndexOutOfRangeException(\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
                             indent + "        }\n\n" +
                             indent + "        _buffer.SetBytes(_offset + %d, src, srcOffset, length);\n" +
-                            indent + "        return this;\n" +
                             indent + "    }\n",
-                    containingClassName,
                     propName,
                     fieldLength,
                     offset
@@ -1111,7 +1109,7 @@ public class CSharpGenerator implements CodeGenerator
                 "\n" +
                         indent + "    private readonly %s _%s = new %s();\n",
                 compositeName,
-                propertyName,
+                toLowerFirstChar(propertyName),
                 compositeName
         ));
 
@@ -1128,11 +1126,11 @@ public class CSharpGenerator implements CodeGenerator
                         indent + "        }\n" +
                         indent + "    }\n",
                 compositeName,
-                compositeName,
+                toUpperFirstChar(propertyName),
                 generateTypeFieldNotPresentCondition(token.version(), indent),
-                propertyName,
+                toLowerFirstChar(propertyName),
                 offset,
-                propertyName
+                toLowerFirstChar(propertyName)
         ));
 
         return sb;
