@@ -71,7 +71,7 @@ public class SerializedToken implements MessageFlyweight
 
     public void position(final int position)
     {
-        CodecUtil.checkPosition(position, buffer.capacity());
+        buffer.checkPosition(position);
         this.position = position;
     }
 

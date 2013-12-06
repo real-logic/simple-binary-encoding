@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import org.junit.Test;
 import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -52,8 +53,16 @@ public class DirectBufferTest
     public static final DirectBuffer DIRECT_BYTE_BUFFER = new DirectBuffer(ByteBuffer.allocateDirect(BUFFER_SIZE));
 
     @DataPoint
-    public static final DirectBuffer HEAP_BYTE_BUFFER_SLICE = new DirectBuffer(((ByteBuffer)
-            (ByteBuffer.allocate(BUFFER_SIZE*2).position(BUFFER_SIZE))).slice());
+    public static final DirectBuffer HEAP_BYTE_BUFFER_SLICE =
+        new DirectBuffer(((ByteBuffer)(ByteBuffer.allocate(BUFFER_SIZE * 2).position(BUFFER_SIZE))).slice());
+
+    @Theory
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowExceptionForPositionAboveCapacity(final DirectBuffer buffer)
+    {
+        final int position = BUFFER_SIZE + 1;
+        buffer.checkPosition(position);
+    }
 
     @Theory
     public void shouldGetLongFromBuffer(final DirectBuffer buffer)

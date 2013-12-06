@@ -1098,7 +1098,7 @@ public class JavaGenerator implements CodeGenerator
             "    }\n\n" +
             "    public void position(final int position)\n" +
             "    {\n" +
-            "        CodecUtil.checkPosition(position, buffer.capacity());\n" +
+            "        buffer.checkPosition(position);\n" +
             "        this.position = position;\n" +
             "    }\n",
             templateIdType,

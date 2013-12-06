@@ -91,6 +91,25 @@ public class DirectBuffer
     }
 
     /**
+     * Check that a given position is within the capacity of a buffer from a given offset.
+     *
+     * Can be overridden in a DirectBuffer subclass to enable an extensible buffer.
+     *
+     * @param position access is required to.
+     */
+    public void checkPosition(final int position)
+    {
+        if (position > capacity)
+        {
+            final String msg = String.format("position=%d is beyond capacity=%d",
+                                             Integer.valueOf(position),
+                                             Integer.valueOf(capacity));
+
+            throw new IndexOutOfBoundsException(msg);
+        }
+    }
+
+    /**
      * Create a duplicate {@link ByteBuffer} for the view in native byte order.
      * The duplicate {@link ByteBuffer} shares the underlying memory so all changes are reflected.
      *

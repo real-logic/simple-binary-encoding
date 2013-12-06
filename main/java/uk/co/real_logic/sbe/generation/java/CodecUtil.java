@@ -20,24 +20,6 @@ import java.nio.ByteOrder;
 public class CodecUtil
 {
     /**
-     * Check that a given position is within the capacity of a buffer from a given offset.
-     *
-     * @param position access is required to.
-     * @param capacity of the underlying buffer.
-     */
-    public static void checkPosition(final int position, final int capacity)
-    {
-        if (position > capacity)
-        {
-            final String msg = String.format("position=%d is beyond capacity=%d",
-                                             Integer.valueOf(position),
-                                             Integer.valueOf(capacity));
-
-            throw new IndexOutOfBoundsException(msg);
-        }
-    }
-
-    /**
      * Put a character to a {@link DirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
