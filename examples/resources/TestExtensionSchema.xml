@@ -22,6 +22,7 @@
     <types>
         <type name="ModelYear" primitiveType="uint16"/>
         <type name="VehicleCode" primitiveType="char" length="6"/>
+        <type name="Ron" primitiveType="uint8" minVal="90" maxVal="110"/>
         <type name="someNumbers" primitiveType="int32" length="5"/>
         <composite name="Engine">
             <type name="capacity" primitiveType="uint16"/>
@@ -60,7 +61,7 @@
             <field name="mpg" id="11" type="float"/>
         </group>
         <group name="performanceFigures" id="12" dimensionType="groupSizeEncoding">
-            <field name="octaneRating" id="13" type="uint8"/>
+            <field name="octaneRating" id="13" type="Ron"/>
             <group name="acceleration" id="14" dimensionType="groupSizeEncoding">
                 <field name="mph" id="15" type="uint16"/>
                 <field name="seconds" id="16" type="float"/>

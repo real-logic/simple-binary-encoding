@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.examples;
 
+import extension.Car;
 import uk.co.real_logic.sbe.generation.java.DirectBuffer;
 
 import java.io.FileOutputStream;
@@ -188,7 +189,8 @@ public class SbeExtensionExample
 
         sb.append("\ncar.engine.fuel=").append(new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
 
-        sb.append("\ncar.cutHolderCount=").append(car.cupHolderCount());
+        final String cupHolderCount = car.cupHolderCount() == Car.cupHolderCountNullVal() ? "null" : car.cupHolderCount() + "";
+        sb.append("\ncar.cutHolderCount=").append(cupHolderCount);
 
         for (final extension.Car.FuelFigures fuelFigures : car.fuelFigures())
         {
