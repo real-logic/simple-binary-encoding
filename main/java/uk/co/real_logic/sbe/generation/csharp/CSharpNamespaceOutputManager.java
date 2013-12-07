@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.generation.cSharp;
+package uk.co.real_logic.sbe.generation.csharp;
 
 import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.util.Verify;
