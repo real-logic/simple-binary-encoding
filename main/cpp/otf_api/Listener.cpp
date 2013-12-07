@@ -47,6 +47,8 @@ using ::std::endl;
 #if !defined(WIN32)
 const int32_t Field::INVALID_ID;
 const int Field::FIELD_INDEX;
+#else
+#define snprintf _snprintf
 #endif /* WIN32 */
 
 Listener::Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL),

@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#if defined(WIN32)
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#else
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
@@ -20,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#endif /* WIN32 */
 
 #include <iostream>
 #include <string>
@@ -277,7 +285,20 @@ int main(int argc, char * const argv[])
     CarCallbacks carCbs(listener);
     char *buffer = NULL;
     int length = 0, ch, justHeader = 0;
+#if defined(WIN32)
+    int optind = 1;
 
+    if (strcmp(argv[optind], "-?") == 0)
+    {
+        usage(argv[0]);
+        exit(-1);
+    }
+    else if (strcmp(argv[optind], "-h") == 0)
+    {
+        justHeader++;
+        optind++;
+    }
+#else
     while ((ch = ::getopt(argc, argv, "h")) != -1)
     {
         switch (ch)
@@ -293,6 +314,7 @@ int main(int argc, char * const argv[])
         }
 
     }
+#endif /* WIN32 */
 
     // load IR from .sbeir file
     if (repo.loadFromFile(argv[optind]) < 0)
@@ -326,6 +348,8 @@ int main(int argc, char * const argv[])
     listener.dispatchMessageByHeader(repo.header(), &repo)
             .resetForDecode(buffer, length)
             .subscribe(&carCbs, &carCbs, &carCbs);
+
+    std::cout << "Message ends at offset " << listener.bufferOffset() << "\n";
 
     return 0;
 }

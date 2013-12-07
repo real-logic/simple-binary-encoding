@@ -124,9 +124,11 @@ public class SbeTool
             {
                 final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
                 final File fullPath = new File(outputDirName, serializedIrFilename);
-                final Serializer serializer = new Serializer(fullPath.getAbsolutePath(), ir);
 
-                serializer.serialize();
+                try (final Serializer serializer = new Serializer(fullPath.getAbsolutePath(), ir))
+                {
+                    serializer.serialize();
+                }
             }
         }
     }

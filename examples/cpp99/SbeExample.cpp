@@ -24,6 +24,10 @@
 using namespace std;
 using namespace baseline;
 
+#if defined(WIN32)
+#    define snprintf _snprintf
+#endif /* WIN32 */
+
 char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
 char MANUFACTURER_CODE[] = {'1', '2', '3'};
 const char *MAKE = "Honda";
@@ -144,6 +148,7 @@ const char *format(Model::Value value)
     case Model::B: return "B";
     case Model::C: return "C";
     case Model::NULL_VALUE: return "NULL";
+    default: return "unknown";
     }
 }
 

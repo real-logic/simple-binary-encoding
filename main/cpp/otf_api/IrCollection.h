@@ -16,10 +16,19 @@
 #ifndef _IR_COLLECTION_H_
 #define _IR_COLLECTION_H_
 
+#if defined(WIN32)
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <io.h>
+#define fileno _fileno
+#define read _read
+#define stat _stat64
+#else
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#endif /* WIN32 */
 
 #include <map>
 #include <iostream>
@@ -64,6 +73,10 @@ public:
             return -1;
         }
         std::cout << "IR Filename " << filename << " length " << length_ << std::endl;
+        if (length_ == 0)
+        {
+            return -1;
+        }
         buffer_ = new char[length_];
 
         if (IrCollection::readFileIntoBuffer(buffer_, filename, length_) < 0)

@@ -60,7 +60,8 @@ Jars for the executable, source, and javadoc can be found in
 C++ Build
 ---------
 
-NOTE: Linux and Mac OS only for the moment. See [FAQ](https://github.com/real-logic/simple-binary-encoding/wiki/Frequently-Asked-Questions).
+NOTE: Linux, Mac OS, and Windows only for the moment. See [FAQ](https://github.com/real-logic/simple-binary-encoding/wiki/Frequently-Asked-Questions).
+Windows builds have been tested with Visual Studio Express 12.
 
 Dependent build:
 
