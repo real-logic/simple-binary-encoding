@@ -5,6 +5,8 @@ SBE is OSI layer 6 representation for encoding and decoding application messages
 
 Further details on the background and usage of SBE can be found on the [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
 
+Benchmark tools and information can be found [here](https://github.com/real-logic/message-codec-bench).
+
 License (See LICENSE file for full license)
 -------------------------------------------
 Copyright 2013 Real Logic Limited
