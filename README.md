@@ -28,11 +28,11 @@ Directory Layout
 
 Main source code
 
-    src/main
+    main
 
 Unit tests
 
-    src/test
+    test
 
 Examples of usage
 
