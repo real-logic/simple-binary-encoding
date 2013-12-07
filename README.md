@@ -54,3 +54,20 @@ Distribution
 Jars for the executable, source, and javadoc can be found in
 
     target/dist
+
+C++ Build
+---------
+
+NOTE: Linux and Mac OS only for the moment. See [FAQ](https://github.com/real-logic/simple-binary-encoding/wiki/Frequently-Asked-Questions).
+
+Dependent build:
+
+    $ ant cpp:test
+
+If you have doxygen installed:
+
+    $ ant cpp
+
+Run the C++99 examples
+
+    $ ant cpp:examples
