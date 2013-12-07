@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.generation.csharp;
+package uk.co.real_logic.sbe.generation.cSharp;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
@@ -31,7 +31,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.*;
+import static uk.co.real_logic.sbe.generation.cSharp.CSharpUtil.*;
 
 public class CSharpGenerator implements CodeGenerator
 {

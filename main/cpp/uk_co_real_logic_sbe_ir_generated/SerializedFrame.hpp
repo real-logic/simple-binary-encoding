@@ -2,6 +2,8 @@
 #ifndef _SERIALIZEDFRAME_HPP_
 #define _SERIALIZEDFRAME_HPP_
 
+/* math.h needed for NAN */
+#include <math.h>
 #include "sbe/sbe.hpp"
 
 #include "uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp"
@@ -45,7 +47,7 @@ public:
     };
 
     SerializedFrame &wrapForDecode(char *buffer, const int offset,
-                       const int actingBlockLength, const int actingVersion)
+                        const int actingBlockLength, const int actingVersion)
     {
         buffer_ = buffer;
         offset_ = offset;
@@ -111,6 +113,21 @@ public:
     };
 
 
+    static sbe_int32_t sbeIrVersionNullVal()
+    {
+        return -2147483648;
+    };
+
+    static sbe_int32_t sbeIrVersionMinVal()
+    {
+        return -2147483647;
+    };
+
+    static sbe_int32_t sbeIrVersionMaxVal()
+    {
+        return 2147483647;
+    };
+
     sbe_int32_t sbeIrVersion(void) const
     {
         return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 0)));
@@ -137,6 +154,21 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
+
+    static sbe_int32_t schemaVersionNullVal()
+    {
+        return -2147483648;
+    };
+
+    static sbe_int32_t schemaVersionMinVal()
+    {
+        return -2147483647;
+    };
+
+    static sbe_int32_t schemaVersionMaxVal()
+    {
+        return 2147483647;
+    };
 
     sbe_int32_t schemaVersion(void) const
     {

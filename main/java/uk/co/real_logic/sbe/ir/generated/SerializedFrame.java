@@ -80,6 +80,21 @@ public class SerializedFrame implements MessageFlyweight
         return 1;
     }
 
+    public static int sbeIrVersionNullVal()
+    {
+        return -2147483648;
+    }
+
+    public static int sbeIrVersionMinVal()
+    {
+        return -2147483647;
+    }
+
+    public static int sbeIrVersionMaxVal()
+    {
+        return 2147483647;
+    }
+
     public int sbeIrVersion()
     {
         return CodecUtil.int32Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -94,6 +109,21 @@ public class SerializedFrame implements MessageFlyweight
     public static int schemaVersionSchemaId()
     {
         return 2;
+    }
+
+    public static int schemaVersionNullVal()
+    {
+        return -2147483648;
+    }
+
+    public static int schemaVersionMinVal()
+    {
+        return -2147483647;
+    }
+
+    public static int schemaVersionMaxVal()
+    {
+        return 2147483647;
     }
 
     public int schemaVersion()

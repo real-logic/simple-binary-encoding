@@ -2,6 +2,8 @@
 #ifndef _SERIALIZEDSIGNAL_HPP_
 #define _SERIALIZEDSIGNAL_HPP_
 
+/* math.h needed for NAN */
+#include <math.h>
 #include "sbe/sbe.hpp"
 
 using namespace sbe;

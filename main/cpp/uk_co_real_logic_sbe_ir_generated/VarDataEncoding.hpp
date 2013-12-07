@@ -2,6 +2,8 @@
 #ifndef _VARDATAENCODING_HPP_
 #define _VARDATAENCODING_HPP_
 
+/* math.h needed for NAN */
+#include <math.h>
 #include "sbe/sbe.hpp"
 
 using namespace sbe;
@@ -30,6 +32,21 @@ public:
     };
 
 
+    static sbe_uint8_t lengthNullVal()
+    {
+        return (sbe_uint8_t)255;
+    };
+
+    static sbe_uint8_t lengthMinVal()
+    {
+        return (sbe_uint8_t)0;
+    };
+
+    static sbe_uint8_t lengthMaxVal()
+    {
+        return (sbe_uint8_t)254;
+    };
+
     sbe_uint8_t length(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + offset_ + 0)));
@@ -39,6 +56,21 @@ public:
     {
         *((sbe_uint8_t *)(buffer_ + offset_ + 0)) = (value);
         return *this;
+    };
+
+    static sbe_uint8_t varDataNullVal()
+    {
+        return (sbe_uint8_t)255;
+    };
+
+    static sbe_uint8_t varDataMinVal()
+    {
+        return (sbe_uint8_t)0;
+    };
+
+    static sbe_uint8_t varDataMaxVal()
+    {
+        return (sbe_uint8_t)254;
     };
 };
 }

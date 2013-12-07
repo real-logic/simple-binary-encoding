@@ -2,6 +2,8 @@
 #ifndef _SERIALIZEDTOKEN_HPP_
 #define _SERIALIZEDTOKEN_HPP_
 
+/* math.h needed for NAN */
+#include <math.h>
 #include "sbe/sbe.hpp"
 
 #include "uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp"
@@ -45,7 +47,7 @@ public:
     };
 
     SerializedToken &wrapForDecode(char *buffer, const int offset,
-                       const int actingBlockLength, const int actingVersion)
+                        const int actingBlockLength, const int actingVersion)
     {
         buffer_ = buffer;
         offset_ = offset;
@@ -111,6 +113,21 @@ public:
     };
 
 
+    static sbe_int32_t tokenOffsetNullVal()
+    {
+        return -2147483648;
+    };
+
+    static sbe_int32_t tokenOffsetMinVal()
+    {
+        return -2147483647;
+    };
+
+    static sbe_int32_t tokenOffsetMaxVal()
+    {
+        return 2147483647;
+    };
+
     sbe_int32_t tokenOffset(void) const
     {
         return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 0)));
@@ -137,6 +154,21 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
+
+    static sbe_int32_t tokenSizeNullVal()
+    {
+        return -2147483648;
+    };
+
+    static sbe_int32_t tokenSizeMinVal()
+    {
+        return -2147483647;
+    };
+
+    static sbe_int32_t tokenSizeMaxVal()
+    {
+        return 2147483647;
+    };
 
     sbe_int32_t tokenSize(void) const
     {
@@ -165,6 +197,21 @@ public:
     };
 
 
+    static sbe_int32_t schemaIDNullVal()
+    {
+        return -2147483648;
+    };
+
+    static sbe_int32_t schemaIDMinVal()
+    {
+        return -2147483647;
+    };
+
+    static sbe_int32_t schemaIDMaxVal()
+    {
+        return 2147483647;
+    };
+
     sbe_int32_t schemaID(void) const
     {
         return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 8)));
@@ -191,6 +238,21 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     };
 
+
+    static sbe_int32_t tokenVersionNullVal()
+    {
+        return -2147483648;
+    };
+
+    static sbe_int32_t tokenVersionMinVal()
+    {
+        return -2147483647;
+    };
+
+    static sbe_int32_t tokenVersionMaxVal()
+    {
+        return 2147483647;
+    };
 
     sbe_int32_t tokenVersion(void) const
     {

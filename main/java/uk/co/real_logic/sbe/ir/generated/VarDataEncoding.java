@@ -22,6 +22,21 @@ public class VarDataEncoding implements FixedFlyweight
         return -1;
     }
 
+    public static short lengthNullVal()
+    {
+        return (short)255;
+    }
+
+    public static short lengthMinVal()
+    {
+        return (short)0;
+    }
+
+    public static short lengthMaxVal()
+    {
+        return (short)254;
+    }
+
     public short length()
     {
         return CodecUtil.uint8Get(buffer, offset + 0);
@@ -31,5 +46,20 @@ public class VarDataEncoding implements FixedFlyweight
     {
         CodecUtil.uint8Put(buffer, offset + 0, value);
         return this;
+    }
+
+    public static short varDataNullVal()
+    {
+        return (short)255;
+    }
+
+    public static short varDataMinVal()
+    {
+        return (short)0;
+    }
+
+    public static short varDataMaxVal()
+    {
+        return (short)254;
     }
 }

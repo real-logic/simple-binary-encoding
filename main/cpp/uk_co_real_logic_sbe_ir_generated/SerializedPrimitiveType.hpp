@@ -2,6 +2,8 @@
 #ifndef _SERIALIZEDPRIMITIVETYPE_HPP_
 #define _SERIALIZEDPRIMITIVETYPE_HPP_
 
+/* math.h needed for NAN */
+#include <math.h>
 #include "sbe/sbe.hpp"
 
 using namespace sbe;
