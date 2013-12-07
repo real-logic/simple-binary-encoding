@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <messageSchema package="baseline"
+               version="0"
                semanticVersion="5.2"
                description="Code generation unit test support"
                byteOrder="littleEndian">
