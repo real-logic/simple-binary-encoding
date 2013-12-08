@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\target\test\csharp\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,15 +27,39 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\target\test\csharp\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\vs2013\packages\NUnit.Runners.lite.2.6.3.20131019\lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit-console-runner">
+      <HintPath>..\..\vs2013\packages\NUnit.Runners.lite.2.6.3.20131019\lib\nunit-console-runner.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit-gui-runner">
+      <HintPath>..\..\vs2013\packages\NUnit.Runners.lite.2.6.3.20131019\lib\nunit-gui-runner.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.core">
+      <HintPath>..\..\vs2013\packages\NUnit.Runners.lite.2.6.3.20131019\lib\nunit.core.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.core.interfaces">
+      <HintPath>..\..\vs2013\packages\NUnit.Runners.lite.2.6.3.20131019\lib\nunit.core.interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\vs2013\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.uiexception">
+      <HintPath>..\..\vs2013\packages\NUnit.Runners.lite.2.6.3.20131019\lib\nunit.uiexception.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.uikit">
+      <HintPath>..\..\vs2013\packages\NUnit.Runners.lite.2.6.3.20131019\lib\nunit.uikit.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.util">
+      <HintPath>..\..\vs2013\packages\NUnit.Runners.lite.2.6.3.20131019\lib\nunit.util.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,6 +70,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\vs2013\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="DirectBufferTests.cs" />
     <Compile Include="EndianessConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

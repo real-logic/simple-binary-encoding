@@ -1,3 +1,5 @@
 *.suo
 *.vssettings
 packages/
+*.user
+TestResult.xml
