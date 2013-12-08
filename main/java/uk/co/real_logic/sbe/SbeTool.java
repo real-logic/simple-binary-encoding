@@ -36,8 +36,8 @@ import java.io.FileInputStream;
  * <code>
  *     <pre>
  *     $ java -jar sbe.jar &lt;filename.xml&gt;
- *     $ java -jar sbe.jar -Doption=value &lt;filename.xml&gt;
- *     $ java -jar sbe.jar -Doption=value &lt;filename.sbeir&gt;
+ *     $ java -Doption=value -jar sbe.jar &lt;filename.xml&gt;
+ *     $ java -Doption=value -jar sbe.jar &lt;filename.sbeir&gt;
  *     </pre>
  * </code>
  * <p/>
