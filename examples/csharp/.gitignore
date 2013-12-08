@@ -1,9 +1,6 @@
 *.user
-*.suo
-*.vssettings
 obj/
 bin/
-packages/
 
 BooleanType.cs
 Car.cs
@@ -13,5 +10,3 @@ MessageHeader.cs
 Model.cs
 OptionalExtras.cs
 VarDataEncoding.cs
-
-FIX/
