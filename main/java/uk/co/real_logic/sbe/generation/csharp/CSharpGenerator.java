@@ -203,9 +203,9 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "public class %sGroup : IGroupFlyweight<%sGroup>\n" +
+            indent + "public class %1$sGroup : IGroupFlyweight<%1$sGroup>\n" +
             indent + "{\n" +
-            indent + "    private readonly %s _dimensions = new %s();\n" +
+            indent + "    private readonly %2$s _dimensions = new %2$s();\n" +
             indent + "    private IMessageFlyweight _parentMessage;\n" +
             indent + "    private DirectBuffer _buffer;\n" +
             indent + "    private int _blockLength;\n" +
@@ -214,8 +214,6 @@ public class CSharpGenerator implements CodeGenerator
             indent + "    private int _index;\n" +
             indent + "    private int _offset;\n\n",
             formatClassName(groupName),
-            formatClassName(groupName),
-            dimensionsClassName,
             dimensionsClassName
         ));
 
@@ -229,7 +227,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _blockLength = _dimensions.BlockLength;\n" +
             indent + "        _actingVersion = actingVersion;\n" +
             indent + "        _index = -1;\n" +
-            indent + "        const int dimensionsHeaderSize = %d;\n" +
+            indent + "        const int dimensionsHeaderSize = %1$d;\n" +
             indent + "        _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;\n" +
             indent + "    }\n\n",
             dimensionHeaderSize
@@ -245,26 +243,24 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _parentMessage = parentMessage;\n" +
             indent + "        _buffer = buffer;\n" +
             indent + "        _dimensions.Wrap(buffer, parentMessage.Position, _actingVersion);\n" +
-            indent + "        _dimensions.NumInGroup = (%s)count;\n" +
-            indent + "        _dimensions.BlockLength = (%s)%d;\n" +
+            indent + "        _dimensions.NumInGroup = (%1$s)count;\n" +
+            indent + "        _dimensions.BlockLength = (%2$s)%3$d;\n" +
             indent + "        _index = -1;\n" +
             indent + "        _count = count;\n" +
-            indent + "        _blockLength = %d;\n" +
-            indent + "        const int dimensionsHeaderSize = %d;\n" +
+            indent + "        _blockLength = %3$d;\n" +
+            indent + "        const int dimensionsHeaderSize = %4$d;\n" +
             indent + "        parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;\n" +
             indent + "    }\n\n",
             typeForNumInGroup,
             typeForBlockLength,
             blockLength,
-            blockLength,
             dimensionHeaderSize
         ));
 
-        sb.append(String.format(
+        sb.append(
             indent + "    public int Count { get { return _count; } }\n\n" +
-            indent + "    public bool HasNext { get { return _index + 1 < _count; } }\n\n",
-            formatClassName(groupName)
-        ));
+            indent + "    public bool HasNext { get { return _index + 1 < _count; } }\n\n"
+        );
 
         sb.append(String.format(
             indent + "    public %sGroup Next()\n" +
@@ -305,30 +301,28 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public %sGroup %s\n" +
+            indent + "    public %1$sGroup %2$s\n" +
             indent + "    {\n" +
             indent + "        get\n" +
             indent + "        {\n" +
-            indent + "            _%s.WrapForDecode(_parentMessage, _buffer, _actingVersion);\n" +
-            indent + "            return _%s;\n" +
+            indent + "            _%3$s.WrapForDecode(_parentMessage, _buffer, _actingVersion);\n" +
+            indent + "            return _%3$s;\n" +
             indent + "        }\n" +
             indent + "    }\n",
             className,
             toUpperFirstChar(groupName),
-            toLowerFirstChar(groupName),
             toLowerFirstChar(groupName)
         ));
 
         sb.append(String.format(
             "\n" +
-            indent + "    public %sGroup %sCount(int count)\n" +
+            indent + "    public %1$sGroup %2$sCount(int count)\n" +
             indent + "    {\n" +
-            indent + "        _%s.WrapForEncode(_parentMessage, _buffer, count);\n" +
-            indent + "        return _%s;\n" +
+            indent + "        _%3$s.WrapForEncode(_parentMessage, _buffer, count);\n" +
+            indent + "        return _%3$s;\n" +
             indent + "    }\n",
             className,
             toUpperFirstChar(groupName),
-            toLowerFirstChar(groupName),
             toLowerFirstChar(groupName)
         ));
 
@@ -359,13 +353,13 @@ public class CSharpGenerator implements CodeGenerator
                 final String byteOrderStr = generateByteOrder(byteOrder, lengthEncoding.primitiveType().size());
 
                 sb.append(String.format(
-                    "    public int Get%s(byte[] dst, int dstOffset, int length)\n" +
+                    "    public int Get%1$s(byte[] dst, int dstOffset, int length)\n" +
                     "    {\n" +
-                    "%s" +
-                    "        const int sizeOfLengthField = %d;\n" +
+                    "%2$s" +
+                    "        const int sizeOfLengthField = %3$d;\n" +
                     "        int lengthPosition = Position;\n" +
                     "        Position = lengthPosition + sizeOfLengthField;\n" +
-                    "        int dataLength = _buffer.%sGet(lengthPosition%s);\n" +
+                    "        int dataLength = _buffer.%4$sGet(lengthPosition%5$s);\n" +
                     "        int bytesCopied = Math.Min(length, dataLength);\n" +
                     "        _buffer.GetBytes(Position, dst, dstOffset, bytesCopied);\n" +
                     "        Position = Position + dataLength;\n\n" +
@@ -379,11 +373,11 @@ public class CSharpGenerator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    "    public int Set%s(byte[] src, int srcOffset, int length)\n" +
+                    "    public int Set%1$s(byte[] src, int srcOffset, int length)\n" +
                     "    {\n" +
-                    "        const int sizeOfLengthField = %d;\n" +
+                    "        const int sizeOfLengthField = %2$d;\n" +
                     "        int lengthPosition = Position;\n" +
-                    "        _buffer.%sPut(lengthPosition, (%s)length%s);\n" +
+                    "        _buffer.%3$sPut(lengthPosition, (%4$s)length%5$s);\n" +
                     "        Position = lengthPosition + sizeOfLengthField;\n" +
                     "        _buffer.SetBytes(Position, src, srcOffset, length);\n" +
                     "        Position = Position + length;\n\n" +
@@ -602,24 +596,21 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public %s %s\n" +
+            indent + "    public %1$s %2$s\n" +
             indent + "    {\n" +
             indent + "        get\n" +
             indent + "        {\n" +
-            "%s" +
-            indent + "            return _buffer.%sGet(_offset + %d%s);\n" +
+            "%3$s" +
+            indent + "            return _buffer.%4$sGet(_offset + %5$d%6$s);\n" +
             indent + "        }\n" +
             indent + "        set\n" +
             indent + "        {\n" +
-            indent + "            _buffer.%sPut(_offset + %d, value%s);\n" +
+            indent + "            _buffer.%4$sPut(_offset + %5$d, value%6$s);\n" +
             indent + "        }\n" +
             indent + "    }\n\n",
             typeName,
             toUpperFirstChar(propertyName),
             generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
-            typePrefix,
-            offset,
-            byteOrderStr,
             typePrefix,
             offset,
             byteOrderStr
@@ -636,7 +627,7 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         return String.format(
-            indent + "        if (actingVersion < %d) return %s;\n\n",
+            indent + "        if (actingVersion < %1$d) return %2$s;\n\n",
             Integer.valueOf(sinceVersion),
             sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.nullVal().toString()) : "(byte)0"
         );
@@ -691,14 +682,14 @@ public class CSharpGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public %s Get%s(int index)\n" +
+            indent + "    public %1$s Get%2$s(int index)\n" +
             indent + "    {\n" +
-            indent + "        if (index < 0 || index >= %d)\n" +
+            indent + "        if (index < 0 || index >= %3$d)\n" +
             indent + "        {\n" +
             indent + "            throw new IndexOutOfRangeException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
-            "%s" +
-            indent + "        return _buffer.%sGet(_offset + %d + (index * %d)%s);\n" +
+            "%4$s" +
+            indent + "        return _buffer.%5$sGet(_offset + %6$d + (index * %7$d)%8$s);\n" +
             indent + "    }\n\n",
             typeName,
             propName,
@@ -711,13 +702,13 @@ public class CSharpGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public void Set%s(int index, %s value)\n" +
+            indent + "    public void Set%1$s(int index, %2$s value)\n" +
             indent + "    {\n" +
-            indent + "        if (index < 0 || index >= %d)\n" +
+            indent + "        if (index < 0 || index >= %3$d)\n" +
             indent + "        {\n" +
             indent + "            throw new IndexOutOfRangeException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
-            indent + "        _buffer.%sPut(_offset + %d + (index * %d), value%s);\n" +
+            indent + "        _buffer.%4$sPut(_offset + %5$d + (index * %6$d), value%7$s);\n" +
             indent + "    }\n",
             propName,
             typeName,
@@ -733,15 +724,15 @@ public class CSharpGenerator implements CodeGenerator
             generateCharacterEncodingMethod(sb, propertyName, token.encoding().characterEncoding());
 
             sb.append(String.format(
-                indent + "    public int Get%s(byte[] dst, int dstOffset)\n" +
+                indent + "    public int Get%1$s(byte[] dst, int dstOffset)\n" +
                 indent + "    {\n" +
-                indent + "        const int length = %d;\n" +
+                indent + "        const int length = %2$d;\n" +
                 indent + "        if (dstOffset < 0 || dstOffset > (dst.Length - length))\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfRangeException(\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
-                "%s" +
-                indent + "        _buffer.GetBytes(_offset + %d, dst, dstOffset, length);\n" +
+                "%3$s" +
+                indent + "        _buffer.GetBytes(_offset + %4$d, dst, dstOffset, length);\n" +
                 indent + "        return length;\n" +
                 indent + "    }\n\n",
                 propName,
@@ -751,14 +742,14 @@ public class CSharpGenerator implements CodeGenerator
             ));
 
             sb.append(String.format(
-                indent + "    public void Set%s(byte[] src, int srcOffset)\n" +
+                indent + "    public void Set%1$s(byte[] src, int srcOffset)\n" +
                 indent + "    {\n" +
-                indent + "        const int length = %d;\n" +
+                indent + "        const int length = %2$d;\n" +
                 indent + "        if (srcOffset < 0 || srcOffset > (src.Length - length))\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfRangeException(\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
                 indent + "        }\n\n" +
-                indent + "        _buffer.SetBytes(_offset + %d, src, srcOffset, length);\n" +
+                indent + "        _buffer.SetBytes(_offset + %3$d, src, srcOffset, length);\n" +
                 indent + "    }\n",
                 propName,
                 fieldLength,
@@ -786,7 +777,7 @@ public class CSharpGenerator implements CodeGenerator
             // ODE: we generate a property here because the constant could become a field in a newer version of the protocol
             return String.format(
                 "\n" +
-                indent + "    public %s %s { get { return %s; } }\n",
+                indent + "    public %1$s %2$s { get { return %3$s; } }\n",
                 cSharpTypeName(token.encoding().primitiveType()),
                 toUpperFirstChar(propertyName),
                 generateLiteral(token.encoding().primitiveType(), token.encoding().constVal().toString())
@@ -801,22 +792,22 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    private static readonly byte[] _%sValue = {%s};\n",
+            indent + "    private static readonly byte[] _%1$sValue = {%2$s};\n",
             propertyName,
             values
         ));
 
         sb.append(String.format(
             "\n" +
-            indent + "    public const int %sLength = %d;\n",
+            indent + "    public const int %1$sLength = %2$d;\n",
             toUpperFirstChar(propertyName),
             Integer.valueOf(constantValue.length)
         ));
 
         sb.append(String.format(
-            indent + "    public %s %s(int index)\n" +
+            indent + "    public %1$s %2$s(int index)\n" +
             indent + "    {\n" +
-            indent + "        return _%sValue[index];\n" +
+            indent + "        return _%3$sValue[index];\n" +
             indent + "    }\n\n",
             javaTypeName,
             toUpperFirstChar(propertyName),
@@ -824,10 +815,10 @@ public class CSharpGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public int Get%s(byte[] dst, int offset, int length)\n" +
+            indent + "    public int Get%1$s(byte[] dst, int offset, int length)\n" +
             indent + "    {\n" +
-            indent + "        int bytesCopied = Math.Min(length, %d);\n" +
-            indent + "        Array.Copy(_%sValue, 0, dst, offset, bytesCopied);\n" +
+            indent + "        int bytesCopied = Math.Min(length, %2$d);\n" +
+            indent + "        Array.Copy(_%3$sValue, 0, dst, offset, bytesCopied);\n" +
             indent + "        return bytesCopied;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
@@ -1019,16 +1010,16 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public %s %s\n" +
+            indent + "    public %1$s %2$s\n" +
             indent + "    {\n" +
             indent + "        get\n" +
             indent + "        {\n" +
-            "%s" +
-            indent + "            return (%s)_buffer.%sGet(_offset + %d%s);\n" +
+            "%3$s" +
+            indent + "            return (%4$s)_buffer.%5$sGet(_offset + %6$d%7$s);\n" +
             indent + "        }\n" +
             indent + "        set\n" +
             indent + "        {\n" +
-            indent + "            _buffer.%sPut(_offset + %d, (%s)value%s);\n" +
+            indent + "            _buffer.%5$sPut(_offset + %6$d, (%8$s)value%7$s);\n" +
             indent + "        }\n" +
             indent + "    }\n\n",
             enumName,
@@ -1038,10 +1029,7 @@ public class CSharpGenerator implements CodeGenerator
             typePrefix,
             offset,
             byteOrderStr,
-            typePrefix,
-            offset,
-            enumUnderlyingType,
-            byteOrderStr
+            enumUnderlyingType
         ));
 
         return sb;
@@ -1060,16 +1048,16 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public %s %s\n" +
+            indent + "    public %1$s %2$s\n" +
             indent + "    {\n" +
             indent + "        get\n" +
             indent + "        {\n" +
-            "%s" +
-            indent + "            return (%s)_buffer.%sGet(_offset + %d%s);\n" +
+            "%3$s" +
+            indent + "            return (%4$s)_buffer.%5$sGet(_offset + %6$d%7$s);\n" +
             indent + "        }\n" +
             indent + "        set\n" +
             indent + "        {\n" +
-            indent + "            _buffer.%sPut(_offset + %d, (%s)value%s);\n" +
+            indent + "            _buffer.%5$sPut(_offset + %6$d, (%8$s)value%7$s);\n" +
             indent + "        }\n" +
             indent + "    }\n",
             bitSetName,
@@ -1079,10 +1067,7 @@ public class CSharpGenerator implements CodeGenerator
             typePrefix,
             offset,
             byteOrderStr,
-            typePrefix,
-            offset,
-            typeName,
-            byteOrderStr
+            typeName
         ));
 
         return sb;
@@ -1097,7 +1082,7 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    private readonly %s _%s = new %s();\n",
+            indent + "    private readonly %1$s _%2$s = new %3$s();\n",
             compositeName,
             toLowerFirstChar(propertyName),
             compositeName
@@ -1106,21 +1091,20 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public %s %s\n" +
+            indent + "    public %1$s %2$s\n" +
             indent + "    {\n" +
             indent + "        get\n" +
             indent + "        {\n" +
-            "%s" +
-            indent + "            _%s.Wrap(_buffer, _offset + %d, _actingVersion);\n" +
-            indent + "            return _%s;\n" +
+            "%3$s" +
+            indent + "            _%4$s.Wrap(_buffer, _offset + %5$d, _actingVersion);\n" +
+            indent + "            return _%4$s;\n" +
             indent + "        }\n" +
             indent + "    }\n",
             compositeName,
             toUpperFirstChar(propertyName),
             generateTypeFieldNotPresentCondition(token.version(), indent),
             toLowerFirstChar(propertyName),
-            offset,
-            toLowerFirstChar(propertyName)
+            offset
         ));
 
         return sb;
