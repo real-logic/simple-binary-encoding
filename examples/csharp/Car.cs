@@ -3,7 +3,7 @@
 using System;
 using Adaptive.SimpleBinaryEncoding;
 
-namespace Uk.Co.Real_logic.Sbe.Examples
+namespace Baseline
 {
     public class Car : IMessageFlyweight
     {
@@ -35,7 +35,7 @@ namespace Uk.Co.Real_logic.Sbe.Examples
     }
 
     public void WrapForDecode(DirectBuffer buffer, int offset,
-                            int actingBlockLength, int actingVersion)
+                              int actingBlockLength, int actingVersion)
     {
         _buffer = buffer;
         _offset = offset;
@@ -188,7 +188,7 @@ namespace Uk.Co.Real_logic.Sbe.Examples
         return length;
     }
 
-    public Car SetVehicleCode(byte[] src, int srcOffset)
+    public void SetVehicleCode(byte[] src, int srcOffset)
     {
         const int length = 6;
         if (srcOffset < 0 || srcOffset > (src.Length - length))
@@ -197,7 +197,6 @@ namespace Uk.Co.Real_logic.Sbe.Examples
         }
 
         _buffer.SetBytes(_offset + 28, src, srcOffset, length);
-        return this;
     }
 
     public const int ExtrasSchemaId = 7;

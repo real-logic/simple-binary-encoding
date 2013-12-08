@@ -3,7 +3,7 @@
 using System;
 using Adaptive.SimpleBinaryEncoding;
 
-namespace Uk.Co.Real_logic.Sbe.Examples
+namespace Baseline
 {
     [Flags]
     public enum OptionalExtras : byte

@@ -3,7 +3,7 @@
 using System;
 using Adaptive.SimpleBinaryEncoding;
 
-namespace Uk.Co.Real_logic.Sbe.Examples
+namespace Baseline
 {
     public class Engine : IFixedFlyweight
     {
@@ -84,7 +84,7 @@ namespace Uk.Co.Real_logic.Sbe.Examples
         return length;
     }
 
-    public Engine SetManufacturerCode(byte[] src, int srcOffset)
+    public void SetManufacturerCode(byte[] src, int srcOffset)
     {
         const int length = 3;
         if (srcOffset < 0 || srcOffset > (src.Length - length))
@@ -93,7 +93,6 @@ namespace Uk.Co.Real_logic.Sbe.Examples
         }
 
         _buffer.SetBytes(_offset + 3, src, srcOffset, length);
-        return this;
     }
 
     private static readonly byte[] _fuelValue = {80, 101, 116, 114, 111, 108};
