@@ -1,6 +1,6 @@
 ﻿using Uk.Co.Real_logic.Sbe.Samples.Fix;
 
-namespace Adaptive.SimpleBinaryEncoding.PerfTests
+namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE
 {
     public class BenchmarkState
     {

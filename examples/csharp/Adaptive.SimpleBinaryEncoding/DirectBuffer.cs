@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Adaptive.SimpleBinaryEncoding
 {
-    public unsafe class DirectBuffer : IDisposable, IDirectBuffer
+    public sealed unsafe class DirectBuffer : IDisposable, IDirectBuffer
     {
         private readonly byte[] _buffer;
         private readonly byte* _pBuffer;
@@ -403,7 +403,7 @@ namespace Adaptive.SimpleBinaryEncoding
             Dispose(false);
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (_disposed)
                 return;

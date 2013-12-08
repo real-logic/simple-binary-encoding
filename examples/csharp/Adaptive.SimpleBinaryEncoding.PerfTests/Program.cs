@@ -1,64 +1,44 @@
 ﻿using System;
-using System.Diagnostics;
-using Uk.Co.Real_logic.Sbe.Samples.Fix;
+using Adaptive.SimpleBinaryEncoding.PerfTests.Bench.Proto;
+using Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE;
 
 namespace Adaptive.SimpleBinaryEncoding.PerfTests
 {
     public class Program
     {
-        static readonly double TicksToNanos = 1000 * 1000 * 1000 / (double)Stopwatch.Frequency;
-
         public static void Main()
         {
-            for (int i = 0; i < 10; i++)
+            Console.WriteLine("WARM UP");
+            SbePerfTestRunner.PerfTestEncode(-1);
+            SbePerfTestRunner.PerfTestDecode(-1);
+            GpbPerfTestRunner.PerfTestEncode(-1);
+            GpbPerfTestRunner.PerfTestDecode(-1);
+
+            long sbeDecodeLatency = 0L;
+            long sbeEncodeLatency = 0L;
+            long gpbDecodeLatency = 0L;
+            long gpbEncodeLatency = 0L;
+
+            Console.WriteLine();
+            Console.WriteLine("Running ...");
+
+            for (int i = 0; i < 5; i++)
             {
-                PerfTestEncode(i);
-                PerfTestDecode(i);
-            }
-        }
+                sbeEncodeLatency += SbePerfTestRunner.PerfTestEncode(i);
+                GC.Collect(2);
 
-        private static void PerfTestEncode(int runNumber)
-        {
-            const int reps = 10*1000*1000;
-            var state = new BenchmarkState();
+                sbeDecodeLatency += SbePerfTestRunner.PerfTestDecode(i);
+                GC.Collect(2);
 
-            var sw = Stopwatch.StartNew();
-            var gcCount = GC.CollectionCount(0);
-            var size = 0;
-            for (int i = 0; i < reps; i++)
-            {
-                size = MarketDataBenchmark.Encode(state.MessageHeader, state.MarketData, state.EncodeBuffer, state.BufferIndex);
-            }
-            
-            var avgOpLatency = (long)(((sw.ElapsedTicks) / (double)reps) * TicksToNanos);
+                gpbEncodeLatency += GpbPerfTestRunner.PerfTestEncode(i);
+                GC.Collect(2);
 
-            Console.WriteLine("[{0}/Encode] - {1}(ns) average latency - message size: {2} - GC count: {3}",
-                runNumber,
-                avgOpLatency,
-                size + MessageHeader.Size,
-                GC.CollectionCount(0) - gcCount);
-        }
-
-        private static void PerfTestDecode(int runNumber)
-        {
-            const int reps = 10*1000*1000;
-            var state = new BenchmarkState();
-            var marketDataSize = 0;
-
-            var sw = Stopwatch.StartNew();
-            var gcCount = GC.CollectionCount(0);
-            for (int i = 0; i < reps; i++)
-            {
-                marketDataSize = MarketDataBenchmark.Decode(state.MessageHeader, state.MarketData, state.DecodeBuffer, state.BufferIndex);
+                gpbDecodeLatency += GpbPerfTestRunner.PerfTestDecode(i);
+                GC.Collect(2);
             }
 
-            var avgOpLatency = (long)(((sw.ElapsedTicks) / (double)reps) * TicksToNanos);
-
-            Console.WriteLine("[{0}/Decode] - {1}(ns) average latency - message size: {2} - GC count: {3}",
-                runNumber,
-                avgOpLatency,
-                marketDataSize + MessageHeader.Size,
-                GC.CollectionCount(0) - gcCount);
+            Console.WriteLine("Latency ratio Google Protobuf / SBE - Decode: {0}", Math.Truncate((double)gpbDecodeLatency / sbeDecodeLatency *100) / 100);
+            Console.WriteLine("Latency ratio Google Protobuf / SBE - Encode: {0}", Math.Truncate((double)gpbEncodeLatency / sbeEncodeLatency *100) / 100);
         }
     }
 }
