@@ -1,17 +1,2 @@
 *.user
-*.suo
-*.vssettings
 obj/
-bin/
-packages/
-
-BooleanType.cs
-Car.cs
-Engine.cs
-GroupSizeEncoding.cs
-MessageHeader.cs
-Model.cs
-OptionalExtras.cs
-VarDataEncoding.cs
-
-FIX/

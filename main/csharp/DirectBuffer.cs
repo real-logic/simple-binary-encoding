@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Adaptive.SimpleBinaryEncoding
 {
-    public unsafe class DirectBuffer : IDisposable, IDirectBuffer
+    public sealed unsafe class DirectBuffer : IDisposable, IDirectBuffer
     {
         private readonly byte[] _buffer;
         private readonly byte* _pBuffer;
@@ -29,7 +29,7 @@ namespace Adaptive.SimpleBinaryEncoding
         /// <param name="position">position access is required to.</param>
         public void CheckPosition(int position)
         {
-            if (position > _buffer.Length)
+            if (position >= _buffer.Length)
             {
                  throw new IndexOutOfRangeException(string.Format("position={0} is beyond capacity={1}", position, _buffer.Length));
             }
@@ -403,7 +403,7 @@ namespace Adaptive.SimpleBinaryEncoding
             Dispose(false);
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (_disposed)
                 return;

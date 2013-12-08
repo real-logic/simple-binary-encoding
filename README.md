@@ -74,3 +74,8 @@ If you have doxygen installed:
 Run the C++99 examples
 
     $ ant cpp:examples
+
+C# Build
+--------
+
+See readme.md in vs2013 directory

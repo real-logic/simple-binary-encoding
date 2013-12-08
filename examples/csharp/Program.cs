@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Adaptive.SimpleBinaryEncoding;
+using Baseline;
 
 namespace Uk.Co.Real_logic.Sbe.Examples
 {
