@@ -534,7 +534,10 @@ public class JavaGenerator implements CodeGenerator
             sb.append("    ").append(token.name()).append('(').append(constVal).append("),\n");
         }
 
-        sb.setLength(sb.length() - 2);
+        final Token token = tokens.get(0);
+        final CharSequence nullVal = generateLiteral(token.encoding().primitiveType(), token.encoding().applicableNullVal().toString());
+        sb.append("    ").append("NULL_VAL").append('(').append(nullVal).append(')');
+
         sb.append(";\n\n");
 
         return sb;
@@ -583,11 +586,13 @@ public class JavaGenerator implements CodeGenerator
             );
         }
 
-        sb.append(
+        sb.append(String.format(
+            "            case %s: return NULL_VAL;\n" +
             "        }\n\n" +
             "        throw new IllegalArgumentException(\"Unknown value: \" + value);\n" +
-            "    }\n"
-        );
+            "    }\n",
+            tokens.get(0).encoding().applicableNullVal().toString()
+        ));
 
         return sb;
     }
