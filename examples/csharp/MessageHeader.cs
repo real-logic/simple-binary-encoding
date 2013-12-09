@@ -20,6 +20,12 @@ namespace Baseline
 
         public const int Size = 6;
 
+    public const ushort BlockLengthNullVal = (ushort)65535;
+
+    public const ushort BlockLengthMinVal = (ushort)0;
+
+    public const ushort BlockLengthMaxVal = (ushort)65534;
+
     public ushort BlockLength
     {
         get
@@ -32,6 +38,12 @@ namespace Baseline
         }
     }
 
+
+    public const ushort TemplateIdNullVal = (ushort)65535;
+
+    public const ushort TemplateIdMinVal = (ushort)0;
+
+    public const ushort TemplateIdMaxVal = (ushort)65534;
 
     public ushort TemplateId
     {
@@ -46,6 +58,12 @@ namespace Baseline
     }
 
 
+    public const byte VersionNullVal = (byte)255;
+
+    public const byte VersionMinVal = (byte)0;
+
+    public const byte VersionMaxVal = (byte)254;
+
     public byte Version
     {
         get
@@ -58,6 +76,12 @@ namespace Baseline
         }
     }
 
+
+    public const byte ReservedNullVal = (byte)255;
+
+    public const byte ReservedMinVal = (byte)0;
+
+    public const byte ReservedMaxVal = (byte)254;
 
     public byte Reserved
     {

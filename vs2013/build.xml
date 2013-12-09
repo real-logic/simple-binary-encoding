@@ -60,7 +60,7 @@
     </ProjectFiles>
   </ItemGroup>
 
-  <Target Name="Compile" DependsOnTargets="Clean;Version">
+  <Target Name="Compile" DependsOnTargets="Version">
     <MSBuild Projects="@(ProjectFiles)" />
   </Target>
 

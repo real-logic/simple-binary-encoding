@@ -20,6 +20,12 @@ namespace Baseline
 
         public const int Size = -1;
 
+    public const byte LengthNullVal = (byte)255;
+
+    public const byte LengthMinVal = (byte)0;
+
+    public const byte LengthMaxVal = (byte)254;
+
     public byte Length
     {
         get
@@ -32,5 +38,11 @@ namespace Baseline
         }
     }
 
+
+    public const byte VarDataNullVal = (byte)255;
+
+    public const byte VarDataMinVal = (byte)0;
+
+    public const byte VarDataMaxVal = (byte)254;
     }
 }
