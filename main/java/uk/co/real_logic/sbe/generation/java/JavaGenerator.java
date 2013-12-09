@@ -195,9 +195,9 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "public static class %s implements GroupFlyweight<%s>\n" +
+            indent + "public static class %1$s implements GroupFlyweight<%1$s>\n" +
             indent + "{\n" +
-            indent + "    private final %s dimensions = new %s();\n" +
+            indent + "    private final %2$s dimensions = new %2$s();\n" +
             indent + "    private MessageFlyweight parentMessage;\n" +
             indent + "    private DirectBuffer buffer;\n" +
             indent + "    private int blockLength;\n" +
@@ -206,8 +206,6 @@ public class JavaGenerator implements CodeGenerator
             indent + "    private int index;\n" +
             indent + "    private int offset;\n\n",
             formatClassName(groupName),
-            formatClassName(groupName),
-            dimensionsClassName,
             dimensionsClassName
         ));
 
@@ -315,27 +313,23 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public %s %s()\n" +
+            indent + "    public %1$s %2$s()\n" +
             indent + "    {\n" +
-            indent + "        %s.wrapForDecode(parentMessage, buffer, actingVersion);\n" +
-            indent + "        return %s;\n" +
+            indent + "        %2$s.wrapForDecode(parentMessage, buffer, actingVersion);\n" +
+            indent + "        return %2$s;\n" +
             indent + "    }\n",
             className,
-            propertyName,
-            propertyName,
             propertyName
         ));
 
         sb.append(String.format(
             "\n" +
-            indent + "    public %s %sCount(final int count)\n" +
+            indent + "    public %1$s %2$sCount(final int count)\n" +
             indent + "    {\n" +
-            indent + "        %s.wrapForEncode(parentMessage, buffer, count);\n" +
-            indent + "        return %s;\n" +
+            indent + "        %2$s.wrapForEncode(parentMessage, buffer, count);\n" +
+            indent + "        return %2$s;\n" +
             indent + "    }\n",
             className,
-            propertyName,
-            propertyName,
             propertyName
         ));
 
@@ -548,19 +542,17 @@ public class JavaGenerator implements CodeGenerator
         final String javaEncodingType = javaTypeName(token.encoding().primitiveType());
 
         return String.format(
-            "    private final %s value;\n\n"+
-            "    %s(final %s value)\n" +
+            "    private final %1$s value;\n\n"+
+            "    %2$s(final %1$s value)\n" +
             "    {\n" +
             "        this.value = value;\n" +
             "    }\n\n" +
-            "    public %s value()\n" +
+            "    public %1$s value()\n" +
             "    {\n" +
             "        return value;\n" +
             "    }\n\n",
             javaEncodingType,
-            enumName,
-            javaEncodingType,
-            javaEncodingType
+            enumName
         );
     }
 
