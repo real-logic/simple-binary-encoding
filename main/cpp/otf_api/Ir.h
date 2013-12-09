@@ -186,11 +186,11 @@ public:
     /// Return the value of the current tokens bit set Ir::CHOICE value
     uint64_t choiceValue() const;
     /// Return the length of the name of the current token
-    uint8_t nameLen() const;
+    int64_t nameLen() const;
     /// Return the name of the current token
     std::string name() const;
     /// Return the length of the current tokens constant value in bytes
-    uint64_t constLen() const;
+    int64_t constLen() const;
     /// Retrieve the current tokens constant value or NULL if not present
     const char *constVal() const;
 
@@ -211,7 +211,7 @@ public:
                   int constValLength = 0);
 
     // used to retrieve what would be the nominal size of a single element of a primitive type
-    static unsigned int size(TokenPrimitiveType type)
+    static int64_t size(TokenPrimitiveType type)
     {
         switch (type)
         {

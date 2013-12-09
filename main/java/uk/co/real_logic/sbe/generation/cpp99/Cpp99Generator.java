@@ -418,7 +418,7 @@ public class Cpp99Generator implements CodeGenerator
                     "        sbe_uint64_t sizeOfLengthField = %3$d;\n" +
                     "        sbe_uint64_t lengthPosition = position();\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
-                    "        sbe_uint64_t dataLength = %4$s(*((%5$s *)(buffer_ + lengthPosition)));\n" +
+                    "        sbe_int64_t dataLength = %4$s(*((%5$s *)(buffer_ + lengthPosition)));\n" +
                     "        int bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
                     "        ::memcpy(dst, buffer_ + position(), bytesToCopy);\n" +
                     "        position(position() + (sbe_uint64_t)dataLength);\n" +

@@ -187,7 +187,7 @@ uint64_t Ir::choiceValue() const
     }
 }
 
-uint8_t Ir::nameLen() const
+int64_t Ir::nameLen() const
 {
     return impl_->nameLength;
 }
@@ -197,7 +197,7 @@ std::string Ir::name() const
     return std::string(impl_->name, nameLen());
 }
 
-uint64_t Ir::constLen() const
+int64_t Ir::constLen() const
 {
     return impl_->constValLength;
 }
