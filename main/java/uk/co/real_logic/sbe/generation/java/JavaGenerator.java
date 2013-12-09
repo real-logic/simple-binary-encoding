@@ -1292,9 +1292,12 @@ public class JavaGenerator implements CodeGenerator
                 break;
 
             case UINT16:
-            case UINT32:
             case INT32:
                 literal = value;
+                break;
+
+            case UINT32:
+                literal = value + "L";
                 break;
 
             case FLOAT:
