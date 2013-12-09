@@ -72,11 +72,11 @@ namespace Baseline
     {
         get
         {
-            return _buffer.Uint32Get(_offset + 0, ByteOrder.LittleEndian);
+            return _buffer.Uint32GetLittleEndian(_offset + 0);
         }
         set
         {
-            _buffer.Uint32Put(_offset + 0, value, ByteOrder.LittleEndian);
+            _buffer.Uint32PutLittleEndian(_offset + 0, value);
         }
     }
 
@@ -87,11 +87,11 @@ namespace Baseline
     {
         get
         {
-            return _buffer.Uint16Get(_offset + 4, ByteOrder.LittleEndian);
+            return _buffer.Uint16GetLittleEndian(_offset + 4);
         }
         set
         {
-            _buffer.Uint16Put(_offset + 4, value, ByteOrder.LittleEndian);
+            _buffer.Uint16PutLittleEndian(_offset + 4, value);
         }
     }
 
@@ -137,7 +137,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("index out of range: index=" + index);
         }
 
-        return _buffer.Int32Get(_offset + 8 + (index * 4), ByteOrder.LittleEndian);
+        return _buffer.Int32GetLittleEndian(_offset + 8 + (index * 4));
     }
 
     public void SetSomeNumbers(int index, int value)
@@ -147,7 +147,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("index out of range: index=" + index);
         }
 
-        _buffer.Int32Put(_offset + 8 + (index * 4), value, ByteOrder.LittleEndian);
+        _buffer.Int32PutLittleEndian(_offset + 8 + (index * 4), value);
     }
 
     public const int VehicleCodeSchemaId = 6;
@@ -308,11 +308,11 @@ namespace Baseline
         {
             get
             {
-                return _buffer.Uint16Get(_offset + 0, ByteOrder.LittleEndian);
+                return _buffer.Uint16GetLittleEndian(_offset + 0);
             }
             set
             {
-                _buffer.Uint16Put(_offset + 0, value, ByteOrder.LittleEndian);
+                _buffer.Uint16PutLittleEndian(_offset + 0, value);
             }
         }
 
@@ -323,11 +323,11 @@ namespace Baseline
         {
             get
             {
-                return _buffer.FloatGet(_offset + 2, ByteOrder.LittleEndian);
+                return _buffer.FloatGetLittleEndian(_offset + 2);
             }
             set
             {
-                _buffer.FloatPut(_offset + 2, value, ByteOrder.LittleEndian);
+                _buffer.FloatPutLittleEndian(_offset + 2, value);
             }
         }
 
@@ -506,11 +506,11 @@ namespace Baseline
             {
                 get
                 {
-                    return _buffer.Uint16Get(_offset + 0, ByteOrder.LittleEndian);
+                    return _buffer.Uint16GetLittleEndian(_offset + 0);
                 }
                 set
                 {
-                    _buffer.Uint16Put(_offset + 0, value, ByteOrder.LittleEndian);
+                    _buffer.Uint16PutLittleEndian(_offset + 0, value);
                 }
             }
 
@@ -521,11 +521,11 @@ namespace Baseline
             {
                 get
                 {
-                    return _buffer.FloatGet(_offset + 2, ByteOrder.LittleEndian);
+                    return _buffer.FloatGetLittleEndian(_offset + 2);
                 }
                 set
                 {
-                    _buffer.FloatPut(_offset + 2, value, ByteOrder.LittleEndian);
+                    _buffer.FloatPutLittleEndian(_offset + 2, value);
                 }
             }
 
