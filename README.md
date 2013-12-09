@@ -7,6 +7,8 @@ Further details on the background and usage of SBE can be found on the [Wiki](ht
 
 Benchmark tools and information can be found [here](https://github.com/real-logic/message-codec-bench).
 
+An XSD for SBE specs can be found [here](https://github.com/real-logic/simple-binary-encoding/blob/master/main/resources/fpl/SimpleBinary1-0.xsd)
+
 License (See LICENSE file for full license)
 -------------------------------------------
 Copyright 2013 Real Logic Limited
