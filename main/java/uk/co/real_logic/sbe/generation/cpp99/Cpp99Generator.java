@@ -1372,7 +1372,7 @@ public class Cpp99Generator implements CodeGenerator
 
             case UINT32:
             case INT32:
-                literal = value.toString();
+                literal = value;
                 break;
 
             case FLOAT:
