@@ -73,7 +73,7 @@ If you have doxygen installed:
 
 Run the C++99 examples
 
-    $ ant cpp:examples
+    $ ant examples:cpp
 
 C# Build
 --------

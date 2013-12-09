@@ -341,7 +341,7 @@
         </sequential>
     </target>
 
-    <target name="cpp:examples" depends="cpp:examples:gen, cpp:examples:otf"/>
+    <target name="examples:cpp" depends="cpp:examples:gen, cpp:examples:otf" description="Compile and run C++99 examples"/>
 
     <target name="update:gtest" depends="">
         <sequential>
