@@ -126,8 +126,8 @@ public class PrimitiveValue
     public static final long NULL_VALUE_INT32 = -2147483648;
 
     public static final long MIN_VALUE_UINT32 = 0;
-    public static final long MAX_VALUE_UINT32 = 0xFFFFFFFD;
-    public static final long NULL_VALUE_UINT32 = 0xFFFFFFFE;
+    public static final long MAX_VALUE_UINT32 = 4294967293L; // 0xFFFFFFFD
+    public static final long NULL_VALUE_UINT32 = 4294967294L; // 0xFFFFFFFE
 
     public static final long MIN_VALUE_INT64 = Long.MIN_VALUE + 1;  // -2^63 + 1
     public static final long MAX_VALUE_INT64 = Long.MAX_VALUE;      //  2^63 - 1  (SBE spec says -2^63 - 1)
