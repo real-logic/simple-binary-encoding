@@ -554,14 +554,20 @@ public class CSharpGenerator implements CodeGenerator
                                                    final Token token,
                                                    final String indent)
     {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(generatePrimitiveFieldMetaData(propertyName, token, indent));
+
         if (Encoding.Presence.CONSTANT == token.encoding().presence())
         {
-            return generateConstPropertyMethods(propertyName, token, indent);
+            sb.append(generateConstPropertyMethods(propertyName, token, indent));
         }
         else
         {
-            return generatePrimitivePropertyMethods(propertyName, token, indent);
+            sb.append(generatePrimitivePropertyMethods(propertyName, token, indent));
         }
+
+        return sb;
     }
 
     private CharSequence generatePrimitivePropertyMethods(final String propertyName,
@@ -580,6 +586,40 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         return "";
+    }
+
+    private CharSequence generatePrimitiveFieldMetaData(final String propertyName, final Token token, final String indent)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        final PrimitiveType primitiveType = token.encoding().primitiveType();
+        final String typeName = cSharpTypeName(primitiveType);
+
+        sb.append(String.format(
+                "\n" +
+                        indent + "    public const %s %sNullVal = %s;\n",
+                typeName,
+                toUpperFirstChar(propertyName),
+                generateLiteral(primitiveType, token.encoding().applicableNullVal().toString())
+        ));
+
+        sb.append(String.format(
+                "\n" +
+                        indent + "    public const %s %sMinVal = %s;\n",
+                typeName,
+                toUpperFirstChar(propertyName),
+                generateLiteral(primitiveType, token.encoding().applicableMinVal().toString())
+        ));
+
+        sb.append(String.format(
+                "\n" +
+                        indent + "    public const %s %sMaxVal = %s;\n",
+                typeName,
+                toUpperFirstChar(propertyName),
+                generateLiteral(primitiveType, token.encoding().applicableMaxVal().toString())
+        ));
+
+        return sb;
     }
 
     private CharSequence generateSingleValueProperty(final String propertyName,
@@ -1147,11 +1187,24 @@ public class CSharpGenerator implements CodeGenerator
                 break;
 
             case UINT32:
-                literal = value + "U";
+                // TODO remove once Issue #39 is fixed
+                if( value.startsWith("-")){
+                    literal = "0U";
+                }
+                else{
+                    literal = value + "U";
+                }
                 break;
 
             case FLOAT:
-                literal = value + "f";
+                if (value.endsWith("NaN"))
+                {
+                    literal = "float.NaN";
+                }
+                else
+                {
+                    literal = value + "f";
+                }
                 break;
 
             case UINT64:
@@ -1163,7 +1216,14 @@ public class CSharpGenerator implements CodeGenerator
                 break;
 
             case DOUBLE:
-                literal = value + "d";
+                if (value.endsWith("NaN"))
+                {
+                    literal = "double.NaN";
+                }
+                else
+                {
+                    literal = value + "d";
+                }
         }
 
         return literal;

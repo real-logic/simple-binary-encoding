@@ -68,6 +68,12 @@ namespace Baseline
 
     public const int SerialNumberSchemaId = 1;
 
+    public const uint SerialNumberNullVal = 0U;
+
+    public const uint SerialNumberMinVal = 0U;
+
+    public const uint SerialNumberMaxVal = 0U;
+
     public uint SerialNumber
     {
         get
@@ -82,6 +88,12 @@ namespace Baseline
 
 
     public const int ModelYearSchemaId = 2;
+
+    public const ushort ModelYearNullVal = (ushort)65535;
+
+    public const ushort ModelYearMinVal = (ushort)0;
+
+    public const ushort ModelYearMaxVal = (ushort)65534;
 
     public ushort ModelYear
     {
@@ -128,6 +140,12 @@ namespace Baseline
 
     public const int SomeNumbersSchemaId = 5;
 
+    public const int SomeNumbersNullVal = -2147483648;
+
+    public const int SomeNumbersMinVal = -2147483647;
+
+    public const int SomeNumbersMaxVal = 2147483647;
+
     public const int SomeNumbersLength  = 5;
 
     public int GetSomeNumbers(int index)
@@ -151,6 +169,12 @@ namespace Baseline
     }
 
     public const int VehicleCodeSchemaId = 6;
+
+    public const byte VehicleCodeNullVal = (byte)0;
+
+    public const byte VehicleCodeMinVal = (byte)32;
+
+    public const byte VehicleCodeMaxVal = (byte)126;
 
     public const int VehicleCodeLength  = 6;
 
@@ -304,6 +328,12 @@ namespace Baseline
 
         public const int SpeedSchemaId = 10;
 
+        public const ushort SpeedNullVal = (ushort)65535;
+
+        public const ushort SpeedMinVal = (ushort)0;
+
+        public const ushort SpeedMaxVal = (ushort)65534;
+
         public ushort Speed
         {
             get
@@ -318,6 +348,12 @@ namespace Baseline
 
 
         public const int MpgSchemaId = 11;
+
+        public const float MpgNullVal = float.NaN;
+
+        public const float MpgMinVal = 1.401298464324817E-45f;
+
+        public const float MpgMaxVal = 3.4028234663852886E38f;
 
         public float Mpg
         {
@@ -411,6 +447,12 @@ namespace Baseline
 
         public const int OctaneRatingSchemaId = 13;
 
+        public const byte OctaneRatingNullVal = (byte)255;
+
+        public const byte OctaneRatingMinVal = (byte)90;
+
+        public const byte OctaneRatingMaxVal = (byte)110;
+
         public byte OctaneRating
         {
             get
@@ -502,6 +544,12 @@ namespace Baseline
 
             public const int MphSchemaId = 15;
 
+            public const ushort MphNullVal = (ushort)65535;
+
+            public const ushort MphMinVal = (ushort)0;
+
+            public const ushort MphMaxVal = (ushort)65534;
+
             public ushort Mph
             {
                 get
@@ -516,6 +564,12 @@ namespace Baseline
 
 
             public const int SecondsSchemaId = 16;
+
+            public const float SecondsNullVal = float.NaN;
+
+            public const float SecondsMinVal = 1.401298464324817E-45f;
+
+            public const float SecondsMaxVal = 3.4028234663852886E38f;
 
             public float Seconds
             {

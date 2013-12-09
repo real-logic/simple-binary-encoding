@@ -20,6 +20,12 @@ namespace Baseline
 
         public const int Size = 6;
 
+    public const ushort CapacityNullVal = (ushort)65535;
+
+    public const ushort CapacityMinVal = (ushort)0;
+
+    public const ushort CapacityMaxVal = (ushort)65534;
+
     public ushort Capacity
     {
         get
@@ -32,6 +38,12 @@ namespace Baseline
         }
     }
 
+
+    public const byte NumCylindersNullVal = (byte)255;
+
+    public const byte NumCylindersMinVal = (byte)0;
+
+    public const byte NumCylindersMaxVal = (byte)254;
 
     public byte NumCylinders
     {
@@ -46,7 +58,19 @@ namespace Baseline
     }
 
 
+    public const ushort MaxRpmNullVal = (ushort)65535;
+
+    public const ushort MaxRpmMinVal = (ushort)0;
+
+    public const ushort MaxRpmMaxVal = (ushort)65534;
+
     public ushort MaxRpm { get { return (ushort)9000; } }
+
+    public const byte ManufacturerCodeNullVal = (byte)0;
+
+    public const byte ManufacturerCodeMinVal = (byte)32;
+
+    public const byte ManufacturerCodeMaxVal = (byte)126;
 
     public const int ManufacturerCodeLength  = 3;
 
@@ -94,6 +118,12 @@ namespace Baseline
 
         _buffer.SetBytes(_offset + 3, src, srcOffset, length);
     }
+
+    public const byte FuelNullVal = (byte)0;
+
+    public const byte FuelMinVal = (byte)32;
+
+    public const byte FuelMaxVal = (byte)126;
 
     private static readonly byte[] _fuelValue = {80, 101, 116, 114, 111, 108};
 

@@ -20,6 +20,12 @@ namespace Baseline
 
         public const int Size = 3;
 
+    public const ushort BlockLengthNullVal = (ushort)65535;
+
+    public const ushort BlockLengthMinVal = (ushort)0;
+
+    public const ushort BlockLengthMaxVal = (ushort)65534;
+
     public ushort BlockLength
     {
         get
@@ -32,6 +38,12 @@ namespace Baseline
         }
     }
 
+
+    public const byte NumInGroupNullVal = (byte)255;
+
+    public const byte NumInGroupMinVal = (byte)0;
+
+    public const byte NumInGroupMaxVal = (byte)254;
 
     public byte NumInGroup
     {
