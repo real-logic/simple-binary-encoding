@@ -93,7 +93,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         [TestCase(-5, 8)]
         public void ShouldPutInt16LittleEndian(short value, int index)
         {
-            _directBuffer.Int16Put(index, value, ByteOrder.LittleEndian);
+            _directBuffer.Int16PutLittleEndian(index, value);
 
             Assert.AreEqual(value, *(short*) (_pBuffer + index));
         }
@@ -103,7 +103,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         [TestCase(-5, 8)]
         public void ShouldPutInt16BigEndian(short value, int index)
         {
-            _directBuffer.Int16Put(index, value, ByteOrder.BigEndian);
+            _directBuffer.Int16PutBigEndian(index, value);
 
             var expected = EndianessConverter.ApplyInt16(ByteOrder.BigEndian, value);
             Assert.AreEqual(expected, *(short*) (_pBuffer + index));
@@ -117,7 +117,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
             var bytes = BitConverter.GetBytes(value);
             Array.Copy(bytes, 0, _buffer, index, 2);
 
-            var result = _directBuffer.Int16Get(index, ByteOrder.LittleEndian);
+            var result = _directBuffer.Int16GetLittleEndian(index);
 
             Assert.AreEqual(value, result);
         }
@@ -130,7 +130,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
             var bytes = BitConverter.GetBytes(value);
             Array.Copy(bytes, 0, _buffer, index, 2);
 
-            var result = _directBuffer.Int16Get(index, ByteOrder.BigEndian);
+            var result = _directBuffer.Int16GetBigEndian(index);
 
             var expected = EndianessConverter.ApplyInt16(ByteOrder.BigEndian, value);
             Assert.AreEqual(expected, result);
@@ -145,7 +145,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         [TestCase(-5, 8)]
         public void ShouldPutInt32LittleEndian(int value, int index)
         {
-            _directBuffer.Int32Put(index, value, ByteOrder.LittleEndian);
+            _directBuffer.Int32PutLittleEndian(index, value);
 
             Assert.AreEqual(value, *(int*)(_pBuffer + index));
         }
@@ -155,7 +155,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         [TestCase(-5, 8)]
         public void ShouldPutInt32BigEndian(int value, int index)
         {
-            _directBuffer.Int32Put(index, value, ByteOrder.BigEndian);
+            _directBuffer.Int32PutBigEndian(index, value);
 
             var expected = EndianessConverter.ApplyInt32(ByteOrder.BigEndian, value);
             Assert.AreEqual(expected, *(int*)(_pBuffer + index));
@@ -169,7 +169,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
             var bytes = BitConverter.GetBytes(value);
             Array.Copy(bytes, 0, _buffer, index, 4);
 
-            var result = _directBuffer.Int32Get(index, ByteOrder.LittleEndian);
+            var result = _directBuffer.Int32GetLittleEndian(index);
 
             Assert.AreEqual(value, result);
         }
@@ -182,7 +182,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
             var bytes = BitConverter.GetBytes(value);
             Array.Copy(bytes, 0, _buffer, index, 4);
 
-            var result = _directBuffer.Int32Get(index, ByteOrder.BigEndian);
+            var result = _directBuffer.Int32GetBigEndian(index);
 
             var expected = EndianessConverter.ApplyInt32(ByteOrder.BigEndian, value);
             Assert.AreEqual(expected, result);
@@ -197,7 +197,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         [TestCase(-5, 8)]
         public void ShouldPutInt64LittleEndian(int value, int index)
         {
-            _directBuffer.Int64Put(index, value, ByteOrder.LittleEndian);
+            _directBuffer.Int64PutLittleEndian(index, value);
 
             Assert.AreEqual(value, *(long*)(_pBuffer + index));
         }
@@ -207,7 +207,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         [TestCase(-5, 8)]
         public void ShouldPutInt64BigEndian(long value, int index)
         {
-            _directBuffer.Int64Put(index, value, ByteOrder.BigEndian);
+            _directBuffer.Int64PutBigEndian(index, value);
 
             var expected = EndianessConverter.ApplyInt64(ByteOrder.BigEndian, value);
             Assert.AreEqual(expected, *(long*)(_pBuffer + index));
@@ -221,7 +221,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
             var bytes = BitConverter.GetBytes(value);
             Array.Copy(bytes, 0, _buffer, index, 8);
 
-            var result = _directBuffer.Int64Get(index, ByteOrder.LittleEndian);
+            var result = _directBuffer.Int64GetLittleEndian(index);
 
             Assert.AreEqual(value, result);
         }
@@ -234,8 +234,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
             var bytes = BitConverter.GetBytes(value);
             Array.Copy(bytes, 0, _buffer, index, 8);
 
-            var result = _directBuffer.Int64Get(index, ByteOrder.BigEndian);
-
+            var result = _directBuffer.Int64GetBigEndian(index);
             var expected = EndianessConverter.ApplyInt64(ByteOrder.BigEndian, value);
             Assert.AreEqual(expected, result);
         }
@@ -273,7 +272,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         {
             const ushort value = 5;
             const int index = 0;
-            _directBuffer.Uint16Put(index, value, ByteOrder.LittleEndian);
+            _directBuffer.Uint16PutLittleEndian(index, value);
 
             Assert.AreEqual(value, *(ushort*)(_pBuffer + index));
         }
@@ -283,7 +282,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         {
             const ushort value = 5;
             const int index = 0;
-            _directBuffer.Uint16Put(index, value, ByteOrder.BigEndian);
+            _directBuffer.Uint16PutBigEndian(index, value);
 
             var expected = EndianessConverter.ApplyUint16(ByteOrder.BigEndian, value);
             Assert.AreEqual(expected, *(ushort*)(_pBuffer + index));
@@ -297,7 +296,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
             var bytes = BitConverter.GetBytes(value);
             Array.Copy(bytes, 0, _buffer, index, 2);
 
-            var result = _directBuffer.Uint16Get(index, ByteOrder.LittleEndian);
+            var result = _directBuffer.Uint16GetLittleEndian(index);
 
             Assert.AreEqual(value, result);
         }
@@ -310,7 +309,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
             var bytes = BitConverter.GetBytes(value);
             Array.Copy(bytes, 0, _buffer, index, 2);
 
-            var result = _directBuffer.Uint16Get(index, ByteOrder.BigEndian);
+            var result = _directBuffer.Uint16GetBigEndian(index);
 
             var expected = EndianessConverter.ApplyUint16(ByteOrder.BigEndian, value);
             Assert.AreEqual(expected, result);
@@ -325,7 +324,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
        {
            const uint value = 5;
            const int index = 0;
-           _directBuffer.Uint32Put(index, value, ByteOrder.LittleEndian);
+           _directBuffer.Uint32PutLittleEndian(index, value);
 
            Assert.AreEqual(value, *(uint*)(_pBuffer + index));
        }
@@ -335,7 +334,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
        {
            const uint value = 5;
            const int index = 0;
-           _directBuffer.Uint32Put(index, value, ByteOrder.BigEndian);
+           _directBuffer.Uint32PutBigEndian(index, value);
 
            var expected = EndianessConverter.ApplyUint32(ByteOrder.BigEndian, value);
            Assert.AreEqual(expected, *(uint*)(_pBuffer + index));
@@ -349,7 +348,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
            var bytes = BitConverter.GetBytes(value);
            Array.Copy(bytes, 0, _buffer, index, 4);
 
-           var result = _directBuffer.Uint32Get(index, ByteOrder.LittleEndian);
+           var result = _directBuffer.Uint32GetLittleEndian(index);
 
            Assert.AreEqual(value, result);
        }
@@ -362,7 +361,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
            var bytes = BitConverter.GetBytes(value);
            Array.Copy(bytes, 0, _buffer, index, 4);
 
-           var result = _directBuffer.Uint32Get(index, ByteOrder.BigEndian);
+           var result = _directBuffer.Uint32GetBigEndian(index);
 
            var expected = EndianessConverter.ApplyUint32(ByteOrder.BigEndian, value);
            Assert.AreEqual(expected, result);
@@ -377,7 +376,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
        {
            const ulong value = ulong.MaxValue - 1;
            const int index = 0;
-           _directBuffer.Uint64Put(index, value, ByteOrder.LittleEndian);
+           _directBuffer.Uint64PutLittleEndian(index, value);
 
            Assert.AreEqual(value, *(ulong*)(_pBuffer + index));
        }
@@ -387,7 +386,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
        {
            const ulong value = ulong.MaxValue - 1;
            const int index = 0;
-           _directBuffer.Uint64Put(index, value, ByteOrder.BigEndian);
+           _directBuffer.Uint64PutBigEndian(index, value);
 
            var expected = EndianessConverter.ApplyUint64(ByteOrder.BigEndian, value);
            Assert.AreEqual(expected, *(ulong*)(_pBuffer + index));
@@ -401,7 +400,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
            var bytes = BitConverter.GetBytes(value);
            Array.Copy(bytes, 0, _buffer, index, 8);
 
-           var result = _directBuffer.Uint64Get(index, ByteOrder.LittleEndian);
+           var result = _directBuffer.Uint64GetLittleEndian(index);
 
            Assert.AreEqual(value, result);
        }
@@ -414,7 +413,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
            var bytes = BitConverter.GetBytes(value);
            Array.Copy(bytes, 0, _buffer, index, 8);
 
-           var result = _directBuffer.Uint64Get(index, ByteOrder.BigEndian);
+           var result = _directBuffer.Uint64GetBigEndian(index);
 
            var expected = EndianessConverter.ApplyUint64(ByteOrder.BigEndian, value);
            Assert.AreEqual(expected, result);
@@ -429,7 +428,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
        {
            const float value = float.MaxValue - 1;
            const int index = 0;
-           _directBuffer.FloatPut(index, value, ByteOrder.LittleEndian);
+           _directBuffer.FloatPutLittleEndian(index, value);
 
            Assert.AreEqual(value, *(float*)(_pBuffer + index));
        }
@@ -439,7 +438,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
        {
            const float value = float.MaxValue - 1;
            const int index = 0;
-           _directBuffer.FloatPut(index, value, ByteOrder.BigEndian);
+           _directBuffer.FloatPutBigEndian(index, value);
 
            var expected = EndianessConverter.ApplyFloat(ByteOrder.BigEndian, value);
            Assert.AreEqual(expected, *(float*)(_pBuffer + index));
@@ -453,7 +452,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
            var bytes = BitConverter.GetBytes(value);
            Array.Copy(bytes, 0, _buffer, index, 4);
 
-           var result = _directBuffer.FloatGet(index, ByteOrder.LittleEndian);
+           var result = _directBuffer.FloatGetLittleEndian(index);
 
            Assert.AreEqual(value, result);
        }
@@ -466,7 +465,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
            var bytes = BitConverter.GetBytes(value);
            Array.Copy(bytes, 0, _buffer, index, 4);
 
-           var result = _directBuffer.FloatGet(index, ByteOrder.BigEndian);
+           var result = _directBuffer.FloatGetBigEndian(index);
 
            var expected = EndianessConverter.ApplyFloat(ByteOrder.BigEndian, value);
            Assert.AreEqual(expected, result);
@@ -481,7 +480,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
        {
            const double value = double.MaxValue - 1;
            const int index = 0;
-           _directBuffer.DoublePut(index, value, ByteOrder.LittleEndian);
+           _directBuffer.DoublePutLittleEndian(index, value);
 
            Assert.AreEqual(value, *(double*)(_pBuffer + index));
        }
@@ -491,7 +490,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
        {
            const double value = double.MaxValue - 1;
            const int index = 0;
-           _directBuffer.DoublePut(index, value, ByteOrder.BigEndian);
+           _directBuffer.DoublePutBigEndian(index, value);
 
            var expected = EndianessConverter.ApplyDouble(ByteOrder.BigEndian, value);
            Assert.AreEqual(expected, *(double*)(_pBuffer + index));
@@ -505,7 +504,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
            var bytes = BitConverter.GetBytes(value);
            Array.Copy(bytes, 0, _buffer, index, 8);
 
-           var result = _directBuffer.DoubleGet(index, ByteOrder.LittleEndian);
+           var result = _directBuffer.DoubleGetLittleEndian(index);
 
            Assert.AreEqual(value, result);
        }
@@ -518,7 +517,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
            var bytes = BitConverter.GetBytes(value);
            Array.Copy(bytes, 0, _buffer, index, 8);
 
-           var result = _directBuffer.DoubleGet(index, ByteOrder.BigEndian);
+           var result = _directBuffer.DoubleGetBigEndian(index);
 
            var expected = EndianessConverter.ApplyDouble(ByteOrder.BigEndian, value);
            Assert.AreEqual(expected, result);

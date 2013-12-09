@@ -24,11 +24,11 @@ namespace Baseline
     {
         get
         {
-            return _buffer.Uint16Get(_offset + 0, ByteOrder.LittleEndian);
+            return _buffer.Uint16GetLittleEndian(_offset + 0);
         }
         set
         {
-            _buffer.Uint16Put(_offset + 0, value, ByteOrder.LittleEndian);
+            _buffer.Uint16PutLittleEndian(_offset + 0, value);
         }
     }
 
@@ -37,11 +37,11 @@ namespace Baseline
     {
         get
         {
-            return _buffer.Uint16Get(_offset + 2, ByteOrder.LittleEndian);
+            return _buffer.Uint16GetLittleEndian(_offset + 2);
         }
         set
         {
-            _buffer.Uint16Put(_offset + 2, value, ByteOrder.LittleEndian);
+            _buffer.Uint16PutLittleEndian(_offset + 2, value);
         }
     }
 

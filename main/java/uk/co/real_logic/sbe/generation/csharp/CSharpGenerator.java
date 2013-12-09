@@ -359,7 +359,7 @@ public class CSharpGenerator implements CodeGenerator
                     "        const int sizeOfLengthField = %3$d;\n" +
                     "        int lengthPosition = Position;\n" +
                     "        Position = lengthPosition + sizeOfLengthField;\n" +
-                    "        int dataLength = _buffer.%4$sGet(lengthPosition%5$s);\n" +
+                    "        int dataLength = _buffer.%4$sGet%5$s(lengthPosition);\n" +
                     "        int bytesCopied = Math.Min(length, dataLength);\n" +
                     "        _buffer.GetBytes(Position, dst, dstOffset, bytesCopied);\n" +
                     "        Position = Position + dataLength;\n\n" +
@@ -601,11 +601,11 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        get\n" +
             indent + "        {\n" +
             "%3$s" +
-            indent + "            return _buffer.%4$sGet(_offset + %5$d%6$s);\n" +
+            indent + "            return _buffer.%4$sGet%6$s(_offset + %5$d);\n" +
             indent + "        }\n" +
             indent + "        set\n" +
             indent + "        {\n" +
-            indent + "            _buffer.%4$sPut(_offset + %5$d, value%6$s);\n" +
+            indent + "            _buffer.%4$sPut%6$s(_offset + %5$d, value);\n" +
             indent + "        }\n" +
             indent + "    }\n\n",
             typeName,
@@ -689,7 +689,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "            throw new IndexOutOfRangeException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
             "%4$s" +
-            indent + "        return _buffer.%5$sGet(_offset + %6$d + (index * %7$d)%8$s);\n" +
+            indent + "        return _buffer.%5$sGet%8$s(_offset + %6$d + (index * %7$d));\n" +
             indent + "    }\n\n",
             typeName,
             propName,
@@ -708,7 +708,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new IndexOutOfRangeException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
-            indent + "        _buffer.%4$sPut(_offset + %5$d + (index * %6$d), value%7$s);\n" +
+            indent + "        _buffer.%4$sPut%7$s(_offset + %5$d + (index * %6$d), value);\n" +
             indent + "    }\n",
             propName,
             typeName,
@@ -1015,11 +1015,11 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        get\n" +
             indent + "        {\n" +
             "%3$s" +
-            indent + "            return (%4$s)_buffer.%5$sGet(_offset + %6$d%7$s);\n" +
+            indent + "            return (%4$s)_buffer.%5$sGet%7$s(_offset + %6$d);\n" +
             indent + "        }\n" +
             indent + "        set\n" +
             indent + "        {\n" +
-            indent + "            _buffer.%5$sPut(_offset + %6$d, (%8$s)value%7$s);\n" +
+            indent + "            _buffer.%5$sPut%7$s(_offset + %6$d, (%8$s)value);\n" +
             indent + "        }\n" +
             indent + "    }\n\n",
             enumName,
@@ -1053,11 +1053,11 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        get\n" +
             indent + "        {\n" +
             "%3$s" +
-            indent + "            return (%4$s)_buffer.%5$sGet(_offset + %6$d%7$s);\n" +
+            indent + "            return (%4$s)_buffer.%5$sGet%7$s(_offset + %6$d);\n" +
             indent + "        }\n" +
             indent + "        set\n" +
             indent + "        {\n" +
-            indent + "            _buffer.%5$sPut(_offset + %6$d, (%8$s)value%7$s);\n" +
+            indent + "            _buffer.%5$sPut%7$s(_offset + %6$d, (%8$s)value);\n" +
             indent + "        }\n" +
             indent + "    }\n",
             bitSetName,
@@ -1120,10 +1120,10 @@ public class CSharpGenerator implements CodeGenerator
         switch (byteOrder.toString())
         {
             case "BIG_ENDIAN":
-                return ", ByteOrder.BigEndian";
+                return "BigEndian";
 
             default:
-                return ", ByteOrder.LittleEndian";
+                return "LittleEndian";
         }
     }
 
