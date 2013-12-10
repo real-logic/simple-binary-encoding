@@ -1004,7 +1004,7 @@ public class Cpp99Generator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
 
-        final byte[] constantValue = token.encoding().constVal().byteArrayValue();
+        final byte[] constantValue = token.encoding().constVal().byteArrayValue(token.encoding().primitiveType());
         final StringBuilder values = new StringBuilder();
         for (final byte b : constantValue)
         {

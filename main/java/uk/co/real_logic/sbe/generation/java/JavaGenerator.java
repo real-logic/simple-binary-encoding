@@ -947,8 +947,8 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
-        final byte[] constantValue = token.encoding().constVal().byteArrayValue();
-        final CharSequence values = generateByteLiteralList(token.encoding().constVal().byteArrayValue());
+        final byte[] constantValue = token.encoding().constVal().byteArrayValue(token.encoding().primitiveType());
+        final CharSequence values = generateByteLiteralList(token.encoding().constVal().byteArrayValue(token.encoding().primitiveType()));
 
         sb.append(String.format(
             "\n" +

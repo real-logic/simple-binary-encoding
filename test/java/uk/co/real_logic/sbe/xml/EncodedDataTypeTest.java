@@ -313,7 +313,7 @@ public class EncodedDataTypeTest
         Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
         final String expectedString = "F";
-        final PrimitiveValue expectedValue = parse(expectedString, PrimitiveType.CHAR, expectedString.length(), "UTF-8");
+        final PrimitiveValue expectedValue = parse(expectedString, PrimitiveType.CHAR);
         assertThat((((EncodedDataType)map.get("testTypePresenceConst")).constVal()), is(expectedValue));
     }
 

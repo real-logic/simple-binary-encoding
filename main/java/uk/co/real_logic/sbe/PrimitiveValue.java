@@ -319,6 +319,28 @@ public class PrimitiveValue
     }
 
     /**
+     * Return byte array value for this PrimitiveValue given a particular type
+     *
+     * @param type of this value
+     * @return value expressed as a byte array
+     * @throws IllegalStateException if not a byte array value representation
+     */
+    public byte[] byteArrayValue(final PrimitiveType type)
+    {
+        if (representation == Representation.BYTE_ARRAY)
+        {
+            return byteArrayValue;
+        }
+        else if (representation == Representation.LONG && size == 1 && type == PrimitiveType.CHAR)
+        {
+            final byte[] array = new byte[1];
+            array[0] = (byte)longValue;
+            return array;
+        }
+        throw new IllegalStateException("PrimitiveValue is not a byte[] representation");
+    }
+
+    /**
      * Return size for this PrimitiveValue for serialization purposes.
      *
      * @return size for serialization

@@ -69,7 +69,14 @@ public class EncodedDataType extends Type
                 final String nodeValue = node.getFirstChild().getNodeValue();
                 if (PrimitiveType.CHAR == primitiveType)
                 {
-                    constVal = PrimitiveValue.parse(nodeValue, primitiveType, nodeValue.length(), characterEncoding);
+                    if (nodeValue.length() == 1)
+                    {
+                        constVal = PrimitiveValue.parse(nodeValue, primitiveType);
+                    }
+                    else
+                    {
+                        constVal = PrimitiveValue.parse(nodeValue, primitiveType, nodeValue.length(), characterEncoding);
+                    }
                 }
                 else
                 {

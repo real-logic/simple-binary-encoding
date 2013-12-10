@@ -20,6 +20,7 @@
         </composite>
     </types>
     <types>
+        <type name="CharConstType" presence="constant" primitiveType="char">g</type>
         <type name="ModelYear" primitiveType="uint16"/>
         <type name="VehicleCode" primitiveType="char" length="6"/>
         <composite name="Engine" semanticType="Engine">
@@ -45,6 +46,7 @@
         </set>
     </types>
     <message name="Car" id="1" description="Description of a basic Car">
+        <field name="charConst" id="100" type="CharConstType"/>
         <field name="serialNumber" id="1" type="uint32"/>
         <field name="modelYear" id="2" type="ModelYear"/>
         <field name="available" id="3" type="BooleanType"/>
