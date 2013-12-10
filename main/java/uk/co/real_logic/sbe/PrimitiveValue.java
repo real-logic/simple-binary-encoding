@@ -151,6 +151,7 @@ public class PrimitiveValue
     private final byte[] byteArrayValue;
     private final String characterEncoding;
     private final int size;
+    private final byte[] byteArrayValueForLong = new byte[1];
 
     /**
      * Construct and fill in value as a long.
@@ -333,9 +334,8 @@ public class PrimitiveValue
         }
         else if (representation == Representation.LONG && size == 1 && type == PrimitiveType.CHAR)
         {
-            final byte[] array = new byte[1];
-            array[0] = (byte)longValue;
-            return array;
+            byteArrayValueForLong[0] = (byte)longValue;
+            return byteArrayValueForLong;
         }
         throw new IllegalStateException("PrimitiveValue is not a byte[] representation");
     }
