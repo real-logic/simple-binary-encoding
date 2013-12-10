@@ -1187,15 +1187,7 @@ public class CSharpGenerator implements CodeGenerator
                 break;
 
             case UINT32:
-                // TODO remove once Issue #39 is fixed
-                if (value.startsWith("-"))
-                {
-                    literal = "0U";
-                }
-                else
-                {
-                    literal = value + "U";
-                }
+                literal = value + "U";
                 break;
 
             case FLOAT:
