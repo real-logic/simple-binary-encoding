@@ -68,11 +68,11 @@ namespace Baseline
 
     public const int SerialNumberSchemaId = 1;
 
-    public const uint SerialNumberNullVal = 0U;
+    public const uint SerialNumberNullVal = 4294967294U;
 
     public const uint SerialNumberMinVal = 0U;
 
-    public const uint SerialNumberMaxVal = 0U;
+    public const uint SerialNumberMaxVal = 4294967293U;
 
     public uint SerialNumber
     {
