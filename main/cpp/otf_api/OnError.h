@@ -28,12 +28,12 @@ class Error
 {
 public:
     /// Construct an error object with given error message string
-    Error(const char *errorMsg) : errorMsg_(errorMsg) {};
+    Error(const char *errorMsg) : errorMsg_(errorMsg) {}
     /// Construct an error object with given error message string as std::string
-    Error(const std::string errorMsg) : errorMsg_(errorMsg) {};
+    Error(const std::string errorMsg) : errorMsg_(errorMsg) {}
     virtual ~Error() {};
     /// Return error message
-    const std::string &message() const { return errorMsg_; };
+    const std::string &message() const { return errorMsg_; }
 private:
     std::string errorMsg_;
 };

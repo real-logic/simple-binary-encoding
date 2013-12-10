@@ -71,7 +71,7 @@ public:
     Field()
     {
         reset();
-    };
+    }
 
     virtual ~Field() {};
 
@@ -79,13 +79,13 @@ public:
     Type type() const
     {
         return type_;
-    };
+    }
 
     /// Return the number of encodings this Field contains. This is usually 1. However, Field::COMPOSITE can have more than one.
     int numEncodings() const
     {
         return numEncodings_;
-    };
+    }
 
     /// Return whether the Field is a Field::COMPOSITE or not
     bool isComposite() const { return (COMPOSITE == type_) ? true : false; };
@@ -100,19 +100,19 @@ public:
     int32_t schemaId() const
     {
         return schemaId_;
-    };
+    }
 
     /// Return the name of the Field. Can be empty if field has no name.
     const std::string &fieldName() const
     {
         return name_;
-    };
+    }
 
     /// Return the name of the composite if Field is a Field::COMPOSITE or empty if not.
     const std::string &compositeName() const
     {
         return compositeName_;
-    };
+    }
 
     /** \brief Return the name of the encoding for the given index
      *
@@ -122,7 +122,7 @@ public:
     const std::string &encodingName(const int index) const
     {
         return encodingNames_[index];
-    };
+    }
 
     /** \brief Return the Ir::TokenPrimitiveType of the encoding for the given index
      *
@@ -132,7 +132,7 @@ public:
     Ir::TokenPrimitiveType primitiveType(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? primitiveTypes_[0] : primitiveTypes_[index];
-    };
+    }
 
     /** \brief Return the length in primitive type units of the encoding for the given index
      *
@@ -142,7 +142,7 @@ public:
     int length(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingLengths_[0] : encodingLengths_[index];
-    };
+    }
 
     // encoding values. index = -1 means only 1 encoding (for set, enum, encoding) and exceptions on composite
     // enums and sets can have values as well. So, could grab encoding values.
@@ -158,7 +158,7 @@ public:
     int64_t getInt(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingValues_[0].int64Value_ : encodingValues_[index].int64Value_;
-    };
+    }
 
     /** \brief Return the unsigned integer value of the encoding for the given index
      *
@@ -171,7 +171,7 @@ public:
     uint64_t getUInt(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingValues_[0].uint64Value_ : encodingValues_[index].uint64Value_;
-    };
+    }
 
     /** \brief Return the floating point value of the encoding for the given index
      *
@@ -184,7 +184,7 @@ public:
     double getDouble(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingValues_[0].doubleValue_ : encodingValues_[index].doubleValue_;
-    };
+    }
 
     /** \brief Retrieve the byte array value of the encoding for the given index
      *
@@ -202,7 +202,7 @@ public:
         ::memcpy(dst,
                  encodingValues_[index].arrayValue_ + (Ir::size(primitiveTypes_[index]) * offset),
                  Ir::size(primitiveTypes_[index]) * length);
-    };
+    }
 
     /** \brief Retrieve the name of the valid value that matches the value of this enumeration
      *
@@ -216,7 +216,7 @@ public:
     const std::string &validValue() const
     {
         return validValue_;
-    };
+    }
 
     /** \brief Retrieve the list of names of the set bits in the bit set
      *
@@ -230,7 +230,7 @@ public:
     const std::vector<std::string> &choices() const
     {
         return choiceValues_;
-    };
+    }
 
 protected:
     // builder-ish pattern - set by Listener
@@ -238,37 +238,37 @@ protected:
     {
         numEncodings_ = numEncodings;
         return *this;
-    };
+    }
 
     Field &type(const Type type)
     {
         type_ = type;
         return *this;
-    };
+    }
 
     Field &fieldName(const std::string &name)
     {
         name_ = name;
         return *this;
-    };
+    }
 
     Field &compositeName(const std::string &name)
     {
         compositeName_ = name;
         return *this;
-    };
+    }
 
     Field &name(const int index, const std::string &name)
     {
         encodingNames_[index] = name;
         return *this;
-    };
+    }
 
     Field &schemaId(const uint16_t id)
     {
         schemaId_ = id;
         return *this;
-    };
+    }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value)
     {
@@ -278,7 +278,7 @@ protected:
         encodingLengths_.push_back(1);
         numEncodings_++;
         return *this;
-    };
+    }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
     {
@@ -288,7 +288,7 @@ protected:
         encodingLengths_.push_back(1);
         numEncodings_++;
         return *this;        
-    };
+    }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value)
     {
@@ -298,7 +298,7 @@ protected:
         encodingLengths_.push_back(1);
         numEncodings_++;
         return *this;
-    };
+    }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const char *array, const int size)
     {
@@ -314,24 +314,24 @@ protected:
     {
         validValue_ = value;
         return *this;
-    };
+    }
 
     Field &addChoice(const std::string value)
     {
         choiceValues_.push_back(value);
         return *this;
-    };
+    }
 
     Field &varDataLength(const uint64_t value)
     {
         varDataLength_ = value;
         return *this;
-    };
+    }
 
     uint64_t varDataLength(void)
     {
         return varDataLength_;
-    };
+    }
 
     Field &reset()
     {
@@ -348,7 +348,7 @@ protected:
         choiceValues_.clear();
         validValue_ = "";
         return *this;
-    };
+    }
 
 private:
     Type type_;

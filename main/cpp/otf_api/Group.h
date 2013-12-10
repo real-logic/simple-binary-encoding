@@ -44,55 +44,55 @@ public:
         NONE = 3
     };
 
-    Group() {};
+    Group() {}
 
     Event event() const
     {
         return event_;
-    };
+    }
 
     /// Return the name of the group as given in the schema and Ir
     const std::string &name() const
     {
         return name_;
-    };
+    }
 
     /// Return the iteration number. 0 based.
     int iteration() const
     {
         return iteration_;
-    };
+    }
 
     /// Return the number of iterations of this group to expect.
     int numInGroup() const
     {
         return numInGroup_;
-    };
+    }
 
 protected:
     Group &name(const std::string &name)
     {
         name_ = name;
         return *this;
-    };
+    }
 
     Group &iteration(const int iteration)
     {
         iteration_ = iteration;
         return *this;
-    };
+    }
 
     Group &numInGroup(const int numInGroup)
     {
         numInGroup_ = numInGroup;
         return *this;
-    };
+    }
 
     Group &event(Event event)
     {
         event_ = event;
         return *this;
-    };
+    }
 
     Group &reset()
     {
@@ -101,7 +101,7 @@ protected:
         name_ = "";
         event_ = NONE;
         return *this;
-    };
+    }
 
 private:
     std::string name_;

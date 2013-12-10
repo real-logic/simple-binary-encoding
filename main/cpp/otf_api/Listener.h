@@ -113,7 +113,7 @@ public:
     {
         ir_ = &ir;
         return *this;
-    };
+    }
 
     /**
      * \brief Reset state and initialize for decode of the given buffer.
@@ -146,7 +146,7 @@ public:
         ir_ = &headerIr;
         irCallback_ = irCallback;
         return *this;
-    };
+    }
 
     /**
      * \brief Subscribe callbacks for decoding and initiate decode
@@ -169,7 +169,7 @@ public:
     int bufferOffset(void) const
     {
         return bufferOffset_;
-    };
+    }
 
 protected:
     /*
@@ -178,17 +178,17 @@ protected:
     int deliver(const Field &field)
     {
         return ((onNext_) ? onNext_->onNext(field) : 0);
-    };
+    }
 
     int deliver(const Group &group)
     {
         return ((onNext_) ? onNext_->onNext(group) : 0);
-    };
+    }
 
     int error(const Error &error)
     {
         return ((onError_) ? onError_->onError(error) : 0);
-    };
+    }
 
     /*
      * Called once callbacks are setup and processing of the buffer should begin. This could be overridden by

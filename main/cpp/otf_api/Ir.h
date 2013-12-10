@@ -146,17 +146,17 @@ public:
             delete[] buffer_;
             buffer_ = NULL;
         }
-    };
+    }
 
     int64_t templateId(void) const
     {
         return templateId_;
-    };
+    }
 
     int64_t templateVersion(void) const
     {
         return templateVersion_;
-    };
+    }
 
     // iterator methods for IrTokens
 
