@@ -73,4 +73,30 @@
         OutputXmlFile="$(NUnitResultsFile)"
     />
   </Target>
+
+  
+  <!-- Following targets are supposed to be called from the main build file (Ant)-->
+  <ItemGroup>
+    <PackageVersionAssembly Include="..\target\dist\csharp\lib\net40\SBE.dll"/>
+    <NuSpecFile Include=".\.nuget\SBE.nuspec"/>
+  </ItemGroup>
+ 
+  <Target Name="Package">
+    <GetAssemblyIdentity AssemblyFiles="@(PackageVersionAssembly)">
+      <Output TaskParameter="Assemblies" ItemName="AssemblyIdentity" />
+    </GetAssemblyIdentity>
+    <XmlUpdate
+       XmlFileName="@(NuSpecFile)"
+       XPath="/package/metadata/version"
+       Value="%(AssemblyIdentity.Version)-beta" />
+
+    <Exec Command=".nuget\nuget.exe pack .nuget\sbe.nuspec -OutputDirectory ..\target\dist\csharp\" />
+  </Target>
+
+  <Target Name="Publish">
+    <GetAssemblyIdentity AssemblyFiles="@(PackageVersionAssembly)">
+      <Output TaskParameter="Assemblies" ItemName="AssemblyIdentity" />
+    </GetAssemblyIdentity>
+    <Exec Command=".nuget\nuget.exe push ..\target\dist\csharp\Adaptive.SBE.%(AssemblyIdentity.Version)-beta.nupkg" />
+  </Target>
 </Project>

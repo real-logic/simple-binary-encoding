@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Text;
-using Adaptive.SimpleBinaryEncoding;
 using Baseline;
 
-namespace Uk.Co.Real_logic.Sbe.Examples
+namespace Adaptive.SimpleBinaryEncoding.Examples
 {
-    public class Program
+    public class SbeProgram
     {
         private static readonly byte[] _vehicleCode;
         private static readonly byte[] _manufacturerCode;
@@ -15,10 +14,11 @@ namespace Uk.Co.Real_logic.Sbe.Examples
         private static readonly MessageHeader MessageHeader = new MessageHeader();
         private static readonly Car Car = new Car();
 
-        static Program()
+        static SbeProgram()
         {
             try
             {
+                // convert some sample strings to the correct encoding for this sample
                 _vehicleCode = Encoding.GetEncoding(Car.VehicleCodeCharacterEncoding).GetBytes("abcdef");
                 _manufacturerCode = Encoding.GetEncoding(Engine.ManufacturerCodeCharacterEncoding).GetBytes("123");
                 _make = Encoding.GetEncoding(Car.MakeCharacterEncoding).GetBytes("Honda");
@@ -32,34 +32,40 @@ namespace Uk.Co.Real_logic.Sbe.Examples
 
         private static void Main()
         {
+            // This byte array is used for encoding and decoding, this is what ou would send on the wire or save to disk
             var byteBuffer = new byte[4096];
+            // You need to "wrap" the array with a DirectBuffer, this class is used by the generated code to read and write efficiently to the underlying byte array
             var directBuffer = new DirectBuffer(byteBuffer);
-            const short messageTemplateVersion = 0;
+            const short messageTemplateVersion = 0; 
             int bufferOffset = 0;
-            int encodingLength = 0;
 
-            // Setup for encoding a message
+            // Before encoding a message we need to create a SBE header which specify what we are going to encode (this will allow the decoder to detect that it's an encoded 'car' object)
+            // We will probably simplify this part soon, so the header gets applied automatically, but for now it's manual
+            MessageHeader.Wrap(directBuffer, bufferOffset, messageTemplateVersion); // position the MessageHeader on the DirectBuffer, at the correct position
+            MessageHeader.BlockLength = Car.BlockLength; // size that a car takes on the wire
+            MessageHeader.TemplateId = Car.TemplateId;   // identifier for the car object (SBE template ID)
+            MessageHeader.Version = Car.TemplateVersion; // this can be overriden if we want to support different versions of the car object (advanced functionality)
 
-            MessageHeader.Wrap(directBuffer, bufferOffset, messageTemplateVersion);
-            MessageHeader.BlockLength = Car.BlockLength;
-            MessageHeader.TemplateId = Car.TemplateId;
-            MessageHeader.Version = Car.TemplateVersion;
-
+            // Now that we have encoded the header in the byte array we can encode the car object itself
             bufferOffset += MessageHeader.Size;
-            encodingLength += MessageHeader.Size;
-            encodingLength += Encode(Car, directBuffer, bufferOffset);
+            Encode(Car, directBuffer, bufferOffset);
 
-            // Decode the encoded message
 
+            // Now we have encoded the message is the byte array, we are going to decode it
+
+            // first we decode the header (in a real world scenario you would need the header to decide which SBE decoder you are going to use
             bufferOffset = 0;
+            // position the MessageHeader object at the beginning of the array
             MessageHeader.Wrap(directBuffer, bufferOffset, messageTemplateVersion);
 
-            // Lookup the applicable flyweight to decode this type of message based on templateId and version.
+            // Extract infos from the header
+            // In a real app you would use that to lookup the applicable flyweight to decode this type of message based on templateId and version.
             int templateId = MessageHeader.TemplateId;
             short actingVersion = MessageHeader.Version;
             int actingBlockLength = MessageHeader.BlockLength;
 
             bufferOffset += MessageHeader.Size;
+            // now we decode the message
             Decode(Car, directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
             Console.ReadKey();
@@ -67,32 +73,35 @@ namespace Uk.Co.Real_logic.Sbe.Examples
 
         private static int Encode(Car car, DirectBuffer directBuffer, int bufferOffset)
         {
-            int srcOffset = 0;
+            const int srcOffset = 0;
 
+            // we position the car encoder on the direct buffer, at the correct offset (ie. just after the header)
             car.WrapForEncode(directBuffer, bufferOffset);
-            car.SerialNumber = 1234;
+            car.SerialNumber = 1234; // we set the different fields, just as normal properties and they get written straight to the underlying byte buffer
             car.ModelYear = 2013;
-            car.Available = BooleanType.TRUE;
+            car.Available = BooleanType.TRUE; // enums are supports
             car.Code = Model.A;
-            car.SetVehicleCode(_vehicleCode, srcOffset);
+            car.SetVehicleCode(_vehicleCode, srcOffset); // we set a constant string
 
             for (int i = 0, size = Car.SomeNumbersLength; i < size; i++)
             {
-                car.SetSomeNumbers(i, i);
+                car.SetSomeNumbers(i, i); // this property is defined as a constant length array of integers
             }
 
-            car.Extras = OptionalExtras.CruiseControl | OptionalExtras.SunRoof;
+            car.Extras = OptionalExtras.CruiseControl | OptionalExtras.SunRoof; // bit set (flag enums in C#) are supported
 
             car.Engine.Capacity = 2000;
             car.Engine.NumCylinders = 4;
             car.Engine.SetManufacturerCode(_manufacturerCode, srcOffset);
 
-            var fuelFigures = car.FuelFiguresCount(3);
-            fuelFigures.Next();
+            // we have written all the constant length fields, now we can write the repeatable groups
+
+            var fuelFigures = car.FuelFiguresCount(3); // we specify that we are going to write 3 FueldFigures (the API is not very .NET friendly yet, we will address that)
+            fuelFigures.Next(); // move to the first element
             fuelFigures.Speed = 30;
             fuelFigures.Mpg = 35.9f;
 
-            fuelFigures.Next();
+            fuelFigures.Next(); // second
             fuelFigures.Speed = 55;
             fuelFigures.Mpg = 49.0f;
 
@@ -100,11 +109,11 @@ namespace Uk.Co.Real_logic.Sbe.Examples
             fuelFigures.Speed = 75;
             fuelFigures.Mpg = 40.0f;
 
-            Car.PerformanceFiguresGroup perfFigures = car.PerformanceFiguresCount(2);
+            Car.PerformanceFiguresGroup perfFigures = car.PerformanceFiguresCount(2); // demonstrates how to create a nested group
             perfFigures.Next();
             perfFigures.OctaneRating = 95;
 
-            Car.PerformanceFiguresGroup.AccelerationGroup acceleration = perfFigures.AccelerationCount(3).Next();
+            Car.PerformanceFiguresGroup.AccelerationGroup acceleration = perfFigures.AccelerationCount(3).Next(); // this group is going to be nested in the first element of the previous group
             acceleration.Mph = 30;
             acceleration.Seconds = 4.0f;
 
@@ -131,6 +140,8 @@ namespace Uk.Co.Real_logic.Sbe.Examples
             acceleration.Mph = 100;
             acceleration.Seconds = 11.8f;
 
+            // once we have written all the repeatable groups we can write the variable length properties (you would use that for strings, byte[], etc)
+
             car.SetMake(_make, srcOffset, _make.Length);
             car.SetMake(_model, srcOffset, _model.Length);
 
@@ -146,8 +157,10 @@ namespace Uk.Co.Real_logic.Sbe.Examples
             var buffer = new byte[128];
             var sb = new StringBuilder();
 
+            // position the car flyweight just after the header on the DirectBuffer
             car.WrapForDecode(directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
+            // decode the car properties on by one, directly from the buffer
             sb.Append("\ncar.templateId=").Append(Car.TemplateId);
             sb.Append("\ncar.serialNumber=").Append(car.SerialNumber);
             sb.Append("\ncar.modelYear=").Append(car.ModelYear);
@@ -167,7 +180,7 @@ namespace Uk.Co.Real_logic.Sbe.Examples
             }
 
             OptionalExtras extras = car.Extras;
-            sb.Append("\ncar.extras.cruiseControl=").Append((extras & OptionalExtras.CruiseControl) == OptionalExtras.CruiseControl);
+            sb.Append("\ncar.extras.cruiseControl=").Append((extras & OptionalExtras.CruiseControl) == OptionalExtras.CruiseControl); // this is how you can find out if a specific flag is set in a flag enum
             sb.Append("\ncar.extras.sportsPack=").Append((extras & OptionalExtras.SportsPack) == OptionalExtras.SportsPack);
             sb.Append("\ncar.extras.sunRoof=").Append((extras & OptionalExtras.SunRoof) == OptionalExtras.SunRoof);
 
@@ -183,10 +196,9 @@ namespace Uk.Co.Real_logic.Sbe.Examples
 
             int length = engine.GetFuel(buffer, 0, buffer.Length);
 
-            sb.Append("\ncar.engine.fuel=").Append(Encoding.ASCII.GetString(buffer, 0, length));
+            sb.Append("\ncar.engine.fuel=").Append(Encoding.ASCII.GetString(buffer, 0, length)); // string requires a bit of work to decode
 
-
-            var fuelFiguresGroup = car.FuelFigures;
+            var fuelFiguresGroup = car.FuelFigures; // decode a repeatable group (we will change the API to support foreach soon)
             while (fuelFiguresGroup.HasNext)
             {
                 var fuelFigures = fuelFiguresGroup.Next();
@@ -194,14 +206,14 @@ namespace Uk.Co.Real_logic.Sbe.Examples
                 sb.Append("\ncar.fuelFigures.mpg=").Append(fuelFigures.Mpg);
             }
 
-
+            // the nested group
             var performanceFiguresGroup = car.PerformanceFigures;
             while (performanceFiguresGroup.HasNext)
             {
                 var performanceFigures = performanceFiguresGroup.Next();
                 sb.Append("\ncar.performanceFigures.octaneRating=").Append(performanceFigures.OctaneRating);
 
-                var accelerationGroup = performanceFigures.Acceleration;
+                var accelerationGroup = performanceFigures.Acceleration; 
                 while (accelerationGroup.HasNext)
                 {
                     var acceleration = accelerationGroup.Next();
@@ -210,6 +222,7 @@ namespace Uk.Co.Real_logic.Sbe.Examples
                 }
             }
 
+            // variable length fields
             length = car.GetMake(buffer, 0, buffer.Length);
             sb.Append("\ncar.make=").Append(Encoding.GetEncoding(Car.MakeCharacterEncoding).GetString(buffer, 0, length));
 
