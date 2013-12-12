@@ -57,6 +57,12 @@ public:
         return name_;
     }
 
+    /// Return the schema ID of the group as given in the schema and Ir
+    int64_t schemaId() const
+    {
+        return schemaId_;
+    }
+
     /// Return the iteration number. 0 based.
     int iteration() const
     {
@@ -73,6 +79,12 @@ protected:
     Group &name(const std::string &name)
     {
         name_ = name;
+        return *this;
+    }
+
+    Group &schemaId(const int32_t id)
+    {
+        schemaId_ = id;
         return *this;
     }
 
@@ -108,6 +120,7 @@ private:
     Event event_;
     int iteration_;
     int numInGroup_;
+    int32_t schemaId_;
 
     friend class Listener;
 };

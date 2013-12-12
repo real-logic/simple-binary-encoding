@@ -269,9 +269,10 @@ private:
         int iteration_;
         int irPosition_;
         State state_;
+        int32_t schemaId_;
 
-        Frame(const std::string &name = "") : scopeName_(name), blockLength_(-1), numInGroup_(-1), iteration_(-1),
-                                              irPosition_(-1), state_(MESSAGE) {};
+        Frame(const std::string &name = "") : scopeName_(name), blockLength_(-1),
+                                              numInGroup_(-1), iteration_(-1), irPosition_(-1), state_(MESSAGE), schemaId_(Ir::INVALID_ID) {};
     };
 
     Frame messageFrame_;

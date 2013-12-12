@@ -121,7 +121,7 @@ public:
         // group started
         if (g.event() == Group::START)
         {
-            std::cout << "Group name=\"" << g.name() << "\" start (";
+            std::cout << "Group name=\"" << g.name() << "\" id=\"" << g.schemaId() << "\" start (";
             std::cout << g.iteration() << "/" << g.numInGroup() - 1 << "):" << "\n";
 
             if (g.iteration() == 1)
@@ -131,7 +131,7 @@ public:
         }
         else if (g.event() == Group::END)  // group ended
         {
-            std::cout << "Group name=\"" << g.name() << "\" end (";
+            std::cout << "Group name=\"" << g.name() << "\" id=\"" << g.schemaId() << "\" end (";
             std::cout << g.iteration() << "/" << g.numInGroup() - 1 << "):" << "\n";
 
             if (g.iteration() == g.numInGroup() - 1)

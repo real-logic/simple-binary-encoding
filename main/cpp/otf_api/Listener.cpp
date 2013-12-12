@@ -415,6 +415,7 @@ void Listener::processEndComposite(void)
             //cout << "save IR position " << stack_.top().irPosition_ << endl;
 
             cachedGroup_.name(stack_.top().scopeName_)
+                        .schemaId(stack_.top().schemaId_)
                         .iteration(0)
                         .numInGroup(stack_.top().numInGroup_)
                         .event(Group::START);
@@ -576,6 +577,7 @@ void Listener::processBeginGroup(const Ir *ir)
 {
     stack_.push(Frame(ir->name().c_str()));
     stack_.top().state_ = Frame::BEGAN_GROUP;
+    stack_.top().schemaId_ = ir->schemaId();
     updateBufferOffsetFromIr(ir);
     relativeOffsetAnchor_ = bufferOffset_;
 }
@@ -586,6 +588,7 @@ void Listener::processEndGroup(void)
     if (stack_.top().numInGroup_ > 0)
     {
         cachedGroup_.name(stack_.top().scopeName_)
+                    .schemaId(stack_.top().schemaId_)
                     .iteration(stack_.top().iteration_)
                     .numInGroup(stack_.top().numInGroup_)
                     .event(Group::END);
@@ -599,6 +602,7 @@ void Listener::processEndGroup(void)
         ir_->position(stack_.top().irPosition_);  // rewind IR to first field in group
 
         cachedGroup_.name(stack_.top().scopeName_)
+                    .schemaId(stack_.top().schemaId_)
                     .iteration(stack_.top().iteration_)
                     .numInGroup(stack_.top().numInGroup_)
                     .event(Group::START);
