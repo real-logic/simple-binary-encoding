@@ -32,7 +32,7 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Uk.Co.Real_logic.Sbe.Examples.Program</StartupObject>
+    <StartupObject>Adaptive.SimpleBinaryEncoding.Examples.SbeProgram</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -54,7 +54,7 @@
     <Compile Include="MessageHeader.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="OptionalExtras.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="SbeProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VarDataEncoding.cs" />
   </ItemGroup>

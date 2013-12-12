@@ -9,9 +9,10 @@ Build
 To run the build:
     $ build.bat
 
+Note: the build file assumes .NET 4 is installed.
+
 This will:
  - restore NuGet packages
  - compile the solution
  - run unit tests
 
-     
