@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.generation.cpp99;
+package uk.co.real_logic.sbe.generation.cpp98;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 
@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Utilities for mapping between IR and the C++ language.
  */
-public class Cpp99Util
+public class Cpp98Util
 {
     private static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
 
@@ -49,7 +49,7 @@ public class Cpp99Util
      * @param primitiveType to map.
      * @return the name of the Java primitive that most closely maps.
      */
-    public static String cpp99TypeName(final PrimitiveType primitiveType)
+    public static String cpp98TypeName(final PrimitiveType primitiveType)
     {
         return typeNameByPrimitiveTypeMap.get(primitiveType);
     }
@@ -99,7 +99,7 @@ public class Cpp99Util
     }
 
     /**
-     * Return the Cpp99 formatted byte order encoding string to use for a given byte order and primitiveType
+     * Return the Cpp98 formatted byte order encoding string to use for a given byte order and primitiveType
      *
      * @param byteOrder of the {@link uk.co.real_logic.sbe.ir.Token}
      * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}

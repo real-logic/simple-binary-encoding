@@ -15,10 +15,10 @@
  */
 package uk.co.real_logic.sbe.generation;
 
+import uk.co.real_logic.sbe.generation.cpp98.Cpp98Generator;
 import uk.co.real_logic.sbe.generation.csharp.CSharpGenerator;
 import uk.co.real_logic.sbe.generation.csharp.CSharpNamespaceOutputManager;
-import uk.co.real_logic.sbe.generation.cpp99.Cpp99Generator;
-import uk.co.real_logic.sbe.generation.cpp99.NamespaceOutputManager;
+import uk.co.real_logic.sbe.generation.cpp98.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.generation.java.PackageOutputManager;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
@@ -39,12 +39,12 @@ public enum TargetCodeGenerator
         }
     },
 
-    CPP99()
+    CPP98()
     {
         public CodeGenerator newInstance(final IntermediateRepresentation ir, final String outputDir)
             throws IOException
         {
-            return new Cpp99Generator(ir, new NamespaceOutputManager(outputDir, ir.namespaceName()));
+            return new Cpp98Generator(ir, new NamespaceOutputManager(outputDir, ir.namespaceName()));
         }
     },
 
