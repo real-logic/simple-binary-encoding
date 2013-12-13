@@ -74,7 +74,7 @@ If you have doxygen installed:
 
     $ ant cpp
 
-Run the C++99 examples
+Run the C++98 examples
 
     $ ant examples:cpp
 

@@ -44,7 +44,7 @@ public class Cpp98Util
     }
 
     /**
-     * Map the name of a {@link uk.co.real_logic.sbe.PrimitiveType} to a C++99 primitive type name.
+     * Map the name of a {@link uk.co.real_logic.sbe.PrimitiveType} to a C++98 primitive type name.
      *
      * @param primitiveType to map.
      * @return the name of the Java primitive that most closely maps.

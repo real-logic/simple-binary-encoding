@@ -203,7 +203,7 @@
         </java>
     </target>
 
-    <target name="generate:cpp98:sbeir" depends="dist" description="Generate serialized IR code for C++99">
+    <target name="generate:cpp98:sbeir" depends="dist" description="Generate serialized IR code for C++98">
         <java classname="uk.co.real_logic.sbe.SbeTool">
             <classpath refid="sbetool.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.main.cpp.src}"/>
@@ -327,7 +327,7 @@
         </sequential>
     </target>
 
-    <target name="examples:cpp" depends="cpp:examples:gen, cpp:examples:otf" description="Compile and run C++99 examples"/>
+    <target name="examples:cpp" depends="cpp:examples:gen, cpp:examples:otf" description="Compile and run C++98 examples"/>
 
     <target name="update:gtest" depends="">
         <sequential>
