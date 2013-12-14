@@ -208,7 +208,7 @@ public class JavaGeneratorTest
         final Object groupFlyweight = clazz.getDeclaredMethod("fuelFigures").invoke(msgFlyweight);
         assertThat((Integer)msgFlyweight.getClass().getDeclaredMethod("position").invoke(msgFlyweight), greaterThan(initialPosition));
 
-        Integer count = (Integer)groupFlyweight.getClass().getDeclaredMethod("count").invoke(groupFlyweight);
+        final Integer count = (Integer)groupFlyweight.getClass().getDeclaredMethod("count").invoke(groupFlyweight);
         assertThat(count, is(Integer.valueOf(0)));
     }
 }

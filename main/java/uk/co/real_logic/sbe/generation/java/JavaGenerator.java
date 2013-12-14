@@ -1050,7 +1050,7 @@ public class JavaGenerator implements CodeGenerator
             "    public static final %s TEMPLATE_ID = %s;\n" +
             "    public static final %s TEMPLATE_VERSION = %s;\n" +
             "    public static final %s BLOCK_LENGTH = %s;\n\n" +
-            "    private %s parentMessage = this;\n" +
+            "    private final %s parentMessage = this;\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
             "    private int position;\n" +
