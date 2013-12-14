@@ -3,7 +3,7 @@ package uk.co.real_logic.sbe.ir.generated;
 
 import uk.co.real_logic.sbe.generation.java.*;
 
-public class MessageHeader implements FixedFlyweight
+public class MessageHeader
 {
     private DirectBuffer buffer;
     private int offset;

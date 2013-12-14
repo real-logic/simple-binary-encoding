@@ -3,13 +3,13 @@ package uk.co.real_logic.sbe.ir.generated;
 
 import uk.co.real_logic.sbe.generation.java.*;
 
-public class SerializedFrame implements MessageFlyweight
+public class SerializedFrame
 {
     public static final int TEMPLATE_ID = 1;
     public static final short TEMPLATE_VERSION = (short)0;
     public static final int BLOCK_LENGTH = 8;
 
-    private MessageFlyweight parentMessage = this;
+    private SerializedFrame parentMessage = this;
     private DirectBuffer buffer;
     private int offset;
     private int position;

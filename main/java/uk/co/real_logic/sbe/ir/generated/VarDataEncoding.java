@@ -3,7 +3,7 @@ package uk.co.real_logic.sbe.ir.generated;
 
 import uk.co.real_logic.sbe.generation.java.*;
 
-public class VarDataEncoding implements FixedFlyweight
+public class VarDataEncoding
 {
     private DirectBuffer buffer;
     private int offset;

@@ -56,7 +56,7 @@ public class JavaGenerator implements CodeGenerator
         {
             final List<Token> tokens = ir.messageHeader().tokens();
             out.append(generateFileHeader(ir.packageName()));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE, FixedFlyweight.class.getSimpleName()));
+            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
             out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
@@ -98,7 +98,7 @@ public class JavaGenerator implements CodeGenerator
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.packageName()));
-                out.append(generateClassDeclaration(className, MessageFlyweight.class.getSimpleName()));
+                out.append(generateClassDeclaration(className));
                 out.append(generateMessageFlyweightCode(className, msgToken.size(), msgToken.version(), msgToken.schemaId()));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
@@ -111,7 +111,7 @@ public class JavaGenerator implements CodeGenerator
                 final List<Token> groups = new ArrayList<>();
                 offset = collectGroups(messageBody, offset, groups);
                 final StringBuilder sb = new StringBuilder();
-                generateGroups(sb, groups, 0, BASE_INDENT);
+                generateGroups(sb, className, groups, 0, BASE_INDENT);
                 out.append(sb);
 
                 final List<Token> varData = messageBody.subList(offset, messageBody.size());
@@ -156,7 +156,11 @@ public class JavaGenerator implements CodeGenerator
         return index;
     }
 
-    private int generateGroups(final StringBuilder sb, final List<Token> tokens, int index, final String indent)
+    private int generateGroups(final StringBuilder sb,
+                               final String parentMessageClassName,
+                               final List<Token> tokens,
+                               int index,
+                               final String indent)
     {
         for (int size = tokens.size(); index < size; index++)
         {
@@ -166,7 +170,7 @@ public class JavaGenerator implements CodeGenerator
                 final String groupName = groupToken.name();
                 sb.append(generateGroupProperty(groupName, groupToken, indent));
 
-                generateGroupClassHeader(sb, groupName, tokens, index, indent + INDENT);
+                generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
 
                 final List<Token> rootFields = new ArrayList<>();
                 index = collectRootFields(tokens, ++index, rootFields);
@@ -174,7 +178,7 @@ public class JavaGenerator implements CodeGenerator
 
                 if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
                 {
-                    index = generateGroups(sb, tokens, index, indent + INDENT);
+                    index = generateGroups(sb, parentMessageClassName, tokens, index, indent + INDENT);
                 }
 
                 sb.append(indent).append("    }\n");
@@ -186,6 +190,7 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateGroupClassHeader(final StringBuilder sb,
                                           final String groupName,
+                                          final String parentMessageClassName,
                                           final List<Token> tokens,
                                           final int index,
                                           final String indent)
@@ -195,10 +200,10 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "public static class %1$s implements GroupFlyweight<%1$s>\n" +
+            indent + "public static class %1$s implements Iterable<%1$s>, java.util.Iterator<%1$s>\n" +
             indent + "{\n" +
             indent + "    private final %2$s dimensions = new %2$s();\n" +
-            indent + "    private MessageFlyweight parentMessage;\n" +
+            indent + "    private %3$s parentMessage;\n" +
             indent + "    private DirectBuffer buffer;\n" +
             indent + "    private int blockLength;\n" +
             indent + "    private int actingVersion;\n" +
@@ -206,11 +211,12 @@ public class JavaGenerator implements CodeGenerator
             indent + "    private int index;\n" +
             indent + "    private int offset;\n\n",
             formatClassName(groupName),
-            dimensionsClassName
+            dimensionsClassName,
+            parentMessageClassName
         ));
 
         sb.append(String.format(
-            indent + "    public void wrapForDecode(final MessageFlyweight parentMessage, final DirectBuffer buffer, final int actingVersion)\n" +
+            indent + "    public void wrapForDecode(final %s parentMessage, final DirectBuffer buffer, final int actingVersion)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
@@ -222,6 +228,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        final int dimensionsHeaderSize = %d;\n" +
             indent + "        parentMessage.position(parentMessage.position() + dimensionsHeaderSize);\n" +
             indent + "    }\n\n",
+            parentMessageClassName,
             dimensionHeaderSize
         ));
 
@@ -230,7 +237,7 @@ public class JavaGenerator implements CodeGenerator
         final String javaTypeForNumInGroup = javaTypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    public void wrapForEncode(final MessageFlyweight parentMessage, final DirectBuffer buffer, final int count)\n" +
+            indent + "    public void wrapForEncode(final %s parentMessage, final DirectBuffer buffer, final int count)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
@@ -243,6 +250,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        final int dimensionsHeaderSize = %d;\n" +
             indent + "        parentMessage.position(parentMessage.position() + dimensionsHeaderSize);\n" +
             indent + "    }\n\n",
+            parentMessageClassName,
             javaTypeForNumInGroup,
             javaTypeForBlockLength,
             blockLength,
@@ -409,7 +417,7 @@ public class JavaGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
             out.append(generateFileHeader(ir.packageName()));
-            out.append(generateClassDeclaration(bitSetName, FixedFlyweight.class.getSimpleName()));
+            out.append(generateClassDeclaration(bitSetName));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
             out.append(generateChoiceClear(bitSetName, tokens.get(0)));
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
@@ -443,7 +451,7 @@ public class JavaGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(compositeName))
         {
             out.append(generateFileHeader(ir.packageName()));
-            out.append(generateClassDeclaration(compositeName, FixedFlyweight.class.getSimpleName()));
+            out.append(generateClassDeclaration(compositeName));
             out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size()));
 
             out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
@@ -599,13 +607,12 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateClassDeclaration(final String className, final String implementedInterface)
+    private CharSequence generateClassDeclaration(final String className)
     {
         return String.format(
-            "public class %s implements %s\n" +
+            "public class %s\n" +
             "{\n",
-            className,
-            implementedInterface
+            className
         );
     }
 
@@ -1043,7 +1050,7 @@ public class JavaGenerator implements CodeGenerator
             "    public static final %s TEMPLATE_ID = %s;\n" +
             "    public static final %s TEMPLATE_VERSION = %s;\n" +
             "    public static final %s BLOCK_LENGTH = %s;\n\n" +
-            "    private MessageFlyweight parentMessage = this;\n" +
+            "    private %s parentMessage = this;\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
             "    private int position;\n" +
@@ -1104,6 +1111,7 @@ public class JavaGenerator implements CodeGenerator
             generateLiteral(ir.messageHeader().templateVersionType(), Integer.toString(version)),
             blockLengthType,
             generateLiteral(ir.messageHeader().blockLengthType(), Integer.toString(blockLength)),
+            className,
             blockLengthType,
             templateIdType,
             templateVersionType,

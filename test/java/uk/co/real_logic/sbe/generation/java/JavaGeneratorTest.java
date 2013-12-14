@@ -24,6 +24,7 @@ import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 
+import java.lang.reflect.Method;
 import java.nio.ByteOrder;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -71,8 +72,9 @@ public class JavaGeneratorTest
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
-        final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
-        flyweight.wrap(mockBuffer, bufferOffset, actingVersion);
+        final Object flyweight = clazz.newInstance();
+        final Method method = flyweight.getClass().getDeclaredMethod("wrap", DirectBuffer.class, int.class, int.class);
+        method.invoke(flyweight, mockBuffer, Integer.valueOf(bufferOffset), Integer.valueOf(actingVersion));
 
         final Integer result = (Integer)clazz.getDeclaredMethod("templateId").invoke(flyweight);
         assertThat(result, is(Integer.valueOf(templateId.intValue())));
@@ -133,8 +135,9 @@ public class JavaGeneratorTest
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
-        final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
-        flyweight.wrap(mockBuffer, bufferOffset, actingVersion);
+        final Object flyweight = clazz.newInstance();
+        final Method method = flyweight.getClass().getDeclaredMethod("wrap", DirectBuffer.class, int.class, int.class);
+        method.invoke(flyweight, mockBuffer, Integer.valueOf(bufferOffset), Integer.valueOf(actingVersion));
 
         final Object result = clazz.getDeclaredMethod("cruiseControl").invoke(flyweight);
 
@@ -163,8 +166,9 @@ public class JavaGeneratorTest
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
-        final FixedFlyweight flyweight = (FixedFlyweight)clazz.newInstance();
-        flyweight.wrap(mockBuffer, bufferOffset, actingVersion);
+        final Object flyweight = clazz.newInstance();
+        final Method method = flyweight.getClass().getDeclaredMethod("wrap", DirectBuffer.class, int.class, int.class);
+        method.invoke(flyweight, mockBuffer, Integer.valueOf(bufferOffset), Integer.valueOf(actingVersion));
 
         final Integer capacityResult = (Integer)clazz.getDeclaredMethod("capacity").invoke(flyweight);
         assertThat(capacityResult, is(Integer.valueOf(expectedEngineCapacity)));
@@ -195,12 +199,16 @@ public class JavaGeneratorTest
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
         assertNotNull(clazz);
 
-        final MessageFlyweight messageFlyweight = (MessageFlyweight)clazz.newInstance();
-        messageFlyweight.wrapForEncode(buffer, 0);
+        final Object msgFlyweight = clazz.newInstance();
+        msgFlyweight.getClass().getDeclaredMethod("wrapForEncode", DirectBuffer.class, int.class)
+                               .invoke(msgFlyweight, mockBuffer, Integer.valueOf(0));
 
-        final int initialPosition = messageFlyweight.position();
-        final GroupFlyweight groupFlyweight = (GroupFlyweight)clazz.getDeclaredMethod("fuelFigures").invoke(messageFlyweight);
-        assertThat(Integer.valueOf(messageFlyweight.position()), greaterThan(Integer.valueOf(initialPosition)));
-        assertThat(Integer.valueOf(groupFlyweight.count()), is(Integer.valueOf(0)));
+        final Integer initialPosition = (Integer)msgFlyweight.getClass().getDeclaredMethod("position").invoke(msgFlyweight);
+
+        final Object groupFlyweight = clazz.getDeclaredMethod("fuelFigures").invoke(msgFlyweight);
+        assertThat((Integer)msgFlyweight.getClass().getDeclaredMethod("position").invoke(msgFlyweight), greaterThan(initialPosition));
+
+        Integer count = (Integer)groupFlyweight.getClass().getDeclaredMethod("count").invoke(groupFlyweight);
+        assertThat(count, is(Integer.valueOf(0)));
     }
 }
