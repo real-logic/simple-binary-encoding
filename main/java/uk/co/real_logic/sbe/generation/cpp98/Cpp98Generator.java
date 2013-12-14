@@ -203,33 +203,33 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "class %1$s : public GroupFlyweight\n" +
+            indent + "class %1$s\n" +
             indent + "{\n" +
             indent + "private:\n" +
-            indent + "    %2$s dimensions_;\n" +
+            indent + "    char *buffer_;\n" +
+            indent + "    int *positionPtr_;\n" +
             indent + "    int blockLength_;\n" +
             indent + "    int count_;\n" +
             indent + "    int index_;\n" +
             indent + "    int offset_;\n" +
             indent + "    int actingVersion_;\n" +
-            indent + "    MessageFlyweight *message_;\n" +
-            indent + "    char *buffer_;\n\n" +
+            indent + "    %2$s dimensions_;\n\n" +
             indent + "public:\n\n",
             formatClassName(groupName),
             dimensionsClassName
         ));
 
         sb.append(String.format(
-            indent + "    void wrapForDecode(MessageFlyweight *message, const int actingVersion)\n" +
+            indent + "    void wrapForDecode(char *buffer, int *pos, const int actingVersion)\n" +
             indent + "    {\n" +
-            indent + "        message_ = message;\n" +
-            indent + "        buffer_ = message_->buffer();\n" +
-            indent + "        dimensions_.wrap(buffer_, message_->position(), actingVersion);\n" +
+            indent + "        buffer_ = buffer;\n" +
+            indent + "        dimensions_.wrap(buffer_, *pos, actingVersion);\n" +
             indent + "        count_ = dimensions_.numInGroup();\n" +
             indent + "        blockLength_ = dimensions_.blockLength();\n" +
             indent + "        index_ = -1;\n" +
             indent + "        actingVersion_ = actingVersion;\n" +
-            indent + "        message_->position(message_->position() + %1$d);\n" +
+            indent + "        positionPtr_ = pos;\n" +
+            indent + "        *positionPtr_ = *positionPtr_ + %1$d;\n" +
             indent + "    }\n\n",
             dimensionHeaderSize
         ));
@@ -239,23 +239,21 @@ public class Cpp98Generator implements CodeGenerator
         final String cpp98TypeForNumInGroup = cpp98TypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    void wrapForEncode(MessageFlyweight *message, const int count)\n" +
+            indent + "    void wrapForEncode(char *buffer, const int count,\n" +
+            indent + "                       int *pos, const int actingVersion)\n" +
             indent + "    {\n" +
-            indent + "        message_ = message;\n" +
-            indent + "        buffer_ = message_->buffer();\n" +
-            indent + "        dimensions_.wrap(buffer_, message_->position(), message_->actingVersion());\n" +
+            indent + "        buffer_ = buffer;\n" +
+            indent + "        dimensions_.wrap(buffer_, *pos, actingVersion);\n" +
             indent + "        dimensions_.numInGroup((%1$s)count);\n" +
             indent + "        dimensions_.blockLength((%2$s)%3$d);\n" +
             indent + "        index_ = -1;\n" +
             indent + "        count_ = count;\n" +
             indent + "        blockLength_ = %3$d;\n" +
-            indent + "        actingVersion_ = message_->actingVersion();\n" +
-            indent + "        message_->position(message_->position() + %4$d);\n" +
+            indent + "        actingVersion_ = actingVersion;\n" +
+            indent + "        positionPtr_ = pos;\n" +
+            indent + "        *positionPtr_ = *positionPtr_ + %4$d;\n" +
             indent + "    }\n\n",
-            cpp98TypeForNumInGroup,
-            cpp98TypeForBlockLength,
-            blockLength,
-            dimensionHeaderSize
+            cpp98TypeForNumInGroup, cpp98TypeForBlockLength, blockLength, dimensionHeaderSize
         ));
 
         sb.append(
@@ -272,20 +270,13 @@ public class Cpp98Generator implements CodeGenerator
         sb.append(String.format(
             indent + "    %1$s &next(void)\n" +
             indent + "    {\n" +
-            indent + "        offset_ = message_->position();\n" +
-            indent + "        message_->position(offset_ + blockLength_);\n" +
+            indent + "        offset_ = *positionPtr_;\n" +
+            indent + "        *positionPtr_ = offset_ + blockLength_;\n" +
             indent + "        ++index_;\n\n" +
             indent + "        return *this;\n" +
             indent + "    }\n\n",
             formatClassName(groupName)
         ));
-
-        sb.append(
-            indent + "    MessageFlyweight *message(void)\n" +
-            indent + "    {\n" +
-            indent + "        return message_;\n" +
-            indent + "    }\n\n"
-        );
     }
 
     private CharSequence generateGroupProperty(final String groupName,
@@ -320,7 +311,7 @@ public class Cpp98Generator implements CodeGenerator
             "\n" +
             indent + "    %1$s &%2$s(void)\n" +
             indent + "    {\n" +
-            indent + "        %2$s_.wrapForDecode(message(), message()->actingVersion());\n" +
+            indent + "        %2$s_.wrapForDecode(buffer_, positionPtr_, actingVersion_);\n" +
             indent + "        return %2$s_;\n" +
             indent + "    }\n",
             className,
@@ -331,7 +322,7 @@ public class Cpp98Generator implements CodeGenerator
             "\n" +
             indent + "    %1$s &%2$sCount(const int count)\n" +
             indent + "    {\n" +
-            indent + "        %2$s_.wrapForEncode(message(), count);\n" +
+            indent + "        %2$s_.wrapForEncode(buffer_, count, positionPtr_, actingVersion_);\n" +
             indent + "        return %2$s_;\n" +
             indent + "    }\n",
             className,
@@ -460,7 +451,7 @@ public class Cpp98Generator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
             out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), bitSetName, null));
-            out.append(generateClassDeclaration(bitSetName, "FixedFlyweight"));
+            out.append(generateClassDeclaration(bitSetName, null));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
 
             out.append(String.format(
@@ -730,12 +721,9 @@ public class Cpp98Generator implements CodeGenerator
 
     private CharSequence generateClassDeclaration(final String className, final String implementedInterface)
     {
-        return String.format(
-            "class %s : public %s\n" +
-            "{\n",
-            className,
-            implementedInterface
-        );
+        return (implementedInterface == null) ?
+                String.format("class %s\n{\n", className) :
+                String.format("class %s : public %s\n{\n", className, implementedInterface);
     }
 
     private CharSequence generateEnumDeclaration(final String name)
@@ -1096,6 +1084,7 @@ public class Cpp98Generator implements CodeGenerator
         sb.append(String.format(
             "private:\n" +
             "    char *buffer_;\n" +
+            "    int *positionPtr_;\n" +
             "    int offset_;\n" +
             "    int position_;\n" +
             "    int actingBlockLength_;\n" +
@@ -1119,6 +1108,7 @@ public class Cpp98Generator implements CodeGenerator
             "        actingBlockLength_ = blockLength();\n" +
             "        actingVersion_ = templateVersion();\n" +
             "        position(offset + actingBlockLength_);\n" +
+            "        positionPtr_ = &position_;\n" +
             "        return *this;\n" +
             "    }\n\n" +
             "    %2$s &wrapForDecode(char *buffer, const int offset,\n" +
@@ -1128,6 +1118,7 @@ public class Cpp98Generator implements CodeGenerator
             "        offset_ = offset;\n" +
             "        actingBlockLength_ = actingBlockLength;\n" +
             "        actingVersion_ = actingVersion;\n" +
+            "        positionPtr_ = &position_;\n" +
             "        position(offset + actingBlockLength_);\n" +
             "        return *this;\n" +
             "    }\n\n" +
@@ -1154,10 +1145,6 @@ public class Cpp98Generator implements CodeGenerator
             "    char *buffer(void)\n" +
             "    {\n" +
             "        return buffer_;\n" +
-            "    }\n\n" +
-            "    MessageFlyweight *message(void)\n" +
-            "    {\n" +
-            "        return this;\n" +
             "    }\n\n" +
             "    int actingVersion(void) const\n" +
             "    {\n" +
@@ -1313,7 +1300,7 @@ public class Cpp98Generator implements CodeGenerator
             "\n" +
             indent + "    %1$s &%2$s()\n" +
             indent + "    {\n" +
-            indent + "        %2$s_.wrap(buffer_, offset_ + %3$d, message()->actingVersion());\n" +
+            indent + "        %2$s_.wrap(buffer_, offset_ + %3$d, actingVersion_);\n" +
             indent + "        return %2$s_;\n" +
             indent + "    }\n",
             bitsetName,
@@ -1344,7 +1331,7 @@ public class Cpp98Generator implements CodeGenerator
             "\n" +
             indent + "    %1$s &%2$s(void)\n" +
             indent + "    {\n" +
-            indent + "        %2$s_.wrap(buffer_, offset_ + %3$d, message()->actingVersion());\n" +
+            indent + "        %2$s_.wrap(buffer_, offset_ + %3$d, actingVersion_);\n" +
             indent + "        return %2$s_;\n" +
             indent + "    }\n",
             compositeName,

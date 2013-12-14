@@ -78,23 +78,6 @@ class MessageFlyweight
 public:
     virtual MessageFlyweight &wrapForEncode(char *buffer, const int offset) = 0;
     virtual MessageFlyweight &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion) = 0;
-    virtual uint64_t offset(void) const = 0;
-    virtual uint64_t position(void) const = 0;
-    virtual void position(const uint64_t position) = 0;
-    virtual char *buffer(void) = 0;
-    virtual int size(void) const = 0;
-    virtual int actingVersion(void) const = 0;
-};
-
-/// Interface for GroupFlyweight
-class GroupFlyweight
-{
-public:
-    virtual void wrapForDecode(MessageFlyweight *message, const int actingVersion) = 0;
-    virtual void wrapForEncode(MessageFlyweight *message, const int count) = 0;
-    virtual int count(void) const = 0;
-    virtual bool hasNext(void) const = 0;
-    virtual GroupFlyweight &next(void) = 0;
 };
 
 }
