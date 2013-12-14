@@ -155,6 +155,7 @@ public class SbeExtensionExample
         car.wrapForDecode(directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
         sb.append("\ncar.templateId=").append(car.templateId());
+        sb.append("\ncar.templateVersion=").append(car.templateVersion());
         sb.append("\ncar.serialNumber=").append(car.serialNumber());
         sb.append("\ncar.modelYear=").append(car.modelYear());
         sb.append("\ncar.available=").append(car.available());

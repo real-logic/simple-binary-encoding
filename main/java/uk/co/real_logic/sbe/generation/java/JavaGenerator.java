@@ -1047,25 +1047,25 @@ public class JavaGenerator implements CodeGenerator
         final String templateVersionType = javaTypeName(ir.messageHeader().templateVersionType());
 
         return String.format(
-            "    public static final %s TEMPLATE_ID = %s;\n" +
-            "    public static final %s TEMPLATE_VERSION = %s;\n" +
-            "    public static final %s BLOCK_LENGTH = %s;\n\n" +
-            "    private final %s parentMessage = this;\n" +
+            "    public static final %1$s TEMPLATE_ID = %2$s;\n" +
+            "    public static final %3$s TEMPLATE_VERSION = %4$s;\n" +
+            "    public static final %5$s BLOCK_LENGTH = %6$s;\n\n" +
+            "    private final %7$s parentMessage = this;\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
             "    private int position;\n" +
             "    private int actingBlockLength;\n" +
             "    private int actingVersion;\n" +
             "\n" +
-            "    public %s blockLength()\n" +
+            "    public %5$s blockLength()\n" +
             "    {\n" +
             "        return BLOCK_LENGTH;\n" +
             "    }\n\n" +
-            "    public %s templateId()\n" +
+            "    public %1$s templateId()\n" +
             "    {\n" +
             "        return TEMPLATE_ID;\n" +
             "    }\n\n" +
-            "    public %s templateVersion()\n" +
+            "    public %3$s templateVersion()\n" +
             "    {\n" +
             "        return TEMPLATE_VERSION;\n" +
             "    }\n\n" +
@@ -1073,7 +1073,7 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        return offset;\n" +
             "    }\n\n" +
-            "    public %s wrapForEncode(final DirectBuffer buffer, final int offset)\n" +
+            "    public %7$s wrapForEncode(final DirectBuffer buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
@@ -1082,7 +1082,7 @@ public class JavaGenerator implements CodeGenerator
             "        position(offset + actingBlockLength);\n\n" +
             "        return this;\n" +
             "    }\n\n" +
-            "    public %s wrapForDecode(final DirectBuffer buffer, final int offset,\n" +
+            "    public %7$s wrapForDecode(final DirectBuffer buffer, final int offset,\n" +
             "                            final int actingBlockLength, final int actingVersion)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
@@ -1111,11 +1111,6 @@ public class JavaGenerator implements CodeGenerator
             generateLiteral(ir.messageHeader().templateVersionType(), Integer.toString(version)),
             blockLengthType,
             generateLiteral(ir.messageHeader().blockLengthType(), Integer.toString(blockLength)),
-            className,
-            blockLengthType,
-            templateIdType,
-            templateVersionType,
-            className,
             className
         );
     }
