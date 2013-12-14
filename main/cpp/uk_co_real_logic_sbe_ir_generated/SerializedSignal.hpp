@@ -61,7 +61,7 @@ public:
         }
 
         throw "unknown value for enum SerializedSignal";
-    };
+    }
 };
 }
 #endif

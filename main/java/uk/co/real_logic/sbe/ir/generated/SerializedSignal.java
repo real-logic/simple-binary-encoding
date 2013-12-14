@@ -21,7 +21,8 @@ public enum SerializedSignal
     END_ENUM((short)11),
     BEGIN_SET((short)12),
     CHOICE((short)13),
-    BEGIN_MESSAGE((short)1);
+    BEGIN_MESSAGE((short)1),
+    NULL_VAL((short)255);
 
     private final short value;
 
@@ -56,6 +57,7 @@ public enum SerializedSignal
             case 12: return BEGIN_SET;
             case 13: return CHOICE;
             case 1: return BEGIN_MESSAGE;
+            case 255: return NULL_VAL;
         }
 
         throw new IllegalArgumentException("Unknown value: " + value);

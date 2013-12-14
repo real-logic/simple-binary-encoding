@@ -6,7 +6,8 @@ import uk.co.real_logic.sbe.generation.java.*;
 public enum SerializedByteOrder
 {
     SBE_BIG_ENDIAN((short)1),
-    SBE_LITTLE_ENDIAN((short)0);
+    SBE_LITTLE_ENDIAN((short)0),
+    NULL_VAL((short)255);
 
     private final short value;
 
@@ -26,6 +27,7 @@ public enum SerializedByteOrder
         {
             case 1: return SBE_BIG_ENDIAN;
             case 0: return SBE_LITTLE_ENDIAN;
+            case 255: return NULL_VAL;
         }
 
         throw new IllegalArgumentException("Unknown value: " + value);

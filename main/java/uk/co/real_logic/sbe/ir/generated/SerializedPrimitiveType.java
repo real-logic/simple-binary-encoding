@@ -16,7 +16,8 @@ public enum SerializedPrimitiveType
     UINT64((short)9),
     NONE((short)0),
     UINT16((short)7),
-    INT16((short)3);
+    INT16((short)3),
+    NULL_VAL((short)255);
 
     private final short value;
 
@@ -46,6 +47,7 @@ public enum SerializedPrimitiveType
             case 0: return NONE;
             case 7: return UINT16;
             case 3: return INT16;
+            case 255: return NULL_VAL;
         }
 
         throw new IllegalArgumentException("Unknown value: " + value);
