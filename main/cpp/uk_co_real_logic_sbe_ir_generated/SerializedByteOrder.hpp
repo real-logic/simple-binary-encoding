@@ -31,7 +31,7 @@ public:
         }
 
         throw "unknown value for enum SerializedByteOrder";
-    };
+    }
 };
 }
 #endif

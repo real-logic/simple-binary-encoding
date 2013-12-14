@@ -58,7 +58,7 @@ public class Cpp98Generator implements CodeGenerator
         {
             final List<Token> tokens = ir.messageHeader().tokens();
             out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), MESSAGE_HEADER_VISITOR, null));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_VISITOR, "FixedFlyweight"));
+            out.append(generateClassDeclaration(MESSAGE_HEADER_VISITOR, null));
             out.append(generateFixedFlyweightCode(MESSAGE_HEADER_VISITOR, tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_VISITOR, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
@@ -106,7 +106,7 @@ public class Cpp98Generator implements CodeGenerator
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), className, typesToInclude));
-                out.append(generateClassDeclaration(className, "MessageFlyweight"));
+                out.append(generateClassDeclaration(className, null));
                 out.append(generateMessageFlyweightCode(msgToken.size(), className, msgToken.schemaId(), msgToken.version()));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
@@ -496,7 +496,7 @@ public class Cpp98Generator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(compositeName))
         {
             out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), compositeName, null));
-            out.append(generateClassDeclaration(compositeName, "FixedFlyweight"));
+            out.append(generateClassDeclaration(compositeName, null));
             out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size()));
 
             out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));

@@ -65,21 +65,6 @@ namespace sbe {
     #error "Byte Ordering of platform not determined. Set __BYTE_ORDER__ manually before including this file."
 #endif
 
-/// Interface for FixedFlyweight
-class FixedFlyweight
-{
-public:
-    virtual FixedFlyweight &wrap(char *buffer, const int offset, const int actingVersion) = 0;
-};
-
-/// Interface for MessageFlyweight
-class MessageFlyweight
-{
-public:
-    virtual MessageFlyweight &wrapForEncode(char *buffer, const int offset) = 0;
-    virtual MessageFlyweight &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion) = 0;
-};
-
 }
 
 #endif /* _SBE_HPP_ */

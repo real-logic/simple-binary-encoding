@@ -51,7 +51,7 @@ public:
         }
 
         throw "unknown value for enum SerializedPrimitiveType";
-    };
+    }
 };
 }
 #endif
