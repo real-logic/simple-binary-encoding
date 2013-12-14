@@ -1083,7 +1083,7 @@ public class JavaGenerator implements CodeGenerator
             "        return this;\n" +
             "    }\n\n" +
             "    public %7$s wrapForDecode(final DirectBuffer buffer, final int offset,\n" +
-            "                            final int actingBlockLength, final int actingVersion)\n" +
+            "                              final int actingBlockLength, final int actingVersion)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
