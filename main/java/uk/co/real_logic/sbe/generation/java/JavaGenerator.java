@@ -311,7 +311,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public static long %sSchemaId()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
-            indent + "    }\n\n",
+            indent + "    }\n",
             groupName,
             Integer.valueOf(token.schemaId())
         ));
