@@ -5,7 +5,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Baseline
 {
-    public class VarDataEncoding : IFixedFlyweight
+    public class VarDataEncoding
     {
         private DirectBuffer _buffer;
         private int _offset;

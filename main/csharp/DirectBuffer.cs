@@ -9,8 +9,6 @@ namespace Adaptive.SimpleBinaryEncoding
         private readonly byte* _pBuffer;
         private bool _disposed;
         private GCHandle _pinnedGCHandle;
-        // assumes .NET runs only on little endian systems
-        private const ByteOrder NativeByteOrder = ByteOrder.LittleEndian;
 
         public DirectBuffer(byte[] byteArray)
         {

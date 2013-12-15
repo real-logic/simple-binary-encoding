@@ -5,7 +5,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Baseline
 {
-    public class GroupSizeEncoding : IFixedFlyweight
+    public class GroupSizeEncoding
     {
         private DirectBuffer _buffer;
         private int _offset;

@@ -37,8 +37,6 @@ public class CSharpGenerator implements CodeGenerator
 {
     /** Class name to be used for visitor pattern that accesses the message header. */
     public static final String MESSAGE_HEADER_TYPE = "MessageHeader";
-    public static final String FIXED_FLYWEIGHT_TYPE = "IFixedFlyweight";
-    public static final String MESSAGE_FLYWEIGHT_TYPE = "IMessageFlyweight";
 
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
@@ -62,7 +60,7 @@ public class CSharpGenerator implements CodeGenerator
         {
             final List<Token> tokens = ir.messageHeader().tokens();
             out.append(generateFileHeader(ir.packageName()));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE, FIXED_FLYWEIGHT_TYPE));
+            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
             out.append(generateFixedFlyweightCode(tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
@@ -105,7 +103,7 @@ public class CSharpGenerator implements CodeGenerator
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.packageName()));
-                out.append(generateClassDeclaration(className, MESSAGE_FLYWEIGHT_TYPE));
+                out.append(generateClassDeclaration(className));
                 out.append(generateMessageFlyweightCode(className, msgToken.size(), msgToken.version(), msgToken.schemaId()));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
@@ -118,7 +116,7 @@ public class CSharpGenerator implements CodeGenerator
                 final List<Token> groups = new ArrayList<>();
                 offset = collectGroups(messageBody, offset, groups);
                 final StringBuilder sb = new StringBuilder();
-                generateGroups(sb, groups, 0, BASE_INDENT);
+                generateGroups(sb, className, groups, 0, BASE_INDENT);
                 out.append(sb);
 
                 final List<Token> varData = messageBody.subList(offset, messageBody.size());
@@ -164,7 +162,11 @@ public class CSharpGenerator implements CodeGenerator
         return index;
     }
 
-    private int generateGroups(final StringBuilder sb, final List<Token> tokens, int index, final String indent)
+    private int generateGroups(final StringBuilder sb,
+                               final String parentMessageClassName,
+                               final List<Token> tokens,
+                               int index,
+                               final String indent)
     {
         for (int size = tokens.size(); index < size; index++)
         {
@@ -174,7 +176,7 @@ public class CSharpGenerator implements CodeGenerator
                 final String groupName = groupToken.name();
                 sb.append(generateGroupProperty(groupName, groupToken, indent));
 
-                generateGroupClassHeader(sb, groupName, tokens, index, indent + INDENT);
+                generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
 
                 final List<Token> rootFields = new ArrayList<>();
                 index = collectRootFields(tokens, ++index, rootFields);
@@ -182,7 +184,7 @@ public class CSharpGenerator implements CodeGenerator
 
                 if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
                 {
-                    index = generateGroups(sb, tokens, index, indent + INDENT);
+                    index = generateGroups(sb, parentMessageClassName, tokens, index, indent + INDENT);
                 }
 
                 sb.append(indent).append("    }\n");
@@ -194,6 +196,7 @@ public class CSharpGenerator implements CodeGenerator
 
     private void generateGroupClassHeader(final StringBuilder sb,
                                           final String groupName,
+                                          final String parentMessageClassName,
                                           final List<Token> tokens,
                                           final int index,
                                           final String indent)
@@ -203,10 +206,10 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "public class %1$sGroup : IGroupFlyweight<%1$sGroup>\n" +
+            indent + "public class %1$sGroup\n" +
             indent + "{\n" +
             indent + "    private readonly %2$s _dimensions = new %2$s();\n" +
-            indent + "    private IMessageFlyweight _parentMessage;\n" +
+            indent + "    private %3$s _parentMessage;\n" +
             indent + "    private DirectBuffer _buffer;\n" +
             indent + "    private int _blockLength;\n" +
             indent + "    private int _actingVersion;\n" +
@@ -214,11 +217,12 @@ public class CSharpGenerator implements CodeGenerator
             indent + "    private int _index;\n" +
             indent + "    private int _offset;\n\n",
             formatClassName(groupName),
-            dimensionsClassName
+            dimensionsClassName,
+            parentMessageClassName
         ));
 
         sb.append(String.format(
-            indent + "    public void WrapForDecode(IMessageFlyweight parentMessage, DirectBuffer buffer, int actingVersion)\n" +
+            indent + "    public void WrapForDecode(%s parentMessage, DirectBuffer buffer, int actingVersion)\n" +
             indent + "    {\n" +
             indent + "        _parentMessage = parentMessage;\n" +
             indent + "        _buffer = buffer;\n" +
@@ -227,9 +231,10 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _blockLength = _dimensions.BlockLength;\n" +
             indent + "        _actingVersion = actingVersion;\n" +
             indent + "        _index = -1;\n" +
-            indent + "        const int dimensionsHeaderSize = %1$d;\n" +
+            indent + "        const int dimensionsHeaderSize = %d;\n" +
             indent + "        _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;\n" +
             indent + "    }\n\n",
+            parentMessageClassName,
             dimensionHeaderSize
         ));
 
@@ -238,19 +243,20 @@ public class CSharpGenerator implements CodeGenerator
         final String typeForNumInGroup = cSharpTypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    public void WrapForEncode(IMessageFlyweight parentMessage, DirectBuffer buffer, int count)\n" +
+            indent + "    public void WrapForEncode(%1$s parentMessage, DirectBuffer buffer, int count)\n" +
             indent + "    {\n" +
             indent + "        _parentMessage = parentMessage;\n" +
             indent + "        _buffer = buffer;\n" +
             indent + "        _dimensions.Wrap(buffer, parentMessage.Position, _actingVersion);\n" +
-            indent + "        _dimensions.NumInGroup = (%1$s)count;\n" +
-            indent + "        _dimensions.BlockLength = (%2$s)%3$d;\n" +
+            indent + "        _dimensions.NumInGroup = (%2$s)count;\n" +
+            indent + "        _dimensions.BlockLength = (%3$s)%4$d;\n" +
             indent + "        _index = -1;\n" +
             indent + "        _count = count;\n" +
-            indent + "        _blockLength = %3$d;\n" +
-            indent + "        const int dimensionsHeaderSize = %4$d;\n" +
+            indent + "        _blockLength = %4$d;\n" +
+            indent + "        const int dimensionsHeaderSize = %5$d;\n" +
             indent + "        parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;\n" +
             indent + "    }\n\n",
+            parentMessageClassName,
             typeForNumInGroup,
             typeForBlockLength,
             blockLength,
@@ -440,7 +446,7 @@ public class CSharpGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(compositeName))
         {
             out.append(generateFileHeader(ir.packageName()));
-            out.append(generateClassDeclaration(compositeName, FIXED_FLYWEIGHT_TYPE));
+            out.append(generateClassDeclaration(compositeName));
             out.append(generateFixedFlyweightCode(tokens.get(0).size()));
 
             out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
@@ -509,13 +515,12 @@ public class CSharpGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateClassDeclaration(final String className, final String implementedInterface)
+    private CharSequence generateClassDeclaration(final String className)
     {
         return String.format(
-            "    public class %s : %s\n" +
+            "    public class %s\n" +
                 "    {\n",
-            className,
-            implementedInterface
+            className
         );
     }
 
@@ -915,7 +920,7 @@ public class CSharpGenerator implements CodeGenerator
             "    public const %s TemplateId = %s;\n" +
             "    public const %s TemplateVersion = %s;\n" +
             "    public const %s BlockLength = %s;\n\n" +
-            "    private readonly IMessageFlyweight _parentMessage;\n" +
+            "    private readonly %s _parentMessage;\n" +
             "    private DirectBuffer _buffer;\n" +
             "    private int _offset;\n" +
             "    private int _position;\n" +
@@ -969,6 +974,7 @@ public class CSharpGenerator implements CodeGenerator
             generateLiteral(ir.messageHeader().templateVersionType(), Integer.toString(version)),
             blockLengthType,
             generateLiteral(ir.messageHeader().blockLengthType(), Integer.toString(blockLength)),
+            className,
             className
         );
     }
