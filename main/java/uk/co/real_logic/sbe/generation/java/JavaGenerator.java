@@ -225,8 +225,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        blockLength = dimensions.blockLength();\n" +
             indent + "        this.actingVersion = actingVersion;\n" +
             indent + "        index = -1;\n" +
-            indent + "        final int dimensionsHeaderSize = %d;\n" +
-            indent + "        parentMessage.position(parentMessage.position() + dimensionsHeaderSize);\n" +
+            indent + "        parentMessage.position(parentMessage.position() + %d);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             dimensionHeaderSize
@@ -237,23 +236,21 @@ public class JavaGenerator implements CodeGenerator
         final String javaTypeForNumInGroup = javaTypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    public void wrapForEncode(final %s parentMessage, final DirectBuffer buffer, final int count)\n" +
+            indent + "    public void wrapForEncode(final %1$s parentMessage, final DirectBuffer buffer, final int count)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
             indent + "        dimensions.wrap(buffer, parentMessage.position(), actingVersion);\n" +
-            indent + "        dimensions.numInGroup((%s)count);\n" +
-            indent + "        dimensions.blockLength((%s)%d);\n" +
+            indent + "        dimensions.numInGroup((%2$s)count);\n" +
+            indent + "        dimensions.blockLength((%3$s)%4$d);\n" +
             indent + "        index = -1;\n" +
             indent + "        this.count = count;\n" +
-            indent + "        blockLength = %d;\n" +
-            indent + "        final int dimensionsHeaderSize = %d;\n" +
-            indent + "        parentMessage.position(parentMessage.position() + dimensionsHeaderSize);\n" +
+            indent + "        blockLength = %4$d;\n" +
+            indent + "        parentMessage.position(parentMessage.position() + %5$d);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             javaTypeForNumInGroup,
             javaTypeForBlockLength,
-            blockLength,
             blockLength,
             dimensionHeaderSize
         ));
