@@ -5,13 +5,13 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Baseline
 {
-    public class Car : IMessageFlyweight
+    public class Car
     {
     public const ushort TemplateId = (ushort)1;
     public const byte TemplateVersion = (byte)0;
     public const ushort BlockLength = (ushort)41;
 
-    private readonly IMessageFlyweight _parentMessage;
+    private readonly Car _parentMessage;
     private DirectBuffer _buffer;
     private int _offset;
     private int _position;
@@ -270,10 +270,10 @@ namespace Baseline
         return _fuelFigures;
     }
 
-    public class FuelFiguresGroup : IGroupFlyweight<FuelFiguresGroup>
+    public class FuelFiguresGroup
     {
         private readonly GroupSizeEncoding _dimensions = new GroupSizeEncoding();
-        private IMessageFlyweight _parentMessage;
+        private Car _parentMessage;
         private DirectBuffer _buffer;
         private int _blockLength;
         private int _actingVersion;
@@ -281,7 +281,7 @@ namespace Baseline
         private int _index;
         private int _offset;
 
-        public void WrapForDecode(IMessageFlyweight parentMessage, DirectBuffer buffer, int actingVersion)
+        public void WrapForDecode(Car parentMessage, DirectBuffer buffer, int actingVersion)
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
@@ -294,7 +294,7 @@ namespace Baseline
             _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
         }
 
-        public void WrapForEncode(IMessageFlyweight parentMessage, DirectBuffer buffer, int count)
+        public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
@@ -389,10 +389,10 @@ namespace Baseline
         return _performanceFigures;
     }
 
-    public class PerformanceFiguresGroup : IGroupFlyweight<PerformanceFiguresGroup>
+    public class PerformanceFiguresGroup
     {
         private readonly GroupSizeEncoding _dimensions = new GroupSizeEncoding();
-        private IMessageFlyweight _parentMessage;
+        private Car _parentMessage;
         private DirectBuffer _buffer;
         private int _blockLength;
         private int _actingVersion;
@@ -400,7 +400,7 @@ namespace Baseline
         private int _index;
         private int _offset;
 
-        public void WrapForDecode(IMessageFlyweight parentMessage, DirectBuffer buffer, int actingVersion)
+        public void WrapForDecode(Car parentMessage, DirectBuffer buffer, int actingVersion)
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
@@ -413,7 +413,7 @@ namespace Baseline
             _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
         }
 
-        public void WrapForEncode(IMessageFlyweight parentMessage, DirectBuffer buffer, int count)
+        public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
@@ -486,10 +486,10 @@ namespace Baseline
             return _acceleration;
         }
 
-        public class AccelerationGroup : IGroupFlyweight<AccelerationGroup>
+        public class AccelerationGroup
         {
             private readonly GroupSizeEncoding _dimensions = new GroupSizeEncoding();
-            private IMessageFlyweight _parentMessage;
+            private Car _parentMessage;
             private DirectBuffer _buffer;
             private int _blockLength;
             private int _actingVersion;
@@ -497,7 +497,7 @@ namespace Baseline
             private int _index;
             private int _offset;
 
-            public void WrapForDecode(IMessageFlyweight parentMessage, DirectBuffer buffer, int actingVersion)
+            public void WrapForDecode(Car parentMessage, DirectBuffer buffer, int actingVersion)
             {
                 _parentMessage = parentMessage;
                 _buffer = buffer;
@@ -510,7 +510,7 @@ namespace Baseline
                 _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
             }
 
-            public void WrapForEncode(IMessageFlyweight parentMessage, DirectBuffer buffer, int count)
+            public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
             {
                 _parentMessage = parentMessage;
                 _buffer = buffer;

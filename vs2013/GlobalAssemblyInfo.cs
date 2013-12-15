@@ -10,8 +10,8 @@
 
 [assembly: System.Reflection.AssemblyCopyright("Copyright © Adaptive 2013. All rights reserved.")]
 [assembly: System.Reflection.AssemblyConfiguration("Release")]
-[assembly: System.Reflection.AssemblyVersion("0.1.0.1")]
-[assembly: System.Reflection.AssemblyFileVersion("0.1.0.1")]
-[assembly: System.Reflection.AssemblyInformationalVersion("0.1.0.1")]
+[assembly: System.Reflection.AssemblyVersion("1.0.0.0")]
+[assembly: System.Reflection.AssemblyFileVersion("1.0.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersion("1.0.0.0")]
 
 
