@@ -1,0 +1,5 @@
+- Targeting Scala 2.11 Milestones for now to take advantage of name based extractors in 2.11-M5. We can use this to provide strongly typed, allocation free Option classes for the SBE primitive types.
+
+Questions
+- Split Encoding / Decoding into separate traits?
+- Introduce ADTs for exhaustive pattern matching support?
