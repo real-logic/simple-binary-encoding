@@ -1,7 +1,8 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.generation.java.*;
+import uk.co.real_logic.sbe.codec.java.CodecUtil;
+import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 
 public class SerializedFrame
 {

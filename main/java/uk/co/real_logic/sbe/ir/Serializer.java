@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.ir;
 
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.generation.java.DirectBuffer;
+import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.generated.SerializedFrame;
 import uk.co.real_logic.sbe.ir.generated.SerializedToken;
 import uk.co.real_logic.sbe.util.Verify;

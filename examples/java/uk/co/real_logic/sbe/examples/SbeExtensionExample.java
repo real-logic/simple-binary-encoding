@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.examples;
 
 import extension.Car;
-import uk.co.real_logic.sbe.generation.java.DirectBuffer;
+import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 
 import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;

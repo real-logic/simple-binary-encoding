@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.generation.java;
 import org.junit.Before;
 import org.junit.Test;
 import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.generation.java.util.CompilerUtil;
 import uk.co.real_logic.sbe.generation.java.util.StringWriterOutputManager;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;

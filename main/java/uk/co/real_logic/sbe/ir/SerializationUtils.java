@@ -17,8 +17,8 @@ package uk.co.real_logic.sbe.ir;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.generation.java.CodecUtil;
-import uk.co.real_logic.sbe.generation.java.DirectBuffer;
+import uk.co.real_logic.sbe.codec.java.CodecUtil;
+import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.generated.SerializedByteOrder;
 import uk.co.real_logic.sbe.ir.generated.SerializedPrimitiveType;
 import uk.co.real_logic.sbe.ir.generated.SerializedSignal;

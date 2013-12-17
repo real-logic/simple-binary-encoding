@@ -27,7 +27,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
+import static uk.co.real_logic.sbe.codec.java.JavaUtil.*;
 
 public class JavaGenerator implements CodeGenerator
 {
@@ -598,7 +598,7 @@ public class JavaGenerator implements CodeGenerator
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
             "package %s;\n\n" +
-            "import uk.co.real_logic.sbe.generation.java.*;\n\n",
+            "import uk.co.real_logic.sbe.codec.java.*;\n\n",
             packageName
         );
     }
