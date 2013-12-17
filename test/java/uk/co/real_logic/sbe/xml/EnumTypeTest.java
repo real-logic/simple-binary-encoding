@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.Integer.valueOf;
-import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
