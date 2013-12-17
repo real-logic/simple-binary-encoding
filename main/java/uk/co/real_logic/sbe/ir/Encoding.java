@@ -42,6 +42,7 @@ public class Encoding
     }
 
     private final PrimitiveType primitiveType;
+    private final Presence presence;
     private final ByteOrder byteOrder;
     private final PrimitiveValue minVal;
     private final PrimitiveValue maxVal;
@@ -52,6 +53,7 @@ public class Encoding
     public Encoding()
     {
         primitiveType = null;
+        presence = Presence.REQUIRED;
         byteOrder = ByteOrder.LITTLE_ENDIAN;
         minVal = null;
         maxVal = null;
@@ -61,6 +63,7 @@ public class Encoding
     }
 
     public Encoding(final PrimitiveType primitiveType,
+                    final Presence presence,
                     final ByteOrder byteOrder,
                     final PrimitiveValue minVal,
                     final PrimitiveValue maxVal,
@@ -68,9 +71,11 @@ public class Encoding
                     final PrimitiveValue constVal,
                     final String characterEncoding)
     {
+        Verify.notNull(presence, "presence");
         Verify.notNull(byteOrder, "byteOrder");
 
         this.primitiveType = primitiveType;
+        this.presence = presence;
         this.byteOrder = byteOrder;
         this.minVal = minVal;
         this.maxVal = maxVal;
@@ -146,17 +151,7 @@ public class Encoding
      */
     public Presence presence()
     {
-        if (null != constVal)
-        {
-            return Presence.CONSTANT;
-        }
-
-        if (null != nullVal)
-        {
-            return Presence.OPTIONAL;
-        }
-
-        return Presence.REQUIRED;
+        return  presence;
     }
 
     /**
@@ -234,28 +229,24 @@ public class Encoding
      */
     public static class Builder
     {
-        private PrimitiveType primitiveType;
-        private ByteOrder byteOrder;
-        private PrimitiveValue minVal;
-        private PrimitiveValue maxVal;
-        private PrimitiveValue nullVal;
-        private PrimitiveValue constVal;
-        private String characterEncoding;
-
-        public Builder()
-        {
-            primitiveType = null;
-            byteOrder = ByteOrder.LITTLE_ENDIAN;
-            minVal = null;
-            maxVal = null;
-            nullVal = null;
-            constVal = null;
-            characterEncoding = "";
-        }
+        private PrimitiveType primitiveType = null;
+        private Presence presence = Presence.REQUIRED;
+        private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
+        private PrimitiveValue minVal = null;
+        private PrimitiveValue maxVal = null;
+        private PrimitiveValue nullVal = null;
+        private PrimitiveValue constVal = null;
+        private String characterEncoding = "";
 
         public Builder primitiveType(final PrimitiveType primitiveType)
         {
             this.primitiveType = primitiveType;
+            return this;
+        }
+
+        public Builder presence(final Presence presence)
+        {
+            this.presence = presence;
             return this;
         }
 
@@ -297,7 +288,7 @@ public class Encoding
 
         public Encoding build()
         {
-            return new Encoding(primitiveType, byteOrder, minVal, maxVal, nullVal, constVal, characterEncoding);
+            return new Encoding(primitiveType, presence, byteOrder, minVal, maxVal, nullVal, constVal, characterEncoding);
         }
     }
 }
