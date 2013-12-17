@@ -239,7 +239,7 @@ public class Message
             handleError(nodeList.item(nodeIndex), "could not find type: " + typeName);
         }
 
-        Field field = new Field.Builder()
+        final Field field = new Field.Builder()
             .name(getAttributeValue(nodeList.item(nodeIndex), "name"))
             .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))

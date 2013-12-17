@@ -28,7 +28,6 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 public class Field
 {
     public static final int INVALID_ID = Integer.MAX_VALUE;  // schemaId must only be short, so this is way out of range.
-    public static final String INVALID_ID_STRING = Integer.toString(INVALID_ID);
 
     private final String name;                 // required for field/data & group
     private final String description;          // optional for field/data & group
@@ -191,7 +190,7 @@ public class Field
     {
         private String name;
         private String description;
-        private int id;
+        private int id = INVALID_ID;
         private Type type;
         private int offset;
         private String semanticType;
@@ -199,13 +198,7 @@ public class Field
         private int blockLength;
         private CompositeType dimensionType;
         private boolean variableLength;
-        private int sinceVersion;
-
-        public Builder()
-        {
-            id = INVALID_ID;
-            sinceVersion = 0;
-        }
+        private int sinceVersion = 0;
 
         public Builder name(final String name)
         {
