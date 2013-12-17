@@ -23,3 +23,6 @@ Questions:
  - should we codegen headers?
  - optional fields as nullable?	
 
+
+ DirectBuffer does not implement IDirectBuffer!
+	All the method names are backto front e.g. one has GetInt, the other has Int8Get
