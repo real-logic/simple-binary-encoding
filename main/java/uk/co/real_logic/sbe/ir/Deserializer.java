@@ -176,7 +176,7 @@ public class Deserializer implements Closeable
         encBuilder.primitiveType(type)
                   .byteOrder(SerializationUtils.byteOrder(serializedToken.byteOrder()));
 
-        tokenBuilder.name(new String(byteArray, 0, serializedToken.getName(byteArray, 0, byteArray.length)));
+        tokenBuilder.name(new String(byteArray, 0, serializedToken.getName(byteArray, 0, byteArray.length), SerializedToken.nameCharacterEncoding()));
 
         encBuilder.constVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getConstVal(valArray, 0, valArray.length)));
         encBuilder.minVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getMinVal(valArray, 0, valArray.length)));

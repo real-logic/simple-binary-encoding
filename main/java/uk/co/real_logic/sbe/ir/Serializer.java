@@ -138,7 +138,7 @@ public class Serializer implements Closeable
                        .primitiveType(SerializationUtils.primitiveType(type))
                        .byteOrder(SerializationUtils.byteOrder(token.encoding().byteOrder()));
 
-        serializedToken.putName(token.name().getBytes(), 0, token.name().getBytes().length);
+        serializedToken.putName(token.name().getBytes(), 0, token.name().getBytes(SerializedToken.nameCharacterEncoding()).length);
 
         serializedToken.putConstVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().constVal(), type));
         serializedToken.putMinVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().minVal(), type));
