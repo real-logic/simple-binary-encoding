@@ -11,3 +11,5 @@ out
 .project
 .classpath
 .settings
+*.sublime-project
+*.sublime-workspace
