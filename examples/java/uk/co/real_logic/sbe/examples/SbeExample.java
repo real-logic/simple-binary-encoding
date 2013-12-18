@@ -204,7 +204,10 @@ public class SbeExample
             }
         }
 
+
+        sb.append("\ncar.make.semanticType=").append(Car.makeMetaAttribute(Car.MetaAttribute.SEMANTIC_TYPE));
         sb.append("\ncar.make=").append(new String(buffer, 0, car.getMake(buffer, 0, buffer.length), Car.makeCharacterEncoding()));
+
         sb.append("\ncar.model=").append(new String(buffer, 0, car.getModel(buffer, 0, buffer.length), Car.modelCharacterEncoding()));
 
         sb.append("\ncar.size=").append(car.size());
