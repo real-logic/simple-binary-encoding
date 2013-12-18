@@ -138,7 +138,8 @@ public class Encoder implements Closeable
                        .primitiveType(IrCodecUtils.primitiveType(type))
                        .byteOrder(IrCodecUtils.byteOrder(token.encoding().byteOrder()));
 
-        serializedToken.putName(token.name().getBytes(), 0, token.name().getBytes(SerializedToken.nameCharacterEncoding()).length);
+        final byte[] nameBytes = token.name().getBytes(SerializedToken.nameCharacterEncoding());
+        serializedToken.putName(nameBytes, 0, nameBytes.length);
 
         serializedToken.putConstVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().constVal(), type));
         serializedToken.putMinVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().minVal(), type));
