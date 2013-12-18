@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
-public class Serializer implements Closeable
+public class Encoder implements Closeable
 {
     private static final int CAPACITY = 4096;
 
@@ -41,7 +41,7 @@ public class Serializer implements Closeable
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
     private int totalSize = 0;
 
-    public Serializer(final String fileName, final IntermediateRepresentation ir)
+    public Encoder(final String fileName, final IntermediateRepresentation ir)
         throws FileNotFoundException
     {
         channel = new FileOutputStream(fileName).getChannel();
@@ -51,7 +51,7 @@ public class Serializer implements Closeable
         this.ir = ir;
     }
 
-    public Serializer(final ByteBuffer buffer, final IntermediateRepresentation ir)
+    public Encoder(final ByteBuffer buffer, final IntermediateRepresentation ir)
     {
         channel = null;
         resultBuffer = buffer;
@@ -69,29 +69,29 @@ public class Serializer implements Closeable
         }
     }
 
-    public int serialize()
+    public int encode()
         throws IOException
     {
         Verify.notNull(ir, "ir");
 
-        write(buffer, serializeFrame());
+        write(buffer, encodeFrame());
 
-        serializeTokenList(ir.messageHeader().tokens());
+        encodeTokenList(ir.messageHeader().tokens());
 
         for (final List<Token> tokenList : ir.messages())
         {
-            serializeTokenList(tokenList);
+            encodeTokenList(tokenList);
         }
 
         return totalSize;
     }
 
-    private void serializeTokenList(final List<Token> tokenList)
+    private void encodeTokenList(final List<Token> tokenList)
         throws IOException
     {
         for (final Token token : tokenList)
         {
-            write(buffer, serializeToken(token));
+            write(buffer, encodeToken(token));
         }
     }
 
@@ -113,7 +113,7 @@ public class Serializer implements Closeable
         totalSize += size;
     }
 
-    private int serializeFrame()
+    private int encodeFrame()
     {
         serializedFrame.wrapForEncode(directBuffer, 0)
                        .sbeIrVersion(0)
@@ -124,7 +124,7 @@ public class Serializer implements Closeable
         return serializedFrame.size();
     }
 
-    private int serializeToken(final Token token)
+    private int encodeToken(final Token token)
         throws UnsupportedEncodingException
     {
         final PrimitiveType type = token.encoding().primitiveType();
@@ -134,16 +134,16 @@ public class Serializer implements Closeable
                        .tokenSize(token.size())
                        .schemaID(token.schemaId())
                        .tokenVersion(token.version())
-                       .signal(SerializationUtils.signal(token.signal()))
-                       .primitiveType(SerializationUtils.primitiveType(type))
-                       .byteOrder(SerializationUtils.byteOrder(token.encoding().byteOrder()));
+                       .signal(IrCodecUtils.signal(token.signal()))
+                       .primitiveType(IrCodecUtils.primitiveType(type))
+                       .byteOrder(IrCodecUtils.byteOrder(token.encoding().byteOrder()));
 
         serializedToken.putName(token.name().getBytes(), 0, token.name().getBytes(SerializedToken.nameCharacterEncoding()).length);
 
-        serializedToken.putConstVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().constVal(), type));
-        serializedToken.putMinVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().minVal(), type));
-        serializedToken.putMaxVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().maxVal(), type));
-        serializedToken.putNullVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().nullVal(), type));
+        serializedToken.putConstVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().constVal(), type));
+        serializedToken.putMinVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().minVal(), type));
+        serializedToken.putMaxVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().maxVal(), type));
+        serializedToken.putNullVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().nullVal(), type));
 
         final String charEncodingCharEncoding = SerializedToken.characterEncodingCharacterEncoding();
         final String charEncoding = token.encoding().characterEncoding();

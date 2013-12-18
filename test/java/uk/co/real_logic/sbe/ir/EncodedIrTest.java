@@ -28,38 +28,38 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class SerializedIrTest
+public class EncodedIrTest
 {
     private static final int CAPACITY = 8192;
 
     @Test
-    public void shouldSerializeIr()
+    public void shouldEncodeIr()
         throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
         IntermediateRepresentation ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        Serializer serializer = new Serializer(buffer, ir);
+        Encoder encoder = new Encoder(buffer, ir);
 
-        serializer.serialize();
+        encoder.encode();
     }
 
     @Test
-    public void shouldSerializeThenDeserializeIr()
+    public void shouldEncodeThenDecodeIr()
         throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation serIr = irg.generate(schema);
+        IntermediateRepresentation ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        Serializer serializer = new Serializer(buffer, serIr);
+        Encoder encoder = new Encoder(buffer, ir);
 
-        serializer.serialize();
+        encoder.encode();
         buffer.flip();
 
-        Deserializer deserializer = new Deserializer(buffer);
-        IntermediateRepresentation deserIr = deserializer.deserialize();
+        Decoder decoder = new Decoder(buffer);
+        IntermediateRepresentation decodedIr = decoder.decode();
     }
 
     @Test
@@ -68,39 +68,39 @@ public class SerializedIrTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation serIr = irg.generate(schema);
+        IntermediateRepresentation ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        Serializer serializer = new Serializer(buffer, serIr);
+        Encoder encoder = new Encoder(buffer, ir);
 
-        serializer.serialize();
+        encoder.encode();
         buffer.flip();
 
         ByteBuffer readBuffer = ByteBuffer.allocateDirect(buffer.remaining());
         readBuffer.put(buffer);
         readBuffer.flip();
 
-        Deserializer deserializer = new Deserializer(readBuffer);
-        IntermediateRepresentation deserIr = deserializer.deserialize();
+        Decoder decoder = new Decoder(readBuffer);
+        IntermediateRepresentation decodedIr = decoder.decode();
     }
 
     @Test
-    public void shouldDeserializeCorrectFrame()
+    public void shouldDecodeCorrectFrame()
         throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation serIr = irg.generate(schema);
+        IntermediateRepresentation ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        Serializer serializer = new Serializer(buffer, serIr);
+        Encoder encoder = new Encoder(buffer, ir);
 
-        serializer.serialize();
+        encoder.encode();
         buffer.flip();
 
-        Deserializer deserializer = new Deserializer(buffer);
-        IntermediateRepresentation deserIr = deserializer.deserialize();
+        Decoder decoder = new Decoder(buffer);
+        IntermediateRepresentation decodedIr = decoder.decode();
 
-        assertThat(Integer.valueOf(deserIr.version()), is(Integer.valueOf(serIr.version())));
-        assertThat(deserIr.packageName(), is(serIr.packageName()));
+        assertThat(Integer.valueOf(decodedIr.version()), is(Integer.valueOf(ir.version())));
+        assertThat(decodedIr.packageName(), is(ir.packageName()));
     }
 
     private void checkTokenEquality(final Token lhs, final Token rhs)
@@ -122,54 +122,54 @@ public class SerializedIrTest
     }
 
     @Test
-    public void shouldDeserializeCorrectHeader()
+    public void shouldDecodeCorrectHeader()
         throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation serIr = irg.generate(schema);
+        IntermediateRepresentation ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        Serializer serializer = new Serializer(buffer, serIr);
+        Encoder encoder = new Encoder(buffer, ir);
 
-        serializer.serialize();
+        encoder.encode();
         buffer.flip();
 
-        final Deserializer deserializer = new Deserializer(buffer);
-        final IntermediateRepresentation deserIr = deserializer.deserialize();
-        final List<Token> tokens = deserIr.messageHeader().tokens();
+        final Decoder decoder = new Decoder(buffer);
+        final IntermediateRepresentation decodedIr = decoder.decode();
+        final List<Token> tokens = decodedIr.messageHeader().tokens();
 
-        assertThat(Integer.valueOf(tokens.size()), is(Integer.valueOf(serIr.messageHeader().tokens().size())));
+        assertThat(Integer.valueOf(tokens.size()), is(Integer.valueOf(ir.messageHeader().tokens().size())));
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
-            checkTokenEquality(tokens.get(i), serIr.messageHeader().tokens().get(i));
+            checkTokenEquality(tokens.get(i), ir.messageHeader().tokens().get(i));
         }
     }
 
     @Test
-    public void shouldDeserializeCorrectMessages()
+    public void shouldDecodeCorrectMessages()
         throws Exception
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation serIr = irg.generate(schema);
+        IntermediateRepresentation ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        Serializer serializer = new Serializer(buffer, serIr);
+        Encoder encoder = new Encoder(buffer, ir);
 
-        serializer.serialize();
+        encoder.encode();
         buffer.flip();
 
-        Deserializer deserializer = new Deserializer(buffer);
-        IntermediateRepresentation deserIr = deserializer.deserialize();
+        Decoder decoder = new Decoder(buffer);
+        IntermediateRepresentation decodedIr = decoder.decode();
 
-        assertThat(Integer.valueOf(deserIr.messages().size()), is(Integer.valueOf(serIr.messages().size())));
-        for (final List<Token> deserTokenList : deserIr.messages())
+        assertThat(Integer.valueOf(decodedIr.messages().size()), is(Integer.valueOf(ir.messages().size())));
+        for (final List<Token> decodedTokenList : decodedIr.messages())
         {
-            final List<Token> serTokenList = serIr.getMessage(deserTokenList.get(0).schemaId());
+            final List<Token> tokens = ir.getMessage(decodedTokenList.get(0).schemaId());
 
-            assertThat(Integer.valueOf(deserTokenList.size()), is(Integer.valueOf(serTokenList.size())));
-            for (int i = 0, size = deserTokenList.size(); i < size; i++)
+            assertThat(Integer.valueOf(decodedTokenList.size()), is(Integer.valueOf(tokens.size())));
+            for (int i = 0, size = decodedTokenList.size(); i < size; i++)
             {
-                checkTokenEquality(deserTokenList.get(i), serTokenList.get(i));
+                checkTokenEquality(decodedTokenList.get(i), tokens.get(i));
             }
         }
     }

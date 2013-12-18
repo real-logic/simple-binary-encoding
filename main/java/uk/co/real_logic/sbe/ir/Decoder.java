@@ -27,7 +27,7 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Deserializer implements Closeable
+public class Decoder implements Closeable
 {
     private static final int CAPACITY = 4096;
 
@@ -43,7 +43,7 @@ public class Deserializer implements Closeable
     private final byte[] valArray = new byte[CAPACITY];
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
 
-    public Deserializer(final String fileName)
+    public Decoder(final String fileName)
         throws IOException
     {
         channel = new RandomAccessFile(fileName, "r").getChannel();
@@ -53,7 +53,7 @@ public class Deserializer implements Closeable
         offset = 0;
     }
 
-    public Deserializer(final ByteBuffer buffer)
+    public Decoder(final ByteBuffer buffer)
     {
         channel = null;
         size = buffer.limit();
@@ -70,15 +70,15 @@ public class Deserializer implements Closeable
         }
     }
 
-    public IntermediateRepresentation deserialize()
+    public IntermediateRepresentation decode()
         throws IOException
     {
-        deserializeFrame();
+        decodeFrame();
 
         final List<Token> tokens = new ArrayList<>();
         while (offset < size)
         {
-            tokens.add(deserializeToken());
+            tokens.add(decodeToken());
         }
 
         int i = 0, size = tokens.size();
@@ -137,7 +137,7 @@ public class Deserializer implements Closeable
         return index;
     }
 
-    private void deserializeFrame()
+    private void decodeFrame()
     {
         serializedFrame.wrapForDecode(directBuffer, offset, serializedFrame.blockLength(), 0);
 
@@ -155,7 +155,7 @@ public class Deserializer implements Closeable
         offset += serializedFrame.size();
     }
 
-    private Token deserializeToken()
+    private Token decodeToken()
         throws UnsupportedEncodingException
     {
         final Token.Builder tokenBuilder = new Token.Builder();
@@ -169,19 +169,19 @@ public class Deserializer implements Closeable
                     .size(serializedToken.tokenSize())
                     .schemaId(serializedToken.schemaID())
                     .version(serializedToken.tokenVersion())
-                    .signal(SerializationUtils.signal(serializedToken.signal()));
+                    .signal(IrCodecUtils.signal(serializedToken.signal()));
 
-        final PrimitiveType type = SerializationUtils.primitiveType(serializedToken.primitiveType());
+        final PrimitiveType type = IrCodecUtils.primitiveType(serializedToken.primitiveType());
 
         encBuilder.primitiveType(type)
-                  .byteOrder(SerializationUtils.byteOrder(serializedToken.byteOrder()));
+                  .byteOrder(IrCodecUtils.byteOrder(serializedToken.byteOrder()));
 
         tokenBuilder.name(new String(byteArray, 0, serializedToken.getName(byteArray, 0, byteArray.length), SerializedToken.nameCharacterEncoding()));
 
-        encBuilder.constVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getConstVal(valArray, 0, valArray.length)));
-        encBuilder.minVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getMinVal(valArray, 0, valArray.length)));
-        encBuilder.maxVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getMaxVal(valArray, 0, valArray.length)));
-        encBuilder.nullVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getNullVal(valArray, 0, valArray.length)));
+        encBuilder.constVal(IrCodecUtils.getVal(valBuffer, type, serializedToken.getConstVal(valArray, 0, valArray.length)));
+        encBuilder.minVal(IrCodecUtils.getVal(valBuffer, type, serializedToken.getMinVal(valArray, 0, valArray.length)));
+        encBuilder.maxVal(IrCodecUtils.getVal(valBuffer, type, serializedToken.getMaxVal(valArray, 0, valArray.length)));
+        encBuilder.nullVal(IrCodecUtils.getVal(valBuffer, type, serializedToken.getNullVal(valArray, 0, valArray.length)));
 
         final int charEncodingSize = serializedToken.getCharacterEncoding(byteArray, 0, byteArray.length);
         encBuilder.characterEncoding(new String(byteArray, 0, charEncodingSize, SerializedToken.characterEncodingCharacterEncoding()));

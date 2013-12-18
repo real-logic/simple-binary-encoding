@@ -3,10 +3,6 @@
                description="SBE IR Serialization"
                version="0"
                byteOrder="littleEndian">
-    <!--
-        IR serialization
-    -->
-
     <types>
         <composite name="messageHeader">
             <type name="blockLength" primitiveType="uint16"/>

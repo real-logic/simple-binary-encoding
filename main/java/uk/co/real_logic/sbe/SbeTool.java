@@ -18,9 +18,9 @@ package uk.co.real_logic.sbe;
 
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
-import uk.co.real_logic.sbe.ir.Deserializer;
+import uk.co.real_logic.sbe.ir.Decoder;
+import uk.co.real_logic.sbe.ir.Encoder;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
-import uk.co.real_logic.sbe.ir.Serializer;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
@@ -50,7 +50,7 @@ import java.io.FileInputStream;
  *     <li><code>sbe.should.generate</code>: Generate or not. Defaults to true</li>
  *     <li><code>sbe.target.language</code>: Target language for code generation, defaults to Java.</li>
  *     <li><code>sbe.output.dir</code>: Target directory for code generation, defaults to current directory.</li>
- *     <li><code>sbe.ir.filename</code>: Filename to serialize IR to within the output directory.</li>
+ *     <li><code>sbe.ir.filename</code>: Filename to encode IR to within the output directory.</li>
  * </ul>
  */
 public class SbeTool
@@ -103,7 +103,7 @@ public class SbeTool
             }
             else if (fileName.endsWith(".sbeir"))
             {
-                ir = new Deserializer(fileName).deserialize();
+                ir = new Decoder(fileName).decode();
             }
             else
             {
@@ -125,9 +125,9 @@ public class SbeTool
                 final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
                 final File fullPath = new File(outputDirName, serializedIrFilename);
 
-                try (final Serializer serializer = new Serializer(fullPath.getAbsolutePath(), ir))
+                try (final Encoder encoder = new Encoder(fullPath.getAbsolutePath(), ir))
                 {
-                    serializer.serialize();
+                    encoder.encode();
                 }
             }
         }

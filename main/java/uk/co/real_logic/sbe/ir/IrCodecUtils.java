@@ -25,7 +25,7 @@ import uk.co.real_logic.sbe.ir.generated.SerializedSignal;
 
 import java.nio.ByteOrder;
 
-public class SerializationUtils
+public class IrCodecUtils
 {
     public static SerializedByteOrder byteOrder(final ByteOrder byteOrder)
     {
