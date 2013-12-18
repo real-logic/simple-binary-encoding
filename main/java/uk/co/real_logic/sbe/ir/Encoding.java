@@ -20,7 +20,6 @@ import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.util.Verify;
 
 import java.nio.ByteOrder;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Optional encoding settings that can be associated with {@link Token}s.
@@ -51,7 +50,7 @@ public class Encoding
     private final PrimitiveValue constVal;
     private final String characterEncoding;
     private final String epoch;
-    private final TimeUnit timeUnit;
+    private final String timeUnit;
     private final String semanticType;
 
     public Encoding()
@@ -78,7 +77,7 @@ public class Encoding
                     final PrimitiveValue constVal,
                     final String characterEncoding,
                     final String epoch,
-                    final TimeUnit timeUnit,
+                    final String timeUnit,
                     final String semanticType)
     {
         Verify.notNull(presence, "presence");
@@ -234,11 +233,11 @@ public class Encoding
     }
 
     /**
-     * The {@link TimeUnit} of the timestamp.
+     * The time unit of the timestamp.
      *
-     * @return the {@link TimeUnit} of the timestamp.
+     * @return the time unit of the timestamp.
      */
-    public TimeUnit timeUnit()
+    public String timeUnit()
     {
         return timeUnit;
     }
@@ -284,7 +283,7 @@ public class Encoding
         private PrimitiveValue constVal = null;
         private String characterEncoding = "";
         private String epoch = null;
-        private TimeUnit timeUnit = null;
+        private String timeUnit = null;
         private String semanticType = null;
 
         public Builder primitiveType(final PrimitiveType primitiveType)
@@ -341,7 +340,7 @@ public class Encoding
             return this;
         }
 
-        public Builder timeUnit(final TimeUnit timeUnit)
+        public Builder timeUnit(final String timeUnit)
         {
             this.timeUnit = timeUnit;
             return this;

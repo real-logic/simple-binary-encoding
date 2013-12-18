@@ -293,14 +293,13 @@ public class IrGenerator
         final Encoding.Builder encodingBuilder = new Encoding.Builder()
             .primitiveType(type.primitiveType())
             .byteOrder(byteOrder)
+            .semanticType(semanticTypeOf(type, field))
             .characterEncoding(type.characterEncoding());
-
-        encodingBuilder.semanticType(semanticTypeOf(type, field));
 
         if (null != field)
         {
             encodingBuilder.epoch(field.epoch());
-            encodingBuilder.timeUnit(field.timeUnit() != null ? field.timeUnit().jucTimeUnit() : null);
+            encodingBuilder.timeUnit(field.timeUnit());
         }
 
         final Token.Builder tokenBuilder = new Token.Builder()

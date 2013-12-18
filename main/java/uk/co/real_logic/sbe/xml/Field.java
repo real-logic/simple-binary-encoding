@@ -44,7 +44,7 @@ public class Field
     private int computedOffset;                // used to hold the calculated offset of this field from top level <message> or <group>
     private int computedBlockLength;           // used to hold the calculated block length of this group
     private final String epoch;                // optional, epoch from which a timestamps start, defaults to "unix"
-    private final TimeUnit timeUnit;           // optional, defaults to TimeUnit.NANOSECOND.
+    private final String timeUnit;             // optional, defaults to "nanosecond".
 
     public Field(final String name,
                  final String description,
@@ -58,7 +58,7 @@ public class Field
                  final boolean variableLength,
                  final int sinceVersion,
                  final String epoch,
-                 final TimeUnit timeUnit)
+                 final String timeUnit)
     {
         this.name = name;
         this.description = description;
@@ -176,7 +176,7 @@ public class Field
         return epoch;
     }
 
-    public TimeUnit timeUnit()
+    public String timeUnit()
     {
         return timeUnit;
     }
@@ -217,7 +217,7 @@ public class Field
         private boolean variableLength;
         private int sinceVersion = 0;
         private String epoch;
-        private TimeUnit timeUnit;
+        private String timeUnit;
 
         public Builder name(final String name)
         {
@@ -291,7 +291,7 @@ public class Field
             return this;
         }
 
-        public Builder timeUnit(final TimeUnit timeUnit)
+        public Builder timeUnit(final String timeUnit)
         {
             this.timeUnit = timeUnit;
             return this;
