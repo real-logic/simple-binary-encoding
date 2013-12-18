@@ -8,19 +8,19 @@
     -->
 
     <types>
-        <composite name="messageHeader" semanticType="messageHeader">
+        <composite name="messageHeader">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>
-        <composite name="groupSize" semanticType="NumInGroup">
+        <composite name="groupSize">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="numInGroup" primitiveType="uint8"/>
         </composite>
         <composite name="varDataEncoding">
-            <type name="length" primitiveType="uint8" semanticType="Length"/>
-            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8" semanticType="data"/>
+            <type name="length" primitiveType="uint8"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
         </composite>
         <enum name="SerializedPrimitiveType" encodingType="uint8">
             <validValue name="NONE">0</validValue>
@@ -62,24 +62,24 @@
     </types>
 
     <message name="SerializedFrame" id="1" description="Frame Header for start of Serialized IR">
-        <field name="sbeIrVersion" id="1" type="int32" semanticType="Version"/>
-        <field name="schemaVersion" id="2" type="int32" semanticType="Version"/>
-        <data name="packageVal" id="4" type="varDataEncoding" semanticType="Package"/>
+        <field name="sbeIrVersion" id="1" type="int32"/>
+        <field name="schemaVersion" id="2" type="int32"/>
+        <data name="packageVal" id="4" type="varDataEncoding"/>
     </message>
 
     <message name="SerializedToken" id="2" description="Serialized IR Token">
-        <field name="tokenOffset" id="11" type="int32" semanticType="Offset"/>
-        <field name="tokenSize" id="12" type="int32" semanticType="Size"/>
-        <field name="schemaID" id="13" type="int32" semanticType="ID"/>
-        <field name="tokenVersion" id="17" type="int32" semanticType="Version"/>
-        <field name="signal" id="14" type="SerializedSignal" semanticType="Signal"/>
-        <field name="primitiveType" id="15" type="SerializedPrimitiveType" semanticType="PrimitiveType"/>
-        <field name="byteOrder" id="16" type="SerializedByteOrder" semanticType="ByteOrder"/>
-        <data name="name" id="18" type="varDataEncoding" semanticType="String"/>
-        <data name="constVal" id="19" type="varDataEncoding" semanticType="Value"/>
-        <data name="minVal" id="20" type="varDataEncoding" semanticType="Value"/>
-        <data name="maxVal" id="21" type="varDataEncoding" semanticType="Value"/>
-        <data name="nullVal" id="22" type="varDataEncoding" semanticType="Value"/>
-        <data name="characterEncoding" id="23" type="varDataEncoding" semanticType="String"/>
+        <field name="tokenOffset" id="11" type="int32"/>
+        <field name="tokenSize" id="12" type="int32"/>
+        <field name="schemaID" id="13" type="int32"/>
+        <field name="tokenVersion" id="17" type="int32"/>
+        <field name="signal" id="14" type="SerializedSignal"/>
+        <field name="primitiveType" id="15" type="SerializedPrimitiveType"/>
+        <field name="byteOrder" id="16" type="SerializedByteOrder"/>
+        <data name="name" id="18" type="varDataEncoding"/>
+        <data name="constVal" id="19" type="varDataEncoding"/>
+        <data name="minVal" id="20" type="varDataEncoding"/>
+        <data name="maxVal" id="21" type="varDataEncoding"/>
+        <data name="nullVal" id="22" type="varDataEncoding"/>
+        <data name="characterEncoding" id="23" type="varDataEncoding"/>
     </message>
 </messageSchema>
