@@ -21,10 +21,7 @@ import uk.co.real_logic.sbe.ir.generated.SerializedFrame;
 import uk.co.real_logic.sbe.ir.generated.SerializedToken;
 import uk.co.real_logic.sbe.util.Verify;
 
-import java.io.Closeable;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
@@ -128,6 +125,7 @@ public class Serializer implements Closeable
     }
 
     private int serializeToken(final Token token)
+        throws UnsupportedEncodingException
     {
         final PrimitiveType type = token.encoding().primitiveType();
 
@@ -147,8 +145,10 @@ public class Serializer implements Closeable
         serializedToken.putMaxVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().maxVal(), type));
         serializedToken.putNullVal(valArray, 0, SerializationUtils.putVal(valBuffer, token.encoding().nullVal(), type));
 
-        serializedToken.putCharacterEncoding(token.encoding().characterEncoding().getBytes(), 0,
-                                             token.encoding().characterEncoding().getBytes().length);
+        final String charEncodingCharEncoding = SerializedToken.characterEncodingCharacterEncoding();
+        final String charEncoding = token.encoding().characterEncoding();
+        final byte[] charBytes = charEncoding.getBytes(charEncodingCharEncoding);
+        serializedToken.putCharacterEncoding(charBytes, 0, charBytes.length);
 
         return serializedToken.size();
     }

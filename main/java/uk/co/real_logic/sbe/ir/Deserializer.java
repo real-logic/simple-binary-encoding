@@ -78,10 +78,7 @@ public class Deserializer implements Closeable
         final List<Token> tokens = new ArrayList<>();
         while (offset < size)
         {
-            final Token token = deserializeToken();
-
-            // System.out.println(token.toString());
-            tokens.add(token);
+            tokens.add(deserializeToken());
         }
 
         int i = 0, size = tokens.size();
@@ -146,7 +143,7 @@ public class Deserializer implements Closeable
 
         if (serializedFrame.sbeIrVersion() != 0)
         {
-            // TODO: throw exception since we don't know how to handle this
+            throw new IllegalStateException("Unknown SBE version: " + serializedFrame.sbeIrVersion());
         }
 
         final byte[] byteArray = new byte[1024];
@@ -159,38 +156,38 @@ public class Deserializer implements Closeable
     }
 
     private Token deserializeToken()
+        throws UnsupportedEncodingException
     {
-        final Token.Builder builder = new Token.Builder();
+        final Token.Builder tokenBuilder = new Token.Builder();
         final Encoding.Builder encBuilder = new Encoding.Builder();
 
         final byte[] byteArray = new byte[1024];
 
         serializedToken.wrapForDecode(directBuffer, offset, serializedToken.blockLength(), 0);
 
-        builder.offset(serializedToken.tokenOffset())
-               .size(serializedToken.tokenSize())
-               .schemaId(serializedToken.schemaID())
-               .version(serializedToken.tokenVersion())
-               .signal(SerializationUtils.signal(serializedToken.signal()));
+        tokenBuilder.offset(serializedToken.tokenOffset())
+                    .size(serializedToken.tokenSize())
+                    .schemaId(serializedToken.schemaID())
+                    .version(serializedToken.tokenVersion())
+                    .signal(SerializationUtils.signal(serializedToken.signal()));
 
         final PrimitiveType type = SerializationUtils.primitiveType(serializedToken.primitiveType());
 
         encBuilder.primitiveType(type)
                   .byteOrder(SerializationUtils.byteOrder(serializedToken.byteOrder()));
 
-        // must deserialize vardata in order
-
-        builder.name(new String(byteArray, 0, serializedToken.getName(byteArray, 0, byteArray.length)));
+        tokenBuilder.name(new String(byteArray, 0, serializedToken.getName(byteArray, 0, byteArray.length)));
 
         encBuilder.constVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getConstVal(valArray, 0, valArray.length)));
         encBuilder.minVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getMinVal(valArray, 0, valArray.length)));
         encBuilder.maxVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getMaxVal(valArray, 0, valArray.length)));
         encBuilder.nullVal(SerializationUtils.getVal(valBuffer, type, serializedToken.getNullVal(valArray, 0, valArray.length)));
 
-        encBuilder.characterEncoding(new String(byteArray, 0, serializedToken.getCharacterEncoding(byteArray, 0, byteArray.length)));
+        final int charEncodingSize = serializedToken.getCharacterEncoding(byteArray, 0, byteArray.length);
+        encBuilder.characterEncoding(new String(byteArray, 0, charEncodingSize, SerializedToken.characterEncodingCharacterEncoding()));
 
         offset += serializedToken.size();
 
-        return builder.encoding(encBuilder.build()).build();
+        return tokenBuilder.encoding(encBuilder.build()).build();
     }
 }
