@@ -76,8 +76,8 @@ public class SbeTool
     /** Output directory for generated code */
     public static final String OUTPUT_DIR = "sbe.output.dir";
 
-    /** String system property to hold filename for serialization of IR. */
-    public static final String SERIALIZED_IR_FILENAME = "sbe.ir.filename";
+    /** String system property to hold filename for encoding of IR. */
+    public static final String ENCODED_IR_FILENAME = "sbe.ir.filename";
 
     /**
      * Main entry point for the SBE Tool.
@@ -119,11 +119,11 @@ public class SbeTool
                 generate(ir, outputDirName, targetLanguage);
             }
 
-            final String serializedIrFilename = System.getProperty(SERIALIZED_IR_FILENAME);
-            if (serializedIrFilename != null)
+            final String encodedIrFilename = System.getProperty(ENCODED_IR_FILENAME);
+            if (encodedIrFilename != null)
             {
                 final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
-                final File fullPath = new File(outputDirName, serializedIrFilename);
+                final File fullPath = new File(outputDirName, encodedIrFilename);
 
                 try (final Encoder encoder = new Encoder(fullPath.getAbsolutePath(), ir))
                 {
