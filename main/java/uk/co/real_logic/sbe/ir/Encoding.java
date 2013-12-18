@@ -23,7 +23,7 @@ import java.nio.ByteOrder;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Optional settings that can be associated with {@link Token}s.
+ * Optional encoding settings that can be associated with {@link Token}s.
  */
 public class Encoding
 {
@@ -52,6 +52,7 @@ public class Encoding
     private final String characterEncoding;
     private final String epoch;
     private final TimeUnit timeUnit;
+    private final String semanticType;
 
     public Encoding()
     {
@@ -65,6 +66,7 @@ public class Encoding
         characterEncoding = "";
         epoch = null;
         timeUnit = null;
+        semanticType = null;
     }
 
     public Encoding(final PrimitiveType primitiveType,
@@ -76,7 +78,8 @@ public class Encoding
                     final PrimitiveValue constVal,
                     final String characterEncoding,
                     final String epoch,
-                    final TimeUnit timeUnit)
+                    final TimeUnit timeUnit,
+                    final String semanticType)
     {
         Verify.notNull(presence, "presence");
         Verify.notNull(byteOrder, "byteOrder");
@@ -91,6 +94,7 @@ public class Encoding
         this.characterEncoding = characterEncoding;
         this.epoch = epoch;
         this.timeUnit = timeUnit;
+        this.semanticType = semanticType;
     }
 
     /**
@@ -239,6 +243,16 @@ public class Encoding
         return timeUnit;
     }
 
+    /**
+     * The semantic type of an encoding which can have relevance to the application layer.
+     *
+     * @return semantic type of an encoding which can have relevance to the application layer.
+     */
+    public String semanticType()
+    {
+        return semanticType;
+    }
+
     public String toString()
     {
         return "Encoding{" +
@@ -252,6 +266,7 @@ public class Encoding
             ", characterEncoding='" + characterEncoding + '\'' +
             ", epoch='" + epoch + '\'' +
             ", timeUnit=" + timeUnit +
+            ", semanticType='" + semanticType + '\'' +
             '}';
     }
 
@@ -270,6 +285,7 @@ public class Encoding
         private String characterEncoding = "";
         private String epoch = null;
         private TimeUnit timeUnit = null;
+        private String semanticType = null;
 
         public Builder primitiveType(final PrimitiveType primitiveType)
         {
@@ -331,9 +347,25 @@ public class Encoding
             return this;
         }
 
+        public Builder semanticType(final String semanticType)
+        {
+            this.semanticType = semanticType;
+            return this;
+        }
+
         public Encoding build()
         {
-            return new Encoding(primitiveType, presence, byteOrder, minVal, maxVal, nullVal, constVal, characterEncoding, epoch, timeUnit);
+            return new Encoding(primitiveType,
+                                presence,
+                                byteOrder,
+                                minVal,
+                                maxVal,
+                                nullVal,
+                                constVal,
+                                characterEncoding,
+                                epoch,
+                                timeUnit,
+                                semanticType);
         }
     }
 }

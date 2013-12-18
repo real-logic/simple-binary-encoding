@@ -99,6 +99,8 @@ public class IrGenerator
             .name(field.name())
             .schemaId(field.id())
             .version(field.sinceVersion())
+            .encoding(new Encoding.Builder()
+                          .semanticType(semanticTypeOf(null, field)).build())
             .build();
 
         tokenList.add(token);
@@ -159,7 +161,9 @@ public class IrGenerator
             .signal(Signal.BEGIN_COMPOSITE)
             .name(type.name())
             .offset(currOffset)
-            .size(type.size());
+            .size(type.size())
+            .encoding(new Encoding.Builder()
+                          .semanticType(semanticTypeOf(type, field)).build());
 
         if (field != null)
         {
@@ -183,6 +187,7 @@ public class IrGenerator
         final PrimitiveType encodingType = type.encodingType();
         final Encoding.Builder encodingBuilder = new Encoding.Builder()
             .primitiveType(encodingType)
+            .semanticType(semanticTypeOf(type, field))
             .byteOrder(byteOrder);
 
         if (type.presence() == Presence.OPTIONAL)
@@ -243,6 +248,7 @@ public class IrGenerator
             .size(encodingType.size())
             .offset(offset)
             .encoding(new Encoding.Builder()
+                          .semanticType(semanticTypeOf(type, field))
                           .primitiveType(encodingType)
                           .build());
 
@@ -289,6 +295,8 @@ public class IrGenerator
             .byteOrder(byteOrder)
             .characterEncoding(type.characterEncoding());
 
+        encodingBuilder.semanticType(semanticTypeOf(type, field));
+
         if (null != field)
         {
             encodingBuilder.epoch(field.epoch());
@@ -331,5 +339,16 @@ public class IrGenerator
                                         .build();
 
         tokenList.add(token);
+    }
+
+    private String semanticTypeOf(final Type type, final Field field)
+    {
+        final String typeSemanticType = null != type ? type.semanticType() : null;
+        if (typeSemanticType != null)
+        {
+            return  typeSemanticType;
+        }
+
+        return null != field ? field.semanticType() : null;
     }
 }
