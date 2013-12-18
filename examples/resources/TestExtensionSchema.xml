@@ -68,7 +68,7 @@
                 <field name="seconds" id="16" type="float"/>
             </group>
         </group>
-        <data name="make" id="17" type="varDataEncoding"/>
+        <data name="make" id="17" type="varDataEncoding" semanticType="Make"/>
         <data name="model" id="18" type="varDataEncoding"/>
     </message>
 </messageSchema>

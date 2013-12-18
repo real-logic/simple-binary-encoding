@@ -354,6 +354,7 @@ public class JavaGenerator implements CodeGenerator
 
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
                 generateCharacterEncodingMethod(sb, token.name(), characterEncoding);
+                generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
 
                 final String propertyName = toUpperFirstChar(token.name());
                 final Token lengthToken = tokens.get(i + 2);
@@ -365,6 +366,7 @@ public class JavaGenerator implements CodeGenerator
                 final String byteOrderStr = lengthEncoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
                 sb.append(String.format(
+                    "\n" +
                     "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
                     "    {\n" +
                     "%s" +
@@ -376,7 +378,7 @@ public class JavaGenerator implements CodeGenerator
                     "        position(position + sizeOfLengthField + dataLength);\n" +
                     "        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
                     "        return bytesCopied;\n" +
-                    "    }\n\n",
+                    "    }\n",
                     propertyName,
                     generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
                     sizeOfLengthField,
@@ -385,6 +387,7 @@ public class JavaGenerator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
+                    "\n" +
                     "    public int put%s(final byte[] src, final int srcOffset, final int length)\n" +
                     "    {\n" +
                     "        final int sizeOfLengthField = %d;\n" +
@@ -607,7 +610,13 @@ public class JavaGenerator implements CodeGenerator
     {
         return String.format(
             "public class %s\n" +
-            "{\n",
+            "{\n" +
+            "    public enum MetaAttribute\n" +
+            "    {\n" +
+            "        EPOCH,\n" +
+            "        TIME_UNIT,\n" +
+            "        SEMANTIC_TYPE\n" +
+            "    }\n\n",
             className
         );
     }
@@ -925,7 +934,7 @@ public class JavaGenerator implements CodeGenerator
             "    public static String %sCharacterEncoding()\n" +
             "    {\n" +
             "        return \"%s\";\n" +
-            "    }\n\n",
+            "    }\n",
             formatPropertyName(propertyName),
             encoding
         ));
@@ -1124,6 +1133,7 @@ public class JavaGenerator implements CodeGenerator
                 final String propertyName = formatPropertyName(signalToken.name());
 
                 generateFieldIdMethod(sb, signalToken, indent);
+                generateFieldMetaAttributeMethod(sb, signalToken, indent);
 
                 switch (encodingToken.signal())
                 {
@@ -1159,6 +1169,32 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             token.name(),
             Integer.valueOf(token.schemaId())
+        ));
+    }
+
+    private void generateFieldMetaAttributeMethod(final StringBuilder sb, final Token token, final String indent)
+    {
+        final Encoding encoding = token.encoding();
+        final String epoch = encoding.epoch() == null ? "" : encoding.epoch();
+        final String timeUnit = encoding.timeUnit() == null ? "" : encoding.timeUnit();
+        final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
+
+        sb.append(String.format(
+            "\n" +
+            indent + "    public static String %sMetaAttribute(final MetaAttribute metaAttribute)\n" +
+            indent + "    {\n" +
+            indent + "        switch (metaAttribute)\n" +
+            indent + "        {\n" +
+            indent + "            case EPOCH: return \"%s\";\n" +
+            indent + "            case TIME_UNIT: return \"%s\";\n" +
+            indent + "            case SEMANTIC_TYPE: return \"%s\";\n" +
+            indent + "        }\n\n" +
+            indent + "        return \"\";\n" +
+            indent + "    }\n",
+            token.name(),
+            epoch,
+            timeUnit,
+            semanticType
         ));
     }
 

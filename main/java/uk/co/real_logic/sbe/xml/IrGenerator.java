@@ -100,6 +100,8 @@ public class IrGenerator
             .schemaId(field.id())
             .version(field.sinceVersion())
             .encoding(new Encoding.Builder()
+                          .epoch(field.epoch())
+                          .timeUnit(field.timeUnit())
                           .semanticType(semanticTypeOf(null, field)).build())
             .build();
 

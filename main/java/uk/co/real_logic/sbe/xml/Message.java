@@ -283,6 +283,8 @@ public class Message
             .semanticType(getAttributeValueOrNull(nodeList.item(nodeIndex), "semanticType"))
             .presence(Presence.get(getAttributeValue(nodeList.item(nodeIndex), "presence", "required")))
             .sinceVersion(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "sinceVersion", "0")))
+            .epoch(getAttributeValue(nodeList.item(nodeIndex), "epoch", "unix"))
+            .timeUnit(getAttributeValue(nodeList.item(nodeIndex), "timeUnit", "nanosecond"))
             .type(fieldType)
             .variableLength(true)
             .build();
