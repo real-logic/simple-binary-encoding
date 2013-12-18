@@ -107,8 +107,7 @@ public class EncodedDataType extends Type
         }
         else
         {
-            // TODO: should we check for presence=optional and flag it? No, should default to primitiveType nullVal
-            nullVal = null; // this value is invalid unless nullVal specified for type
+            nullVal = null;
         }
     }
 

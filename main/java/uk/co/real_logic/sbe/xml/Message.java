@@ -245,8 +245,10 @@ public class Message
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
             .semanticType(getAttributeValueOrNull(nodeList.item(nodeIndex), "semanticType"))
-            .presence(Presence.get(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
+            .presence(Presence.get(getAttributeValue(nodeList.item(nodeIndex), "presence", "required")))
             .sinceVersion(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "sinceVersion", "0")))
+            .epoch(getAttributeValue(nodeList.item(nodeIndex), "epoch", "unix"))
+            .timeUnit(TimeUnit.get(getAttributeValue(nodeList.item(nodeIndex), "timeUnit", "nanosecond")))
             .type(fieldType)
             .build();
 
@@ -279,7 +281,7 @@ public class Message
             .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
             .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
             .semanticType(getAttributeValueOrNull(nodeList.item(nodeIndex), "semanticType"))
-            .presence(Presence.get(getAttributeValueOrNull(nodeList.item(nodeIndex), "presence")))
+            .presence(Presence.get(getAttributeValue(nodeList.item(nodeIndex), "presence", "required")))
             .sinceVersion(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "sinceVersion", "0")))
             .type(fieldType)
             .variableLength(true)

@@ -32,104 +32,6 @@ import java.util.Map;
 
 /**
  * SBE compositeType.
- * <p>
- * Decimal types can use mantissa and exponent portions as min/max/null.
- * <table>
- *     <thead>
- *         <tr>
- *             <th></th>
- *             <th></th>
- *             <th>Length</th>
- *             <th>Exponent</th>
- *             <th>Min</th>
- *             <th>Max</th>
- *             <th>Null</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>decimal</td>
- *             <td></td>
- *             <td>9</td>
- *             <td>-128 to 127</td>
- *             <td></td>
- *             <td></td>
- *             <td></td>
- *         </tr>
- *         <tr>
- *             <td></td>
- *             <td>int64 mantissa</td>
- *             <td></td>
- *             <td></td>
- *             <td>-2^63 + 1</td>
- *             <td>2^64(2^63 - 1)</td>
- *             <td>-2^63</td>
- *         </tr>
- *         <tr>
- *             <td></td>
- *             <td>int8 exponent</td>
- *             <td></td>
- *             <td></td>
- *             <td>10^127</td>
- *             <td>10^-128</td>
- *             <td>10^127</td>
- *         </tr>
- *         <tr>
- *             <td>decimal64</td>
- *             <td></td>
- *             <td>8</td>
- *             <td>-128 to 127</td>
- *             <td></td>
- *             <td></td>
- *             <td></td>
- *         </tr>
- *         <tr>
- *             <td></td>
- *             <td>int64 mantissa</td>
- *             <td></td>
- *             <td></td>
- *             <td>-2^63 + 1</td>
- *             <td>2^64(2^63 - 1)</td>
- *             <td>-2^63</td>
- *         </tr>
- *         <tr>
- *             <td></td>
- *             <td>constant exponent</td>
- *             <td></td>
- *             <td></td>
- *             <td>10^127</td>
- *             <td>10^-128</td>
- *             <td>10^127</td>
- *         </tr>
- *         <tr>
- *             <td>decimal32</td>
- *             <td></td>
- *             <td>4</td>
- *             <td>-128 to 127</td>
- *             <td></td>
- *             <td></td>
- *             <td></td>
- *         </tr>
- *         <tr>
- *             <td></td>
- *             <td>int32 mantissa</td>
- *             <td></td>
- *             <td></td>
- *             <td>-2^31 + 1</td>
- *             <td>2^32(2^31 - 1)</td>
- *             <td>-2^63</td>
- *         </tr>
- *         <tr>
- *             <td></td>
- *             <td>constant exponent</td>
- *             <td></td>
- *             <td></td>
- *             <td>10^127</td>
- *             <td>10^-128</td>
- *             <td>10^127</td>
- *         </tr>
- *     </tbody>
- * </table>
  */
 public class CompositeType extends Type
 {
@@ -148,12 +50,12 @@ public class CompositeType extends Type
         super(node);
 
         sinceVersion = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "sinceVersion", "0"));
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile("type").evaluate(node, XPathConstants.NODESET);
+        final XPath xPath = XPathFactory.newInstance().newXPath();
+        final NodeList list = (NodeList)xPath.compile("type").evaluate(node, XPathConstants.NODESET);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            EncodedDataType type = new EncodedDataType(list.item(i));
+            final EncodedDataType type = new EncodedDataType(list.item(i));
 
             if (compositeMap.get(type.name()) != null)
             {
@@ -226,8 +128,7 @@ public class CompositeType extends Type
      */
     public void makeDataFieldCompositeType()
     {
-        EncodedDataType edt = compositeMap.get("varData");
-
+        final EncodedDataType edt = compositeMap.get("varData");
         if (edt != null)
         {
             edt.variableLength(true);
@@ -246,6 +147,7 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "composite for group size encoding must have \"blockLength\"");
         }
+
         if (compositeMap.get("numInGroup") == null)
         {
             XmlSchemaParser.handleError(node, "composite for group size encoding must have \"numInGroup\"");
@@ -264,6 +166,7 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "composite for variable length data encoding must have \"length\"");
         }
+
         if (compositeMap.get("varData") == null)
         {
             XmlSchemaParser.handleError(node, "composite for variable length data encoding must have \"varData\"");
@@ -282,10 +185,12 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"blockLength\"");
         }
+
         if (compositeMap.get("templateId") == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"templateId\"");
         }
+
         if (compositeMap.get("version") == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"version\"");

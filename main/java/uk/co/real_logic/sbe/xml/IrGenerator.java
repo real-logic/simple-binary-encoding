@@ -289,6 +289,12 @@ public class IrGenerator
             .byteOrder(byteOrder)
             .characterEncoding(type.characterEncoding());
 
+        if (null != field)
+        {
+            encodingBuilder.epoch(field.epoch());
+            encodingBuilder.timeUnit(field.timeUnit() != null ? field.timeUnit().jucTimeUnit() : null);
+        }
+
         final Token.Builder tokenBuilder = new Token.Builder()
             .signal(Signal.ENCODING)
             .name(type.name())

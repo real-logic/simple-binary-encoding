@@ -139,6 +139,11 @@ public class EnumType extends Type
         }
     }
 
+    /**
+     * The {@link PrimitiveType} used to encode the enum.
+     *
+     * @return the {@link PrimitiveType} used to encode the enum.
+     */
     public PrimitiveType encodingType()
     {
         return encodingType;
@@ -157,7 +162,7 @@ public class EnumType extends Type
     /**
      * Get the {@link ValidValue} represented by a {@link PrimitiveValue}.
      *
-     * @param value to get.
+     * @param value to lookup
      * @return the {@link ValidValue} represented by a {@link PrimitiveValue} or null.
      */
     public ValidValue getValidValue(final PrimitiveValue value)
@@ -168,7 +173,7 @@ public class EnumType extends Type
     /**
      * Get the {@link ValidValue} represented by a string name.
      *
-     * @param name to get.
+     * @param name to lookup
      * @return the {@link ValidValue} represented by a string name or null.
      */
     public ValidValue getValidValue(final String name)

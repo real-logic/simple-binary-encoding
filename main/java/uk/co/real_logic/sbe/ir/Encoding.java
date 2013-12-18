@@ -20,6 +20,7 @@ import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.util.Verify;
 
 import java.nio.ByteOrder;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Optional settings that can be associated with {@link Token}s.
@@ -49,6 +50,8 @@ public class Encoding
     private final PrimitiveValue nullVal;
     private final PrimitiveValue constVal;
     private final String characterEncoding;
+    private final String epoch;
+    private final TimeUnit timeUnit;
 
     public Encoding()
     {
@@ -60,6 +63,8 @@ public class Encoding
         nullVal = null;
         constVal = null;
         characterEncoding = "";
+        epoch = null;
+        timeUnit = null;
     }
 
     public Encoding(final PrimitiveType primitiveType,
@@ -69,7 +74,9 @@ public class Encoding
                     final PrimitiveValue maxVal,
                     final PrimitiveValue nullVal,
                     final PrimitiveValue constVal,
-                    final String characterEncoding)
+                    final String characterEncoding,
+                    final String epoch,
+                    final TimeUnit timeUnit)
     {
         Verify.notNull(presence, "presence");
         Verify.notNull(byteOrder, "byteOrder");
@@ -82,6 +89,8 @@ public class Encoding
         this.nullVal = nullVal;
         this.constVal = constVal;
         this.characterEncoding = characterEncoding;
+        this.epoch = epoch;
+        this.timeUnit = timeUnit;
     }
 
     /**
@@ -210,17 +219,39 @@ public class Encoding
         return characterEncoding;
     }
 
+    /**
+     * The epoch from which a timestamp is offset. The default is "unix".
+     *
+     * @return the epoch from which a timestamp is offset.
+     */
+    public String epoch()
+    {
+        return epoch;
+    }
+
+    /**
+     * The {@link TimeUnit} of the timestamp.
+     *
+     * @return the {@link TimeUnit} of the timestamp.
+     */
+    public TimeUnit timeUnit()
+    {
+        return timeUnit;
+    }
+
     public String toString()
     {
         return "Encoding{" +
             "primitiveType=" + primitiveType +
+            ", presence=" + presence +
             ", byteOrder=" + byteOrder +
-            ", presence=" + presence() +
             ", minVal=" + minVal +
             ", maxVal=" + maxVal +
             ", nullVal=" + nullVal +
             ", constVal=" + constVal +
-            ", characterEncoding=" + characterEncoding +
+            ", characterEncoding='" + characterEncoding + '\'' +
+            ", epoch='" + epoch + '\'' +
+            ", timeUnit=" + timeUnit +
             '}';
     }
 
@@ -237,6 +268,8 @@ public class Encoding
         private PrimitiveValue nullVal = null;
         private PrimitiveValue constVal = null;
         private String characterEncoding = "";
+        private String epoch = null;
+        private TimeUnit timeUnit = null;
 
         public Builder primitiveType(final PrimitiveType primitiveType)
         {
@@ -286,9 +319,21 @@ public class Encoding
             return this;
         }
 
+        public Builder epoch(final String epoch)
+        {
+            this.epoch = epoch;
+            return this;
+        }
+
+        public Builder timeUnit(final TimeUnit timeUnit)
+        {
+            this.timeUnit = timeUnit;
+            return this;
+        }
+
         public Encoding build()
         {
-            return new Encoding(primitiveType, presence, byteOrder, minVal, maxVal, nullVal, constVal, characterEncoding);
+            return new Encoding(primitiveType, presence, byteOrder, minVal, maxVal, nullVal, constVal, characterEncoding, epoch, timeUnit);
         }
     }
 }

@@ -35,7 +35,7 @@ public class Field
     private final Type type;                   // required for field/data (not present for group)
     private final int offset;                  // optional for field/data (not present for group)
     private final String semanticType;         // optional for field/data (not present for group?)
-    private final Presence presence;           // optional for field/data (not present for group)  null means not set
+    private final Presence presence;           // optional, defaults to required
     private final int blockLength;             // optional for group (not present for field/data)
     private final CompositeType dimensionType; // required for group (not present for field/data)
     private final boolean variableLength;      // true for data (false for field/group)
@@ -43,8 +43,9 @@ public class Field
     private List<Field> groupFieldList;        // used by group fields as the list of child fields in the group
     private int computedOffset;                // used to hold the calculated offset of this field from top level <message> or <group>
     private int computedBlockLength;           // used to hold the calculated block length of this group
+    private final String epoch;                // optional, epoch from which a timestamps start, defaults to "unix"
+    private final TimeUnit timeUnit;           // optional, defaults to TimeUnit.NANOSECOND.
 
-    /** Builder constructor */
     public Field(final String name,
                  final String description,
                  final int id,
@@ -55,7 +56,9 @@ public class Field
                  final int blockLength,
                  final CompositeType dimensionType,
                  final boolean variableLength,
-                 final int sinceVersion)
+                 final int sinceVersion,
+                 final String epoch,
+                 final TimeUnit timeUnit)
     {
         this.name = name;
         this.description = description;
@@ -71,6 +74,8 @@ public class Field
         this.groupFieldList = null;
         this.computedOffset = 0;
         this.computedBlockLength = 0;
+        this.epoch = epoch;
+        this.timeUnit = timeUnit;
     }
 
     public void validate(final Node node)
@@ -166,6 +171,16 @@ public class Field
         return sinceVersion;
     }
 
+    public String epoch()
+    {
+        return epoch;
+    }
+
+    public TimeUnit timeUnit()
+    {
+        return timeUnit;
+    }
+
     public String toString()
     {
         return "Field{" +
@@ -178,11 +193,13 @@ public class Field
             ", presence=" + presence +
             ", blockLength=" + blockLength +
             ", dimensionType=" + dimensionType +
-            ", sinceVersion=" + sinceVersion +
             ", variableLength=" + variableLength +
+            ", sinceVersion=" + sinceVersion +
             ", groupFieldList=" + groupFieldList +
             ", computedOffset=" + computedOffset +
             ", computedBlockLength=" + computedBlockLength +
+            ", epoch='" + epoch + '\'' +
+            ", timeUnit=" + timeUnit +
             '}';
     }
 
@@ -199,6 +216,8 @@ public class Field
         private CompositeType dimensionType;
         private boolean variableLength;
         private int sinceVersion = 0;
+        private String epoch;
+        private TimeUnit timeUnit;
 
         public Builder name(final String name)
         {
@@ -266,10 +285,33 @@ public class Field
             return this;
         }
 
+        public Builder epoch(final String epoch)
+        {
+            this.epoch = epoch;
+            return this;
+        }
+
+        public Builder timeUnit(final TimeUnit timeUnit)
+        {
+            this.timeUnit = timeUnit;
+            return this;
+        }
+
         public Field build()
         {
-            return new Field(name, description, id, type, offset,
-                             semanticType, presence, blockLength, dimensionType, variableLength, sinceVersion);
+            return new Field(name,
+                             description,
+                             id,
+                             type,
+                             offset,
+                             semanticType,
+                             presence,
+                             blockLength,
+                             dimensionType,
+                             variableLength,
+                             sinceVersion,
+                             epoch,
+                             timeUnit);
         }
     }
 }
