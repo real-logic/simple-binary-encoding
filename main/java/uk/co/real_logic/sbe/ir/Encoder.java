@@ -145,9 +145,7 @@ public class Encoder implements Closeable
         serializedToken.putMaxVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().maxVal(), type));
         serializedToken.putNullVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().nullVal(), type));
 
-        final String charEncodingCharEncoding = SerializedToken.characterEncodingCharacterEncoding();
-        final String charEncoding = token.encoding().characterEncoding();
-        final byte[] charBytes = charEncoding.getBytes(charEncodingCharEncoding);
+        final byte[] charBytes = token.encoding().characterEncoding().getBytes(SerializedToken.characterEncodingCharacterEncoding());
         serializedToken.putCharacterEncoding(charBytes, 0, charBytes.length);
 
         return serializedToken.size();
