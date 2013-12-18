@@ -134,17 +134,17 @@ public class Encoder implements Closeable
                        .tokenSize(token.size())
                        .schemaID(token.schemaId())
                        .tokenVersion(token.version())
-                       .signal(IrCodecUtils.signal(token.signal()))
-                       .primitiveType(IrCodecUtils.primitiveType(type))
-                       .byteOrder(IrCodecUtils.byteOrder(token.encoding().byteOrder()));
+                       .signal(IrUtil.signal(token.signal()))
+                       .primitiveType(IrUtil.primitiveType(type))
+                       .byteOrder(IrUtil.byteOrder(token.encoding().byteOrder()));
 
         final byte[] nameBytes = token.name().getBytes(SerializedToken.nameCharacterEncoding());
         serializedToken.putName(nameBytes, 0, nameBytes.length);
 
-        serializedToken.putConstVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().constVal(), type));
-        serializedToken.putMinVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().minVal(), type));
-        serializedToken.putMaxVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().maxVal(), type));
-        serializedToken.putNullVal(valArray, 0, IrCodecUtils.putVal(valBuffer, token.encoding().nullVal(), type));
+        serializedToken.putConstVal(valArray, 0, IrUtil.putVal(valBuffer, token.encoding().constVal(), type));
+        serializedToken.putMinVal(valArray, 0, IrUtil.putVal(valBuffer, token.encoding().minVal(), type));
+        serializedToken.putMaxVal(valArray, 0, IrUtil.putVal(valBuffer, token.encoding().maxVal(), type));
+        serializedToken.putNullVal(valArray, 0, IrUtil.putVal(valBuffer, token.encoding().nullVal(), type));
 
         final byte[] charBytes = token.encoding().characterEncoding().getBytes(SerializedToken.characterEncodingCharacterEncoding());
         serializedToken.putCharacterEncoding(charBytes, 0, charBytes.length);

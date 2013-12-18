@@ -169,19 +169,19 @@ public class Decoder implements Closeable
                     .size(serializedToken.tokenSize())
                     .schemaId(serializedToken.schemaID())
                     .version(serializedToken.tokenVersion())
-                    .signal(IrCodecUtils.signal(serializedToken.signal()));
+                    .signal(IrUtil.signal(serializedToken.signal()));
 
-        final PrimitiveType type = IrCodecUtils.primitiveType(serializedToken.primitiveType());
+        final PrimitiveType type = IrUtil.primitiveType(serializedToken.primitiveType());
 
         encBuilder.primitiveType(type)
-                  .byteOrder(IrCodecUtils.byteOrder(serializedToken.byteOrder()));
+                  .byteOrder(IrUtil.byteOrder(serializedToken.byteOrder()));
 
         tokenBuilder.name(new String(byteArray, 0, serializedToken.getName(byteArray, 0, byteArray.length), SerializedToken.nameCharacterEncoding()));
 
-        encBuilder.constVal(IrCodecUtils.getVal(valBuffer, type, serializedToken.getConstVal(valArray, 0, valArray.length)));
-        encBuilder.minVal(IrCodecUtils.getVal(valBuffer, type, serializedToken.getMinVal(valArray, 0, valArray.length)));
-        encBuilder.maxVal(IrCodecUtils.getVal(valBuffer, type, serializedToken.getMaxVal(valArray, 0, valArray.length)));
-        encBuilder.nullVal(IrCodecUtils.getVal(valBuffer, type, serializedToken.getNullVal(valArray, 0, valArray.length)));
+        encBuilder.constVal(IrUtil.getVal(valBuffer, type, serializedToken.getConstVal(valArray, 0, valArray.length)));
+        encBuilder.minVal(IrUtil.getVal(valBuffer, type, serializedToken.getMinVal(valArray, 0, valArray.length)));
+        encBuilder.maxVal(IrUtil.getVal(valBuffer, type, serializedToken.getMaxVal(valArray, 0, valArray.length)));
+        encBuilder.nullVal(IrUtil.getVal(valBuffer, type, serializedToken.getNullVal(valArray, 0, valArray.length)));
 
         final int charEncodingSize = serializedToken.getCharacterEncoding(byteArray, 0, byteArray.length);
         encBuilder.characterEncoding(new String(byteArray, 0, charEncodingSize, SerializedToken.characterEncodingCharacterEncoding()));
