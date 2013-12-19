@@ -23,7 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-public class SbeExtensionExample
+public class GeneratedStubExtensionExample
 {
     private static final String ENCODING_FILENAME = "sbe.encoding.filename";
     private static final byte[] VEHICLE_CODE;
@@ -88,6 +88,11 @@ public class SbeExtensionExample
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
         final int templateId = MESSAGE_HEADER.templateId();
+        if (templateId != extension.Car.TEMPLATE_ID)
+        {
+            throw new IllegalStateException("Template ids do not match");
+        }
+
         final short actingVersion = MESSAGE_HEADER.version();
         final int actingBlockLength = MESSAGE_HEADER.blockLength();
 
@@ -95,9 +100,9 @@ public class SbeExtensionExample
         decode(CAR_1, directBuffer, bufferOffset, actingBlockLength, actingVersion);
     }
 
-    private static int encode(final baseline.Car car,
-                              final DirectBuffer directBuffer,
-                              final int bufferOffset)
+    public static int encode(final baseline.Car car,
+                             final DirectBuffer directBuffer,
+                             final int bufferOffset)
     {
         final int srcOffset = 0;
 
@@ -142,11 +147,11 @@ public class SbeExtensionExample
         return car.size();
     }
 
-    private static void decode(final extension.Car car,
-                               final DirectBuffer directBuffer,
-                               final int bufferOffset,
-                               final int actingBlockLength,
-                               final int actingVersion)
+    public static void decode(final extension.Car car,
+                              final DirectBuffer directBuffer,
+                              final int bufferOffset,
+                              final int actingBlockLength,
+                              final int actingVersion)
         throws Exception
     {
         final byte[] buffer = new byte[128];

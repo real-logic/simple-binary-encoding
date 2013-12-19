@@ -262,10 +262,10 @@
         <javac srcdir="${dir.examples.src}" destdir="${dir.examples.build}" includeAntRuntime="false" debug="true">
             <classpath refid="examples.classpath"/>
         </javac>
-        <java classname="uk.co.real_logic.sbe.examples.SbeExample">
+        <java classname="uk.co.real_logic.sbe.examples.GeneratedStubExample">
             <classpath refid="examples.classpath"/>
         </java>
-        <java classname="uk.co.real_logic.sbe.examples.SbeExtensionExample">
+        <java classname="uk.co.real_logic.sbe.examples.GeneratedStubExtensionExample">
             <classpath refid="examples.classpath"/>
         </java>
     </target>
@@ -327,7 +327,7 @@
                 <sysproperty key="sbe.ir.filename" value="Car.sbeir"/>
                 <arg value="${dir.examples.resources}/TestSchema.xml"/>
             </java>
-            <java classname="uk.co.real_logic.sbe.examples.SbeExample">
+            <java classname="uk.co.real_logic.sbe.examples.GeneratedStubExample">
                 <classpath refid="examples.classpath"/>
                 <sysproperty key="sbe.encoding.filename" value="${dir.gen.cpp98}/Car.data"/>
             </java>
