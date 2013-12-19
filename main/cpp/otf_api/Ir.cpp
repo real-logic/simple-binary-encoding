@@ -19,8 +19,8 @@
 #include <sys/types.h>
 
 #include "otf_api/Ir.h"
-#include "uk_co_real_logic_sbe_ir_generated/SerializedToken.hpp"
-#include "uk_co_real_logic_sbe_ir_generated/SerializedFrame.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/FrameCodec.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/TokenCodec.hpp"
 
 using namespace sbe::on_the_fly;
 using namespace uk_co_real_logic_sbe_ir_generated;
@@ -29,7 +29,7 @@ using ::std::endl;
 
 struct Ir::Impl
 {
-    SerializedToken serializedToken;
+    TokenCodec tokenCodec;
     char name[256];
     char constVal[256];
     int nameLength;
@@ -56,22 +56,25 @@ void Ir::readTokenAtCurrentPosition()
 
     //printf("read buffer_ %p offset %d\n", buffer_, cursorOffset_);
 
-    impl_->serializedToken.wrapForDecode((char *)buffer_, cursorOffset_,
-        impl_->serializedToken.blockLength(), impl_->serializedToken.templateVersion());
+    impl_->tokenCodec.wrapForDecode((char *)buffer_, cursorOffset_,
+        impl_->tokenCodec.blockLength(), impl_->tokenCodec.templateVersion());
 
     // read all the var data and save in Impl then save size
 
-    impl_->nameLength = impl_->serializedToken.getName(impl_->name, sizeof(impl_->name));
+    impl_->nameLength = impl_->tokenCodec.getName(impl_->name, sizeof(impl_->name));
 
-    impl_->constValLength = impl_->serializedToken.getConstVal(impl_->constVal, sizeof(impl_->constVal));
+    impl_->constValLength = impl_->tokenCodec.getConstVal(impl_->constVal, sizeof(impl_->constVal));
 
     // don't really do anything with min/max/null/encoding right now
-    length = impl_->serializedToken.getMinVal(tmp, sizeof(tmp));
-    length = impl_->serializedToken.getMaxVal(tmp, sizeof(tmp));
-    length = impl_->serializedToken.getNullVal(tmp, sizeof(tmp));
-    length = impl_->serializedToken.getCharacterEncoding(tmp, sizeof(tmp));
+    length = impl_->tokenCodec.getMinVal(tmp, sizeof(tmp));
+    length = impl_->tokenCodec.getMaxVal(tmp, sizeof(tmp));
+    length = impl_->tokenCodec.getNullVal(tmp, sizeof(tmp));
+    length = impl_->tokenCodec.getCharacterEncoding(tmp, sizeof(tmp));
+    length = impl_->tokenCodec.getEpoch(tmp, sizeof(tmp));
+    length = impl_->tokenCodec.getTimeUnit(tmp, sizeof(tmp));
+    length = impl_->tokenCodec.getSemanticType(tmp, sizeof(tmp));
 
-    impl_->serializedTokenSize = impl_->serializedToken.size();
+    impl_->serializedTokenSize = impl_->tokenCodec.size();
 
 //    printf("token %p %d offset=%d size=%d id=%d signal=%d type=%d order=%d name=%s constLen=%d\n",
 //           buffer_, cursorOffset_, offset(), size(), schemaId(), signal(), primitiveType(), byteOrder(),
@@ -110,35 +113,35 @@ bool Ir::end() const
 
 int32_t Ir::offset() const
 {
-    return impl_->serializedToken.tokenOffset();
+    return impl_->tokenCodec.tokenOffset();
 }
 
 int32_t Ir::size() const
 {
-    return impl_->serializedToken.tokenSize();
+    return impl_->tokenCodec.tokenSize();
 }
 
 Ir::TokenSignal Ir::signal() const
 {
     // the serialized IR and the Ir::TokenSignal enums MUST be kept in sync!
-    return (Ir::TokenSignal)impl_->serializedToken.signal();
+    return (Ir::TokenSignal)impl_->tokenCodec.signal();
 }
 
 Ir::TokenByteOrder Ir::byteOrder() const
 {
     // the serialized IR and the Ir::TokenByteOrder enums MUST be kept in sync!
-    return (Ir::TokenByteOrder)impl_->serializedToken.byteOrder();
+    return (Ir::TokenByteOrder)impl_->tokenCodec.byteOrder();
 }
 
 Ir::TokenPrimitiveType Ir::primitiveType() const
 {
     // the serialized IR and the Ir::TokenPrimitiveType enums MUST be kept in sync!
-    return (Ir::TokenPrimitiveType)impl_->serializedToken.primitiveType();
+    return (Ir::TokenPrimitiveType)impl_->tokenCodec.primitiveType();
 }
 
 int32_t Ir::schemaId() const
 {
-    return impl_->serializedToken.schemaID();
+    return impl_->tokenCodec.schemaId();
 }
 
 uint64_t Ir::validValue() const
@@ -233,7 +236,7 @@ void Ir::addToken(uint32_t offset,
                   const char *constVal,
                   int constValLength)
 {
-    SerializedToken serializedToken;
+    TokenCodec tokenCodec;
 
     if (buffer_ == NULL)
     {
@@ -242,23 +245,26 @@ void Ir::addToken(uint32_t offset,
 
     //printf("buffer_ %p offset %d\n", buffer_, cursorOffset_);
 
-    serializedToken.wrapForEncode((char *)buffer_, cursorOffset_);
+    tokenCodec.wrapForEncode((char *)buffer_, cursorOffset_);
 
-    serializedToken.tokenOffset(offset)
-                   .tokenSize(size)
-                   .schemaID(schemaId)
-                   .tokenVersion(0)
-                   .signal((SerializedSignal::Value)signal)
-                   .primitiveType((SerializedPrimitiveType::Value)primitiveType)
-                   .byteOrder((SerializedByteOrder::Value)byteOrder);
+    tokenCodec.tokenOffset(offset)
+              .tokenSize(size)
+              .schemaId(schemaId)
+              .tokenVersion(0)
+              .signal((SignalCodec::Value)signal)
+              .primitiveType((PrimitiveTypeCodec::Value)primitiveType)
+              .byteOrder((ByteOrderCodec::Value)byteOrder);
 
-    serializedToken.putName(name.c_str(), name.size());
-    serializedToken.putConstVal(constVal, constValLength);
-    serializedToken.putMinVal(NULL, 0);
-    serializedToken.putMaxVal(NULL, 0);
-    serializedToken.putNullVal(NULL, 0);
-    serializedToken.putCharacterEncoding(NULL, 0);
+    tokenCodec.putName(name.c_str(), name.size());
+    tokenCodec.putConstVal(constVal, constValLength);
+    tokenCodec.putMinVal(NULL, 0);
+    tokenCodec.putMaxVal(NULL, 0);
+    tokenCodec.putNullVal(NULL, 0);
+    tokenCodec.putCharacterEncoding(NULL, 0);
+    tokenCodec.putEpoch(NULL, 0);
+    tokenCodec.putTimeUnit(NULL, 0);
+    tokenCodec.putSemanticType(NULL, 0);
 
-    cursorOffset_ += serializedToken.size();
+    cursorOffset_ += tokenCodec.size();
     len_ = cursorOffset_;
 }

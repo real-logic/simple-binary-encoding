@@ -1,21 +1,22 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
-#ifndef _SERIALIZEDFRAME_HPP_
-#define _SERIALIZEDFRAME_HPP_
+#ifndef _FRAMECODEC_HPP_
+#define _FRAMECODEC_HPP_
 
 /* math.h needed for NAN */
 #include <math.h>
 #include "sbe/sbe.hpp"
 
 #include "uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp"
-#include "uk_co_real_logic_sbe_ir_generated/SerializedSignal.hpp"
-#include "uk_co_real_logic_sbe_ir_generated/SerializedPrimitiveType.hpp"
-#include "uk_co_real_logic_sbe_ir_generated/SerializedByteOrder.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/ByteOrderCodec.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/PresenceCodec.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/PrimitiveTypeCodec.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/SignalCodec.hpp"
 
 using namespace sbe;
 
 namespace uk_co_real_logic_sbe_ir_generated {
 
-class SerializedFrame
+class FrameCodec
 {
 private:
     char *buffer_;
@@ -37,7 +38,7 @@ public:
         return offset_;
     }
 
-    SerializedFrame &wrapForEncode(char *buffer, const int offset)
+    FrameCodec &wrapForEncode(char *buffer, const int offset)
     {
         buffer_ = buffer;
         offset_ = offset;
@@ -48,7 +49,7 @@ public:
         return *this;
     }
 
-    SerializedFrame &wrapForDecode(char *buffer, const int offset,
+    FrameCodec &wrapForDecode(char *buffer, const int offset,
                         const int actingBlockLength, const int actingVersion)
     {
         buffer_ = buffer;
@@ -131,7 +132,7 @@ public:
         return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 0)));
     }
 
-    SerializedFrame &sbeIrVersion(const sbe_int32_t value)
+    FrameCodec &sbeIrVersion(const sbe_int32_t value)
     {
         *((sbe_int32_t *)(buffer_ + offset_ + 0)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;
@@ -173,7 +174,7 @@ public:
         return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 4)));
     }
 
-    SerializedFrame &schemaVersion(const sbe_int32_t value)
+    FrameCodec &schemaVersion(const sbe_int32_t value)
     {
         *((sbe_int32_t *)(buffer_ + offset_ + 4)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;

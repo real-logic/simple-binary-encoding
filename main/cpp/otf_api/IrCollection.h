@@ -34,8 +34,8 @@
 #include <iostream>
 
 #include "otf_api/Ir.h"
-#include "uk_co_real_logic_sbe_ir_generated/SerializedToken.hpp"
-#include "uk_co_real_logic_sbe_ir_generated/SerializedFrame.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/TokenCodec.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/FrameCodec.hpp"
 
 using namespace sbe::on_the_fly;
 using namespace uk_co_real_logic_sbe_ir_generated;
@@ -163,7 +163,7 @@ protected:
 
     int processIr(void)
     {
-        SerializedFrame frame;
+        FrameCodec frame;
         int offset = 0, tmpLen = 0;
         char tmp[256];
 
@@ -188,7 +188,7 @@ protected:
 
     int readHeader(int offset)
     {
-        SerializedToken token;
+        TokenCodec token;
         int size = 0;
 
         while (offset + size < length_)
@@ -204,15 +204,18 @@ protected:
             token.getMaxVal(tmp, sizeof(tmp));
             token.getNullVal(tmp, sizeof(tmp));
             token.getCharacterEncoding(tmp, sizeof(tmp));
+            token.getEpoch(tmp, sizeof(tmp));
+            token.getTimeUnit(tmp, sizeof(tmp));
+            token.getSemanticType(tmp, sizeof(tmp));
 
             size += token.size();
 
-            if (token.signal() == SerializedSignal::BEGIN_COMPOSITE)
+            if (token.signal() == SignalCodec::BEGIN_COMPOSITE)
             {
                 std::cout << " Header name=\"" << std::string(name, nameLen) << "\"";
             }
 
-            if (token.signal() == SerializedSignal::END_COMPOSITE)
+            if (token.signal() == SignalCodec::END_COMPOSITE)
             {
                 break;
             }
@@ -227,7 +230,7 @@ protected:
 
     int readMessage(int offset)
     {
-        SerializedToken token;
+        TokenCodec token;
         int size = 0;
 
         while (offset + size < length_)
@@ -243,17 +246,20 @@ protected:
             token.getMaxVal(tmp, sizeof(tmp));
             token.getNullVal(tmp, sizeof(tmp));
             token.getCharacterEncoding(tmp, sizeof(tmp));
+            token.getEpoch(tmp, sizeof(tmp));
+            token.getTimeUnit(tmp, sizeof(tmp));
+            token.getSemanticType(tmp, sizeof(tmp));
 
             size += token.size();
 
-            if (token.signal() == SerializedSignal::BEGIN_MESSAGE)
+            if (token.signal() == SignalCodec::BEGIN_MESSAGE)
             {
                 std::cout << " Message name=\"" << std::string(name, nameLen) << "\"";
-                std::cout << " id=\"" << token.schemaID() << "\"";
+                std::cout << " id=\"" << token.schemaId() << "\"";
                 std::cout << " version=\"" << token.tokenVersion() << "\"";
             }
 
-            if (token.signal() == SerializedSignal::END_MESSAGE)
+            if (token.signal() == SignalCodec::END_MESSAGE)
             {
                 break;
             }
@@ -263,7 +269,7 @@ protected:
 
         // save buffer_ + offset as start of message and size as length
 
-        map_.insert(std::pair<int, Ir *>(token.schemaID(), new Ir(buffer_ + offset, size, token.schemaID(), token.tokenVersion())));
+        map_.insert(std::pair<int, Ir *>(token.schemaId(), new Ir(buffer_ + offset, size, token.schemaId(), token.tokenVersion())));
 
         // map_[token.schemaID()] = new Ir(buffer_ + offset, size);
 
