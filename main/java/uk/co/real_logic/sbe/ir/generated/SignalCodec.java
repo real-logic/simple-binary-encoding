@@ -1,9 +1,9 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.generation.java.*;
+import uk.co.real_logic.sbe.codec.java.*;
 
-public enum SerializedSignal
+public enum SignalCodec
 {
     END_SET((short)14),
     BEGIN_VAR_DATA((short)15),
@@ -18,15 +18,15 @@ public enum SerializedSignal
     END_VAR_DATA((short)16),
     BEGIN_GROUP((short)7),
     BEGIN_ENUM((short)9),
+    CHOICE((short)13),
     END_ENUM((short)11),
     BEGIN_SET((short)12),
-    CHOICE((short)13),
     BEGIN_MESSAGE((short)1),
     NULL_VAL((short)255);
 
     private final short value;
 
-    SerializedSignal(final short value)
+    SignalCodec(final short value)
     {
         this.value = value;
     }
@@ -36,7 +36,7 @@ public enum SerializedSignal
         return value;
     }
 
-    public static SerializedSignal get(final short value)
+    public static SignalCodec get(final short value)
     {
         switch (value)
         {
@@ -53,9 +53,9 @@ public enum SerializedSignal
             case 16: return END_VAR_DATA;
             case 7: return BEGIN_GROUP;
             case 9: return BEGIN_ENUM;
+            case 13: return CHOICE;
             case 11: return END_ENUM;
             case 12: return BEGIN_SET;
-            case 13: return CHOICE;
             case 1: return BEGIN_MESSAGE;
             case 255: return NULL_VAL;
         }

@@ -1,9 +1,9 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.generation.java.*;
+import uk.co.real_logic.sbe.codec.java.*;
 
-public enum SerializedPrimitiveType
+public enum PrimitiveTypeCodec
 {
     INT32((short)4),
     INT8((short)2),
@@ -21,7 +21,7 @@ public enum SerializedPrimitiveType
 
     private final short value;
 
-    SerializedPrimitiveType(final short value)
+    PrimitiveTypeCodec(final short value)
     {
         this.value = value;
     }
@@ -31,7 +31,7 @@ public enum SerializedPrimitiveType
         return value;
     }
 
-    public static SerializedPrimitiveType get(final short value)
+    public static PrimitiveTypeCodec get(final short value)
     {
         switch (value)
         {

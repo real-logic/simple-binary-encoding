@@ -10,7 +10,7 @@
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>
-        <composite name="groupSize">
+        <composite name="groupSizeEncoding">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="numInGroup" primitiveType="uint8"/>
         </composite>
@@ -18,7 +18,7 @@
             <type name="length" primitiveType="uint8"/>
             <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
         </composite>
-        <enum name="SerializedPrimitiveType" encodingType="uint8">
+        <enum name="PrimitiveTypeCodec" encodingType="uint8">
             <validValue name="NONE">0</validValue>
             <validValue name="CHAR">1</validValue>
             <validValue name="INT8">2</validValue>
@@ -32,7 +32,7 @@
             <validValue name="FLOAT">10</validValue>
             <validValue name="DOUBLE">11</validValue>
         </enum>
-        <enum name="SerializedSignal" encodingType="uint8">
+        <enum name="SignalCodec" encodingType="uint8">
             <validValue name="BEGIN_MESSAGE">1</validValue>
             <validValue name="END_MESSAGE">2</validValue>
             <validValue name="BEGIN_COMPOSITE">3</validValue>
@@ -51,31 +51,40 @@
             <validValue name="END_VAR_DATA">16</validValue>
             <validValue name="ENCODING">17</validValue>
         </enum>
-        <enum name="SerializedByteOrder" encodingType="uint8">
+        <enum name="ByteOrderCodec" encodingType="uint8">
             <validValue name="SBE_LITTLE_ENDIAN">0</validValue>
             <validValue name="SBE_BIG_ENDIAN">1</validValue>
         </enum>
+        <enum name="PresenceCodec" encodingType="uint8">
+            <validValue name="REQUIRED">0</validValue>
+            <validValue name="OPTIONAL">1</validValue>
+            <validValue name="CONSTANT">2</validValue>
+        </enum>
     </types>
 
-    <message name="SerializedFrame" id="1" description="Frame Header for start of Serialized IR">
+    <message name="FrameCodec" id="1" description="Frame Header for start of encoding IR">
         <field name="sbeIrVersion" id="1" type="int32"/>
         <field name="schemaVersion" id="2" type="int32"/>
         <data name="packageVal" id="4" type="varDataEncoding"/>
     </message>
 
-    <message name="SerializedToken" id="2" description="Serialized IR Token">
+    <message name="TokenCodec" id="2" description="Codec for an IR Token">
         <field name="tokenOffset" id="11" type="int32"/>
         <field name="tokenSize" id="12" type="int32"/>
-        <field name="schemaID" id="13" type="int32"/>
+        <field name="schemaId" id="13" type="int32"/>
         <field name="tokenVersion" id="17" type="int32"/>
-        <field name="signal" id="14" type="SerializedSignal"/>
-        <field name="primitiveType" id="15" type="SerializedPrimitiveType"/>
-        <field name="byteOrder" id="16" type="SerializedByteOrder"/>
+        <field name="signal" id="14" type="SignalCodec"/>
+        <field name="primitiveType" id="15" type="PrimitiveTypeCodec"/>
+        <field name="byteOrder" id="16" type="ByteOrderCodec"/>
+        <field name="presence" id="17" type="PresenceCodec"/>
         <data name="name" id="18" type="varDataEncoding"/>
         <data name="constVal" id="19" type="varDataEncoding"/>
         <data name="minVal" id="20" type="varDataEncoding"/>
         <data name="maxVal" id="21" type="varDataEncoding"/>
         <data name="nullVal" id="22" type="varDataEncoding"/>
         <data name="characterEncoding" id="23" type="varDataEncoding"/>
+        <data name="epoch" id="24" type="varDataEncoding"/>
+        <data name="timeUnit" id="25" type="varDataEncoding"/>
+        <data name="semanticType" id="26" type="varDataEncoding"/>
     </message>
 </messageSchema>

@@ -17,14 +17,16 @@ package uk.co.real_logic.sbe.ir;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
-import uk.co.real_logic.sbe.ir.generated.SerializedFrame;
-import uk.co.real_logic.sbe.ir.generated.SerializedToken;
+import uk.co.real_logic.sbe.ir.generated.FrameCodec;
+import uk.co.real_logic.sbe.ir.generated.TokenCodec;
 import uk.co.real_logic.sbe.util.Verify;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
+
+import static uk.co.real_logic.sbe.ir.IrUtil.*;
 
 public class Encoder implements Closeable
 {
@@ -35,8 +37,8 @@ public class Encoder implements Closeable
     private final ByteBuffer buffer;
     private final DirectBuffer directBuffer;
     private final IntermediateRepresentation ir;
-    private final SerializedFrame serializedFrame = new SerializedFrame();
-    private final SerializedToken serializedToken = new SerializedToken();
+    private final FrameCodec frameCodec = new FrameCodec();
+    private final TokenCodec tokenCodec = new TokenCodec();
     private final byte[] valArray = new byte[CAPACITY];
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
     private int totalSize = 0;
@@ -115,40 +117,51 @@ public class Encoder implements Closeable
 
     private int encodeFrame()
     {
-        serializedFrame.wrapForEncode(directBuffer, 0)
-                       .sbeIrVersion(0)
-                       .schemaVersion(ir.version());
+        frameCodec.wrapForEncode(directBuffer, 0)
+                  .sbeIrVersion(0)
+                  .schemaVersion(ir.version());
 
-        serializedFrame.putPackageVal(ir.packageName().getBytes(), 0, ir.packageName().getBytes().length);
+        frameCodec.putPackageVal(ir.packageName().getBytes(), 0, ir.packageName().getBytes().length);
 
-        return serializedFrame.size();
+        return frameCodec.size();
     }
 
     private int encodeToken(final Token token)
         throws UnsupportedEncodingException
     {
-        final PrimitiveType type = token.encoding().primitiveType();
+        final Encoding encoding = token.encoding();
+        final PrimitiveType type = encoding.primitiveType();
 
-        serializedToken.wrapForEncode(directBuffer, 0)
-                       .tokenOffset(token.offset())
-                       .tokenSize(token.size())
-                       .schemaID(token.schemaId())
-                       .tokenVersion(token.version())
-                       .signal(IrUtil.signal(token.signal()))
-                       .primitiveType(IrUtil.primitiveType(type))
-                       .byteOrder(IrUtil.byteOrder(token.encoding().byteOrder()));
+        tokenCodec.wrapForEncode(directBuffer, 0)
+                  .tokenOffset(token.offset())
+                  .tokenSize(token.size())
+                  .schemaId(token.schemaId())
+                  .tokenVersion(token.version())
+                  .signal(mapSignal(token.signal()))
+                  .primitiveType(mapPrimitiveType(type))
+                  .byteOrder(mapByteOrder(encoding.byteOrder()))
+                  .presence(mapPresence(encoding.presence()));
 
-        final byte[] nameBytes = token.name().getBytes(SerializedToken.nameCharacterEncoding());
-        serializedToken.putName(nameBytes, 0, nameBytes.length);
+        final byte[] nameBytes = token.name().getBytes(TokenCodec.nameCharacterEncoding());
+        tokenCodec.putName(nameBytes, 0, nameBytes.length);
 
-        serializedToken.putConstVal(valArray, 0, IrUtil.putVal(valBuffer, token.encoding().constVal(), type));
-        serializedToken.putMinVal(valArray, 0, IrUtil.putVal(valBuffer, token.encoding().minVal(), type));
-        serializedToken.putMaxVal(valArray, 0, IrUtil.putVal(valBuffer, token.encoding().maxVal(), type));
-        serializedToken.putNullVal(valArray, 0, IrUtil.putVal(valBuffer, token.encoding().nullVal(), type));
+        tokenCodec.putConstVal(valArray, 0, put(valBuffer, encoding.constVal(), type));
+        tokenCodec.putMinVal(valArray, 0, put(valBuffer, encoding.minVal(), type));
+        tokenCodec.putMaxVal(valArray, 0, put(valBuffer, encoding.maxVal(), type));
+        tokenCodec.putNullVal(valArray, 0, put(valBuffer, encoding.nullVal(), type));
 
-        final byte[] charBytes = token.encoding().characterEncoding().getBytes(SerializedToken.characterEncodingCharacterEncoding());
-        serializedToken.putCharacterEncoding(charBytes, 0, charBytes.length);
+        final byte[] charEncodingBytes = getBytes(encoding.characterEncoding(), TokenCodec.characterEncodingCharacterEncoding());
+        tokenCodec.putCharacterEncoding(charEncodingBytes, 0, charEncodingBytes.length);
 
-        return serializedToken.size();
+        final byte[] epochBytes = getBytes(encoding.epoch(), TokenCodec.epochCharacterEncoding());
+        tokenCodec.putEpoch(epochBytes, 0, epochBytes.length);
+
+        final byte[] timeUnitBytes = getBytes(encoding.timeUnit(), TokenCodec.timeUnitCharacterEncoding());
+        tokenCodec.putTimeUnit(timeUnitBytes, 0, timeUnitBytes.length);
+
+        final byte[] semanticTypeBytes = getBytes(encoding.semanticType(), TokenCodec.semanticTypeCharacterEncoding());
+        tokenCodec.putSemanticType(semanticTypeBytes, 0, semanticTypeBytes.length);
+
+        return tokenCodec.size();
     }
 }

@@ -259,6 +259,17 @@
         </java>
     </target>
 
+    <target name="examples:java:ir-gen"
+            description="Generate codec stubs for SBE IR"
+            depends="dist">
+        <java classname="uk.co.real_logic.sbe.SbeTool">
+            <classpath refid="examples.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.main.src}"/>
+            <sysproperty key="sbe.target.language" value="Java"/>
+            <arg value="${dir.main.resources}/sbe-ir.xml"/>
+        </java>
+    </target>
+
     <target name="cpp:examples:gen" depends="dist" description="Generate and run C++ generated code example">
         <mkdir dir="${dir.gen.cpp98}"/>
         <java classname="uk.co.real_logic.sbe.SbeTool">

@@ -103,7 +103,7 @@ public class EncodedIrTest
         assertThat(decodedIr.packageName(), is(ir.packageName()));
     }
 
-    private void checkTokenEquality(final Token lhs, final Token rhs)
+    private void assertEqual(final Token lhs, final Token rhs)
     {
         assertThat(lhs.name(), is(rhs.name()));
         assertThat(Integer.valueOf(lhs.version()), is(Integer.valueOf(rhs.version())));
@@ -114,11 +114,15 @@ public class EncodedIrTest
 
         assertThat(lhs.encoding().byteOrder(), is(rhs.encoding().byteOrder()));
         assertThat(lhs.encoding().primitiveType(), is(rhs.encoding().primitiveType()));
+        assertThat(lhs.encoding().presence(), is(rhs.encoding().presence()));
         assertThat(lhs.encoding().constVal(), is(rhs.encoding().constVal()));
         assertThat(lhs.encoding().minVal(), is(rhs.encoding().minVal()));
         assertThat(lhs.encoding().maxVal(), is(rhs.encoding().maxVal()));
         assertThat(lhs.encoding().nullVal(), is(rhs.encoding().nullVal()));
         assertThat(lhs.encoding().characterEncoding(), is(rhs.encoding().characterEncoding()));
+        assertThat(lhs.encoding().epoch(), is(rhs.encoding().epoch()));
+        assertThat(lhs.encoding().timeUnit(), is(rhs.encoding().timeUnit()));
+        assertThat(lhs.encoding().semanticType(), is(rhs.encoding().semanticType()));
     }
 
     @Test
@@ -141,7 +145,7 @@ public class EncodedIrTest
         assertThat(Integer.valueOf(tokens.size()), is(Integer.valueOf(ir.messageHeader().tokens().size())));
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
-            checkTokenEquality(tokens.get(i), ir.messageHeader().tokens().get(i));
+            assertEqual(tokens.get(i), ir.messageHeader().tokens().get(i));
         }
     }
 
@@ -169,7 +173,7 @@ public class EncodedIrTest
             assertThat(Integer.valueOf(decodedTokenList.size()), is(Integer.valueOf(tokens.size())));
             for (int i = 0, size = decodedTokenList.size(); i < size; i++)
             {
-                checkTokenEquality(decodedTokenList.get(i), tokens.get(i));
+                assertEqual(decodedTokenList.get(i), tokens.get(i));
             }
         }
     }

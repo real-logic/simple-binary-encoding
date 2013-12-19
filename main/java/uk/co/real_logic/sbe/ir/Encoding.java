@@ -62,7 +62,7 @@ public class Encoding
         maxVal = null;
         nullVal = null;
         constVal = null;
-        characterEncoding = "";
+        characterEncoding = null;
         epoch = null;
         timeUnit = null;
         semanticType = null;
@@ -281,7 +281,7 @@ public class Encoding
         private PrimitiveValue maxVal = null;
         private PrimitiveValue nullVal = null;
         private PrimitiveValue constVal = null;
-        private String characterEncoding = "";
+        private String characterEncoding = null;
         private String epoch = null;
         private String timeUnit = null;
         private String semanticType = null;

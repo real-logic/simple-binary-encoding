@@ -1,11 +1,17 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.codec.java.CodecUtil;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
+import uk.co.real_logic.sbe.codec.java.*;
 
 public class MessageHeader
 {
+    public enum MetaAttribute
+    {
+        EPOCH,
+        TIME_UNIT,
+        SEMANTIC_TYPE
+    }
+
     private DirectBuffer buffer;
     private int offset;
     private int actingVersion;

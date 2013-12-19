@@ -1,16 +1,22 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.codec.java.CodecUtil;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
+import uk.co.real_logic.sbe.codec.java.*;
 
-public class SerializedFrame
+public class FrameCodec
 {
+    public enum MetaAttribute
+    {
+        EPOCH,
+        TIME_UNIT,
+        SEMANTIC_TYPE
+    }
+
     public static final int TEMPLATE_ID = 1;
     public static final short TEMPLATE_VERSION = (short)0;
     public static final int BLOCK_LENGTH = 8;
 
-    private SerializedFrame parentMessage = this;
+    private final FrameCodec parentMessage = this;
     private DirectBuffer buffer;
     private int offset;
     private int position;
@@ -37,7 +43,7 @@ public class SerializedFrame
         return offset;
     }
 
-    public SerializedFrame wrapForEncode(final DirectBuffer buffer, final int offset)
+    public FrameCodec wrapForEncode(final DirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
         this.offset = offset;
@@ -48,8 +54,8 @@ public class SerializedFrame
         return this;
     }
 
-    public SerializedFrame wrapForDecode(final DirectBuffer buffer, final int offset,
-                            final int actingBlockLength, final int actingVersion)
+    public FrameCodec wrapForDecode(final DirectBuffer buffer, final int offset,
+                              final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;
@@ -81,6 +87,18 @@ public class SerializedFrame
         return 1;
     }
 
+    public static String sbeIrVersionMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     public static int sbeIrVersionNullVal()
     {
         return -2147483648;
@@ -101,7 +119,7 @@ public class SerializedFrame
         return CodecUtil.int32Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public SerializedFrame sbeIrVersion(final int value)
+    public FrameCodec sbeIrVersion(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
@@ -110,6 +128,18 @@ public class SerializedFrame
     public static int schemaVersionSchemaId()
     {
         return 2;
+    }
+
+    public static String schemaVersionMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+        }
+
+        return "";
     }
 
     public static int schemaVersionNullVal()
@@ -132,7 +162,7 @@ public class SerializedFrame
         return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public SerializedFrame schemaVersion(final int value)
+    public FrameCodec schemaVersion(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
@@ -148,15 +178,27 @@ public class SerializedFrame
         return "UTF-8";
     }
 
+    public static String packageValMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     public int getPackageVal(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int lengthPosition = position();
-        position(lengthPosition + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, lengthPosition);
+        final int position = position();
+        buffer.checkPosition(position + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, position);
         final int bytesCopied = Math.min(length, dataLength);
-        CodecUtil.int8sGet(buffer, position(), dst, dstOffset, bytesCopied);
-        position(position() + dataLength);
+        position(position + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -164,11 +206,10 @@ public class SerializedFrame
     public int putPackageVal(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int lengthPosition = position();
-        CodecUtil.uint8Put(buffer, lengthPosition, (short)length);
-        position(lengthPosition + sizeOfLengthField);
-        CodecUtil.int8sPut(buffer, position(), src, srcOffset, length);
-        position(position() + length);
+        final int position = position();
+        position(position + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, position, (short)length);
+        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }

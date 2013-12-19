@@ -19,25 +19,26 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.codec.java.CodecUtil;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
-import uk.co.real_logic.sbe.ir.generated.SerializedByteOrder;
-import uk.co.real_logic.sbe.ir.generated.SerializedPrimitiveType;
-import uk.co.real_logic.sbe.ir.generated.SerializedSignal;
+import uk.co.real_logic.sbe.ir.generated.*;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
 
 public class IrUtil
 {
-    public static SerializedByteOrder byteOrder(final ByteOrder byteOrder)
+    public static final byte[] EMPTY_BUFFER = new byte[0];
+
+    public static ByteOrderCodec mapByteOrder(final ByteOrder byteOrder)
     {
         if (byteOrder == ByteOrder.BIG_ENDIAN)
         {
-            return SerializedByteOrder.SBE_BIG_ENDIAN;
+            return ByteOrderCodec.SBE_BIG_ENDIAN;
         }
 
-        return SerializedByteOrder.SBE_LITTLE_ENDIAN;
+        return ByteOrderCodec.SBE_LITTLE_ENDIAN;
     }
 
-    public static ByteOrder byteOrder(final SerializedByteOrder byteOrder)
+    public static ByteOrder mapByteOrder(final ByteOrderCodec byteOrder)
     {
         switch (byteOrder)
         {
@@ -51,65 +52,65 @@ public class IrUtil
         return ByteOrder.LITTLE_ENDIAN;
     }
 
-    public static SerializedSignal signal(final Signal signal)
+    public static SignalCodec mapSignal(final Signal signal)
     {
         switch (signal)
         {
             case BEGIN_MESSAGE:
-                return SerializedSignal.BEGIN_MESSAGE;
+                return SignalCodec.BEGIN_MESSAGE;
 
             case END_MESSAGE:
-                return SerializedSignal.END_MESSAGE;
+                return SignalCodec.END_MESSAGE;
 
             case BEGIN_FIELD:
-                return SerializedSignal.BEGIN_FIELD;
+                return SignalCodec.BEGIN_FIELD;
 
             case END_FIELD:
-                return SerializedSignal.END_FIELD;
+                return SignalCodec.END_FIELD;
 
             case BEGIN_COMPOSITE:
-                return SerializedSignal.BEGIN_COMPOSITE;
+                return SignalCodec.BEGIN_COMPOSITE;
 
             case END_COMPOSITE:
-                return SerializedSignal.END_COMPOSITE;
+                return SignalCodec.END_COMPOSITE;
 
             case BEGIN_ENUM:
-                return SerializedSignal.BEGIN_ENUM;
+                return SignalCodec.BEGIN_ENUM;
 
             case END_ENUM:
-                return SerializedSignal.END_ENUM;
+                return SignalCodec.END_ENUM;
 
             case BEGIN_SET:
-                return SerializedSignal.BEGIN_SET;
+                return SignalCodec.BEGIN_SET;
 
             case END_SET:
-                return SerializedSignal.END_SET;
+                return SignalCodec.END_SET;
 
             case BEGIN_GROUP:
-                return SerializedSignal.BEGIN_GROUP;
+                return SignalCodec.BEGIN_GROUP;
 
             case END_GROUP:
-                return SerializedSignal.END_GROUP;
+                return SignalCodec.END_GROUP;
 
             case BEGIN_VAR_DATA:
-                return SerializedSignal.BEGIN_VAR_DATA;
+                return SignalCodec.BEGIN_VAR_DATA;
 
             case END_VAR_DATA:
-                return SerializedSignal.END_VAR_DATA;
+                return SignalCodec.END_VAR_DATA;
 
             case VALID_VALUE:
-                return SerializedSignal.VALID_VALUE;
+                return SignalCodec.VALID_VALUE;
 
             case CHOICE:
-                return SerializedSignal.CHOICE;
+                return SignalCodec.CHOICE;
 
             case ENCODING:
             default:
-                return SerializedSignal.ENCODING;
+                return SignalCodec.ENCODING;
         }
     }
 
-    public static Signal signal(final SerializedSignal signal)
+    public static Signal mapSignal(final SignalCodec signal)
     {
         switch (signal)
         {
@@ -167,54 +168,54 @@ public class IrUtil
         }
     }
 
-    public static SerializedPrimitiveType primitiveType(final PrimitiveType type)
+    public static PrimitiveTypeCodec mapPrimitiveType(final PrimitiveType type)
     {
         if (type == null)
         {
-            return SerializedPrimitiveType.NONE;
+            return PrimitiveTypeCodec.NONE;
         }
 
         switch (type)
         {
             case INT8:
-                return SerializedPrimitiveType.INT8;
+                return PrimitiveTypeCodec.INT8;
 
             case INT16:
-                return SerializedPrimitiveType.INT16;
+                return PrimitiveTypeCodec.INT16;
 
             case INT32:
-                return SerializedPrimitiveType.INT32;
+                return PrimitiveTypeCodec.INT32;
 
             case INT64:
-                return SerializedPrimitiveType.INT64;
+                return PrimitiveTypeCodec.INT64;
 
             case UINT8:
-                return SerializedPrimitiveType.UINT8;
+                return PrimitiveTypeCodec.UINT8;
 
             case UINT16:
-                return SerializedPrimitiveType.UINT16;
+                return PrimitiveTypeCodec.UINT16;
 
             case UINT32:
-                return SerializedPrimitiveType.UINT32;
+                return PrimitiveTypeCodec.UINT32;
 
             case UINT64:
-                return SerializedPrimitiveType.UINT64;
+                return PrimitiveTypeCodec.UINT64;
 
             case FLOAT:
-                return SerializedPrimitiveType.FLOAT;
+                return PrimitiveTypeCodec.FLOAT;
 
             case DOUBLE:
-                return SerializedPrimitiveType.DOUBLE;
+                return PrimitiveTypeCodec.DOUBLE;
 
             case CHAR:
-                return SerializedPrimitiveType.CHAR;
+                return PrimitiveTypeCodec.CHAR;
 
             default:
-                return SerializedPrimitiveType.NONE;
+                return PrimitiveTypeCodec.NONE;
         }
     }
 
-    public static PrimitiveType primitiveType(final SerializedPrimitiveType type)
+    public static PrimitiveType mapPrimitiveType(final PrimitiveTypeCodec type)
     {
         switch (type)
         {
@@ -257,9 +258,9 @@ public class IrUtil
         }
     }
 
-    public static int putVal(final DirectBuffer buffer,
-                             final PrimitiveValue value,
-                             final PrimitiveType type)
+    public static int put(final DirectBuffer buffer,
+                          final PrimitiveValue value,
+                          final PrimitiveType type)
     {
         if (value == null)
         {
@@ -325,7 +326,7 @@ public class IrUtil
         }
     }
 
-    public static PrimitiveValue getVal(final DirectBuffer buffer, final PrimitiveType type, final int length)
+    public static PrimitiveValue get(final DirectBuffer buffer, final PrimitiveType type, final int length)
     {
         if (length == 0)
         {
@@ -379,5 +380,45 @@ public class IrUtil
             default:
                 return null;
         }
+    }
+
+    public static byte[] getBytes(final String value, final String characterEncoding)
+        throws UnsupportedEncodingException
+    {
+        if (null == value)
+        {
+            return EMPTY_BUFFER;
+        }
+
+        return value.getBytes(characterEncoding);
+    }
+
+
+    public static Encoding.Presence mapPresence(final PresenceCodec presence)
+    {
+        switch (presence)
+        {
+            case OPTIONAL:
+                return Encoding.Presence.OPTIONAL;
+
+            case CONSTANT:
+                return Encoding.Presence.CONSTANT;
+        }
+
+        return Encoding.Presence.REQUIRED;
+    }
+
+    public static PresenceCodec mapPresence(final Encoding.Presence presence)
+    {
+        switch (presence)
+        {
+            case OPTIONAL:
+                return PresenceCodec.OPTIONAL;
+
+            case CONSTANT:
+                return PresenceCodec.CONSTANT;
+        }
+
+        return PresenceCodec.REQUIRED;
     }
 }

@@ -139,7 +139,7 @@ public class EncodedDataType extends Type
         this.minVal = null;
         this.maxVal = null;
         this.nullVal = null;
-        characterEncoding = "";
+        characterEncoding = null;
         sinceVersion = 0;
     }
 
