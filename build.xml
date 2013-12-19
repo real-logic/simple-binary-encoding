@@ -215,6 +215,17 @@
     <target name="generate:sbeir" depends="generate:java:sbeir, generate:cpp98:sbeir"
             description="Generate serialized IR code for all languages"/>
 
+    <target name="generate:sbeir-stubs"
+            description="Generate codec stubs for SBE IR"
+            depends="dist">
+        <java classname="uk.co.real_logic.sbe.SbeTool">
+            <classpath refid="examples.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.main.src}"/>
+            <sysproperty key="sbe.target.language" value="Java"/>
+            <arg value="${dir.main.resources}/sbe-ir.xml"/>
+        </java>
+    </target>
+
     <!-- SBE Examples targets -->
 
     <property name="dir.examples.src" value="examples/java"/>
@@ -256,17 +267,6 @@
         </java>
         <java classname="uk.co.real_logic.sbe.examples.SbeExtensionExample">
             <classpath refid="examples.classpath"/>
-        </java>
-    </target>
-
-    <target name="examples:java:ir-gen"
-            description="Generate codec stubs for SBE IR"
-            depends="dist">
-        <java classname="uk.co.real_logic.sbe.SbeTool">
-            <classpath refid="examples.classpath"/>
-            <sysproperty key="sbe.output.dir" value="${dir.main.src}"/>
-            <sysproperty key="sbe.target.language" value="Java"/>
-            <arg value="${dir.main.resources}/sbe-ir.xml"/>
         </java>
     </target>
 
