@@ -5,8 +5,8 @@ import uk.co.real_logic.sbe.codec.java.*;
 
 public enum ByteOrderCodec
 {
-    SBE_BIG_ENDIAN((short)1),
     SBE_LITTLE_ENDIAN((short)0),
+    SBE_BIG_ENDIAN((short)1),
     NULL_VAL((short)255);
 
     private final short value;
@@ -25,8 +25,8 @@ public enum ByteOrderCodec
     {
         switch (value)
         {
-            case 1: return SBE_BIG_ENDIAN;
             case 0: return SBE_LITTLE_ENDIAN;
+            case 1: return SBE_BIG_ENDIAN;
             case 255: return NULL_VAL;
         }
 

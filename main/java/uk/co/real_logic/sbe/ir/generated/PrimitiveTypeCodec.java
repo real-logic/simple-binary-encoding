@@ -5,18 +5,18 @@ import uk.co.real_logic.sbe.codec.java.*;
 
 public enum PrimitiveTypeCodec
 {
-    INT32((short)4),
-    INT8((short)2),
-    CHAR((short)1),
-    DOUBLE((short)11),
-    FLOAT((short)10),
-    UINT32((short)8),
-    UINT8((short)6),
-    INT64((short)5),
-    UINT64((short)9),
     NONE((short)0),
-    UINT16((short)7),
+    CHAR((short)1),
+    INT8((short)2),
     INT16((short)3),
+    INT32((short)4),
+    INT64((short)5),
+    UINT8((short)6),
+    UINT16((short)7),
+    UINT32((short)8),
+    UINT64((short)9),
+    FLOAT((short)10),
+    DOUBLE((short)11),
     NULL_VAL((short)255);
 
     private final short value;
@@ -35,18 +35,18 @@ public enum PrimitiveTypeCodec
     {
         switch (value)
         {
-            case 4: return INT32;
-            case 2: return INT8;
-            case 1: return CHAR;
-            case 11: return DOUBLE;
-            case 10: return FLOAT;
-            case 8: return UINT32;
-            case 6: return UINT8;
-            case 5: return INT64;
-            case 9: return UINT64;
             case 0: return NONE;
-            case 7: return UINT16;
+            case 1: return CHAR;
+            case 2: return INT8;
             case 3: return INT16;
+            case 4: return INT32;
+            case 5: return INT64;
+            case 6: return UINT8;
+            case 7: return UINT16;
+            case 8: return UINT32;
+            case 9: return UINT64;
+            case 10: return FLOAT;
+            case 11: return DOUBLE;
             case 255: return NULL_VAL;
         }
 

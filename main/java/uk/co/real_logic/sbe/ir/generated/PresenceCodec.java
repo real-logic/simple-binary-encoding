@@ -5,9 +5,9 @@ import uk.co.real_logic.sbe.codec.java.*;
 
 public enum PresenceCodec
 {
-    CONSTANT((short)2),
     REQUIRED((short)0),
     OPTIONAL((short)1),
+    CONSTANT((short)2),
     NULL_VAL((short)255);
 
     private final short value;
@@ -26,9 +26,9 @@ public enum PresenceCodec
     {
         switch (value)
         {
-            case 2: return CONSTANT;
             case 0: return REQUIRED;
             case 1: return OPTIONAL;
+            case 2: return CONSTANT;
             case 255: return NULL_VAL;
         }
 

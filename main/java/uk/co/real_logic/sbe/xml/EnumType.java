@@ -26,7 +26,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleError;
@@ -42,8 +42,8 @@ public class EnumType extends Type
 {
     private final PrimitiveType encodingType;
     private final PrimitiveValue nullValue;
-    private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new HashMap<>();
-    private final Map<String, ValidValue> validValueByNameMap = new HashMap<>();
+    private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new LinkedHashMap<>();
+    private final Map<String, ValidValue> validValueByNameMap = new LinkedHashMap<>();
 
     /**
      * Construct a new enumType from XML Schema.

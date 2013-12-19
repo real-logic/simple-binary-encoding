@@ -5,23 +5,23 @@ import uk.co.real_logic.sbe.codec.java.*;
 
 public enum SignalCodec
 {
-    END_SET((short)14),
-    BEGIN_VAR_DATA((short)15),
+    BEGIN_MESSAGE((short)1),
     END_MESSAGE((short)2),
+    BEGIN_COMPOSITE((short)3),
+    END_COMPOSITE((short)4),
     BEGIN_FIELD((short)5),
     END_FIELD((short)6),
-    END_COMPOSITE((short)4),
-    ENCODING((short)17),
-    VALID_VALUE((short)10),
-    END_GROUP((short)8),
-    BEGIN_COMPOSITE((short)3),
-    END_VAR_DATA((short)16),
     BEGIN_GROUP((short)7),
+    END_GROUP((short)8),
     BEGIN_ENUM((short)9),
-    CHOICE((short)13),
+    VALID_VALUE((short)10),
     END_ENUM((short)11),
     BEGIN_SET((short)12),
-    BEGIN_MESSAGE((short)1),
+    CHOICE((short)13),
+    END_SET((short)14),
+    BEGIN_VAR_DATA((short)15),
+    END_VAR_DATA((short)16),
+    ENCODING((short)17),
     NULL_VAL((short)255);
 
     private final short value;
@@ -40,23 +40,23 @@ public enum SignalCodec
     {
         switch (value)
         {
-            case 14: return END_SET;
-            case 15: return BEGIN_VAR_DATA;
+            case 1: return BEGIN_MESSAGE;
             case 2: return END_MESSAGE;
+            case 3: return BEGIN_COMPOSITE;
+            case 4: return END_COMPOSITE;
             case 5: return BEGIN_FIELD;
             case 6: return END_FIELD;
-            case 4: return END_COMPOSITE;
-            case 17: return ENCODING;
-            case 10: return VALID_VALUE;
-            case 8: return END_GROUP;
-            case 3: return BEGIN_COMPOSITE;
-            case 16: return END_VAR_DATA;
             case 7: return BEGIN_GROUP;
+            case 8: return END_GROUP;
             case 9: return BEGIN_ENUM;
-            case 13: return CHOICE;
+            case 10: return VALID_VALUE;
             case 11: return END_ENUM;
             case 12: return BEGIN_SET;
-            case 1: return BEGIN_MESSAGE;
+            case 13: return CHOICE;
+            case 14: return END_SET;
+            case 15: return BEGIN_VAR_DATA;
+            case 16: return END_VAR_DATA;
+            case 17: return ENCODING;
             case 255: return NULL_VAL;
         }
 
