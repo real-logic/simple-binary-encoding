@@ -567,13 +567,14 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
+        final PrimitiveType primitiveType = tokens.get(0).encoding().primitiveType();
         sb.append(String.format(
            "    public static %s get(final %s value)\n" +
            "    {\n" +
            "        switch (value)\n" +
            "        {\n",
            enumName,
-           javaTypeName(tokens.get(0).encoding().primitiveType())
+           javaTypeName(primitiveType)
         ));
 
         for (final Token token : tokens)
@@ -586,11 +587,14 @@ public class JavaGenerator implements CodeGenerator
         }
 
         sb.append(String.format(
-            "            case %s: return NULL_VAL;\n" +
+            "        }\n\n" +
+            "        if (%s == value)\n" +
+            "        {\n" +
+            "            return NULL_VAL;\n" +
             "        }\n\n" +
             "        throw new IllegalArgumentException(\"Unknown value: \" + value);\n" +
             "    }\n",
-            tokens.get(0).encoding().applicableNullVal().toString()
+            generateLiteral(primitiveType, tokens.get(0).encoding().applicableNullVal().toString())
         ));
 
         return sb;
