@@ -27,7 +27,11 @@ public enum ByteOrderCodec
         {
             case 0: return SBE_LITTLE_ENDIAN;
             case 1: return SBE_BIG_ENDIAN;
-            case 255: return NULL_VAL;
+        }
+
+        if ((short)255 == value)
+        {
+            return NULL_VAL;
         }
 
         throw new IllegalArgumentException("Unknown value: " + value);

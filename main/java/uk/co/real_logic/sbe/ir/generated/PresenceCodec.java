@@ -29,7 +29,11 @@ public enum PresenceCodec
             case 0: return REQUIRED;
             case 1: return OPTIONAL;
             case 2: return CONSTANT;
-            case 255: return NULL_VAL;
+        }
+
+        if ((short)255 == value)
+        {
+            return NULL_VAL;
         }
 
         throw new IllegalArgumentException("Unknown value: " + value);
