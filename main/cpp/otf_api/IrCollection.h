@@ -91,6 +91,12 @@ public:
         return 0;
     }
 
+    /*
+     * TODO: provide version of loadFromFile that takes { list of IDs, callback to call when ID encountered }.
+     * TODO: this is to provide means of knowing exact offset for a given ID.
+     * TODO: if ID in repeating group or VAR_DATA, then return Ir::VARIABLE_SIZE
+     */
+
     /**
      * \brief Return the Ir for the header used for message dispatch
      *

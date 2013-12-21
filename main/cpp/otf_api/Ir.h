@@ -193,6 +193,34 @@ public:
     int64_t constLen() const;
     /// Retrieve the current tokens constant value or NULL if not present
     const char *constVal() const;
+    /// Return the length of the current tokens min value in bytes
+    int64_t minLen() const;
+    /// Return the current tokens min value or NULL if not present
+    const char *minVal() const;
+    /// Return the length of the current tokens max value in bytes
+    int64_t maxLen() const;
+    /// Return the current tokens max value or NULL if not present
+    const char *maxVal() const;
+    /// Return the length of the current tokens null value in bytes
+    int64_t nullLen() const;
+    /// Return the current tokens null value or NULL if not present
+    const char *nullVal() const;
+    /// Return the length of the current tokens characterEncoding value in bytes
+    int64_t characterEncodingLen() const;
+    /// Return the current tokens characterEncoding value or NULL if not present
+    const char *characterEncoding() const;
+    /// Return the length of the current tokens epoch value in bytes
+    int64_t epochLen() const;
+    /// Return the current tokens epoch value or NULL if not present
+    const char *epoch() const;
+    /// Return the length of the current tokens timeUnit value in bytes
+    int64_t timeUnitLen() const;
+    /// Return the current tokens timeUnit value or NULL if not present
+    const char *timeUnit() const;
+    /// Return the length of the current tokens semanticType value in bytes
+    int64_t semanticTypeLen() const;
+    /// Return the current tokens semanticType value or NULL if not present
+    const char *semanticType() const;
 
     /// Retrieve position of current token
     int position() const;

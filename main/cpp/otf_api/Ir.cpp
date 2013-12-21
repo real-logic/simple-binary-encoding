@@ -32,8 +32,22 @@ struct Ir::Impl
     TokenCodec tokenCodec;
     char name[256];
     char constVal[256];
+    char minVal[256];
+    char maxVal[256];
+    char nullVal[256];
+    char characterEncoding[256];
+    char epoch[256];
+    char timeUnit[256];
+    char semanticType[256];
     int nameLength;
     int constValLength;
+    int minValLength;
+    int maxValLength;
+    int nullValLength;
+    int characterEncodingLength;
+    int epochLength;
+    int timeUnitLength;
+    int semanticTypeLength;
     uint32_t serializedTokenSize;
 };
 
@@ -52,7 +66,6 @@ Ir::Ir(const char *buffer, const int len, const int64_t templateId, const int64_
 void Ir::readTokenAtCurrentPosition()
 {
     char tmp[256];
-    int length;
 
     //printf("read buffer_ %p offset %d\n", buffer_, cursorOffset_);
 
@@ -66,13 +79,13 @@ void Ir::readTokenAtCurrentPosition()
     impl_->constValLength = impl_->tokenCodec.getConstVal(impl_->constVal, sizeof(impl_->constVal));
 
     // don't really do anything with min/max/null/encoding right now
-    length = impl_->tokenCodec.getMinVal(tmp, sizeof(tmp));
-    length = impl_->tokenCodec.getMaxVal(tmp, sizeof(tmp));
-    length = impl_->tokenCodec.getNullVal(tmp, sizeof(tmp));
-    length = impl_->tokenCodec.getCharacterEncoding(tmp, sizeof(tmp));
-    length = impl_->tokenCodec.getEpoch(tmp, sizeof(tmp));
-    length = impl_->tokenCodec.getTimeUnit(tmp, sizeof(tmp));
-    length = impl_->tokenCodec.getSemanticType(tmp, sizeof(tmp));
+    impl_->minValLength = impl_->tokenCodec.getMinVal(impl_->minVal, sizeof(tmp));
+    impl_->maxValLength = impl_->tokenCodec.getMaxVal(impl_->maxVal, sizeof(tmp));
+    impl_->nullValLength = impl_->tokenCodec.getNullVal(impl_->nullVal, sizeof(tmp));
+    impl_->characterEncodingLength = impl_->tokenCodec.getCharacterEncoding(impl_->characterEncoding, sizeof(tmp));
+    impl_->epochLength = impl_->tokenCodec.getEpoch(impl_->epoch, sizeof(tmp));
+    impl_->timeUnitLength = impl_->tokenCodec.getTimeUnit(impl_->timeUnit, sizeof(tmp));
+    impl_->semanticTypeLength = impl_->tokenCodec.getSemanticType(impl_->semanticType, sizeof(tmp));
 
     impl_->serializedTokenSize = impl_->tokenCodec.size();
 
@@ -213,6 +226,111 @@ const char *Ir::constVal() const
     }
 
     return impl_->constVal;
+}
+
+int64_t Ir::minLen() const
+{
+    return impl_->minValLength;
+}
+
+const char *Ir::minVal() const
+{
+    if (minLen() == 0)
+    {
+        return NULL;
+    }
+
+    return impl_->minVal;
+}
+
+int64_t Ir::maxLen() const
+{
+    return impl_->maxValLength;
+}
+
+const char *Ir::maxVal() const
+{
+    if (maxLen() == 0)
+    {
+        return NULL;
+    }
+
+    return impl_->maxVal;
+}
+
+int64_t Ir::nullLen() const
+{
+    return impl_->nullValLength;
+}
+
+const char *Ir::nullVal() const
+{
+    if (nullLen() == 0)
+    {
+        return NULL;
+    }
+
+    return impl_->nullVal;
+}
+
+int64_t Ir::characterEncodingLen() const
+{
+    return impl_->characterEncodingLength;
+}
+
+const char *Ir::characterEncoding() const
+{
+    if (characterEncodingLen() == 0)
+    {
+        return NULL;
+    }
+
+    return impl_->characterEncoding;
+}
+
+int64_t Ir::epochLen() const
+{
+    return impl_->epochLength;
+}
+
+const char *Ir::epoch() const
+{
+    if (epochLen() == 0)
+    {
+        return NULL;
+    }
+
+    return impl_->epoch;
+}
+
+int64_t Ir::timeUnitLen() const
+{
+    return impl_->timeUnitLength;
+}
+
+const char *Ir::timeUnit() const
+{
+    if (timeUnitLen() == 0)
+    {
+        return NULL;
+    }
+
+    return impl_->timeUnit;
+}
+
+int64_t Ir::semanticTypeLen() const
+{
+    return impl_->semanticTypeLength;
+}
+
+const char *Ir::semanticType() const
+{
+    if (semanticTypeLen() == 0)
+    {
+        return NULL;
+    }
+
+    return impl_->semanticType;
 }
 
 int Ir::position() const
