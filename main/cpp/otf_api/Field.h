@@ -242,6 +242,47 @@ public:
         return choiceValues_;
     }
 
+    /// Type of Meta Attribute
+    enum MetaAttribute
+    {
+        /// epoch attribute
+        EPOCH,
+        /// timeUnit attribute
+        TIME_UNIT,
+        /// semanticType attribute
+        SEMANTIC_TYPE
+    };
+
+    /** \brief Return the value of the meta attribute of the encoding for the given index
+     *
+     * \param attr to return
+     * \param index of the encoding to return the value of. May be Field::FIELD_INDEX if only a single encoding.
+     * \return string holding the attribute value or an empty string if not set and not a defined default.
+     */
+    const std::string getMetaAttribute(const MetaAttribute attr, const int index = FIELD_INDEX) const
+    {
+        int i = (FIELD_INDEX == index) ? 0 : index;
+
+        switch (attr)
+        {
+            case EPOCH:
+                return std::string(metaEpoch_[i].first, metaEpoch_[i].second);
+                break;
+
+            case TIME_UNIT:
+                return std::string(metaTimeUnit_[i].first, metaTimeUnit_[i].second);
+                break;
+
+            case SEMANTIC_TYPE:
+                return std::string(metaSemanticType_[i].first, metaSemanticType_[i].second);
+                break;
+
+            default:
+                break;
+        }
+        return std::string("");
+    }
+
 protected:
     // builder-ish pattern - set by Listener
     Field &numEncodings(const uint16_t numEncodings)
@@ -280,6 +321,13 @@ protected:
         return *this;
     }
 
+    void addMeta(const Ir *ir)
+    {
+        metaEpoch_.push_back(std::pair<const char *, int>(ir->epoch(), ir->epochLen()));
+        metaTimeUnit_.push_back(std::pair<const char *, int>(ir->timeUnit(), ir->timeUnitLen()));
+        metaSemanticType_.push_back(std::pair<const char *, int>(ir->semanticType(), ir->semanticTypeLen()));
+    }
+
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
                        const int64_t value, const Ir *ir)
     {
@@ -288,6 +336,7 @@ protected:
         encodingValues_.push_back(EncodingValue(value));
         encodingLengths_.push_back(1);
         presence_.push_back(ir->presence());
+        addMeta(ir);
         numEncodings_++;
         return *this;
     }
@@ -300,6 +349,7 @@ protected:
         encodingValues_.push_back(EncodingValue(value));
         encodingLengths_.push_back(1);
         presence_.push_back(ir->presence());
+        addMeta(ir);
         numEncodings_++;
         return *this;        
     }
@@ -312,6 +362,7 @@ protected:
         encodingValues_.push_back(EncodingValue(value));
         encodingLengths_.push_back(1);
         presence_.push_back(ir->presence());
+        addMeta(ir);
         numEncodings_++;
         return *this;
     }
@@ -324,6 +375,7 @@ protected:
         encodingValues_.push_back(EncodingValue(array));
         encodingLengths_.push_back(size / Ir::size(type));
         presence_.push_back(ir->presence());
+        addMeta(ir);
         numEncodings_++;
         return *this;
     }
@@ -365,6 +417,9 @@ protected:
         encodingLengths_.clear();
         presence_.clear();
         choiceValues_.clear();
+        metaEpoch_.clear();
+        metaTimeUnit_.clear();
+        metaSemanticType_.clear();
         validValue_ = "";
         return *this;
     }
@@ -383,6 +438,9 @@ private:
     std::vector<EncodingValue> encodingValues_;
     std::vector<int> encodingLengths_;
     std::vector<Ir::TokenPresence> presence_;
+    std::vector<std::pair<const char *, int> > metaEpoch_;
+    std::vector<std::pair<const char *, int> > metaTimeUnit_;
+    std::vector<std::pair<const char *, int> > metaSemanticType_;
 
     std::vector<std::string> choiceValues_;
 

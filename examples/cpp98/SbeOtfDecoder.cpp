@@ -103,6 +103,10 @@ public:
             std::cout << " value=\"" << std::string(tmp, f.length(1)) << "\"";
 
             std::cout << " presence=" << presenceStr(f.presence(1));
+            // printing out meta attributes
+//            std::cout << " epoch=\"" << f.getMetaAttribute(Field::EPOCH, 1) << "\"";
+//            std::cout << " timeUnit=\"" << f.getMetaAttribute(Field::TIME_UNIT, 1) << "\"";
+//            std::cout << " semanticType=\"" << f.getMetaAttribute(Field::SEMANTIC_TYPE, 1) << "\"";
             std::cout << std::endl;
         }
         else // if not enum, set, or var data, then just normal encodings, but could be composite
@@ -227,7 +231,12 @@ protected:
             default:
                 break;
         }
-        std::cout << " presence=" << presenceStr(f.presence(index)) << std::endl;
+        std::cout << " presence=" << presenceStr(f.presence(index));
+        // printing out meta attributes for encodings
+//        std::cout << " epoch=\"" << f.getMetaAttribute(Field::EPOCH, index) << "\"";
+//        std::cout << " timeUnit=\"" << f.getMetaAttribute(Field::TIME_UNIT, index) << "\"";
+//        std::cout << " semanticType=\"" << f.getMetaAttribute(Field::SEMANTIC_TYPE, index) << "\"";
+        std::cout << std::endl;
     }
 
     // print presence
