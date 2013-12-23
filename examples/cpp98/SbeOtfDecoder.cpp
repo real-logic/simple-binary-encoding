@@ -102,6 +102,7 @@ public:
             f.getArray(1, tmp, 0, f.length(1));  // copy the data
             std::cout << " value=\"" << std::string(tmp, f.length(1)) << "\"";
 
+            std::cout << " presence=" << presenceStr(f.presence());
             std::cout << std::endl;
         }
         else // if not enum, set, or var data, then just normal encodings, but could be composite
@@ -226,8 +227,32 @@ protected:
             default:
                 break;
         }
-        std::cout << std::endl;
-    };
+        std::cout << " presence=" << presenceStr(f.presence(index)) << std::endl;
+    }
+
+    // print presence
+    const char *presenceStr(Ir::TokenPresence presence)
+    {
+        switch (presence)
+        {
+            case Ir::REQUIRED:
+                return "REQUIRED";
+                break;
+
+            case Ir::OPTIONAL:
+                return "OPTIONAL";
+                break;
+
+            case Ir::CONSTANT:
+                return "CONSTANT";
+                break;
+
+            default:
+                return "UNKNOWN";
+                break;
+
+        }
+    }
 
 private:
     Listener &listener_;

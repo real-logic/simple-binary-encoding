@@ -512,13 +512,13 @@ void Listener::processEndVarData(void)
 
 uint64_t Listener::processEncoding(const Ir *ir, const int64_t value)
 {
-    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value);
+    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir->presence());
     return ir->size();
 }
 
 uint64_t Listener::processEncoding(const Ir *ir, const uint64_t value)
 {
-    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value);
+    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir->presence());
 
     //printf("encoding %s %d %u\n", ir->name().c_str(), ir->primitiveType(), value);
 
@@ -554,7 +554,7 @@ uint64_t Listener::processEncoding(const Ir *ir, const uint64_t value)
 
 uint64_t Listener::processEncoding(const Ir *ir, const double value)
 {
-    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value);
+    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir->presence());
     return ir->size();
 }
 
@@ -563,12 +563,12 @@ uint64_t Listener::processEncoding(const Ir *ir, const char *value, const int si
     // arrays and variable length fields both come through here
     if (cachedField_.type() == Field::VAR_DATA)
     {
-        cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, cachedField_.varDataLength());
+        cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, cachedField_.varDataLength(), ir->presence());
         return cachedField_.varDataLength();
     }
     else
     {
-        cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, size);
+        cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, size, ir->presence());
         return size;
     }
 }

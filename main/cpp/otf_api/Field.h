@@ -134,6 +134,16 @@ public:
         return (index == FIELD_INDEX) ? primitiveTypes_[0] : primitiveTypes_[index];
     }
 
+    /** \brief Return the Ir::TokenPresence of the encoding for the given index
+     *
+     * \param index of the encoding to return the presence of. May be Field::FIELD_INDEX if only a single encoding.
+     * \return the presence of the encoding
+     */
+    Ir::TokenPresence presence(const int index = FIELD_INDEX) const
+    {
+        return (index == FIELD_INDEX) ? presence_[0] : presence_[index];
+    }
+
     /** \brief Return the length in primitive type units of the encoding for the given index
      *
      * \param index of the encoding to return the length of. May be Field::FIELD_INDEX if only a single encoding.
@@ -270,42 +280,50 @@ protected:
         return *this;
     }
 
-    Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const int64_t value)
+    Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
+                       const int64_t value, const Ir::TokenPresence presence = Ir::REQUIRED)
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
         encodingValues_.push_back(EncodingValue(value));
         encodingLengths_.push_back(1);
+        presence_.push_back(presence);
         numEncodings_++;
         return *this;
     }
 
-    Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const uint64_t value)
+    Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
+                       const uint64_t value, const Ir::TokenPresence presence = Ir::REQUIRED)
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
         encodingValues_.push_back(EncodingValue(value));
         encodingLengths_.push_back(1);
+        presence_.push_back(presence);
         numEncodings_++;
         return *this;        
     }
 
-    Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const double value)
+    Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
+                       const double value, const Ir::TokenPresence presence = Ir::REQUIRED)
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
         encodingValues_.push_back(EncodingValue(value));
         encodingLengths_.push_back(1);
+        presence_.push_back(presence);
         numEncodings_++;
         return *this;
     }
 
-    Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type, const char *array, const int size)
+    Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
+                       const char *array, const int size, const Ir::TokenPresence presence = Ir::REQUIRED)
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
         encodingValues_.push_back(EncodingValue(array));
         encodingLengths_.push_back(size / Ir::size(type));
+        presence_.push_back(presence);
         numEncodings_++;
         return *this;
     }
@@ -345,6 +363,7 @@ protected:
         primitiveTypes_.clear();
         encodingValues_.clear();
         encodingLengths_.clear();
+        presence_.clear();
         choiceValues_.clear();
         validValue_ = "";
         return *this;
@@ -363,6 +382,7 @@ private:
     std::vector<Ir::TokenPrimitiveType> primitiveTypes_;
     std::vector<EncodingValue> encodingValues_;
     std::vector<int> encodingLengths_;
+    std::vector<Ir::TokenPresence> presence_;
 
     std::vector<std::string> choiceValues_;
 
