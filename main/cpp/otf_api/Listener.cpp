@@ -452,14 +452,14 @@ void Listener::processEndField(void)
 uint64_t Listener::processBeginEnum(const Ir *ir, const char value)
 {
     cachedField_.type(Field::ENUM)
-                .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value);
+                .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value, ir);
     return ir->size();
 }
 
 uint64_t Listener::processBeginEnum(const Ir *ir, uint8_t value)
 {
     cachedField_.type(Field::ENUM)
-                .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value);
+                .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value, ir);
     return ir->size();
 }
 
@@ -480,7 +480,7 @@ void Listener::processEndEnum(void)
 uint64_t Listener::processBeginSet(const Ir *ir, const uint64_t value)
 {
     cachedField_.type(Field::SET)
-                .addEncoding(ir->name(), ir->primitiveType(), value);
+                .addEncoding(ir->name(), ir->primitiveType(), value, ir);
     return ir->size();
 }
 
@@ -512,13 +512,13 @@ void Listener::processEndVarData(void)
 
 uint64_t Listener::processEncoding(const Ir *ir, const int64_t value)
 {
-    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir->presence());
+    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir);
     return ir->size();
 }
 
 uint64_t Listener::processEncoding(const Ir *ir, const uint64_t value)
 {
-    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir->presence());
+    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir);
 
     //printf("encoding %s %d %u\n", ir->name().c_str(), ir->primitiveType(), value);
 
@@ -554,7 +554,7 @@ uint64_t Listener::processEncoding(const Ir *ir, const uint64_t value)
 
 uint64_t Listener::processEncoding(const Ir *ir, const double value)
 {
-    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir->presence());
+    cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir);
     return ir->size();
 }
 
@@ -563,12 +563,12 @@ uint64_t Listener::processEncoding(const Ir *ir, const char *value, const int si
     // arrays and variable length fields both come through here
     if (cachedField_.type() == Field::VAR_DATA)
     {
-        cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, cachedField_.varDataLength(), ir->presence());
+        cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, cachedField_.varDataLength(), ir);
         return cachedField_.varDataLength();
     }
     else
     {
-        cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, size, ir->presence());
+        cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, size, ir);
         return size;
     }
 }

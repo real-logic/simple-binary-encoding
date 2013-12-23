@@ -281,49 +281,49 @@ protected:
     }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
-                       const int64_t value, const Ir::TokenPresence presence = Ir::REQUIRED)
+                       const int64_t value, const Ir *ir)
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
         encodingValues_.push_back(EncodingValue(value));
         encodingLengths_.push_back(1);
-        presence_.push_back(presence);
+        presence_.push_back(ir->presence());
         numEncodings_++;
         return *this;
     }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
-                       const uint64_t value, const Ir::TokenPresence presence = Ir::REQUIRED)
+                       const uint64_t value, const Ir *ir)
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
         encodingValues_.push_back(EncodingValue(value));
         encodingLengths_.push_back(1);
-        presence_.push_back(presence);
+        presence_.push_back(ir->presence());
         numEncodings_++;
         return *this;        
     }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
-                       const double value, const Ir::TokenPresence presence = Ir::REQUIRED)
+                       const double value, const Ir *ir)
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
         encodingValues_.push_back(EncodingValue(value));
         encodingLengths_.push_back(1);
-        presence_.push_back(presence);
+        presence_.push_back(ir->presence());
         numEncodings_++;
         return *this;
     }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
-                       const char *array, const int size, const Ir::TokenPresence presence = Ir::REQUIRED)
+                       const char *array, const int size, const Ir *ir)
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
         encodingValues_.push_back(EncodingValue(array));
         encodingLengths_.push_back(size / Ir::size(type));
-        presence_.push_back(presence);
+        presence_.push_back(ir->presence());
         numEncodings_++;
         return *this;
     }
