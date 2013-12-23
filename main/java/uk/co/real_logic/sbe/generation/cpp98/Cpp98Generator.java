@@ -1079,29 +1079,36 @@ public class Cpp98Generator implements CodeGenerator
                                                       final int schemaId,
                                                       final int version)
     {
-        final StringBuilder sb = new StringBuilder();
+        final String blockLengthType = cpp98TypeName(ir.headerStructure().blockLengthType());
+        final String templateIdType = cpp98TypeName(ir.headerStructure().templateIdType());
+        final String templateVersionType = cpp98TypeName(ir.headerStructure().templateVersionType());
 
-        sb.append(String.format(
+        return String.format(
             "private:\n" +
             "    char *buffer_;\n" +
             "    int *positionPtr_;\n" +
             "    int offset_;\n" +
             "    int position_;\n" +
             "    int actingBlockLength_;\n" +
-            "    int actingVersion_;\n\n"
-        ));
-
-        sb.append(String.format(
+            "    int actingVersion_;\n\n" +
             "public:\n\n" +
-            "    static sbe_uint64_t blockLength(void)\n" +
+            "    static %1$s blockLength(void)\n" +
             "    {\n" +
-            "        return %1$d;\n" +
+            "        return %2$s;\n" +
+            "    }\n\n" +
+            "    static %3$s templateId(void)\n" +
+            "    {\n" +
+            "        return %4$s;\n" +
+            "    }\n\n" +
+            "    static %5$s templateVersion(void)\n" +
+            "    {\n" +
+            "        return %6$s;\n" +
             "    }\n\n" +
             "    sbe_uint64_t offset(void) const\n" +
             "    {\n" +
             "        return offset_;\n" +
             "    }\n\n" +
-            "    %2$s &wrapForEncode(char *buffer, const int offset)\n" +
+            "    %7$s &wrapForEncode(char *buffer, const int offset)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
@@ -1111,7 +1118,7 @@ public class Cpp98Generator implements CodeGenerator
             "        positionPtr_ = &position_;\n" +
             "        return *this;\n" +
             "    }\n\n" +
-            "    %2$s &wrapForDecode(char *buffer, const int offset,\n" +
+            "    %7$s &wrapForDecode(char *buffer, const int offset,\n" +
             "                        const int actingBlockLength, const int actingVersion)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
@@ -1134,14 +1141,6 @@ public class Cpp98Generator implements CodeGenerator
             "    {\n" +
             "        return position() - offset_;\n" +
             "    }\n\n" +
-            "    static int templateId(void)\n" +
-            "    {\n" +
-            "        return %3$d;\n" +
-            "    }\n\n" +
-            "    static int templateVersion(void)\n" +
-            "    {\n" +
-            "        return %4$d;\n" +
-            "    }\n\n" +
             "    char *buffer(void)\n" +
             "    {\n" +
             "        return buffer_;\n" +
@@ -1150,13 +1149,14 @@ public class Cpp98Generator implements CodeGenerator
             "    {\n" +
             "        return actingVersion_;\n" +
             "    }\n",
-            Integer.valueOf(blockLength),
-            className,
-            Integer.valueOf(schemaId),
-            Long.valueOf(version)
-        ));
-
-        return sb;
+            blockLengthType,
+            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(blockLength)),
+            templateIdType,
+            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(schemaId)),
+            templateVersionType,
+            generateLiteral(ir.headerStructure().templateVersionType(), Integer.toString(version)),
+            className
+        );
     }
 
     private CharSequence generateFields(final String containingClassName,
