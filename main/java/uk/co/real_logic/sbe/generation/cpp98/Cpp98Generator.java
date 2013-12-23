@@ -58,7 +58,7 @@ public class Cpp98Generator implements CodeGenerator
         {
             final List<Token> tokens = ir.headerStructure().tokens();
             out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), MESSAGE_HEADER_TYPE, null));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE, null));
+            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
             out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
@@ -106,7 +106,7 @@ public class Cpp98Generator implements CodeGenerator
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), className, typesToInclude));
-                out.append(generateClassDeclaration(className, null));
+                out.append(generateClassDeclaration(className));
                 out.append(generateMessageFlyweightCode(msgToken.size(), className, msgToken.schemaId(), msgToken.version()));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
@@ -372,6 +372,8 @@ public class Cpp98Generator implements CodeGenerator
                     Integer.valueOf(token.schemaId())
                 ));
 
+                generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
+
                 final Token lengthToken = tokens.get(i + 2);
                 final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
                 final String lengthcpp98Type = cpp98TypeName(lengthToken.encoding().primitiveType());
@@ -451,7 +453,7 @@ public class Cpp98Generator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
             out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), bitSetName, null));
-            out.append(generateClassDeclaration(bitSetName, null));
+            out.append(generateClassDeclaration(bitSetName));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
 
             out.append(String.format(
@@ -496,7 +498,7 @@ public class Cpp98Generator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(compositeName))
         {
             out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), compositeName, null));
-            out.append(generateClassDeclaration(compositeName, null));
+            out.append(generateClassDeclaration(compositeName));
             out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size()));
 
             out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
@@ -719,11 +721,20 @@ public class Cpp98Generator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateClassDeclaration(final String className, final String implementedInterface)
+    private CharSequence generateClassDeclaration(final String className)
     {
-        return (implementedInterface == null) ?
-                String.format("class %s\n{\n", className) :
-                String.format("class %s : public %s\n{\n", className, implementedInterface);
+        return String.format(
+            "class %s\n" +
+            "{\n" +
+            "public:\n" +
+            "    enum MetaAttribute\n" +
+            "    {\n" +
+            "         EPOCH,\n" +
+            "         TIME_UNIT,\n" +
+            "         SEMANTIC_TYPE\n" +
+            "    };\n\n",
+            className
+        );
     }
 
     private CharSequence generateEnumDeclaration(final String name)
@@ -1196,6 +1207,8 @@ public class Cpp98Generator implements CodeGenerator
                     Long.valueOf(signalToken.version())
                 ));
 
+                generateFieldMetaAttributeMethod(sb, signalToken, indent);
+
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
@@ -1218,6 +1231,32 @@ public class Cpp98Generator implements CodeGenerator
         }
 
         return sb;
+    }
+
+    private void generateFieldMetaAttributeMethod(final StringBuilder sb, final Token token, final String indent)
+    {
+        final Encoding encoding = token.encoding();
+        final String epoch = encoding.epoch() == null ? "" : encoding.epoch();
+        final String timeUnit = encoding.timeUnit() == null ? "" : encoding.timeUnit();
+        final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
+
+        sb.append(String.format(
+            "\n" +
+            indent + "    static const char *%sMetaAttribute(const MetaAttribute metaAttribute)\n" +
+            indent + "    {\n" +
+            indent + "        switch (metaAttribute)\n" +
+            indent + "        {\n" +
+            indent + "            case EPOCH: return \"%s\";\n" +
+            indent + "            case TIME_UNIT: return \"%s\";\n" +
+            indent + "            case SEMANTIC_TYPE: return \"%s\";\n" +
+            indent + "        }\n\n" +
+            indent + "        return \"\";\n" +
+            indent + "    }\n",
+            token.name(),
+            epoch,
+            timeUnit,
+            semanticType
+        ));
     }
 
     private CharSequence generateEnumFieldNotPresentCondition(final int sinceVersion, final String enumName, final String indent)
