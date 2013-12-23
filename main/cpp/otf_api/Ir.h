@@ -112,6 +112,17 @@ public:
         DOUBLE = 11
     };
 
+    /// Constants used for representing Presence
+    enum TokenPresence
+    {
+        /// Field or encoding presence is required
+        REQUIRED = 0,
+        /// Field or encoding presence is optional
+        OPTIONAL = 1,
+        /// Field or encoding presence is constant and not encoded
+        CONSTANT = 2
+    };
+
     /**
      * \brief Interface for returning an Ir for a given templateId value.
      *
@@ -179,6 +190,8 @@ public:
     TokenByteOrder byteOrder() const;
     /// Retrieve the Ir::TokenPrimitiveType of the current token
     TokenPrimitiveType primitiveType() const;
+    /// Retrieve the Ir::TokenPresence of the current token
+    TokenPresence presence() const;
     /// Retrieve the ID set by the schema of the current token
     int32_t schemaId() const;
     /// Return the Ir::VALID_VALUE of an enumeration for the current token
