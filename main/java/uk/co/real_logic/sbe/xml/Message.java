@@ -139,7 +139,7 @@ public class Message
     }
 
     /**
-     * Return the {@link String} representing the {@link Type} for the header of this message
+     * Return the {@link String} representing the {@link Type} for the headerStructure of this message
      */
     public String headerType()
     {

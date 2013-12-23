@@ -140,12 +140,12 @@ public class EncodedIrTest
 
         final Decoder decoder = new Decoder(buffer);
         final IntermediateRepresentation decodedIr = decoder.decode();
-        final List<Token> tokens = decodedIr.messageHeader().tokens();
+        final List<Token> tokens = decodedIr.headerStructure().tokens();
 
-        assertThat(Integer.valueOf(tokens.size()), is(Integer.valueOf(ir.messageHeader().tokens().size())));
+        assertThat(Integer.valueOf(tokens.size()), is(Integer.valueOf(ir.headerStructure().tokens().size())));
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
-            assertEqual(tokens.get(i), ir.messageHeader().tokens().get(i));
+            assertEqual(tokens.get(i), ir.headerStructure().tokens().get(i));
         }
     }
 

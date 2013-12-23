@@ -21,9 +21,9 @@ import uk.co.real_logic.sbe.util.Verify;
 import java.util.List;
 
 /**
- * Intermediate representation for a message header
+ * Metadata description for a message headerStructure
  */
-public class MessageHeader
+public class HeaderStructure
 {
     public static final String TEMPLATE_ID = "templateId";
     public static final String TEMPLATE_VERSION = "version";
@@ -34,19 +34,19 @@ public class MessageHeader
     private PrimitiveType templateVersionType;
     private PrimitiveType blockLengthType;
 
-    public MessageHeader(final List<Token> tokens)
+    public HeaderStructure(final List<Token> tokens)
     {
         Verify.notNull(tokens, "tokens");
         this.tokens = tokens;
 
-        captureFieldEncodings(tokens);
+        captureEncodings(tokens);
 
         Verify.notNull(templateIdType, "templateIdType");
         Verify.notNull(templateVersionType, "templateVersionType");
         Verify.notNull(blockLengthType, "blockLengthType");
     }
 
-    private void captureFieldEncodings(final List<Token> tokens)
+    private void captureEncodings(final List<Token> tokens)
     {
         for (final Token token : tokens)
         {

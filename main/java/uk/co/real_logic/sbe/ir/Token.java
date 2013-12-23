@@ -50,7 +50,7 @@ import uk.co.real_logic.sbe.util.Verify;
  * are delimited by BEGIN and END {@link Signal} values in the node {@link Encoding}.
  * A list structure like this allows for each concatenation of encodings as well as easy traversal.
  * <p/>
- * An example encoding of a message header might be like this.
+ * An example encoding of a message headerStructure might be like this.
  * <ul>
  * <li>Token 0 - Signal = BEGIN_MESSAGE, schemaId = 100</li>
  * <li>Token 1 - Signal = BEGIN_FIELD, schemaId = 25</li>

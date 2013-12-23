@@ -174,7 +174,7 @@ public class CompositeType extends Type
     }
 
     /**
-     * Check the composite for being a well formed message header encoding. This means
+     * Check the composite for being a well formed message headerStructure encoding. This means
      * that there are the fields "blockLength", "templateId" and "version" present.
      *
      * @param node of the XML for this composite

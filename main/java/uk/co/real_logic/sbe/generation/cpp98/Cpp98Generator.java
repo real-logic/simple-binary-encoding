@@ -33,8 +33,8 @@ import static uk.co.real_logic.sbe.generation.cpp98.Cpp98Util.*;
 
 public class Cpp98Generator implements CodeGenerator
 {
-    /** Class name to be used for visitor pattern that accesses the message header. */
-    public static final String MESSAGE_HEADER_VISITOR = "MessageHeader";
+    /** Class name to be used for visitor pattern that accesses the message headerStructure. */
+    public static final String MESSAGE_HEADER_TYPE = "MessageHeader";
 
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
@@ -54,13 +54,13 @@ public class Cpp98Generator implements CodeGenerator
 
     public void generateMessageHeaderStub() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_VISITOR))
+        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
         {
-            final List<Token> tokens = ir.messageHeader().tokens();
-            out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), MESSAGE_HEADER_VISITOR, null));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_VISITOR, null));
-            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_VISITOR, tokens.get(0).size()));
-            out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_VISITOR, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            final List<Token> tokens = ir.headerStructure().tokens();
+            out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), MESSAGE_HEADER_TYPE, null));
+            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE, null));
+            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
+            out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("};\n}\n#endif\n");
         }

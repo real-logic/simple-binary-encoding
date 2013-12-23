@@ -5,7 +5,9 @@ import baseline.MessageHeader;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.Decoder;
 import uk.co.real_logic.sbe.ir.Encoder;
+import uk.co.real_logic.sbe.ir.HeaderStructure;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
+import uk.co.real_logic.sbe.otf.OtfHeaderDecoder;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
@@ -38,9 +40,16 @@ public class OtfExample
         encodedSchemaBuffer.flip();
         final IntermediateRepresentation ir = decodeIr(encodedSchemaBuffer);
 
-        // Now we have IR we can read the message header
+        // Now we have IR we can read the message headerStructure
+        int bufferOffset = 0;
+        final DirectBuffer buffer = new DirectBuffer(encodedMsgBuffer);
+        final OtfHeaderDecoder otfHeaderDecoder = new OtfHeaderDecoder(ir.headerStructure());
 
-        // Given the message header we can select the appropriate message to decode.
+        final int templateId = otfHeaderDecoder.getTemplateId(buffer, bufferOffset);
+        final int actingVersion = otfHeaderDecoder.getTemplateVersion(buffer, bufferOffset);
+        final int blockLength = otfHeaderDecoder.getBlockLength(buffer, bufferOffset);
+
+        // Given the headerStructure we can select the appropriate message to decode.
     }
 
     private static void encodeSchema(final ByteBuffer buffer)

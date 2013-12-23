@@ -40,7 +40,7 @@ public class BasicXmlIrGenerationTest
         final IrGenerator irg = new IrGenerator();
 
         final IntermediateRepresentation ir = irg.generate(schema);
-        final List<Token> tokens = ir.messageHeader().tokens();
+        final List<Token> tokens = ir.headerStructure().tokens();
 
         assertThat(valueOf(tokens.size()), is(valueOf(6)));
 

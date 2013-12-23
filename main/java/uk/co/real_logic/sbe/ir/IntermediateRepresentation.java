@@ -26,16 +26,16 @@ import java.util.*;
 public class IntermediateRepresentation
 {
     private final String packageName;
-    private final MessageHeader messageHeader;
+    private final HeaderStructure headerStructure;
     private final Map<Long, List<Token>> messagesByIdMap = new HashMap<>();
     private final Map<String, List<Token>> typesByNameMap = new HashMap<>();
     private final int version;
 
     /**
-     * Create a new IR container taking a defensive copy of the header {@link Token}s passed.
+     * Create a new IR container taking a defensive copy of the headerStructure {@link Token}s passed.
      *
      * @param packageName that should be applied to generated code.
-     * @param headerTokens representing the message header.
+     * @param headerTokens representing the message headerStructure.
      */
     public IntermediateRepresentation(final String packageName, final List<Token> headerTokens, final int version)
     {
@@ -43,18 +43,18 @@ public class IntermediateRepresentation
         Verify.notNull(headerTokens, "headerTokens");
 
         this.packageName = packageName;
-        this.messageHeader = new MessageHeader(Collections.unmodifiableList(new ArrayList<>(headerTokens)));
+        this.headerStructure = new HeaderStructure(Collections.unmodifiableList(new ArrayList<>(headerTokens)));
         this.version = version;
     }
 
     /**
-     * Return the {@link MessageHeader} description for all messages.
+     * Return the {@link HeaderStructure} description for all messages.
      *
-     * @return the {@link MessageHeader} description for all messages.
+     * @return the {@link HeaderStructure} description for all messages.
      */
-    public MessageHeader messageHeader()
+    public HeaderStructure headerStructure()
     {
-        return messageHeader;
+        return headerStructure;
     }
 
     /**

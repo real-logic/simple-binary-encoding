@@ -78,7 +78,7 @@ public class Encoder implements Closeable
 
         write(buffer, encodeFrame());
 
-        encodeTokenList(ir.messageHeader().tokens());
+        encodeTokenList(ir.headerStructure().tokens());
 
         for (final List<Token> tokenList : ir.messages())
         {

@@ -35,7 +35,7 @@ import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.*;
 
 public class CSharpGenerator implements CodeGenerator
 {
-    /** Class name to be used for visitor pattern that accesses the message header. */
+    /** Class name to be used for visitor pattern that accesses the message headerStructure. */
     public static final String MESSAGE_HEADER_TYPE = "MessageHeader";
 
     private static final String BASE_INDENT = "";
@@ -58,7 +58,7 @@ public class CSharpGenerator implements CodeGenerator
     {
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
         {
-            final List<Token> tokens = ir.messageHeader().tokens();
+            final List<Token> tokens = ir.headerStructure().tokens();
             out.append(generateFileHeader(ir.packageName()));
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
             out.append(generateFixedFlyweightCode(tokens.get(0).size()));
@@ -912,9 +912,9 @@ public class CSharpGenerator implements CodeGenerator
                                                       final int version,
                                                       final int schemaId)
     {
-        final String blockLengthType = cSharpTypeName(ir.messageHeader().blockLengthType());
-        final String templateIdType = cSharpTypeName(ir.messageHeader().templateIdType());
-        final String templateVersionType = cSharpTypeName(ir.messageHeader().templateVersionType());
+        final String blockLengthType = cSharpTypeName(ir.headerStructure().blockLengthType());
+        final String templateIdType = cSharpTypeName(ir.headerStructure().templateIdType());
+        final String templateVersionType = cSharpTypeName(ir.headerStructure().templateVersionType());
 
         return String.format(
             "    public const %s TemplateId = %s;\n" +
@@ -969,11 +969,11 @@ public class CSharpGenerator implements CodeGenerator
             "        }\n" +
             "    }\n\n",
             templateIdType,
-            generateLiteral(ir.messageHeader().templateIdType(), Integer.toString(schemaId)),
+            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(schemaId)),
             templateVersionType,
-            generateLiteral(ir.messageHeader().templateVersionType(), Integer.toString(version)),
+            generateLiteral(ir.headerStructure().templateVersionType(), Integer.toString(version)),
             blockLengthType,
-            generateLiteral(ir.messageHeader().blockLengthType(), Integer.toString(blockLength)),
+            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(blockLength)),
             className,
             className
         );
