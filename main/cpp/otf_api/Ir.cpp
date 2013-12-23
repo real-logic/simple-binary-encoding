@@ -152,6 +152,11 @@ Ir::TokenPrimitiveType Ir::primitiveType() const
     return (Ir::TokenPrimitiveType)impl_->tokenCodec.primitiveType();
 }
 
+Ir::TokenPresence Ir::presence() const
+{
+    return (Ir::TokenPresence)impl_->tokenCodec.presence();
+}
+
 int32_t Ir::schemaId() const
 {
     return impl_->tokenCodec.schemaId();
