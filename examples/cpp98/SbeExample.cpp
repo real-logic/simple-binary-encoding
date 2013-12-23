@@ -187,6 +187,7 @@ void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int ac
     sb.append("\ncar.performanceFigures.acceleration.secondsId=").append(format(Car::PerformanceFigures::Acceleration::secondsSchemaId()));
     sb.append("\ncar.makeId=").append(format(Car::makeSchemaId()));
     sb.append("\ncar.makeCharacterEncoding=").append(Car::makeCharacterEncoding());
+    sb.append("\ncar.makeMetaAttribute.SEMANTIC_TYPE=").append(Car::makeMetaAttribute(Car::SEMANTIC_TYPE));
     sb.append("\ncar.modelId=").append(format(Car::modelSchemaId()));
     sb.append("\ncar.modelCharacterEncoding=").append(Car::modelCharacterEncoding());
 
