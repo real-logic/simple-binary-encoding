@@ -26,7 +26,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
@@ -37,8 +37,8 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 public class SetType extends Type
 {
     private final PrimitiveType encodingType;
-    private final Map<PrimitiveValue, Choice> choiceByPrimitiveValueMap = new HashMap<>();
-    private final Map<String, Choice> choiceByNameMap = new HashMap<>();
+    private final Map<PrimitiveValue, Choice> choiceByPrimitiveValueMap = new LinkedHashMap<>();
+    private final Map<String, Choice> choiceByNameMap = new LinkedHashMap<>();
 
     /**
      * Construct a new SetType from XML Schema.
