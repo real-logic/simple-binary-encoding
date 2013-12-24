@@ -15,6 +15,32 @@
  */
 package uk.co.real_logic.sbe.otf;
 
+import uk.co.real_logic.sbe.codec.java.DirectBuffer;
+import uk.co.real_logic.sbe.ir.Token;
+
+import java.util.List;
+
 public interface TokenListener
 {
+    void onBeginMessage(Token token);
+
+    void onEndMessage(Token token);
+
+    void onEncoding(Token fieldToken, DirectBuffer buffer, int bufferIndex, Token typeToken, int actingVersion);
+
+    void onEnum(Token fieldToken,
+                DirectBuffer buffer, int bufferIndex,
+                List<Token> tokens, int fromIndex, int toIndex,
+                int actingVersion,
+                TokenListener listener);
+
+    void onBitSet(Token fieldToken,
+                  DirectBuffer buffer, int bufferIndex,
+                  List<Token> tokens, int fromIndex, int toIndex,
+                  int actingVersion,
+                  TokenListener listener);
+
+    void onBeginComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex);
+
+    void onEndComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex);
 }

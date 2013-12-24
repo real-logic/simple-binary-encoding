@@ -3,27 +3,24 @@ package uk.co.real_logic.sbe.examples;
 import baseline.Car;
 import baseline.MessageHeader;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
-import uk.co.real_logic.sbe.ir.Decoder;
-import uk.co.real_logic.sbe.ir.Encoder;
-import uk.co.real_logic.sbe.ir.HeaderStructure;
-import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
+import uk.co.real_logic.sbe.ir.*;
+import uk.co.real_logic.sbe.otf.OtfDecoder;
 import uk.co.real_logic.sbe.otf.OtfHeaderDecoder;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
-import java.io.FileInputStream;
+import java.io.*;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 public class OtfExample
 {
     private static final MessageHeader MESSAGE_HEADER = new MessageHeader();
     private static final Car CAR = new Car();
     private static final int ACTING_VERSION = 0;
-    private static final int MSG_BUFFER_CAPACITY = 16 * 1024;
+    private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
 
     public static void main(final String[] args) throws Exception
@@ -35,12 +32,11 @@ public class OtfExample
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
-
         // Now lets decode the schema IR so we have IR objects.
         encodedSchemaBuffer.flip();
         final IntermediateRepresentation ir = decodeIr(encodedSchemaBuffer);
 
-        // Now we have IR we can read the message headerStructure
+        // Now we have IR we can read the message header
         int bufferOffset = 0;
         final DirectBuffer buffer = new DirectBuffer(encodedMsgBuffer);
         final OtfHeaderDecoder otfHeaderDecoder = new OtfHeaderDecoder(ir.headerStructure());
@@ -49,7 +45,22 @@ public class OtfExample
         final int actingVersion = otfHeaderDecoder.getTemplateVersion(buffer, bufferOffset);
         final int blockLength = otfHeaderDecoder.getBlockLength(buffer, bufferOffset);
 
-        // Given the headerStructure we can select the appropriate message to decode.
+        bufferOffset += otfHeaderDecoder.size();
+
+        // Given the header information we can select the appropriate message template to do the decode.
+        final List<Token> msgTokens = ir.getMessage(templateId);
+        final OtfDecoder oftDecoder = new OtfDecoder();
+        bufferOffset = oftDecoder.decode(buffer,
+                                         bufferOffset,
+                                         actingVersion,
+                                         blockLength,
+                                         msgTokens,
+                                         new ExampleTokenListener(new PrintWriter(System.out, true)));
+
+        if (bufferOffset != encodedMsgBuffer.position())
+        {
+//            throw new IllegalStateException("Message not fully decoded");
+        }
     }
 
     private static void encodeSchema(final ByteBuffer buffer)
@@ -75,7 +86,9 @@ public class OtfExample
 
         bufferOffset += MESSAGE_HEADER.size();
 
-        GeneratedStubExample.encode(CAR, directBuffer, bufferOffset);
+        bufferOffset += ExampleUsingGeneratedStub.encode(CAR, directBuffer, bufferOffset);
+
+        buffer.position(bufferOffset);
     }
 
     private static IntermediateRepresentation decodeIr(final ByteBuffer buffer)

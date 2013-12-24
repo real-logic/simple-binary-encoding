@@ -30,6 +30,7 @@ import java.nio.ByteOrder;
  */
 public class OtfHeaderDecoder
 {
+    private final int size;
     private int templateIdOffset;
     private int templateVersionOffset;
     private int blockLengthOffset;
@@ -47,6 +48,8 @@ public class OtfHeaderDecoder
      */
     public OtfHeaderDecoder(final HeaderStructure headerStructure)
     {
+        size = headerStructure.tokens().get(0).size();
+
         for (final Token token : headerStructure.tokens())
         {
             switch (token.name())
@@ -72,21 +75,51 @@ public class OtfHeaderDecoder
         }
     }
 
+    /**
+     * The size of the message header in bytes.
+     *
+     * @return the size of the message header in bytes.
+     */
+    public int size()
+    {
+        return size;
+    }
+
+    /**
+     * Get the template id from the message header.
+     *
+     * @param buffer from which to read the value.
+     * @param bufferOffset in the buffer at which the message header begins.
+     * @return the value of the template id.
+     */
     public int getTemplateId(final DirectBuffer buffer, final int bufferOffset)
     {
         return get(buffer, bufferOffset, templateIdOffset, templateIdType, templateIdByteOrder);
     }
 
+    /**
+     * Get the template version number from the message header.
+     *
+     * @param buffer from which to read the value.
+     * @param bufferOffset in the buffer at which the message header begins.
+     * @return the value of the template version number.
+     */
     public int getTemplateVersion(final DirectBuffer buffer, final int bufferOffset)
     {
         return get(buffer, bufferOffset, templateVersionOffset, templateVersionType, templateVersionByteOrder);
     }
 
+    /**
+     * Get the block length of the root block in the message.
+     *
+     * @param buffer from which to read the value.
+     * @param bufferOffset in the buffer at which the message header begins.
+     * @return the length of the root block in the coming message.
+     */
     public int getBlockLength(final DirectBuffer buffer, final int bufferOffset)
     {
         return get(buffer, bufferOffset, blockLengthOffset, blockLengthType, blockLengthByteOrder);
     }
-
 
     private static int get(final DirectBuffer buffer,
                            final int bufferOffset,
