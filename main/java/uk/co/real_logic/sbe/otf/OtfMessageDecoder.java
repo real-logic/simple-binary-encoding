@@ -25,12 +25,15 @@ import java.util.List;
 public class OtfMessageDecoder
 {
     private final OtfGroupSizeDecoder groupSizeDecoder;
+    private final OtfVarDataDecoder varDataDecoder;
 
-    public OtfMessageDecoder(final OtfGroupSizeDecoder groupSizeDecoder)
+    public OtfMessageDecoder(final OtfGroupSizeDecoder groupSizeDecoder, final OtfVarDataDecoder varDataDecoder)
     {
         Verify.notNull(groupSizeDecoder, "groupSizeDecoder");
+        Verify.notNull(varDataDecoder, "varDataDecoder");
 
         this.groupSizeDecoder = groupSizeDecoder;
+        this.varDataDecoder = varDataDecoder;
     }
 
     public int decode(final DirectBuffer buffer,
@@ -128,6 +131,23 @@ public class OtfMessageDecoder
                               final int toIndex,
                               final TokenListener listener)
     {
+        for (int i = fromIndex; i < toIndex; i++)
+        {
+            final Token token = tokens.get(i);
+
+            if (Signal.BEGIN_VAR_DATA == token.signal())
+            {
+                final int length = varDataDecoder.getLength(buffer, bufferIndex);
+                final Token typeToken = tokens.get(i + 1 + varDataDecoder.varDataTokenOffset());
+                bufferIndex += varDataDecoder.size();
+
+                listener.onVarData(token, buffer, bufferIndex, length, typeToken);
+
+                bufferIndex += length;
+                i += (varDataDecoder.tokenCount() + 1);
+            }
+        }
+
         return bufferIndex;
     }
 
@@ -149,11 +169,11 @@ public class OtfMessageDecoder
                 break;
 
             case BEGIN_ENUM:
-                listener.onEnum(fieldToken, buffer, bufferIndex + typeToken.offset(), tokens, fromIndex + 1, toIndex - 1, actingVersion, listener);
+                listener.onEnum(fieldToken, buffer, bufferIndex + typeToken.offset(), tokens, fromIndex + 1, toIndex - 1, actingVersion);
                 break;
 
             case BEGIN_SET:
-                listener.onBitSet(fieldToken, buffer, bufferIndex + typeToken.offset(), tokens, fromIndex + 1, toIndex - 1, actingVersion, listener);
+                listener.onBitSet(fieldToken, buffer, bufferIndex + typeToken.offset(), tokens, fromIndex + 1, toIndex - 1, actingVersion);
                 break;
 
             case BEGIN_COMPOSITE:

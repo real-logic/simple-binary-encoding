@@ -23,6 +23,7 @@ import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.otf.TokenListener;
 
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ public class ExampleTokenListener implements TokenListener
 {
     final PrintWriter out;
     final Deque<String> namedScope = new ArrayDeque<>();
+    final byte[] tempBuffer = new byte[1024];
 
     public ExampleTokenListener(final PrintWriter out)
     {
@@ -66,8 +68,7 @@ public class ExampleTokenListener implements TokenListener
     public void onEnum(final Token fieldToken,
                        final DirectBuffer buffer, final int bufferIndex,
                        final List<Token> tokens, final int beginIndex, final int endIndex,
-                       final int actingVersion,
-                       final TokenListener listener)
+                       final int actingVersion)
     {
         final Token typeToken = tokens.get(beginIndex + 1);
         final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, actingVersion);
@@ -92,8 +93,7 @@ public class ExampleTokenListener implements TokenListener
     public void onBitSet(final Token fieldToken,
                          final DirectBuffer buffer, final int bufferIndex,
                          final List<Token> tokens, final int beginIndex, final int endIndex,
-                         final int actingVersion,
-                         final TokenListener listener)
+                         final int actingVersion)
     {
         final Token typeToken = tokens.get(beginIndex + 1);
         final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, actingVersion);
@@ -132,6 +132,26 @@ public class ExampleTokenListener implements TokenListener
     public void onEndGroup(final Token token, final int groupIndex, final int numInGroup)
     {
         namedScope.pop();
+    }
+
+    public void onVarData(final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final int length, final Token typeToken)
+    {
+        final String value;
+        try
+        {
+            value = new String(tempBuffer, 0, buffer.getBytes(bufferIndex, tempBuffer, 0, length), typeToken.encoding().characterEncoding());
+        }
+        catch (final UnsupportedEncodingException ex)
+        {
+            ex.printStackTrace();
+            return;
+        }
+
+        printScope();
+        out.append(fieldToken.name())
+           .append('=')
+           .append(value)
+           .println();
     }
 
     private static CharSequence readEncodingAsString(final DirectBuffer buffer,
@@ -277,10 +297,10 @@ public class ExampleTokenListener implements TokenListener
 
     private void printScope()
     {
-        final Iterator<String> iter = namedScope.descendingIterator();
-        while (iter.hasNext())
+        final Iterator<String> i = namedScope.descendingIterator();
+        while (i.hasNext())
         {
-            out.print(iter.next());
+            out.print(i.next());
         }
     }
 }

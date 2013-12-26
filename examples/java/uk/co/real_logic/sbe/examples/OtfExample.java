@@ -22,6 +22,7 @@ import uk.co.real_logic.sbe.ir.*;
 import uk.co.real_logic.sbe.otf.OtfGroupSizeDecoder;
 import uk.co.real_logic.sbe.otf.OtfMessageDecoder;
 import uk.co.real_logic.sbe.otf.OtfHeaderDecoder;
+import uk.co.real_logic.sbe.otf.OtfVarDataDecoder;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
@@ -65,9 +66,10 @@ public class OtfExample
 
         // Given the header information we can select the appropriate message template to do the decode.
         final OtfGroupSizeDecoder groupSizeDecoder = new OtfGroupSizeDecoder(ir.getType(OtfGroupSizeDecoder.GROUP_SIZE_ENCODING_NAME));
+        final OtfVarDataDecoder varDataDecoder = new OtfVarDataDecoder(ir.getType(OtfVarDataDecoder.VAR_DATA_ENCODING_NAME));
         final List<Token> msgTokens = ir.getMessage(templateId);
 
-        final OtfMessageDecoder messageDecoder = new OtfMessageDecoder(groupSizeDecoder);
+        final OtfMessageDecoder messageDecoder = new OtfMessageDecoder(groupSizeDecoder, varDataDecoder);
         bufferOffset = messageDecoder.decode(buffer,
                                              bufferOffset,
                                              actingVersion,
@@ -77,7 +79,7 @@ public class OtfExample
 
         if (bufferOffset != encodedMsgBuffer.position())
         {
-//            throw new IllegalStateException("Message not fully decoded");
+            throw new IllegalStateException("Message not fully decoded");
         }
     }
 

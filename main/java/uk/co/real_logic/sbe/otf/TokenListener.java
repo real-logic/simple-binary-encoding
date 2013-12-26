@@ -31,14 +31,12 @@ public interface TokenListener
     void onEnum(Token fieldToken,
                 DirectBuffer buffer, int bufferIndex,
                 List<Token> tokens, int fromIndex, int toIndex,
-                int actingVersion,
-                TokenListener listener);
+                int actingVersion);
 
     void onBitSet(Token fieldToken,
                   DirectBuffer buffer, int bufferIndex,
                   List<Token> tokens, int fromIndex, int toIndex,
-                  int actingVersion,
-                  TokenListener listener);
+                  int actingVersion);
 
     void onBeginComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex);
 
@@ -47,4 +45,6 @@ public interface TokenListener
     void onBeginGroup(Token token, int groupIndex, int numInGroup);
 
     void onEndGroup(Token token, int groupIndex, int numInGroup);
+
+    void onVarData(Token fieldToken, DirectBuffer buffer, int bufferIndex, int length, Token typeToken);
 }
