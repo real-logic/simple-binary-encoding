@@ -124,6 +124,16 @@ public class ExampleTokenListener implements TokenListener
         namedScope.pop();
     }
 
+    public void onBeginGroup(final Token token, final int groupIndex, final int numInGroup)
+    {
+        namedScope.push(token.name() + ".");
+    }
+
+    public void onEndGroup(final Token token, final int groupIndex, final int numInGroup)
+    {
+        namedScope.pop();
+    }
+
     private static CharSequence readEncodingAsString(final DirectBuffer buffer,
                                                      final int index,
                                                      final Token typeToken,
@@ -158,7 +168,7 @@ public class ExampleTokenListener implements TokenListener
             return constOrNotPresentValue.longValue();
         }
 
-        return readAsLong(buffer, bufferIndex, typeToken.encoding());
+        return getLong(buffer, bufferIndex, typeToken.encoding());
     }
 
     private static PrimitiveValue constOrNotPresentValue(final Token token, final int actingVersion)
@@ -229,7 +239,7 @@ public class ExampleTokenListener implements TokenListener
         }
     }
 
-    private static long readAsLong(final DirectBuffer buffer, final int index, final Encoding encoding)
+    private static long getLong(final DirectBuffer buffer, final int index, final Encoding encoding)
     {
         switch (encoding.primitiveType())
         {

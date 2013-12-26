@@ -4,7 +4,8 @@ import baseline.Car;
 import baseline.MessageHeader;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.*;
-import uk.co.real_logic.sbe.otf.OtfDecoder;
+import uk.co.real_logic.sbe.otf.OtfGroupSizeDecoder;
+import uk.co.real_logic.sbe.otf.OtfMessageDecoder;
 import uk.co.real_logic.sbe.otf.OtfHeaderDecoder;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
@@ -39,23 +40,25 @@ public class OtfExample
         // Now we have IR we can read the message header
         int bufferOffset = 0;
         final DirectBuffer buffer = new DirectBuffer(encodedMsgBuffer);
-        final OtfHeaderDecoder otfHeaderDecoder = new OtfHeaderDecoder(ir.headerStructure());
+        final OtfHeaderDecoder headerDecoder = new OtfHeaderDecoder(ir.headerStructure());
 
-        final int templateId = otfHeaderDecoder.getTemplateId(buffer, bufferOffset);
-        final int actingVersion = otfHeaderDecoder.getTemplateVersion(buffer, bufferOffset);
-        final int blockLength = otfHeaderDecoder.getBlockLength(buffer, bufferOffset);
+        final int templateId = headerDecoder.getTemplateId(buffer, bufferOffset);
+        final int actingVersion = headerDecoder.getTemplateVersion(buffer, bufferOffset);
+        final int blockLength = headerDecoder.getBlockLength(buffer, bufferOffset);
 
-        bufferOffset += otfHeaderDecoder.size();
+        bufferOffset += headerDecoder.size();
 
         // Given the header information we can select the appropriate message template to do the decode.
+        final OtfGroupSizeDecoder groupSizeDecoder = new OtfGroupSizeDecoder(ir.getType(OtfGroupSizeDecoder.GROUP_SIZE_ENCODING_NAME));
         final List<Token> msgTokens = ir.getMessage(templateId);
-        final OtfDecoder oftDecoder = new OtfDecoder();
-        bufferOffset = oftDecoder.decode(buffer,
-                                         bufferOffset,
-                                         actingVersion,
-                                         blockLength,
-                                         msgTokens,
-                                         new ExampleTokenListener(new PrintWriter(System.out, true)));
+
+        final OtfMessageDecoder messageDecoder = new OtfMessageDecoder(groupSizeDecoder);
+        bufferOffset = messageDecoder.decode(buffer,
+                                             bufferOffset,
+                                             actingVersion,
+                                             blockLength,
+                                             msgTokens,
+                                             new ExampleTokenListener(new PrintWriter(System.out, true)));
 
         if (bufferOffset != encodedMsgBuffer.position())
         {

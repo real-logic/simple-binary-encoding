@@ -16,7 +16,6 @@
 package uk.co.real_logic.sbe.otf;
 
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.codec.java.CodecUtil;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.HeaderStructure;
 import uk.co.real_logic.sbe.ir.Token;
@@ -94,7 +93,7 @@ public class OtfHeaderDecoder
      */
     public int getTemplateId(final DirectBuffer buffer, final int bufferOffset)
     {
-        return get(buffer, bufferOffset, templateIdOffset, templateIdType, templateIdByteOrder);
+        return Util.getInt(buffer, bufferOffset + templateIdOffset, templateIdType, templateIdByteOrder);
     }
 
     /**
@@ -106,7 +105,7 @@ public class OtfHeaderDecoder
      */
     public int getTemplateVersion(final DirectBuffer buffer, final int bufferOffset)
     {
-        return get(buffer, bufferOffset, templateVersionOffset, templateVersionType, templateVersionByteOrder);
+        return Util.getInt(buffer, bufferOffset + templateVersionOffset, templateVersionType, templateVersionByteOrder);
     }
 
     /**
@@ -118,34 +117,6 @@ public class OtfHeaderDecoder
      */
     public int getBlockLength(final DirectBuffer buffer, final int bufferOffset)
     {
-        return get(buffer, bufferOffset, blockLengthOffset, blockLengthType, blockLengthByteOrder);
-    }
-
-    private static int get(final DirectBuffer buffer,
-                           final int bufferOffset,
-                           final int headerOffset,
-                           final PrimitiveType type,
-                           final ByteOrder byteOrder)
-    {
-        switch (type)
-        {
-            case INT8:
-                return CodecUtil.int8Get(buffer, bufferOffset + headerOffset);
-
-            case UINT8:
-                return CodecUtil.uint8Get(buffer, bufferOffset + headerOffset);
-
-            case INT16:
-                return CodecUtil.int16Get(buffer, bufferOffset + headerOffset, byteOrder);
-
-            case UINT16:
-                return CodecUtil.uint16Get(buffer, bufferOffset + headerOffset, byteOrder);
-
-            case INT32:
-                 return CodecUtil.int32Get(buffer, bufferOffset + headerOffset, byteOrder);
-
-            default:
-                throw new IllegalArgumentException("Unsupported type: " + type);
-        }
+        return Util.getInt(buffer, bufferOffset + blockLengthOffset, blockLengthType, blockLengthByteOrder);
     }
 }

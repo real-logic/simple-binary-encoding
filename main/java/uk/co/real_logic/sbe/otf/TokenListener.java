@@ -43,4 +43,8 @@ public interface TokenListener
     void onBeginComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex);
 
     void onEndComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex);
+
+    void onBeginGroup(Token token, int groupIndex, int numInGroup);
+
+    void onEndGroup(Token token, int groupIndex, int numInGroup);
 }
