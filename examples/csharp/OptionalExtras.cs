@@ -8,8 +8,8 @@ namespace Baseline
     [Flags]
     public enum OptionalExtras : byte
     {
-        SportsPack = 2,
         SunRoof = 1,
+        SportsPack = 2,
         CruiseControl = 4,
     }
 }

@@ -290,8 +290,7 @@ namespace Baseline
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            const int dimensionsHeaderSize = 3;
-            _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+            _parentMessage.Position = parentMessage.Position + 3;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -304,8 +303,7 @@ namespace Baseline
             _index = -1;
             _count = count;
             _blockLength = 6;
-            const int dimensionsHeaderSize = 3;
-            parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+            parentMessage.Position = parentMessage.Position + 3;
         }
 
         public int Count { get { return _count; } }
@@ -409,8 +407,7 @@ namespace Baseline
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            const int dimensionsHeaderSize = 3;
-            _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+            _parentMessage.Position = parentMessage.Position + 3;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -423,8 +420,7 @@ namespace Baseline
             _index = -1;
             _count = count;
             _blockLength = 1;
-            const int dimensionsHeaderSize = 3;
-            parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+            parentMessage.Position = parentMessage.Position + 3;
         }
 
         public int Count { get { return _count; } }
@@ -506,8 +502,7 @@ namespace Baseline
                 _blockLength = _dimensions.BlockLength;
                 _actingVersion = actingVersion;
                 _index = -1;
-                const int dimensionsHeaderSize = 3;
-                _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+                _parentMessage.Position = parentMessage.Position + 3;
             }
 
             public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -520,8 +515,7 @@ namespace Baseline
                 _index = -1;
                 _count = count;
                 _blockLength = 6;
-                const int dimensionsHeaderSize = 3;
-                parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+                parentMessage.Position = parentMessage.Position + 3;
             }
 
             public int Count { get { return _count; } }

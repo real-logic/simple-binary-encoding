@@ -231,8 +231,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _blockLength = _dimensions.BlockLength;\n" +
             indent + "        _actingVersion = actingVersion;\n" +
             indent + "        _index = -1;\n" +
-            indent + "        const int dimensionsHeaderSize = %d;\n" +
-            indent + "        _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;\n" +
+            indent + "        _parentMessage.Position = parentMessage.Position + %d;\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             dimensionHeaderSize
@@ -253,8 +252,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _index = -1;\n" +
             indent + "        _count = count;\n" +
             indent + "        _blockLength = %4$d;\n" +
-            indent + "        const int dimensionsHeaderSize = %5$d;\n" +
-            indent + "        parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;\n" +
+            indent + "        parentMessage.Position = parentMessage.Position + %5$d;\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             typeForNumInGroup,
