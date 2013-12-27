@@ -593,12 +593,12 @@ namespace Baseline
     public int GetMake(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int lengthPosition = Position;
-        Position = lengthPosition + sizeOfLengthField;
-        int dataLength = _buffer.Uint8Get(lengthPosition);
+        int position = Position;
+        _buffer.CheckPosition(position + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(position);
         int bytesCopied = Math.Min(length, dataLength);
-        _buffer.GetBytes(Position, dst, dstOffset, bytesCopied);
-        Position = Position + dataLength;
+        Position = position + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -606,11 +606,10 @@ namespace Baseline
     public int SetMake(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int lengthPosition = Position;
-        _buffer.Uint8Put(lengthPosition, (byte)length);
-        Position = lengthPosition + sizeOfLengthField;
-        _buffer.SetBytes(Position, src, srcOffset, length);
-        Position = Position + length;
+        int position = Position;
+        Position = position + sizeOfLengthField + length;
+        _buffer.Uint8Put(position, (byte)length);
+        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -622,12 +621,12 @@ namespace Baseline
     public int GetModel(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int lengthPosition = Position;
-        Position = lengthPosition + sizeOfLengthField;
-        int dataLength = _buffer.Uint8Get(lengthPosition);
+        int position = Position;
+        _buffer.CheckPosition(position + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(position);
         int bytesCopied = Math.Min(length, dataLength);
-        _buffer.GetBytes(Position, dst, dstOffset, bytesCopied);
-        Position = Position + dataLength;
+        Position = position + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -635,11 +634,10 @@ namespace Baseline
     public int SetModel(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int lengthPosition = Position;
-        _buffer.Uint8Put(lengthPosition, (byte)length);
-        Position = lengthPosition + sizeOfLengthField;
-        _buffer.SetBytes(Position, src, srcOffset, length);
-        Position = Position + length;
+        int position = Position;
+        Position = position + sizeOfLengthField + length;
+        _buffer.Uint8Put(position, (byte)length);
+        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }

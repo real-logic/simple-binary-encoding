@@ -353,7 +353,7 @@ public class CSharpGenerator implements CodeGenerator
                 final Token lengthToken = tokens.get(i + 2);
                 final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
                 final Encoding lengthEncoding = lengthToken.encoding();
-                final String lengthJavaType = cSharpTypeName(lengthEncoding.primitiveType());
+                final String lengthCsharpType = cSharpTypeName(lengthEncoding.primitiveType());
                 final String lengthTypePrefix = toUpperFirstChar(lengthEncoding.primitiveType().primitiveName());
                 final ByteOrder byteOrder = lengthEncoding.byteOrder();
                 final String byteOrderStr = generateByteOrder(byteOrder, lengthEncoding.primitiveType().size());
@@ -363,12 +363,12 @@ public class CSharpGenerator implements CodeGenerator
                     "    {\n" +
                     "%2$s" +
                     "        const int sizeOfLengthField = %3$d;\n" +
-                    "        int lengthPosition = Position;\n" +
-                    "        Position = lengthPosition + sizeOfLengthField;\n" +
-                    "        int dataLength = _buffer.%4$sGet%5$s(lengthPosition);\n" +
+                    "        int position = Position;\n" +
+                    "        _buffer.CheckPosition(position + sizeOfLengthField);\n" +
+                    "        int dataLength = _buffer.%4$sGet%5$s(position);\n" +
                     "        int bytesCopied = Math.Min(length, dataLength);\n" +
-                    "        _buffer.GetBytes(Position, dst, dstOffset, bytesCopied);\n" +
-                    "        Position = Position + dataLength;\n\n" +
+                    "        Position = position + sizeOfLengthField + dataLength;\n" +
+                    "        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
                     "        return bytesCopied;\n" +
                     "    }\n\n",
                     propertyName,
@@ -382,17 +382,16 @@ public class CSharpGenerator implements CodeGenerator
                     "    public int Set%1$s(byte[] src, int srcOffset, int length)\n" +
                     "    {\n" +
                     "        const int sizeOfLengthField = %2$d;\n" +
-                    "        int lengthPosition = Position;\n" +
-                    "        _buffer.%3$sPut(lengthPosition, (%4$s)length%5$s);\n" +
-                    "        Position = lengthPosition + sizeOfLengthField;\n" +
-                    "        _buffer.SetBytes(Position, src, srcOffset, length);\n" +
-                    "        Position = Position + length;\n\n" +
+                    "        int position = Position;\n" +
+                    "        Position = position + sizeOfLengthField + length;\n" +
+                    "        _buffer.%3$sPut%5$s(position, (%4$s)length);\n" +
+                    "        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);\n\n" +
                     "        return length;\n" +
                     "    }\n",
                     propertyName,
                     sizeOfLengthField,
                     lengthTypePrefix,
-                    lengthJavaType,
+                    lengthCsharpType,
                     byteOrderStr
                 ));
             }
