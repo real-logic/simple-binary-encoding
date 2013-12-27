@@ -27,7 +27,7 @@ import java.nio.ByteOrder;
 public class Util
 {
     /**
-     * Get an integer value from a buffer.
+     * Get an integer value from a buffer at a given index.
      *
      * @param buffer from which to read.
      * @param bufferIndex at which he integer should be read.

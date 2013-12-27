@@ -26,6 +26,8 @@ import java.nio.ByteOrder;
  * Used to decode a message header while doing on-the-fly decoding of a message stream.
  * <p/>
  * Meta data is cached to improve the performance of decoding headers.
+ * <p/>
+ * This class is thread safe.
  */
 public class OtfHeaderDecoder
 {

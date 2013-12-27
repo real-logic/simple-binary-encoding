@@ -257,6 +257,9 @@
         <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension">
             <classpath refid="examples.classpath"/>
         </java>
+        <java classname="uk.co.real_logic.sbe.examples.OtfExample">
+            <classpath refid="examples.classpath"/>
+        </java>
     </target>
 
     <target name="cpp:examples:gen" depends="dist" description="Generate and run C++ generated code example">

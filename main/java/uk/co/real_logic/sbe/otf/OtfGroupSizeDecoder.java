@@ -24,7 +24,9 @@ import java.nio.ByteOrder;
 import java.util.List;
 
 /**
- * Used to decode the group size header.
+ * Used to decode group size headers.
+ * <p/>
+ * This class is thread safe.
  */
 public class OtfGroupSizeDecoder
 {

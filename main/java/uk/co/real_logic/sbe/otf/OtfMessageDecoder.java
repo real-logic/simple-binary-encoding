@@ -22,11 +22,26 @@ import uk.co.real_logic.sbe.util.Verify;
 
 import java.util.List;
 
+/**
+ * On-the-fly decoder that dynamically decodes messages based on the IR for a schema.
+ * <p/>
+ * The contents of the messages are structurally decomposed and passed to a {@link TokenListener} for decoding the primitive values.
+ * <p/>
+ * The design keeps all state on the stack to maximise performance and avoid object allocation. The message decoder can be used reused by
+ * repeatably calling {@link OtfMessageDecoder#decode(DirectBuffer, int, int, int, java.util.List, TokenListener)}
+ * and is thread safe to be used across multiple threads.
+ */
 public class OtfMessageDecoder
 {
     private final OtfGroupSizeDecoder groupSizeDecoder;
     private final OtfVarDataDecoder varDataDecoder;
 
+    /**
+     * Construct a message decoder with provided decoders for the group and var data headers. The provided decoders are expected to be thread safe.
+     *
+     * @param groupSizeDecoder for decoding the repeating group header.
+     * @param varDataDecoder for decoding the var data field header.
+     */
     public OtfMessageDecoder(final OtfGroupSizeDecoder groupSizeDecoder, final OtfVarDataDecoder varDataDecoder)
     {
         Verify.notNull(groupSizeDecoder, "groupSizeDecoder");
@@ -36,6 +51,17 @@ public class OtfMessageDecoder
         this.varDataDecoder = varDataDecoder;
     }
 
+    /**
+     * Decode a message from the provided buffer based on the message schema described with IR {@link uk.co.real_logic.sbe.ir.Token}s.
+     *
+     * @param buffer containing the encoded message.
+     * @param bufferIndex at which the message encoding starts in the buffer.
+     * @param actingVersion of the encoded message for dealing with extension fields.
+     * @param blockLength of the root message fields.
+     * @param msgTokens in IR format describing the message structure.
+     * @param listener to callback for decoding the primitive values as discovered in the structure.
+     * @return the index in the underlying buffer after decoding.
+     */
     public int decode(final DirectBuffer buffer,
                       int bufferIndex,
                       final int actingVersion,
@@ -71,7 +97,7 @@ public class OtfMessageDecoder
     {
         for (int i = fromIndex; i < toIndex; i++)
         {
-            if (tokens.get(i).signal() == Signal.BEGIN_FIELD)
+            if (Signal.BEGIN_FIELD == tokens.get(i).signal())
             {
                 i = decodeField(buffer, bufferIndex, tokens, i, actingVersion, listener);
             }
@@ -164,8 +190,8 @@ public class OtfMessageDecoder
 
         switch (typeToken.signal())
         {
-            case ENCODING:
-                listener.onEncoding(fieldToken, buffer, bufferIndex + typeToken.offset(), typeToken, actingVersion);
+            case BEGIN_COMPOSITE:
+                decodeComposite(fieldToken, buffer, bufferIndex + typeToken.offset(), tokens, fromIndex + 1, toIndex - 1, actingVersion, listener);
                 break;
 
             case BEGIN_ENUM:
@@ -176,8 +202,8 @@ public class OtfMessageDecoder
                 listener.onBitSet(fieldToken, buffer, bufferIndex + typeToken.offset(), tokens, fromIndex + 1, toIndex - 1, actingVersion);
                 break;
 
-            case BEGIN_COMPOSITE:
-                decodeComposite(fieldToken, buffer, bufferIndex + typeToken.offset(), tokens, fromIndex + 1, toIndex - 1, actingVersion, listener);
+            case ENCODING:
+                listener.onEncoding(fieldToken, buffer, bufferIndex + typeToken.offset(), typeToken, actingVersion);
                 break;
         }
 

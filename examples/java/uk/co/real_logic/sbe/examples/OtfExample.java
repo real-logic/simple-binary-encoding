@@ -42,6 +42,8 @@ public class OtfExample
 
     public static void main(final String[] args) throws Exception
     {
+        System.out.println("\n*** OTF Example ***\n");
+
         // Encode up message and schema as if we just got them off the wire.
         final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocateDirect(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);
@@ -65,6 +67,7 @@ public class OtfExample
         bufferOffset += headerDecoder.size();
 
         // Given the header information we can select the appropriate message template to do the decode.
+        // The OTF Java classes are thread safe so the same instances can be reused across multiple threads.
         final OtfGroupSizeDecoder groupSizeDecoder = new OtfGroupSizeDecoder(ir.getType(OtfGroupSizeDecoder.GROUP_SIZE_ENCODING_NAME));
         final OtfVarDataDecoder varDataDecoder = new OtfVarDataDecoder(ir.getType(OtfVarDataDecoder.VAR_DATA_ENCODING_NAME));
         final List<Token> msgTokens = ir.getMessage(templateId);

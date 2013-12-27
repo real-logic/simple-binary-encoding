@@ -52,6 +52,8 @@ public class ExampleUsingGeneratedStubExtension
 
     public static void main(final String[] args)throws Exception
     {
+        System.out.println("\n*** Extension Stub Example ***");
+
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
         final DirectBuffer directBuffer = new DirectBuffer(byteBuffer);
         final short messageTemplateVersion = 0;

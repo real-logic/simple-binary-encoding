@@ -24,7 +24,9 @@ import java.nio.ByteOrder;
 import java.util.List;
 
 /**
- * Used to decode the var data field.
+ * Used to decode var data fields.
+ * <p/>
+ * This class is thread safe.
  */
 public class OtfVarDataDecoder
 {
