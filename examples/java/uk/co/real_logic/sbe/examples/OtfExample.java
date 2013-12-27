@@ -93,7 +93,7 @@ public class OtfExample
         {
             final MessageSchema schema = XmlSchemaParser.parse(in);
             final IntermediateRepresentation ir = new IrGenerator().generate(schema);
-            new Encoder(buffer, ir).encode();
+            new IrEncoder(buffer, ir).encode();
         }
     }
 
@@ -117,7 +117,7 @@ public class OtfExample
     private static IntermediateRepresentation decodeIr(final ByteBuffer buffer)
         throws IOException
     {
-        final Decoder decoder = new Decoder(buffer);
-        return decoder.decode();
+        final IrDecoder irDecoder = new IrDecoder(buffer);
+        return irDecoder.decode();
     }
 }

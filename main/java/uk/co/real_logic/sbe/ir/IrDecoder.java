@@ -30,7 +30,7 @@ import java.util.List;
 
 import static uk.co.real_logic.sbe.ir.IrUtil.*;
 
-public class Decoder implements Closeable
+public class IrDecoder implements Closeable
 {
     private static final int CAPACITY = 4096;
 
@@ -46,7 +46,7 @@ public class Decoder implements Closeable
     private final byte[] valArray = new byte[CAPACITY];
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
 
-    public Decoder(final String fileName)
+    public IrDecoder(final String fileName)
         throws IOException
     {
         channel = new RandomAccessFile(fileName, "r").getChannel();
@@ -56,7 +56,7 @@ public class Decoder implements Closeable
         offset = 0;
     }
 
-    public Decoder(final ByteBuffer buffer)
+    public IrDecoder(final ByteBuffer buffer)
     {
         channel = null;
         size = buffer.limit();

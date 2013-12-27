@@ -18,8 +18,8 @@ package uk.co.real_logic.sbe;
 
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
-import uk.co.real_logic.sbe.ir.Decoder;
-import uk.co.real_logic.sbe.ir.Encoder;
+import uk.co.real_logic.sbe.ir.IrDecoder;
+import uk.co.real_logic.sbe.ir.IrEncoder;
 import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
@@ -103,7 +103,7 @@ public class SbeTool
             }
             else if (fileName.endsWith(".sbeir"))
             {
-                ir = new Decoder(fileName).decode();
+                ir = new IrDecoder(fileName).decode();
             }
             else
             {
@@ -125,9 +125,9 @@ public class SbeTool
                 final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
                 final File fullPath = new File(outputDirName, encodedIrFilename);
 
-                try (final Encoder encoder = new Encoder(fullPath.getAbsolutePath(), ir))
+                try (final IrEncoder irEncoder = new IrEncoder(fullPath.getAbsolutePath(), ir))
                 {
-                    encoder.encode();
+                    irEncoder.encode();
                 }
             }
         }

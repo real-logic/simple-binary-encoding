@@ -144,7 +144,7 @@
         </javadoc>
     </target>
 
-    <target name="cpp:doc" depends="build" description="Generate doc for OTF C++ decoder">
+    <target name="cpp:doc" depends="build" description="Generate doc for OTF C++ Decoder">
         <doxygen>
             <property name="INPUT" value="${dir.main.cpp.src}/otf_api"/>
             <property name="OUTPUT_DIRECTORY" value="${dir.docs.cpp}"/>

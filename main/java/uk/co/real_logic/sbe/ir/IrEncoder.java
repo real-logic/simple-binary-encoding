@@ -28,7 +28,7 @@ import java.util.List;
 
 import static uk.co.real_logic.sbe.ir.IrUtil.*;
 
-public class Encoder implements Closeable
+public class IrEncoder implements Closeable
 {
     private static final int CAPACITY = 4096;
 
@@ -43,7 +43,7 @@ public class Encoder implements Closeable
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
     private int totalSize = 0;
 
-    public Encoder(final String fileName, final IntermediateRepresentation ir)
+    public IrEncoder(final String fileName, final IntermediateRepresentation ir)
         throws FileNotFoundException
     {
         channel = new FileOutputStream(fileName).getChannel();
@@ -53,7 +53,7 @@ public class Encoder implements Closeable
         this.ir = ir;
     }
 
-    public Encoder(final ByteBuffer buffer, final IntermediateRepresentation ir)
+    public IrEncoder(final ByteBuffer buffer, final IntermediateRepresentation ir)
     {
         channel = null;
         resultBuffer = buffer;
