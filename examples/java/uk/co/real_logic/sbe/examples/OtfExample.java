@@ -55,10 +55,15 @@ public class OtfExample
         encodedSchemaBuffer.flip();
         final IntermediateRepresentation ir = decodeIr(encodedSchemaBuffer);
 
+        // From the IR we can create OTF decoders for messages.
+        final OtfHeaderDecoder headerDecoder = new OtfHeaderDecoder(ir.headerStructure());
+        final OtfMessageDecoder messageDecoder
+            = new OtfMessageDecoder(new OtfGroupSizeDecoder(ir.getType(OtfGroupSizeDecoder.GROUP_SIZE_ENCODING_NAME)),
+                                    new OtfVarDataDecoder(ir.getType(OtfVarDataDecoder.VAR_DATA_ENCODING_NAME)));
+
         // Now we have IR we can read the message header
         int bufferOffset = 0;
         final DirectBuffer buffer = new DirectBuffer(encodedMsgBuffer);
-        final OtfHeaderDecoder headerDecoder = new OtfHeaderDecoder(ir.headerStructure());
 
         final int templateId = headerDecoder.getTemplateId(buffer, bufferOffset);
         final int actingVersion = headerDecoder.getTemplateVersion(buffer, bufferOffset);
@@ -68,11 +73,9 @@ public class OtfExample
 
         // Given the header information we can select the appropriate message template to do the decode.
         // The OTF Java classes are thread safe so the same instances can be reused across multiple threads.
-        final OtfGroupSizeDecoder groupSizeDecoder = new OtfGroupSizeDecoder(ir.getType(OtfGroupSizeDecoder.GROUP_SIZE_ENCODING_NAME));
-        final OtfVarDataDecoder varDataDecoder = new OtfVarDataDecoder(ir.getType(OtfVarDataDecoder.VAR_DATA_ENCODING_NAME));
+
         final List<Token> msgTokens = ir.getMessage(templateId);
 
-        final OtfMessageDecoder messageDecoder = new OtfMessageDecoder(groupSizeDecoder, varDataDecoder);
         bufferOffset = messageDecoder.decode(buffer,
                                              bufferOffset,
                                              actingVersion,
