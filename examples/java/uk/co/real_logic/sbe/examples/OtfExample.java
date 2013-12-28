@@ -19,10 +19,8 @@ import baseline.Car;
 import baseline.MessageHeader;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.*;
-import uk.co.real_logic.sbe.otf.OtfGroupSizeDecoder;
 import uk.co.real_logic.sbe.otf.OtfMessageDecoder;
 import uk.co.real_logic.sbe.otf.OtfHeaderDecoder;
-import uk.co.real_logic.sbe.otf.OtfVarDataDecoder;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
@@ -55,11 +53,8 @@ public class OtfExample
         encodedSchemaBuffer.flip();
         final IntermediateRepresentation ir = decodeIr(encodedSchemaBuffer);
 
-        // From the IR we can create OTF decoders for messages.
+        // From the IR we can create OTF decoder for message headers.
         final OtfHeaderDecoder headerDecoder = new OtfHeaderDecoder(ir.headerStructure());
-        final OtfMessageDecoder messageDecoder
-            = new OtfMessageDecoder(new OtfGroupSizeDecoder(ir.getType(OtfGroupSizeDecoder.GROUP_SIZE_ENCODING_NAME)),
-                                    new OtfVarDataDecoder(ir.getType(OtfVarDataDecoder.VAR_DATA_ENCODING_NAME)));
 
         // Now we have IR we can read the message header
         int bufferOffset = 0;
@@ -76,12 +71,12 @@ public class OtfExample
 
         final List<Token> msgTokens = ir.getMessage(templateId);
 
-        bufferOffset = messageDecoder.decode(buffer,
-                                             bufferOffset,
-                                             actingVersion,
-                                             blockLength,
-                                             msgTokens,
-                                             new ExampleTokenListener(new PrintWriter(System.out, true)));
+        bufferOffset = OtfMessageDecoder.decode(buffer,
+                                                bufferOffset,
+                                                actingVersion,
+                                                blockLength,
+                                                msgTokens,
+                                                new ExampleTokenListener(new PrintWriter(System.out, true)));
 
         if (bufferOffset != encodedMsgBuffer.position())
         {

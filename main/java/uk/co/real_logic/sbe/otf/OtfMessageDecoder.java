@@ -18,7 +18,6 @@ package uk.co.real_logic.sbe.otf;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
-import uk.co.real_logic.sbe.util.Verify;
 
 import java.util.List;
 
@@ -33,41 +32,26 @@ import java.util.List;
  */
 public class OtfMessageDecoder
 {
-    private final OtfGroupSizeDecoder groupSizeDecoder;
-    private final OtfVarDataDecoder varDataDecoder;
-
-    /**
-     * Construct a message decoder with provided decoders for the group and var data headers. The provided decoders are expected to be thread safe.
-     *
-     * @param groupSizeDecoder for decoding the repeating group header.
-     * @param varDataDecoder for decoding the var data field header.
-     */
-    public OtfMessageDecoder(final OtfGroupSizeDecoder groupSizeDecoder, final OtfVarDataDecoder varDataDecoder)
-    {
-        Verify.notNull(groupSizeDecoder, "groupSizeDecoder");
-        Verify.notNull(varDataDecoder, "varDataDecoder");
-
-        this.groupSizeDecoder = groupSizeDecoder;
-        this.varDataDecoder = varDataDecoder;
-    }
+    private static final int GROUP_DIM_TYPE_TOKENS = 5;
+    private static final int VAR_DATA_TOKENS = 5;
 
     /**
      * Decode a message from the provided buffer based on the message schema described with IR {@link uk.co.real_logic.sbe.ir.Token}s.
      *
-     * @param buffer containing the encoded message.
-     * @param bufferIndex at which the message encoding starts in the buffer.
+     * @param buffer        containing the encoded message.
+     * @param bufferIndex   at which the message encoding starts in the buffer.
      * @param actingVersion of the encoded message for dealing with extension fields.
-     * @param blockLength of the root message fields.
-     * @param msgTokens in IR format describing the message structure.
-     * @param listener to callback for decoding the primitive values as discovered in the structure.
+     * @param blockLength   of the root message fields.
+     * @param msgTokens     in IR format describing the message structure.
+     * @param listener      to callback for decoding the primitive values as discovered in the structure.
      * @return the index in the underlying buffer after decoding.
      */
-    public int decode(final DirectBuffer buffer,
-                      int bufferIndex,
-                      final int actingVersion,
-                      final int blockLength,
-                      final List<Token> msgTokens,
-                      final TokenListener listener)
+    public static int decode(final DirectBuffer buffer,
+                             int bufferIndex,
+                             final int actingVersion,
+                             final int blockLength,
+                             final List<Token> msgTokens,
+                             final TokenListener listener)
     {
         final int groupsBeginIndex = findNextOrLimit(msgTokens, 1, msgTokens.size(), Signal.BEGIN_GROUP);
         final int varDataSearchStart = groupsBeginIndex != msgTokens.size() ? groupsBeginIndex : 1;
@@ -104,13 +88,13 @@ public class OtfMessageDecoder
         }
     }
 
-    private int decodeGroups(final DirectBuffer buffer,
-                             int bufferIndex,
-                             final int actingVersion,
-                             final List<Token> tokens,
-                             final int fromIndex,
-                             final int toIndex,
-                             final TokenListener listener)
+    private static int decodeGroups(final DirectBuffer buffer,
+                                    int bufferIndex,
+                                    final int actingVersion,
+                                    final List<Token> tokens,
+                                    final int fromIndex,
+                                    final int toIndex,
+                                    final TokenListener listener)
     {
         for (int i = fromIndex; i < toIndex; i++)
         {
@@ -118,15 +102,21 @@ public class OtfMessageDecoder
 
             if (Signal.BEGIN_GROUP == token.signal())
             {
-                final int beginFieldsIndex = i + groupSizeDecoder.groupHeaderTokenCount() + 1;
+                final Token blockLengthToken = tokens.get(i + 2);
+                final int blockLength = Util.getInt(buffer, bufferIndex + blockLengthToken.offset(),
+                                                    blockLengthToken.encoding().primitiveType(), blockLengthToken.encoding().byteOrder());
+
+                final Token numInGroupToken = tokens.get(i + 3);
+                final int numInGroup = Util.getInt(buffer, bufferIndex + numInGroupToken.offset(),
+                                                   numInGroupToken.encoding().primitiveType(), numInGroupToken.encoding().byteOrder());
+
+                final Token dimensionTypeComposite = tokens.get(i + 1);
+                bufferIndex += dimensionTypeComposite.size();
+
+                final int beginFieldsIndex = i + GROUP_DIM_TYPE_TOKENS;
                 final int endGroupIndex = findNextOrLimit(tokens, beginFieldsIndex, toIndex, Signal.END_GROUP);
                 final int nextGroupIndex = findNextOrLimit(tokens, beginFieldsIndex, toIndex, Signal.BEGIN_GROUP);
                 final int endOfFieldsIndex = Math.min(endGroupIndex, nextGroupIndex) - 1;
-
-                final int blockLength = groupSizeDecoder.getBlockLength(buffer, bufferIndex);
-                final int numInGroup = groupSizeDecoder.getNumInGroup(buffer, bufferIndex);
-
-                bufferIndex += groupSizeDecoder.size();
 
                 for (int g = 0; g < numInGroup; g++)
                 {
@@ -150,12 +140,12 @@ public class OtfMessageDecoder
         return bufferIndex;
     }
 
-    private int decodeVarData(final DirectBuffer buffer,
-                              int bufferIndex,
-                              final List<Token> tokens,
-                              final int fromIndex,
-                              final int toIndex,
-                              final TokenListener listener)
+    private static int decodeVarData(final DirectBuffer buffer,
+                                     int bufferIndex,
+                                     final List<Token> tokens,
+                                     final int fromIndex,
+                                     final int toIndex,
+                                     final TokenListener listener)
     {
         for (int i = fromIndex; i < toIndex; i++)
         {
@@ -163,14 +153,17 @@ public class OtfMessageDecoder
 
             if (Signal.BEGIN_VAR_DATA == token.signal())
             {
-                final int length = varDataDecoder.getLength(buffer, bufferIndex);
-                final Token typeToken = tokens.get(i + 1 + varDataDecoder.varDataTokenOffset());
-                bufferIndex += varDataDecoder.size();
+                final Token lengthToken = tokens.get(i + 2);
+                final int length = Util.getInt(buffer, bufferIndex + lengthToken.offset(),
+                                               lengthToken.encoding().primitiveType(), lengthToken.encoding().byteOrder());
 
-                listener.onVarData(token, buffer, bufferIndex, length, typeToken);
+                final Token varDataToken = tokens.get(i + 3);
+                bufferIndex += varDataToken.offset();
+
+                listener.onVarData(token, buffer, bufferIndex, length, varDataToken);
 
                 bufferIndex += length;
-                i += (varDataDecoder.tokenCount() + 1);
+                i += VAR_DATA_TOKENS;
             }
         }
 
