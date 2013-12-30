@@ -7,6 +7,13 @@ namespace Baseline
 {
     public class GroupSizeEncoding
     {
+        public enum MetaAttribute
+        {
+            Epoch,
+            TimeUnit,
+            SemanticType
+        }
+
         private DirectBuffer _buffer;
         private int _offset;
         private int _actingVersion;

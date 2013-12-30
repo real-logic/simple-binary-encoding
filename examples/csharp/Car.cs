@@ -7,6 +7,13 @@ namespace Baseline
 {
     public class Car
     {
+        public enum MetaAttribute
+        {
+            Epoch,
+            TimeUnit,
+            SemanticType
+        }
+
     public const ushort TemplateId = (ushort)1;
     public const byte TemplateVersion = (byte)0;
     public const ushort BlockLength = (ushort)41;
@@ -68,6 +75,18 @@ namespace Baseline
 
     public const int SerialNumberSchemaId = 1;
 
+    public static string SerialNumberMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
     public const uint SerialNumberNullVal = 4294967294U;
 
     public const uint SerialNumberMinVal = 0U;
@@ -88,6 +107,18 @@ namespace Baseline
 
 
     public const int ModelYearSchemaId = 2;
+
+    public static string ModelYearMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
 
     public const ushort ModelYearNullVal = (ushort)65535;
 
@@ -110,6 +141,18 @@ namespace Baseline
 
     public const int AvailableSchemaId = 3;
 
+    public static string AvailableMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
     public BooleanType Available
     {
         get
@@ -125,6 +168,18 @@ namespace Baseline
 
     public const int CodeSchemaId = 4;
 
+    public static string CodeMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
     public Model Code
     {
         get
@@ -139,6 +194,18 @@ namespace Baseline
 
 
     public const int SomeNumbersSchemaId = 5;
+
+    public static string SomeNumbersMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
 
     public const int SomeNumbersNullVal = -2147483648;
 
@@ -169,6 +236,18 @@ namespace Baseline
     }
 
     public const int VehicleCodeSchemaId = 6;
+
+    public static string VehicleCodeMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
 
     public const byte VehicleCodeNullVal = (byte)0;
 
@@ -225,6 +304,18 @@ namespace Baseline
 
     public const int ExtrasSchemaId = 7;
 
+    public static string ExtrasMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
     public OptionalExtras Extras
     {
         get
@@ -238,6 +329,18 @@ namespace Baseline
     }
 
     public const int EngineSchemaId = 8;
+
+    public static string EngineMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
 
     private readonly Engine _engine = new Engine();
 
@@ -326,6 +429,18 @@ namespace Baseline
 
         public const int SpeedSchemaId = 10;
 
+        public static string SpeedMetaAttribute(MetaAttribute metaAttribute)
+        {
+            switch (metaAttribute)
+            {
+                case MetaAttribute.Epoch: return "unix";
+                case MetaAttribute.TimeUnit: return "nanosecond";
+                case MetaAttribute.SemanticType: return "";
+            }
+
+            return "";
+        }
+
         public const ushort SpeedNullVal = (ushort)65535;
 
         public const ushort SpeedMinVal = (ushort)0;
@@ -346,6 +461,18 @@ namespace Baseline
 
 
         public const int MpgSchemaId = 11;
+
+        public static string MpgMetaAttribute(MetaAttribute metaAttribute)
+        {
+            switch (metaAttribute)
+            {
+                case MetaAttribute.Epoch: return "unix";
+                case MetaAttribute.TimeUnit: return "nanosecond";
+                case MetaAttribute.SemanticType: return "";
+            }
+
+            return "";
+        }
 
         public const float MpgNullVal = float.NaN;
 
@@ -443,6 +570,18 @@ namespace Baseline
 
         public const int OctaneRatingSchemaId = 13;
 
+        public static string OctaneRatingMetaAttribute(MetaAttribute metaAttribute)
+        {
+            switch (metaAttribute)
+            {
+                case MetaAttribute.Epoch: return "unix";
+                case MetaAttribute.TimeUnit: return "nanosecond";
+                case MetaAttribute.SemanticType: return "";
+            }
+
+            return "";
+        }
+
         public const byte OctaneRatingNullVal = (byte)255;
 
         public const byte OctaneRatingMinVal = (byte)90;
@@ -538,6 +677,18 @@ namespace Baseline
 
             public const int MphSchemaId = 15;
 
+            public static string MphMetaAttribute(MetaAttribute metaAttribute)
+            {
+                switch (metaAttribute)
+                {
+                    case MetaAttribute.Epoch: return "unix";
+                    case MetaAttribute.TimeUnit: return "nanosecond";
+                    case MetaAttribute.SemanticType: return "";
+                }
+
+                return "";
+            }
+
             public const ushort MphNullVal = (ushort)65535;
 
             public const ushort MphMinVal = (ushort)0;
@@ -558,6 +709,18 @@ namespace Baseline
 
 
             public const int SecondsSchemaId = 16;
+
+            public static string SecondsMetaAttribute(MetaAttribute metaAttribute)
+            {
+                switch (metaAttribute)
+                {
+                    case MetaAttribute.Epoch: return "unix";
+                    case MetaAttribute.TimeUnit: return "nanosecond";
+                    case MetaAttribute.SemanticType: return "";
+                }
+
+                return "";
+            }
 
             public const float SecondsNullVal = float.NaN;
 
@@ -583,6 +746,19 @@ namespace Baseline
     public const int MakeSchemaId = 17;
 
     public const string MakeCharacterEncoding = "UTF-8";
+
+
+    public static string MakeMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "Make";
+        }
+
+        return "";
+    }
 
     public int GetMake(byte[] dst, int dstOffset, int length)
     {
@@ -611,6 +787,19 @@ namespace Baseline
     public const int ModelSchemaId = 18;
 
     public const string ModelCharacterEncoding = "UTF-8";
+
+
+    public static string ModelMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
 
     public int GetModel(byte[] dst, int dstOffset, int length)
     {

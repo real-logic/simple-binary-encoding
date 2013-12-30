@@ -346,6 +346,7 @@ public class CSharpGenerator implements CodeGenerator
 
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
                 generateCharacterEncodingMethod(sb, token.name(), characterEncoding);
+                generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
 
                 final String propertyName = toUpperFirstChar(token.name());
                 final Token lengthToken = tokens.get(i + 2);
@@ -357,6 +358,7 @@ public class CSharpGenerator implements CodeGenerator
                 final String byteOrderStr = generateByteOrder(byteOrder, lengthEncoding.primitiveType().size());
 
                 sb.append(String.format(
+                    "\n" +
                     "    public int Get%1$s(byte[] dst, int dstOffset, int length)\n" +
                     "    {\n" +
                     "%2$s" +
@@ -516,7 +518,13 @@ public class CSharpGenerator implements CodeGenerator
     {
         return String.format(
             "    public class %s\n" +
-                "    {\n",
+            "    {\n" +
+            "        public enum MetaAttribute\n" +
+            "        {\n" +
+            "            Epoch,\n" +
+            "            TimeUnit,\n" +
+            "            SemanticType\n" +
+            "        }\n\n",
             className
         );
     }
@@ -989,6 +997,7 @@ public class CSharpGenerator implements CodeGenerator
                 final String propertyName = signalToken.name();
 
                 generateFieldIdMethod(sb, signalToken, indent);
+                generateFieldMetaAttributeMethod(sb, signalToken, indent);
 
                 switch (encodingToken.signal())
                 {
@@ -1021,6 +1030,32 @@ public class CSharpGenerator implements CodeGenerator
             indent + "    public const int %sSchemaId = %d;\n",
             CSharpUtil.formatPropertyName(token.name()),
             Integer.valueOf(token.schemaId())
+        ));
+    }
+
+    private void generateFieldMetaAttributeMethod(final StringBuilder sb, final Token token, final String indent)
+    {
+        final Encoding encoding = token.encoding();
+        final String epoch = encoding.epoch() == null ? "" : encoding.epoch();
+        final String timeUnit = encoding.timeUnit() == null ? "" : encoding.timeUnit();
+        final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
+
+        sb.append(String.format(
+                "\n" +
+                        indent + "    public static string %sMetaAttribute(MetaAttribute metaAttribute)\n" +
+                        indent + "    {\n" +
+                        indent + "        switch (metaAttribute)\n" +
+                        indent + "        {\n" +
+                        indent + "            case MetaAttribute.Epoch: return \"%s\";\n" +
+                        indent + "            case MetaAttribute.TimeUnit: return \"%s\";\n" +
+                        indent + "            case MetaAttribute.SemanticType: return \"%s\";\n" +
+                        indent + "        }\n\n" +
+                        indent + "        return \"\";\n" +
+                        indent + "    }\n",
+                toUpperFirstChar(token.name()),
+                epoch,
+                timeUnit,
+                semanticType
         ));
     }
 
