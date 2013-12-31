@@ -217,7 +217,7 @@ public class ExampleUsingGeneratedStubExtension
             }
         }
 
-        sb.append("\ncar.make.semanticType=").append(extension.Car.makeMetaAttribute(extension.Car.MetaAttribute.SEMANTIC_TYPE));
+        sb.append("\ncar.make.semanticType=").append(extension.Car.makeMetaAttribute(extension.MetaAttribute.SEMANTIC_TYPE));
         sb.append("\ncar.make=").append(new String(buffer, 0, car.getMake(buffer, 0, buffer.length), extension.Car.makeCharacterEncoding()));
 
         sb.append("\ncar.model=").append(new String(buffer, 0, car.getModel(buffer, 0, buffer.length), extension.Car.modelCharacterEncoding()));
