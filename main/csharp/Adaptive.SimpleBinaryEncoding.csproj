@@ -47,7 +47,6 @@
     <Compile Include="ByteOrder.cs" />
     <Compile Include="DirectBuffer.cs" />
     <Compile Include="EndianessConverter.cs" />
-    <Compile Include="IDirectBuffer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
