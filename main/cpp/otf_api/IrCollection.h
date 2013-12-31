@@ -58,6 +58,17 @@ public:
     virtual ~IrCollection()
     {
         delete[] buffer_;
+        for (std::multimap<int, Ir *>::iterator it = map_.begin(); it != map_.end(); ++it)
+        {
+//            std::cout << (*it).first << " => " << (*it).second << '\n';
+            Ir *ir = (*it).second;
+            delete ir;
+            (*it).second = NULL;
+        }
+        if (header_ != NULL)
+        {
+            delete header_;
+        }
     }
 
     /**

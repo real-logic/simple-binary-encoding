@@ -147,17 +147,11 @@ public:
 
     // constructors and destructors
 
-    /// Construct an Ir from a buffer with serialized tokens of len total size.
+    /// Construct an Ir from a buffer with serialized tokens of len total size. Responsibility of buffer management is the applications.
     Ir(const char *buffer = NULL, const int len = 0, const int64_t templateId = -1, const int64_t templateVersion = -1);
 
-    virtual ~Ir()
-    {
-        if (buffer_ != NULL)
-        {
-            delete[] buffer_;
-            buffer_ = NULL;
-        }
-    }
+    /// Destroy an Ir. The buffer is NOT freed.
+    virtual ~Ir();
 
     int64_t templateId(void) const
     {

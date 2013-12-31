@@ -385,5 +385,7 @@ int main(int argc, char * const argv[])
 
     std::cout << "Message ends at offset " << listener.bufferOffset() << "\n";
 
+    delete[] buffer;
+
     return 0;
 }

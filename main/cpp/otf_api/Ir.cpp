@@ -63,6 +63,16 @@ Ir::Ir(const char *buffer, const int len, const int64_t templateId, const int64_
     begin();
 }
 
+Ir::~Ir()
+{
+    if (impl_ != NULL)
+    {
+        delete impl_;
+        impl_ = NULL;
+    }
+//    std::cout << "Ir being deleted" << "\n";
+}
+
 void Ir::readTokenAtCurrentPosition()
 {
     char tmp[256];
