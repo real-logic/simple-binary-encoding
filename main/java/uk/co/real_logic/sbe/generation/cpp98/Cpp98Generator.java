@@ -379,6 +379,7 @@ public class Cpp98Generator implements CodeGenerator
                 final String lengthcpp98Type = cpp98TypeName(lengthToken.encoding().primitiveType());
 
                 sb.append(String.format(
+                    "\n" +
                     "    sbe_int64_t %1$sLength(void) const\n" +
                     "    {\n" +
                             "%2$s" +
@@ -725,14 +726,7 @@ public class Cpp98Generator implements CodeGenerator
     {
         return String.format(
             "class %s\n" +
-            "{\n" +
-            "public:\n" +
-            "    enum MetaAttribute\n" +
-            "    {\n" +
-            "         EPOCH,\n" +
-            "         TIME_UNIT,\n" +
-            "         SEMANTIC_TYPE\n" +
-            "    };\n\n",
+            "{\n",
             className
         );
     }
@@ -1242,13 +1236,13 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static const char *%sMetaAttribute(const MetaAttribute metaAttribute)\n" +
+            indent + "    static const char *%sMetaAttribute(const MetaAttribute::Attribute metaAttribute)\n" +
             indent + "    {\n" +
             indent + "        switch (metaAttribute)\n" +
             indent + "        {\n" +
-            indent + "            case EPOCH: return \"%s\";\n" +
-            indent + "            case TIME_UNIT: return \"%s\";\n" +
-            indent + "            case SEMANTIC_TYPE: return \"%s\";\n" +
+            indent + "            case MetaAttribute::EPOCH: return \"%s\";\n" +
+            indent + "            case MetaAttribute::TIME_UNIT: return \"%s\";\n" +
+            indent + "            case MetaAttribute::SEMANTIC_TYPE: return \"%s\";\n" +
             indent + "        }\n\n" +
             indent + "        return \"\";\n" +
             indent + "    }\n",

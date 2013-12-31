@@ -65,6 +65,17 @@ namespace sbe {
     #error "Byte Ordering of platform not determined. Set __BYTE_ORDER__ manually before including this file."
 #endif
 
+class MetaAttribute
+{
+public:
+    enum Attribute
+    {
+        EPOCH,
+        TIME_UNIT,
+        SEMANTIC_TYPE
+    };
+};
+
 }
 
 #endif /* _SBE_HPP_ */
