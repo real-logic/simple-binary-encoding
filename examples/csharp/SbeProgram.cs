@@ -223,6 +223,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples
             }
 
             // variable length fields
+            sb.Append("\ncar.make.semanticType=").Append(Car.MakeMetaAttribute(Car.MetaAttribute.SemanticType));
             length = car.GetMake(buffer, 0, buffer.Length);
             sb.Append("\ncar.make=").Append(Encoding.GetEncoding(Car.MakeCharacterEncoding).GetString(buffer, 0, length));
 
