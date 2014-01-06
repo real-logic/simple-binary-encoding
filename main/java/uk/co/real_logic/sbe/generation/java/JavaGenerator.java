@@ -1365,9 +1365,12 @@ public class JavaGenerator implements CodeGenerator
                 }
                 break;
 
-            case UINT64:
             case INT64:
                 literal = value + "L";
+                break;
+
+            case UINT64:
+                literal = "0x" + Long.toHexString(Long.parseLong(value)) + "L";
                 break;
 
             case DOUBLE:

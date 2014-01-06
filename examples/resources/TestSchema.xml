@@ -48,7 +48,7 @@
         </set>
     </types>
     <message name="Car" id="1" description="Description of a basic Car">
-        <field name="serialNumber" id="1" type="uint32"/>
+        <field name="serialNumber" id="1" type="uint64"/>
         <field name="modelYear" id="2" type="ModelYear"/>
         <field name="available" id="3" type="BooleanType"/>
         <field name="code" id="4" type="Model"/>
