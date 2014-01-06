@@ -5,13 +5,6 @@ import uk.co.real_logic.sbe.codec.java.*;
 
 public class FrameCodec
 {
-    public enum MetaAttribute
-    {
-        EPOCH,
-        TIME_UNIT,
-        SEMANTIC_TYPE
-    }
-
     public static final int TEMPLATE_ID = 1;
     public static final short TEMPLATE_VERSION = (short)0;
     public static final int BLOCK_LENGTH = 8;
@@ -19,7 +12,7 @@ public class FrameCodec
     private final FrameCodec parentMessage = this;
     private DirectBuffer buffer;
     private int offset;
-    private int position;
+    private int limit;
     private int actingBlockLength;
     private int actingVersion;
 
@@ -49,7 +42,7 @@ public class FrameCodec
         this.offset = offset;
         this.actingBlockLength = BLOCK_LENGTH;
         this.actingVersion = TEMPLATE_VERSION;
-        position(offset + actingBlockLength);
+        limit(offset + actingBlockLength);
 
         return this;
     }
@@ -61,25 +54,25 @@ public class FrameCodec
         this.offset = offset;
         this.actingBlockLength = actingBlockLength;
         this.actingVersion = actingVersion;
-        position(offset + actingBlockLength);
+        limit(offset + actingBlockLength);
 
         return this;
     }
 
     public int size()
     {
-        return position - offset;
+        return limit - offset;
     }
 
-    public int position()
+    public int limit()
     {
-        return position;
+        return limit;
     }
 
-    public void position(final int position)
+    public void limit(final int limit)
     {
-        buffer.checkPosition(position);
-        this.position = position;
+        buffer.checkLimit(limit);
+        this.limit = limit;
     }
 
     public static int sbeIrVersionSchemaId()
@@ -193,12 +186,12 @@ public class FrameCodec
     public int getPackageVal(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        buffer.checkPosition(position + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, position);
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        position(position + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -206,10 +199,10 @@ public class FrameCodec
     public int putPackageVal(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        position(position + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, position, (short)length);
-        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }

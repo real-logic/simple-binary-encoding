@@ -28,9 +28,19 @@ private:
 
 public:
 
-    static sbe_uint64_t blockLength(void)
+    static sbe_uint16_t blockLength(void)
     {
-        return 20;
+        return (sbe_uint16_t)20;
+    }
+
+    static sbe_uint16_t templateId(void)
+    {
+        return (sbe_uint16_t)2;
+    }
+
+    static sbe_uint8_t templateVersion(void)
+    {
+        return (sbe_uint8_t)0;
     }
 
     sbe_uint64_t offset(void) const
@@ -76,16 +86,6 @@ public:
         return position() - offset_;
     }
 
-    static int templateId(void)
-    {
-        return 2;
-    }
-
-    static int templateVersion(void)
-    {
-        return 0;
-    }
-
     char *buffer(void)
     {
         return buffer_;
@@ -111,6 +111,18 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
+
+    static const char *tokenOffsetMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
 
     static sbe_int32_t tokenOffsetNullVal()
     {
@@ -154,6 +166,18 @@ public:
     }
 
 
+    static const char *tokenSizeMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static sbe_int32_t tokenSizeNullVal()
     {
         return -2147483648;
@@ -195,6 +219,18 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
+
+    static const char *schemaIdMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
 
     static sbe_int32_t schemaIdNullVal()
     {
@@ -238,6 +274,18 @@ public:
     }
 
 
+    static const char *tokenVersionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static sbe_int32_t tokenVersionNullVal()
     {
         return -2147483648;
@@ -280,6 +328,18 @@ public:
     }
 
 
+    static const char *signalMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     SignalCodec::Value signal(void) const
     {
         return SignalCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 16))));
@@ -306,6 +366,18 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
+
+    static const char *primitiveTypeMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
 
     PrimitiveTypeCodec::Value primitiveType(void) const
     {
@@ -334,6 +406,18 @@ public:
     }
 
 
+    static const char *byteOrderMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     ByteOrderCodec::Value byteOrder(void) const
     {
         return ByteOrderCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 18))));
@@ -360,6 +444,18 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
+
+    static const char *presenceMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
 
     PresenceCodec::Value presence(void) const
     {
@@ -390,6 +486,19 @@ public:
     static int nameSchemaId(void)
     {
         return 18;
+    }
+
+
+    static const char *nameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
     }
 
     sbe_int64_t nameLength(void) const
@@ -447,6 +556,19 @@ public:
         return 19;
     }
 
+
+    static const char *constValMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     sbe_int64_t constValLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
@@ -500,6 +622,19 @@ public:
     static int minValSchemaId(void)
     {
         return 20;
+    }
+
+
+    static const char *minValMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
     }
 
     sbe_int64_t minValLength(void) const
@@ -557,6 +692,19 @@ public:
         return 21;
     }
 
+
+    static const char *maxValMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     sbe_int64_t maxValLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
@@ -610,6 +758,19 @@ public:
     static int nullValSchemaId(void)
     {
         return 22;
+    }
+
+
+    static const char *nullValMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
     }
 
     sbe_int64_t nullValLength(void) const
@@ -667,6 +828,19 @@ public:
         return 23;
     }
 
+
+    static const char *characterEncodingMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     sbe_int64_t characterEncodingLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
@@ -720,6 +894,19 @@ public:
     static int epochSchemaId(void)
     {
         return 24;
+    }
+
+
+    static const char *epochMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
     }
 
     sbe_int64_t epochLength(void) const
@@ -777,6 +964,19 @@ public:
         return 25;
     }
 
+
+    static const char *timeUnitMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     sbe_int64_t timeUnitLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
@@ -830,6 +1030,19 @@ public:
     static int semanticTypeSchemaId(void)
     {
         return 26;
+    }
+
+
+    static const char *semanticTypeMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
     }
 
     sbe_int64_t semanticTypeLength(void) const

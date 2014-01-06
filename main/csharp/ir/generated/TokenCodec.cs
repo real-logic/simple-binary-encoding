@@ -7,13 +7,6 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
 {
     public class TokenCodec
     {
-        public enum MetaAttribute
-        {
-            Epoch,
-            TimeUnit,
-            SemanticType
-        }
-
     public const ushort TemplateId = (ushort)2;
     public const byte TemplateVersion = (byte)0;
     public const ushort BlockLength = (ushort)20;

@@ -58,10 +58,10 @@ public class DirectBufferTest
 
     @Theory
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowExceptionForPositionAboveCapacity(final DirectBuffer buffer)
+    public void shouldThrowExceptionForLimitAboveCapacity(final DirectBuffer buffer)
     {
         final int position = BUFFER_CAPACITY + 1;
-        buffer.checkPosition(position);
+        buffer.checkLimit(position);
     }
 
     @Theory

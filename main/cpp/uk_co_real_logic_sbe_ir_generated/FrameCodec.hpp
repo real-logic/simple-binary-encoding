@@ -28,9 +28,19 @@ private:
 
 public:
 
-    static sbe_uint64_t blockLength(void)
+    static sbe_uint16_t blockLength(void)
     {
-        return 8;
+        return (sbe_uint16_t)8;
+    }
+
+    static sbe_uint16_t templateId(void)
+    {
+        return (sbe_uint16_t)1;
+    }
+
+    static sbe_uint8_t templateVersion(void)
+    {
+        return (sbe_uint8_t)0;
     }
 
     sbe_uint64_t offset(void) const
@@ -76,16 +86,6 @@ public:
         return position() - offset_;
     }
 
-    static int templateId(void)
-    {
-        return 1;
-    }
-
-    static int templateVersion(void)
-    {
-        return 0;
-    }
-
     char *buffer(void)
     {
         return buffer_;
@@ -111,6 +111,18 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
+
+    static const char *sbeIrVersionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
 
     static sbe_int32_t sbeIrVersionNullVal()
     {
@@ -153,6 +165,18 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
+
+    static const char *schemaVersionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
 
     static sbe_int32_t schemaVersionNullVal()
     {
@@ -198,6 +222,19 @@ public:
     static int packageValSchemaId(void)
     {
         return 4;
+    }
+
+
+    static const char *packageValMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
     }
 
     sbe_int64_t packageValLength(void) const

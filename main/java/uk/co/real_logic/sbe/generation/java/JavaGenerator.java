@@ -223,12 +223,12 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
-            indent + "        dimensions.wrap(buffer, parentMessage.position(), actingVersion);\n" +
+            indent + "        dimensions.wrap(buffer, parentMessage.limit(), actingVersion);\n" +
             indent + "        count = dimensions.numInGroup();\n" +
             indent + "        blockLength = dimensions.blockLength();\n" +
             indent + "        this.actingVersion = actingVersion;\n" +
             indent + "        index = -1;\n" +
-            indent + "        parentMessage.position(parentMessage.position() + %d);\n" +
+            indent + "        parentMessage.limit(parentMessage.limit() + %d);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             dimensionHeaderSize
@@ -243,13 +243,13 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
-            indent + "        dimensions.wrap(buffer, parentMessage.position(), actingVersion);\n" +
+            indent + "        dimensions.wrap(buffer, parentMessage.limit(), actingVersion);\n" +
             indent + "        dimensions.numInGroup((%2$s)count);\n" +
             indent + "        dimensions.blockLength((%3$s)%4$d);\n" +
             indent + "        index = -1;\n" +
             indent + "        this.count = count;\n" +
             indent + "        blockLength = %4$d;\n" +
-            indent + "        parentMessage.position(parentMessage.position() + %5$d);\n" +
+            indent + "        parentMessage.limit(parentMessage.limit() + %5$d);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             javaTypeForNumInGroup,
@@ -285,8 +285,8 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new java.util.NoSuchElementException();\n" +
             indent + "        }\n\n" +
-            indent + "        offset = parentMessage.position();\n" +
-            indent + "        parentMessage.position(offset + blockLength);\n" +
+            indent + "        offset = parentMessage.limit();\n" +
+            indent + "        parentMessage.limit(offset + blockLength);\n" +
             indent + "        ++index;\n\n" +
             indent + "        return this;\n" +
             indent + "    }\n",
@@ -374,12 +374,12 @@ public class JavaGenerator implements CodeGenerator
                     "    {\n" +
                     "%s" +
                     "        final int sizeOfLengthField = %d;\n" +
-                    "        final int position = position();\n" +
-                    "        buffer.checkPosition(position + sizeOfLengthField);\n" +
-                    "        final int dataLength = CodecUtil.%sGet(buffer, position%s);\n" +
+                    "        final int limit = limit();\n" +
+                    "        buffer.checkLimit(limit + sizeOfLengthField);\n" +
+                    "        final int dataLength = CodecUtil.%sGet(buffer, limit%s);\n" +
                     "        final int bytesCopied = Math.min(length, dataLength);\n" +
-                    "        position(position + sizeOfLengthField + dataLength);\n" +
-                    "        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
+                    "        limit(limit + sizeOfLengthField + dataLength);\n" +
+                    "        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
                     "        return bytesCopied;\n" +
                     "    }\n",
                     propertyName,
@@ -394,10 +394,10 @@ public class JavaGenerator implements CodeGenerator
                     "    public int put%s(final byte[] src, final int srcOffset, final int length)\n" +
                     "    {\n" +
                     "        final int sizeOfLengthField = %d;\n" +
-                    "        final int position = position();\n" +
-                    "        position(position + sizeOfLengthField + length);\n" +
-                    "        CodecUtil.%sPut(buffer, position, (%s)length%s);\n" +
-                    "        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);\n\n" +
+                    "        final int limit = limit();\n" +
+                    "        limit(limit + sizeOfLengthField + length);\n" +
+                    "        CodecUtil.%sPut(buffer, limit, (%s)length%s);\n" +
+                    "        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);\n\n" +
                     "        return length;\n" +
                     "    }\n",
                     propertyName,
@@ -1077,7 +1077,7 @@ public class JavaGenerator implements CodeGenerator
             "    private final %7$s parentMessage = this;\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
-            "    private int position;\n" +
+            "    private int limit;\n" +
             "    private int actingBlockLength;\n" +
             "    private int actingVersion;\n" +
             "\n" +
@@ -1103,7 +1103,7 @@ public class JavaGenerator implements CodeGenerator
             "        this.offset = offset;\n" +
             "        this.actingBlockLength = BLOCK_LENGTH;\n" +
             "        this.actingVersion = TEMPLATE_VERSION;\n" +
-            "        position(offset + actingBlockLength);\n\n" +
+            "        limit(offset + actingBlockLength);\n\n" +
             "        return this;\n" +
             "    }\n\n" +
             "    public %7$s wrapForDecode(final DirectBuffer buffer, final int offset,\n" +
@@ -1113,21 +1113,21 @@ public class JavaGenerator implements CodeGenerator
             "        this.offset = offset;\n" +
             "        this.actingBlockLength = actingBlockLength;\n" +
             "        this.actingVersion = actingVersion;\n" +
-            "        position(offset + actingBlockLength);\n\n" +
+            "        limit(offset + actingBlockLength);\n\n" +
             "        return this;\n" +
             "    }\n\n" +
             "    public int size()\n" +
             "    {\n" +
-            "        return position - offset;\n" +
+            "        return limit - offset;\n" +
             "    }\n\n" +
-            "    public int position()\n" +
+            "    public int limit()\n" +
             "    {\n" +
-            "        return position;\n" +
+            "        return limit;\n" +
             "    }\n\n" +
-            "    public void position(final int position)\n" +
+            "    public void limit(final int limit)\n" +
             "    {\n" +
-            "        buffer.checkPosition(position);\n" +
-            "        this.position = position;\n" +
+            "        buffer.checkLimit(limit);\n" +
+            "        this.limit = limit;\n" +
             "    }\n",
             templateIdType,
             generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(schemaId)),

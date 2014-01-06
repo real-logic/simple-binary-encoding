@@ -91,19 +91,19 @@ public class DirectBuffer
     }
 
     /**
-     * Check that a given position is within the capacity of a buffer from a given offset.
+     * Check that a given limit is not greater than the capacity of a buffer from a given offset.
      *
-     * Can be overridden in a DirectBuffer subclass to enable an extensible buffer.
+     * Can be overridden in a DirectBuffer subclass to enable an extensible buffer or handle retry after a flush.
      *
-     * @param position access is required to.
-     * @throws IndexOutOfBoundsException if position is beyond buffer capacity.
+     * @param limit access is required to.
+     * @throws IndexOutOfBoundsException if limit is beyond buffer capacity.
      */
-    public void checkPosition(final int position)
+    public void checkLimit(final int limit)
     {
-        if (position > capacity)
+        if (limit > capacity)
         {
-            final String msg = String.format("position=%d is beyond capacity=%d",
-                                             Integer.valueOf(position),
+            final String msg = String.format("limit=%d is beyond capacity=%d",
+                                             Integer.valueOf(limit),
                                              Integer.valueOf(capacity));
 
             throw new IndexOutOfBoundsException(msg);

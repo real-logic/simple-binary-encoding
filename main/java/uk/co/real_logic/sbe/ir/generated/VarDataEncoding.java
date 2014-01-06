@@ -5,13 +5,6 @@ import uk.co.real_logic.sbe.codec.java.*;
 
 public class VarDataEncoding
 {
-    public enum MetaAttribute
-    {
-        EPOCH,
-        TIME_UNIT,
-        SEMANTIC_TYPE
-    }
-
     private DirectBuffer buffer;
     private int offset;
     private int actingVersion;

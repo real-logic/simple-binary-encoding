@@ -204,10 +204,10 @@ public class JavaGeneratorTest
         msgFlyweight.getClass().getDeclaredMethod("wrapForEncode", DirectBuffer.class, int.class)
                                .invoke(msgFlyweight, mockBuffer, Integer.valueOf(0));
 
-        final Integer initialPosition = (Integer)msgFlyweight.getClass().getDeclaredMethod("position").invoke(msgFlyweight);
+        final Integer initialPosition = (Integer)msgFlyweight.getClass().getDeclaredMethod("limit").invoke(msgFlyweight);
 
         final Object groupFlyweight = clazz.getDeclaredMethod("fuelFigures").invoke(msgFlyweight);
-        assertThat((Integer)msgFlyweight.getClass().getDeclaredMethod("position").invoke(msgFlyweight), greaterThan(initialPosition));
+        assertThat((Integer)msgFlyweight.getClass().getDeclaredMethod("limit").invoke(msgFlyweight), greaterThan(initialPosition));
 
         final Integer count = (Integer)groupFlyweight.getClass().getDeclaredMethod("count").invoke(groupFlyweight);
         assertThat(count, is(Integer.valueOf(0)));

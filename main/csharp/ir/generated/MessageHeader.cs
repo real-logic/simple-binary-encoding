@@ -7,13 +7,6 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
 {
     public class MessageHeader
     {
-        public enum MetaAttribute
-        {
-            Epoch,
-            TimeUnit,
-            SemanticType
-        }
-
         private DirectBuffer _buffer;
         private int _offset;
         private int _actingVersion;
