@@ -7,13 +7,6 @@ namespace Baseline
 {
     public class Car
     {
-        public enum MetaAttribute
-        {
-            Epoch,
-            TimeUnit,
-            SemanticType
-        }
-
     public const ushort TemplateId = (ushort)1;
     public const byte TemplateVersion = (byte)0;
     public const ushort BlockLength = (ushort)41;

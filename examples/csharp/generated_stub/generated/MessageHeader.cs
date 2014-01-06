@@ -7,13 +7,6 @@ namespace Baseline
 {
     public class MessageHeader
     {
-        public enum MetaAttribute
-        {
-            Epoch,
-            TimeUnit,
-            SemanticType
-        }
-
         private DirectBuffer _buffer;
         private int _offset;
         private int _actingVersion;

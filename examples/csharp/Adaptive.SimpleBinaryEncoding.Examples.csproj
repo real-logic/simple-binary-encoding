@@ -53,6 +53,7 @@
     <Compile Include="generated_stub\generated\Engine.cs" />
     <Compile Include="generated_stub\generated\GroupSizeEncoding.cs" />
     <Compile Include="generated_stub\generated\MessageHeader.cs" />
+    <Compile Include="generated_stub\generated\MetaAttribute.cs" />
     <Compile Include="generated_stub\generated\Model.cs" />
     <Compile Include="generated_stub\generated\OptionalExtras.cs" />
     <Compile Include="generated_stub\generated\VarDataEncoding.cs" />

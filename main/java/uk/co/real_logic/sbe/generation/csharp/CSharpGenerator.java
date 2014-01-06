@@ -38,6 +38,8 @@ public class CSharpGenerator implements CodeGenerator
     /** Class name to be used for visitor pattern that accesses the message headerStructure. */
     public static final String MESSAGE_HEADER_TYPE = "MessageHeader";
 
+    private static final String META_ATTRIBUTE_ENUM = "MetaAttribute";
+
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
 
@@ -71,6 +73,8 @@ public class CSharpGenerator implements CodeGenerator
 
     public void generateTypeStubs() throws IOException
     {
+        generateMetaAttributeEnum();
+
         for (final List<Token> tokens : ir.types())
         {
             switch (tokens.get(0).signal())
@@ -518,15 +522,28 @@ public class CSharpGenerator implements CodeGenerator
     {
         return String.format(
             "    public class %s\n" +
-            "    {\n" +
-            "        public enum MetaAttribute\n" +
-            "        {\n" +
-            "            Epoch,\n" +
-            "            TimeUnit,\n" +
-            "            SemanticType\n" +
-            "        }\n\n",
+            "    {\n",
             className
         );
+    }
+
+    private void generateMetaAttributeEnum() throws IOException
+    {
+        try (final Writer out = outputManager.createOutput(META_ATTRIBUTE_ENUM))
+        {
+            out.append(generateFileHeader(ir.packageName()));
+
+            out.append(String.format(
+                            "    public enum MetaAttribute\n" +
+                            "    {\n" +
+                            "        Epoch,\n" +
+                            "        TimeUnit,\n" +
+                            "        SemanticType\n" +
+                            "    }\n" +
+                            "}\n",
+                    ir.packageName()
+            ));
+        }
     }
 
     private CharSequence generateEnumDeclaration(final String name, final String primitiveType, final boolean addFlagsAttribute)
