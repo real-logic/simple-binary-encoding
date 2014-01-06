@@ -4,7 +4,7 @@ using Baseline;
 
 namespace Adaptive.SimpleBinaryEncoding.Examples.generated_stub
 {
-    public class ExampleUsingGeneratedStub
+    public static class ExampleUsingGeneratedStub
     {
         private static readonly byte[] _vehicleCode;
         private static readonly byte[] _manufacturerCode;

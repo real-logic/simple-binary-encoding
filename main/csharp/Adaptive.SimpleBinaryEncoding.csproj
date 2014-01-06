@@ -80,16 +80,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DotNetPort-Notes.txt" />
-    <Content Include="ir\Migrated\Encoding.java" />
-    <Content Include="ir\Migrated\HeaderStructure.java" />
-    <Content Include="ir\Migrated\IntermediateRepresentation.java" />
-    <Content Include="ir\Migrated\IrDecoder.java" />
-    <Content Include="ir\Migrated\IrEncoder.java" />
-    <Content Include="ir\Migrated\IrUtil.java" />
-    <Content Include="ir\Migrated\Signal.java" />
-    <Content Include="ir\Migrated\Token.java" />
-    <Content Include="PrimitiveType.java" />
-    <Content Include="PrimitiveValue.java" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

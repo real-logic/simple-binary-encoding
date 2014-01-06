@@ -69,10 +69,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Otf\ExampleTokenListener.java" />
-    <Content Include="Otf\OtfExample.java" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Otf\car_example_serialized_ir.bin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

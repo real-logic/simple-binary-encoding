@@ -477,7 +477,7 @@
         <copy file="vs2013/.nuget/GenerateSampleCode.bat" todir="${dir.dist}/csharp/sample" />
         <copy file="vs2013/.nuget/readme.txt" todir="${dir.dist}/csharp" />
         <copy file="examples/resources/TestSchema.xml"  todir="${dir.dist}/csharp/sample" />
-        <copy file="examples/csharp/SbeProgram.cs" todir="${dir.dist}/csharp/sample" />
+        <copy file="examples/csharp/generated_stub/ExampleUsingGeneratedStub.cs" todir="${dir.dist}/csharp/sample" />
 
         <exec executable="C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe">
             <arg value="/t:Package"/>
