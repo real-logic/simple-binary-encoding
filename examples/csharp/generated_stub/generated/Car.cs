@@ -68,6 +68,18 @@ namespace Baseline
 
     public const int SerialNumberSchemaId = 1;
 
+    public static string SerialNumberMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
     public const uint SerialNumberNullVal = 4294967294U;
 
     public const uint SerialNumberMinVal = 0U;
@@ -88,6 +100,18 @@ namespace Baseline
 
 
     public const int ModelYearSchemaId = 2;
+
+    public static string ModelYearMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
 
     public const ushort ModelYearNullVal = (ushort)65535;
 
@@ -110,6 +134,18 @@ namespace Baseline
 
     public const int AvailableSchemaId = 3;
 
+    public static string AvailableMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
     public BooleanType Available
     {
         get
@@ -125,6 +161,18 @@ namespace Baseline
 
     public const int CodeSchemaId = 4;
 
+    public static string CodeMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
     public Model Code
     {
         get
@@ -139,6 +187,18 @@ namespace Baseline
 
 
     public const int SomeNumbersSchemaId = 5;
+
+    public static string SomeNumbersMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
 
     public const int SomeNumbersNullVal = -2147483648;
 
@@ -169,6 +229,18 @@ namespace Baseline
     }
 
     public const int VehicleCodeSchemaId = 6;
+
+    public static string VehicleCodeMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
 
     public const byte VehicleCodeNullVal = (byte)0;
 
@@ -225,6 +297,18 @@ namespace Baseline
 
     public const int ExtrasSchemaId = 7;
 
+    public static string ExtrasMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
     public OptionalExtras Extras
     {
         get
@@ -238,6 +322,18 @@ namespace Baseline
     }
 
     public const int EngineSchemaId = 8;
+
+    public static string EngineMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
 
     private readonly Engine _engine = new Engine();
 
@@ -290,8 +386,7 @@ namespace Baseline
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            const int dimensionsHeaderSize = 3;
-            _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+            _parentMessage.Position = parentMessage.Position + 3;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -304,8 +399,7 @@ namespace Baseline
             _index = -1;
             _count = count;
             _blockLength = 6;
-            const int dimensionsHeaderSize = 3;
-            parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+            parentMessage.Position = parentMessage.Position + 3;
         }
 
         public int Count { get { return _count; } }
@@ -328,6 +422,18 @@ namespace Baseline
 
         public const int SpeedSchemaId = 10;
 
+        public static string SpeedMetaAttribute(MetaAttribute metaAttribute)
+        {
+            switch (metaAttribute)
+            {
+                case MetaAttribute.Epoch: return "unix";
+                case MetaAttribute.TimeUnit: return "nanosecond";
+                case MetaAttribute.SemanticType: return "";
+            }
+
+            return "";
+        }
+
         public const ushort SpeedNullVal = (ushort)65535;
 
         public const ushort SpeedMinVal = (ushort)0;
@@ -348,6 +454,18 @@ namespace Baseline
 
 
         public const int MpgSchemaId = 11;
+
+        public static string MpgMetaAttribute(MetaAttribute metaAttribute)
+        {
+            switch (metaAttribute)
+            {
+                case MetaAttribute.Epoch: return "unix";
+                case MetaAttribute.TimeUnit: return "nanosecond";
+                case MetaAttribute.SemanticType: return "";
+            }
+
+            return "";
+        }
 
         public const float MpgNullVal = float.NaN;
 
@@ -409,8 +527,7 @@ namespace Baseline
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            const int dimensionsHeaderSize = 3;
-            _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+            _parentMessage.Position = parentMessage.Position + 3;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -423,8 +540,7 @@ namespace Baseline
             _index = -1;
             _count = count;
             _blockLength = 1;
-            const int dimensionsHeaderSize = 3;
-            parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+            parentMessage.Position = parentMessage.Position + 3;
         }
 
         public int Count { get { return _count; } }
@@ -446,6 +562,18 @@ namespace Baseline
         }
 
         public const int OctaneRatingSchemaId = 13;
+
+        public static string OctaneRatingMetaAttribute(MetaAttribute metaAttribute)
+        {
+            switch (metaAttribute)
+            {
+                case MetaAttribute.Epoch: return "unix";
+                case MetaAttribute.TimeUnit: return "nanosecond";
+                case MetaAttribute.SemanticType: return "";
+            }
+
+            return "";
+        }
 
         public const byte OctaneRatingNullVal = (byte)255;
 
@@ -506,8 +634,7 @@ namespace Baseline
                 _blockLength = _dimensions.BlockLength;
                 _actingVersion = actingVersion;
                 _index = -1;
-                const int dimensionsHeaderSize = 3;
-                _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+                _parentMessage.Position = parentMessage.Position + 3;
             }
 
             public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -520,8 +647,7 @@ namespace Baseline
                 _index = -1;
                 _count = count;
                 _blockLength = 6;
-                const int dimensionsHeaderSize = 3;
-                parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;
+                parentMessage.Position = parentMessage.Position + 3;
             }
 
             public int Count { get { return _count; } }
@@ -544,6 +670,18 @@ namespace Baseline
 
             public const int MphSchemaId = 15;
 
+            public static string MphMetaAttribute(MetaAttribute metaAttribute)
+            {
+                switch (metaAttribute)
+                {
+                    case MetaAttribute.Epoch: return "unix";
+                    case MetaAttribute.TimeUnit: return "nanosecond";
+                    case MetaAttribute.SemanticType: return "";
+                }
+
+                return "";
+            }
+
             public const ushort MphNullVal = (ushort)65535;
 
             public const ushort MphMinVal = (ushort)0;
@@ -564,6 +702,18 @@ namespace Baseline
 
 
             public const int SecondsSchemaId = 16;
+
+            public static string SecondsMetaAttribute(MetaAttribute metaAttribute)
+            {
+                switch (metaAttribute)
+                {
+                    case MetaAttribute.Epoch: return "unix";
+                    case MetaAttribute.TimeUnit: return "nanosecond";
+                    case MetaAttribute.SemanticType: return "";
+                }
+
+                return "";
+            }
 
             public const float SecondsNullVal = float.NaN;
 
@@ -590,15 +740,28 @@ namespace Baseline
 
     public const string MakeCharacterEncoding = "UTF-8";
 
+
+    public static string MakeMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "Make";
+        }
+
+        return "";
+    }
+
     public int GetMake(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int lengthPosition = Position;
-        Position = lengthPosition + sizeOfLengthField;
-        int dataLength = _buffer.Uint8Get(lengthPosition);
+        int position = Position;
+        _buffer.CheckPosition(position + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(position);
         int bytesCopied = Math.Min(length, dataLength);
-        _buffer.GetBytes(Position, dst, dstOffset, bytesCopied);
-        Position = Position + dataLength;
+        Position = position + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -606,11 +769,10 @@ namespace Baseline
     public int SetMake(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int lengthPosition = Position;
-        _buffer.Uint8Put(lengthPosition, (byte)length);
-        Position = lengthPosition + sizeOfLengthField;
-        _buffer.SetBytes(Position, src, srcOffset, length);
-        Position = Position + length;
+        int position = Position;
+        Position = position + sizeOfLengthField + length;
+        _buffer.Uint8Put(position, (byte)length);
+        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -619,15 +781,28 @@ namespace Baseline
 
     public const string ModelCharacterEncoding = "UTF-8";
 
+
+    public static string ModelMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
     public int GetModel(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int lengthPosition = Position;
-        Position = lengthPosition + sizeOfLengthField;
-        int dataLength = _buffer.Uint8Get(lengthPosition);
+        int position = Position;
+        _buffer.CheckPosition(position + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(position);
         int bytesCopied = Math.Min(length, dataLength);
-        _buffer.GetBytes(Position, dst, dstOffset, bytesCopied);
-        Position = Position + dataLength;
+        Position = position + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -635,11 +810,10 @@ namespace Baseline
     public int SetModel(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int lengthPosition = Position;
-        _buffer.Uint8Put(lengthPosition, (byte)length);
-        Position = lengthPosition + sizeOfLengthField;
-        _buffer.SetBytes(Position, src, srcOffset, length);
-        Position = Position + length;
+        int position = Position;
+        Position = position + sizeOfLengthField + length;
+        _buffer.Uint8Put(position, (byte)length);
+        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }

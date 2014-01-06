@@ -38,6 +38,8 @@ public class CSharpGenerator implements CodeGenerator
     /** Class name to be used for visitor pattern that accesses the message headerStructure. */
     public static final String MESSAGE_HEADER_TYPE = "MessageHeader";
 
+    private static final String META_ATTRIBUTE_ENUM = "MetaAttribute";
+
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
 
@@ -71,6 +73,8 @@ public class CSharpGenerator implements CodeGenerator
 
     public void generateTypeStubs() throws IOException
     {
+        generateMetaAttributeEnum();
+
         for (final List<Token> tokens : ir.types())
         {
             switch (tokens.get(0).signal())
@@ -231,8 +235,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _blockLength = _dimensions.BlockLength;\n" +
             indent + "        _actingVersion = actingVersion;\n" +
             indent + "        _index = -1;\n" +
-            indent + "        const int dimensionsHeaderSize = %d;\n" +
-            indent + "        _parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;\n" +
+            indent + "        _parentMessage.Position = parentMessage.Position + %d;\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             dimensionHeaderSize
@@ -253,8 +256,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _index = -1;\n" +
             indent + "        _count = count;\n" +
             indent + "        _blockLength = %4$d;\n" +
-            indent + "        const int dimensionsHeaderSize = %5$d;\n" +
-            indent + "        parentMessage.Position = parentMessage.Position + dimensionsHeaderSize;\n" +
+            indent + "        parentMessage.Position = parentMessage.Position + %5$d;\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             typeForNumInGroup,
@@ -348,27 +350,29 @@ public class CSharpGenerator implements CodeGenerator
 
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
                 generateCharacterEncodingMethod(sb, token.name(), characterEncoding);
+                generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
 
                 final String propertyName = toUpperFirstChar(token.name());
                 final Token lengthToken = tokens.get(i + 2);
                 final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
                 final Encoding lengthEncoding = lengthToken.encoding();
-                final String lengthJavaType = cSharpTypeName(lengthEncoding.primitiveType());
+                final String lengthCsharpType = cSharpTypeName(lengthEncoding.primitiveType());
                 final String lengthTypePrefix = toUpperFirstChar(lengthEncoding.primitiveType().primitiveName());
                 final ByteOrder byteOrder = lengthEncoding.byteOrder();
                 final String byteOrderStr = generateByteOrder(byteOrder, lengthEncoding.primitiveType().size());
 
                 sb.append(String.format(
+                    "\n" +
                     "    public int Get%1$s(byte[] dst, int dstOffset, int length)\n" +
                     "    {\n" +
                     "%2$s" +
                     "        const int sizeOfLengthField = %3$d;\n" +
-                    "        int lengthPosition = Position;\n" +
-                    "        Position = lengthPosition + sizeOfLengthField;\n" +
-                    "        int dataLength = _buffer.%4$sGet%5$s(lengthPosition);\n" +
+                    "        int position = Position;\n" +
+                    "        _buffer.CheckPosition(position + sizeOfLengthField);\n" +
+                    "        int dataLength = _buffer.%4$sGet%5$s(position);\n" +
                     "        int bytesCopied = Math.Min(length, dataLength);\n" +
-                    "        _buffer.GetBytes(Position, dst, dstOffset, bytesCopied);\n" +
-                    "        Position = Position + dataLength;\n\n" +
+                    "        Position = position + sizeOfLengthField + dataLength;\n" +
+                    "        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
                     "        return bytesCopied;\n" +
                     "    }\n\n",
                     propertyName,
@@ -382,17 +386,16 @@ public class CSharpGenerator implements CodeGenerator
                     "    public int Set%1$s(byte[] src, int srcOffset, int length)\n" +
                     "    {\n" +
                     "        const int sizeOfLengthField = %2$d;\n" +
-                    "        int lengthPosition = Position;\n" +
-                    "        _buffer.%3$sPut(lengthPosition, (%4$s)length%5$s);\n" +
-                    "        Position = lengthPosition + sizeOfLengthField;\n" +
-                    "        _buffer.SetBytes(Position, src, srcOffset, length);\n" +
-                    "        Position = Position + length;\n\n" +
+                    "        int position = Position;\n" +
+                    "        Position = position + sizeOfLengthField + length;\n" +
+                    "        _buffer.%3$sPut%5$s(position, (%4$s)length);\n" +
+                    "        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);\n\n" +
                     "        return length;\n" +
                     "    }\n",
                     propertyName,
                     sizeOfLengthField,
                     lengthTypePrefix,
-                    lengthJavaType,
+                    lengthCsharpType,
                     byteOrderStr
                 ));
             }
@@ -519,9 +522,28 @@ public class CSharpGenerator implements CodeGenerator
     {
         return String.format(
             "    public class %s\n" +
-                "    {\n",
+            "    {\n",
             className
         );
+    }
+
+    private void generateMetaAttributeEnum() throws IOException
+    {
+        try (final Writer out = outputManager.createOutput(META_ATTRIBUTE_ENUM))
+        {
+            out.append(generateFileHeader(ir.packageName()));
+
+            out.append(String.format(
+                            "    public enum MetaAttribute\n" +
+                            "    {\n" +
+                            "        Epoch,\n" +
+                            "        TimeUnit,\n" +
+                            "        SemanticType\n" +
+                            "    }\n" +
+                            "}\n",
+                    ir.packageName()
+            ));
+        }
     }
 
     private CharSequence generateEnumDeclaration(final String name, final String primitiveType, final boolean addFlagsAttribute)
@@ -992,6 +1014,7 @@ public class CSharpGenerator implements CodeGenerator
                 final String propertyName = signalToken.name();
 
                 generateFieldIdMethod(sb, signalToken, indent);
+                generateFieldMetaAttributeMethod(sb, signalToken, indent);
 
                 switch (encodingToken.signal())
                 {
@@ -1024,6 +1047,32 @@ public class CSharpGenerator implements CodeGenerator
             indent + "    public const int %sSchemaId = %d;\n",
             CSharpUtil.formatPropertyName(token.name()),
             Integer.valueOf(token.schemaId())
+        ));
+    }
+
+    private void generateFieldMetaAttributeMethod(final StringBuilder sb, final Token token, final String indent)
+    {
+        final Encoding encoding = token.encoding();
+        final String epoch = encoding.epoch() == null ? "" : encoding.epoch();
+        final String timeUnit = encoding.timeUnit() == null ? "" : encoding.timeUnit();
+        final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
+
+        sb.append(String.format(
+                "\n" +
+                        indent + "    public static string %sMetaAttribute(MetaAttribute metaAttribute)\n" +
+                        indent + "    {\n" +
+                        indent + "        switch (metaAttribute)\n" +
+                        indent + "        {\n" +
+                        indent + "            case MetaAttribute.Epoch: return \"%s\";\n" +
+                        indent + "            case MetaAttribute.TimeUnit: return \"%s\";\n" +
+                        indent + "            case MetaAttribute.SemanticType: return \"%s\";\n" +
+                        indent + "        }\n\n" +
+                        indent + "        return \"\";\n" +
+                        indent + "    }\n",
+                toUpperFirstChar(token.name()),
+                epoch,
+                timeUnit,
+                semanticType
         ));
     }
 

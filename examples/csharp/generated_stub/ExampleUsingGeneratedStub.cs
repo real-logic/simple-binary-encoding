@@ -2,9 +2,9 @@
 using System.Text;
 using Baseline;
 
-namespace Adaptive.SimpleBinaryEncoding.Examples
+namespace Adaptive.SimpleBinaryEncoding.Examples.generated_stub
 {
-    public class SbeProgram
+    public static class ExampleUsingGeneratedStub
     {
         private static readonly byte[] _vehicleCode;
         private static readonly byte[] _manufacturerCode;
@@ -14,7 +14,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples
         private static readonly MessageHeader MessageHeader = new MessageHeader();
         private static readonly Car Car = new Car();
 
-        static SbeProgram()
+        static ExampleUsingGeneratedStub()
         {
             try
             {
@@ -30,7 +30,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples
             }
         }
 
-        private static void Main()
+        public static void Main()
         {
             // This byte array is used for encoding and decoding, this is what ou would send on the wire or save to disk
             var byteBuffer = new byte[4096];
@@ -67,11 +67,9 @@ namespace Adaptive.SimpleBinaryEncoding.Examples
             bufferOffset += MessageHeader.Size;
             // now we decode the message
             Decode(Car, directBuffer, bufferOffset, actingBlockLength, actingVersion);
-
-            Console.ReadKey();
         }
 
-        private static int Encode(Car car, DirectBuffer directBuffer, int bufferOffset)
+        public static int Encode(Car car, DirectBuffer directBuffer, int bufferOffset)
         {
             const int srcOffset = 0;
 
@@ -148,7 +146,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples
             return car.Size;
         }
 
-        private static void Decode(Car car,
+        public static void Decode(Car car,
             DirectBuffer directBuffer,
             int bufferOffset,
             int actingBlockLength,
@@ -223,6 +221,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples
             }
 
             // variable length fields
+            sb.Append("\ncar.make.semanticType=").Append(Car.MakeMetaAttribute(MetaAttribute.SemanticType));
             length = car.GetMake(buffer, 0, buffer.Length);
             sb.Append("\ncar.make=").Append(Encoding.GetEncoding(Car.MakeCharacterEncoding).GetString(buffer, 0, length));
 

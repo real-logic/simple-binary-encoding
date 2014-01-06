@@ -37,6 +37,8 @@
     <property name="dir.test.cpp.include" location="test/cpp"/>
     <property name="exec.test.cpp" location="target/test/cpp/gtest-runner"/>
 
+    <property name="dir.main.csharp.src" location="main/csharp/ir/generated"/>
+
     <path id="test.classpath">
         <pathelement path="${dir.main.build}"/>
         <pathelement path="${dir.test.build}"/>
@@ -212,7 +214,16 @@
         </java>
     </target>
 
-    <target name="generate:sbeir" depends="generate:java:sbeir, generate:cpp98:sbeir"
+    <target name="generate:chsarp:sbeir" depends="dist" description="Generate serialized IR code for C#">
+        <java classname="uk.co.real_logic.sbe.SbeTool">
+            <classpath refid="sbetool.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.main.csharp.src}"/>
+            <sysproperty key="sbe.target.language" value="csharp"/>
+            <arg value="${dir.main.resources}/sbe-ir.xml"/>
+        </java>
+    </target>
+
+    <target name="generate:sbeir" depends="generate:java:sbeir, generate:cpp98:sbeir, generate:chsarp:sbeir"
             description="Generate serialized IR code for all languages"/>
 
     <!-- SBE Examples targets -->
@@ -429,6 +440,7 @@
 
     <property name="dir.gen.csharp" value="target/gen/csharp"/>
     <property name="dir.main.csharp.output" value="target/main/csharp/bin/Release"/>
+    <property name="serialized.ir.filename" value="car_example_serialized_ir.bin"/>
 
     <target name="csharp:examples" depends="dist" description="Generate C# files for the car example">
         <mkdir dir="${dir.gen.csharp}"/>
@@ -436,15 +448,19 @@
             <classpath refid="examples.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.gen.csharp}"/>
             <sysproperty key="sbe.target.language" value="CSharp"/>
+            <sysproperty key="sbe.ir.filename" value="${serialized.ir.filename}"/>
             <arg value="${dir.examples.resources}/TestSchema.xml"/>
         </java>
 
-        <copy todir="examples/csharp/">
-            <fileset dir="${dir.gen.csharp}"/>
+        <copy todir="examples/csharp/generated_stub/generated">
+            <fileset dir="${dir.gen.csharp}">
+                <exclude name="**/${serialized.ir.filename}"/>
+            </fileset>
         </copy>
+        <copy todir="examples/csharp/otf" file="${dir.gen.csharp}/${serialized.ir.filename}" />
     </target>
 
-    <target name="csharp:build" depends="init, csharp:examples" description="Build .NET solution and run unit tests">
+    <target name="csharp:build" depends="init, csharp:examples, generate:chsarp:sbeir" description="Build .NET solution and run unit tests">
         <echo message="Calling MSBuild with version: ${build.version}"  />
         <exec executable="C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe">
             <arg value="/p:BUILD_NUMBER=${build.version}"/>
@@ -461,7 +477,7 @@
         <copy file="vs2013/.nuget/GenerateSampleCode.bat" todir="${dir.dist}/csharp/sample" />
         <copy file="vs2013/.nuget/readme.txt" todir="${dir.dist}/csharp" />
         <copy file="examples/resources/TestSchema.xml"  todir="${dir.dist}/csharp/sample" />
-        <copy file="examples/csharp/SbeProgram.cs" todir="${dir.dist}/csharp/sample" />
+        <copy file="examples/csharp/generated_stub/ExampleUsingGeneratedStub.cs" todir="${dir.dist}/csharp/sample" />
 
         <exec executable="C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe">
             <arg value="/t:Package"/>

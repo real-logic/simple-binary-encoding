@@ -47,7 +47,7 @@ Move all the generated files (\sample\output\*.cs) to the root of the project.
 
 You will also need to add \lib\net40\sbe.dll as a reference to your project, if it's not already there (if you added the NuGet package to an existing project it should already be there).
 
-The package also contains a sample class which manipulates the generated code to encode a message and then decode it (\sample\SbeProgram.cs)
+The package also contains a sample class which manipulates the generated code to encode a message and then decode it (\sample\ExampleUsingGeneratedStub.cs)
 Add this file to your project and configure it as an entry point for the project (Project properties > Application > Startup object) 
 and also change the project type to console application if it's not already one.
 

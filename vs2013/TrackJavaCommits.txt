@@ -1,0 +1,16 @@
+This file contains the list of commits of Java ported to .NET (most recent at the TOP)
+
+e656ddc11ec0b27ed7430805ff4408416a915d15
+[Java]: Moved MetaAttribute to be top level.
+
+d96fa2d7e1b5fd2dd7b176693d6b2b06a339e982
+[Java]: Example of accessing a meta attribute such as semanticType.
+
+3224cc5671cbe08c315766bd65bb0341089bdf76
+[Java]: Added <propertyName>MetaAttribute() method to Java code gen for supporting access to the likes of semanticType, epoch, and timeUnit from layer 7.
+
+20d9334708ce25580d72f9cf8ec3abc0a1569568
+[Java]: Minor tidy up of group wrap methods.
+
+f1c35089126156f24c05a5ba3c5a6d2e0bddda2a
+[Java]: Corrected position check location for var data and optimised the writes to the position in parent message.
