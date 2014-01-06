@@ -386,7 +386,8 @@ void Ir::addToken(uint32_t offset,
               .tokenVersion(0)
               .signal((SignalCodec::Value)signal)
               .primitiveType((PrimitiveTypeCodec::Value)primitiveType)
-              .byteOrder((ByteOrderCodec::Value)byteOrder);
+              .byteOrder((ByteOrderCodec::Value)byteOrder)
+              .presence((constVal != NULL ? PresenceCodec::OPTIONAL : PresenceCodec::REQUIRED));
 
     tokenCodec.putName(name.c_str(), name.size());
     tokenCodec.putConstVal(constVal, constValLength);
