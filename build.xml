@@ -440,6 +440,7 @@
 
     <property name="dir.gen.csharp" value="target/gen/csharp"/>
     <property name="dir.main.csharp.output" value="target/main/csharp/bin/Release"/>
+    <property name="serialized.ir.filename" value="car_example_serialized_ir.bin"/>
 
     <target name="csharp:examples" depends="dist" description="Generate C# files for the car example">
         <mkdir dir="${dir.gen.csharp}"/>
@@ -447,12 +448,16 @@
             <classpath refid="examples.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.gen.csharp}"/>
             <sysproperty key="sbe.target.language" value="CSharp"/>
+            <sysproperty key="sbe.ir.filename" value="${serialized.ir.filename}"/>
             <arg value="${dir.examples.resources}/TestSchema.xml"/>
         </java>
 
-        <copy todir="examples/csharp/">
-            <fileset dir="${dir.gen.csharp}"/>
+        <copy todir="examples/csharp/generated_stub/generated">
+            <fileset dir="${dir.gen.csharp}">
+                <exclude name="**/${serialized.ir.filename}"/>
+            </fileset>
         </copy>
+        <copy todir="examples/csharp/otf" file="${dir.gen.csharp}/${serialized.ir.filename}" />
     </target>
 
     <target name="csharp:build" depends="init, csharp:examples, generate:chsarp:sbeir" description="Build .NET solution and run unit tests">

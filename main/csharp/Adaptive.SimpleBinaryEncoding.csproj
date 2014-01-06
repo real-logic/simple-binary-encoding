@@ -47,10 +47,49 @@
     <Compile Include="ByteOrder.cs" />
     <Compile Include="DirectBuffer.cs" />
     <Compile Include="EndianessConverter.cs" />
+    <Compile Include="ir\Encoding.cs" />
+    <Compile Include="ir\generated\ByteOrderCodec.cs" />
+    <Compile Include="ir\generated\FrameCodec.cs" />
+    <Compile Include="ir\generated\MessageHeader.cs" />
+    <Compile Include="ir\generated\PresenceCodec.cs" />
+    <Compile Include="ir\generated\PrimitiveTypeCodec.cs" />
+    <Compile Include="ir\generated\SignalCodec.cs" />
+    <Compile Include="ir\generated\TokenCodec.cs" />
+    <Compile Include="ir\generated\VarDataEncoding.cs" />
+    <Compile Include="ir\HeaderStructure.cs" />
+    <Compile Include="ir\IntermediateRepresentation.cs" />
+    <Compile Include="ir\IrDecoder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ir\IrUtil.cs" />
+    <Compile Include="ir\Presence.cs" />
+    <Compile Include="ir\Signal.cs" />
+    <Compile Include="ir\Token.cs" />
+    <Compile Include="ir\VersionContext.cs" />
+    <Compile Include="Otf\AbstractTokenListener.cs" />
+    <Compile Include="Otf\ITokenListener.cs" />
+    <Compile Include="Otf\OtfHeaderDecoder.cs" />
+    <Compile Include="Otf\OtfMessageDecoder.cs" />
+    <Compile Include="Otf\Util.cs" />
+    <Compile Include="PrimitiveType.cs" />
+    <Compile Include="PrimitiveValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Representation.cs" />
+    <Compile Include="SbePrimitiveType.cs" />
+    <Compile Include="Util\Verify.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="DotNetPort-Notes.txt" />
+    <Content Include="ir\Migrated\Encoding.java" />
+    <Content Include="ir\Migrated\HeaderStructure.java" />
+    <Content Include="ir\Migrated\IntermediateRepresentation.java" />
+    <Content Include="ir\Migrated\IrDecoder.java" />
+    <Content Include="ir\Migrated\IrEncoder.java" />
+    <Content Include="ir\Migrated\IrUtil.java" />
+    <Content Include="ir\Migrated\Signal.java" />
+    <Content Include="ir\Migrated\Token.java" />
+    <Content Include="PrimitiveType.java" />
+    <Content Include="PrimitiveValue.java" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

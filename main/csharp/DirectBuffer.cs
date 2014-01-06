@@ -27,7 +27,7 @@ namespace Adaptive.SimpleBinaryEncoding
         /// <param name="position">position access is required to.</param>
         public void CheckPosition(int position)
         {
-            if (position >= _buffer.Length)
+            if (position > _buffer.Length)
             {
                  throw new IndexOutOfRangeException(string.Format("position={0} is beyond capacity={1}", position, _buffer.Length));
             }
