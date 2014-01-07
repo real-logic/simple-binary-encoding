@@ -1257,7 +1257,7 @@ public class CSharpGenerator implements CodeGenerator
                 break;
 
             case UINT64:
-                literal = value + "UL";
+                literal = "0x" + Long.toHexString(Long.parseLong(value)) + "UL";
                 break;
 
             case INT64:

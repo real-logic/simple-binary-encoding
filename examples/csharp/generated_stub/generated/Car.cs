@@ -9,7 +9,7 @@ namespace Baseline
     {
     public const ushort TemplateId = (ushort)1;
     public const byte TemplateVersion = (byte)0;
-    public const ushort BlockLength = (ushort)41;
+    public const ushort BlockLength = (ushort)45;
 
     private readonly Car _parentMessage;
     private DirectBuffer _buffer;
@@ -80,21 +80,21 @@ namespace Baseline
         return "";
     }
 
-    public const uint SerialNumberNullVal = 4294967294U;
+    public const ulong SerialNumberNullVal = 0x8000000000000000UL;
 
-    public const uint SerialNumberMinVal = 0U;
+    public const ulong SerialNumberMinVal = 0x0UL;
 
-    public const uint SerialNumberMaxVal = 4294967293U;
+    public const ulong SerialNumberMaxVal = 0x7fffffffffffffffUL;
 
-    public uint SerialNumber
+    public ulong SerialNumber
     {
         get
         {
-            return _buffer.Uint32GetLittleEndian(_offset + 0);
+            return _buffer.Uint64GetLittleEndian(_offset + 0);
         }
         set
         {
-            _buffer.Uint32PutLittleEndian(_offset + 0, value);
+            _buffer.Uint64PutLittleEndian(_offset + 0, value);
         }
     }
 
@@ -123,11 +123,11 @@ namespace Baseline
     {
         get
         {
-            return _buffer.Uint16GetLittleEndian(_offset + 4);
+            return _buffer.Uint16GetLittleEndian(_offset + 8);
         }
         set
         {
-            _buffer.Uint16PutLittleEndian(_offset + 4, value);
+            _buffer.Uint16PutLittleEndian(_offset + 8, value);
         }
     }
 
@@ -150,11 +150,11 @@ namespace Baseline
     {
         get
         {
-            return (BooleanType)_buffer.Uint8Get(_offset + 6);
+            return (BooleanType)_buffer.Uint8Get(_offset + 10);
         }
         set
         {
-            _buffer.Uint8Put(_offset + 6, (byte)value);
+            _buffer.Uint8Put(_offset + 10, (byte)value);
         }
     }
 
@@ -177,11 +177,11 @@ namespace Baseline
     {
         get
         {
-            return (Model)_buffer.CharGet(_offset + 7);
+            return (Model)_buffer.CharGet(_offset + 11);
         }
         set
         {
-            _buffer.CharPut(_offset + 7, (byte)value);
+            _buffer.CharPut(_offset + 11, (byte)value);
         }
     }
 
@@ -215,7 +215,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("index out of range: index=" + index);
         }
 
-        return _buffer.Int32GetLittleEndian(_offset + 8 + (index * 4));
+        return _buffer.Int32GetLittleEndian(_offset + 12 + (index * 4));
     }
 
     public void SetSomeNumbers(int index, int value)
@@ -225,7 +225,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("index out of range: index=" + index);
         }
 
-        _buffer.Int32PutLittleEndian(_offset + 8 + (index * 4), value);
+        _buffer.Int32PutLittleEndian(_offset + 12 + (index * 4), value);
     }
 
     public const int VehicleCodeSchemaId = 6;
@@ -257,7 +257,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("index out of range: index=" + index);
         }
 
-        return _buffer.CharGet(_offset + 28 + (index * 1));
+        return _buffer.CharGet(_offset + 32 + (index * 1));
     }
 
     public void SetVehicleCode(int index, byte value)
@@ -267,7 +267,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("index out of range: index=" + index);
         }
 
-        _buffer.CharPut(_offset + 28 + (index * 1), value);
+        _buffer.CharPut(_offset + 32 + (index * 1), value);
     }
 
     public const string VehicleCodeCharacterEncoding = "UTF-8";
@@ -280,7 +280,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("dstOffset out of range for copy: offset=" + dstOffset);
         }
 
-        _buffer.GetBytes(_offset + 28, dst, dstOffset, length);
+        _buffer.GetBytes(_offset + 32, dst, dstOffset, length);
         return length;
     }
 
@@ -292,7 +292,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("srcOffset out of range for copy: offset=" + srcOffset);
         }
 
-        _buffer.SetBytes(_offset + 28, src, srcOffset, length);
+        _buffer.SetBytes(_offset + 32, src, srcOffset, length);
     }
 
     public const int ExtrasSchemaId = 7;
@@ -313,11 +313,11 @@ namespace Baseline
     {
         get
         {
-            return (OptionalExtras)_buffer.Uint8Get(_offset + 34);
+            return (OptionalExtras)_buffer.Uint8Get(_offset + 38);
         }
         set
         {
-            _buffer.Uint8Put(_offset + 34, (byte)value);
+            _buffer.Uint8Put(_offset + 38, (byte)value);
         }
     }
 
@@ -341,7 +341,7 @@ namespace Baseline
     {
         get
         {
-            _engine.Wrap(_buffer, _offset + 35, _actingVersion);
+            _engine.Wrap(_buffer, _offset + 39, _actingVersion);
             return _engine;
         }
     }
