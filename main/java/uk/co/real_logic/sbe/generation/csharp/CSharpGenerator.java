@@ -230,12 +230,12 @@ public class CSharpGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        _parentMessage = parentMessage;\n" +
             indent + "        _buffer = buffer;\n" +
-            indent + "        _dimensions.Wrap(buffer, parentMessage.Position, actingVersion);\n" +
+            indent + "        _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);\n" +
             indent + "        _count = _dimensions.NumInGroup;\n" +
             indent + "        _blockLength = _dimensions.BlockLength;\n" +
             indent + "        _actingVersion = actingVersion;\n" +
             indent + "        _index = -1;\n" +
-            indent + "        _parentMessage.Position = parentMessage.Position + %d;\n" +
+            indent + "        _parentMessage.Limit = parentMessage.Limit + %d;\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             dimensionHeaderSize
@@ -250,13 +250,13 @@ public class CSharpGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        _parentMessage = parentMessage;\n" +
             indent + "        _buffer = buffer;\n" +
-            indent + "        _dimensions.Wrap(buffer, parentMessage.Position, _actingVersion);\n" +
+            indent + "        _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);\n" +
             indent + "        _dimensions.NumInGroup = (%2$s)count;\n" +
             indent + "        _dimensions.BlockLength = (%3$s)%4$d;\n" +
             indent + "        _index = -1;\n" +
             indent + "        _count = count;\n" +
             indent + "        _blockLength = %4$d;\n" +
-            indent + "        parentMessage.Position = parentMessage.Position + %5$d;\n" +
+            indent + "        parentMessage.Limit = parentMessage.Limit + %5$d;\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             typeForNumInGroup,
@@ -277,8 +277,8 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new InvalidOperationException();\n" +
             indent + "        }\n\n" +
-            indent + "        _offset = _parentMessage.Position;\n" +
-            indent + "        _parentMessage.Position = _offset + _blockLength;\n" +
+            indent + "        _offset = _parentMessage.Limit;\n" +
+            indent + "        _parentMessage.Limit = _offset + _blockLength;\n" +
             indent + "        ++_index;\n\n" +
             indent + "        return this;\n" +
             indent + "    }\n",
@@ -367,12 +367,12 @@ public class CSharpGenerator implements CodeGenerator
                     "    {\n" +
                     "%2$s" +
                     "        const int sizeOfLengthField = %3$d;\n" +
-                    "        int position = Position;\n" +
-                    "        _buffer.CheckPosition(position + sizeOfLengthField);\n" +
-                    "        int dataLength = _buffer.%4$sGet%5$s(position);\n" +
+                    "        int limit = Limit;\n" +
+                    "        _buffer.CheckLimit(limit + sizeOfLengthField);\n" +
+                    "        int dataLength = _buffer.%4$sGet%5$s(limit);\n" +
                     "        int bytesCopied = Math.Min(length, dataLength);\n" +
-                    "        Position = position + sizeOfLengthField + dataLength;\n" +
-                    "        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
+                    "        Limit = limit + sizeOfLengthField + dataLength;\n" +
+                    "        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
                     "        return bytesCopied;\n" +
                     "    }\n\n",
                     propertyName,
@@ -386,10 +386,10 @@ public class CSharpGenerator implements CodeGenerator
                     "    public int Set%1$s(byte[] src, int srcOffset, int length)\n" +
                     "    {\n" +
                     "        const int sizeOfLengthField = %2$d;\n" +
-                    "        int position = Position;\n" +
-                    "        Position = position + sizeOfLengthField + length;\n" +
-                    "        _buffer.%3$sPut%5$s(position, (%4$s)length);\n" +
-                    "        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);\n\n" +
+                    "        int limit = Limit;\n" +
+                    "        Limit = limit + sizeOfLengthField + length;\n" +
+                    "        _buffer.%3$sPut%5$s(limit, (%4$s)length);\n" +
+                    "        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);\n\n" +
                     "        return length;\n" +
                     "    }\n",
                     propertyName,
@@ -945,7 +945,7 @@ public class CSharpGenerator implements CodeGenerator
             "    private readonly %s _parentMessage;\n" +
             "    private DirectBuffer _buffer;\n" +
             "    private int _offset;\n" +
-            "    private int _position;\n" +
+            "    private int _limit;\n" +
             "    private int _actingBlockLength;\n" +
             "    private int _actingVersion;\n" +
             "\n" +
@@ -960,7 +960,7 @@ public class CSharpGenerator implements CodeGenerator
             "        _offset = offset;\n" +
             "        _actingBlockLength = BlockLength;\n" +
             "        _actingVersion = TemplateVersion;\n" +
-            "        Position = offset + _actingBlockLength;\n" +
+            "        Limit = offset + _actingBlockLength;\n" +
             "    }\n\n" +
             "    public void WrapForDecode(DirectBuffer buffer, int offset,\n" +
             "                              int actingBlockLength, int actingVersion)\n" +
@@ -969,25 +969,25 @@ public class CSharpGenerator implements CodeGenerator
             "        _offset = offset;\n" +
             "        _actingBlockLength = actingBlockLength;\n" +
             "        _actingVersion = actingVersion;\n" +
-            "        Position = offset + _actingBlockLength;\n" +
+            "        Limit = offset + _actingBlockLength;\n" +
             "    }\n\n" +
             "    public int Size\n" +
             "    {\n" +
             "        get\n" +
             "        {\n" +
-            "            return _position - _offset;\n" +
+            "            return _limit - _offset;\n" +
             "        }\n" +
             "    }\n\n" +
-            "    public int Position\n" +
+            "    public int Limit\n" +
             "    {\n" +
             "        get\n" +
             "        {\n" +
-            "            return _position;\n" +
+            "            return _limit;\n" +
             "        }\n" +
             "        set\n" +
             "        {\n" +
-            "            _buffer.CheckPosition(_position);\n" +
-            "            _position = value;\n" +
+            "            _buffer.CheckLimit(_limit);\n" +
+            "            _limit = value;\n" +
             "        }\n" +
             "    }\n\n",
             templateIdType,

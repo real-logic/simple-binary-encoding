@@ -24,15 +24,14 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         [Test]
         public void CheckPositionShouldNotThrowWhenPositionIsInRange()
         {
-            _directBuffer.CheckPosition(0);
-            _directBuffer.CheckPosition(15);
+            _directBuffer.CheckLimit(_buffer.Length);
         }
 
         [Test]
         [ExpectedException(typeof(IndexOutOfRangeException))]
         public void CheckPositionShouldThrowWhenPositionIsNotInRange()
         {
-            _directBuffer.CheckPosition(16);
+            _directBuffer.CheckLimit(_buffer.Length + 1);
         }
 
 

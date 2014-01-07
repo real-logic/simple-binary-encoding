@@ -14,7 +14,7 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     private readonly TokenCodec _parentMessage;
     private DirectBuffer _buffer;
     private int _offset;
-    private int _position;
+    private int _limit;
     private int _actingBlockLength;
     private int _actingVersion;
 
@@ -31,7 +31,7 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
         _offset = offset;
         _actingBlockLength = BlockLength;
         _actingVersion = TemplateVersion;
-        Position = offset + _actingBlockLength;
+        Limit = offset + _actingBlockLength;
     }
 
     public void WrapForDecode(DirectBuffer buffer, int offset,
@@ -41,27 +41,27 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
         _offset = offset;
         _actingBlockLength = actingBlockLength;
         _actingVersion = actingVersion;
-        Position = offset + _actingBlockLength;
+        Limit = offset + _actingBlockLength;
     }
 
     public int Size
     {
         get
         {
-            return _position - _offset;
+            return _limit - _offset;
         }
     }
 
-    public int Position
+    public int Limit
     {
         get
         {
-            return _position;
+            return _limit;
         }
         set
         {
-            _buffer.CheckPosition(_position);
-            _position = value;
+            _buffer.CheckLimit(_limit);
+            _limit = value;
         }
     }
 
@@ -326,12 +326,12 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int GetName(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -339,10 +339,10 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int SetName(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -367,12 +367,12 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int GetConstVal(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -380,10 +380,10 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int SetConstVal(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -408,12 +408,12 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int GetMinVal(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -421,10 +421,10 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int SetMinVal(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -449,12 +449,12 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int GetMaxVal(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -462,10 +462,10 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int SetMaxVal(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -490,12 +490,12 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int GetNullVal(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -503,10 +503,10 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int SetNullVal(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -531,12 +531,12 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int GetCharacterEncoding(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -544,10 +544,10 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int SetCharacterEncoding(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -572,12 +572,12 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int GetEpoch(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -585,10 +585,10 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int SetEpoch(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -613,12 +613,12 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int GetTimeUnit(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -626,10 +626,10 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int SetTimeUnit(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -654,12 +654,12 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int GetSemanticType(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -667,10 +667,10 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     public int SetSemanticType(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }

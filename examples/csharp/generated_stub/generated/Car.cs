@@ -14,7 +14,7 @@ namespace Baseline
     private readonly Car _parentMessage;
     private DirectBuffer _buffer;
     private int _offset;
-    private int _position;
+    private int _limit;
     private int _actingBlockLength;
     private int _actingVersion;
 
@@ -31,7 +31,7 @@ namespace Baseline
         _offset = offset;
         _actingBlockLength = BlockLength;
         _actingVersion = TemplateVersion;
-        Position = offset + _actingBlockLength;
+        Limit = offset + _actingBlockLength;
     }
 
     public void WrapForDecode(DirectBuffer buffer, int offset,
@@ -41,27 +41,27 @@ namespace Baseline
         _offset = offset;
         _actingBlockLength = actingBlockLength;
         _actingVersion = actingVersion;
-        Position = offset + _actingBlockLength;
+        Limit = offset + _actingBlockLength;
     }
 
     public int Size
     {
         get
         {
-            return _position - _offset;
+            return _limit - _offset;
         }
     }
 
-    public int Position
+    public int Limit
     {
         get
         {
-            return _position;
+            return _limit;
         }
         set
         {
-            _buffer.CheckPosition(_position);
-            _position = value;
+            _buffer.CheckLimit(_limit);
+            _limit = value;
         }
     }
 
@@ -381,25 +381,25 @@ namespace Baseline
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
-            _dimensions.Wrap(buffer, parentMessage.Position, actingVersion);
+            _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);
             _count = _dimensions.NumInGroup;
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            _parentMessage.Position = parentMessage.Position + 3;
+            _parentMessage.Limit = parentMessage.Limit + 3;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
-            _dimensions.Wrap(buffer, parentMessage.Position, _actingVersion);
+            _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);
             _dimensions.NumInGroup = (byte)count;
             _dimensions.BlockLength = (ushort)6;
             _index = -1;
             _count = count;
             _blockLength = 6;
-            parentMessage.Position = parentMessage.Position + 3;
+            parentMessage.Limit = parentMessage.Limit + 3;
         }
 
         public int Count { get { return _count; } }
@@ -413,8 +413,8 @@ namespace Baseline
                 throw new InvalidOperationException();
             }
 
-            _offset = _parentMessage.Position;
-            _parentMessage.Position = _offset + _blockLength;
+            _offset = _parentMessage.Limit;
+            _parentMessage.Limit = _offset + _blockLength;
             ++_index;
 
             return this;
@@ -522,25 +522,25 @@ namespace Baseline
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
-            _dimensions.Wrap(buffer, parentMessage.Position, actingVersion);
+            _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);
             _count = _dimensions.NumInGroup;
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            _parentMessage.Position = parentMessage.Position + 3;
+            _parentMessage.Limit = parentMessage.Limit + 3;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
-            _dimensions.Wrap(buffer, parentMessage.Position, _actingVersion);
+            _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);
             _dimensions.NumInGroup = (byte)count;
             _dimensions.BlockLength = (ushort)1;
             _index = -1;
             _count = count;
             _blockLength = 1;
-            parentMessage.Position = parentMessage.Position + 3;
+            parentMessage.Limit = parentMessage.Limit + 3;
         }
 
         public int Count { get { return _count; } }
@@ -554,8 +554,8 @@ namespace Baseline
                 throw new InvalidOperationException();
             }
 
-            _offset = _parentMessage.Position;
-            _parentMessage.Position = _offset + _blockLength;
+            _offset = _parentMessage.Limit;
+            _parentMessage.Limit = _offset + _blockLength;
             ++_index;
 
             return this;
@@ -629,25 +629,25 @@ namespace Baseline
             {
                 _parentMessage = parentMessage;
                 _buffer = buffer;
-                _dimensions.Wrap(buffer, parentMessage.Position, actingVersion);
+                _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);
                 _count = _dimensions.NumInGroup;
                 _blockLength = _dimensions.BlockLength;
                 _actingVersion = actingVersion;
                 _index = -1;
-                _parentMessage.Position = parentMessage.Position + 3;
+                _parentMessage.Limit = parentMessage.Limit + 3;
             }
 
             public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
             {
                 _parentMessage = parentMessage;
                 _buffer = buffer;
-                _dimensions.Wrap(buffer, parentMessage.Position, _actingVersion);
+                _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);
                 _dimensions.NumInGroup = (byte)count;
                 _dimensions.BlockLength = (ushort)6;
                 _index = -1;
                 _count = count;
                 _blockLength = 6;
-                parentMessage.Position = parentMessage.Position + 3;
+                parentMessage.Limit = parentMessage.Limit + 3;
             }
 
             public int Count { get { return _count; } }
@@ -661,8 +661,8 @@ namespace Baseline
                     throw new InvalidOperationException();
                 }
 
-                _offset = _parentMessage.Position;
-                _parentMessage.Position = _offset + _blockLength;
+                _offset = _parentMessage.Limit;
+                _parentMessage.Limit = _offset + _blockLength;
                 ++_index;
 
                 return this;
@@ -756,12 +756,12 @@ namespace Baseline
     public int GetMake(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -769,10 +769,10 @@ namespace Baseline
     public int SetMake(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -797,12 +797,12 @@ namespace Baseline
     public int GetModel(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -810,10 +810,10 @@ namespace Baseline
     public int SetModel(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
