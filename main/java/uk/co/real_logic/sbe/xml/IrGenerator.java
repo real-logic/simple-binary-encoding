@@ -86,6 +86,9 @@ public class IrGenerator
             .size(msg.blockLength())
             .schemaId(msg.id())
             .version(version)
+            .encoding(new Encoding.Builder()
+                          .semanticType(msg.semanticType())
+                          .build())
             .build();
 
         tokenList.add(token);
@@ -102,7 +105,8 @@ public class IrGenerator
             .encoding(new Encoding.Builder()
                           .epoch(field.epoch())
                           .timeUnit(field.timeUnit())
-                          .semanticType(semanticTypeOf(null, field)).build())
+                          .semanticType(semanticTypeOf(null, field))
+                          .build())
             .build();
 
         tokenList.add(token);
@@ -165,7 +169,8 @@ public class IrGenerator
             .offset(currOffset)
             .size(type.size())
             .encoding(new Encoding.Builder()
-                          .semanticType(semanticTypeOf(type, field)).build());
+                          .semanticType(semanticTypeOf(type, field))
+                          .build());
 
         if (field != null)
         {
@@ -319,25 +324,25 @@ public class IrGenerator
         {
             case REQUIRED:
                 encodingBuilder.presence(Encoding.Presence.REQUIRED)
-                               .minVal(type.minVal())
-                               .maxVal(type.maxVal());
+                    .minVal(type.minVal())
+                    .maxVal(type.maxVal());
                 break;
 
             case OPTIONAL:
                 encodingBuilder.presence(Encoding.Presence.OPTIONAL)
-                               .minVal(type.minVal())
-                               .maxVal(type.maxVal())
-                               .nullVal(type.nullVal());
+                    .minVal(type.minVal())
+                    .maxVal(type.maxVal())
+                    .nullVal(type.nullVal());
                 break;
 
             case CONSTANT:
                 encodingBuilder.presence(Encoding.Presence.CONSTANT)
-                               .constVal(type.constVal());
+                    .constVal(type.constVal());
                 break;
         }
 
         final Token token = tokenBuilder.encoding(encodingBuilder.build())
-                                        .build();
+            .build();
 
         tokenList.add(token);
     }
