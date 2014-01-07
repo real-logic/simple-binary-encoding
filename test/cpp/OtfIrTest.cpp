@@ -17,6 +17,7 @@
 
 #include "gtest/gtest.h"
 #include "otf_api/Ir.h"
+#include "otf_api/IrCollection.h"
 
 using namespace sbe::on_the_fly;
 using ::std::cout;
@@ -107,4 +108,9 @@ TEST_F(OtfIrTest, shouldBeAbleToIterate)
     EXPECT_EQ(ir_.name(), std::string("messageHeader"));
     ir_.next();
     EXPECT_EQ(ir_.end(), true);
+}
+
+TEST(OtfIrCollectionTest, shouldHandleEmptyIrCollection)
+{
+    IrCollection irCollection;
 }

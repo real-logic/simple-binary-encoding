@@ -51,13 +51,17 @@ class IrCollection
 {
 public:
     /// Construct a collection
-    IrCollection() : header_(NULL)
+    IrCollection() : buffer_(NULL), header_(NULL)
     {
     }
 
     virtual ~IrCollection()
     {
-        delete[] buffer_;
+        if (buffer_ != NULL)
+        {
+            delete[] buffer_;
+        }
+
         for (std::multimap<int, Ir *>::iterator it = map_.begin(); it != map_.end(); ++it)
         {
 //            std::cout << (*it).first << " => " << (*it).second << '\n';
@@ -65,6 +69,7 @@ public:
             delete ir;
             (*it).second = NULL;
         }
+        
         if (header_ != NULL)
         {
             delete header_;
