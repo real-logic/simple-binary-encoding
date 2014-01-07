@@ -52,7 +52,7 @@ public class JavaGeneratorTest
         ir = irg.generate(schema);
 
         outputManager.clear();
-        outputManager.setPackageName(ir.packageName());
+        outputManager.setPackageName(ir.applicableNamespace());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class JavaGeneratorTest
         final Short templateId = Short.valueOf((short)7);
         final int actingVersion = 0;
         final Integer blockLength = Integer.valueOf(32);
-        final String fqClassName = ir.packageName() + "." + MESSAGE_HEADER_TYPE;
+        final String fqClassName = ir.applicableNamespace() + "." + MESSAGE_HEADER_TYPE;
 
         when(Short.valueOf(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER))).thenReturn(templateId);
 
@@ -89,7 +89,7 @@ public class JavaGeneratorTest
     public void shouldGenerateUint8EnumStub() throws Exception
     {
         final String className = "BooleanType";
-        final String fqClassName = ir.packageName() + "." + className;
+        final String fqClassName = ir.applicableNamespace() + "." + className;
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
@@ -106,7 +106,7 @@ public class JavaGeneratorTest
     public void shouldGenerateCharEnumStub() throws Exception
     {
         final String className = "Model";
-        final String fqClassName = ir.packageName() + "." + className;
+        final String fqClassName = ir.applicableNamespace() + "." + className;
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
@@ -126,7 +126,7 @@ public class JavaGeneratorTest
         final int actingVersion = 0;
         final Byte bitset = Byte.valueOf((byte)0b0000_0100);
         final String className = "OptionalExtras";
-        final String fqClassName = ir.packageName() + "." + className;
+        final String fqClassName = ir.applicableNamespace() + "." + className;
 
         when(Byte.valueOf(mockBuffer.getByte(bufferOffset))).thenReturn(bitset);
 
@@ -157,7 +157,7 @@ public class JavaGeneratorTest
         final int manufacturerCodeOffset = bufferOffset + 3;
         final byte[] manufacturerCode = {'A', 'B', 'C'};
         final String className = "Engine";
-        final String fqClassName = ir.packageName() + "." + className;
+        final String fqClassName = ir.applicableNamespace() + "." + className;
 
         when(Short.valueOf(mockBuffer.getShort(capacityFieldOffset, BYTE_ORDER))).thenReturn(Short.valueOf((short)expectedEngineCapacity));
 
@@ -192,7 +192,7 @@ public class JavaGeneratorTest
     {
         final DirectBuffer buffer = new DirectBuffer(new byte[4096]);
         final String className = "Car";
-        final String fqClassName = ir.packageName() + "." + className;
+        final String fqClassName = ir.applicableNamespace() + "." + className;
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generate();

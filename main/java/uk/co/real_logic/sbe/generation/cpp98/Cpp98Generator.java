@@ -57,7 +57,7 @@ public class Cpp98Generator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
         {
             final List<Token> tokens = ir.headerStructure().tokens();
-            out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), MESSAGE_HEADER_TYPE, null));
+            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), MESSAGE_HEADER_TYPE, null));
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
             out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
@@ -105,7 +105,7 @@ public class Cpp98Generator implements CodeGenerator
 
             try (final Writer out = outputManager.createOutput(className))
             {
-                out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), className, typesToInclude));
+                out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), className, typesToInclude));
                 out.append(generateClassDeclaration(className));
                 out.append(generateMessageFlyweightCode(msgToken.size(), className, msgToken.schemaId(), msgToken.version()));
 
@@ -453,7 +453,7 @@ public class Cpp98Generator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
-            out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), bitSetName, null));
+            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), bitSetName, null));
             out.append(generateClassDeclaration(bitSetName));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
 
@@ -481,7 +481,7 @@ public class Cpp98Generator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), enumName, null));
+            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), enumName, null));
             out.append(generateEnumDeclaration(enumName));
 
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumToken));
@@ -498,7 +498,7 @@ public class Cpp98Generator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(compositeName))
         {
-            out.append(generateFileHeader(ir.namespaceName().replace('.', '_'), compositeName, null));
+            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), compositeName, null));
             out.append(generateClassDeclaration(compositeName));
             out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size()));
 

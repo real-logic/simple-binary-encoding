@@ -38,7 +38,7 @@ public class NamespaceOutputManager implements OutputManager
         throws IOException
     {
         Verify.notNull(baseDirectoryName, "baseDirectoryName");
-        Verify.notNull(namespaceName, "namespaceName");
+        Verify.notNull(namespaceName, "applicableNamespace");
 
         final String dirName =
             (baseDirectoryName.endsWith("" + File.separatorChar) ? baseDirectoryName : baseDirectoryName + File.separatorChar) +

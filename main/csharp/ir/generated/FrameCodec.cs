@@ -132,12 +132,12 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
     }
 
 
-    public const int PackageValSchemaId = 4;
+    public const int PackageNameSchemaId = 4;
 
-    public const string PackageValCharacterEncoding = "UTF-8";
+    public const string PackageNameCharacterEncoding = "UTF-8";
 
 
-    public static string PackageValMetaAttribute(MetaAttribute metaAttribute)
+    public static string PackageNameMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -149,7 +149,7 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
         return "";
     }
 
-    public int GetPackageVal(byte[] dst, int dstOffset, int length)
+    public int GetPackageName(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -162,7 +162,48 @@ namespace Uk.Co.Real_logic.Sbe.Ir.Generated
         return bytesCopied;
     }
 
-    public int SetPackageVal(byte[] src, int srcOffset, int length)
+    public int SetPackageName(byte[] src, int srcOffset, int length)
+    {
+        const int sizeOfLengthField = 1;
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
+
+        return length;
+    }
+
+    public const int NamespaceNameSchemaId = 4;
+
+    public const string NamespaceNameCharacterEncoding = "UTF-8";
+
+
+    public static string NamespaceNameMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
+    public int GetNamespaceName(byte[] dst, int dstOffset, int length)
+    {
+        const int sizeOfLengthField = 1;
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
+        int bytesCopied = Math.Min(length, dataLength);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
+    }
+
+    public int SetNamespaceName(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;

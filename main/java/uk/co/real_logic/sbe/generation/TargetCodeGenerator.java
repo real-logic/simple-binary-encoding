@@ -35,7 +35,7 @@ public enum TargetCodeGenerator
         public CodeGenerator newInstance(final IntermediateRepresentation ir, final String outputDir)
             throws IOException
         {
-            return new JavaGenerator(ir, new PackageOutputManager(outputDir, ir.packageName()));
+            return new JavaGenerator(ir, new PackageOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 
@@ -44,7 +44,7 @@ public enum TargetCodeGenerator
         public CodeGenerator newInstance(final IntermediateRepresentation ir, final String outputDir)
             throws IOException
         {
-            return new Cpp98Generator(ir, new NamespaceOutputManager(outputDir, ir.namespaceName()));
+            return new Cpp98Generator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 
@@ -53,7 +53,7 @@ public enum TargetCodeGenerator
         public CodeGenerator newInstance(final IntermediateRepresentation ir, final String outputDir)
                 throws IOException
         {
-            return new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.namespaceName()));
+            return new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     };
 

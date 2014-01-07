@@ -101,6 +101,7 @@ public class EncodedIrTest
 
         assertThat(Integer.valueOf(decodedIr.version()), is(Integer.valueOf(ir.version())));
         assertThat(decodedIr.packageName(), is(ir.packageName()));
+        assertThat(decodedIr.namespaceName(), is(ir.namespaceName()));
     }
 
     private void assertEqual(final Token lhs, final Token rhs)

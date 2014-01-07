@@ -65,7 +65,8 @@
     <message name="FrameCodec" id="1" description="Frame Header for start of encoding IR">
         <field name="sbeIrVersion" id="1" type="int32"/>
         <field name="schemaVersion" id="2" type="int32"/>
-        <data name="packageVal" id="4" type="varDataEncoding"/>
+        <data name="packageName" id="4" type="varDataEncoding"/>
+        <data name="namespaceName" id="4" type="varDataEncoding"/>
     </message>
 
     <message name="TokenCodec" id="2" description="Codec for an IR Token">

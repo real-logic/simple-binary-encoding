@@ -41,10 +41,12 @@ public class IrDecoder implements Closeable
     private int offset;
     private final long size;
     private String irPackageName = null;
+    private String irNamespaceName = null;
     private List<Token> irHeader = null;
     private int irVersion = 0;
     private final byte[] valArray = new byte[CAPACITY];
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
+    private final byte[] buffer = new byte[1024];
 
     public IrDecoder(final String fileName)
         throws IOException
@@ -91,7 +93,7 @@ public class IrDecoder implements Closeable
             i = captureHeader(tokens, 0);
         }
 
-        final IntermediateRepresentation ir = new IntermediateRepresentation(irPackageName, irHeader, irVersion);
+        final IntermediateRepresentation ir = new IntermediateRepresentation(irPackageName, irNamespaceName, irHeader, irVersion);
 
         for (; i < size; i++)
         {
@@ -141,6 +143,7 @@ public class IrDecoder implements Closeable
     }
 
     private void decodeFrame()
+        throws UnsupportedEncodingException
     {
         frameCodec.wrapForDecode(directBuffer, offset, frameCodec.blockLength(), 0);
 
@@ -149,10 +152,15 @@ public class IrDecoder implements Closeable
             throw new IllegalStateException("Unknown SBE version: " + frameCodec.sbeIrVersion());
         }
 
-        final byte[] buffer = new byte[1024];
-
         irVersion = frameCodec.schemaVersion();
-        irPackageName = new String(buffer, 0, frameCodec.getPackageVal(buffer, 0, buffer.length));
+
+        irPackageName = new String(buffer, 0, frameCodec.getPackageName(buffer, 0, buffer.length), FrameCodec.packageNameCharacterEncoding());
+
+        irNamespaceName = new String(buffer, 0, frameCodec.getNamespaceName(buffer, 0, buffer.length), FrameCodec.namespaceNameCharacterEncoding());
+        if (irNamespaceName.isEmpty())
+        {
+            irNamespaceName = null;
+        }
 
         offset += frameCodec.size();
     }
@@ -162,8 +170,6 @@ public class IrDecoder implements Closeable
     {
         final Token.Builder tokenBuilder = new Token.Builder();
         final Encoding.Builder encBuilder = new Encoding.Builder();
-
-        final byte[] buffer = new byte[1024];
 
         tokenCodec.wrapForDecode(directBuffer, offset, tokenCodec.blockLength(), 0);
 

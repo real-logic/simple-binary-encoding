@@ -116,12 +116,17 @@ public class IrEncoder implements Closeable
     }
 
     private int encodeFrame()
+        throws UnsupportedEncodingException
     {
         frameCodec.wrapForEncode(directBuffer, 0)
                   .sbeIrVersion(0)
                   .schemaVersion(ir.version());
 
-        frameCodec.putPackageVal(ir.packageName().getBytes(), 0, ir.packageName().getBytes().length);
+        final byte[] packageBytes = ir.packageName().getBytes(FrameCodec.packageNameCharacterEncoding());
+        frameCodec.putPackageName(packageBytes, 0, packageBytes.length);
+
+        final byte[] namespaceBytes = getBytes(ir.namespaceName(), FrameCodec.namespaceNameCharacterEncoding());
+        frameCodec.putNamespaceName(namespaceBytes, 0, namespaceBytes.length);
 
         return frameCodec.size();
     }

@@ -26,6 +26,7 @@ import java.util.*;
 public class IntermediateRepresentation
 {
     private final String packageName;
+    private final String namespaceName;
     private final HeaderStructure headerStructure;
     private final Map<Long, List<Token>> messagesByIdMap = new HashMap<>();
     private final Map<String, List<Token>> typesByNameMap = new HashMap<>();
@@ -34,15 +35,17 @@ public class IntermediateRepresentation
     /**
      * Create a new IR container taking a defensive copy of the headerStructure {@link Token}s passed.
      *
-     * @param packageName that should be applied to generated code.
-     * @param headerTokens representing the message headerStructure.
+     * @param packageName   that should be applied to generated code.
+     * @param namespaceName that should be applied to generated code.
+     * @param headerTokens  representing the message headerStructure.
      */
-    public IntermediateRepresentation(final String packageName, final List<Token> headerTokens, final int version)
+    public IntermediateRepresentation(final String packageName, final String namespaceName, final List<Token> headerTokens, final int version)
     {
         Verify.notNull(packageName, "packageName");
         Verify.notNull(headerTokens, "headerTokens");
 
         this.packageName = packageName;
+        this.namespaceName = namespaceName;
         this.headerStructure = new HeaderStructure(Collections.unmodifiableList(new ArrayList<>(headerTokens)));
         this.version = version;
     }
@@ -60,7 +63,7 @@ public class IntermediateRepresentation
     /**
      * Add a List of {@link Token}s for a given message id.
      *
-     * @param messageId to identify the list of tokens for the message.
+     * @param messageId     to identify the list of tokens for the message.
      * @param messageTokens the List of {@link Token}s representing the message.
      */
     public void addMessage(final long messageId, final List<Token> messageTokens)
@@ -125,13 +128,25 @@ public class IntermediateRepresentation
     }
 
     /**
-     * Get the namespace name to be used for generated code.
+     * Get the namespaceName to be used for generated code.
      *
-     * @return the namespace name to be used for generated code.
+     * @return the namespaceName to be used for generated code.
      */
     public String namespaceName()
     {
-        return packageName;
+        return namespaceName;
+    }
+
+    /**
+     * Get the namespaceName to be used for generated code.
+     * <p/>
+     * If {@link #namespaceName} is null then {@link #packageName} is used.
+     *
+     * @return the namespaceName to be used for generated code.
+     */
+    public String applicableNamespace()
+    {
+        return namespaceName == null ? packageName : namespaceName;
     }
 
     /**

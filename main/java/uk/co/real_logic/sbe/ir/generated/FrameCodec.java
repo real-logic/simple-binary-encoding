@@ -161,17 +161,17 @@ public class FrameCodec
         return this;
     }
 
-    public static int packageValSchemaId()
+    public static int packageNameSchemaId()
     {
         return 4;
     }
 
-    public static String packageValCharacterEncoding()
+    public static String packageNameCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    public static String packageValMetaAttribute(final MetaAttribute metaAttribute)
+    public static String packageNameMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -183,7 +183,7 @@ public class FrameCodec
         return "";
     }
 
-    public int getPackageVal(final byte[] dst, final int dstOffset, final int length)
+    public int getPackageName(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -196,7 +196,53 @@ public class FrameCodec
         return bytesCopied;
     }
 
-    public int putPackageVal(final byte[] src, final int srcOffset, final int length)
+    public int putPackageName(final byte[] src, final int srcOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+
+        return length;
+    }
+
+    public static int namespaceNameSchemaId()
+    {
+        return 4;
+    }
+
+    public static String namespaceNameCharacterEncoding()
+    {
+        return "UTF-8";
+    }
+
+    public static String namespaceNameMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    public int getNamespaceName(final byte[] dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
+    }
+
+    public int putNamespaceName(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();

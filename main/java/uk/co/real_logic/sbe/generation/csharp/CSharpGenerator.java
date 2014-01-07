@@ -61,7 +61,7 @@ public class CSharpGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
         {
             final List<Token> tokens = ir.headerStructure().tokens();
-            out.append(generateFileHeader(ir.packageName()));
+            out.append(generateFileHeader(ir.applicableNamespace()));
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
             out.append(generateFixedFlyweightCode(tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
@@ -106,7 +106,7 @@ public class CSharpGenerator implements CodeGenerator
 
             try (final Writer out = outputManager.createOutput(className))
             {
-                out.append(generateFileHeader(ir.packageName()));
+                out.append(generateFileHeader(ir.applicableNamespace()));
                 out.append(generateClassDeclaration(className));
                 out.append(generateMessageFlyweightCode(className, msgToken.size(), msgToken.version(), msgToken.schemaId()));
 
@@ -265,10 +265,10 @@ public class CSharpGenerator implements CodeGenerator
             dimensionHeaderSize
         ));
 
-        sb.append(
+        sb.append(String.format(
             indent + "    public int Count { get { return _count; } }\n\n" +
             indent + "    public bool HasNext { get { return _index + 1 < _count; } }\n\n"
-        );
+        ));
 
         sb.append(String.format(
             indent + "    public %sGroup Next()\n" +
@@ -411,7 +411,7 @@ public class CSharpGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateFileHeader(ir.packageName()));
+            out.append(generateFileHeader(ir.applicableNamespace()));
             String enumPrimitiveType = cSharpTypeName(enumToken.encoding().primitiveType());
             out.append(generateEnumDeclaration(enumName, enumPrimitiveType, true));
 
@@ -430,7 +430,7 @@ public class CSharpGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateFileHeader(ir.packageName()));
+            out.append(generateFileHeader(ir.applicableNamespace()));
             String enumPrimitiveType = cSharpTypeName(enumToken.encoding().primitiveType());
             out.append(generateEnumDeclaration(enumName, enumPrimitiveType, false));
 
@@ -448,7 +448,7 @@ public class CSharpGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(compositeName))
         {
-            out.append(generateFileHeader(ir.packageName()));
+            out.append(generateFileHeader(ir.applicableNamespace()));
             out.append(generateClassDeclaration(compositeName));
             out.append(generateFixedFlyweightCode(tokens.get(0).size()));
 
@@ -531,17 +531,16 @@ public class CSharpGenerator implements CodeGenerator
     {
         try (final Writer out = outputManager.createOutput(META_ATTRIBUTE_ENUM))
         {
-            out.append(generateFileHeader(ir.packageName()));
+            out.append(generateFileHeader(ir.applicableNamespace()));
 
             out.append(String.format(
-                            "    public enum MetaAttribute\n" +
-                            "    {\n" +
-                            "        Epoch,\n" +
-                            "        TimeUnit,\n" +
-                            "        SemanticType\n" +
-                            "    }\n" +
-                            "}\n",
-                    ir.packageName()
+                "    public enum MetaAttribute\n" +
+                "    {\n" +
+                "        Epoch,\n" +
+                "        TimeUnit,\n" +
+                "        SemanticType\n" +
+                "    }\n" +
+                "}\n"
             ));
         }
     }
@@ -552,7 +551,7 @@ public class CSharpGenerator implements CodeGenerator
         if (addFlagsAttribute)
         {
             result += "    [Flags]\n";
-        }
+    }
 
         result +=
             "    public enum " + name + " : " + primitiveType + "\n" +

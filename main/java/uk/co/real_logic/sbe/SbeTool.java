@@ -79,6 +79,9 @@ public class SbeTool
     /** String system property to hold filename for encoding of IR. */
     public static final String ENCODED_IR_FILENAME = "sbe.ir.filename";
 
+    /** String system property of the namespace for generated code. */
+    public static final String TARGET_NAMESPACE = "sbe.target.namespace";
+
     /**
      * Main entry point for the SBE Tool.
      *
@@ -99,7 +102,7 @@ public class SbeTool
 
             if (fileName.endsWith(".xml"))
             {
-                ir = new IrGenerator().generate(parseSchema(fileName));
+                ir = new IrGenerator().generate(parseSchema(fileName), System.getProperty(TARGET_NAMESPACE));
             }
             else if (fileName.endsWith(".sbeir"))
             {

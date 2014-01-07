@@ -26,7 +26,9 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Class to hold the state while generating the {@link IntermediateRepresentation}. */
+/**
+ * Class to hold the state while generating the {@link IntermediateRepresentation}.
+ */
 public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
@@ -36,13 +38,14 @@ public class IrGenerator
     /**
      * Generate a complete {@link IntermediateRepresentation} for a given schema.
      *
-     * @param schema from which the {@link IntermediateRepresentation} should be generated.
+     * @param schema    from which the {@link IntermediateRepresentation} should be generated.
+     * @param namespace for the generated code.
      * @return complete {@link IntermediateRepresentation} for a given schema.
      */
-    public IntermediateRepresentation generate(final MessageSchema schema)
+    public IntermediateRepresentation generate(final MessageSchema schema, final String namespace)
     {
         final IntermediateRepresentation ir =
-            new IntermediateRepresentation(schema.packageName(), generateForHeader(schema), schema.version());
+            new IntermediateRepresentation(schema.packageName(), namespace, generateForHeader(schema), schema.version());
 
         for (final Message message : schema.messages())
         {
@@ -51,6 +54,17 @@ public class IrGenerator
         }
 
         return ir;
+    }
+
+    /**
+     * Generate a complete {@link IntermediateRepresentation} for a given schema.
+     *
+     * @param schema    from which the {@link IntermediateRepresentation} should be generated.
+     * @return complete {@link IntermediateRepresentation} for a given schema.
+     */
+    public IntermediateRepresentation generate(final MessageSchema schema)
+    {
+        return generate(schema, null);
     }
 
     private List<Token> generateForMessage(final MessageSchema schema, final long messageId)
@@ -87,8 +101,8 @@ public class IrGenerator
             .schemaId(msg.id())
             .version(version)
             .encoding(new Encoding.Builder()
-                          .semanticType(msg.semanticType())
-                          .build())
+                .semanticType(msg.semanticType())
+                .build())
             .build();
 
         tokenList.add(token);
@@ -103,10 +117,10 @@ public class IrGenerator
             .schemaId(field.id())
             .version(field.sinceVersion())
             .encoding(new Encoding.Builder()
-                          .epoch(field.epoch())
-                          .timeUnit(field.timeUnit())
-                          .semanticType(semanticTypeOf(null, field))
-                          .build())
+                .epoch(field.epoch())
+                .timeUnit(field.timeUnit())
+                .semanticType(semanticTypeOf(null, field))
+                .build())
             .build();
 
         tokenList.add(token);
@@ -169,8 +183,8 @@ public class IrGenerator
             .offset(currOffset)
             .size(type.size())
             .encoding(new Encoding.Builder()
-                          .semanticType(semanticTypeOf(type, field))
-                          .build());
+                .semanticType(semanticTypeOf(type, field))
+                .build());
 
         if (field != null)
         {
@@ -232,10 +246,10 @@ public class IrGenerator
             .signal(Signal.VALID_VALUE)
             .name(value.name())
             .encoding(new Encoding.Builder()
-                          .byteOrder(byteOrder)
-                          .primitiveType(encodingType)
-                          .constVal(value.primitiveValue())
-                          .build());
+                .byteOrder(byteOrder)
+                .primitiveType(encodingType)
+                .constVal(value.primitiveValue())
+                .build());
 
         if (field != null)
         {
@@ -255,9 +269,9 @@ public class IrGenerator
             .size(encodingType.size())
             .offset(offset)
             .encoding(new Encoding.Builder()
-                          .semanticType(semanticTypeOf(type, field))
-                          .primitiveType(encodingType)
-                          .build());
+                .semanticType(semanticTypeOf(type, field))
+                .primitiveType(encodingType)
+                .build());
 
         if (field != null)
         {
@@ -282,10 +296,10 @@ public class IrGenerator
             .signal(Signal.CHOICE)
             .name(value.name())
             .encoding(new Encoding.Builder()
-                          .constVal(value.primitiveValue())
-                          .byteOrder(byteOrder)
-                          .primitiveType(encodingType)
-                          .build());
+                .constVal(value.primitiveValue())
+                .byteOrder(byteOrder)
+                .primitiveType(encodingType)
+                .build());
 
         if (field != null)
         {
@@ -352,7 +366,7 @@ public class IrGenerator
         final String typeSemanticType = null != type ? type.semanticType() : null;
         if (typeSemanticType != null)
         {
-            return  typeSemanticType;
+            return typeSemanticType;
         }
 
         return null != field ? field.semanticType() : null;

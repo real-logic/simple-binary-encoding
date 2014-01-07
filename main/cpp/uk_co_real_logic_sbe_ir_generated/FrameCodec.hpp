@@ -204,28 +204,28 @@ public:
         return *this;
     }
 
-    static const char *packageValCharacterEncoding()
+    static const char *packageNameCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    static int packageValSinceVersion(void)
+    static int packageNameSinceVersion(void)
     {
          return 0;
     }
 
-    bool packageValInActingVersion(void)
+    bool packageNameInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int packageValSchemaId(void)
+    static int packageNameSchemaId(void)
     {
         return 4;
     }
 
 
-    static const char *packageValMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    static const char *packageNameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -237,19 +237,19 @@ public:
         return "";
     }
 
-    sbe_int64_t packageValLength(void) const
+    sbe_int64_t packageNameLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
     }
 
-    const char *packageVal(void)
+    const char *packageName(void)
     {
          const char *fieldPtr = (buffer_ + position() + 1);
          position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
          return fieldPtr;
     }
 
-    int getPackageVal(char *dst, const int length)
+    int getPackageName(char *dst, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
@@ -261,7 +261,75 @@ public:
         return bytesToCopy;
     }
 
-    int putPackageVal(const char *src, const int length)
+    int putPackageName(const char *src, const int length)
+    {
+        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
+        position(lengthPosition + sizeOfLengthField);
+        ::memcpy(buffer_ + position(), src, length);
+        position(position() + (sbe_uint64_t)length);
+        return length;
+    }
+
+    static const char *namespaceNameCharacterEncoding()
+    {
+        return "UTF-8";
+    }
+
+    static int namespaceNameSinceVersion(void)
+    {
+         return 0;
+    }
+
+    bool namespaceNameInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
+    }
+
+    static int namespaceNameSchemaId(void)
+    {
+        return 4;
+    }
+
+
+    static const char *namespaceNameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    sbe_int64_t namespaceNameLength(void) const
+    {
+        return (*((sbe_uint8_t *)(buffer_ + position())));
+    }
+
+    const char *namespaceName(void)
+    {
+         const char *fieldPtr = (buffer_ + position() + 1);
+         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         return fieldPtr;
+    }
+
+    int getNamespaceName(char *dst, const int length)
+    {
+        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + sizeOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        int bytesToCopy = (length < dataLength) ? length : dataLength;
+        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        position(position() + (sbe_uint64_t)dataLength);
+        return bytesToCopy;
+    }
+
+    int putNamespaceName(const char *src, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
