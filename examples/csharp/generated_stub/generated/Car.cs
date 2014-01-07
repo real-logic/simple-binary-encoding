@@ -9,12 +9,12 @@ namespace Baseline
     {
     public const ushort TemplateId = (ushort)1;
     public const byte TemplateVersion = (byte)0;
-    public const ushort BlockLength = (ushort)41;
+    public const ushort BlockLength = (ushort)45;
 
     private readonly Car _parentMessage;
     private DirectBuffer _buffer;
     private int _offset;
-    private int _position;
+    private int _limit;
     private int _actingBlockLength;
     private int _actingVersion;
 
@@ -31,7 +31,7 @@ namespace Baseline
         _offset = offset;
         _actingBlockLength = BlockLength;
         _actingVersion = TemplateVersion;
-        Position = offset + _actingBlockLength;
+        Limit = offset + _actingBlockLength;
     }
 
     public void WrapForDecode(DirectBuffer buffer, int offset,
@@ -41,27 +41,27 @@ namespace Baseline
         _offset = offset;
         _actingBlockLength = actingBlockLength;
         _actingVersion = actingVersion;
-        Position = offset + _actingBlockLength;
+        Limit = offset + _actingBlockLength;
     }
 
     public int Size
     {
         get
         {
-            return _position - _offset;
+            return _limit - _offset;
         }
     }
 
-    public int Position
+    public int Limit
     {
         get
         {
-            return _position;
+            return _limit;
         }
         set
         {
-            _buffer.CheckPosition(_position);
-            _position = value;
+            _buffer.CheckLimit(_limit);
+            _limit = value;
         }
     }
 
@@ -80,21 +80,21 @@ namespace Baseline
         return "";
     }
 
-    public const uint SerialNumberNullVal = 4294967294U;
+    public const ulong SerialNumberNullVal = 0x8000000000000000UL;
 
-    public const uint SerialNumberMinVal = 0U;
+    public const ulong SerialNumberMinVal = 0x0UL;
 
-    public const uint SerialNumberMaxVal = 4294967293U;
+    public const ulong SerialNumberMaxVal = 0x7fffffffffffffffUL;
 
-    public uint SerialNumber
+    public ulong SerialNumber
     {
         get
         {
-            return _buffer.Uint32GetLittleEndian(_offset + 0);
+            return _buffer.Uint64GetLittleEndian(_offset + 0);
         }
         set
         {
-            _buffer.Uint32PutLittleEndian(_offset + 0, value);
+            _buffer.Uint64PutLittleEndian(_offset + 0, value);
         }
     }
 
@@ -123,11 +123,11 @@ namespace Baseline
     {
         get
         {
-            return _buffer.Uint16GetLittleEndian(_offset + 4);
+            return _buffer.Uint16GetLittleEndian(_offset + 8);
         }
         set
         {
-            _buffer.Uint16PutLittleEndian(_offset + 4, value);
+            _buffer.Uint16PutLittleEndian(_offset + 8, value);
         }
     }
 
@@ -150,11 +150,11 @@ namespace Baseline
     {
         get
         {
-            return (BooleanType)_buffer.Uint8Get(_offset + 6);
+            return (BooleanType)_buffer.Uint8Get(_offset + 10);
         }
         set
         {
-            _buffer.Uint8Put(_offset + 6, (byte)value);
+            _buffer.Uint8Put(_offset + 10, (byte)value);
         }
     }
 
@@ -177,11 +177,11 @@ namespace Baseline
     {
         get
         {
-            return (Model)_buffer.CharGet(_offset + 7);
+            return (Model)_buffer.CharGet(_offset + 11);
         }
         set
         {
-            _buffer.CharPut(_offset + 7, (byte)value);
+            _buffer.CharPut(_offset + 11, (byte)value);
         }
     }
 
@@ -215,7 +215,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("index out of range: index=" + index);
         }
 
-        return _buffer.Int32GetLittleEndian(_offset + 8 + (index * 4));
+        return _buffer.Int32GetLittleEndian(_offset + 12 + (index * 4));
     }
 
     public void SetSomeNumbers(int index, int value)
@@ -225,7 +225,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("index out of range: index=" + index);
         }
 
-        _buffer.Int32PutLittleEndian(_offset + 8 + (index * 4), value);
+        _buffer.Int32PutLittleEndian(_offset + 12 + (index * 4), value);
     }
 
     public const int VehicleCodeSchemaId = 6;
@@ -257,7 +257,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("index out of range: index=" + index);
         }
 
-        return _buffer.CharGet(_offset + 28 + (index * 1));
+        return _buffer.CharGet(_offset + 32 + (index * 1));
     }
 
     public void SetVehicleCode(int index, byte value)
@@ -267,7 +267,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("index out of range: index=" + index);
         }
 
-        _buffer.CharPut(_offset + 28 + (index * 1), value);
+        _buffer.CharPut(_offset + 32 + (index * 1), value);
     }
 
     public const string VehicleCodeCharacterEncoding = "UTF-8";
@@ -280,7 +280,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("dstOffset out of range for copy: offset=" + dstOffset);
         }
 
-        _buffer.GetBytes(_offset + 28, dst, dstOffset, length);
+        _buffer.GetBytes(_offset + 32, dst, dstOffset, length);
         return length;
     }
 
@@ -292,7 +292,7 @@ namespace Baseline
             throw new IndexOutOfRangeException("srcOffset out of range for copy: offset=" + srcOffset);
         }
 
-        _buffer.SetBytes(_offset + 28, src, srcOffset, length);
+        _buffer.SetBytes(_offset + 32, src, srcOffset, length);
     }
 
     public const int ExtrasSchemaId = 7;
@@ -313,11 +313,11 @@ namespace Baseline
     {
         get
         {
-            return (OptionalExtras)_buffer.Uint8Get(_offset + 34);
+            return (OptionalExtras)_buffer.Uint8Get(_offset + 38);
         }
         set
         {
-            _buffer.Uint8Put(_offset + 34, (byte)value);
+            _buffer.Uint8Put(_offset + 38, (byte)value);
         }
     }
 
@@ -341,7 +341,7 @@ namespace Baseline
     {
         get
         {
-            _engine.Wrap(_buffer, _offset + 35, _actingVersion);
+            _engine.Wrap(_buffer, _offset + 39, _actingVersion);
             return _engine;
         }
     }
@@ -381,25 +381,25 @@ namespace Baseline
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
-            _dimensions.Wrap(buffer, parentMessage.Position, actingVersion);
+            _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);
             _count = _dimensions.NumInGroup;
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            _parentMessage.Position = parentMessage.Position + 3;
+            _parentMessage.Limit = parentMessage.Limit + 3;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
-            _dimensions.Wrap(buffer, parentMessage.Position, _actingVersion);
+            _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);
             _dimensions.NumInGroup = (byte)count;
             _dimensions.BlockLength = (ushort)6;
             _index = -1;
             _count = count;
             _blockLength = 6;
-            parentMessage.Position = parentMessage.Position + 3;
+            parentMessage.Limit = parentMessage.Limit + 3;
         }
 
         public int Count { get { return _count; } }
@@ -413,8 +413,8 @@ namespace Baseline
                 throw new InvalidOperationException();
             }
 
-            _offset = _parentMessage.Position;
-            _parentMessage.Position = _offset + _blockLength;
+            _offset = _parentMessage.Limit;
+            _parentMessage.Limit = _offset + _blockLength;
             ++_index;
 
             return this;
@@ -522,25 +522,25 @@ namespace Baseline
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
-            _dimensions.Wrap(buffer, parentMessage.Position, actingVersion);
+            _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);
             _count = _dimensions.NumInGroup;
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            _parentMessage.Position = parentMessage.Position + 3;
+            _parentMessage.Limit = parentMessage.Limit + 3;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
         {
             _parentMessage = parentMessage;
             _buffer = buffer;
-            _dimensions.Wrap(buffer, parentMessage.Position, _actingVersion);
+            _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);
             _dimensions.NumInGroup = (byte)count;
             _dimensions.BlockLength = (ushort)1;
             _index = -1;
             _count = count;
             _blockLength = 1;
-            parentMessage.Position = parentMessage.Position + 3;
+            parentMessage.Limit = parentMessage.Limit + 3;
         }
 
         public int Count { get { return _count; } }
@@ -554,8 +554,8 @@ namespace Baseline
                 throw new InvalidOperationException();
             }
 
-            _offset = _parentMessage.Position;
-            _parentMessage.Position = _offset + _blockLength;
+            _offset = _parentMessage.Limit;
+            _parentMessage.Limit = _offset + _blockLength;
             ++_index;
 
             return this;
@@ -629,25 +629,25 @@ namespace Baseline
             {
                 _parentMessage = parentMessage;
                 _buffer = buffer;
-                _dimensions.Wrap(buffer, parentMessage.Position, actingVersion);
+                _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);
                 _count = _dimensions.NumInGroup;
                 _blockLength = _dimensions.BlockLength;
                 _actingVersion = actingVersion;
                 _index = -1;
-                _parentMessage.Position = parentMessage.Position + 3;
+                _parentMessage.Limit = parentMessage.Limit + 3;
             }
 
             public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
             {
                 _parentMessage = parentMessage;
                 _buffer = buffer;
-                _dimensions.Wrap(buffer, parentMessage.Position, _actingVersion);
+                _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);
                 _dimensions.NumInGroup = (byte)count;
                 _dimensions.BlockLength = (ushort)6;
                 _index = -1;
                 _count = count;
                 _blockLength = 6;
-                parentMessage.Position = parentMessage.Position + 3;
+                parentMessage.Limit = parentMessage.Limit + 3;
             }
 
             public int Count { get { return _count; } }
@@ -661,8 +661,8 @@ namespace Baseline
                     throw new InvalidOperationException();
                 }
 
-                _offset = _parentMessage.Position;
-                _parentMessage.Position = _offset + _blockLength;
+                _offset = _parentMessage.Limit;
+                _parentMessage.Limit = _offset + _blockLength;
                 ++_index;
 
                 return this;
@@ -756,12 +756,12 @@ namespace Baseline
     public int GetMake(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -769,10 +769,10 @@ namespace Baseline
     public int SetMake(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
@@ -797,12 +797,12 @@ namespace Baseline
     public int GetModel(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        _buffer.CheckPosition(position + sizeOfLengthField);
-        int dataLength = _buffer.Uint8Get(position);
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
         int bytesCopied = Math.Min(length, dataLength);
-        Position = position + sizeOfLengthField + dataLength;
-        _buffer.GetBytes(position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -810,10 +810,10 @@ namespace Baseline
     public int SetModel(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
-        int position = Position;
-        Position = position + sizeOfLengthField + length;
-        _buffer.Uint8Put(position, (byte)length);
-        _buffer.SetBytes(position + sizeOfLengthField, src, srcOffset, length);
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }

@@ -12,6 +12,7 @@ namespace Adaptive.SimpleBinaryEncoding
         private readonly byte* _pBuffer;
         private bool _disposed;
         private GCHandle _pinnedGCHandle;
+        private readonly int _capacity;
 
         /// <summary>
         /// Constructs a <see cref="DirectBuffer"/>
@@ -26,17 +27,18 @@ namespace Adaptive.SimpleBinaryEncoding
 
             _buffer = byteArray;
             _pBuffer = (byte*) _pinnedGCHandle.AddrOfPinnedObject().ToPointer();
+            _capacity = _buffer.Length;
         }
 
         /// <summary>
-        /// Assert that a given position is within the capacity of the buffer.
+        /// Check that a given limit is not greater than the capacity of a buffer from a given offset.
         /// </summary>
-        /// <param name="position">The position (index) that access is required to.</param>
-        public void CheckPosition(int position)
+        /// <param name="limit">limit access is required to.</param>
+        public void CheckLimit(int limit)
         {
-            if (position > _buffer.Length)
+            if (limit > _capacity)
             {
-                 throw new IndexOutOfRangeException(string.Format("position={0} is beyond capacity={1}", position, _buffer.Length));
+                 throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _buffer.Length));
             }
         }
 
@@ -477,7 +479,7 @@ namespace Adaptive.SimpleBinaryEncoding
         /// <returns>count of bytes copied.</returns>
         public int GetBytes(int index, byte[] destination, int offsetDestination, int length)
         {
-            int count = Math.Min(length, _buffer.Length - index);
+            int count = Math.Min(length, _capacity - index);
             Buffer.BlockCopy(_buffer, index, destination, offsetDestination, count);
             return count;
         }
@@ -492,7 +494,7 @@ namespace Adaptive.SimpleBinaryEncoding
         /// <returns>count of bytes copied.</returns>
         public int SetBytes(int index, byte[] src, int offset, int length)
         {
-            int count = Math.Min(length, _buffer.Length - index);
+            int count = Math.Min(length, _capacity - index);
             Buffer.BlockCopy(src, offset, _buffer, index, count);
 
             return count;

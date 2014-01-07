@@ -51,6 +51,7 @@
     <Compile Include="ir\generated\ByteOrderCodec.cs" />
     <Compile Include="ir\generated\FrameCodec.cs" />
     <Compile Include="ir\generated\MessageHeader.cs" />
+    <Compile Include="ir\generated\MetaAttribute.cs" />
     <Compile Include="ir\generated\PresenceCodec.cs" />
     <Compile Include="ir\generated\PrimitiveTypeCodec.cs" />
     <Compile Include="ir\generated\SignalCodec.cs" />

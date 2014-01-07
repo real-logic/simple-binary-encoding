@@ -372,7 +372,6 @@ namespace Adaptive.SimpleBinaryEncoding
         /// <returns> int value of the hashCode </returns>
         public override int GetHashCode()
         {
-            long bits;
             switch (_representation)
             {
                 case Representation.Long:
