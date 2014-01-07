@@ -69,7 +69,7 @@ public:
             delete ir;
             (*it).second = NULL;
         }
-        
+
         if (header_ != NULL)
         {
             delete header_;
@@ -143,6 +143,16 @@ public:
             }
         }
         return NULL;
+    }
+
+    /**
+     * \brief Return the underlying map of templateId to Ir objects
+     *
+     * \return map of templateId as int to Ir
+     */
+    std::multimap<int, Ir *> &map(void)
+    {
+        return map_;
     }
 
 protected:
