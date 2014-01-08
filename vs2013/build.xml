@@ -89,7 +89,7 @@
     <Exec Command="java -Dsbe.output.dir=..\examples\csharp\Otf\ -Dsbe.should.generate=false -Dsbe.ir.filename=car_example_serialized_ir.bin -jar ..\target\dist\SbeTool.jar ..\examples\resources\TestSchema.xml" />
   </Target>
 
-  <Target Name="CIBuild" DependsOnTargets="GenerateIR, GenerateExamples, Compile"/>
+  <Target Name="CIBuild" DependsOnTargets="GenerateIR;GenerateExamples;Compile"/>
   
   <!-- Following targets are supposed to be called from the main build file (Ant)-->
   <ItemGroup>
