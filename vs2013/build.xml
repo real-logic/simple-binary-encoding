@@ -89,7 +89,13 @@
     <Exec Command="java -Dsbe.output.dir=..\examples\csharp\Otf\ -Dsbe.should.generate=false -Dsbe.ir.filename=car_example_serialized_ir.bin -jar ..\target\dist\SbeTool.jar ..\examples\resources\TestSchema.xml" />
   </Target>
 
-  <Target Name="CIBuild" DependsOnTargets="GenerateIR;GenerateExamples;Compile"/>
+  <!-- This target uses SbeTool to generate the SBE stubs for FIX messages required to run the performance tests -->
+  <Target Name="GeneratePerfTestStubs">
+    <Message Text="Generating stubs for perf tests..." Importance="high" />
+    <Exec Command="java -Dsbe.output.dir=..\perf\csharp\Adaptive.SimpleBinaryEncoding.PerfTests\Bench\SBE\FIX -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX -jar ..\target\dist\SbeTool.jar ..\perf\resources\sbe\fix-message-samples.xml" />
+  </Target>
+
+  <Target Name="CIBuild" DependsOnTargets="GenerateIR;GenerateExamples;GeneratePerfTestStubs;Compile"/>
   
   <!-- Following targets are supposed to be called from the main build file (Ant)-->
   <ItemGroup>
