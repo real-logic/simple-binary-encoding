@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Adaptive.SimpleBinaryEncoding.Examples.Generated;
 using Adaptive.SimpleBinaryEncoding.Examples.generated_stub;
 using Adaptive.SimpleBinaryEncoding.ir;
 using Adaptive.SimpleBinaryEncoding.Otf;
-using Baseline;
-using MessageHeader = Uk.Co.Real_logic.Sbe.Ir.Generated.MessageHeader;
 
 namespace Adaptive.SimpleBinaryEncoding.Examples.Otf
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Uk.Co.Real_logic.Sbe.Ir.Generated;
+using Adaptive.SimpleBinaryEncoding.Ir.Generated;
 
 namespace Adaptive.SimpleBinaryEncoding.ir
 {

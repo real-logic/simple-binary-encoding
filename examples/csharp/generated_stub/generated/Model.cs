@@ -3,7 +3,7 @@
 using System;
 using Adaptive.SimpleBinaryEncoding;
 
-namespace Baseline
+namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 {
     public enum Model : byte
     {

@@ -74,6 +74,22 @@
     />
   </Target>
 
+  <!-- This target uses SbeTool to generate the SBE IR stubs used for the OTF decoder. SbeTool needs to be available in target\dist folder (requires to run the main Ant "dist" target). -->
+  <Target Name="GenerateIR">
+    <Message Text="Generating SBE IR stubs..." Importance="high" />
+    <Exec Command="java -Dsbe.output.dir=..\main\csharp\ir\generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Ir.Generated -jar ..\target\dist\SbeTool.jar ..\main\resources\sbe-ir.xml" />
+  </Target>
+
+  <!-- This target uses SbeTool to generate the SBE IR stubs used for the OTF decoder. SbeTool needs to be available in target\dist folder (requires to run the main Ant "dist" target). -->
+  <Target Name="GenerateExamples">
+    <Message Text="Generating stubs for example project..." Importance="high" />
+    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\generated_stub\generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Examples.Generated -jar ..\target\dist\SbeTool.jar ..\examples\resources\TestSchema.xml" />
+
+    <Message Text="Generating serialized IR for OTF encoder example..." Importance="high" />
+    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\Otf\ -Dsbe.should.generate=false -Dsbe.ir.filename=car_example_serialized_ir.bin -jar ..\target\dist\SbeTool.jar ..\examples\resources\TestSchema.xml" />
+  </Target>
+
+  <Target Name="CIBuild" DependsOnTargets="GenerateIR, GenerateExamples, Compile"/>
   
   <!-- Following targets are supposed to be called from the main build file (Ant)-->
   <ItemGroup>

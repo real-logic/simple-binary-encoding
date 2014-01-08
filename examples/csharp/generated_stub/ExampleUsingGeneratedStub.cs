@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using Baseline;
+using Adaptive.SimpleBinaryEncoding.Examples.Generated;
 
 namespace Adaptive.SimpleBinaryEncoding.Examples.generated_stub
 {
