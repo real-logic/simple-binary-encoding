@@ -221,7 +221,7 @@ public:
 
     static int packageNameSchemaId(void)
     {
-        return 4;
+        return 3;
     }
 
 

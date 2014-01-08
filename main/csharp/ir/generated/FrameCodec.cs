@@ -3,7 +3,7 @@
 using System;
 using Adaptive.SimpleBinaryEncoding;
 
-namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
+namespace Uk.Co.Real_logic.Sbe.Ir.Generated
 {
     public class FrameCodec
     {
@@ -132,7 +132,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int PackageNameSchemaId = 4;
+    public const int PackageNameSchemaId = 3;
 
     public const string PackageNameCharacterEncoding = "UTF-8";
 

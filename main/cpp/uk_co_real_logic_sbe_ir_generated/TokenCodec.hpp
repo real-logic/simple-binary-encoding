@@ -260,7 +260,7 @@ public:
 
     static int tokenVersionSchemaId(void)
     {
-        return 17;
+        return 14;
     }
 
     static int tokenVersionSinceVersion(void)
@@ -314,7 +314,7 @@ public:
 
     static int signalSchemaId(void)
     {
-        return 14;
+        return 15;
     }
 
     static int signalSinceVersion(void)
@@ -353,7 +353,7 @@ public:
 
     static int primitiveTypeSchemaId(void)
     {
-        return 15;
+        return 16;
     }
 
     static int primitiveTypeSinceVersion(void)
@@ -392,7 +392,7 @@ public:
 
     static int byteOrderSchemaId(void)
     {
-        return 16;
+        return 17;
     }
 
     static int byteOrderSinceVersion(void)
@@ -431,7 +431,7 @@ public:
 
     static int presenceSchemaId(void)
     {
-        return 17;
+        return 18;
     }
 
     static int presenceSinceVersion(void)
@@ -485,7 +485,7 @@ public:
 
     static int nameSchemaId(void)
     {
-        return 18;
+        return 19;
     }
 
 
@@ -553,7 +553,7 @@ public:
 
     static int constValSchemaId(void)
     {
-        return 19;
+        return 20;
     }
 
 
@@ -621,7 +621,7 @@ public:
 
     static int minValSchemaId(void)
     {
-        return 20;
+        return 21;
     }
 
 
@@ -689,7 +689,7 @@ public:
 
     static int maxValSchemaId(void)
     {
-        return 21;
+        return 22;
     }
 
 
@@ -757,7 +757,7 @@ public:
 
     static int nullValSchemaId(void)
     {
-        return 22;
+        return 23;
     }
 
 
@@ -825,7 +825,7 @@ public:
 
     static int characterEncodingSchemaId(void)
     {
-        return 23;
+        return 24;
     }
 
 
@@ -893,7 +893,7 @@ public:
 
     static int epochSchemaId(void)
     {
-        return 24;
+        return 25;
     }
 
 
@@ -961,7 +961,7 @@ public:
 
     static int timeUnitSchemaId(void)
     {
-        return 25;
+        return 26;
     }
 
 
@@ -1029,7 +1029,7 @@ public:
 
     static int semanticTypeSchemaId(void)
     {
-        return 26;
+        return 27;
     }
 
 

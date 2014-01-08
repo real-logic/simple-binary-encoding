@@ -206,7 +206,7 @@ public class TokenCodec
 
     public static int tokenVersionSchemaId()
     {
-        return 17;
+        return 14;
     }
 
     public static String tokenVersionMetaAttribute(final MetaAttribute metaAttribute)
@@ -249,7 +249,7 @@ public class TokenCodec
 
     public static int signalSchemaId()
     {
-        return 14;
+        return 15;
     }
 
     public static String signalMetaAttribute(final MetaAttribute metaAttribute)
@@ -277,7 +277,7 @@ public class TokenCodec
 
     public static int primitiveTypeSchemaId()
     {
-        return 15;
+        return 16;
     }
 
     public static String primitiveTypeMetaAttribute(final MetaAttribute metaAttribute)
@@ -305,7 +305,7 @@ public class TokenCodec
 
     public static int byteOrderSchemaId()
     {
-        return 16;
+        return 17;
     }
 
     public static String byteOrderMetaAttribute(final MetaAttribute metaAttribute)
@@ -333,7 +333,7 @@ public class TokenCodec
 
     public static int presenceSchemaId()
     {
-        return 17;
+        return 18;
     }
 
     public static String presenceMetaAttribute(final MetaAttribute metaAttribute)
@@ -361,7 +361,7 @@ public class TokenCodec
 
     public static int nameSchemaId()
     {
-        return 18;
+        return 19;
     }
 
     public static String nameCharacterEncoding()
@@ -407,7 +407,7 @@ public class TokenCodec
 
     public static int constValSchemaId()
     {
-        return 19;
+        return 20;
     }
 
     public static String constValCharacterEncoding()
@@ -453,7 +453,7 @@ public class TokenCodec
 
     public static int minValSchemaId()
     {
-        return 20;
+        return 21;
     }
 
     public static String minValCharacterEncoding()
@@ -499,7 +499,7 @@ public class TokenCodec
 
     public static int maxValSchemaId()
     {
-        return 21;
+        return 22;
     }
 
     public static String maxValCharacterEncoding()
@@ -545,7 +545,7 @@ public class TokenCodec
 
     public static int nullValSchemaId()
     {
-        return 22;
+        return 23;
     }
 
     public static String nullValCharacterEncoding()
@@ -591,7 +591,7 @@ public class TokenCodec
 
     public static int characterEncodingSchemaId()
     {
-        return 23;
+        return 24;
     }
 
     public static String characterEncodingCharacterEncoding()
@@ -637,7 +637,7 @@ public class TokenCodec
 
     public static int epochSchemaId()
     {
-        return 24;
+        return 25;
     }
 
     public static String epochCharacterEncoding()
@@ -683,7 +683,7 @@ public class TokenCodec
 
     public static int timeUnitSchemaId()
     {
-        return 25;
+        return 26;
     }
 
     public static String timeUnitCharacterEncoding()
@@ -729,7 +729,7 @@ public class TokenCodec
 
     public static int semanticTypeSchemaId()
     {
-        return 26;
+        return 27;
     }
 
     public static String semanticTypeCharacterEncoding()

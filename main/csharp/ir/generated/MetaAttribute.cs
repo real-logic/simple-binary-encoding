@@ -3,7 +3,7 @@
 using System;
 using Adaptive.SimpleBinaryEncoding;
 
-namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
+namespace Uk.Co.Real_logic.Sbe.Ir.Generated
 {
     public enum MetaAttribute
     {

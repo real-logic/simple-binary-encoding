@@ -163,7 +163,7 @@ public class FrameCodec
 
     public static int packageNameSchemaId()
     {
-        return 4;
+        return 3;
     }
 
     public static String packageNameCharacterEncoding()

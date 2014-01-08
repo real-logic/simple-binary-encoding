@@ -65,7 +65,7 @@
     <message name="FrameCodec" id="1" description="Frame Header for start of encoding IR">
         <field name="sbeIrVersion" id="1" type="int32"/>
         <field name="schemaVersion" id="2" type="int32"/>
-        <data name="packageName" id="4" type="varDataEncoding"/>
+        <data name="packageName" id="3" type="varDataEncoding"/>
         <data name="namespaceName" id="4" type="varDataEncoding"/>
     </message>
 
@@ -73,19 +73,19 @@
         <field name="tokenOffset" id="11" type="int32"/>
         <field name="tokenSize" id="12" type="int32"/>
         <field name="schemaId" id="13" type="int32"/>
-        <field name="tokenVersion" id="17" type="int32"/>
-        <field name="signal" id="14" type="SignalCodec"/>
-        <field name="primitiveType" id="15" type="PrimitiveTypeCodec"/>
-        <field name="byteOrder" id="16" type="ByteOrderCodec"/>
-        <field name="presence" id="17" type="PresenceCodec"/>
-        <data name="name" id="18" type="varDataEncoding"/>
-        <data name="constVal" id="19" type="varDataEncoding"/>
-        <data name="minVal" id="20" type="varDataEncoding"/>
-        <data name="maxVal" id="21" type="varDataEncoding"/>
-        <data name="nullVal" id="22" type="varDataEncoding"/>
-        <data name="characterEncoding" id="23" type="varDataEncoding"/>
-        <data name="epoch" id="24" type="varDataEncoding"/>
-        <data name="timeUnit" id="25" type="varDataEncoding"/>
-        <data name="semanticType" id="26" type="varDataEncoding"/>
+        <field name="tokenVersion" id="14" type="int32"/>
+        <field name="signal" id="15" type="SignalCodec"/>
+        <field name="primitiveType" id="16" type="PrimitiveTypeCodec"/>
+        <field name="byteOrder" id="17" type="ByteOrderCodec"/>
+        <field name="presence" id="18" type="PresenceCodec"/>
+        <data name="name" id="19" type="varDataEncoding"/>
+        <data name="constVal" id="20" type="varDataEncoding"/>
+        <data name="minVal" id="21" type="varDataEncoding"/>
+        <data name="maxVal" id="22" type="varDataEncoding"/>
+        <data name="nullVal" id="23" type="varDataEncoding"/>
+        <data name="characterEncoding" id="24" type="varDataEncoding"/>
+        <data name="epoch" id="25" type="varDataEncoding"/>
+        <data name="timeUnit" id="26" type="varDataEncoding"/>
+        <data name="semanticType" id="27" type="varDataEncoding"/>
     </message>
 </messageSchema>
