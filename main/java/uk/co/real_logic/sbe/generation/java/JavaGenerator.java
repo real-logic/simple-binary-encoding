@@ -102,7 +102,7 @@ public class JavaGenerator implements CodeGenerator
             {
                 out.append(generateFileHeader(ir.applicableNamespace()));
                 out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(className, msgToken.size(), msgToken.version(), msgToken.schemaId()));
+                out.append(generateMessageFlyweightCode(className, msgToken));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -1061,14 +1061,12 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateMessageFlyweightCode(final String className,
-                                                      final int blockLength,
-                                                      final int version,
-                                                      final int schemaId)
+    private CharSequence generateMessageFlyweightCode(final String className, final Token token)
     {
         final String blockLengthType = javaTypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = javaTypeName(ir.headerStructure().templateIdType());
         final String templateVersionType = javaTypeName(ir.headerStructure().templateVersionType());
+        final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
             "    public static final %1$s TEMPLATE_ID = %2$s;\n" +
@@ -1092,6 +1090,10 @@ public class JavaGenerator implements CodeGenerator
             "    public %3$s templateVersion()\n" +
             "    {\n" +
             "        return TEMPLATE_VERSION;\n" +
+            "    }\n\n" +
+            "    public String semanticType()\n" +
+            "    {\n" +
+            "        return \"%8$s\";\n" +
             "    }\n\n" +
             "    public int offset()\n" +
             "    {\n" +
@@ -1130,12 +1132,13 @@ public class JavaGenerator implements CodeGenerator
             "        this.limit = limit;\n" +
             "    }\n",
             templateIdType,
-            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(schemaId)),
+            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.schemaId())),
             templateVersionType,
-            generateLiteral(ir.headerStructure().templateVersionType(), Integer.toString(version)),
+            generateLiteral(ir.headerStructure().templateVersionType(), Integer.toString(token.version())),
             blockLengthType,
-            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(blockLength)),
-            className
+            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
+            className,
+            semanticType
         );
     }
 
