@@ -16,13 +16,15 @@ namespace Adaptive.SimpleBinaryEncoding.ir
 	    private readonly IDictionary<long, IList<Token>> _messagesByIdMap = new Dictionary<long, IList<Token>>();
 	    private readonly IDictionary<string, IList<Token>> _typesByNameMap = new Dictionary<string, IList<Token>>();
 	    private readonly int _version;
+        private readonly string _namespaceName;
 
-	    /// <summary>
-	    /// Create a new IR container taking a defensive copy of the headerStructure <seealso cref="Token"/>s passed.
-	    /// </summary>
-	    /// <param name="packageName"> that should be applied to generated code. </param>
-	    /// <param name="headerTokens"> representing the message headerStructure. </param>
-	    public IntermediateRepresentation(string packageName, IList<Token> headerTokens, int version)
+        /// <summary>
+        /// Create a new IR container taking a defensive copy of the headerStructure <seealso cref="Token"/>s passed.
+        /// </summary>
+        /// <param name="packageName"> that should be applied to generated code. </param>
+        /// <param name="namespaceName"> that should be applied to generated code.</param>
+        /// <param name="headerTokens"> representing the message headerStructure. </param>
+        public IntermediateRepresentation(string packageName, string namespaceName, IList<Token> headerTokens, int version)
 	    {
 		    Verify.NotNull(packageName, "packageName");
 		    Verify.NotNull(headerTokens, "headerTokens");
@@ -30,6 +32,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
 		    _packageName = packageName;
 		    _headerStructure = new HeaderStructure(new List<Token>(headerTokens));
 		    _version = version;
+            _namespaceName = namespaceName;
 	    }
 
         /// <summary>
@@ -108,7 +111,18 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         /// <value>the namespace name to be used for generated code.</value>
         public string NamespaceName
         {
-            get { return _packageName; }
+            get { return _namespaceName; }
+        }
+
+        /// <summary>
+        /// Get the namespaceName to be used for generated code.
+        /// <p/>
+        /// If <seealso cref="NamespaceName"/> is null then <seealso cref="PackageName"/> is used.
+        /// </summary>
+        /// <returns> the namespaceName to be used for generated code. </returns>
+        public string ApplicableNamespace
+        {
+            get { return _namespaceName ?? _packageName; }
         }
 
         /// <summary>

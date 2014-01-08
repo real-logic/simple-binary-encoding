@@ -15,10 +15,12 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         private readonly TokenCodec _tokenCodec = new TokenCodec();
         private readonly byte[] _valArray = new byte[Capacity];
         private readonly DirectBuffer _valBuffer;
-        private int IrVersion;
+        private int _irVersion;
         private IList<Token> _irHeader;
         private string _irPackageName;
+        private string _irNamespaceName = null;
         private int _offset;
+        private readonly byte[] _buffer = new byte[1024];
 
         public IrDecoder(string fileName)
         {
@@ -54,7 +56,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
                 i = CaptureHeader(tokens, 0);
             }
 
-            var ir = new IntermediateRepresentation(_irPackageName, _irHeader, IrVersion);
+            var ir = new IntermediateRepresentation(_irPackageName, _irNamespaceName, _irHeader, _irVersion);
 
             for (; i < size; i++)
             {
@@ -110,12 +112,20 @@ namespace Adaptive.SimpleBinaryEncoding.ir
                 throw new InvalidOperationException("Unknown SBE version: " + _frameCodec.SbeIrVersion);
             }
 
-            var buffer = new byte[1024];
+            _irVersion = _frameCodec.SchemaVersion;
 
-            IrVersion = _frameCodec.SchemaVersion;
+            var length = _frameCodec.GetPackageName(_buffer, 0, _buffer.Length);
+            var encoding = System.Text.Encoding.GetEncoding(FrameCodec.PackageNameCharacterEncoding);
+            _irPackageName = encoding.GetString(_buffer, 0, length);
 
-            int length = _frameCodec.GetPackageVal(buffer, 0, buffer.Length);
-            _irPackageName = System.Text.Encoding.UTF8.GetString(buffer, 0, length);
+            length = _frameCodec.GetNamespaceName(_buffer, 0, _buffer.Length);
+            encoding = System.Text.Encoding.GetEncoding(FrameCodec.NamespaceNameCharacterEncoding);
+            _irNamespaceName = encoding.GetString(_buffer, 0, length);
+
+            if (string.IsNullOrEmpty(_irNamespaceName))
+            {
+                _irNamespaceName = null;
+            }
 
             _offset += _frameCodec.Size;
         }
@@ -124,8 +134,6 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         {
             var tokenBuilder = new Token.Builder();
             var encBuilder = new Encoding.Builder();
-
-            var buffer = new byte[1024];
 
             _tokenCodec.WrapForDecode(_directBuffer, _offset, TokenCodec.BlockLength, 0);
 
@@ -143,9 +151,9 @@ namespace Adaptive.SimpleBinaryEncoding.ir
                 .ByteOrder(IrUtil.MapByteOrder(_tokenCodec.ByteOrder))
                 .Presence(IrUtil.MapPresence(_tokenCodec.Presence));
 
-            int stringLength = _tokenCodec.GetName(buffer, 0, buffer.Length);
+            int stringLength = _tokenCodec.GetName(_buffer, 0, _buffer.Length);
             System.Text.Encoding encoding = System.Text.Encoding.GetEncoding(TokenCodec.NameCharacterEncoding);
-            string value = encoding.GetString(buffer, 0, stringLength);
+            string value = encoding.GetString(_buffer, 0, stringLength);
             tokenBuilder.Name(value);
 
             encBuilder.ConstVal(IrUtil.Get(_valBuffer, type, _tokenCodec.GetConstVal(_valArray, 0, _valArray.Length)));
@@ -154,27 +162,27 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             encBuilder.NullVal(IrUtil.Get(_valBuffer, type, _tokenCodec.GetNullVal(_valArray, 0, _valArray.Length)));
 
             // character encoding
-            stringLength = _tokenCodec.GetCharacterEncoding(buffer, 0, buffer.Length);
+            stringLength = _tokenCodec.GetCharacterEncoding(_buffer, 0, _buffer.Length);
             encoding = System.Text.Encoding.GetEncoding(TokenCodec.CharacterEncodingCharacterEncoding);
-            value = encoding.GetString(buffer, 0, stringLength);
+            value = encoding.GetString(_buffer, 0, stringLength);
             encBuilder.CharacterEncoding(value.Length == 0 ? null : value);
 
             // epoch
-            stringLength = _tokenCodec.GetEpoch(buffer, 0, buffer.Length);
+            stringLength = _tokenCodec.GetEpoch(_buffer, 0, _buffer.Length);
             encoding = System.Text.Encoding.GetEncoding(TokenCodec.EpochCharacterEncoding);
-            value = encoding.GetString(buffer, 0, stringLength);
+            value = encoding.GetString(_buffer, 0, stringLength);
             encBuilder.Epoch(value.Length == 0 ? null : value);
 
             // time unit
-            stringLength = _tokenCodec.GetTimeUnit(buffer, 0, buffer.Length);
+            stringLength = _tokenCodec.GetTimeUnit(_buffer, 0, _buffer.Length);
             encoding = System.Text.Encoding.GetEncoding(TokenCodec.TimeUnitCharacterEncoding);
-            value = encoding.GetString(buffer, 0, stringLength);
+            value = encoding.GetString(_buffer, 0, stringLength);
             encBuilder.TimeUnit(value.Length == 0 ? null : value);
 
             // semantic type
-            stringLength = _tokenCodec.GetSemanticType(buffer, 0, buffer.Length);
+            stringLength = _tokenCodec.GetSemanticType(_buffer, 0, _buffer.Length);
             encoding = System.Text.Encoding.GetEncoding(TokenCodec.SemanticTypeCharacterEncoding);
-            value = encoding.GetString(buffer, 0, stringLength);
+            value = encoding.GetString(_buffer, 0, stringLength);
             encBuilder.SemanticType(value.Length == 0 ? null : value);
 
             _offset += _tokenCodec.Size;
