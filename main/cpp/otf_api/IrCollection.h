@@ -200,7 +200,8 @@ protected:
         char tmp[256];
 
         frame.wrapForDecode(buffer_, offset, frame.blockLength(), frame.templateVersion());
-        tmpLen = frame.getPackageVal(tmp, sizeof(tmp));
+        tmpLen = frame.getPackageName(tmp, sizeof(tmp));
+        frame.getNamespaceName(tmp, sizeof(tmp));
 
         ::std::cout << "Reading IR package=\"" << std::string(tmp, tmpLen) << "\"" << ::std::endl;
 
