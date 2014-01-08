@@ -1,5 +1,8 @@
 This file contains the list of commits of Java ported to .NET (most recent at the TOP)
 
+63931461c7f520deda6faa24ae6aef0c07417360
+Added support for having a sbe.target.namespace system property override the package in the schema . Enhancement #63.
+
 e656ddc11ec0b27ed7430805ff4408416a915d15
 [Java]: Moved MetaAttribute to be top level.
 
