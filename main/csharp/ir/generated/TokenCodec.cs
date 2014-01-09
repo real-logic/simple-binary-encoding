@@ -347,12 +347,12 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int ConstValSchemaId = 20;
+    public const int ConstValueSchemaId = 20;
 
-    public const string ConstValCharacterEncoding = "UTF-8";
+    public const string ConstValueCharacterEncoding = "UTF-8";
 
 
-    public static string ConstValMetaAttribute(MetaAttribute metaAttribute)
+    public static string ConstValueMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -364,7 +364,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public int GetConstVal(byte[] dst, int dstOffset, int length)
+    public int GetConstValue(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -377,7 +377,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return bytesCopied;
     }
 
-    public int SetConstVal(byte[] src, int srcOffset, int length)
+    public int SetConstValue(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -388,12 +388,12 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int MinValSchemaId = 21;
+    public const int MinValueSchemaId = 21;
 
-    public const string MinValCharacterEncoding = "UTF-8";
+    public const string MinValueCharacterEncoding = "UTF-8";
 
 
-    public static string MinValMetaAttribute(MetaAttribute metaAttribute)
+    public static string MinValueMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -405,7 +405,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public int GetMinVal(byte[] dst, int dstOffset, int length)
+    public int GetMinValue(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -418,7 +418,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return bytesCopied;
     }
 
-    public int SetMinVal(byte[] src, int srcOffset, int length)
+    public int SetMinValue(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -429,12 +429,12 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int MaxValSchemaId = 22;
+    public const int MaxValueSchemaId = 22;
 
-    public const string MaxValCharacterEncoding = "UTF-8";
+    public const string MaxValueCharacterEncoding = "UTF-8";
 
 
-    public static string MaxValMetaAttribute(MetaAttribute metaAttribute)
+    public static string MaxValueMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -446,7 +446,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public int GetMaxVal(byte[] dst, int dstOffset, int length)
+    public int GetMaxValue(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -459,7 +459,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return bytesCopied;
     }
 
-    public int SetMaxVal(byte[] src, int srcOffset, int length)
+    public int SetMaxValue(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -470,12 +470,12 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int NullValSchemaId = 23;
+    public const int NullValueSchemaId = 23;
 
-    public const string NullValCharacterEncoding = "UTF-8";
+    public const string NullValueCharacterEncoding = "UTF-8";
 
 
-    public static string NullValMetaAttribute(MetaAttribute metaAttribute)
+    public static string NullValueMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -487,7 +487,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public int GetNullVal(byte[] dst, int dstOffset, int length)
+    public int GetNullValue(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -500,7 +500,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return bytesCopied;
     }
 
-    public int SetNullVal(byte[] src, int srcOffset, int length)
+    public int SetNullValue(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;

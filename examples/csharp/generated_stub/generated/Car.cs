@@ -577,9 +577,9 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 
         public const byte OctaneRatingNullVal = (byte)255;
 
-        public const byte OctaneRatingMinVal = (byte)90;
+        public const byte OctaneRatingMinVal = (byte)0;
 
-        public const byte OctaneRatingMaxVal = (byte)110;
+        public const byte OctaneRatingMaxVal = (byte)254;
 
         public byte OctaneRating
         {
