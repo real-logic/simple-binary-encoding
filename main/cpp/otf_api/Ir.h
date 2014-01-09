@@ -199,19 +199,19 @@ public:
     /// Return the length of the current tokens constant value in bytes
     int64_t constLen() const;
     /// Retrieve the current tokens constant value or NULL if not present
-    const char *constVal() const;
+    const char *constValue() const;
     /// Return the length of the current tokens min value in bytes
     int64_t minLen() const;
     /// Return the current tokens min value or NULL if not present
-    const char *minVal() const;
+    const char *minValue() const;
     /// Return the length of the current tokens max value in bytes
     int64_t maxLen() const;
     /// Return the current tokens max value or NULL if not present
-    const char *maxVal() const;
+    const char *maxValue() const;
     /// Return the length of the current tokens null value in bytes
     int64_t nullLen() const;
     /// Return the current tokens null value or NULL if not present
-    const char *nullVal() const;
+    const char *nullValue() const;
     /// Return the length of the current tokens characterEncoding value in bytes
     int64_t characterEncodingLen() const;
     /// Return the current tokens characterEncoding value or NULL if not present
@@ -242,7 +242,7 @@ public:
                   TokenPrimitiveType primitiveType,
                   uint16_t schemaId,
                   const std::string &name,
-                  const char *constVal = NULL,
+                  const char *constValue = NULL,
                   int constValLength = 0);
 
     // used to retrieve what would be the nominal size of a single element of a primitive type

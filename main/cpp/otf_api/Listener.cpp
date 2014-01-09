@@ -283,14 +283,14 @@ int Listener::process(void)
             {
                 updateBufferOffsetFromIr(ir);
                 const char *valuePosition = buffer_ + bufferOffset_;
-                const char *constVal = ir->constVal();
+                const char *constValue = ir->constValue();
                 int *calculatedOffset = &bufferOffset_;
                 int constOffset;
 
-                // use ir->constVal() for value if this token is a constant
-                if (constVal != NULL)
+                // use ir->constValue() for value if this token is a constant
+                if (constValue != NULL)
                 {
-                    valuePosition = constVal;
+                    valuePosition = constValue;
                     calculatedOffset = &constOffset;  // use a dummy variable for offset as constant comes from IR
                 }
 

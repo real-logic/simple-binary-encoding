@@ -124,17 +124,17 @@ public:
         return "";
     }
 
-    static sbe_int32_t tokenOffsetNullVal()
+    static sbe_int32_t tokenOffsetNullValue()
     {
         return -2147483648;
     }
 
-    static sbe_int32_t tokenOffsetMinVal()
+    static sbe_int32_t tokenOffsetMinValue()
     {
         return -2147483647;
     }
 
-    static sbe_int32_t tokenOffsetMaxVal()
+    static sbe_int32_t tokenOffsetMaxValue()
     {
         return 2147483647;
     }
@@ -178,17 +178,17 @@ public:
         return "";
     }
 
-    static sbe_int32_t tokenSizeNullVal()
+    static sbe_int32_t tokenSizeNullValue()
     {
         return -2147483648;
     }
 
-    static sbe_int32_t tokenSizeMinVal()
+    static sbe_int32_t tokenSizeMinValue()
     {
         return -2147483647;
     }
 
-    static sbe_int32_t tokenSizeMaxVal()
+    static sbe_int32_t tokenSizeMaxValue()
     {
         return 2147483647;
     }
@@ -232,17 +232,17 @@ public:
         return "";
     }
 
-    static sbe_int32_t schemaIdNullVal()
+    static sbe_int32_t schemaIdNullValue()
     {
         return -2147483648;
     }
 
-    static sbe_int32_t schemaIdMinVal()
+    static sbe_int32_t schemaIdMinValue()
     {
         return -2147483647;
     }
 
-    static sbe_int32_t schemaIdMaxVal()
+    static sbe_int32_t schemaIdMaxValue()
     {
         return 2147483647;
     }
@@ -286,17 +286,17 @@ public:
         return "";
     }
 
-    static sbe_int32_t tokenVersionNullVal()
+    static sbe_int32_t tokenVersionNullValue()
     {
         return -2147483648;
     }
 
-    static sbe_int32_t tokenVersionMinVal()
+    static sbe_int32_t tokenVersionMinValue()
     {
         return -2147483647;
     }
 
-    static sbe_int32_t tokenVersionMaxVal()
+    static sbe_int32_t tokenVersionMaxValue()
     {
         return 2147483647;
     }
@@ -536,28 +536,28 @@ public:
         return length;
     }
 
-    static const char *constValCharacterEncoding()
+    static const char *constValueCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    static int constValSinceVersion(void)
+    static int constValueSinceVersion(void)
     {
          return 0;
     }
 
-    bool constValInActingVersion(void)
+    bool constValueInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int constValSchemaId(void)
+    static int constValueSchemaId(void)
     {
         return 20;
     }
 
 
-    static const char *constValMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    static const char *constValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -569,19 +569,19 @@ public:
         return "";
     }
 
-    sbe_int64_t constValLength(void) const
+    sbe_int64_t constValueLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
     }
 
-    const char *constVal(void)
+    const char *constValue(void)
     {
          const char *fieldPtr = (buffer_ + position() + 1);
          position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
          return fieldPtr;
     }
 
-    int getConstVal(char *dst, const int length)
+    int getConstValue(char *dst, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
@@ -593,7 +593,7 @@ public:
         return bytesToCopy;
     }
 
-    int putConstVal(const char *src, const int length)
+    int putConstValue(const char *src, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
@@ -604,28 +604,28 @@ public:
         return length;
     }
 
-    static const char *minValCharacterEncoding()
+    static const char *minValueCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    static int minValSinceVersion(void)
+    static int minValueSinceVersion(void)
     {
          return 0;
     }
 
-    bool minValInActingVersion(void)
+    bool minValueInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int minValSchemaId(void)
+    static int minValueSchemaId(void)
     {
         return 21;
     }
 
 
-    static const char *minValMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    static const char *minValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -637,19 +637,19 @@ public:
         return "";
     }
 
-    sbe_int64_t minValLength(void) const
+    sbe_int64_t minValueLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
     }
 
-    const char *minVal(void)
+    const char *minValue(void)
     {
          const char *fieldPtr = (buffer_ + position() + 1);
          position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
          return fieldPtr;
     }
 
-    int getMinVal(char *dst, const int length)
+    int getMinValue(char *dst, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
@@ -661,7 +661,7 @@ public:
         return bytesToCopy;
     }
 
-    int putMinVal(const char *src, const int length)
+    int putMinValue(const char *src, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
@@ -672,28 +672,28 @@ public:
         return length;
     }
 
-    static const char *maxValCharacterEncoding()
+    static const char *maxValueCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    static int maxValSinceVersion(void)
+    static int maxValueSinceVersion(void)
     {
          return 0;
     }
 
-    bool maxValInActingVersion(void)
+    bool maxValueInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int maxValSchemaId(void)
+    static int maxValueSchemaId(void)
     {
         return 22;
     }
 
 
-    static const char *maxValMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    static const char *maxValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -705,19 +705,19 @@ public:
         return "";
     }
 
-    sbe_int64_t maxValLength(void) const
+    sbe_int64_t maxValueLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
     }
 
-    const char *maxVal(void)
+    const char *maxValue(void)
     {
          const char *fieldPtr = (buffer_ + position() + 1);
          position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
          return fieldPtr;
     }
 
-    int getMaxVal(char *dst, const int length)
+    int getMaxValue(char *dst, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
@@ -729,7 +729,7 @@ public:
         return bytesToCopy;
     }
 
-    int putMaxVal(const char *src, const int length)
+    int putMaxValue(const char *src, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
@@ -740,28 +740,28 @@ public:
         return length;
     }
 
-    static const char *nullValCharacterEncoding()
+    static const char *nullValueCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    static int nullValSinceVersion(void)
+    static int nullValueSinceVersion(void)
     {
          return 0;
     }
 
-    bool nullValInActingVersion(void)
+    bool nullValueInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int nullValSchemaId(void)
+    static int nullValueSchemaId(void)
     {
         return 23;
     }
 
 
-    static const char *nullValMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    static const char *nullValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -773,19 +773,19 @@ public:
         return "";
     }
 
-    sbe_int64_t nullValLength(void) const
+    sbe_int64_t nullValueLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
     }
 
-    const char *nullVal(void)
+    const char *nullValue(void)
     {
          const char *fieldPtr = (buffer_ + position() + 1);
          position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
          return fieldPtr;
     }
 
-    int getNullVal(char *dst, const int length)
+    int getNullValue(char *dst, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
@@ -797,7 +797,7 @@ public:
         return bytesToCopy;
     }
 
-    int putNullVal(const char *src, const int length)
+    int putNullValue(const char *src, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();

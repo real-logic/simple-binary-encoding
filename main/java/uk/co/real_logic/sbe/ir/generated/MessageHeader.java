@@ -22,17 +22,17 @@ public class MessageHeader
         return 6;
     }
 
-    public static int blockLengthNullVal()
+    public static int blockLengthNullValue()
     {
         return 65535;
     }
 
-    public static int blockLengthMinVal()
+    public static int blockLengthMinValue()
     {
         return 0;
     }
 
-    public static int blockLengthMaxVal()
+    public static int blockLengthMaxValue()
     {
         return 65534;
     }
@@ -48,17 +48,17 @@ public class MessageHeader
         return this;
     }
 
-    public static int templateIdNullVal()
+    public static int templateIdNullValue()
     {
         return 65535;
     }
 
-    public static int templateIdMinVal()
+    public static int templateIdMinValue()
     {
         return 0;
     }
 
-    public static int templateIdMaxVal()
+    public static int templateIdMaxValue()
     {
         return 65534;
     }
@@ -74,17 +74,17 @@ public class MessageHeader
         return this;
     }
 
-    public static short versionNullVal()
+    public static short versionNullValue()
     {
         return (short)255;
     }
 
-    public static short versionMinVal()
+    public static short versionMinValue()
     {
         return (short)0;
     }
 
-    public static short versionMaxVal()
+    public static short versionMaxValue()
     {
         return (short)254;
     }
@@ -100,17 +100,17 @@ public class MessageHeader
         return this;
     }
 
-    public static short reservedNullVal()
+    public static short reservedNullValue()
     {
         return (short)255;
     }
 
-    public static short reservedMinVal()
+    public static short reservedMinValue()
     {
         return (short)0;
     }
 
-    public static short reservedMaxVal()
+    public static short reservedMaxValue()
     {
         return (short)254;
     }

@@ -31,19 +31,19 @@ struct Ir::Impl
 {
     TokenCodec tokenCodec;
     char name[256];
-    char constVal[256];
-    char minVal[256];
-    char maxVal[256];
-    char nullVal[256];
+    char constValue[256];
+    char minValue[256];
+    char maxValue[256];
+    char nullValue[256];
     char characterEncoding[256];
     char epoch[256];
     char timeUnit[256];
     char semanticType[256];
     int nameLength;
-    int constValLength;
-    int minValLength;
-    int maxValLength;
-    int nullValLength;
+    int constValueLength;
+    int minValueLength;
+    int maxValueLength;
+    int nullValueLength;
     int characterEncodingLength;
     int epochLength;
     int timeUnitLength;
@@ -86,12 +86,12 @@ void Ir::readTokenAtCurrentPosition()
 
     impl_->nameLength = impl_->tokenCodec.getName(impl_->name, sizeof(impl_->name));
 
-    impl_->constValLength = impl_->tokenCodec.getConstVal(impl_->constVal, sizeof(impl_->constVal));
+    impl_->constValueLength = impl_->tokenCodec.getConstValue(impl_->constValue, sizeof(impl_->constValue));
 
     // don't really do anything with min/max/null/encoding right now
-    impl_->minValLength = impl_->tokenCodec.getMinVal(impl_->minVal, sizeof(tmp));
-    impl_->maxValLength = impl_->tokenCodec.getMaxVal(impl_->maxVal, sizeof(tmp));
-    impl_->nullValLength = impl_->tokenCodec.getNullVal(impl_->nullVal, sizeof(tmp));
+    impl_->minValueLength = impl_->tokenCodec.getMinValue(impl_->minValue, sizeof(tmp));
+    impl_->maxValueLength = impl_->tokenCodec.getMaxValue(impl_->maxValue, sizeof(tmp));
+    impl_->nullValueLength = impl_->tokenCodec.getNullValue(impl_->nullValue, sizeof(tmp));
     impl_->characterEncodingLength = impl_->tokenCodec.getCharacterEncoding(impl_->characterEncoding, sizeof(tmp));
     impl_->epochLength = impl_->tokenCodec.getEpoch(impl_->epoch, sizeof(tmp));
     impl_->timeUnitLength = impl_->tokenCodec.getTimeUnit(impl_->timeUnit, sizeof(tmp));
@@ -178,11 +178,11 @@ uint64_t Ir::validValue() const
     switch (primitiveType())
     {
         case Ir::CHAR:
-            return impl_->constVal[0];
+            return impl_->constValue[0];
             break;
 
         case Ir::UINT8:
-            return impl_->constVal[0];
+            return impl_->constValue[0];
             break;
 
         default:
@@ -197,19 +197,19 @@ uint64_t Ir::choiceValue() const
     switch (primitiveType())
     {
         case Ir::UINT8:
-            return impl_->constVal[0];
+            return impl_->constValue[0];
             break;
 
         case Ir::UINT16:
-            return *(uint16_t *)(impl_->constVal);
+            return *(uint16_t *)(impl_->constValue);
             break;
 
         case Ir::UINT32:
-            return *(uint32_t *)(impl_->constVal);
+            return *(uint32_t *)(impl_->constValue);
             break;
 
         case Ir::UINT64:
-            return *(uint64_t *)(impl_->constVal);
+            return *(uint64_t *)(impl_->constValue);
             break;
 
         default:
@@ -230,62 +230,62 @@ std::string Ir::name() const
 
 int64_t Ir::constLen() const
 {
-    return impl_->constValLength;
+    return impl_->constValueLength;
 }
 
-const char *Ir::constVal() const
+const char *Ir::constValue() const
 {
     if (constLen() == 0)
     {
         return NULL;
     }
 
-    return impl_->constVal;
+    return impl_->constValue;
 }
 
 int64_t Ir::minLen() const
 {
-    return impl_->minValLength;
+    return impl_->minValueLength;
 }
 
-const char *Ir::minVal() const
+const char *Ir::minValue() const
 {
     if (minLen() == 0)
     {
         return NULL;
     }
 
-    return impl_->minVal;
+    return impl_->minValue;
 }
 
 int64_t Ir::maxLen() const
 {
-    return impl_->maxValLength;
+    return impl_->maxValueLength;
 }
 
-const char *Ir::maxVal() const
+const char *Ir::maxValue() const
 {
     if (maxLen() == 0)
     {
         return NULL;
     }
 
-    return impl_->maxVal;
+    return impl_->maxValue;
 }
 
 int64_t Ir::nullLen() const
 {
-    return impl_->nullValLength;
+    return impl_->nullValueLength;
 }
 
-const char *Ir::nullVal() const
+const char *Ir::nullValue() const
 {
     if (nullLen() == 0)
     {
         return NULL;
     }
 
-    return impl_->nullVal;
+    return impl_->nullValue;
 }
 
 int64_t Ir::characterEncodingLen() const
@@ -366,8 +366,8 @@ void Ir::addToken(uint32_t offset,
                   TokenPrimitiveType primitiveType,
                   uint16_t schemaId,
                   const std::string &name,
-                  const char *constVal,
-                  int constValLength)
+                  const char *constValue,
+                  int constValueLength)
 {
     TokenCodec tokenCodec;
 
@@ -387,13 +387,13 @@ void Ir::addToken(uint32_t offset,
               .signal((SignalCodec::Value)signal)
               .primitiveType((PrimitiveTypeCodec::Value)primitiveType)
               .byteOrder((ByteOrderCodec::Value)byteOrder)
-              .presence((constVal != NULL ? PresenceCodec::OPTIONAL : PresenceCodec::REQUIRED));
+              .presence((constValue != NULL ? PresenceCodec::OPTIONAL : PresenceCodec::REQUIRED));
 
     tokenCodec.putName(name.c_str(), name.size());
-    tokenCodec.putConstVal(constVal, constValLength);
-    tokenCodec.putMinVal(NULL, 0);
-    tokenCodec.putMaxVal(NULL, 0);
-    tokenCodec.putNullVal(NULL, 0);
+    tokenCodec.putConstValue(constValue, constValueLength);
+    tokenCodec.putMinValue(NULL, 0);
+    tokenCodec.putMaxValue(NULL, 0);
+    tokenCodec.putNullValue(NULL, 0);
     tokenCodec.putCharacterEncoding(NULL, 0);
     tokenCodec.putEpoch(NULL, 0);
     tokenCodec.putTimeUnit(NULL, 0);

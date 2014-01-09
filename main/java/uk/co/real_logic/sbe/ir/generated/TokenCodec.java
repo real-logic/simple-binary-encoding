@@ -31,6 +31,11 @@ public class TokenCodec
         return TEMPLATE_VERSION;
     }
 
+    public String semanticType()
+    {
+        return "";
+    }
+
     public int offset()
     {
         return offset;
@@ -92,17 +97,17 @@ public class TokenCodec
         return "";
     }
 
-    public static int tokenOffsetNullVal()
+    public static int tokenOffsetNullValue()
     {
         return -2147483648;
     }
 
-    public static int tokenOffsetMinVal()
+    public static int tokenOffsetMinValue()
     {
         return -2147483647;
     }
 
-    public static int tokenOffsetMaxVal()
+    public static int tokenOffsetMaxValue()
     {
         return 2147483647;
     }
@@ -135,17 +140,17 @@ public class TokenCodec
         return "";
     }
 
-    public static int tokenSizeNullVal()
+    public static int tokenSizeNullValue()
     {
         return -2147483648;
     }
 
-    public static int tokenSizeMinVal()
+    public static int tokenSizeMinValue()
     {
         return -2147483647;
     }
 
-    public static int tokenSizeMaxVal()
+    public static int tokenSizeMaxValue()
     {
         return 2147483647;
     }
@@ -178,17 +183,17 @@ public class TokenCodec
         return "";
     }
 
-    public static int schemaIdNullVal()
+    public static int schemaIdNullValue()
     {
         return -2147483648;
     }
 
-    public static int schemaIdMinVal()
+    public static int schemaIdMinValue()
     {
         return -2147483647;
     }
 
-    public static int schemaIdMaxVal()
+    public static int schemaIdMaxValue()
     {
         return 2147483647;
     }
@@ -221,17 +226,17 @@ public class TokenCodec
         return "";
     }
 
-    public static int tokenVersionNullVal()
+    public static int tokenVersionNullValue()
     {
         return -2147483648;
     }
 
-    public static int tokenVersionMinVal()
+    public static int tokenVersionMinValue()
     {
         return -2147483647;
     }
 
-    public static int tokenVersionMaxVal()
+    public static int tokenVersionMaxValue()
     {
         return 2147483647;
     }
@@ -405,17 +410,17 @@ public class TokenCodec
         return length;
     }
 
-    public static int constValSchemaId()
+    public static int constValueSchemaId()
     {
         return 20;
     }
 
-    public static String constValCharacterEncoding()
+    public static String constValueCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    public static String constValMetaAttribute(final MetaAttribute metaAttribute)
+    public static String constValueMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -427,7 +432,7 @@ public class TokenCodec
         return "";
     }
 
-    public int getConstVal(final byte[] dst, final int dstOffset, final int length)
+    public int getConstValue(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -440,7 +445,7 @@ public class TokenCodec
         return bytesCopied;
     }
 
-    public int putConstVal(final byte[] src, final int srcOffset, final int length)
+    public int putConstValue(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -451,17 +456,17 @@ public class TokenCodec
         return length;
     }
 
-    public static int minValSchemaId()
+    public static int minValueSchemaId()
     {
         return 21;
     }
 
-    public static String minValCharacterEncoding()
+    public static String minValueCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    public static String minValMetaAttribute(final MetaAttribute metaAttribute)
+    public static String minValueMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -473,7 +478,7 @@ public class TokenCodec
         return "";
     }
 
-    public int getMinVal(final byte[] dst, final int dstOffset, final int length)
+    public int getMinValue(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -486,7 +491,7 @@ public class TokenCodec
         return bytesCopied;
     }
 
-    public int putMinVal(final byte[] src, final int srcOffset, final int length)
+    public int putMinValue(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -497,17 +502,17 @@ public class TokenCodec
         return length;
     }
 
-    public static int maxValSchemaId()
+    public static int maxValueSchemaId()
     {
         return 22;
     }
 
-    public static String maxValCharacterEncoding()
+    public static String maxValueCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    public static String maxValMetaAttribute(final MetaAttribute metaAttribute)
+    public static String maxValueMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -519,7 +524,7 @@ public class TokenCodec
         return "";
     }
 
-    public int getMaxVal(final byte[] dst, final int dstOffset, final int length)
+    public int getMaxValue(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -532,7 +537,7 @@ public class TokenCodec
         return bytesCopied;
     }
 
-    public int putMaxVal(final byte[] src, final int srcOffset, final int length)
+    public int putMaxValue(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -543,17 +548,17 @@ public class TokenCodec
         return length;
     }
 
-    public static int nullValSchemaId()
+    public static int nullValueSchemaId()
     {
         return 23;
     }
 
-    public static String nullValCharacterEncoding()
+    public static String nullValueCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    public static String nullValMetaAttribute(final MetaAttribute metaAttribute)
+    public static String nullValueMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -565,7 +570,7 @@ public class TokenCodec
         return "";
     }
 
-    public int getNullVal(final byte[] dst, final int dstOffset, final int length)
+    public int getNullValue(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -578,7 +583,7 @@ public class TokenCodec
         return bytesCopied;
     }
 
-    public int putNullVal(final byte[] src, final int srcOffset, final int length)
+    public int putNullValue(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();

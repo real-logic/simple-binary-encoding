@@ -32,17 +32,17 @@ public:
     }
 
 
-    static sbe_uint16_t blockLengthNullVal()
+    static sbe_uint16_t blockLengthNullValue()
     {
         return (sbe_uint16_t)65535;
     }
 
-    static sbe_uint16_t blockLengthMinVal()
+    static sbe_uint16_t blockLengthMinValue()
     {
         return (sbe_uint16_t)0;
     }
 
-    static sbe_uint16_t blockLengthMaxVal()
+    static sbe_uint16_t blockLengthMaxValue()
     {
         return (sbe_uint16_t)65534;
     }
@@ -58,17 +58,17 @@ public:
         return *this;
     }
 
-    static sbe_uint16_t templateIdNullVal()
+    static sbe_uint16_t templateIdNullValue()
     {
         return (sbe_uint16_t)65535;
     }
 
-    static sbe_uint16_t templateIdMinVal()
+    static sbe_uint16_t templateIdMinValue()
     {
         return (sbe_uint16_t)0;
     }
 
-    static sbe_uint16_t templateIdMaxVal()
+    static sbe_uint16_t templateIdMaxValue()
     {
         return (sbe_uint16_t)65534;
     }
@@ -84,17 +84,17 @@ public:
         return *this;
     }
 
-    static sbe_uint8_t versionNullVal()
+    static sbe_uint8_t versionNullValue()
     {
         return (sbe_uint8_t)255;
     }
 
-    static sbe_uint8_t versionMinVal()
+    static sbe_uint8_t versionMinValue()
     {
         return (sbe_uint8_t)0;
     }
 
-    static sbe_uint8_t versionMaxVal()
+    static sbe_uint8_t versionMaxValue()
     {
         return (sbe_uint8_t)254;
     }
@@ -110,17 +110,17 @@ public:
         return *this;
     }
 
-    static sbe_uint8_t reservedNullVal()
+    static sbe_uint8_t reservedNullValue()
     {
         return (sbe_uint8_t)255;
     }
 
-    static sbe_uint8_t reservedMinVal()
+    static sbe_uint8_t reservedMinValue()
     {
         return (sbe_uint8_t)0;
     }
 
-    static sbe_uint8_t reservedMaxVal()
+    static sbe_uint8_t reservedMaxValue()
     {
         return (sbe_uint8_t)254;
     }

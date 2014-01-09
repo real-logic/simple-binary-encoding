@@ -711,7 +711,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public static %s %sNullVal()\n" +
+            indent + "    public static %s %sNullValue()\n" +
             indent + "    {\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
@@ -722,7 +722,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public static %s %sMinVal()\n" +
+            indent + "    public static %s %sMinValue()\n" +
             indent + "    {\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
@@ -733,7 +733,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public static %s %sMaxVal()\n" +
+            indent + "    public static %s %sMaxValue()\n" +
             indent + "    {\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",

@@ -232,10 +232,10 @@ protected:
             token.wrapForDecode(buffer_, offset + size, token.blockLength(), token.templateVersion());
 
             nameLen = token.getName(name, sizeof(name));
-            token.getConstVal(tmp, sizeof(tmp));
-            token.getMinVal(tmp, sizeof(tmp));
-            token.getMaxVal(tmp, sizeof(tmp));
-            token.getNullVal(tmp, sizeof(tmp));
+            token.getConstValue(tmp, sizeof(tmp));
+            token.getMinValue(tmp, sizeof(tmp));
+            token.getMaxValue(tmp, sizeof(tmp));
+            token.getNullValue(tmp, sizeof(tmp));
             token.getCharacterEncoding(tmp, sizeof(tmp));
             token.getEpoch(tmp, sizeof(tmp));
             token.getTimeUnit(tmp, sizeof(tmp));
@@ -274,10 +274,10 @@ protected:
             token.wrapForDecode(buffer_, offset + size, token.blockLength(), token.templateVersion());
 
             nameLen = token.getName(name, sizeof(name));
-            token.getConstVal(tmp, sizeof(tmp));
-            token.getMinVal(tmp, sizeof(tmp));
-            token.getMaxVal(tmp, sizeof(tmp));
-            token.getNullVal(tmp, sizeof(tmp));
+            token.getConstValue(tmp, sizeof(tmp));
+            token.getMinValue(tmp, sizeof(tmp));
+            token.getMaxValue(tmp, sizeof(tmp));
+            token.getNullValue(tmp, sizeof(tmp));
             token.getCharacterEncoding(tmp, sizeof(tmp));
             token.getEpoch(tmp, sizeof(tmp));
             token.getTimeUnit(tmp, sizeof(tmp));

@@ -31,6 +31,11 @@ public class FrameCodec
         return TEMPLATE_VERSION;
     }
 
+    public String semanticType()
+    {
+        return "";
+    }
+
     public int offset()
     {
         return offset;
@@ -92,17 +97,17 @@ public class FrameCodec
         return "";
     }
 
-    public static int sbeIrVersionNullVal()
+    public static int sbeIrVersionNullValue()
     {
         return -2147483648;
     }
 
-    public static int sbeIrVersionMinVal()
+    public static int sbeIrVersionMinValue()
     {
         return -2147483647;
     }
 
-    public static int sbeIrVersionMaxVal()
+    public static int sbeIrVersionMaxValue()
     {
         return 2147483647;
     }
@@ -135,17 +140,17 @@ public class FrameCodec
         return "";
     }
 
-    public static int schemaVersionNullVal()
+    public static int schemaVersionNullValue()
     {
         return -2147483648;
     }
 
-    public static int schemaVersionMinVal()
+    public static int schemaVersionMinValue()
     {
         return -2147483647;
     }
 
-    public static int schemaVersionMaxVal()
+    public static int schemaVersionMaxValue()
     {
         return 2147483647;
     }

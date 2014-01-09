@@ -256,7 +256,7 @@ public class Cpp98Generator implements CodeGenerator
             cpp98TypeForNumInGroup, cpp98TypeForBlockLength, blockLength, dimensionHeaderSize
         ));
 
-        sb.append(
+        sb.append(String.format(
             indent + "    int count(void) const\n" +
             indent + "    {\n" +
             indent + "        return count_;\n" +
@@ -265,7 +265,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return index_ + 1 < count_;\n" +
             indent + "    }\n\n"
-        );
+        ));
 
         sb.append(String.format(
             indent + "    %1$s &next(void)\n" +
@@ -802,7 +802,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static %1$s %2$sNullVal()\n" +
+            indent + "    static %1$s %2$sNullValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",
@@ -813,7 +813,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static %1$s %2$sMinVal()\n" +
+            indent + "    static %1$s %2$sMinValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",
@@ -824,7 +824,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static %1$s %2$sMaxVal()\n" +
+            indent + "    static %1$s %2$sMaxValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",

@@ -150,10 +150,10 @@ public class IrEncoder implements Closeable
         final byte[] nameBytes = token.name().getBytes(TokenCodec.nameCharacterEncoding());
         tokenCodec.putName(nameBytes, 0, nameBytes.length);
 
-        tokenCodec.putConstVal(valArray, 0, put(valBuffer, encoding.constValue(), type));
-        tokenCodec.putMinVal(valArray, 0, put(valBuffer, encoding.minValue(), type));
-        tokenCodec.putMaxVal(valArray, 0, put(valBuffer, encoding.maxValue(), type));
-        tokenCodec.putNullVal(valArray, 0, put(valBuffer, encoding.nullValue(), type));
+        tokenCodec.putConstValue(valArray, 0, put(valBuffer, encoding.constValue(), type));
+        tokenCodec.putMinValue(valArray, 0, put(valBuffer, encoding.minValue(), type));
+        tokenCodec.putMaxValue(valArray, 0, put(valBuffer, encoding.maxValue(), type));
+        tokenCodec.putNullValue(valArray, 0, put(valBuffer, encoding.nullValue(), type));
 
         final byte[] charEncodingBytes = getBytes(encoding.characterEncoding(), TokenCodec.characterEncodingCharacterEncoding());
         tokenCodec.putCharacterEncoding(charEncodingBytes, 0, charEncodingBytes.length);

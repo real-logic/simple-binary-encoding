@@ -124,17 +124,17 @@ public:
         return "";
     }
 
-    static sbe_int32_t sbeIrVersionNullVal()
+    static sbe_int32_t sbeIrVersionNullValue()
     {
         return -2147483648;
     }
 
-    static sbe_int32_t sbeIrVersionMinVal()
+    static sbe_int32_t sbeIrVersionMinValue()
     {
         return -2147483647;
     }
 
-    static sbe_int32_t sbeIrVersionMaxVal()
+    static sbe_int32_t sbeIrVersionMaxValue()
     {
         return 2147483647;
     }
@@ -178,17 +178,17 @@ public:
         return "";
     }
 
-    static sbe_int32_t schemaVersionNullVal()
+    static sbe_int32_t schemaVersionNullValue()
     {
         return -2147483648;
     }
 
-    static sbe_int32_t schemaVersionMinVal()
+    static sbe_int32_t schemaVersionMinValue()
     {
         return -2147483647;
     }
 
-    static sbe_int32_t schemaVersionMaxVal()
+    static sbe_int32_t schemaVersionMaxValue()
     {
         return 2147483647;
     }

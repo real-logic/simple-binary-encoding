@@ -187,10 +187,10 @@ public class IrDecoder implements Closeable
 
         tokenBuilder.name(new String(buffer, 0, tokenCodec.getName(buffer, 0, buffer.length), TokenCodec.nameCharacterEncoding()));
 
-        encBuilder.constValue(get(valBuffer, type, tokenCodec.getConstVal(valArray, 0, valArray.length)));
-        encBuilder.minValue(get(valBuffer, type, tokenCodec.getMinVal(valArray, 0, valArray.length)));
-        encBuilder.maxValue(get(valBuffer, type, tokenCodec.getMaxVal(valArray, 0, valArray.length)));
-        encBuilder.nullValue(get(valBuffer, type, tokenCodec.getNullVal(valArray, 0, valArray.length)));
+        encBuilder.constValue(get(valBuffer, type, tokenCodec.getConstValue(valArray, 0, valArray.length)));
+        encBuilder.minValue(get(valBuffer, type, tokenCodec.getMinValue(valArray, 0, valArray.length)));
+        encBuilder.maxValue(get(valBuffer, type, tokenCodec.getMaxValue(valArray, 0, valArray.length)));
+        encBuilder.nullValue(get(valBuffer, type, tokenCodec.getNullValue(valArray, 0, valArray.length)));
 
         final String characterEncoding = new String(buffer, 0, tokenCodec.getCharacterEncoding(buffer, 0, buffer.length),
                                                     TokenCodec.characterEncodingCharacterEncoding());
