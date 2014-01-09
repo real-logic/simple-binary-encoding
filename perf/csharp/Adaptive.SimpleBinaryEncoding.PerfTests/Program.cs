@@ -22,7 +22,9 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests
             Console.WriteLine();
             Console.WriteLine("Running ...");
 
-            for (int i = 0; i < 5; i++)
+            const int runsCount = 5;
+
+            for (int i = 0; i < runsCount; i++)
             {
                 sbeEncodeLatency += SbePerfTestRunner.PerfTestEncode(i);
                 GC.Collect(2);
@@ -39,6 +41,9 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests
 
             Console.WriteLine("Latency ratio Google Protobuf / SBE - Decode: {0}", Math.Truncate((double)gpbDecodeLatency / sbeDecodeLatency *100) / 100);
             Console.WriteLine("Latency ratio Google Protobuf / SBE - Encode: {0}", Math.Truncate((double)gpbEncodeLatency / sbeEncodeLatency *100) / 100);
+
+            Console.WriteLine("##teamcity[buildStatisticValue key='AverageEncodeLatencyNanos' value='{0:0.0}']", (double) sbeEncodeLatency / runsCount);
+            Console.WriteLine("##teamcity[buildStatisticValue key='AverageDecodeLatencyNanos' value='{0:0.0}']", (double) sbeDecodeLatency / runsCount);
         }
     }
 }
