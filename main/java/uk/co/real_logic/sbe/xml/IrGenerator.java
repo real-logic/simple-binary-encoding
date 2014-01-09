@@ -213,7 +213,7 @@ public class IrGenerator
 
         if (type.presence() == Presence.OPTIONAL)
         {
-            encodingBuilder.nullVal(encodingType.nullVal());
+            encodingBuilder.nullValue(encodingType.nullValue());
         }
 
         final Token.Builder builder = new Token.Builder()
@@ -248,7 +248,7 @@ public class IrGenerator
             .encoding(new Encoding.Builder()
                 .byteOrder(byteOrder)
                 .primitiveType(encodingType)
-                .constVal(value.primitiveValue())
+                .constValue(value.primitiveValue())
                 .build());
 
         if (field != null)
@@ -296,7 +296,7 @@ public class IrGenerator
             .signal(Signal.CHOICE)
             .name(value.name())
             .encoding(new Encoding.Builder()
-                .constVal(value.primitiveValue())
+                .constValue(value.primitiveValue())
                 .byteOrder(byteOrder)
                 .primitiveType(encodingType)
                 .build());
@@ -338,20 +338,20 @@ public class IrGenerator
         {
             case REQUIRED:
                 encodingBuilder.presence(Encoding.Presence.REQUIRED)
-                    .minVal(type.minVal())
-                    .maxVal(type.maxVal());
+                    .minValue(type.minValue())
+                    .maxValue(type.maxValue());
                 break;
 
             case OPTIONAL:
                 encodingBuilder.presence(Encoding.Presence.OPTIONAL)
-                    .minVal(type.minVal())
-                    .maxVal(type.maxVal())
-                    .nullVal(type.nullVal());
+                    .minValue(type.minValue())
+                    .maxValue(type.maxValue())
+                    .nullValue(type.nullValue());
                 break;
 
             case CONSTANT:
                 encodingBuilder.presence(Encoding.Presence.CONSTANT)
-                    .constVal(type.constVal());
+                    .constValue(type.constVal());
                 break;
         }
 

@@ -23,7 +23,7 @@
     <types>
         <type name="ModelYear" primitiveType="uint16"/>
         <type name="VehicleCode" primitiveType="char" length="6"/>
-        <type name="Ron" primitiveType="uint8" minVal="90" maxVal="110"/>
+        <type name="Ron" primitiveType="uint8" minValue="90" maxValue="110"/>
         <type name="someNumbers" primitiveType="int32" length="5"/>
         <composite name="Engine">
             <type name="capacity" primitiveType="uint16"/>

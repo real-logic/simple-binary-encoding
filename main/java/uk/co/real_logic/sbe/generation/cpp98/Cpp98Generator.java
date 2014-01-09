@@ -534,7 +534,7 @@ public class Cpp98Generator implements CodeGenerator
             {
                 final String choiceName = token.name();
                 final String typeName = cpp98TypeName(token.encoding().primitiveType());
-                final String choiceBitPosition = token.encoding().constVal().toString();
+                final String choiceBitPosition = token.encoding().constValue().toString();
                 final String byteOrderStr = formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType());
 
                 sb.append(String.format(
@@ -583,13 +583,13 @@ public class Cpp98Generator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            final CharSequence constVal = generateLiteral(token.encoding().primitiveType(), token.encoding().constVal().toString());
+            final CharSequence constVal = generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString());
             sb.append("        ").append(token.name()).append(" = ").append(constVal).append(",\n");
         }
 
         sb.append(String.format(
             "        NULL_VALUE = %1$s",
-            generateLiteral(encoding.primitiveType(), encoding.applicableNullVal().toString())
+            generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString())
         ));
 
         sb.append("\n    };\n\n");
@@ -615,7 +615,7 @@ public class Cpp98Generator implements CodeGenerator
         {
             sb.append(String.format(
                 "            case %1$s: return %2$s;\n",
-                token.encoding().constVal().toString(),
+                token.encoding().constValue().toString(),
                 token.name())
             );
         }
@@ -625,7 +625,7 @@ public class Cpp98Generator implements CodeGenerator
             "        }\n\n" +
             "        throw \"unknown value for enum %2$s\";\n" +
             "    }\n",
-            encodingToken.encoding().applicableNullVal().toString(),
+            encodingToken.encoding().applicableNullValue().toString(),
             enumName
         ));
 
@@ -645,7 +645,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "            return %2$s;\n" +
             indent + "        }\n\n",
             Integer.valueOf(sinceVersion),
-            generateLiteral(encoding.primitiveType(), encoding.applicableNullVal().toString())
+            generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString())
         );
     }
 
@@ -808,7 +808,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    }\n",
             cpp98TypeName,
             propertyName,
-            generateLiteral(primitiveType, token.encoding().applicableNullVal().toString())
+            generateLiteral(primitiveType, token.encoding().applicableNullValue().toString())
         ));
 
         sb.append(String.format(
@@ -819,7 +819,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    }\n",
             cpp98TypeName,
             propertyName,
-            generateLiteral(primitiveType, token.encoding().applicableMinVal().toString())
+            generateLiteral(primitiveType, token.encoding().applicableMinValue().toString())
         ));
 
         sb.append(String.format(
@@ -830,7 +830,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    }\n",
             cpp98TypeName,
             propertyName,
-            generateLiteral(primitiveType, token.encoding().applicableMaxVal().toString())
+            generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())
         ));
 
         return sb;
@@ -991,13 +991,13 @@ public class Cpp98Generator implements CodeGenerator
                 indent + "    }\n",
                 cpp98TypeName,
                 propertyName,
-                generateLiteral(token.encoding().primitiveType(), token.encoding().constVal().toString())
+                generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString())
             );
         }
 
         final StringBuilder sb = new StringBuilder();
 
-        final byte[] constantValue = token.encoding().constVal().byteArrayValue(token.encoding().primitiveType());
+        final byte[] constantValue = token.encoding().constValue().byteArrayValue(token.encoding().primitiveType());
         final StringBuilder values = new StringBuilder();
         for (final byte b : constantValue)
         {

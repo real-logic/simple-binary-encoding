@@ -57,7 +57,7 @@ public class EnumType extends Type
 
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final String encodingTypeStr = getAttributeValue(node, "encodingType");
-        String nullValueStr = getAttributeValueOrNull(node, "nullVal");
+        String nullValueStr = getAttributeValueOrNull(node, "nullValue");
 
         switch (encodingTypeStr)
         {
@@ -90,7 +90,7 @@ public class EnumType extends Type
 
                     if (nullValueStr == null)
                     {
-                        nullValueStr = getAttributeValueOrNull(encodingTypeNode, "nullVal");
+                        nullValueStr = getAttributeValueOrNull(encodingTypeNode, "nullValue");
                     }
                 }
                 break;
@@ -105,7 +105,7 @@ public class EnumType extends Type
         {
             if (presence() != Presence.OPTIONAL)
             {
-                handleError(node, "nullVal set, but presence is not optional");
+                handleError(node, "nullValue set, but presence is not optional");
                 nullValue = null;
             }
             else
@@ -182,9 +182,9 @@ public class EnumType extends Type
     }
 
     /**
-     * The nullVal of the type
+     * The nullValue of the type
      *
-     * @return value of the nullVal
+     * @return value of the nullValue
      */
     public PrimitiveValue nullValue()
     {

@@ -4,7 +4,7 @@
                description="Unit Test"
                byteOrder="littleEndian">
     <types>
-        <enum name="NullBoolean" encodingType="uint8" nullVal="255" semanticType="Boolean">
+        <enum name="NullBoolean" encodingType="uint8" nullValue="255" semanticType="Boolean">
             <validValue name="false">0</validValue>
             <validValue name="true">1</validValue>
         </enum>

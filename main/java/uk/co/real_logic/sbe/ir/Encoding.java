@@ -44,10 +44,10 @@ public class Encoding
     private final PrimitiveType primitiveType;
     private final Presence presence;
     private final ByteOrder byteOrder;
-    private final PrimitiveValue minVal;
-    private final PrimitiveValue maxVal;
-    private final PrimitiveValue nullVal;
-    private final PrimitiveValue constVal;
+    private final PrimitiveValue minValue;
+    private final PrimitiveValue maxValue;
+    private final PrimitiveValue nullValue;
+    private final PrimitiveValue constValue;
     private final String characterEncoding;
     private final String epoch;
     private final String timeUnit;
@@ -58,10 +58,10 @@ public class Encoding
         primitiveType = null;
         presence = Presence.REQUIRED;
         byteOrder = ByteOrder.LITTLE_ENDIAN;
-        minVal = null;
-        maxVal = null;
-        nullVal = null;
-        constVal = null;
+        minValue = null;
+        maxValue = null;
+        nullValue = null;
+        constValue = null;
         characterEncoding = null;
         epoch = null;
         timeUnit = null;
@@ -71,10 +71,10 @@ public class Encoding
     public Encoding(final PrimitiveType primitiveType,
                     final Presence presence,
                     final ByteOrder byteOrder,
-                    final PrimitiveValue minVal,
-                    final PrimitiveValue maxVal,
-                    final PrimitiveValue nullVal,
-                    final PrimitiveValue constVal,
+                    final PrimitiveValue minValue,
+                    final PrimitiveValue maxValue,
+                    final PrimitiveValue nullValue,
+                    final PrimitiveValue constValue,
                     final String characterEncoding,
                     final String epoch,
                     final String timeUnit,
@@ -86,10 +86,10 @@ public class Encoding
         this.primitiveType = primitiveType;
         this.presence = presence;
         this.byteOrder = byteOrder;
-        this.minVal = minVal;
-        this.maxVal = maxVal;
-        this.nullVal = nullVal;
-        this.constVal = constVal;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.nullValue = nullValue;
+        this.constValue = constValue;
         this.characterEncoding = characterEncoding;
         this.epoch = epoch;
         this.timeUnit = timeUnit;
@@ -119,31 +119,31 @@ public class Encoding
     /**
      * The min value for the token or null if not set.
      *
-     * @return the minVal for the token or null if not set.
+     * @return the minValue for the token or null if not set.
      */
-    public PrimitiveValue minVal()
+    public PrimitiveValue minValue()
     {
-        return minVal;
+        return minValue;
     }
 
     /**
      * The max value for the token or null if not set.
      *
-     * @return the maxVal for the token or null if not set.
+     * @return the maxValue for the token or null if not set.
      */
-    public PrimitiveValue maxVal()
+    public PrimitiveValue maxValue()
     {
-        return maxVal;
+        return maxValue;
     }
 
     /**
      * The null value for the token or null if not set.
      *
-     * @return the nullVal for the token or null if not set.
+     * @return the nullValue for the token or null if not set.
      */
-    public PrimitiveValue nullVal()
+    public PrimitiveValue nullValue()
     {
-        return nullVal;
+        return nullValue;
     }
 
     /**
@@ -151,9 +151,9 @@ public class Encoding
      *
      * @return the constant value for the token or null if not set.
      */
-    public PrimitiveValue constVal()
+    public PrimitiveValue constValue()
     {
-        return constVal;
+        return constValue;
     }
 
     /**
@@ -171,14 +171,14 @@ public class Encoding
      *
      * @return most applicable null value for the encoded type.
      */
-    public PrimitiveValue applicableNullVal()
+    public PrimitiveValue applicableNullValue()
     {
-        if (null != nullVal)
+        if (null != nullValue)
         {
-            return nullVal;
+            return nullValue;
         }
 
-        return primitiveType.nullVal();
+        return primitiveType.nullValue();
     }
 
     /**
@@ -186,14 +186,14 @@ public class Encoding
      *
      * @return most applicable min value for the encoded type.
      */
-    public PrimitiveValue applicableMinVal()
+    public PrimitiveValue applicableMinValue()
     {
-        if (null != minVal)
+        if (null != minValue)
         {
-            return minVal;
+            return minValue;
         }
 
-        return primitiveType.minVal();
+        return primitiveType.minValue();
     }
 
 
@@ -202,14 +202,14 @@ public class Encoding
      *
      * @return most applicable max value for the encoded type.
      */
-    public PrimitiveValue applicableMaxVal()
+    public PrimitiveValue applicableMaxValue()
     {
-        if (null != maxVal)
+        if (null != maxValue)
         {
-            return maxVal;
+            return maxValue;
         }
 
-        return primitiveType.maxVal();
+        return primitiveType.maxValue();
     }
 
     /**
@@ -258,10 +258,10 @@ public class Encoding
             "primitiveType=" + primitiveType +
             ", presence=" + presence +
             ", byteOrder=" + byteOrder +
-            ", minVal=" + minVal +
-            ", maxVal=" + maxVal +
-            ", nullVal=" + nullVal +
-            ", constVal=" + constVal +
+            ", minValue=" + minValue +
+            ", maxValue=" + maxValue +
+            ", nullValue=" + nullValue +
+            ", constValue=" + constValue +
             ", characterEncoding='" + characterEncoding + '\'' +
             ", epoch='" + epoch + '\'' +
             ", timeUnit=" + timeUnit +
@@ -277,10 +277,10 @@ public class Encoding
         private PrimitiveType primitiveType = null;
         private Presence presence = Presence.REQUIRED;
         private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
-        private PrimitiveValue minVal = null;
-        private PrimitiveValue maxVal = null;
-        private PrimitiveValue nullVal = null;
-        private PrimitiveValue constVal = null;
+        private PrimitiveValue minValue = null;
+        private PrimitiveValue maxValue = null;
+        private PrimitiveValue nullValue = null;
+        private PrimitiveValue constValue = null;
         private String characterEncoding = null;
         private String epoch = null;
         private String timeUnit = null;
@@ -304,27 +304,27 @@ public class Encoding
             return this;
         }
 
-        public Builder minVal(final PrimitiveValue minValue)
+        public Builder minValue(final PrimitiveValue minValue)
         {
-            this.minVal = minValue;
+            this.minValue = minValue;
             return this;
         }
 
-        public Builder maxVal(final PrimitiveValue maxValue)
+        public Builder maxValue(final PrimitiveValue maxValue)
         {
-            this.maxVal = maxValue;
+            this.maxValue = maxValue;
             return this;
         }
 
-        public Builder nullVal(final PrimitiveValue nullValue)
+        public Builder nullValue(final PrimitiveValue nullValue)
         {
-            this.nullVal = nullValue;
+            this.nullValue = nullValue;
             return this;
         }
 
-        public Builder constVal(final PrimitiveValue constValue)
+        public Builder constValue(final PrimitiveValue constValue)
         {
-            this.constVal = constValue;
+            this.constValue = constValue;
             return this;
         }
 
@@ -357,10 +357,10 @@ public class Encoding
             return new Encoding(primitiveType,
                                 presence,
                                 byteOrder,
-                                minVal,
-                                maxVal,
-                                nullVal,
-                                constVal,
+                                minValue,
+                                maxValue,
+                                nullValue,
+                                constValue,
                                 characterEncoding,
                                 epoch,
                                 timeUnit,

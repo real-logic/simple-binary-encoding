@@ -79,10 +79,10 @@
         <field name="byteOrder" id="17" type="ByteOrderCodec"/>
         <field name="presence" id="18" type="PresenceCodec"/>
         <data name="name" id="19" type="varDataEncoding"/>
-        <data name="constVal" id="20" type="varDataEncoding"/>
-        <data name="minVal" id="21" type="varDataEncoding"/>
-        <data name="maxVal" id="22" type="varDataEncoding"/>
-        <data name="nullVal" id="23" type="varDataEncoding"/>
+        <data name="constValue" id="20" type="varDataEncoding"/>
+        <data name="minValue" id="21" type="varDataEncoding"/>
+        <data name="maxValue" id="22" type="varDataEncoding"/>
+        <data name="nullValue" id="23" type="varDataEncoding"/>
         <data name="characterEncoding" id="24" type="varDataEncoding"/>
         <data name="epoch" id="25" type="varDataEncoding"/>
         <data name="timeUnit" id="26" type="varDataEncoding"/>

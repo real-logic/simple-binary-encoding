@@ -98,7 +98,7 @@ public class EnumTypeTest
         final String testXmlString =
             "<types>" +
             "<enum name=\"optionalBoolean\" encodingType=\"uint8\" presence=\"optional\"" +
-            "      nullVal=\"" + nullValueStr + "\" semanticType=\"Boolean\">" +
+            "      nullValue=\"" + nullValueStr + "\" semanticType=\"Boolean\">" +
             "    <validValue name=\"False\">0</validValue>" +
             "    <validValue name=\"True\">1</validValue>" +
             "</enum>" +

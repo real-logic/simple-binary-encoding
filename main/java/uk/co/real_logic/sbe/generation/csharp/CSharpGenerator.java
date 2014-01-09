@@ -468,7 +468,7 @@ public class CSharpGenerator implements CodeGenerator
             if (token.signal() == Signal.CHOICE)
             {
                 final String choiceName = toUpperFirstChar(token.name());
-                final String choiceBitPosition = token.encoding().constVal().toString();
+                final String choiceBitPosition = token.encoding().constValue().toString();
                 final int choiceValue = (int)Math.pow(2, Integer.parseInt(choiceBitPosition));
                 sb.append(String.format("        %s = %s,\n", choiceName, Integer.valueOf(choiceValue)));
             }
@@ -484,10 +484,10 @@ public class CSharpGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            sb.append(INDENT).append(INDENT).append(token.name()).append(" = ").append(token.encoding().constVal()).append(",\n");
+            sb.append(INDENT).append(INDENT).append(token.name()).append(" = ").append(token.encoding().constValue()).append(",\n");
         }
 
-        final PrimitiveValue nullVal = encoding.applicableNullVal();
+        final PrimitiveValue nullVal = encoding.applicableNullValue();
 
         sb.append(INDENT).append(INDENT).append("NULL_VALUE = ").append(nullVal).append("\n");
 
@@ -626,7 +626,7 @@ public class CSharpGenerator implements CodeGenerator
                         indent + "    public const %s %sNullVal = %s;\n",
                 typeName,
                 toUpperFirstChar(propertyName),
-                generateLiteral(primitiveType, token.encoding().applicableNullVal().toString())
+                generateLiteral(primitiveType, token.encoding().applicableNullValue().toString())
         ));
 
         sb.append(String.format(
@@ -634,7 +634,7 @@ public class CSharpGenerator implements CodeGenerator
                         indent + "    public const %s %sMinVal = %s;\n",
                 typeName,
                 toUpperFirstChar(propertyName),
-                generateLiteral(primitiveType, token.encoding().applicableMinVal().toString())
+                generateLiteral(primitiveType, token.encoding().applicableMinValue().toString())
         ));
 
         sb.append(String.format(
@@ -642,7 +642,7 @@ public class CSharpGenerator implements CodeGenerator
                         indent + "    public const %s %sMaxVal = %s;\n",
                 typeName,
                 toUpperFirstChar(propertyName),
-                generateLiteral(primitiveType, token.encoding().applicableMaxVal().toString())
+                generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())
         ));
 
         return sb;
@@ -695,7 +695,7 @@ public class CSharpGenerator implements CodeGenerator
         return String.format(
             indent + "        if (actingVersion < %1$d) return %2$s;\n\n",
             Integer.valueOf(sinceVersion),
-            sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.nullVal().toString()) : "(byte)0"
+            sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.nullValue().toString()) : "(byte)0"
         );
     }
 
@@ -846,15 +846,15 @@ public class CSharpGenerator implements CodeGenerator
                 indent + "    public %1$s %2$s { get { return %3$s; } }\n",
                 cSharpTypeName(token.encoding().primitiveType()),
                 toUpperFirstChar(propertyName),
-                generateLiteral(token.encoding().primitiveType(), token.encoding().constVal().toString())
+                generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString())
             );
         }
 
         final StringBuilder sb = new StringBuilder();
 
         final String javaTypeName = cSharpTypeName(token.encoding().primitiveType());
-        final byte[] constantValue = token.encoding().constVal().byteArrayValue();
-        final CharSequence values = generateByteLiteralList(token.encoding().constVal().byteArrayValue());
+        final byte[] constantValue = token.encoding().constValue().byteArrayValue();
+        final CharSequence values = generateByteLiteralList(token.encoding().constValue().byteArrayValue());
 
         sb.append(String.format(
             "\n" +

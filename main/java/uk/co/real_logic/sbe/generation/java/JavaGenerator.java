@@ -497,7 +497,7 @@ public class JavaGenerator implements CodeGenerator
             {
                 final String choiceName = token.name();
                 final String typePrefix = token.encoding().primitiveType().primitiveName();
-                final String choiceBitPosition = token.encoding().constVal().toString();
+                final String choiceBitPosition = token.encoding().constValue().toString();
                 final ByteOrder byteOrder = token.encoding().byteOrder();
                 final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
@@ -534,12 +534,12 @@ public class JavaGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            final CharSequence constVal = generateLiteral(token.encoding().primitiveType(), token.encoding().constVal().toString());
+            final CharSequence constVal = generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString());
             sb.append("    ").append(token.name()).append('(').append(constVal).append("),\n");
         }
 
         final Token token = tokens.get(0);
-        final CharSequence nullVal = generateLiteral(token.encoding().primitiveType(), token.encoding().applicableNullVal().toString());
+        final CharSequence nullVal = generateLiteral(token.encoding().primitiveType(), token.encoding().applicableNullValue().toString());
         sb.append("    ").append("NULL_VAL").append('(').append(nullVal).append(')');
 
         sb.append(";\n\n");
@@ -584,7 +584,7 @@ public class JavaGenerator implements CodeGenerator
         {
             sb.append(String.format(
                 "            case %s: return %s;\n",
-                token.encoding().constVal().toString(),
+                token.encoding().constValue().toString(),
                 token.name())
             );
         }
@@ -597,7 +597,7 @@ public class JavaGenerator implements CodeGenerator
             "        }\n\n" +
             "        throw new IllegalArgumentException(\"Unknown value: \" + value);\n" +
             "    }\n",
-            generateLiteral(primitiveType, tokens.get(0).encoding().applicableNullVal().toString())
+            generateLiteral(primitiveType, tokens.get(0).encoding().applicableNullValue().toString())
         ));
 
         return sb;
@@ -717,7 +717,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             javaTypeName,
             propertyName,
-            generateLiteral(primitiveType, token.encoding().applicableNullVal().toString())
+            generateLiteral(primitiveType, token.encoding().applicableNullValue().toString())
         ));
 
         sb.append(String.format(
@@ -728,7 +728,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             javaTypeName,
             propertyName,
-            generateLiteral(primitiveType, token.encoding().applicableMinVal().toString())
+            generateLiteral(primitiveType, token.encoding().applicableMinValue().toString())
         ));
 
         sb.append(String.format(
@@ -739,7 +739,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             javaTypeName,
             propertyName,
-            generateLiteral(primitiveType, token.encoding().applicableMaxVal().toString())
+            generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())
         ));
 
         return sb;
@@ -803,7 +803,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            return %s;\n" +
             indent + "        }\n\n",
             Integer.valueOf(sinceVersion),
-            generateLiteral(encoding.primitiveType(), encoding.applicableNullVal().toString())
+            generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString())
         );
     }
 
@@ -971,15 +971,15 @@ public class JavaGenerator implements CodeGenerator
                     indent + "    }\n",
                 javaTypeName(token.encoding().primitiveType()),
                 propertyName,
-                generateLiteral(token.encoding().primitiveType(), token.encoding().constVal().toString())
+                generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString())
             );
         }
 
         final StringBuilder sb = new StringBuilder();
 
         final String javaTypeName = javaTypeName(token.encoding().primitiveType());
-        final byte[] constantValue = token.encoding().constVal().byteArrayValue(token.encoding().primitiveType());
-        final CharSequence values = generateByteLiteralList(token.encoding().constVal().byteArrayValue(token.encoding().primitiveType()));
+        final byte[] constantValue = token.encoding().constValue().byteArrayValue(token.encoding().primitiveType());
+        final CharSequence values = generateByteLiteralList(token.encoding().constValue().byteArrayValue(token.encoding().primitiveType()));
 
         sb.append(String.format(
             "\n" +

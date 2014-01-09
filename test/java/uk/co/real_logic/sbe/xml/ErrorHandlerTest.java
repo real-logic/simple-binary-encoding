@@ -48,7 +48,7 @@ public class ErrorHandlerTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"NullBoolean\" encodingType=\"uint8\" nullVal=\"255\" semanticType=\"Boolean\">" +
+            "<enum name=\"NullBoolean\" encodingType=\"uint8\" nullValue=\"255\" semanticType=\"Boolean\">" +
             "    <validValue name=\"false\">0</validValue>" +
             "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
@@ -76,7 +76,7 @@ public class ErrorHandlerTest
             "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
             "</composite>" +
             "<type name=\"ConstButNoValue\" primitiveType=\"char\" presence=\"constant\"></type>" +
-            "<type name=\"NullButNotOptional\" primitiveType=\"int8\" presence=\"required\" nullVal=\"10\"/>" +
+            "<type name=\"NullButNotOptional\" primitiveType=\"int8\" presence=\"required\" nullValue=\"10\"/>" +
             "</types>";
 
         final Map<String, Type> map = new HashMap<>();

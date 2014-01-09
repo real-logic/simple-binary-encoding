@@ -23,7 +23,7 @@ import static java.lang.Double.doubleToLongBits;
 import static java.nio.charset.Charset.forName;
 
 /**
- * Class used to encapsulate values for primitives. Used for nullVal, minVal, maxVal, and constants
+ * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
  * <p/>
  * <table>
  *     <thead>

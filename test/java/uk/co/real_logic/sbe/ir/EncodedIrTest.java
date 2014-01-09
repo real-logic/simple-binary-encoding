@@ -116,10 +116,10 @@ public class EncodedIrTest
         assertThat(lhs.encoding().byteOrder(), is(rhs.encoding().byteOrder()));
         assertThat(lhs.encoding().primitiveType(), is(rhs.encoding().primitiveType()));
         assertThat(lhs.encoding().presence(), is(rhs.encoding().presence()));
-        assertThat(lhs.encoding().constVal(), is(rhs.encoding().constVal()));
-        assertThat(lhs.encoding().minVal(), is(rhs.encoding().minVal()));
-        assertThat(lhs.encoding().maxVal(), is(rhs.encoding().maxVal()));
-        assertThat(lhs.encoding().nullVal(), is(rhs.encoding().nullVal()));
+        assertThat(lhs.encoding().constValue(), is(rhs.encoding().constValue()));
+        assertThat(lhs.encoding().minValue(), is(rhs.encoding().minValue()));
+        assertThat(lhs.encoding().maxValue(), is(rhs.encoding().maxValue()));
+        assertThat(lhs.encoding().nullValue(), is(rhs.encoding().nullValue()));
         assertThat(lhs.encoding().characterEncoding(), is(rhs.encoding().characterEncoding()));
         assertThat(lhs.encoding().epoch(), is(rhs.encoding().epoch()));
         assertThat(lhs.encoding().timeUnit(), is(rhs.encoding().timeUnit()));
