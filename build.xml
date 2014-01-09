@@ -222,6 +222,7 @@
             <classpath refid="sbetool.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.main.csharp.src}"/>
             <sysproperty key="sbe.target.language" value="csharp"/>
+            <sysproperty key="sbe.target.namespace" value="Adaptive.SimpleBinaryEncoding.Ir.Generated"/>
             <arg value="${dir.main.resources}/sbe-ir.xml"/>
         </java>
     </target>

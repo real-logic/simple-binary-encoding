@@ -3,7 +3,7 @@
 using System;
 using Adaptive.SimpleBinaryEncoding;
 
-namespace Uk.Co.Real_logic.Sbe.Ir.Generated
+namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
 {
     public enum ByteOrderCodec : byte
     {
