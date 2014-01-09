@@ -1,5 +1,8 @@
 This file contains the list of commits of Java ported to .NET (most recent at the TOP)
 
+94eead5798df8f7c2d7f4ccbb5692ce8856872a5
+[Java]: Added semanticType() method to the java generated message stubs. Enhancement #72.
+
 63931461c7f520deda6faa24ae6aef0c07417360
 Added support for having a sbe.target.namespace system property override the package in the schema . Enhancement #63.
 
