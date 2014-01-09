@@ -10,6 +10,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     public const ushort TemplateId = (ushort)1;
     public const byte TemplateVersion = (byte)0;
     public const ushort BlockLength = (ushort)8;
+    public const string SematicType = "";
 
     private readonly FrameCodec _parentMessage;
     private DirectBuffer _buffer;

@@ -108,7 +108,7 @@ public class CSharpGenerator implements CodeGenerator
             {
                 out.append(generateFileHeader(ir.applicableNamespace()));
                 out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(className, msgToken.size(), msgToken.version(), msgToken.schemaId()));
+                out.append(generateMessageFlyweightCode(className, msgToken));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -928,19 +928,18 @@ public class CSharpGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateMessageFlyweightCode(final String className,
-                                                      final int blockLength,
-                                                      final int version,
-                                                      final int schemaId)
+    private CharSequence generateMessageFlyweightCode(final String className, final Token token)
     {
         final String blockLengthType = cSharpTypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = cSharpTypeName(ir.headerStructure().templateIdType());
         final String templateVersionType = cSharpTypeName(ir.headerStructure().templateVersionType());
+        final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
             "    public const %s TemplateId = %s;\n" +
             "    public const %s TemplateVersion = %s;\n" +
-            "    public const %s BlockLength = %s;\n\n" +
+            "    public const %s BlockLength = %s;\n" +
+            "    public const string SematicType = \"%s\";\n\n" +
             "    private readonly %s _parentMessage;\n" +
             "    private DirectBuffer _buffer;\n" +
             "    private int _offset;\n" +
@@ -990,11 +989,12 @@ public class CSharpGenerator implements CodeGenerator
             "        }\n" +
             "    }\n\n",
             templateIdType,
-            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(schemaId)),
+            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.schemaId())),
             templateVersionType,
-            generateLiteral(ir.headerStructure().templateVersionType(), Integer.toString(version)),
+            generateLiteral(ir.headerStructure().templateVersionType(), Integer.toString(token.version())),
             blockLengthType,
-            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(blockLength)),
+            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
+            semanticType,
             className,
             className
         );
