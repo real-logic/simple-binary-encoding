@@ -12,6 +12,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples
 
             OtfExample.Main();
 
+            Console.WriteLine("Press a key to continue...");
             Console.ReadKey();
         }
     }
