@@ -81,11 +81,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int SbeIrVersionNullVal = -2147483648;
+    public const int SbeIrVersionNullValue = -2147483648;
 
-    public const int SbeIrVersionMinVal = -2147483647;
+    public const int SbeIrVersionMinValue = -2147483647;
 
-    public const int SbeIrVersionMaxVal = 2147483647;
+    public const int SbeIrVersionMaxValue = 2147483647;
 
     public int SbeIrVersion
     {
@@ -114,11 +114,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int SchemaVersionNullVal = -2147483648;
+    public const int SchemaVersionNullValue = -2147483648;
 
-    public const int SchemaVersionMinVal = -2147483647;
+    public const int SchemaVersionMinValue = -2147483647;
 
-    public const int SchemaVersionMaxVal = 2147483647;
+    public const int SchemaVersionMaxValue = 2147483647;
 
     public int SchemaVersion
     {

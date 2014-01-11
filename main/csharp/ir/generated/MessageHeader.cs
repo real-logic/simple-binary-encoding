@@ -20,11 +20,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
 
         public const int Size = 6;
 
-    public const ushort BlockLengthNullVal = (ushort)65535;
+    public const ushort BlockLengthNullValue = (ushort)65535;
 
-    public const ushort BlockLengthMinVal = (ushort)0;
+    public const ushort BlockLengthMinValue = (ushort)0;
 
-    public const ushort BlockLengthMaxVal = (ushort)65534;
+    public const ushort BlockLengthMaxValue = (ushort)65534;
 
     public ushort BlockLength
     {
@@ -39,11 +39,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const ushort TemplateIdNullVal = (ushort)65535;
+    public const ushort TemplateIdNullValue = (ushort)65535;
 
-    public const ushort TemplateIdMinVal = (ushort)0;
+    public const ushort TemplateIdMinValue = (ushort)0;
 
-    public const ushort TemplateIdMaxVal = (ushort)65534;
+    public const ushort TemplateIdMaxValue = (ushort)65534;
 
     public ushort TemplateId
     {
@@ -58,11 +58,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const byte VersionNullVal = (byte)255;
+    public const byte VersionNullValue = (byte)255;
 
-    public const byte VersionMinVal = (byte)0;
+    public const byte VersionMinValue = (byte)0;
 
-    public const byte VersionMaxVal = (byte)254;
+    public const byte VersionMaxValue = (byte)254;
 
     public byte Version
     {
@@ -77,11 +77,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const byte ReservedNullVal = (byte)255;
+    public const byte ReservedNullValue = (byte)255;
 
-    public const byte ReservedMinVal = (byte)0;
+    public const byte ReservedMinValue = (byte)0;
 
-    public const byte ReservedMaxVal = (byte)254;
+    public const byte ReservedMaxValue = (byte)254;
 
     public byte Reserved
     {

@@ -20,11 +20,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 
         public const int Size = -1;
 
-    public const byte LengthNullVal = (byte)255;
+    public const byte LengthNullValue = (byte)255;
 
-    public const byte LengthMinVal = (byte)0;
+    public const byte LengthMinValue = (byte)0;
 
-    public const byte LengthMaxVal = (byte)254;
+    public const byte LengthMaxValue = (byte)254;
 
     public byte Length
     {
@@ -39,10 +39,10 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
     }
 
 
-    public const byte VarDataNullVal = (byte)255;
+    public const byte VarDataNullValue = (byte)255;
 
-    public const byte VarDataMinVal = (byte)0;
+    public const byte VarDataMinValue = (byte)0;
 
-    public const byte VarDataMaxVal = (byte)254;
+    public const byte VarDataMaxValue = (byte)254;
     }
 }

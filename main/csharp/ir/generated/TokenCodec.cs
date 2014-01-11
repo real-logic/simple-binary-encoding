@@ -81,11 +81,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int TokenOffsetNullVal = -2147483648;
+    public const int TokenOffsetNullValue = -2147483648;
 
-    public const int TokenOffsetMinVal = -2147483647;
+    public const int TokenOffsetMinValue = -2147483647;
 
-    public const int TokenOffsetMaxVal = 2147483647;
+    public const int TokenOffsetMaxValue = 2147483647;
 
     public int TokenOffset
     {
@@ -114,11 +114,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int TokenSizeNullVal = -2147483648;
+    public const int TokenSizeNullValue = -2147483648;
 
-    public const int TokenSizeMinVal = -2147483647;
+    public const int TokenSizeMinValue = -2147483647;
 
-    public const int TokenSizeMaxVal = 2147483647;
+    public const int TokenSizeMaxValue = 2147483647;
 
     public int TokenSize
     {
@@ -147,11 +147,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int SchemaIdNullVal = -2147483648;
+    public const int SchemaIdNullValue = -2147483648;
 
-    public const int SchemaIdMinVal = -2147483647;
+    public const int SchemaIdMinValue = -2147483647;
 
-    public const int SchemaIdMaxVal = 2147483647;
+    public const int SchemaIdMaxValue = 2147483647;
 
     public int SchemaId
     {
@@ -180,11 +180,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int TokenVersionNullVal = -2147483648;
+    public const int TokenVersionNullValue = -2147483648;
 
-    public const int TokenVersionMinVal = -2147483647;
+    public const int TokenVersionMinValue = -2147483647;
 
-    public const int TokenVersionMaxVal = 2147483647;
+    public const int TokenVersionMaxValue = 2147483647;
 
     public int TokenVersion
     {

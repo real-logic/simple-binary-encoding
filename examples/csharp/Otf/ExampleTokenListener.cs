@@ -41,7 +41,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Otf
             for (int i = beginIndex + 1; i < endIndex; i++)
             {
                 // TODO to check..
-                if (encodedValue == tokens[i].Encoding.ConstVal.LongValue())
+                if (encodedValue == tokens[i].Encoding.ConstValue.LongValue())
                 {
                     value = tokens[i].Name;
                     break;
@@ -65,7 +65,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Otf
             {
                 Console.Write(" {0}=", tokens[i].Name);
 
-                long bitPosition = tokens[i].Encoding.ConstVal.LongValue();
+                long bitPosition = tokens[i].Encoding.ConstValue.LongValue();
                 bool flag = (encodedValue & (long) Math.Pow(2, bitPosition)) != 0;
 
                 Console.Write(Convert.ToString(flag));
@@ -154,7 +154,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Otf
             Encoding encoding = token.Encoding;
             if (encoding.Presence == Presence.Constant)
             {
-                return encoding.ConstVal;
+                return encoding.ConstValue;
             }
 
             if (Presence.Optional == encoding.Presence)

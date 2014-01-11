@@ -81,11 +81,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         return "";
     }
 
-    public const ulong SerialNumberNullVal = 0x8000000000000000UL;
+    public const ulong SerialNumberNullValue = 0x8000000000000000UL;
 
-    public const ulong SerialNumberMinVal = 0x0UL;
+    public const ulong SerialNumberMinValue = 0x0UL;
 
-    public const ulong SerialNumberMaxVal = 0x7fffffffffffffffUL;
+    public const ulong SerialNumberMaxValue = 0x7fffffffffffffffUL;
 
     public ulong SerialNumber
     {
@@ -114,11 +114,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         return "";
     }
 
-    public const ushort ModelYearNullVal = (ushort)65535;
+    public const ushort ModelYearNullValue = (ushort)65535;
 
-    public const ushort ModelYearMinVal = (ushort)0;
+    public const ushort ModelYearMinValue = (ushort)0;
 
-    public const ushort ModelYearMaxVal = (ushort)65534;
+    public const ushort ModelYearMaxValue = (ushort)65534;
 
     public ushort ModelYear
     {
@@ -201,11 +201,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         return "";
     }
 
-    public const int SomeNumbersNullVal = -2147483648;
+    public const int SomeNumbersNullValue = -2147483648;
 
-    public const int SomeNumbersMinVal = -2147483647;
+    public const int SomeNumbersMinValue = -2147483647;
 
-    public const int SomeNumbersMaxVal = 2147483647;
+    public const int SomeNumbersMaxValue = 2147483647;
 
     public const int SomeNumbersLength  = 5;
 
@@ -243,11 +243,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         return "";
     }
 
-    public const byte VehicleCodeNullVal = (byte)0;
+    public const byte VehicleCodeNullValue = (byte)0;
 
-    public const byte VehicleCodeMinVal = (byte)32;
+    public const byte VehicleCodeMinValue = (byte)32;
 
-    public const byte VehicleCodeMaxVal = (byte)126;
+    public const byte VehicleCodeMaxValue = (byte)126;
 
     public const int VehicleCodeLength  = 6;
 
@@ -435,11 +435,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             return "";
         }
 
-        public const ushort SpeedNullVal = (ushort)65535;
+        public const ushort SpeedNullValue = (ushort)65535;
 
-        public const ushort SpeedMinVal = (ushort)0;
+        public const ushort SpeedMinValue = (ushort)0;
 
-        public const ushort SpeedMaxVal = (ushort)65534;
+        public const ushort SpeedMaxValue = (ushort)65534;
 
         public ushort Speed
         {
@@ -468,11 +468,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             return "";
         }
 
-        public const float MpgNullVal = float.NaN;
+        public const float MpgNullValue = float.NaN;
 
-        public const float MpgMinVal = 1.401298464324817E-45f;
+        public const float MpgMinValue = 1.401298464324817E-45f;
 
-        public const float MpgMaxVal = 3.4028234663852886E38f;
+        public const float MpgMaxValue = 3.4028234663852886E38f;
 
         public float Mpg
         {
@@ -576,11 +576,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             return "";
         }
 
-        public const byte OctaneRatingNullVal = (byte)255;
+        public const byte OctaneRatingNullValue = (byte)255;
 
-        public const byte OctaneRatingMinVal = (byte)90;
+        public const byte OctaneRatingMinValue = (byte)90;
 
-        public const byte OctaneRatingMaxVal = (byte)110;
+        public const byte OctaneRatingMaxValue = (byte)110;
 
         public byte OctaneRating
         {
@@ -683,11 +683,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
                 return "";
             }
 
-            public const ushort MphNullVal = (ushort)65535;
+            public const ushort MphNullValue = (ushort)65535;
 
-            public const ushort MphMinVal = (ushort)0;
+            public const ushort MphMinValue = (ushort)0;
 
-            public const ushort MphMaxVal = (ushort)65534;
+            public const ushort MphMaxValue = (ushort)65534;
 
             public ushort Mph
             {
@@ -716,11 +716,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
                 return "";
             }
 
-            public const float SecondsNullVal = float.NaN;
+            public const float SecondsNullValue = float.NaN;
 
-            public const float SecondsMinVal = 1.401298464324817E-45f;
+            public const float SecondsMinValue = 1.401298464324817E-45f;
 
-            public const float SecondsMaxVal = 3.4028234663852886E38f;
+            public const float SecondsMaxValue = 3.4028234663852886E38f;
 
             public float Seconds
             {

@@ -85,31 +85,31 @@
         public static readonly PrimitiveType SbeFloat = new PrimitiveType("float", 4, PrimitiveValue.MinValueFloat, PrimitiveValue.MaxValueFloat, PrimitiveValue.NullValueFloat, SbePrimitiveType.Float);
         public static readonly PrimitiveType SbeDouble = new PrimitiveType("double", 8, PrimitiveValue.MinValueDouble, PrimitiveValue.MaxValueDouble, PrimitiveValue.NullValueDouble, SbePrimitiveType.Double);
 
-        private readonly PrimitiveValue _maxVal;
-        private readonly PrimitiveValue _minVal;
+        private readonly PrimitiveValue _maxValue;
+        private readonly PrimitiveValue _minValue;
         private readonly string _name;
-        private readonly PrimitiveValue _nullVal;
+        private readonly PrimitiveValue _nullValue;
         private readonly int _size;
         private readonly SbePrimitiveType _sbePrimitiveType;
 
-        internal PrimitiveType(string name, int size, long minVal, long maxVal, long nullVal, SbePrimitiveType sbePrimitiveType)
+        internal PrimitiveType(string name, int size, long minValue, long maxValue, long nullValue, SbePrimitiveType sbePrimitiveType)
         {
             _name = name;
             _size = size;
             _sbePrimitiveType = sbePrimitiveType;
-            _minVal = new PrimitiveValue(minVal, size);
-            _maxVal = new PrimitiveValue(maxVal, size);
-            _nullVal = new PrimitiveValue(nullVal, size);
+            _minValue = new PrimitiveValue(minValue, size);
+            _maxValue = new PrimitiveValue(maxValue, size);
+            _nullValue = new PrimitiveValue(nullValue, size);
         }
 
-        internal PrimitiveType(string name, int size, double minVal, double maxVal, double nullVal, SbePrimitiveType sbePrimitiveType)
+        internal PrimitiveType(string name, int size, double minValue, double maxValue, double nullValue, SbePrimitiveType sbePrimitiveType)
         {
             _name = name;
             _size = size;
             _sbePrimitiveType = sbePrimitiveType;
-            _minVal = new PrimitiveValue(minVal, size);
-            _maxVal = new PrimitiveValue(maxVal, size);
-            _nullVal = new PrimitiveValue(nullVal, size);
+            _minValue = new PrimitiveValue(minValue, size);
+            _maxValue = new PrimitiveValue(maxValue, size);
+            _nullValue = new PrimitiveValue(nullValue, size);
         }
 
         /// <summary>
@@ -131,30 +131,30 @@
         }
 
         /// <summary>
-        ///     The minVal of the primitive type.
+        ///     The minValue of the primitive type.
         /// </summary>
-        /// <value>default minVal of the primitive type</value>
-        public PrimitiveValue MinVal
+        /// <value>default minValue of the primitive type</value>
+        public PrimitiveValue MinValue
         {
-            get { return _minVal; }
+            get { return _minValue; }
         }
 
         /// <summary>
-        ///     The maxVal of the primitive type.
+        ///     The maxValue of the primitive type.
         /// </summary>
-        /// <value>default maxVal of the primitive type</value>
-        public PrimitiveValue MaxVal
+        /// <value>default maxValue of the primitive type</value>
+        public PrimitiveValue MaxValue
         {
-            get { return _maxVal; }
+            get { return _maxValue; }
         }
 
         /// <summary>
-        ///     The nullVal of the primitive type.
+        ///     The nullValue of the primitive type.
         /// </summary>
-        /// <value>default nullVal of the primitive type</value>
-        public PrimitiveValue NullVal
+        /// <value>default nullValue of the primitive type</value>
+        public PrimitiveValue NullValue
         {
-            get { return _nullVal; }
+            get { return _nullValue; }
         }
 
         public SbePrimitiveType Type

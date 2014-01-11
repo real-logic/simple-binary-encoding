@@ -5,7 +5,7 @@ using System.Text;
 namespace Adaptive.SimpleBinaryEncoding
 {
     /// <summary>
-    ///     Class used to encapsulate values for primitives. Used for nullVal, minVal, maxVal, and constants
+    ///     Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
     ///     <p />
     ///     <table>
     ///         <thead>

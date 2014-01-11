@@ -623,7 +623,7 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
                 "\n" +
-                        indent + "    public const %s %sNullVal = %s;\n",
+                        indent + "    public const %s %sNullValue = %s;\n",
                 typeName,
                 toUpperFirstChar(propertyName),
                 generateLiteral(primitiveType, token.encoding().applicableNullValue().toString())
@@ -631,7 +631,7 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
                 "\n" +
-                        indent + "    public const %s %sMinVal = %s;\n",
+                        indent + "    public const %s %sMinValue = %s;\n",
                 typeName,
                 toUpperFirstChar(propertyName),
                 generateLiteral(primitiveType, token.encoding().applicableMinValue().toString())
@@ -639,7 +639,7 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
                 "\n" +
-                        indent + "    public const %s %sMaxVal = %s;\n",
+                        indent + "    public const %s %sMaxValue = %s;\n",
                 typeName,
                 toUpperFirstChar(propertyName),
                 generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())

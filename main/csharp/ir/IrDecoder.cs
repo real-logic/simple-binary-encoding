@@ -156,10 +156,10 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             string value = encoding.GetString(_buffer, 0, stringLength);
             tokenBuilder.Name(value);
 
-            encBuilder.ConstVal(IrUtil.Get(_valBuffer, type, _tokenCodec.GetConstValue(_valArray, 0, _valArray.Length)));
-            encBuilder.MinVal(IrUtil.Get(_valBuffer, type, _tokenCodec.GetMinValue(_valArray, 0, _valArray.Length)));
-            encBuilder.MaxVal(IrUtil.Get(_valBuffer, type, _tokenCodec.GetMaxValue(_valArray, 0, _valArray.Length)));
-            encBuilder.NullVal(IrUtil.Get(_valBuffer, type, _tokenCodec.GetNullValue(_valArray, 0, _valArray.Length)));
+            encBuilder.ConstValue(IrUtil.Get(_valBuffer, type, _tokenCodec.GetConstValue(_valArray, 0, _valArray.Length)));
+            encBuilder.MinValue(IrUtil.Get(_valBuffer, type, _tokenCodec.GetMinValue(_valArray, 0, _valArray.Length)));
+            encBuilder.MaxValue(IrUtil.Get(_valBuffer, type, _tokenCodec.GetMaxValue(_valArray, 0, _valArray.Length)));
+            encBuilder.NullValue(IrUtil.Get(_valBuffer, type, _tokenCodec.GetNullValue(_valArray, 0, _valArray.Length)));
 
             // character encoding
             stringLength = _tokenCodec.GetCharacterEncoding(_buffer, 0, _buffer.Length);

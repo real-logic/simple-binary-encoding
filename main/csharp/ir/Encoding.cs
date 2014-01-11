@@ -10,10 +10,10 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         private readonly PrimitiveType _primitiveType;
         private readonly Presence _presence;
         private readonly ByteOrder _byteOrder;
-        private readonly PrimitiveValue _minVal;
-        private readonly PrimitiveValue _maxVal;
-        private readonly PrimitiveValue _nullVal;
-        private readonly PrimitiveValue _constVal;
+        private readonly PrimitiveValue _minValue;
+        private readonly PrimitiveValue _maxValue;
+        private readonly PrimitiveValue _nullValue;
+        private readonly PrimitiveValue _constValue;
         private readonly string _characterEncoding;
         private readonly string _epoch;
         private readonly string _timeUnit;
@@ -24,17 +24,17 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             _primitiveType = null;
             _presence = Presence.Required;
             _byteOrder = ByteOrder.LittleEndian;
-            _minVal = null;
-            _maxVal = null;
-            _nullVal = null;
-            _constVal = null;
+            _minValue = null;
+            _maxValue = null;
+            _nullValue = null;
+            _constValue = null;
             _characterEncoding = null;
             _epoch = null;
             _timeUnit = null;
             _semanticType = null;
         }
 
-        public Encoding(PrimitiveType primitiveType, Presence presence, ByteOrder byteOrder, PrimitiveValue minVal, PrimitiveValue maxVal, PrimitiveValue nullVal, PrimitiveValue constVal, string characterEncoding, string epoch, string timeUnit, string semanticType)
+        public Encoding(PrimitiveType primitiveType, Presence presence, ByteOrder byteOrder, PrimitiveValue minValue, PrimitiveValue maxValue, PrimitiveValue nullValue, PrimitiveValue constValue, string characterEncoding, string epoch, string timeUnit, string semanticType)
         {
             Verify.NotNull(presence, "presence");
             Verify.NotNull(byteOrder, "byteOrder");
@@ -42,10 +42,10 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             _primitiveType = primitiveType;
             _presence = presence;
             _byteOrder = byteOrder;
-            _minVal = minVal;
-            _maxVal = maxVal;
-            _nullVal = nullVal;
-            _constVal = constVal;
+            _minValue = minValue;
+            _maxValue = maxValue;
+            _nullValue = nullValue;
+            _constValue = constValue;
             _characterEncoding = characterEncoding;
             _epoch = epoch;
             _timeUnit = timeUnit;
@@ -73,38 +73,38 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         /// <summary>
         /// The min value for the token or null if not set.
         /// </summary>
-        /// <value>the minVal for the token or null if not set.</value>
-        public PrimitiveValue MinVal
+        /// <value>the minValue for the token or null if not set.</value>
+        public PrimitiveValue MinValue
         {
-            get { return _minVal; }
+            get { return _minValue; }
         }
 
 
         /// <summary>
         /// The max value for the token or null if not set.
         /// </summary>
-        /// <value>the maxVal for the token or null if not set.</value>
-        public PrimitiveValue MaxVal
+        /// <value>the maxValue for the token or null if not set.</value>
+        public PrimitiveValue MaxValue
         {
-            get { return _maxVal; }
+            get { return _maxValue; }
         }
 
         /// <summary>
         /// The null value for the token or null if not set.
         /// </summary>
-        /// <value>the nullVal for the token or null if not set.</value>
-        public PrimitiveValue NullVal
+        /// <value>the nullValue for the token or null if not set.</value>
+        public PrimitiveValue NullValue
         {
-            get { return _nullVal; }
+            get { return _nullValue; }
         }
 
         /// <summary>
         /// The constant value for the token or null if not set.
         /// </summary>
         /// <value>the constant value for the token or null if not set.</value>
-        public PrimitiveValue ConstVal
+        public PrimitiveValue ConstValue
         {
-            get { return _constVal; }
+            get { return _constValue; }
         }
 
         /// <summary>
@@ -124,12 +124,12 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         {
             get
             {
-                if (null != _nullVal)
+                if (null != _nullValue)
                 {
-                    return _nullVal;
+                    return _nullValue;
                 }
 
-                return _primitiveType.NullVal;
+                return _primitiveType.NullValue;
             }
         }
 
@@ -141,12 +141,12 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         {
             get
             {
-                if (null != _minVal)
+                if (null != _minValue)
                 {
-                    return _minVal;
+                    return _minValue;
                 }
 
-                return _primitiveType.MinVal;
+                return _primitiveType.MinValue;
             }
         }
 
@@ -159,12 +159,12 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         {
             get
             {
-                if (null != _maxVal)
+                if (null != _maxValue)
                 {
-                    return _maxVal;
+                    return _maxValue;
                 }
 
-                return _primitiveType.MaxVal;
+                return _primitiveType.MaxValue;
             }
         }
 
@@ -206,8 +206,8 @@ namespace Adaptive.SimpleBinaryEncoding.ir
 
         public override string ToString()
         {
-            return "Encoding{primitiveType=" + _primitiveType + ", presence=" + _presence + ", byteOrder=" + _byteOrder + ", minVal=" 
-                + _minVal + ", maxVal=" + _maxVal + ", nullVal=" + _nullVal + ", constVal=" + _constVal + ", characterEncoding='" + _characterEncoding + '\'' + ", epoch='" + _epoch + '\'' 
+            return "Encoding{primitiveType=" + _primitiveType + ", presence=" + _presence + ", byteOrder=" + _byteOrder + ", minValue=" 
+                + _minValue + ", maxValue=" + _maxValue + ", nullValue=" + _nullValue + ", constValue=" + _constValue + ", characterEncoding='" + _characterEncoding + '\'' + ", epoch='" + _epoch + '\'' 
                 + ", timeUnit=" + _timeUnit + ", semanticType='" + _semanticType + '\'' + '}';
         }
 
@@ -246,25 +246,25 @@ namespace Adaptive.SimpleBinaryEncoding.ir
                 return this;
             }
 
-            public Builder MinVal(PrimitiveValue minValue)
+            public Builder MinValue(PrimitiveValue minValue)
             {
                 _minVal = minValue;
                 return this;
             }
 
-            public Builder MaxVal(PrimitiveValue maxValue)
+            public Builder MaxValue(PrimitiveValue maxValue)
             {
                 _maxVal = maxValue;
                 return this;
             }
 
-            public Builder NullVal(PrimitiveValue nullValue)
+            public Builder NullValue(PrimitiveValue nullValue)
             {
                 _nullVal = nullValue;
                 return this;
             }
 
-            public Builder ConstVal(PrimitiveValue constValue)
+            public Builder ConstValue(PrimitiveValue constValue)
             {
                 _constVal = constValue;
                 return this;
