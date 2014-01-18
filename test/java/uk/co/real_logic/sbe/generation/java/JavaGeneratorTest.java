@@ -21,7 +21,7 @@ import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.generation.java.util.CompilerUtil;
 import uk.co.real_logic.sbe.generation.java.util.StringWriterOutputManager;
-import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
+import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 
@@ -42,7 +42,7 @@ public class JavaGeneratorTest
     private final StringWriterOutputManager outputManager = new StringWriterOutputManager();
     private final DirectBuffer mockBuffer = mock(DirectBuffer.class);
 
-    private IntermediateRepresentation ir;
+    private Ir ir;
 
     @Before
     public void setUp() throws Exception

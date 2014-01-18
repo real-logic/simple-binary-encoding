@@ -45,7 +45,7 @@ namespace on_the_fly {
 
 /**
  * \brief Collection that holds the Ir for several message template IDs as well as a header for
- * dispatching them. Equivalent to the Java IntermediateRepresentation class.
+ * dispatching them. Equivalent to the Java Ir class.
  */
 class IrCollection
 {
@@ -200,10 +200,12 @@ protected:
         char tmp[256];
 
         frame.wrapForDecode(buffer_, offset, frame.blockLength(), frame.templateVersion());
-        tmpLen = frame.getPackageName(tmp, sizeof(tmp));
-        frame.getNamespaceName(tmp, sizeof(tmp));
 
+        tmpLen = frame.getPackageName(tmp, sizeof(tmp));
         ::std::cout << "Reading IR package=\"" << std::string(tmp, tmpLen) << "\"" << ::std::endl;
+
+        frame.getNamespaceName(tmp, sizeof(tmp));
+        frame.getSemanticVersion(tmp, sizeof(tmp));
 
         offset += frame.size();
 

@@ -67,6 +67,7 @@
         <field name="schemaVersion" id="2" type="int32"/>
         <data name="packageName" id="3" type="varDataEncoding"/>
         <data name="namespaceName" id="4" type="varDataEncoding"/>
+        <data name="semanticVersion" id="5" type="varDataEncoding"/>
     </message>
 
     <message name="TokenCodec" id="2" description="Codec for an IR Token">

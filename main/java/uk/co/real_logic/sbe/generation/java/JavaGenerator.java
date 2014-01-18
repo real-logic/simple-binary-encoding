@@ -38,10 +38,10 @@ public class JavaGenerator implements CodeGenerator
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
 
-    private final IntermediateRepresentation ir;
+    private final Ir ir;
     private final OutputManager outputManager;
 
-    public JavaGenerator(final IntermediateRepresentation ir, final OutputManager outputManager)
+    public JavaGenerator(final Ir ir, final OutputManager outputManager)
         throws IOException
     {
         Verify.notNull(ir, "ir");

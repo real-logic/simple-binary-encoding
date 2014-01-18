@@ -257,4 +257,50 @@ public class FrameCodec
 
         return length;
     }
+
+    public static int semanticVersionSchemaId()
+    {
+        return 5;
+    }
+
+    public static String semanticVersionCharacterEncoding()
+    {
+        return "UTF-8";
+    }
+
+    public static String semanticVersionMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    public int getSemanticVersion(final byte[] dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
+    }
+
+    public int putSemanticVersion(final byte[] src, final int srcOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+
+        return length;
+    }
 }

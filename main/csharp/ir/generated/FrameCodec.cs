@@ -214,5 +214,46 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
 
         return length;
     }
+
+    public const int SemanticVersionSchemaId = 5;
+
+    public const string SemanticVersionCharacterEncoding = "UTF-8";
+
+
+    public static string SemanticVersionMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
+    public int GetSemanticVersion(byte[] dst, int dstOffset, int length)
+    {
+        const int sizeOfLengthField = 1;
+        int limit = Limit;
+        _buffer.CheckLimit(limit + sizeOfLengthField);
+        int dataLength = _buffer.Uint8Get(limit);
+        int bytesCopied = Math.Min(length, dataLength);
+        Limit = limit + sizeOfLengthField + dataLength;
+        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
+    }
+
+    public int SetSemanticVersion(byte[] src, int srcOffset, int length)
+    {
+        const int sizeOfLengthField = 1;
+        int limit = Limit;
+        Limit = limit + sizeOfLengthField + length;
+        _buffer.Uint8Put(limit, (byte)length);
+        _buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);
+
+        return length;
+    }
     }
 }

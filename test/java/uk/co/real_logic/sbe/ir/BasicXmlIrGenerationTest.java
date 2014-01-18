@@ -39,7 +39,7 @@ public class BasicXmlIrGenerationTest
         final MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         final IrGenerator irg = new IrGenerator();
 
-        final IntermediateRepresentation ir = irg.generate(schema);
+        final Ir ir = irg.generate(schema);
         final List<Token> tokens = ir.headerStructure().tokens();
 
         assertThat(valueOf(tokens.size()), is(valueOf(6)));
@@ -101,7 +101,7 @@ public class BasicXmlIrGenerationTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation ir = irg.generate(schema);
+        Ir ir = irg.generate(schema);
 
         List<Token> tokens = ir.getMessage(50001);
 
@@ -151,7 +151,7 @@ public class BasicXmlIrGenerationTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation ir = irg.generate(schema);
+        Ir ir = irg.generate(schema);
 
         List<Token> tokens = ir.getMessage(1);
 
@@ -214,7 +214,7 @@ public class BasicXmlIrGenerationTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicGroupSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation ir = irg.generate(schema);
+        Ir ir = irg.generate(schema);
         /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, ... */
         int groupIdx = 4;
         int dimensionsCompIdx = 5;
@@ -247,7 +247,7 @@ public class BasicXmlIrGenerationTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("EmbeddedLengthAndCountFileTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation ir = irg.generate(schema);
+        Ir ir = irg.generate(schema);
         /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, 9=field, ... */
         int groupIdx = 4;
         int dimensionsCompIdx = 5;
@@ -272,7 +272,7 @@ public class BasicXmlIrGenerationTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("EmbeddedLengthAndCountFileTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation ir = irg.generate(schema);
+        Ir ir = irg.generate(schema);
         /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=field, 5=comp, 6=enc, 7=enc, 8=compend, 9=fieldend */
         int lengthFieldIdx = 4;
         int lengthEncIdx = 6;

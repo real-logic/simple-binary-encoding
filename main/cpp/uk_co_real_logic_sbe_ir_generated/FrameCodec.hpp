@@ -339,6 +339,74 @@ public:
         position(position() + (sbe_uint64_t)length);
         return length;
     }
+
+    static const char *semanticVersionCharacterEncoding()
+    {
+        return "UTF-8";
+    }
+
+    static int semanticVersionSinceVersion(void)
+    {
+         return 0;
+    }
+
+    bool semanticVersionInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
+    }
+
+    static int semanticVersionSchemaId(void)
+    {
+        return 5;
+    }
+
+
+    static const char *semanticVersionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    sbe_int64_t semanticVersionLength(void) const
+    {
+        return (*((sbe_uint8_t *)(buffer_ + position())));
+    }
+
+    const char *semanticVersion(void)
+    {
+         const char *fieldPtr = (buffer_ + position() + 1);
+         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         return fieldPtr;
+    }
+
+    int getSemanticVersion(char *dst, const int length)
+    {
+        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + sizeOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        int bytesToCopy = (length < dataLength) ? length : dataLength;
+        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        position(position() + (sbe_uint64_t)dataLength);
+        return bytesToCopy;
+    }
+
+    int putSemanticVersion(const char *src, const int length)
+    {
+        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
+        position(lengthPosition + sizeOfLengthField);
+        ::memcpy(buffer_ + position(), src, length);
+        position(position() + (sbe_uint64_t)length);
+        return length;
+    }
 };
 }
 #endif

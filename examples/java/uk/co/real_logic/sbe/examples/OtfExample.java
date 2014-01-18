@@ -51,7 +51,7 @@ public class OtfExample
 
         // Now lets decode the schema IR so we have IR objects.
         encodedSchemaBuffer.flip();
-        final IntermediateRepresentation ir = decodeIr(encodedSchemaBuffer);
+        final Ir ir = decodeIr(encodedSchemaBuffer);
 
         // From the IR we can create OTF decoder for message headers.
         final OtfHeaderDecoder headerDecoder = new OtfHeaderDecoder(ir.headerStructure());
@@ -90,7 +90,7 @@ public class OtfExample
         try (final InputStream in = new FileInputStream("examples/resources/TestSchema.xml"))
         {
             final MessageSchema schema = XmlSchemaParser.parse(in);
-            final IntermediateRepresentation ir = new IrGenerator().generate(schema);
+            final Ir ir = new IrGenerator().generate(schema);
             new IrEncoder(buffer, ir).encode();
         }
     }
@@ -112,7 +112,7 @@ public class OtfExample
         buffer.position(bufferOffset);
     }
 
-    private static IntermediateRepresentation decodeIr(final ByteBuffer buffer)
+    private static Ir decodeIr(final ByteBuffer buffer)
         throws IOException
     {
         final IrDecoder irDecoder = new IrDecoder(buffer);

@@ -18,7 +18,7 @@ package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.ir.Encoding;
-import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
+import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class to hold the state while generating the {@link IntermediateRepresentation}.
+ * Class to hold the state while generating the {@link uk.co.real_logic.sbe.ir.Ir}.
  */
 public class IrGenerator
 {
@@ -36,16 +36,15 @@ public class IrGenerator
     private int version = 0;
 
     /**
-     * Generate a complete {@link IntermediateRepresentation} for a given schema.
+     * Generate a complete {@link uk.co.real_logic.sbe.ir.Ir} for a given schema.
      *
-     * @param schema    from which the {@link IntermediateRepresentation} should be generated.
+     * @param schema    from which the {@link uk.co.real_logic.sbe.ir.Ir} should be generated.
      * @param namespace for the generated code.
-     * @return complete {@link IntermediateRepresentation} for a given schema.
+     * @return complete {@link uk.co.real_logic.sbe.ir.Ir} for a given schema.
      */
-    public IntermediateRepresentation generate(final MessageSchema schema, final String namespace)
+    public Ir generate(final MessageSchema schema, final String namespace)
     {
-        final IntermediateRepresentation ir =
-            new IntermediateRepresentation(schema.packageName(), namespace, generateForHeader(schema), schema.version());
+        final Ir ir = new Ir(schema.packageName(), namespace, schema.version(), schema.semanticVersion(), generateForHeader(schema));
 
         for (final Message message : schema.messages())
         {
@@ -57,12 +56,12 @@ public class IrGenerator
     }
 
     /**
-     * Generate a complete {@link IntermediateRepresentation} for a given schema.
+     * Generate a complete {@link uk.co.real_logic.sbe.ir.Ir} for a given schema.
      *
-     * @param schema    from which the {@link IntermediateRepresentation} should be generated.
-     * @return complete {@link IntermediateRepresentation} for a given schema.
+     * @param schema    from which the {@link uk.co.real_logic.sbe.ir.Ir} should be generated.
+     * @return complete {@link uk.co.real_logic.sbe.ir.Ir} for a given schema.
      */
-    public IntermediateRepresentation generate(final MessageSchema schema)
+    public Ir generate(final MessageSchema schema)
     {
         return generate(schema, null);
     }

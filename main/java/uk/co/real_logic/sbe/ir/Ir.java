@@ -23,24 +23,32 @@ import java.util.*;
  * Intermediate representation of SBE messages to be used for the generation of encoders and decoders
  * as stubs in various languages.
  */
-public class IntermediateRepresentation
+public class Ir
 {
     private final String packageName;
     private final String namespaceName;
+    private final int version;
+    private final String semanticVersion;
+
     private final HeaderStructure headerStructure;
     private final Map<Long, List<Token>> messagesByIdMap = new HashMap<>();
     private final Map<String, List<Token>> typesByNameMap = new HashMap<>();
-    private final int version;
 
     /**
      * Create a new IR container taking a defensive copy of the headerStructure {@link Token}s passed.
      *
-     * @param packageName   that should be applied to generated code.
-     * @param namespaceName that should be applied to generated code.
-     * @param headerTokens  representing the message headerStructure.
+     * @param packageName     that should be applied to generated code.
+     * @param namespaceName   that should be applied to generated code.
+     * @param semanticVersion semantic version for mapping to the application domain.
+     * @param headerTokens    representing the message headerStructure.
      */
-    public IntermediateRepresentation(final String packageName, final String namespaceName, final List<Token> headerTokens, final int version)
+    public Ir(final String packageName,
+              final String namespaceName,
+              final int version,
+              final String semanticVersion,
+              final List<Token> headerTokens)
     {
+        this.semanticVersion = semanticVersion;
         Verify.notNull(packageName, "packageName");
         Verify.notNull(headerTokens, "headerTokens");
 
@@ -138,6 +146,26 @@ public class IntermediateRepresentation
     }
 
     /**
+     * Get the version of the schema.
+     *
+     * @return version number.
+     */
+    public int version()
+    {
+        return version;
+    }
+
+    /**
+     * Get the s semantic version of the schema.
+     *
+     * @return the semantic version of the schema as applicable to the layer 7 application.
+     */
+    public String semanticVersion()
+    {
+        return semanticVersion;
+    }
+
+    /**
      * Get the namespaceName to be used for generated code.
      * <p/>
      * If {@link #namespaceName} is null then {@link #packageName} is used.
@@ -147,16 +175,6 @@ public class IntermediateRepresentation
     public String applicableNamespace()
     {
         return namespaceName == null ? packageName : namespaceName;
-    }
-
-    /**
-     * Get the version of the schema.
-     *
-     * @return version number.
-     */
-    public int version()
-    {
-        return version;
     }
 
     private void captureTypes(final List<Token> tokens)

@@ -36,14 +36,14 @@ public class IrEncoder implements Closeable
     private final ByteBuffer resultBuffer;
     private final ByteBuffer buffer;
     private final DirectBuffer directBuffer;
-    private final IntermediateRepresentation ir;
+    private final Ir ir;
     private final FrameCodec frameCodec = new FrameCodec();
     private final TokenCodec tokenCodec = new TokenCodec();
     private final byte[] valArray = new byte[CAPACITY];
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
     private int totalSize = 0;
 
-    public IrEncoder(final String fileName, final IntermediateRepresentation ir)
+    public IrEncoder(final String fileName, final Ir ir)
         throws FileNotFoundException
     {
         channel = new FileOutputStream(fileName).getChannel();
@@ -53,7 +53,7 @@ public class IrEncoder implements Closeable
         this.ir = ir;
     }
 
-    public IrEncoder(final ByteBuffer buffer, final IntermediateRepresentation ir)
+    public IrEncoder(final ByteBuffer buffer, final Ir ir)
     {
         channel = null;
         resultBuffer = buffer;
@@ -127,6 +127,9 @@ public class IrEncoder implements Closeable
 
         final byte[] namespaceBytes = getBytes(ir.namespaceName(), FrameCodec.namespaceNameCharacterEncoding());
         frameCodec.putNamespaceName(namespaceBytes, 0, namespaceBytes.length);
+
+        final byte[] semanticVersionBytes = getBytes(ir.semanticVersion(), FrameCodec.semanticVersionCharacterEncoding());
+        frameCodec.putSemanticVersion(semanticVersionBytes, 0, semanticVersionBytes.length);
 
         return frameCodec.size();
     }

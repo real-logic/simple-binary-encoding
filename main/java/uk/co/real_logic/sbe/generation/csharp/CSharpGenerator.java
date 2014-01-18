@@ -20,7 +20,7 @@ import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.ir.Encoding;
-import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
+import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.util.Verify;
@@ -43,10 +43,10 @@ public class CSharpGenerator implements CodeGenerator
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
 
-    private final IntermediateRepresentation ir;
+    private final Ir ir;
     private final OutputManager outputManager;
 
-    public CSharpGenerator(final IntermediateRepresentation ir, final OutputManager outputManager)
+    public CSharpGenerator(final Ir ir, final OutputManager outputManager)
         throws IOException
     {
         Verify.notNull(ir, "ir");

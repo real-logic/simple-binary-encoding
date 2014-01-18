@@ -18,9 +18,9 @@ package uk.co.real_logic.sbe;
 
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
+import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.IrDecoder;
 import uk.co.real_logic.sbe.ir.IrEncoder;
-import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
@@ -98,7 +98,7 @@ public class SbeTool
 
         for (final String fileName : args)
         {
-            IntermediateRepresentation ir = null;
+            Ir ir = null;
 
             if (fileName.endsWith(".xml"))
             {
@@ -159,7 +159,7 @@ public class SbeTool
      * @param targetLanguage for the generated code.
      * @throws Exception if an error occurs while generating the code.
      */
-    public static void generate(final IntermediateRepresentation ir,
+    public static void generate(final Ir ir,
                                 final String outputDirName,
                                 final String targetLanguage)
         throws Exception

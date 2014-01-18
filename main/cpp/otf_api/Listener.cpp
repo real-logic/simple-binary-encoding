@@ -111,7 +111,7 @@ int Listener::subscribe(OnNext *onNext,
                 {
                     char message[1024];
 
-                    ::snprintf(message, sizeof(message)-1, "no IR found for message with templateId=%lld and version=%lld", templateId_, templateVersion_);
+                    ::snprintf(message, sizeof(message)-1, "no IR found for message with templateId=%ld and version=%ld", templateId_, templateVersion_);
                     onError_->onError(Error(message));
                     result = -1;
                 }

@@ -42,6 +42,7 @@ public class IrDecoder implements Closeable
     private final long size;
     private String irPackageName = null;
     private String irNamespaceName = null;
+    private String semanticVersion = null;
     private List<Token> irHeader = null;
     private int irVersion = 0;
     private final byte[] valArray = new byte[CAPACITY];
@@ -75,7 +76,7 @@ public class IrDecoder implements Closeable
         }
     }
 
-    public IntermediateRepresentation decode()
+    public Ir decode()
         throws IOException
     {
         decodeFrame();
@@ -93,7 +94,7 @@ public class IrDecoder implements Closeable
             i = captureHeader(tokens, 0);
         }
 
-        final IntermediateRepresentation ir = new IntermediateRepresentation(irPackageName, irNamespaceName, irHeader, irVersion);
+        final Ir ir = new Ir(irPackageName, irNamespaceName, irVersion, semanticVersion, irHeader);
 
         for (; i < size; i++)
         {
@@ -124,7 +125,7 @@ public class IrDecoder implements Closeable
         return index;
     }
 
-    private int captureMessage(final List<Token> tokens, int index, final IntermediateRepresentation ir)
+    private int captureMessage(final List<Token> tokens, int index, final Ir ir)
     {
         final List<Token> messageTokens = new ArrayList<>();
 
@@ -160,6 +161,13 @@ public class IrDecoder implements Closeable
         if (irNamespaceName.isEmpty())
         {
             irNamespaceName = null;
+        }
+
+        semanticVersion =
+            new String(buffer, 0, frameCodec.getSemanticVersion(buffer, 0, buffer.length), FrameCodec.semanticVersionCharacterEncoding());
+        if (semanticVersion.isEmpty())
+        {
+            semanticVersion = null;
         }
 
         offset += frameCodec.size();

@@ -38,7 +38,7 @@ public class EncodedIrTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation ir = irg.generate(schema);
+        Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
         IrEncoder irEncoder = new IrEncoder(buffer, ir);
 
@@ -51,7 +51,7 @@ public class EncodedIrTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation ir = irg.generate(schema);
+        Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
         IrEncoder irEncoder = new IrEncoder(buffer, ir);
 
@@ -59,7 +59,7 @@ public class EncodedIrTest
         buffer.flip();
 
         IrDecoder decoder = new IrDecoder(buffer);
-        IntermediateRepresentation decodedIr = decoder.decode();
+        decoder.decode();
     }
 
     @Test
@@ -68,7 +68,7 @@ public class EncodedIrTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation ir = irg.generate(schema);
+        Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
         IrEncoder irEncoder = new IrEncoder(buffer, ir);
 
@@ -80,7 +80,7 @@ public class EncodedIrTest
         readBuffer.flip();
 
         IrDecoder irDecoder = new IrDecoder(readBuffer);
-        IntermediateRepresentation decodedIr = irDecoder.decode();
+        irDecoder.decode();
     }
 
     @Test
@@ -89,7 +89,7 @@ public class EncodedIrTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation ir = irg.generate(schema);
+        Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
         IrEncoder irEncoder = new IrEncoder(buffer, ir);
 
@@ -97,9 +97,10 @@ public class EncodedIrTest
         buffer.flip();
 
         IrDecoder irDecoder = new IrDecoder(buffer);
-        IntermediateRepresentation decodedIr = irDecoder.decode();
+        Ir decodedIr = irDecoder.decode();
 
         assertThat(Integer.valueOf(decodedIr.version()), is(Integer.valueOf(ir.version())));
+        assertThat(decodedIr.semanticVersion(), is(ir.semanticVersion()));
         assertThat(decodedIr.packageName(), is(ir.packageName()));
         assertThat(decodedIr.namespaceName(), is(ir.namespaceName()));
     }
@@ -132,7 +133,7 @@ public class EncodedIrTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation ir = irg.generate(schema);
+        Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
         IrEncoder irEncoder = new IrEncoder(buffer, ir);
 
@@ -140,7 +141,7 @@ public class EncodedIrTest
         buffer.flip();
 
         final IrDecoder irDecoder = new IrDecoder(buffer);
-        final IntermediateRepresentation decodedIr = irDecoder.decode();
+        final Ir decodedIr = irDecoder.decode();
         final List<Token> tokens = decodedIr.headerStructure().tokens();
 
         assertThat(Integer.valueOf(tokens.size()), is(Integer.valueOf(ir.headerStructure().tokens().size())));
@@ -156,7 +157,7 @@ public class EncodedIrTest
     {
         MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         IrGenerator irg = new IrGenerator();
-        IntermediateRepresentation ir = irg.generate(schema);
+        Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
         IrEncoder irEncoder = new IrEncoder(buffer, ir);
 
@@ -164,7 +165,7 @@ public class EncodedIrTest
         buffer.flip();
 
         IrDecoder irDecoder = new IrDecoder(buffer);
-        IntermediateRepresentation decodedIr = irDecoder.decode();
+        Ir decodedIr = irDecoder.decode();
 
         assertThat(Integer.valueOf(decodedIr.messages().size()), is(Integer.valueOf(ir.messages().size())));
         for (final List<Token> decodedTokenList : decodedIr.messages())
