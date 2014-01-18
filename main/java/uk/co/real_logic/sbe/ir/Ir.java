@@ -156,7 +156,7 @@ public class Ir
     }
 
     /**
-     * Get the s semantic version of the schema.
+     * Get the semantic version of the schema.
      *
      * @return the semantic version of the schema as applicable to the layer 7 application.
      */
