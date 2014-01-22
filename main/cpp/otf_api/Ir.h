@@ -116,11 +116,11 @@ public:
     enum TokenPresence
     {
         /// Field or encoding presence is required
-        REQUIRED = 0,
+        SBE_REQUIRED = 0,
         /// Field or encoding presence is optional
-        OPTIONAL = 1,
+        SBE_OPTIONAL = 1,
         /// Field or encoding presence is constant and not encoded
-        CONSTANT = 2
+        SBE_CONSTANT = 2
     };
 
     /**

@@ -244,15 +244,15 @@ protected:
     {
         switch (presence)
         {
-            case Ir::REQUIRED:
+            case Ir::SBE_REQUIRED:
                 return "REQUIRED";
                 break;
 
-            case Ir::OPTIONAL:
+            case Ir::SBE_OPTIONAL:
                 return "OPTIONAL";
                 break;
 
-            case Ir::CONSTANT:
+            case Ir::SBE_CONSTANT:
                 return "CONSTANT";
                 break;
 
