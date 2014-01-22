@@ -171,7 +171,7 @@ protected:
 
     static int readFileIntoBuffer(char *buffer, const char *filename, int length)
     {
-        FILE *fptr = ::fopen(filename, "r");
+        FILE *fptr = ::fopen(filename, "rb");
         int remaining = length;
 
         if (fptr == NULL)
@@ -189,7 +189,9 @@ protected:
                 break;
             }
         }
+
         fclose(fptr);
+
         return (remaining == 0) ? 0 : -1;
     }
 
