@@ -61,8 +61,9 @@ public class SetType extends Type
             case "uint64":
                 encodingType = PrimitiveType.get(encodingTypeStr);
                 break;
+
             default:
-                // might not have ran into this type yet, so look for the xpath
+                // might not have ran into this type yet, so look for it
                 final Node encodingTypeNode = (Node)xPath.compile(
                     String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
                     .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
@@ -91,7 +92,7 @@ public class SetType extends Type
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            Choice c = new Choice(list.item(i), encodingType);
+            final Choice c = new Choice(list.item(i), encodingType);
 
             if (choiceByPrimitiveValueMap.get(c.primitiveValue()) != null)
             {

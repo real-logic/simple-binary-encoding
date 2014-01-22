@@ -306,6 +306,7 @@ public class XmlSchemaParser
         {
             handleWarning(node, "name is not valid for C++: " + name);
         }
+
         if (!ValidationUtil.isSbeJavaName(name))
         {
             handleWarning(node, "name is not valid for Java: " + name);

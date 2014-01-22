@@ -57,7 +57,7 @@ public class EnumType extends Type
 
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final String encodingTypeStr = getAttributeValue(node, "encodingType");
-        String nullValueStr = getAttributeValueOrNull(node, "nullValue");
+        final EncodedDataType encodedDataType;
 
         switch (encodingTypeStr)
         {
@@ -68,49 +68,50 @@ public class EnumType extends Type
             case "uint16":
             case "int32":
                 encodingType = PrimitiveType.get(encodingTypeStr);
+                encodedDataType = null;
                 break;
 
             default:
-                // might not have ran into this type yet, so look for the xpath
+                // might not have ran into this type yet, so look for it
                 final Node encodingTypeNode =
                     (Node)xPath.compile(String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
                     .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
 
-                if (encodingTypeNode == null)
+                if (null == encodingTypeNode)
                 {
-                    encodingType = null;
+                    throw new IllegalArgumentException("illegal encodingType for enum " + encodingTypeStr);
                 }
-                else if (Integer.parseInt(getAttributeValue(encodingTypeNode, "length", "1")) != 1)
-                {
-                    encodingType = null;
-                }
-                else
-                {
-                    encodingType = PrimitiveType.get(getAttributeValue(encodingTypeNode, "primitiveType"));
 
-                    if (nullValueStr == null)
-                    {
-                        nullValueStr = getAttributeValueOrNull(encodingTypeNode, "nullValue");
-                    }
+                encodedDataType = new EncodedDataType(encodingTypeNode);
+
+                if (encodedDataType.length() != 1)
+                {
+                    throw new IllegalArgumentException("illegal encodingType for enum " + encodingTypeStr + " length not equal to 1");
                 }
-                break;
+
+                encodingType = encodedDataType.primitiveType();
         }
 
-        if (encodingType == null)
-        {
-            throw new IllegalArgumentException("illegal encodingType for enum " + encodingTypeStr);
-        }
-
-        if (nullValueStr != null)
+        final String nullValueStr = getAttributeValueOrNull(node, "nullValue");
+        if (null != nullValueStr)
         {
             if (presence() != Presence.OPTIONAL)
             {
                 handleError(node, "nullValue set, but presence is not optional");
-                nullValue = null;
+            }
+
+            nullValue = PrimitiveValue.parse(nullValueStr, encodingType);
+        }
+        else if (presence() == Presence.OPTIONAL)
+        {
+            if (null != encodedDataType && null != encodedDataType.nullValue())
+            {
+                nullValue = encodedDataType.nullValue();
             }
             else
             {
-                nullValue = PrimitiveValue.parse(nullValueStr, encodingType);
+                handleError(node, "presence optional but no null value found");
+                nullValue = null;
             }
         }
         else

@@ -17,6 +17,7 @@ package uk.co.real_logic.sbe.generation.java;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.generation.java.util.CompilerUtil;
@@ -47,6 +48,8 @@ public class JavaGeneratorTest
     @Before
     public void setUp() throws Exception
     {
+        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "true");
+
         final MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
         final IrGenerator irg = new IrGenerator();
         ir = irg.generate(schema);
