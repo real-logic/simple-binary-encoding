@@ -16,7 +16,6 @@
 
   <modules>
     <module>sbe</module>
-    <module>sbe-tool</module>
   </modules>
 
   <dependencies>
