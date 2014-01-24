@@ -16,10 +16,18 @@
 
 	<modules>
 		<module>sbe</module>
+		<module>sbe-examples</module>
 	</modules>
 
 	<dependencyManagement>
 		<dependencies>
+
+			<dependency>
+				<groupId>uk.co.real_logic</groupId>
+				<artifactId>sbe</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
