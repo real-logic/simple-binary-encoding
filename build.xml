@@ -5,11 +5,11 @@
     <property name="module.name" value="sbe"/>
     <property name="dir.main.src" location="main/java"/>
     <property name="dir.main.build" location="target/main/java/classes"/>
-	
+
     <property name="dir.test.src" location="test/java"/>
     <property name="dir.test.build" location="target/test/java/classes"/>
     <property name="dir.test.lib" location="test/lib"/>
-	
+
     <property name="dir.reports" location="target/reports"/>
 
     <property name="dir.reports.unit" location="target/reports/unit"/>
@@ -163,7 +163,7 @@
             <property name="HTML_OUTPUT" value="${module.name}-otfcpp-doc-${build.version}"/>
         </doxygen>
     </target>
-        
+
     <target name="dist" depends="build, javadoc" description="Generate the distribution">
         <jar destfile="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar">
             <manifest>
@@ -178,8 +178,8 @@
             <fileset dir="${dir.main.src}"/>
         </jar>
 
-        <!-- Olivier: I'm copying SbeTool to a constant name (without timestamp and version number, which makes life easier for other builds..) -->
-        <copy file="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar" tofile="${dir.dist}/SbeTool.jar" />
+        <!-- Copying SbeTool to a constant name (without timestamp and version number, which makes life easier for other builds..) -->
+        <copy file="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar" tofile="${dir.dist}/SbeTool.jar"/>
     </target>
 
     <target name="cpp:dist" depends="cpp:compile, cpp:doc">
@@ -187,7 +187,7 @@
             <fileset dir="${dir.docs.cpp}"/>
         </zip>
     </target>
-  
+
 
     <target name="all" depends="clean, checkstyle, build, test, javadoc, dist"/>
 
@@ -199,7 +199,7 @@
         </fileset>
     </path>
 
-    <target name="generate:java:sbeir" depends="dist" description="Generate serialized IR code for Java">
+    <target name="generate:java:sbeir-stubs" depends="dist" description="Generate serialized IR stubs for Java">
         <java classname="uk.co.real_logic.sbe.SbeTool">
             <classpath refid="sbetool.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.main.src}"/>
@@ -208,7 +208,7 @@
         </java>
     </target>
 
-    <target name="generate:cpp98:sbeir" depends="dist" description="Generate serialized IR code for C++98">
+    <target name="generate:cpp98:sbeir-stubs" depends="dist" description="Generate serialized IR stubs for C++98">
         <java classname="uk.co.real_logic.sbe.SbeTool">
             <classpath refid="sbetool.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.main.cpp.src}"/>
@@ -217,7 +217,7 @@
         </java>
     </target>
 
-    <target name="generate:chsarp:sbeir" depends="dist" description="Generate serialized IR code for C#">
+    <target name="generate:chsarp:sbeir-stubs" depends="dist" description="Generate serialized IR stubs for C#">
         <java classname="uk.co.real_logic.sbe.SbeTool">
             <classpath refid="sbetool.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.main.csharp.src}"/>
@@ -227,7 +227,7 @@
         </java>
     </target>
 
-    <target name="generate:sbeir" depends="generate:java:sbeir, generate:cpp98:sbeir, generate:chsarp:sbeir"
+    <target name="generate:sbeir-stubs" depends="generate:java:sbeir-stubs, generate:cpp98:sbeir-stubs, generate:chsarp:sbeir-stubs"
             description="Generate serialized IR code for all languages"/>
 
     <!-- SBE Examples targets -->
@@ -330,8 +330,8 @@
             <java classname="uk.co.real_logic.sbe.SbeTool">
                 <classpath refid="examples.classpath"/>
                 <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
-                <sysproperty key="sbe.should.generate" value="false"/>
-                <sysproperty key="sbe.ir.filename" value="Car.sbeir"/>
+                <sysproperty key="sbe.generate.stubs" value="false"/>
+                <sysproperty key="sbe.generate.ir" value="true"/>
                 <arg value="${dir.examples.resources}/TestSchema.xml"/>
             </java>
             <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub">
@@ -339,7 +339,7 @@
                 <sysproperty key="sbe.encoding.filename" value="${dir.gen.cpp98}/Car.data"/>
             </java>
             <exec executable="${exec.example.otf.cpp98}" failonerror="true">
-                <arg value="${dir.gen.cpp98}/Car.sbeir"/>
+                <arg value="${dir.gen.cpp98}/TestSchema.sbeir"/>
                 <arg value="${dir.gen.cpp98}/Car.data"/>
             </exec>
         </sequential>
@@ -444,7 +444,6 @@
 
     <property name="dir.gen.csharp" value="target/gen/csharp"/>
     <property name="dir.main.csharp.output" value="target/main/csharp/bin/Release"/>
-    <property name="serialized.ir.filename" value="car_example_serialized_ir.bin"/>
 
     <target name="csharp:examples" depends="dist" description="Generate C# files for the car example">
         <mkdir dir="${dir.gen.csharp}"/>
@@ -452,20 +451,20 @@
             <classpath refid="examples.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.gen.csharp}"/>
             <sysproperty key="sbe.target.language" value="CSharp"/>
-            <sysproperty key="sbe.ir.filename" value="${serialized.ir.filename}"/>
+            <sysproperty key="sbe.generate.ir" value="true"/>
             <arg value="${dir.examples.resources}/TestSchema.xml"/>
         </java>
 
         <copy todir="examples/csharp/generated_stub/generated">
             <fileset dir="${dir.gen.csharp}">
-                <exclude name="**/${serialized.ir.filename}"/>
+                <exclude name="**/TestSchema.sbeir"/>
             </fileset>
         </copy>
-        <copy todir="examples/csharp/otf" file="${dir.gen.csharp}/${serialized.ir.filename}" />
+        <copy todir="examples/csharp/otf" file="${dir.gen.csharp}/TestSchema.sbeir"/>
     </target>
 
-    <target name="csharp:build" depends="init, csharp:examples, generate:chsarp:sbeir" description="Build .NET solution and run unit tests">
-        <echo message="Calling MSBuild with version: ${build.version}"  />
+    <target name="csharp:build" depends="init, csharp:examples, generate:chsarp:sbeir-stubs" description="Build .NET solution and run unit tests">
+        <echo message="Calling MSBuild with version: ${build.version}"/>
         <exec executable="C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe">
             <arg value="/p:BUILD_NUMBER=${build.version}"/>
             <arg value="vs2013/build.xml"/>
@@ -475,13 +474,13 @@
     <target name="csharp:dist" depends="csharp:build" description="Create SBE NuGet pacakge">
         <delete dir="${dir.dist}/csharp/"/>
         <copy todir="${dir.dist}/csharp/lib/net40">
-            <fileset dir="${dir.main.csharp.output}" />
+            <fileset dir="${dir.main.csharp.output}"/>
         </copy>
-        <copy file="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar" tofile="${dir.dist}/csharp/sbetool/SBETool.jar" />
-        <copy file="vs2013/.nuget/GenerateSampleCode.bat" todir="${dir.dist}/csharp/sample" />
-        <copy file="vs2013/.nuget/readme.txt" todir="${dir.dist}/csharp" />
-        <copy file="examples/resources/TestSchema.xml"  todir="${dir.dist}/csharp/sample" />
-        <copy file="examples/csharp/generated_stub/ExampleUsingGeneratedStub.cs" todir="${dir.dist}/csharp/sample" />
+        <copy file="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar" tofile="${dir.dist}/csharp/sbetool/SBETool.jar"/>
+        <copy file="vs2013/.nuget/GenerateSampleCode.bat" todir="${dir.dist}/csharp/sample"/>
+        <copy file="vs2013/.nuget/readme.txt" todir="${dir.dist}/csharp"/>
+        <copy file="examples/resources/TestSchema.xml" todir="${dir.dist}/csharp/sample"/>
+        <copy file="examples/csharp/generated_stub/ExampleUsingGeneratedStub.cs" todir="${dir.dist}/csharp/sample"/>
 
         <exec executable="C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe">
             <arg value="/t:Package"/>

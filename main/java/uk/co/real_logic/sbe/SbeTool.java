@@ -47,10 +47,10 @@ import java.io.FileInputStream;
  *     <li><code>sbe.validation.stop.on.error</code>: Should the parser stop on first error encountered? Defaults to false.</li>
  *     <li><code>sbe.validation.warnings.fatal</code>: Are warnings in parsing considered fatal? Defaults to false.</li>
  *     <li><code>sbe.validation.suppress.output</code>: Should the parser suppress output during validation? Defaults to false.</li>
- *     <li><code>sbe.should.generate</code>: Generate or not. Defaults to true</li>
+ *     <li><code>sbe.generate.stubs</code>: Generate stubs or not. Defaults to true.</li>
+ *     <li><code>sbe.generate.ir</code>: Generate IR or not. Defaults to false.</li>
  *     <li><code>sbe.target.language</code>: Target language for code generation, defaults to Java.</li>
  *     <li><code>sbe.output.dir</code>: Target directory for code generation, defaults to current directory.</li>
- *     <li><code>sbe.ir.filename</code>: Filename to encode IR to within the output directory.</li>
  * </ul>
  */
 public class SbeTool
@@ -67,17 +67,17 @@ public class SbeTool
     /** Boolean system property to control suppressing output on all errors and warnings */
     public static final String VALIDATION_SUPPRESS_OUTPUT = "sbe.validation.suppress.output";
 
-    /** Boolean system property to turn on or off generation. */
-    public static final String SHOULD_GENERATE = "sbe.should.generate";
+    /** Boolean system property to turn on or off generation of stubs. Defaults to true. */
+    public static final String GENERATE_STUBS = "sbe.generate.stubs";
+
+    /** Boolean system property to turn on or off generation of IR. Defaults to false. */
+    public static final String GENERATE_IR = "sbe.generate.ir";
 
     /** Target language for generated code. */
     public static final String TARGET_LANGUAGE = "sbe.target.language";
 
     /** Output directory for generated code */
     public static final String OUTPUT_DIR = "sbe.output.dir";
-
-    /** String system property to hold filename for encoding of IR. */
-    public static final String ENCODED_IR_FILENAME = "sbe.ir.filename";
 
     /** String system property of the namespace for generated code. */
     public static final String TARGET_NAMESPACE = "sbe.target.namespace";
@@ -113,8 +113,7 @@ public class SbeTool
                 System.out.println("File format not supported.");
             }
 
-            final boolean shouldGenerate = Boolean.parseBoolean(System.getProperty(SHOULD_GENERATE, "true"));
-            if (shouldGenerate)
+            if (Boolean.parseBoolean(System.getProperty(GENERATE_STUBS, "true")))
             {
                 final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
                 final String targetLanguage = System.getProperty(TARGET_LANGUAGE, "Java");
@@ -122,11 +121,13 @@ public class SbeTool
                 generate(ir, outputDirName, targetLanguage);
             }
 
-            final String encodedIrFilename = System.getProperty(ENCODED_IR_FILENAME);
-            if (encodedIrFilename != null)
+            if (Boolean.parseBoolean(System.getProperty(GENERATE_IR, "false")))
             {
+                final int nameEnd = fileName.lastIndexOf('.');
+                final String namePart = fileName.substring(0, nameEnd);
+
                 final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
-                final File fullPath = new File(outputDirName, encodedIrFilename);
+                final File fullPath = new File(outputDirName, namePart + ".sbeir");
 
                 try (final IrEncoder irEncoder = new IrEncoder(fullPath.getAbsolutePath(), ir))
                 {
@@ -159,9 +160,7 @@ public class SbeTool
      * @param targetLanguage for the generated code.
      * @throws Exception if an error occurs while generating the code.
      */
-    public static void generate(final Ir ir,
-                                final String outputDirName,
-                                final String targetLanguage)
+    public static void generate(final Ir ir, final String outputDirName, final String targetLanguage)
         throws Exception
     {
         final TargetCodeGenerator targetCodeGenerator = TargetCodeGenerator.get(targetLanguage);
