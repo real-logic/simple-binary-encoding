@@ -123,8 +123,11 @@ public class SbeTool
 
             if (Boolean.parseBoolean(System.getProperty(GENERATE_IR, "false")))
             {
-                final int nameEnd = fileName.lastIndexOf('.');
-                final String namePart = fileName.substring(0, nameEnd);
+                final File inputFile = new File(fileName);
+                final String inputFilename = inputFile.getName();
+
+                final int nameEnd = inputFilename.lastIndexOf('.');
+                final String namePart = inputFilename.substring(0, nameEnd);
 
                 final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
                 final File fullPath = new File(outputDirName, namePart + ".sbeir");
