@@ -9,11 +9,11 @@
 	</parent>
 
 	<groupId>uk.co.real_logic</groupId>
-	<artifactId>sbe</artifactId>
+	<artifactId>sbe-maven-plugin</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>maven-plugin</packaging>
 
-	<name>Simple Binary Encoding: Core project</name>
+	<name>Simple Binary Encoding: Maven Plugin</name>
 	<url>https://github.com/real-logic/simple-binary-encoding</url>
 
 	<properties>
@@ -22,49 +22,47 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
+			<groupId>org.apache.maven.plugin-tools</groupId>
+			<artifactId>maven-plugin-tools-annotations</artifactId>
+			<version>3.2</version>
 		</dependency>
-
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
-			<scope>test</scope>
+			<groupId>uk.co.real_logic</groupId>
+			<artifactId>sbe</artifactId>
 		</dependency>
 	</dependencies>
 
 
 	<build>
 		<plugins>
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.7</version>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+				</configuration>
 				<executions>
 					<execution>
-						<phase>package</phase>
+						<id>mojo-descriptor</id>
 						<goals>
-							<goal>shade</goal>
+							<goal>descriptor</goal>
 						</goals>
-						<configuration>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>uk.co.real_logic.sbe.SbeTool</mainClass>
-								</transformer>
-							</transformers>
-						</configuration>
+					</execution>
+					<execution>
+						<id>help-goal</id>
+						<goals>
+							<goal>helpmojo</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
+
 		</plugins>
+
+
 	</build>
 
 

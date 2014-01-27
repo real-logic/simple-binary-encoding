@@ -87,7 +87,7 @@ public class OtfExample
     private static void encodeSchema(final ByteBuffer buffer)
         throws Exception
     {
-        try (final InputStream in = new FileInputStream("examples/resources/TestSchema.xml"))
+        try (final InputStream in = new FileInputStream("../../../examples/resources/TestSchema.xml"))
         {
             final MessageSchema schema = XmlSchemaParser.parse(in);
             final Ir ir = new IrGenerator().generate(schema);

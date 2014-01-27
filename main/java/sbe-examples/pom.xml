@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Simple Binary Encoding</name>
+	<name>Simple Binary Encoding: Examples</name>
 	<url>https://github.com/real-logic/simple-binary-encoding</url>
 
 	<properties>
@@ -31,14 +31,21 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
+				<groupId>uk.co.real_logic</groupId>
+				<artifactId>sbe-maven-plugin</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
 				<executions>
 					<execution>
-						<id>attach-sources</id>
+						<phase>generate-sources</phase>
 						<goals>
-							<goal>jar</goal>
+							<goal>run</goal>
 						</goals>
+						<configuration>
+							<resources>
+								<resource>../../../examples/resources/TestSchema.xml</resource>
+								<resource>../../../examples/resources/TestExtensionSchema.xml</resource>
+							</resources>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

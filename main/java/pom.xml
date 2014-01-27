@@ -7,7 +7,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Simple Binary Encoding</name>
+	<name>Simple Binary Encoding: Parent</name>
 	<url>https://github.com/real-logic/simple-binary-encoding</url>
 
 	<properties>
@@ -17,6 +17,7 @@
 	<modules>
 		<module>sbe</module>
 		<module>sbe-examples</module>
+		<module>sbe-maven-plugin</module>
 	</modules>
 
 	<dependencyManagement>
@@ -59,6 +60,20 @@
 					<source>1.7</source>
 					<target>1.7</target>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
