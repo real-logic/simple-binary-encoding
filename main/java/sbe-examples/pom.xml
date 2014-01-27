@@ -41,6 +41,8 @@
 							<goal>run</goal>
 						</goals>
 						<configuration>
+              <sbe.generate.stubs>true</sbe.generate.stubs>
+              <sbe.generate.ir>false</sbe.generate.ir>
 							<resources>
 								<resource>../../../examples/resources/TestSchema.xml</resource>
 								<resource>../../../examples/resources/TestExtensionSchema.xml</resource>
