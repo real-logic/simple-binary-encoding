@@ -86,7 +86,7 @@
     <Exec Command="java -Dsbe.output.dir=..\examples\csharp\generated_stub\generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Examples.Generated -jar ..\target\dist\SbeTool.jar ..\examples\resources\TestSchema.xml" />
 
     <Message Text="Generating serialized IR for OTF encoder example..." Importance="high" />
-    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\Otf\ -Dsbe.should.generate=false -Dsbe.ir.filename=car_example_serialized_ir.bin -jar ..\target\dist\SbeTool.jar ..\examples\resources\TestSchema.xml" />
+    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\Otf\ -Dsbe.generate.stubs=false -Dsbe.generate.ir=true -jar ..\target\dist\SbeTool.jar ..\examples\resources\TestSchema.xml" />
   </Target>
 
   <!-- This target uses SbeTool to generate the SBE stubs for FIX messages required to run the performance tests -->
