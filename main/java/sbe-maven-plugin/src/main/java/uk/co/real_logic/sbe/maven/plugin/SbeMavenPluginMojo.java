@@ -1,7 +1,7 @@
 package uk.co.real_logic.sbe.maven.plugin;
 
 import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -12,6 +12,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.FileUtils;
 
 import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.ir.Ir;
@@ -19,7 +20,7 @@ import uk.co.real_logic.sbe.ir.IrDecoder;
 import uk.co.real_logic.sbe.ir.IrEncoder;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 
-@Mojo(name = "run", defaultPhase = LifecyclePhase.CLEAN)
+@Mojo(name = "run", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class SbeMavenPluginMojo extends AbstractMojo {
 
 	@Component
@@ -42,7 +43,7 @@ public class SbeMavenPluginMojo extends AbstractMojo {
 
 	@Parameter(alias = "resources", required = true)
 	private List<String> resources;
-
+	
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		getLog().info("Simple Binary Encoding Maven Plugin.");
@@ -52,7 +53,6 @@ public class SbeMavenPluginMojo extends AbstractMojo {
 		} catch (Exception e) {
 			throw new MojoExecutionException("", e);
 		}
-
 	}
 
 	private void executeCore() throws Exception {
@@ -78,7 +78,17 @@ public class SbeMavenPluginMojo extends AbstractMojo {
 				}
 			}
 		}
-		project.addCompileSourceRoot(outputDir);
+		logGeneratedStubs(absoluteOutput);
+		project.addCompileSourceRoot(absoluteOutput.getAbsolutePath());
+	}
+
+	private void logGeneratedStubs(File absoluteOutput) throws IOException {
+		getLog().info("Adding generated source directory to build: " + absoluteOutput);
+		@SuppressWarnings({ "unchecked" })
+		List<String> fileNames = (List<String>) FileUtils.getFileNames(absoluteOutput, null, null, true);
+		for (String filename : fileNames) {
+			getLog().info("Generated file " + filename);
+		}
 	}
 
 	private Ir getIr(File resourceFile) throws Exception {

@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Real-Logic-SBE" default="all" basedir=".">
+<project name="Real-Logic-SBE" default="all" basedir="." >
 
     <property file="build.properties"/>
     <property name="module.name" value="sbe"/>
-    <property name="dir.main.src" location="main/java"/>
-    <property name="dir.main.build" location="target/main/java/classes"/>
 
-    <property name="dir.test.src" location="test/java"/>
-    <property name="dir.test.build" location="target/test/java/classes"/>
+	<property name="dir.maven.sbe" value="main/java/sbe"/>
+	<property name="dir.maven.sbe.target" value="main/java/sbe/target"/>
+	<property name="dir.maven.surefire.reports" value="main/java/sbe/target/surefire-reports"/>
+	<property name="dir.maven.sbe.main.src" value="main/java/sbe/src/main/java"/>
+	<property name="dir.maven.sbe.test.src" value="main/java/sbe/src/test/java"/>
+	
+	<property name="dir.main.src" location="main/java"/>
+    
     <property name="dir.test.lib" location="test/lib"/>
 
     <property name="dir.reports" location="target/reports"/>
@@ -38,10 +42,8 @@
     <property name="exec.test.cpp" location="target/test/cpp/gtest-runner"/>
 
     <property name="dir.main.csharp.src" location="main/csharp/ir/generated"/>
-
+	
     <path id="test.classpath">
-        <pathelement path="${dir.main.build}"/>
-        <pathelement path="${dir.test.build}"/>
         <pathelement path="${dir.test.resources}"/>
         <fileset dir="${dir.test.lib}">
             <include name="*.jar"/>
@@ -52,11 +54,9 @@
     <taskdef resource="cpptasks.tasks" classpath="${cpptasks.lib}"/>
     <taskdef resource="cpptasks.types" classpath="${cpptasks.lib}"/>
     <taskdef resource="org/doxygen/tools/antlib.xml" classpath="${doxygen.lib}"/>
-
+	
     <target name="init">
         <tstamp/>
-        <mkdir dir="${dir.main.build}"/>
-        <mkdir dir="${dir.test.build}"/>
         <mkdir dir="${dir.dist}"/>
         <mkdir dir="${dir.docs.java}"/>
         <mkdir dir="${dir.docs.cpp}"/>
@@ -75,11 +75,10 @@
                     failOnViolation="true"
                     maxWarnings="0"
                     maxErrors="0">
-            <fileset dir="${dir.main.src}">
+            <fileset dir="${dir.maven.sbe.main.src}">
                 <include name="**/*.java"/>
-                <exclude name="**/ir/generated/**"/>
             </fileset>
-            <fileset dir="${dir.test.src}">
+            <fileset dir="${dir.maven.sbe.test.src}">
                 <include name="**/*.java"/>
             </fileset>
             <formatter type="plain"/>
@@ -88,54 +87,36 @@
     </target>
 
     <target name="clean" description="Delete all existing output">
+    	<antcall target="java:maven-clean"/>
         <delete dir="target"/>
     </target>
 
+    <target name="test" depends="build" description="Unit Test">
+    	<sequential>
+    		<antcall target="java:maven-test"/>
+    		<antcall target="test-report"/>
+    	</sequential>
+    </target>
+	
+	<target name="test-report">
+		<junitreport todir="${dir.reports.unit}">
+            <fileset dir="${dir.maven.surefire.reports}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report todir="${dir.reports.unit}"/>
+		</junitreport>	
+	</target>
+	
     <target name="build" depends="init" description="Build the main source">
-        <javac srcdir="${dir.main.src}" destdir="${dir.main.build}" includeAntRuntime="false" debug="true">
-            <compilerarg value="-Xlint:unchecked"/>
-            <compilerarg value="-XDignore.symbol.file"/>
-        </javac>
+    	<antcall target="java:maven-install"/>
     </target>
 
-    <target name="test" depends="build" description="Unit Test">
-        <sequential>
-            <javac srcdir="${dir.test.src}" destdir="${dir.test.build}" includeAntRuntime="false" debug="true">
-                <classpath refid="test.classpath"/>
-                <compilerarg value="-Xlint:unchecked"/>
-                <compilerarg value="-XDignore.symbol.file"/>
-            </javac>
-            <junit printsummary="withOutAndErr" errorProperty="test.failed" failureProperty="test.failed">
-                <sysproperty key="results.dir" value="${dir.reports.unit}"/>
-                <classpath refid="test.classpath"/>
-                <formatter type="xml"/>
-                <formatter type="plain" usefile="false"/>
-                <batchtest todir="${dir.reports.unit}">
-                    <fileset dir="${dir.test.src}">
-                        <include name="**/*Test.java"/>
-                        <exclude name="**/JavaGeneratorTest.java"/>
-                    </fileset>
-                </batchtest>
-                <batchtest fork="true" todir="${dir.reports.unit}">
-                    <fileset dir="${dir.test.src}">
-                        <include name="**/JavaGeneratorTest.java"/>
-                    </fileset>
-                </batchtest>
-            </junit>
-            <junitreport todir="${dir.reports.unit}">
-                <fileset dir="${dir.reports.unit}">
-                    <include name="TEST-*.xml"/>
-                </fileset>
-                <report todir="${dir.reports.unit}"/>
-            </junitreport>
-            <fail message="Tests failed. Check log and/or reports." if="test.failed"/>
-        </sequential>
-    </target>
+
 
     <target name="javadoc" depends="build">
-        <javadoc sourcepath="${dir.main.src}"
+        <javadoc sourcepath="${dir.maven.sbe.main.src}"
                  destdir="${dir.docs.java}"
-                 overview="${dir.main.src}/overview.html"
+                 overview="${dir.maven.sbe}/overview.html"
                  author="true"
                  version="true"
                  use="true"
@@ -164,22 +145,9 @@
         </doxygen>
     </target>
 
-    <target name="dist" depends="build, javadoc" description="Generate the distribution">
-        <jar destfile="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar">
-            <manifest>
-                <attribute name="Main-Class" value="uk.co.real_logic.sbe.SbeTool"/>
-            </manifest>
-            <fileset dir="${dir.main.build}"/>
-        </jar>
-        <jar destfile="${dir.dist}/${module.name}-api-${build.version}-${DSTAMP}.jar">
-            <fileset dir="${dir.docs.java}"/>
-        </jar>
-        <jar destfile="${dir.dist}/${module.name}-src-${build.version}-${DSTAMP}.jar">
-            <fileset dir="${dir.main.src}"/>
-        </jar>
-
+    <target name="dist" depends="build, test-report, javadoc" description="Generate the distribution">
         <!-- Copying SbeTool to a constant name (without timestamp and version number, which makes life easier for other builds..) -->
-        <copy file="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar" tofile="${dir.dist}/SbeTool.jar"/>
+    	<copy file="${dir.maven.sbe.target}/${module.name}-0.0.1-SNAPSHOT.jar" tofile="${dir.dist}/SbeTool.jar"/>
     </target>
 
     <target name="cpp:dist" depends="cpp:compile, cpp:doc">
@@ -189,7 +157,7 @@
     </target>
 
 
-    <target name="all" depends="clean, checkstyle, build, test, javadoc, dist"/>
+    <target name="all" depends="clean, init, checkstyle, build, dist"/>
 
     <!-- SBE Serialized IR targets -->
 
@@ -439,6 +407,31 @@
 
     <target name="cpp" depends="cpp:test, cpp:doc, cpp:dist"/>
 
+	
+	<!-- Java targets, maven build -->
+	<target name="java:maven-clean">
+		<exec executable="mvn" failonerror="true">
+			<arg value="-f" />
+			<arg value="./main/java/pom.xml" />
+			<arg value="clean" />
+		</exec>
+	</target>
+
+	<target name="java:maven-test">
+		<exec executable="mvn" failonerror="true">
+			<arg value="-f" />
+			<arg value="./main/java/pom.xml" />
+			<arg value="test" />
+		</exec>
+	</target>
+	
+	<target name="java:maven-install">
+		<exec executable="mvn" failonerror="true">
+			<arg value="-f"/>
+			<arg value="./main/java/pom.xml" />
+			<arg value="install" />
+		</exec>
+	</target>
 
     <!-- C# targets (Windows only) -->
 
