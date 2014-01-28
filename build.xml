@@ -55,6 +55,13 @@
     <taskdef resource="cpptasks.types" classpath="${cpptasks.lib}"/>
     <taskdef resource="org/doxygen/tools/antlib.xml" classpath="${doxygen.lib}"/>
 	
+    <condition property="maven.exec" value="mvn">
+    	<os family="unix" />
+    </condition>
+    <condition property="maven.exec" value="mvn.bat">
+    	<os family="windows" />
+    </condition>
+
     <target name="init">
         <tstamp/>
         <mkdir dir="${dir.dist}"/>
@@ -410,7 +417,7 @@
 	
 	<!-- Java targets, maven build -->
 	<target name="java:maven-clean">
-		<exec executable="mvn" failonerror="true">
+		<exec executable="${maven.exec}" failonerror="true">
 			<arg value="-f" />
 			<arg value="./main/java/pom.xml" />
 			<arg value="clean" />
@@ -418,7 +425,7 @@
 	</target>
 
 	<target name="java:maven-test">
-		<exec executable="mvn" failonerror="true">
+		<exec executable="${maven.exec}" failonerror="true">
 			<arg value="-f" />
 			<arg value="./main/java/pom.xml" />
 			<arg value="test" />
@@ -426,7 +433,7 @@
 	</target>
 	
 	<target name="java:maven-install">
-		<exec executable="mvn" failonerror="true">
+		<exec executable="${maven.exec}" failonerror="true">
 			<arg value="-f"/>
 			<arg value="./main/java/pom.xml" />
 			<arg value="install" />
