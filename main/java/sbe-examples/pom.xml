@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>uk.co.real_logic</groupId>
+		<artifactId>sbe-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>uk.co.real_logic</groupId>
+	<artifactId>sbe-examples</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>Simple Binary Encoding: Examples</name>
+	<url>https://github.com/real-logic/simple-binary-encoding</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>uk.co.real_logic</groupId>
+			<artifactId>sbe</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>uk.co.real_logic</groupId>
+				<artifactId>sbe-maven-plugin</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<sbe.generate.stubs>true</sbe.generate.stubs>
+							<sbe.generate.ir>false</sbe.generate.ir>
+							<resources>
+								<resource>../../../examples/resources/TestSchema.xml</resource>
+								<resource>../../../examples/resources/TestExtensionSchema.xml</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+

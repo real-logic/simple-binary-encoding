@@ -23,7 +23,7 @@ public class TestUtil
 {
     public static InputStream getLocalResource(final String name) throws FileNotFoundException
     {
-        final String pathToResources = System.getProperty("test.resources.dir", "test/resources/");
+        final String pathToResources = System.getProperty("test.resources.dir", "../../../test/resources/");
         return new FileInputStream(pathToResources + name);
     }
 }
