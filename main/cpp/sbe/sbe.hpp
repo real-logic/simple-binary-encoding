@@ -23,14 +23,14 @@
  * Types used by C++ codec. Might have to be platform specific at some stage.
  */
 typedef char sbe_char_t;
-typedef int8_t sbe_int8_t;
-typedef int16_t sbe_int16_t;
-typedef int32_t sbe_int32_t;
-typedef int64_t sbe_int64_t;
-typedef uint8_t sbe_uint8_t;
-typedef uint16_t sbe_uint16_t;
-typedef uint32_t sbe_uint32_t;
-typedef uint64_t sbe_uint64_t;
+typedef ::int8_t sbe_int8_t;
+typedef ::int16_t sbe_int16_t;
+typedef ::int32_t sbe_int32_t;
+typedef ::int64_t sbe_int64_t;
+typedef ::uint8_t sbe_uint8_t;
+typedef ::uint16_t sbe_uint16_t;
+typedef ::uint32_t sbe_uint32_t;
+typedef ::uint64_t sbe_uint64_t;
 typedef float sbe_float_t;
 typedef double sbe_double_t;
 

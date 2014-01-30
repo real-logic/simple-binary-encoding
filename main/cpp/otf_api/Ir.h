@@ -31,9 +31,9 @@ class Ir
 {
 public:
     /// Invalid message template ID
-    static const int32_t INVALID_ID = -1;
+    static const ::int32_t INVALID_ID = -1;
     /// Value representing a variable length field (size)
-    static const uint32_t VARIABLE_SIZE = -1;
+    static const ::uint32_t VARIABLE_SIZE = -1;
 
     /// Constants used for holding Token signals
     enum TokenSignal
@@ -148,17 +148,17 @@ public:
     // constructors and destructors
 
     /// Construct an Ir from a buffer with serialized tokens of len total size. Responsibility of buffer management is the applications.
-    Ir(const char *buffer = NULL, const int len = 0, const int64_t templateId = -1, const int64_t templateVersion = -1);
+    Ir(const char *buffer = NULL, const int len = 0, const ::int64_t templateId = -1, const ::int64_t templateVersion = -1);
 
     /// Destroy an Ir. The buffer is NOT freed.
     virtual ~Ir();
 
-    int64_t templateId(void) const
+    ::int64_t templateId(void) const
     {
         return templateId_;
     }
 
-    int64_t templateVersion(void) const
+    ::int64_t templateVersion(void) const
     {
         return templateVersion_;
     }
@@ -175,9 +175,9 @@ public:
     // access methods for current IR Token
 
     /// Retrieve the offset value of the current token
-    int32_t offset() const;
+    ::int32_t offset() const;
     /// Retrieve the size value of the current token
-    int32_t size() const;
+    ::int32_t size() const;
     /// Retrieve the Ir::TokenSignal of the current token
     TokenSignal signal() const;
     /// Retrieve the Ir::TokenByteOrder of the current token
@@ -187,45 +187,45 @@ public:
     /// Retrieve the Ir::TokenPresence of the current token
     TokenPresence presence() const;
     /// Retrieve the ID set by the schema of the current token
-    int32_t schemaId() const;
+    ::int32_t schemaId() const;
     /// Return the Ir::VALID_VALUE of an enumeration for the current token
-    uint64_t validValue() const;
+    ::uint64_t validValue() const;
     /// Return the value of the current tokens bit set Ir::CHOICE value
-    uint64_t choiceValue() const;
+    ::uint64_t choiceValue() const;
     /// Return the length of the name of the current token
-    int64_t nameLen() const;
+    ::int64_t nameLen() const;
     /// Return the name of the current token
     std::string name() const;
     /// Return the length of the current tokens constant value in bytes
-    int64_t constLen() const;
+    ::int64_t constLen() const;
     /// Retrieve the current tokens constant value or NULL if not present
     const char *constValue() const;
     /// Return the length of the current tokens min value in bytes
-    int64_t minLen() const;
+    ::int64_t minLen() const;
     /// Return the current tokens min value or NULL if not present
     const char *minValue() const;
     /// Return the length of the current tokens max value in bytes
-    int64_t maxLen() const;
+    ::int64_t maxLen() const;
     /// Return the current tokens max value or NULL if not present
     const char *maxValue() const;
     /// Return the length of the current tokens null value in bytes
-    int64_t nullLen() const;
+    ::int64_t nullLen() const;
     /// Return the current tokens null value or NULL if not present
     const char *nullValue() const;
     /// Return the length of the current tokens characterEncoding value in bytes
-    int64_t characterEncodingLen() const;
+    ::int64_t characterEncodingLen() const;
     /// Return the current tokens characterEncoding value or NULL if not present
     const char *characterEncoding() const;
     /// Return the length of the current tokens epoch value in bytes
-    int64_t epochLen() const;
+    ::int64_t epochLen() const;
     /// Return the current tokens epoch value or NULL if not present
     const char *epoch() const;
     /// Return the length of the current tokens timeUnit value in bytes
-    int64_t timeUnitLen() const;
+    ::int64_t timeUnitLen() const;
     /// Return the current tokens timeUnit value or NULL if not present
     const char *timeUnit() const;
     /// Return the length of the current tokens semanticType value in bytes
-    int64_t semanticTypeLen() const;
+    ::int64_t semanticTypeLen() const;
     /// Return the current tokens semanticType value or NULL if not present
     const char *semanticType() const;
 
@@ -235,18 +235,18 @@ public:
     void position(int pos);
 
     // used by test fixtures to generate IR for tests - initial call allocates max sized buffer
-    void addToken(uint32_t offset,
-                  uint32_t size,
+    void addToken(::uint32_t offset,
+                  ::uint32_t size,
                   TokenSignal signal,
                   TokenByteOrder byteOrder,
                   TokenPrimitiveType primitiveType,
-                  uint16_t schemaId,
+                  ::uint16_t schemaId,
                   const std::string &name,
                   const char *constValue = NULL,
                   int constValLength = 0);
 
     // used to retrieve what would be the nominal size of a single element of a primitive type
-    static int64_t size(TokenPrimitiveType type)
+    static ::int64_t size(TokenPrimitiveType type)
     {
         switch (type)
         {
@@ -282,8 +282,8 @@ private:
     const char *buffer_;
     int len_;
     int cursorOffset_;
-    int64_t templateId_;
-    int64_t templateVersion_;
+    ::int64_t templateId_;
+    ::int64_t templateVersion_;
 
     struct Impl;
 

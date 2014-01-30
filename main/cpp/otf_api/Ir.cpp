@@ -48,15 +48,15 @@ struct Ir::Impl
     int epochLength;
     int timeUnitLength;
     int semanticTypeLength;
-    uint32_t serializedTokenSize;
+    ::uint32_t serializedTokenSize;
 };
 
 #if !defined(WIN32)
 const int Ir::INVALID_ID;
-const uint32_t Ir::VARIABLE_SIZE;
+const ::uint32_t Ir::VARIABLE_SIZE;
 #endif /* WIN32 */
 
-Ir::Ir(const char *buffer, const int len, const int64_t templateId, const int64_t templateVersion) :
+Ir::Ir(const char *buffer, const int len, const ::int64_t templateId, const ::int64_t templateVersion) :
     buffer_(buffer), len_(len), templateId_(templateId), templateVersion_(templateVersion)
 {
     impl_ = new Ir::Impl;
@@ -134,12 +134,12 @@ bool Ir::end() const
     return true;
 }
 
-int32_t Ir::offset() const
+::int32_t Ir::offset() const
 {
     return impl_->tokenCodec.tokenOffset();
 }
 
-int32_t Ir::size() const
+::int32_t Ir::size() const
 {
     return impl_->tokenCodec.tokenSize();
 }
@@ -167,12 +167,12 @@ Ir::TokenPresence Ir::presence() const
     return (Ir::TokenPresence)impl_->tokenCodec.presence();
 }
 
-int32_t Ir::schemaId() const
+::int32_t Ir::schemaId() const
 {
     return impl_->tokenCodec.schemaId();
 }
 
-uint64_t Ir::validValue() const
+::uint64_t Ir::validValue() const
 {
     // constVal holds the validValue. primitiveType holds the type
     switch (primitiveType())
@@ -191,7 +191,7 @@ uint64_t Ir::validValue() const
     }
 }
 
-uint64_t Ir::choiceValue() const
+::uint64_t Ir::choiceValue() const
 {
     // constVal holds the validValue. primitiveType holds the type
     switch (primitiveType())
@@ -201,15 +201,15 @@ uint64_t Ir::choiceValue() const
             break;
 
         case Ir::UINT16:
-            return *(uint16_t *)(impl_->constValue);
+            return *(::uint16_t *)(impl_->constValue);
             break;
 
         case Ir::UINT32:
-            return *(uint32_t *)(impl_->constValue);
+            return *(::uint32_t *)(impl_->constValue);
             break;
 
         case Ir::UINT64:
-            return *(uint64_t *)(impl_->constValue);
+            return *(::uint64_t *)(impl_->constValue);
             break;
 
         default:
@@ -218,7 +218,7 @@ uint64_t Ir::choiceValue() const
     }
 }
 
-int64_t Ir::nameLen() const
+::int64_t Ir::nameLen() const
 {
     return impl_->nameLength;
 }
@@ -228,7 +228,7 @@ std::string Ir::name() const
     return std::string(impl_->name, nameLen());
 }
 
-int64_t Ir::constLen() const
+::int64_t Ir::constLen() const
 {
     return impl_->constValueLength;
 }
@@ -243,7 +243,7 @@ const char *Ir::constValue() const
     return impl_->constValue;
 }
 
-int64_t Ir::minLen() const
+::int64_t Ir::minLen() const
 {
     return impl_->minValueLength;
 }
@@ -258,7 +258,7 @@ const char *Ir::minValue() const
     return impl_->minValue;
 }
 
-int64_t Ir::maxLen() const
+::int64_t Ir::maxLen() const
 {
     return impl_->maxValueLength;
 }
@@ -273,7 +273,7 @@ const char *Ir::maxValue() const
     return impl_->maxValue;
 }
 
-int64_t Ir::nullLen() const
+::int64_t Ir::nullLen() const
 {
     return impl_->nullValueLength;
 }
@@ -288,7 +288,7 @@ const char *Ir::nullValue() const
     return impl_->nullValue;
 }
 
-int64_t Ir::characterEncodingLen() const
+::int64_t Ir::characterEncodingLen() const
 {
     return impl_->characterEncodingLength;
 }
@@ -303,7 +303,7 @@ const char *Ir::characterEncoding() const
     return impl_->characterEncoding;
 }
 
-int64_t Ir::epochLen() const
+::int64_t Ir::epochLen() const
 {
     return impl_->epochLength;
 }
@@ -318,7 +318,7 @@ const char *Ir::epoch() const
     return impl_->epoch;
 }
 
-int64_t Ir::timeUnitLen() const
+::int64_t Ir::timeUnitLen() const
 {
     return impl_->timeUnitLength;
 }
@@ -333,7 +333,7 @@ const char *Ir::timeUnit() const
     return impl_->timeUnit;
 }
 
-int64_t Ir::semanticTypeLen() const
+::int64_t Ir::semanticTypeLen() const
 {
     return impl_->semanticTypeLength;
 }
@@ -359,12 +359,12 @@ void Ir::position(const int pos)
     readTokenAtCurrentPosition();
 }
 
-void Ir::addToken(uint32_t offset,
-                  uint32_t size,
+void Ir::addToken(::uint32_t offset,
+                  ::uint32_t size,
                   TokenSignal signal,
                   TokenByteOrder byteOrder,
                   TokenPrimitiveType primitiveType,
-                  uint16_t schemaId,
+                  ::uint16_t schemaId,
                   const std::string &name,
                   const char *constValue,
                   int constValueLength)

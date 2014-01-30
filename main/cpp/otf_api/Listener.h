@@ -203,19 +203,19 @@ protected:
     virtual void processEndComposite(void);
     virtual void processBeginField(const Ir *ir);
     virtual void processEndField(void);
-    virtual uint64_t processBeginEnum(const Ir *ir, const char value);
-    virtual uint64_t processBeginEnum(const Ir *ir, const uint8_t value);
+    virtual ::uint64_t processBeginEnum(const Ir *ir, const char value);
+    virtual ::uint64_t processBeginEnum(const Ir *ir, const ::uint8_t value);
     virtual void processEnumValidValue(const Ir *ir);
     virtual void processEndEnum(void);
-    virtual uint64_t processBeginSet(const Ir *ir, const uint64_t value);
+    virtual ::uint64_t processBeginSet(const Ir *ir, const ::uint64_t value);
     virtual void processSetChoice(const Ir *ir);
     virtual void processEndSet(void);
     virtual void processBeginVarData(const Ir *ir);
     virtual void processEndVarData(void);
-    virtual uint64_t processEncoding(const Ir *ir, const int64_t value);
-    virtual uint64_t processEncoding(const Ir *ir, const uint64_t value);
-    virtual uint64_t processEncoding(const Ir *ir, const double value);
-    virtual uint64_t processEncoding(const Ir *ir, const char *value, const int size);
+    virtual ::uint64_t processEncoding(const Ir *ir, const ::int64_t value);
+    virtual ::uint64_t processEncoding(const Ir *ir, const ::uint64_t value);
+    virtual ::uint64_t processEncoding(const Ir *ir, const double value);
+    virtual ::uint64_t processEncoding(const Ir *ir, const char *value, const int size);
     virtual void processBeginGroup(const Ir *ir);
     virtual void processEndGroup(void);
 
@@ -250,8 +250,8 @@ private:
      * State associated with message dispatching from header
      */
     Ir::Callback *irCallback_;
-    int64_t templateId_;
-    int64_t templateVersion_;
+    ::int64_t templateId_;
+    ::int64_t templateVersion_;
 
     /*
      * Stack frame to hold the repeating group state
@@ -269,7 +269,7 @@ private:
         int iteration_;
         int irPosition_;
         State state_;
-        int32_t schemaId_;
+        ::int32_t schemaId_;
 
         Frame(const std::string &name = "") : scopeName_(name), blockLength_(-1),
                                               numInGroup_(-1), iteration_(-1), irPosition_(-1), state_(MESSAGE), schemaId_(Ir::INVALID_ID) {};
