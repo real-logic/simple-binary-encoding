@@ -107,7 +107,7 @@ public class Cpp98Generator implements CodeGenerator
             {
                 out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), className, typesToInclude));
                 out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(msgToken.size(), className, msgToken.schemaId(), msgToken.version()));
+                out.append(generateMessageFlyweightCode(className, msgToken));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -1079,14 +1079,12 @@ public class Cpp98Generator implements CodeGenerator
         );
     }
 
-    private CharSequence generateMessageFlyweightCode(final int blockLength,
-                                                      final String className,
-                                                      final int schemaId,
-                                                      final int version)
+    private CharSequence generateMessageFlyweightCode(final String className, final Token token)
     {
         final String blockLengthType = cpp98TypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = cpp98TypeName(ir.headerStructure().templateIdType());
         final String templateVersionType = cpp98TypeName(ir.headerStructure().templateVersionType());
+        final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
             "private:\n" +
@@ -1108,6 +1106,10 @@ public class Cpp98Generator implements CodeGenerator
             "    static %5$s templateVersion(void)\n" +
             "    {\n" +
             "        return %6$s;\n" +
+            "    }\n\n" +
+            "    static const char *semanticType(void)\n" +
+            "    {\n" +
+            "        return \"%8$s\";\n" +
             "    }\n\n" +
             "    sbe_uint64_t offset(void) const\n" +
             "    {\n" +
@@ -1155,12 +1157,13 @@ public class Cpp98Generator implements CodeGenerator
             "        return actingVersion_;\n" +
             "    }\n",
             blockLengthType,
-            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(blockLength)),
+            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
             templateIdType,
-            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(schemaId)),
+            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.schemaId())),
             templateVersionType,
-            generateLiteral(ir.headerStructure().templateVersionType(), Integer.toString(version)),
-            className
+            generateLiteral(ir.headerStructure().templateVersionType(), Integer.toString(token.version())),
+            className,
+            semanticType
         );
     }
 
