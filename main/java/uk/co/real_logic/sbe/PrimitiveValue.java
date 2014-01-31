@@ -26,6 +26,7 @@ import static java.nio.charset.Charset.forName;
 /**
  * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
  * <p/>
+ *
  * <table>
  *     <thead>
  *         <tr>
@@ -344,6 +345,7 @@ public class PrimitiveValue
             byteArrayValueForLong[0] = (byte)longValue;
             return byteArrayValueForLong;
         }
+
         throw new IllegalStateException("PrimitiveValue is not a byte[] representation");
     }
 
@@ -407,7 +409,7 @@ public class PrimitiveValue
     {
         if (null != value && value instanceof PrimitiveValue)
         {
-            PrimitiveValue rhs = (PrimitiveValue)value;
+            final PrimitiveValue rhs = (PrimitiveValue)value;
 
             if (representation == rhs.representation)
             {
