@@ -220,22 +220,22 @@ public class PrimitiveValue
                 return new PrimitiveValue((long)value.getBytes()[0], 1);
 
             case INT8:
-                return new PrimitiveValue(Long.parseLong(value), 1);
+                return new PrimitiveValue(Byte.parseByte(value), 1);
 
             case INT16:
-                return new PrimitiveValue(Long.parseLong(value), 2);
+                return new PrimitiveValue(Short.parseShort(value), 2);
 
             case INT32:
-                return new PrimitiveValue(Long.parseLong(value), 4);
+                return new PrimitiveValue(Integer.parseInt(value), 4);
 
             case INT64:
                 return new PrimitiveValue(Long.parseLong(value), 8);
 
             case UINT8:
-                return new PrimitiveValue(Long.parseLong(value), 1);
+                return new PrimitiveValue(Short.parseShort(value), 1);
 
             case UINT16:
-                return new PrimitiveValue(Long.parseLong(value), 2);
+                return new PrimitiveValue(Integer.parseInt(value), 2);
 
             case UINT32:
                 return new PrimitiveValue(Long.parseLong(value), 4);
@@ -249,7 +249,7 @@ public class PrimitiveValue
                 return new PrimitiveValue(biValue.longValue(), 8);
 
             case FLOAT:
-                return new PrimitiveValue(Double.parseDouble(value), 4);
+                return new PrimitiveValue(Float.parseFloat(value), 4);
 
             case DOUBLE:
                 return new PrimitiveValue(Double.parseDouble(value), 8);
