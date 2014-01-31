@@ -17,7 +17,7 @@
 package uk.co.real_logic.sbe;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 
 import static java.lang.Double.doubleToLongBits;
@@ -135,10 +135,10 @@ public class PrimitiveValue
     public static final long NULL_VALUE_INT64 = Long.MIN_VALUE;     // (-2 ^ 63)
 
     public static final long MIN_VALUE_UINT64 = 0;
-    public static final BigDecimal BD_MAX_VALUE_UINT64 = new BigDecimal("18446744073709551614");
-    public static final long MAX_VALUE_UINT64 = BD_MAX_VALUE_UINT64.longValue(); // (2 ^ 64)- 2
-    public static final BigDecimal BD_NULL_VALUE_UINT64 = new BigDecimal("18446744073709551615");
-    public static final long NULL_VALUE_UINT64 = BD_NULL_VALUE_UINT64.longValue(); // (2 ^ 64)- 1
+    public static final BigInteger BI_MAX_VALUE_UINT64 = new BigInteger("18446744073709551614");
+    public static final long MAX_VALUE_UINT64 = BI_MAX_VALUE_UINT64.longValue(); // (2 ^ 64)- 2
+    public static final BigInteger BI_NULL_VALUE_UINT64 = new BigInteger("18446744073709551615");
+    public static final long NULL_VALUE_UINT64 = BI_NULL_VALUE_UINT64.longValue(); // (2 ^ 64)- 1
 
     public static final float MIN_VALUE_FLOAT = Float.MIN_VALUE;
     public static final float MAX_VALUE_FLOAT = Float.MAX_VALUE;
@@ -241,12 +241,12 @@ public class PrimitiveValue
                 return new PrimitiveValue(Long.parseLong(value), 4);
 
             case UINT64:
-                final BigDecimal bdValue = new BigDecimal(value);
-                if (bdValue.compareTo(BD_NULL_VALUE_UINT64) > 0)
+                final BigInteger biValue = new BigInteger(value);
+                if (biValue.compareTo(BI_NULL_VALUE_UINT64) > 0)
                 {
                     throw new IllegalArgumentException("Value greater than UINT64 allows: value=" + value);
                 }
-                return new PrimitiveValue(bdValue.longValue(), 8);
+                return new PrimitiveValue(biValue.longValue(), 8);
 
             case FLOAT:
                 return new PrimitiveValue(Double.parseDouble(value), 4);
