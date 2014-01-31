@@ -98,8 +98,7 @@ public class SbeTool
 
         for (final String fileName : args)
         {
-            Ir ir = null;
-
+            final Ir ir;
             if (fileName.endsWith(".xml"))
             {
                 ir = new IrGenerator().generate(parseSchema(fileName), System.getProperty(TARGET_NAMESPACE));
@@ -110,7 +109,9 @@ public class SbeTool
             }
             else
             {
-                System.out.println("File format not supported.");
+                System.err.println("Input file format not supported: " + fileName);
+                System.exit(-1);
+                return;
             }
 
             if (Boolean.parseBoolean(System.getProperty(GENERATE_STUBS, "true")))
