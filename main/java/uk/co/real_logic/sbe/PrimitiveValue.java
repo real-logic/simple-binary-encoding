@@ -17,6 +17,7 @@
 package uk.co.real_logic.sbe;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 import static java.lang.Double.doubleToLongBits;
@@ -129,21 +130,23 @@ public class PrimitiveValue
     public static final long MAX_VALUE_UINT32 = 4294967293L; // 0xFFFFFFFD
     public static final long NULL_VALUE_UINT32 = 4294967294L; // 0xFFFFFFFE
 
-    public static final long MIN_VALUE_INT64 = Long.MIN_VALUE + 1;  // -2^63 + 1
-    public static final long MAX_VALUE_INT64 = Long.MAX_VALUE;      //  2^63 - 1  (SBE spec says -2^63 - 1)
-    public static final long NULL_VALUE_INT64 = Long.MIN_VALUE;     // -2^63
+    public static final long MIN_VALUE_INT64 = Long.MIN_VALUE + 1;  // (-2 ^ 63) + 1
+    public static final long MAX_VALUE_INT64 = Long.MAX_VALUE;      // (2 ^ 63) - 1  (SBE spec says (-2 ^ 63) - 1)
+    public static final long NULL_VALUE_INT64 = Long.MIN_VALUE;     // (-2 ^ 63)
 
     public static final long MIN_VALUE_UINT64 = 0;
-    public static final long MAX_VALUE_UINT64 = Long.MAX_VALUE;  // TODO: placeholder for now (replace with BigInteger?)
-    public static final long NULL_VALUE_UINT64 = Long.MIN_VALUE; // TODO: placeholder for now (replace with BigInteger?)
+    public static final BigDecimal BD_MAX_VALUE_UINT64 = new BigDecimal("18446744073709551614");
+    public static final long MAX_VALUE_UINT64 = BD_MAX_VALUE_UINT64.longValue(); // (2 ^ 64)- 2
+    public static final BigDecimal BD_NULL_VALUE_UINT64 = new BigDecimal("18446744073709551615");
+    public static final long NULL_VALUE_UINT64 = BD_NULL_VALUE_UINT64.longValue(); // (2 ^ 64)- 1
 
     public static final float MIN_VALUE_FLOAT = Float.MIN_VALUE;
     public static final float MAX_VALUE_FLOAT = Float.MAX_VALUE;
-    public static final float NULL_VALUE_FLOAT = Float.NaN;         // TODO: can NOT be used as a normal equality check
+    public static final float NULL_VALUE_FLOAT = Float.NaN;
 
     public static final double MIN_VALUE_DOUBLE = Double.MIN_VALUE;
     public static final double MAX_VALUE_DOUBLE = Double.MAX_VALUE;
-    public static final double NULL_VALUE_DOUBLE = Double.NaN;      // TODO: can NOT be used as a normal equality check
+    public static final double NULL_VALUE_DOUBLE = Double.NaN;
 
     private final Representation representation;
     private final long longValue;
@@ -238,8 +241,12 @@ public class PrimitiveValue
                 return new PrimitiveValue(Long.parseLong(value), 4);
 
             case UINT64:
-                // TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit integers...
-                return new PrimitiveValue(Long.parseLong(value), 8);
+                final BigDecimal bdValue = new BigDecimal(value);
+                if (bdValue.compareTo(BD_NULL_VALUE_UINT64) > 0)
+                {
+                    throw new IllegalArgumentException("Value greater than UINT64 allows: value=" + value);
+                }
+                return new PrimitiveValue(bdValue.longValue(), 8);
 
             case FLOAT:
                 return new PrimitiveValue(Double.parseDouble(value), 4);
