@@ -50,7 +50,7 @@ public class JavaGeneratorTest
     {
         System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "true");
 
-        final MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
+        final MessageSchema schema = parse(TestUtil.getLocalResource("code-generation-schema.xml"));
         final IrGenerator irg = new IrGenerator();
         ir = irg.generate(schema);
 

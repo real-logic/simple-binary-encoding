@@ -178,7 +178,7 @@ public class SetTypeTest
      public void shouldHandleEncodingTypesWithNamedTypes()
          throws Exception
      {
-         MessageSchema schema = parse(TestUtil.getLocalResource("EncodingTypesFileTest.xml"));
+         MessageSchema schema = parse(TestUtil.getLocalResource("encoding-types-schema.xml"));
          List<Field> fields = schema.getMessage(1).fields();
          assertNotNull(fields);
          SetType type = (SetType)fields.get(3).type();

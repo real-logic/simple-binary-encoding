@@ -36,7 +36,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageHeader()
         throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
+        final MessageSchema schema = parse(TestUtil.getLocalResource("basic-schema.xml"));
         final IrGenerator irg = new IrGenerator();
 
         final Ir ir = irg.generate(schema);
@@ -99,7 +99,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForBasicMessage()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("basic-schema.xml"));
         IrGenerator irg = new IrGenerator();
         Ir ir = irg.generate(schema);
 
@@ -149,7 +149,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageWithVariableLengthField()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("basic-variable-length-schema.xml"));
         IrGenerator irg = new IrGenerator();
         Ir ir = irg.generate(schema);
 
@@ -212,7 +212,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensions()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BasicGroupSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("basic-group-schema.xml"));
         IrGenerator irg = new IrGenerator();
         Ir ir = irg.generate(schema);
         /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, ... */
@@ -245,7 +245,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensionsDefaultDimensionType()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("EmbeddedLengthAndCountFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("embedded-length-and-count-schema.xml"));
         IrGenerator irg = new IrGenerator();
         Ir ir = irg.generate(schema);
         /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, 9=field, ... */
@@ -270,7 +270,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageWithVariableLengthFieldWithEmbeddedLength()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("EmbeddedLengthAndCountFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("embedded-length-and-count-schema.xml"));
         IrGenerator irg = new IrGenerator();
         Ir ir = irg.generate(schema);
         /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=field, 5=comp, 6=enc, 7=enc, 8=compend, 9=fieldend */

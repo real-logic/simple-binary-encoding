@@ -36,7 +36,7 @@ public class EncodedIrTest
     public void shouldEncodeIr()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("basic-schema.xml"));
         IrGenerator irg = new IrGenerator();
         Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
@@ -49,7 +49,7 @@ public class EncodedIrTest
     public void shouldEncodeThenDecodeIr()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("basic-schema.xml"));
         IrGenerator irg = new IrGenerator();
         Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
@@ -66,7 +66,7 @@ public class EncodedIrTest
     public void shouldHandleRightSizedBuffer()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("basic-schema.xml"));
         IrGenerator irg = new IrGenerator();
         Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
@@ -87,7 +87,7 @@ public class EncodedIrTest
     public void shouldDecodeCorrectFrame()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("code-generation-schema.xml"));
         IrGenerator irg = new IrGenerator();
         Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
@@ -131,7 +131,7 @@ public class EncodedIrTest
     public void shouldDecodeCorrectHeader()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("code-generation-schema.xml"));
         IrGenerator irg = new IrGenerator();
         Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
@@ -155,7 +155,7 @@ public class EncodedIrTest
     public void shouldDecodeCorrectMessages()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("CodeGenerationSchemaTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("code-generation-schema.xml"));
         IrGenerator irg = new IrGenerator();
         Ir ir = irg.generate(schema);
         ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);

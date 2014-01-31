@@ -257,8 +257,8 @@
             <classpath refid="examples.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.gen.java}"/>
             <sysproperty key="sbe.target.language" value="Java"/>
-            <arg value="${dir.examples.resources}/TestSchema.xml"/>
-            <arg value="${dir.examples.resources}/TestExtensionSchema.xml"/>
+            <arg value="${dir.examples.resources}/example-schema.xml"/>
+            <arg value="${dir.examples.resources}/example-extension-schema.xml"/>
         </java>
         <javac srcdir="${dir.gen.java}" destdir="${dir.examples.build}" includeAntRuntime="false" debug="true">
             <classpath refid="examples.classpath"/>
@@ -283,7 +283,7 @@
             <classpath refid="examples.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
             <sysproperty key="sbe.target.language" value="cpp98"/>
-            <arg value="${dir.examples.resources}/TestSchema.xml"/>
+            <arg value="${dir.examples.resources}/example-schema.xml"/>
         </java>
         <cc outtype="executable"
             debug="true"
@@ -332,14 +332,14 @@
                 <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
                 <sysproperty key="sbe.generate.stubs" value="false"/>
                 <sysproperty key="sbe.generate.ir" value="true"/>
-                <arg value="${dir.examples.resources}/TestSchema.xml"/>
+                <arg value="${dir.examples.resources}/example-schema.xml"/>
             </java>
             <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub">
                 <classpath refid="examples.classpath"/>
                 <sysproperty key="sbe.encoding.filename" value="${dir.gen.cpp98}/Car.data"/>
             </java>
             <exec executable="${exec.example.otf.cpp98}" failonerror="true">
-                <arg value="${dir.gen.cpp98}/TestSchema.sbeir"/>
+                <arg value="${dir.gen.cpp98}/example-schema.sbeir"/>
                 <arg value="${dir.gen.cpp98}/Car.data"/>
             </exec>
         </sequential>
@@ -452,15 +452,15 @@
             <sysproperty key="sbe.output.dir" value="${dir.gen.csharp}"/>
             <sysproperty key="sbe.target.language" value="CSharp"/>
             <sysproperty key="sbe.generate.ir" value="true"/>
-            <arg value="${dir.examples.resources}/TestSchema.xml"/>
+            <arg value="${dir.examples.resources}/example-schema.xml"/>
         </java>
 
         <copy todir="examples/csharp/generated_stub/generated">
             <fileset dir="${dir.gen.csharp}">
-                <exclude name="**/TestSchema.sbeir"/>
+                <exclude name="**/example-schema.sbeir"/>
             </fileset>
         </copy>
-        <copy todir="examples/csharp/otf" file="${dir.gen.csharp}/TestSchema.sbeir"/>
+        <copy todir="examples/csharp/otf" file="${dir.gen.csharp}/example-schema.sbeir"/>
     </target>
 
     <target name="csharp:build" depends="init, csharp:examples, generate:chsarp:sbeir-stubs" description="Build .NET solution and run unit tests">
@@ -479,7 +479,7 @@
         <copy file="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar" tofile="${dir.dist}/csharp/sbetool/SBETool.jar"/>
         <copy file="vs2013/.nuget/GenerateSampleCode.bat" todir="${dir.dist}/csharp/sample"/>
         <copy file="vs2013/.nuget/readme.txt" todir="${dir.dist}/csharp"/>
-        <copy file="examples/resources/TestSchema.xml" todir="${dir.dist}/csharp/sample"/>
+        <copy file="examples/resources/example-schema.xml" todir="${dir.dist}/csharp/sample"/>
         <copy file="examples/csharp/generated_stub/ExampleUsingGeneratedStub.cs" todir="${dir.dist}/csharp/sample"/>
 
         <exec executable="C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe">
@@ -494,4 +494,5 @@
             <arg value="vs2013/build.xml"/>
         </exec>
     </target>
+
 </project>

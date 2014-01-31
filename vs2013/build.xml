@@ -83,10 +83,10 @@
   <!-- This target uses SbeTool to generate the SBE IR stubs used for the OTF decoder. SbeTool needs to be available in target\dist folder (requires to run the main Ant "dist" target). -->
   <Target Name="GenerateExamples">
     <Message Text="Generating stubs for example project..." Importance="high" />
-    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\generated_stub\generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Examples.Generated -jar ..\target\dist\SbeTool.jar ..\examples\resources\TestSchema.xml" />
+    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\generated_stub\generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Examples.Generated -jar ..\target\dist\SbeTool.jar ..\examples\resources\example-schema.xml" />
 
     <Message Text="Generating serialized IR for OTF encoder example..." Importance="high" />
-    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\Otf\ -Dsbe.generate.stubs=false -Dsbe.generate.ir=true -jar ..\target\dist\SbeTool.jar ..\examples\resources\TestSchema.xml" />
+    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\Otf\ -Dsbe.generate.stubs=false -Dsbe.generate.ir=true -jar ..\target\dist\SbeTool.jar ..\examples\resources\example-schema.xml" />
   </Target>
 
   <!-- This target uses SbeTool to generate the SBE stubs for FIX messages required to run the performance tests -->

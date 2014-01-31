@@ -15,7 +15,7 @@ If you have used Google Protocol Buffer in the past, this should sound familiar.
 1. SBE Schema
 -------------
 
-This NuGet package contains a sample schema in \sample\TestSchema.xml (all files referenced in this readme file can be found in \packages\Adaptive.SBE.{version}\ folder contained in your solution directory)
+This NuGet package contains a sample schema in \sample\example-schema.xml (all files referenced in this readme file can be found in \packages\Adaptive.SBE.{version}\ folder contained in your solution directory)
 
 We will use this schema 'as is' in this example but you can use it later as a starting point to define your own schema.
 

@@ -104,7 +104,7 @@ public class ErrorHandlerTest
 
         try
         {
-            parse(TestUtil.getLocalResource("ErrorHandlerTypesTest.xml"));
+            parse(TestUtil.getLocalResource("error-handler-types-schema.xml"));
         }
         catch (final IllegalArgumentException shouldHaveOnly2Errors)
         {
@@ -124,7 +124,7 @@ public class ErrorHandlerTest
 
         try
         {
-            parse(TestUtil.getLocalResource("ErrorHandlerTypesDupTest.xml"));
+            parse(TestUtil.getLocalResource("error-handler-types-dup-schema.xml"));
         }
         catch (final IllegalArgumentException shouldHaveOnly1Warning)
         {
@@ -144,7 +144,7 @@ public class ErrorHandlerTest
 
         try
         {
-            parse(TestUtil.getLocalResource("ErrorHandlerDupMessageTest.xml"));
+            parse(TestUtil.getLocalResource("error-handler-dup-message-schema.xml"));
         }
         catch (final IllegalArgumentException shouldHaveOnly1Error)
         {
@@ -164,7 +164,7 @@ public class ErrorHandlerTest
 
         try
         {
-            parse(TestUtil.getLocalResource("ErrorHandlerMessageTest.xml"));
+            parse(TestUtil.getLocalResource("error-handler-message-schema.xml"));
         }
         catch (final IllegalArgumentException shouldHaveOnly12Errors)
         {
@@ -184,7 +184,7 @@ public class ErrorHandlerTest
 
         try
         {
-            parse(TestUtil.getLocalResource("ErrorHandlerGroupDimensionsTest.xml"));
+            parse(TestUtil.getLocalResource("error-handler-group-dimensions-schema.xml"));
         }
         catch (final IllegalArgumentException shouldHaveOnly1Error)
         {
