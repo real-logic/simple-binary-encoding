@@ -21,6 +21,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         private string _irNamespaceName = null;
         private int _offset;
         private readonly byte[] _buffer = new byte[1024];
+        private string _semanticVersion;
 
         public IrDecoder(string fileName)
         {
@@ -56,7 +57,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
                 i = CaptureHeader(tokens, 0);
             }
 
-            var ir = new IntermediateRepresentation(_irPackageName, _irNamespaceName, _irHeader, _irVersion);
+            var ir = new IntermediateRepresentation(_irPackageName, _irNamespaceName, _irVersion, _semanticVersion, _irHeader);
 
             for (; i < size; i++)
             {
@@ -126,6 +127,16 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             {
                 _irNamespaceName = null;
             }
+
+            length = _frameCodec.GetSemanticVersion(_buffer, 0, _buffer.Length);
+            encoding = System.Text.Encoding.GetEncoding(FrameCodec.SemanticVersionCharacterEncoding);
+            _semanticVersion = encoding.GetString(_buffer, 0, length);
+
+            if (string.IsNullOrEmpty(_semanticVersion))
+            {
+                _semanticVersion = null;
+            }
+
 
             _offset += _frameCodec.Size;
         }

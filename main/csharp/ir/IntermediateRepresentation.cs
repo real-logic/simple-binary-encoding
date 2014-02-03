@@ -10,21 +10,28 @@ namespace Adaptive.SimpleBinaryEncoding.ir
     /// </summary>
     public class IntermediateRepresentation
     {
-
         private readonly string _packageName;
-	    private readonly HeaderStructure _headerStructure;
+        private readonly string _namespaceName;
+        private readonly int _version;
+        private readonly string _semanticVersion;
+        
+        private readonly HeaderStructure _headerStructure;
 	    private readonly IDictionary<long, IList<Token>> _messagesByIdMap = new Dictionary<long, IList<Token>>();
 	    private readonly IDictionary<string, IList<Token>> _typesByNameMap = new Dictionary<string, IList<Token>>();
-	    private readonly int _version;
-        private readonly string _namespaceName;
 
         /// <summary>
         /// Create a new IR container taking a defensive copy of the headerStructure <seealso cref="Token"/>s passed.
         /// </summary>
         /// <param name="packageName"> that should be applied to generated code. </param>
         /// <param name="namespaceName"> that should be applied to generated code.</param>
+        /// <param name="semanticVersion">semantic version for mapping to the application domain.</param>
         /// <param name="headerTokens"> representing the message headerStructure. </param>
-        public IntermediateRepresentation(string packageName, string namespaceName, IList<Token> headerTokens, int version)
+        /// <param name="version"></param>
+        public IntermediateRepresentation(string packageName, 
+            string namespaceName, 
+            int version,
+            string semanticVersion,
+            IList<Token> headerTokens)
 	    {
 		    Verify.NotNull(packageName, "packageName");
 		    Verify.NotNull(headerTokens, "headerTokens");
@@ -32,6 +39,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
 		    _packageName = packageName;
 		    _headerStructure = new HeaderStructure(new List<Token>(headerTokens));
 		    _version = version;
+            _semanticVersion = semanticVersion;
             _namespaceName = namespaceName;
 	    }
 
@@ -132,6 +140,14 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         public int Version
         {
             get { return _version; }
+        }
+
+        /// <summary>
+        /// Get the semantic version of the schema.
+        /// </summary>
+        public string SemanticVersion
+        {
+            get { return _semanticVersion; }
         }
 
         private void CaptureTypes(IList<Token> tokens)
