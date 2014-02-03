@@ -37,6 +37,9 @@ namespace Adaptive.SimpleBinaryEncoding
         /// <param name="bufferLength">Length of the buffer</param>
         public DirectBuffer(byte* pBuffer, int bufferLength)
         {
+            if (pBuffer == null) throw new ArgumentNullException("pBuffer");
+            if (bufferLength < 0) throw new ArgumentException("Buffer size must be > 0", "bufferLength");
+
             _pBuffer = pBuffer;
             _capacity = bufferLength;
             _needToFreeGCHandle = false;
