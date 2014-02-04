@@ -80,7 +80,8 @@ namespace Adaptive.SimpleBinaryEncoding
         {
             Long,
             Double,
-            ByteArray
+            ByteArray,
+            ULong
         }
 
         public const long MinValueChar = 0x20;
@@ -121,17 +122,18 @@ namespace Adaptive.SimpleBinaryEncoding
 
         public const float MinValueFloat = float.Epsilon;
         public const float MaxValueFloat = float.MaxValue;
-        public const float NullValueFloat = float.NaN; // TODO: can NOT be used as a normal equality check
+        public const float NullValueFloat = float.NaN;
 
         public const double MinValueDouble = double.Epsilon;
         public const double MaxValueDouble = double.MaxValue;
-        public const double NullValueDouble = double.NaN; // TODO: can NOT be used as a normal equality check
+        public const double NullValueDouble = double.NaN;
 
         private readonly byte[] _byteArrayValue;
         private readonly byte[] _byteArrayValueForLong = new byte[1];
         private readonly string _characterEncoding;
         private readonly double _doubleValue;
         private readonly long _longValue;
+        private readonly ulong _unsignedLongValue;
         private readonly Representation _representation;
         private readonly int _size;
 
@@ -145,6 +147,7 @@ namespace Adaptive.SimpleBinaryEncoding
             _representation = Representation.Long;
             _longValue = value;
             _doubleValue = 0.0;
+            _unsignedLongValue = 0;
             _byteArrayValue = null;
             _characterEncoding = null;
             _size = size;
@@ -159,7 +162,24 @@ namespace Adaptive.SimpleBinaryEncoding
         {
             _representation = Representation.Double;
             _longValue = 0;
+            _unsignedLongValue = 0;
             _doubleValue = value;
+            _byteArrayValue = null;
+            _characterEncoding = null;
+            _size = size;
+        }
+
+        /// <summary>
+        ///     Construct and fill in value as a double.
+        /// </summary>
+        /// <param name="value"> in double format </param>
+        /// <param name="size"></param>
+        public PrimitiveValue(ulong value, int size)
+        {
+            _representation = Representation.ULong;
+            _unsignedLongValue = 0;
+            _longValue = 0;
+            _doubleValue = 0;
             _byteArrayValue = null;
             _characterEncoding = null;
             _size = size;
@@ -176,6 +196,7 @@ namespace Adaptive.SimpleBinaryEncoding
             _representation = Representation.ByteArray;
             _longValue = 0;
             _doubleValue = 0.0;
+            _unsignedLongValue = 0;
             _byteArrayValue = value;
             _characterEncoding = characterEncoding;
             _size = size;
@@ -217,30 +238,28 @@ namespace Adaptive.SimpleBinaryEncoding
                     return new PrimitiveValue(byte.Parse(value), 1);
 
                 case SbePrimitiveType.Int8:
-                    return new PrimitiveValue(Convert.ToInt64(value), 1);
+                    return new PrimitiveValue(Convert.ToSByte(value), 1);
 
                 case SbePrimitiveType.Int16:
-                    return new PrimitiveValue(Convert.ToInt64(value), 2);
+                    return new PrimitiveValue(Convert.ToInt16(value), 2);
 
                 case SbePrimitiveType.Int32:
-                    return new PrimitiveValue(Convert.ToInt64(value), 4);
+                    return new PrimitiveValue(Convert.ToInt32(value), 4);
 
                 case SbePrimitiveType.Int64:
                     return new PrimitiveValue(Convert.ToInt64(value), 8);
 
                 case SbePrimitiveType.UInt8:
-                    return new PrimitiveValue(Convert.ToInt64(value), 1);
+                    return new PrimitiveValue(Convert.ToByte(value), 1);
 
                 case SbePrimitiveType.UInt16:
-                    return new PrimitiveValue(Convert.ToInt64(value), 2);
+                    return new PrimitiveValue(Convert.ToUInt16(value), 2);
 
                 case SbePrimitiveType.UInt32:
-                    return new PrimitiveValue(Convert.ToInt64(value), 4);
+                    return new PrimitiveValue(Convert.ToUInt32(value), 4);
 
                 case SbePrimitiveType.UInt64:
-                    // TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit integers...
-                    // TODO to fix in .NET
-                    return new PrimitiveValue(Convert.ToInt64(value), 8);
+                    return new PrimitiveValue(Convert.ToUInt64(value), 8);
 
                 case SbePrimitiveType.Float:
                     return new PrimitiveValue(Convert.ToDouble(value), 4);
@@ -265,6 +284,20 @@ namespace Adaptive.SimpleBinaryEncoding
             }
 
             return _longValue;
+        }
+
+        /// <summary>
+        ///     Return unsigned long value for this PrimitiveValue
+        /// </summary>
+        /// <returns>value expressed as a ulong</returns>
+        public ulong ULongValue()
+        {
+            if (_representation != Representation.ULong)
+            {
+                throw new InvalidOperationException("PrimitiveValue is not a ulong representation");
+            }
+
+            return _unsignedLongValue;
         }
 
         /// <summary>
@@ -325,6 +358,9 @@ namespace Adaptive.SimpleBinaryEncoding
                 case Representation.Long:
                     return Convert.ToString(_longValue);
 
+                case Representation.ULong:
+                    return Convert.ToString(_longValue);
+
                 case Representation.Double:
                     return Convert.ToString(_doubleValue);
 
@@ -354,6 +390,9 @@ namespace Adaptive.SimpleBinaryEncoding
                         case Representation.Long:
                             return _longValue == rhs._longValue;
 
+                        case Representation.ULong:
+                            return _unsignedLongValue == rhs._unsignedLongValue;
+
                         case Representation.Double:
                             return _doubleValue == rhs._doubleValue;
 
@@ -376,6 +415,9 @@ namespace Adaptive.SimpleBinaryEncoding
             {
                 case Representation.Long:
                     return _longValue.GetHashCode();
+
+                case Representation.ULong:
+                    return _unsignedLongValue.GetHashCode();
 
                 case Representation.Double:
                     return _doubleValue.GetHashCode();

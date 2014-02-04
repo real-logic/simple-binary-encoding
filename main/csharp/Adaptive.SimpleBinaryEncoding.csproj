@@ -76,7 +76,6 @@
     <Compile Include="PrimitiveType.cs" />
     <Compile Include="PrimitiveValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Representation.cs" />
     <Compile Include="SbePrimitiveType.cs" />
     <Compile Include="Util\Verify.cs" />
   </ItemGroup>

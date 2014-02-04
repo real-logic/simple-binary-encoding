@@ -287,7 +287,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
                     return 4;
 
                 case SbePrimitiveType.UInt64:
-                    buffer.Uint64PutLittleEndian(0, (ulong) value.LongValue()); // TODO add proper support for ulong
+                    buffer.Uint64PutLittleEndian(0, value.ULongValue());
                     return 8;
 
                 case SbePrimitiveType.Float:

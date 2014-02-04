@@ -1,5 +1,8 @@
 This file contains the list of commits of Java ported to .NET (most recent at the TOP)
 
+3a5390e9590a59f6047b6cc99a9f898c9847bdd3
+[Java]: Fix for handling optionality and null values in enum types by propagating to pseudo super type for encoding. Fix for issue #77.
+
 85579448575bf9c81138835f34be3c55de137abf 
 [Java/cpp]: Added semanticVersion to IR.
 
