@@ -34,7 +34,23 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
             _directBuffer.CheckLimit(_buffer.Length + 1);
         }
 
+        [Test]
+        public void ConstructFromNativeBuffer()
+        {
+            var managedBuffer = new Byte[16];
+            var handle = GCHandle.Alloc(managedBuffer, GCHandleType.Pinned);
+            var unmanagedBuffer = (byte*) handle.AddrOfPinnedObject().ToPointer();
 
+            const int value = 5;
+            const int index = 0;
+            
+            using (var directBufferFromUnmanagedbuffer = new DirectBuffer(unmanagedBuffer, managedBuffer.Length))
+            {
+                directBufferFromUnmanagedbuffer.Int64PutLittleEndian(index, value);
+                Assert.AreEqual(value, *(long*) (unmanagedBuffer + index));
+            }
+        }
+        
         #region Byte
 
         [TestCase(5, 0)]

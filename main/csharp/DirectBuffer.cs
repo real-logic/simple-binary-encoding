@@ -8,10 +8,10 @@ namespace Adaptive.SimpleBinaryEncoding
     /// </summary>
     public sealed unsafe class DirectBuffer : IDisposable
     {
-        private readonly byte[] _buffer;
         private readonly byte* _pBuffer;
         private bool _disposed;
         private GCHandle _pinnedGCHandle;
+        private readonly bool _needToFreeGCHandle;
         private readonly int _capacity;
 
         /// <summary>
@@ -24,10 +24,25 @@ namespace Adaptive.SimpleBinaryEncoding
 
             // pin the buffer so it does not get moved around by GC, this is required since we use pointers
             _pinnedGCHandle = GCHandle.Alloc(byteArray, GCHandleType.Pinned);
+            _needToFreeGCHandle = true;
 
-            _buffer = byteArray;
-            _pBuffer = (byte*) _pinnedGCHandle.AddrOfPinnedObject().ToPointer();
-            _capacity = _buffer.Length;
+            _pBuffer = (byte*)_pinnedGCHandle.AddrOfPinnedObject().ToPointer();
+            _capacity = byteArray.Length;
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="DirectBuffer"/> from an unmanaged byte buffer owned by external code
+        /// </summary>
+        /// <param name="pBuffer">Unmanaged byte buffer</param>
+        /// <param name="bufferLength">Length of the buffer</param>
+        public DirectBuffer(byte* pBuffer, int bufferLength)
+        {
+            if (pBuffer == null) throw new ArgumentNullException("pBuffer");
+            if (bufferLength < 0) throw new ArgumentException("Buffer size must be > 0", "bufferLength");
+
+            _pBuffer = pBuffer;
+            _capacity = bufferLength;
+            _needToFreeGCHandle = false;
         }
 
         /// <summary>
@@ -38,7 +53,7 @@ namespace Adaptive.SimpleBinaryEncoding
         {
             if (limit > _capacity)
             {
-                 throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _buffer.Length));
+                throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _capacity));
             }
         }
 
@@ -480,7 +495,8 @@ namespace Adaptive.SimpleBinaryEncoding
         public int GetBytes(int index, byte[] destination, int offsetDestination, int length)
         {
             int count = Math.Min(length, _capacity - index);
-            Buffer.BlockCopy(_buffer, index, destination, offsetDestination, count);
+            Marshal.Copy((IntPtr)(_pBuffer + index), destination, offsetDestination, count);
+
             return count;
         }
 
@@ -495,11 +511,10 @@ namespace Adaptive.SimpleBinaryEncoding
         public int SetBytes(int index, byte[] src, int offset, int length)
         {
             int count = Math.Min(length, _capacity - index);
-            Buffer.BlockCopy(src, offset, _buffer, index, count);
+            Marshal.Copy(src, offset, (IntPtr)(_pBuffer + index), count);
 
             return count;
         }
-
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -521,7 +536,9 @@ namespace Adaptive.SimpleBinaryEncoding
             if (_disposed)
                 return;
 
-            _pinnedGCHandle.Free();
+            if (_needToFreeGCHandle)
+                _pinnedGCHandle.Free();
+
             _disposed = true;
         }
     }
