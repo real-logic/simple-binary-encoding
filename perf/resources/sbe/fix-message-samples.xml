@@ -48,7 +48,7 @@
         <enum name="HandInst" encodingType="char">
             <validValue name="AUTOMATED_EXECUTION">1</validValue>
         </enum>
-        <enum name="CustOrderHandlingInst" encodingType="char" presence="optional">
+        <enum name="CustOrderHandlingInst" encodingType="char" presence="optional" nullValue="A">
             <validValue name="PHONE_SIMPLE">A</validValue>
             <validValue name="PHONE_COMPLEX">B</validValue>
             <validValue name="FCM_PROVIDED_SCREEN">C</validValue>
@@ -74,7 +74,7 @@
             <validValue name="BUY">1</validValue>
             <validValue name="SELL">2</validValue>
         </enum>
-        <enum name="TimeInForce" encodingType="char" presence="optional">
+        <enum name="TimeInForce" encodingType="char" presence="optional" nullValue="0">
             <validValue name="DAY">0</validValue>
             <validValue name="GOOD_TILL_CANCEL">1</validValue>
             <validValue name="FILL_AND_KILL">3</validValue>
@@ -94,18 +94,18 @@
             <validValue name="ON_FLOOR">3</validValue>
             <validValue name="NOT_ON_FLOOR">4</validValue>
         </enum>
-        <enum name="NoAllocs" encodingType="char" presence="optional" semanticType="char">
+        <enum name="NoAllocs" encodingType="char" presence="optional" semanticType="char" nullValue="1">
             <validValue name="ONE">1</validValue>
         </enum>
         <enum name="OFMOverride" encodingType="char" semanticType="char">
             <validValue name="ENABLED">Y</validValue>
             <validValue name="DISABLED">N</validValue>
         </enum>
-        <enum name="MMProtectionReset" encodingType="char" presence="optional" semanticType="char">
+        <enum name="MMProtectionReset" encodingType="char" presence="optional" semanticType="char" nullValue="N">
             <validValue name="RESET">Y</validValue>
             <validValue name="DO_NOT_RESET">N</validValue>
         </enum>
-        <enum name="SecurityIDSource" encodingType="char" presence="optional" semanticType="char">
+        <enum name="SecurityIDSource" encodingType="char" presence="optional" semanticType="char" nullValue="8">
             <validValue name="EXCHANGE_SYMBOL">8</validValue>
         </enum>
         <enum name="MDUpdateAction" encodingType="uint8" semanticType="int">

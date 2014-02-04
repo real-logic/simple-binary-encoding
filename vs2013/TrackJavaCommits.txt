@@ -1,5 +1,8 @@
 This file contains the list of commits of Java ported to .NET (most recent at the TOP)
 
+85579448575bf9c81138835f34be3c55de137abf 
+[Java/cpp]: Added semanticVersion to IR.
+
 94eead5798df8f7c2d7f4ccbb5692ce8856872a5
 [Java]: Added semanticType() method to the java generated message stubs. Enhancement #72.
 

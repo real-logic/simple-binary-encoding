@@ -54,7 +54,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Otf
 
         private static byte[] LoadSchema()
         {
-            return File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, "car_example_serialized_ir.bin"));
+            return File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, "example-schema.sbeir"));
         }
 
         private static void EncodeTestMessage(byte[] buffer)

@@ -70,11 +70,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Otf\car_example_serialized_ir.bin" />
+    <None Include="Otf\example-schema.sbeir" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(ProjectDir)Otf\car_example_serialized_ir.bin $(TargetDir) /D /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy $(ProjectDir)Otf\example-schema.sbeir $(TargetDir) /D /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
