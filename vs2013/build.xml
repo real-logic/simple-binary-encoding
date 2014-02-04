@@ -108,8 +108,28 @@
     <PackageVersionAssembly Include="..\target\dist\csharp\lib\net40\SBE.dll"/>
     <NuSpecFile Include=".\.nuget\SBE.nuspec"/>
   </ItemGroup>
- 
+
+  <PropertyGroup>
+    <DistributionDirectory>..\target\dist\csharp\</DistributionDirectory>
+    <BuildOutputDirectory>..\target\csharp\Release</BuildOutputDirectory>
+  </PropertyGroup>
+
   <Target Name="Package">
+    <RemoveDir Directories="$(DistributionDirectory)" />
+
+    <ItemGroup>
+      <BuildOutputFiles Include="$(BuildOutputDirectory)\SBE.dll"/>
+      <BuildOutputFiles Include="$(BuildOutputDirectory)\SBE.pdb"/>
+      <BuildOutputFiles Include="$(BuildOutputDirectory)\SBE.xml"/>
+    </ItemGroup>
+
+    <Copy SourceFiles="@(BuildOutputFiles)" DestinationFolder="$(DistributionDirectory)\lib\net40" />
+    <Copy SourceFiles="$(DistributionDirectory)\..\SbeTool.jar" DestinationFolder="$(DistributionDirectory)\tools" />
+    <Copy SourceFiles=".nuget\GenerateSampleCode.bat" DestinationFolder="$(DistributionDirectory)\sample"/>
+    <Copy SourceFiles=".nuget\readme.txt" DestinationFolder="$(DistributionDirectory)"/>
+    <Copy SourceFiles="..\examples/resources/example-schema.xml" DestinationFolder="$(DistributionDirectory)\sample"/>
+    <Copy SourceFiles="..\examples\csharp\generated_stub\ExampleUsingGeneratedStub.cs" DestinationFolder="$(DistributionDirectory)\sample"/>
+
     <GetAssemblyIdentity AssemblyFiles="@(PackageVersionAssembly)">
       <Output TaskParameter="Assemblies" ItemName="AssemblyIdentity" />
     </GetAssemblyIdentity>
@@ -118,7 +138,7 @@
        XPath="/package/metadata/version"
        Value="%(AssemblyIdentity.Version)-beta" />
 
-    <Exec Command=".nuget\nuget.exe pack .nuget\sbe.nuspec -OutputDirectory ..\target\dist\csharp\" />
+    <Exec Command=".nuget\nuget.exe pack .nuget\sbe.nuspec -OutputDirectory $(DistributionDirectory)" />
   </Target>
 
   <Target Name="Publish">
