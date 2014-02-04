@@ -19,6 +19,9 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         private readonly string _timeUnit;
         private readonly string _semanticType;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="Encoding"/>
+        /// </summary>
         public Encoding()
         {
             _primitiveType = null;
@@ -34,6 +37,9 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             _semanticType = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="Encoding"/>
+        /// </summary>
         public Encoding(PrimitiveType primitiveType, Presence presence, ByteOrder byteOrder, PrimitiveValue minValue, PrimitiveValue maxValue, PrimitiveValue nullValue, PrimitiveValue constValue, string characterEncoding, string epoch, string timeUnit, string semanticType)
         {
             Verify.NotNull(presence, "presence");
@@ -55,7 +61,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         /// <summary>
         /// The <seealso cref="PrimitiveType"/> of this encoding.
         /// </summary>
-        /// <value>the &lt;seealso cref=&quot;PrimitiveType&quot;/&gt; of this encoding.</value>
+        /// <value>the <see cref="PrimitiveType"/> of this encoding.</value>
         public PrimitiveType PrimitiveType
         {
             get { return _primitiveType; }
@@ -64,7 +70,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         /// <summary>
         /// The <seealso cref="ByteOrder"/> for this encoding.
         /// </summary>
-        /// <value>the &lt;seealso cref=&quot;ByteOrder&quot;/&gt; for this encoding.</value>
+        /// <value>the <see cref="ByteOrder"/> for this encoding.</value>
         public ByteOrder ByteOrder
         {
             get { return _byteOrder; }
@@ -204,6 +210,13 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             get { return _semanticType; }
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
             return "Encoding{primitiveType=" + _primitiveType + ", presence=" + _presence + ", byteOrder=" + _byteOrder + ", minValue=" 
@@ -214,7 +227,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         /// <summary>
         /// Builder to make <seealso cref="Encoding"/> easier to create.
         /// </summary>
-        public class Builder
+        internal class Builder
         {
             private PrimitiveType _primitiveType;
             private Presence _presence = ir.Presence.Required;

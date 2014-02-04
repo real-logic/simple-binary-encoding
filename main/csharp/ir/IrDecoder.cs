@@ -5,7 +5,10 @@ using Adaptive.SimpleBinaryEncoding.Ir.Generated;
 
 namespace Adaptive.SimpleBinaryEncoding.ir
 {
-    public class IrDecoder
+    /// <summary>
+    /// <see cref="IrDecoder"/> can be used to read a SBE encoded intermediate representation generated with SBE Tool
+    /// </summary>
+    public sealed class IrDecoder
     {
         private const int Capacity = 4096;
 
@@ -23,6 +26,10 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         private readonly byte[] _buffer = new byte[1024];
         private string _semanticVersion;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="IrDecoder"/> from a file.
+        /// </summary>
+        /// <param name="fileName">path to the file containing the SBE encoded IR.</param>
         public IrDecoder(string fileName)
         {
             byte[] buffer = File.ReadAllBytes(fileName);
@@ -32,6 +39,10 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             _valBuffer = new DirectBuffer(_valArray);
         }
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="IrDecoder"/> from a byte array
+        /// </summary>
+        /// <param name="buffer">the byte array containg the SBE encoded IR.</param>
         public IrDecoder(byte[] buffer)
         {
             _size = buffer.Length;
@@ -40,7 +51,11 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             _valBuffer = new DirectBuffer(_valArray);
         }
 
-        public virtual IntermediateRepresentation Decode()
+        /// <summary>
+        /// Decodes the input to <see cref="IntermediateRepresentation"/>
+        /// </summary>
+        /// <returns></returns>
+        public IntermediateRepresentation Decode()
         {
             DecodeFrame();
 

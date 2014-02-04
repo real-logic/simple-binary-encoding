@@ -76,7 +76,7 @@ namespace Adaptive.SimpleBinaryEncoding
     /// </summary>
     public class PrimitiveValue
     {
-        public enum Representation
+        private enum Representation
         {
             Long,
             Double,
@@ -84,48 +84,155 @@ namespace Adaptive.SimpleBinaryEncoding
             ULong
         }
 
+        #region CHAR
+
+        /// <summary>
+        /// Minimum value for CHAR SBE type
+        /// </summary>
         public const long MinValueChar = 0x20;
+
+        /// <summary>
+        /// Maximum value for CHAR SBE type
+        /// </summary>
         public const long MaxValueChar = 0x7E;
+
+        /// <summary>
+        /// Null value for CHAR SBE type
+        /// </summary>
         public const long NullValueChar = 0;
 
+        #endregion
+
+
+
+        /// <summary>
+        /// Minimum value for INT8 SBE type
+        /// </summary>
         public const long MinValueInt8 = -127;
+        /// <summary>
+        /// Maximum value for CHAR SBE type
+        /// </summary>
         public const long MaxValueInt8 = 127;
+        /// <summary>
+        /// Null value for CHAR SBE type
+        /// </summary>
         public const long NullValueInt8 = -128;
 
+        /// <summary>
+        /// Minimum value for UINT8 SBE type
+        /// </summary>
         public const long MinValueUint8 = 0;
+        /// <summary>
+        /// Maximum value for UINT8 SBE type
+        /// </summary>
         public const long MaxValueUint8 = 254;
+        /// <summary>
+        /// Null value for UINT8 SBE type
+        /// </summary>
         public const long NullValueUint8 = 255;
 
+        /// <summary>
+        /// Minimum value for INT16 SBE type
+        /// </summary>
         public const long MinValueInt16 = -32767;
+        /// <summary>
+        /// Maximum value for INT16 SBE type
+        /// </summary>
         public const long MaxValueInt16 = 32767;
+        /// <summary>
+        /// Null value for INT16 SBE type
+        /// </summary>
         public const long NullValueInt16 = -32768;
 
+        /// <summary>
+        /// Minimum value for UINT16 SBE type
+        /// </summary>
         public const long MinValueUint16 = 0;
+        /// <summary>
+        /// Maximum value for UINT16 SBE type
+        /// </summary>
         public const long MaxValueUint16 = 65534;
+        /// <summary>
+        /// Null value for UINT16 SBE type
+        /// </summary>
         public const long NullValueUint16 = 65535;
 
+        /// <summary>
+        /// Minimum value for INT32 SBE type
+        /// </summary>
         public const long MinValueInt32 = -2147483647;
+        /// <summary>
+        /// Maximum value for INT32 SBE type
+        /// </summary>
         public const long MaxValueInt32 = 2147483647;
+        /// <summary>
+        /// Null value for INT32 SBE type
+        /// </summary>
         public const long NullValueInt32 = -2147483648;
 
+        /// <summary>
+        /// Minimum value for UINT32 SBE type
+        /// </summary>
         public const long MinValueUint32 = 0;
+        /// <summary>
+        /// Maximum value for UINT32 SBE type
+        /// </summary>
         public const long MaxValueUint32 = 4294967293L; // 0xFFFFFFFD
+        /// <summary>
+        /// Null value for UINT32 SBE type
+        /// </summary>
         public const long NullValueUint32 = 4294967294L; // 0xFFFFFFFE
 
+        /// <summary>
+        /// Minimum value for INT64 SBE type
+        /// </summary>
         public const long MinValueInt64 = long.MinValue + 1; // -2^63 + 1
+        /// <summary>
+        /// Maximum value for INT64 SBE type
+        /// </summary>
         public const long MaxValueInt64 = long.MaxValue; //  2^63 - 1  (SBE spec says -2^63 - 1)
+        /// <summary>
+        /// Null value for INT64 SBE type
+        /// </summary>
         public const long NullValueInt64 = long.MinValue; // -2^63
 
+        /// <summary>
+        /// Minimum value for UINT64 SBE type
+        /// </summary>
         public const long MinValueUint64 = 0;
+        /// <summary>
+        /// Maximum value for UINT64 SBE type
+        /// </summary>
         public const ulong MaxValueUint64 = ulong.MaxValue - 1;
+        /// <summary>
+        /// Null value for UINT64 SBE type
+        /// </summary>
         public const ulong NullValueUint64 = ulong.MaxValue;
 
+        /// <summary>
+        /// Minimum value for FLOAT SBE type
+        /// </summary>
         public const float MinValueFloat = float.Epsilon;
+        /// <summary>
+        /// Maximum value for FLOAT SBE type
+        /// </summary>
         public const float MaxValueFloat = float.MaxValue;
+        /// <summary>
+        /// Null value for FLOAT SBE type
+        /// </summary>
         public const float NullValueFloat = float.NaN;
 
+        /// <summary>
+        /// Minimum value for DOUBLE SBE type
+        /// </summary>
         public const double MinValueDouble = double.Epsilon;
+        /// <summary>
+        /// Maximum value for DOUBLE SBE type
+        /// </summary>
         public const double MaxValueDouble = double.MaxValue;
+        /// <summary>
+        /// Null value for DOUBLE SBE type
+        /// </summary>
         public const double NullValueDouble = double.NaN;
 
         private readonly byte[] _byteArrayValue;

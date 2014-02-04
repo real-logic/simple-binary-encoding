@@ -5,7 +5,14 @@
     /// </summary>
     public enum ByteOrder
     {
+        /// <summary>
+        /// Little endian
+        /// </summary>
         LittleEndian,
+
+        /// <summary>
+        /// Big endian
+        /// </summary>
         BigEndian
     }
 }

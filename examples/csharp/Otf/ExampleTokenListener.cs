@@ -10,17 +10,17 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Otf
 {
     public class ExampleTokenListener : ITokenListener
     {
-        internal readonly Stack<string> NamedScope = new Stack<string>();
-        internal readonly byte[] _tempBuffer = new byte[1024];
+        private readonly Stack<string> _namedScope = new Stack<string>();
+        private readonly byte[] _tempBuffer = new byte[1024];
 
         public void OnBeginMessage(Token token)
         {
-            NamedScope.Push(token.Name + ".");
+            _namedScope.Push(token.Name + ".");
         }
 
         public void OnEndMessage(Token token)
         {
-            NamedScope.Pop();
+            _namedScope.Pop();
         }
 
         public void OnEncoding(Token fieldToken, DirectBuffer buffer, int index, Token typeToken, int actingVersion)
@@ -76,22 +76,22 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Otf
 
         public virtual void OnBeginComposite(Token fieldToken, IList<Token> tokens, int fromIndex, int toIndex)
         {
-            NamedScope.Push(fieldToken.Name + ".");
+            _namedScope.Push(fieldToken.Name + ".");
         }
 
         public virtual void OnEndComposite(Token fieldToken, IList<Token> tokens, int fromIndex, int toIndex)
         {
-            NamedScope.Pop();
+            _namedScope.Pop();
         }
 
         public virtual void OnBeginGroup(Token token, int groupIndex, int numInGroup)
         {
-            NamedScope.Push(token.Name + ".");
+            _namedScope.Push(token.Name + ".");
         }
 
         public virtual void OnEndGroup(Token token, int groupIndex, int numInGroup)
         {
-            NamedScope.Pop();
+            _namedScope.Pop();
         }
 
         public virtual void OnVarData(Token fieldToken, DirectBuffer buffer, int bufferIndex, int length,
@@ -257,7 +257,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Otf
 
         private void PrintScope()
         {
-            foreach (string item in NamedScope.Reverse())
+            foreach (string item in _namedScope.Reverse())
             {
                 Console.Write(item);
             }

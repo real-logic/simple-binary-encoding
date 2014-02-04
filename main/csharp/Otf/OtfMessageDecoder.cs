@@ -13,7 +13,7 @@ namespace Adaptive.SimpleBinaryEncoding.Otf
     ///     The design keeps all state on the stack to maximise performance and avoid object allocation. The message decoder
     ///     can be used reused by
     ///     repeatably calling
-    ///     <seealso cref="OtfMessageDecoder#decode(DirectBuffer, int, int, int, java.util.List, TokenListener)" />
+    ///     <seealso cref="Decode" />
     ///     and is thread safe to be used across multiple threads.
     /// </summary>
     public class OtfMessageDecoder

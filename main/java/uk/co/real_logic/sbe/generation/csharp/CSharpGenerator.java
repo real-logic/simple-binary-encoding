@@ -510,6 +510,7 @@ public class CSharpGenerator implements CodeGenerator
 
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n\n" +
+            "#pragma warning disable 1591 // disable warning on missing comments\n" +
             "using System;\n" +
             "using Adaptive.SimpleBinaryEncoding;\n\n" +
             "namespace %s\n" +

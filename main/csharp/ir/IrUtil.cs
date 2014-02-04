@@ -2,7 +2,7 @@
 
 namespace Adaptive.SimpleBinaryEncoding.ir
 {
-    public class IrUtil
+    internal class IrUtil
     {
         public static readonly byte[] EmptyBuffer = new byte[0];
 

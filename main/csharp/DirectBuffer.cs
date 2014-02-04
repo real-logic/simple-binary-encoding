@@ -526,6 +526,9 @@ namespace Adaptive.SimpleBinaryEncoding
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Destructor for <see cref="DirectBuffer"/>
+        /// </summary>
         ~DirectBuffer()
         {
             Dispose(false);

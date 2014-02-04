@@ -211,12 +211,19 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             get { return _encoding; }
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
             return string.Format("Token{{" + "signal={0}, name='{1}\'" + ", schemaId={2}, version={3}, size={4}, offset={5}, encoding={6}{7}", Signal, Name, SchemaId, _version, _size, _offset, _encoding, '}');
         }
 
-        public class Builder
+        internal class Builder
         {
             private Signal _signal;
             private string _name;

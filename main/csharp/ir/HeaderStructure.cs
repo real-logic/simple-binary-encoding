@@ -8,16 +8,16 @@ namespace Adaptive.SimpleBinaryEncoding.ir
     /// </summary>
     public class HeaderStructure
     {
-        public const string TemplateId = "templateId";
-        public const string TemplateVersion = "version";
-        public const string BlockLength = "blockLength";
+        internal const string TemplateId = "templateId";
+        internal const string TemplateVersion = "version";
+        internal const string BlockLength = "blockLength";
 
         private readonly IList<Token> _tokens;
         private PrimitiveType _templateIdType;
         private PrimitiveType _templateVersionType;
         private PrimitiveType _blockLengthType;
 
-        public HeaderStructure(IList<Token> tokens)
+        internal HeaderStructure(IList<Token> tokens)
         {
             Verify.NotNull(tokens, "tokens");
             _tokens = tokens;
@@ -50,21 +50,33 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             }
         }
 
+        /// <summary>
+        /// List of <see cref="Token"/> associated with this <see cref="HeaderStructure"/>
+        /// </summary>
         public IList<Token> Tokens
         {
             get { return _tokens; }
         }
 
+        /// <summary>
+        /// Underyling type used to store template id infomation
+        /// </summary>
         public PrimitiveType TemplateIdType
         {
             get { return _templateIdType; }
         }
 
+        /// <summary>
+        /// Underyling type used to store template version information
+        /// </summary>
         public PrimitiveType TemplateVersionType
         {
             get { return _templateVersionType; }
         }
 
+        /// <summary>
+        /// Underyling type used to store block length information
+        /// </summary>
         public PrimitiveType BlockLengthType
         {
             get { return _blockLengthType; }
