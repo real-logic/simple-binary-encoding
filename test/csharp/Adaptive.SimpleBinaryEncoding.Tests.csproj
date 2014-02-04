@@ -75,6 +75,46 @@
     </Compile>
     <Compile Include="DirectBufferTests.cs" />
     <Compile Include="EndianessConverterTests.cs" />
+    <Compile Include="Generated\AdminHeartbeat.cs" />
+    <Compile Include="Generated\AdminLogin.cs" />
+    <Compile Include="Generated\AdminLogout.cs" />
+    <Compile Include="Generated\AggressorSide.cs" />
+    <Compile Include="Generated\ChannelReset.cs" />
+    <Compile Include="Generated\DecimalQty.cs" />
+    <Compile Include="Generated\EventType.cs" />
+    <Compile Include="Generated\FLOAT.cs" />
+    <Compile Include="Generated\GroupSize.cs" />
+    <Compile Include="Generated\HaltReason.cs" />
+    <Compile Include="Generated\InstAttribValue.cs" />
+    <Compile Include="Generated\LegSide.cs" />
+    <Compile Include="Generated\MatchEventIndicator.cs" />
+    <Compile Include="Generated\MaturityMonthYear.cs" />
+    <Compile Include="Generated\MDEntryType.cs" />
+    <Compile Include="Generated\MDEntryTypeBook.cs" />
+    <Compile Include="Generated\MDEntryTypeDailyStatistics.cs" />
+    <Compile Include="Generated\MDEntryTypeStatistics.cs" />
+    <Compile Include="Generated\MDIncrementalRefreshBook.cs" />
+    <Compile Include="Generated\MDIncrementalRefreshDailyStatistics.cs" />
+    <Compile Include="Generated\MDIncrementalRefreshLimtsBanding.cs" />
+    <Compile Include="Generated\MDIncrementalRefreshSessionStatistics.cs" />
+    <Compile Include="Generated\MDIncrementalRefreshTrade.cs" />
+    <Compile Include="Generated\MDIncrementalRefreshVolume.cs" />
+    <Compile Include="Generated\MDInstrumentDefinitionFuture.cs" />
+    <Compile Include="Generated\MDInstrumentDefinitionOption.cs" />
+    <Compile Include="Generated\MDInstrumentDefinitionSpread.cs" />
+    <Compile Include="Generated\MDUpdateAction.cs" />
+    <Compile Include="Generated\MessageHeader.cs" />
+    <Compile Include="Generated\MetaAttribute.cs" />
+    <Compile Include="Generated\OpenCloseSettlFlag.cs" />
+    <Compile Include="Generated\PRICE.cs" />
+    <Compile Include="Generated\PRICENULL.cs" />
+    <Compile Include="Generated\QuoteRequest.cs" />
+    <Compile Include="Generated\SecurityStatus.cs" />
+    <Compile Include="Generated\SecurityTradingEvent.cs" />
+    <Compile Include="Generated\SecurityTradingStatus.cs" />
+    <Compile Include="Generated\SecurityUpdateAction.cs" />
+    <Compile Include="Generated\SettlPriceType.cs" />
+    <Compile Include="Generated\SnapshotFullRefresh.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +125,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Generated\README.txt" />
+    <Content Include="Generated\templates_FIXBinary.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

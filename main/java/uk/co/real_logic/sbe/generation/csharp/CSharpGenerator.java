@@ -853,8 +853,8 @@ public class CSharpGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         final String javaTypeName = cSharpTypeName(token.encoding().primitiveType());
-        final byte[] constantValue = token.encoding().constValue().byteArrayValue();
-        final CharSequence values = generateByteLiteralList(token.encoding().constValue().byteArrayValue());
+        final byte[] constantValue = token.encoding().constValue().byteArrayValue(token.encoding().primitiveType());
+        final CharSequence values = generateByteLiteralList(token.encoding().constValue().byteArrayValue(token.encoding().primitiveType()));
 
         sb.append(String.format(
             "\n" +
