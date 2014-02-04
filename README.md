@@ -81,4 +81,4 @@ Run the C++98 examples
 C# Build
 --------
 
-See readme.md in vs2013 directory
+See [readme.md](https://github.com/real-logic/simple-binary-encoding/tree/master/vs2013) in vs2013 directory
