@@ -258,9 +258,9 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             indent + "    public static int headerSize()\n" +
-                indent + "    {\n" +
-                indent + "        return %d;\n" +
-                indent + "    }\n\n",
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n\n",
             dimensionHeaderSize
         ));
 
@@ -388,10 +388,10 @@ public class JavaGenerator implements CodeGenerator
 
                 sb.append(String.format(
                     "\n" +
-                        "    public static int %sHeaderSize()\n" +
-                        "    {\n" +
-                        "        return %d;\n" +
-                        "    }\n",
+                    "    public static int %sHeaderSize()\n" +
+                    "    {\n" +
+                    "        return %d;\n" +
+                    "    }\n",
                     toLowerFirstChar(propertyName),
                     sizeOfLengthField
                 ));
