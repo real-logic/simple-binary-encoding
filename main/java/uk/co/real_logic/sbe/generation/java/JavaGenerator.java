@@ -259,6 +259,18 @@ public class JavaGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
+            indent + "    public static int blockLength()\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n\n",
+            blockLength
+        ));
+
+        sb.append(String.format(
+            indent + "    public int actingBlockLength()\n" +
+            indent + "    {\n" +
+            indent + "        return blockLength;\n" +
+            indent + "    }\n\n" +
             indent + "    public int count()\n" +
             indent + "    {\n" +
             indent + "        return count;\n" +
