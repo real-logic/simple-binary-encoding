@@ -1,90 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="message-codec-bench" default="perf:test:java">
-    <description>
-        Benchmarks for different codecs
-    </description>
+<project name="sbe-benchmarks" default="java:perf:test">
+    <description>Benchmarks for different codecs</description>
 
     <property name="dir.perf.java" location="perf/java"/>
-    <property name="dir.perf.classes" location="target/perf/classes"/>
-
-
-    <property name="dir.gen.java" location="target/gen/perf/java"/>
 
     <property name="dir.resources.sbe" location="perf/resources/sbe"/>
     <property name="dir.resources.protobuf" location="perf/resources/protobuf"/>
 
-    <property name="dir.target.dist" location="target/perf/dist"/>
+    <property name="dir.target.perf.classes" location="target/perf/classes"/>
+    <property name="dir.target.perf.java" location="target/perf/java"/>
+    <property name="dir.target.perf.dist" location="target/perf/dist"/>
 
     <property file="build-local.properties"/>
 
-    <path id="tools.classpath">
+    <path id="perf.tools.classpath">
         <fileset dir="perf/lib" includes="**/*.jar"/>
         <file file="target/dist/sbe.jar"/>
     </path>
 
-    <path id="build.classpath">
-        <path refid="tools.classpath"/>
-        <pathelement location="${dir.perf.classes}"/>
+    <path id="perf.build.classpath">
+        <path refid="perf.tools.classpath"/>
+        <pathelement location="${dir.target.perf.classes}"/>
     </path>
 
     <target name="init">
-        <mkdir dir="${dir.perf.classes}"/>
-        <mkdir dir="${dir.gen.java}"/>
-        <mkdir dir="${dir.perf.classes}"/>
-        <mkdir dir="${dir.target.dist}"/>
+        <mkdir dir="${dir.target.perf.java}"/>
+        <mkdir dir="${dir.target.perf.classes}"/>
+        <mkdir dir="${dir.target.perf.dist}"/>
     </target>
 
-
-    <!-- =================================
-          target: default
-         ================================= -->
-    <target name="compile" depends="init, precompile">
-        <javac srcdir="${dir.gen.java}" destdir="${dir.perf.classes}" includeAntRuntime="false" debug="true">
-            <classpath refid="tools.classpath"/>
-        </javac>
-
-        <javac srcdir="${dir.perf.java}" destdir="${dir.perf.classes}" includeAntRuntime="false" debug="true">
-            <classpath refid="build.classpath"/>
-            <compilerarg value="-s"/>
-            <compilerarg value="${dir.gen.java}"/>
-        </javac>
-
-        <jar destfile="${dir.target.dist}/microbenchmarks.jar">
-            <manifest>
-                <attribute name="Main-Class" value="org.openjdk.jmh.Main"/>
-            </manifest>
-            <fileset dir="${dir.perf.classes}" includes="**/*"/>
-            <zipgroupfileset dir="target/dist" includes="**/sbe.jar"/>
-            <zipgroupfileset dir="perf/lib" includes="**/*.jar"/>
-        </jar>
+    <target name="clean">
+        <deltree dir="target/perf"/>
     </target>
 
-    <target name="precompile" depends="init">
+    <target name="java:codegen" depends="init">
         <java classname="uk.co.real_logic.sbe.SbeTool">
-            <classpath refid="tools.classpath"/>
-            <sysproperty key="sbe.output.dir" value="${dir.gen.java}"/>
+            <classpath refid="perf.tools.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.target.perf.java}"/>
             <sysproperty key="sbe.target.language" value="Java"/>
             <arg value="${dir.resources.sbe}/car.xml"/>
         </java>
         <java classname="uk.co.real_logic.sbe.SbeTool">
-            <classpath refid="tools.classpath"/>
-            <sysproperty key="sbe.output.dir" value="${dir.gen.java}"/>
+            <classpath refid="perf.tools.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.target.perf.java}"/>
             <sysproperty key="sbe.target.language" value="Java"/>
             <arg value="${dir.resources.sbe}/fix-message-samples.xml"/>
         </java>
 
-        <fail unless="protobuf.home"
-              message="protobuf.home is not defined (please add a build-local.properties and define it."/>
+        <fail unless="protobuf.home" message="protobuf.home is not defined (please add a build-local.properties and define it."/>
+
         <exec executable="${protobuf.home}/bin/protoc">
             <arg value="-I${dir.resources.protobuf}"/>
             <arg value="--java_out"/>
-            <arg value="${dir.gen.java}"/>
+            <arg value="${dir.target.perf.java}"/>
             <arg value="${dir.resources.protobuf}/car.proto"/>
             <arg value="${dir.resources.protobuf}/fix-messages.proto"/>
         </exec>
     </target>
 
-    <target name="perf:test:java" depends="compile">
+    <target name="java:compile" depends="clean, init, java:codegen">
+        <javac srcdir="${dir.target.perf.java}" destdir="${dir.target.perf.classes}" includeAntRuntime="false" debug="true">
+            <classpath refid="perf.tools.classpath"/>
+        </javac>
+
+        <javac srcdir="${dir.perf.java}" destdir="${dir.target.perf.classes}" includeAntRuntime="false" debug="true">
+            <classpath refid="perf.build.classpath"/>
+            <compilerarg value="-s"/>
+            <compilerarg value="${dir.target.perf.java}"/>
+        </javac>
+
+        <jar destfile="${dir.target.perf.dist}/microbenchmarks.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.openjdk.jmh.Main"/>
+            </manifest>
+            <fileset dir="${dir.target.perf.classes}" includes="**/*"/>
+            <zipgroupfileset dir="target/dist" includes="**/sbe.jar"/>
+            <zipgroupfileset dir="perf/lib" includes="**/*.jar"/>
+        </jar>
+    </target>
+
+    <target name="java:perf:test" depends="java:compile">
         <exec executable="java">
             <arg value="-jar"/>
             <arg value="target/perf/dist/microbenchmarks.jar"/>
