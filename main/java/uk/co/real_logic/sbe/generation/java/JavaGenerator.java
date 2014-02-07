@@ -228,10 +228,9 @@ public class JavaGenerator implements CodeGenerator
             indent + "        blockLength = dimensions.blockLength();\n" +
             indent + "        this.actingVersion = actingVersion;\n" +
             indent + "        index = -1;\n" +
-            indent + "        parentMessage.limit(parentMessage.limit() + %d);\n" +
+            indent + "        parentMessage.limit(parentMessage.limit() + headerSize());\n" +
             indent + "    }\n\n",
-            parentMessageClassName,
-            dimensionHeaderSize
+            parentMessageClassName
         ));
 
         final Integer blockLength = Integer.valueOf(tokens.get(index).size());
@@ -249,12 +248,19 @@ public class JavaGenerator implements CodeGenerator
             indent + "        index = -1;\n" +
             indent + "        this.count = count;\n" +
             indent + "        blockLength = %4$d;\n" +
-            indent + "        parentMessage.limit(parentMessage.limit() + %5$d);\n" +
+            indent + "        parentMessage.limit(parentMessage.limit() + headerSize());\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             javaTypeForNumInGroup,
             javaTypeForBlockLength,
-            blockLength,
+            blockLength
+        ));
+
+        sb.append(String.format(
+            indent + "    public static int headerSize()\n" +
+                indent + "    {\n" +
+                indent + "        return %d;\n" +
+                indent + "    }\n\n",
             dimensionHeaderSize
         ));
 
@@ -285,7 +291,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n\n" +
             indent + "    public boolean hasNext()\n" +
             indent + "    {\n" +
-            indent + "        return index + 1 < count;\n" +
+            indent + "        return (index + 1) < count;\n" +
             indent + "    }\n\n",
             formatClassName(groupName)
         ));
@@ -379,6 +385,16 @@ public class JavaGenerator implements CodeGenerator
                 final String lengthTypePrefix = lengthEncoding.primitiveType().primitiveName();
                 final ByteOrder byteOrder = lengthEncoding.byteOrder();
                 final String byteOrderStr = lengthEncoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
+
+                sb.append(String.format(
+                    "\n" +
+                        "    public static int %sHeaderSize()\n" +
+                        "    {\n" +
+                        "        return %d;\n" +
+                        "    }\n",
+                    toLowerFirstChar(propertyName),
+                    sizeOfLengthField
+                ));
 
                 sb.append(String.format(
                     "\n" +
