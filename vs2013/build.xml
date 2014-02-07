@@ -77,28 +77,28 @@
   <!-- This target uses SbeTool to generate the SBE IR stubs used for the OTF decoder. SbeTool needs to be available in target\dist folder (requires to run the main Ant "dist" target). -->
   <Target Name="GenerateIR">
     <Message Text="Generating SBE IR stubs..." Importance="high" />
-    <Exec Command="java -Dsbe.output.dir=..\main\csharp\ir\generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Ir.Generated -jar ..\target\dist\SbeTool.jar ..\main\resources\sbe-ir.xml" />
+    <Exec Command="java -Dsbe.output.dir=..\main\csharp\ir\generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Ir.Generated -jar ..\target\dist\sbe.jar ..\main\resources\sbe-ir.xml" />
   </Target>
 
   <!-- This target uses SbeTool to generate the SBE IR stubs used for the OTF decoder. SbeTool needs to be available in target\dist folder (requires to run the main Ant "dist" target). -->
   <Target Name="GenerateExamples">
     <Message Text="Generating stubs for example project..." Importance="high" />
-    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\generated_stub\generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Examples.Generated -jar ..\target\dist\SbeTool.jar ..\examples\resources\example-schema.xml" />
+    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\generated_stub\generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Examples.Generated -jar ..\target\dist\sbe.jar ..\examples\resources\example-schema.xml" />
 
     <Message Text="Generating serialized IR for OTF encoder example..." Importance="high" />
-    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\Otf\ -Dsbe.generate.stubs=false -Dsbe.generate.ir=true -jar ..\target\dist\SbeTool.jar ..\examples\resources\example-schema.xml" />
+    <Exec Command="java -Dsbe.output.dir=..\examples\csharp\Otf\ -Dsbe.generate.stubs=false -Dsbe.generate.ir=true -jar ..\target\dist\sbe.jar ..\examples\resources\example-schema.xml" />
   </Target>
 
   <!-- This target uses SbeTool to generate the SBE stubs for FIX messages required to run the performance tests -->
   <Target Name="GeneratePerfTestStubs">
     <Message Text="Generating stubs for perf tests..." Importance="high" />
-    <Exec Command="java -Dsbe.output.dir=..\perf\csharp\Adaptive.SimpleBinaryEncoding.PerfTests\Bench\SBE\FIX -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX -jar ..\target\dist\SbeTool.jar ..\perf\resources\sbe\fix-message-samples.xml" />
+    <Exec Command="java -Dsbe.output.dir=..\perf\csharp\Adaptive.SimpleBinaryEncoding.PerfTests\Bench\SBE\FIX -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX -jar ..\target\dist\sbe.jar ..\perf\resources\sbe\fix-message-samples.xml" />
   </Target>
 
   <!-- This target uses SbeTool to generate the SBE stubs for FIX messages used to validate that SbeTool generates valide C# -->
   <Target Name="GenerateCmeFix">
     <Message Text="Generating stubs for CME FIX messages..." Importance="high" />
-    <Exec Command="java -Dsbe.output.dir=..\test\csharp\Generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Tests.Generated -jar ..\target\dist\SbeTool.jar ..\test\csharp\Generated\templates_FIXBinary.xml" />
+    <Exec Command="java -Dsbe.output.dir=..\test\csharp\Generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Tests.Generated -jar ..\target\dist\sbe.jar ..\test\csharp\Generated\templates_FIXBinary.xml" />
   </Target>
 
   <Target Name="CIBuild" DependsOnTargets="GenerateIR;GenerateExamples;GeneratePerfTestStubs;GenerateCmeFix;Compile"/>
@@ -124,7 +124,7 @@
     </ItemGroup>
 
     <Copy SourceFiles="@(BuildOutputFiles)" DestinationFolder="$(DistributionDirectory)\lib\net40" />
-    <Copy SourceFiles="$(DistributionDirectory)\..\SbeTool.jar" DestinationFolder="$(DistributionDirectory)\tools" />
+    <Copy SourceFiles="$(DistributionDirectory)\..\sbe.jar" DestinationFolder="$(DistributionDirectory)\tools" />
     <Copy SourceFiles=".nuget\GenerateSampleCode.bat" DestinationFolder="$(DistributionDirectory)\sample"/>
     <Copy SourceFiles=".nuget\readme.txt" DestinationFolder="$(DistributionDirectory)"/>
     <Copy SourceFiles="..\examples/resources/example-schema.xml" DestinationFolder="$(DistributionDirectory)\sample"/>

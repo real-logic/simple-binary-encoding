@@ -179,7 +179,7 @@
         </jar>
 
         <!-- Copying SbeTool to a constant name (without timestamp and version number, which makes life easier for other builds..) -->
-        <copy file="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar" tofile="${dir.dist}/SbeTool.jar"/>
+        <copy file="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar" tofile="${dir.dist}/sbe.jar"/>
     </target>
 
     <target name="cpp:dist" depends="cpp:compile, cpp:doc">
