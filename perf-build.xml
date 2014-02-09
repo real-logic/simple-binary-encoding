@@ -10,6 +10,7 @@
     <property name="dir.target.perf.classes" location="target/perf/classes"/>
     <property name="dir.target.perf.java" location="target/perf/java"/>
     <property name="dir.target.perf.dist" location="target/perf/dist"/>
+    <property name="dir.target.perf.cpp" location="target/perf/cpp"/>
 
     <property file="build-local.properties"/>
 
@@ -30,7 +31,7 @@
     </target>
 
     <target name="clean">
-        <deltree dir="target/perf"/>
+        <delete dir="target/perf"/>
     </target>
 
     <target name="java:codegen" depends="init">
@@ -89,6 +90,37 @@
             <arg value="3"/>
             <arg value=".*Benchmark.*"/>
         </exec>
+    </target>
+
+    <target name="cpp:codegen" depends="init">
+        <java classname="uk.co.real_logic.sbe.SbeTool">
+            <classpath refid="perf.tools.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.target.perf.cpp}"/>
+            <sysproperty key="sbe.target.language" value="Cpp98"/>
+            <arg value="${dir.resources.sbe}/car-c.xml"/>
+        </java>
+        <java classname="uk.co.real_logic.sbe.SbeTool">
+            <classpath refid="perf.tools.classpath"/>
+            <sysproperty key="sbe.output.dir" value="${dir.target.perf.cpp}"/>
+            <sysproperty key="sbe.target.language" value="Cpp98"/>
+            <arg value="${dir.resources.sbe}/fix-message-samples.xml"/>
+        </java>
+    </target>
+
+    <target name="cpp:compile" depends="clean, init, cpp:codegen">
+        <sequential>
+            <exec executable="cmake" dir="target/perf">
+                <arg value="../../perf/cpp"/>
+            </exec>
+            <exec executable="make" dir="target/perf"/>
+        </sequential>
+    </target>
+
+    <target name="cpp:perf:test" depends="cpp:compile">
+        <sequential>
+            <exec executable="target/perf/benchlet-sbe-md-runner"/>
+            <exec executable="target/perf/benchlet-sbe-car-runner"/>
+        </sequential>
     </target>
 
 </project>
