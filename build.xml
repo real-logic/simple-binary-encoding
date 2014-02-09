@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Real-Logic-SBE" default="all" basedir=".">
+<project name="Real-Logic-SBE" default="all" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
     <property file="build.properties"/>
     <property name="module.name" value="sbe"/>
@@ -27,6 +27,7 @@
 
     <property name="cpptasks.lib" location="main/lib/cpptasks-1.0b5.jar"/>
     <property name="doxygen.lib" location="main/lib/ant-doxygen-1.6.1.jar"/>
+    <property name="maven-ant-tasks.lib" location="main/lib/maven-ant-tasks-2.1.3.jar"/>
 
     <property name="dir.main.cpp.src" location="main/cpp"/>
     <property name="dir.main.cpp.build" location="target/main/cpp/obj"/>
@@ -52,6 +53,9 @@
     <taskdef resource="cpptasks.tasks" classpath="${cpptasks.lib}"/>
     <taskdef resource="cpptasks.types" classpath="${cpptasks.lib}"/>
     <taskdef resource="org/doxygen/tools/antlib.xml" classpath="${doxygen.lib}"/>
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+             uri="antlib:org.apache.maven.artifact.ant"
+             classpath="${maven-ant-tasks.lib}"/>
 
     <target name="init">
         <tstamp/>
@@ -68,6 +72,16 @@
         <condition property="windows">
             <os family="windows"/>
         </condition>
+    </target>
+
+    <artifact:pom id="sbe.pom" file="sbe-pom.xml"/>
+
+    <target name="maven.install" depends="clean, checkstyle, build, test, javadoc, dist" description="maven install">
+        <artifact:install file="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar">
+            <artifact:pom refid="sbe.pom"/>
+            <artifact:attach file="${dir.dist}/${module.name}-src-${build.version}-${DSTAMP}.jar" type="jar" classifier="sources"/>
+            <artifact:attach file="${dir.dist}/${module.name}-api-${build.version}-${DSTAMP}.jar" type="jar" classifier="javadoc"/>
+        </artifact:install>
     </target>
 
     <target name="checkstyle" depends="init">

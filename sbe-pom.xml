@@ -1,0 +1,25 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>uk.co.real_logic</groupId>
+    <artifactId>sbe</artifactId>
+    <version>${build.version}-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>Simple Binary Encoding</name>
+    <description>FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency applications</description>
+    <url>https://github.com/real-logic/simple-binary-encoding</url>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <url>https://github.com/real-logic/simple-binary-encoding.git</url>
+        <connection>scm:git:https://github.com/real-logic/simple-binary-encoding.git</connection>
+    </scm>
+
+    <dependencies>
+    </dependencies>
+</project>
