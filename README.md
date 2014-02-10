@@ -6,7 +6,7 @@ Simple Binary Encoding (SBE)
 
 Further details on the background and usage of SBE can be found on the [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
 
-Benchmark tools and information can be found [here](https://github.com/real-logic/message-codec-bench).
+Benchmark tools and information can be found [here](https://github.com/real-logic/simple-binary-encoding/tree/master/perf) and run from he root perf-build.xml file.
 
 An XSD for SBE specs can be found [here](https://github.com/real-logic/simple-binary-encoding/blob/master/main/resources/fpl/SimpleBinary1-0.xsd)
 
