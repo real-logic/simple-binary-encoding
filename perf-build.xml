@@ -7,10 +7,14 @@
     <property name="dir.resources.sbe" location="perf/resources/sbe"/>
     <property name="dir.resources.protobuf" location="perf/resources/protobuf"/>
 
+    <property name="dir.target.perf" location="target/perf"/>
     <property name="dir.target.perf.classes" location="target/perf/classes"/>
     <property name="dir.target.perf.java" location="target/perf/java"/>
     <property name="dir.target.perf.dist" location="target/perf/dist"/>
     <property name="dir.target.perf.cpp" location="target/perf/cpp"/>
+
+    <property name="dir.deps" location="deps"/>
+    <property name="dir.deps.protobuf.build" location="deps/pb"/>
 
     <property file="build-local.properties"/>
 
@@ -120,6 +124,53 @@
         <sequential>
             <exec executable="target/perf/benchlet-sbe-md-runner"/>
             <exec executable="target/perf/benchlet-sbe-car-runner"/>
+        </sequential>
+    </target>
+
+    <target name="deps:init" depends="">
+        <mkdir dir="${dir.deps}"/>
+        <mkdir dir="${dir.deps.protobuf.build}"/>
+    </target>
+
+    <target name="deps:clean" depends="">
+        <delete dir="${dir.deps}"/>
+    </target>
+
+    <target name="protobuf:download" depends="deps:init">
+        <sequential>
+            <local name="protobuf.name"/>
+            <local name="sha.fail"/>
+            <local name="cksum.fail"/>
+            <property name="protobuf.name" value="protobuf-2.5.0.tar.gz"/>
+            <get dest="/tmp">
+                <url url="https://protobuf.googlecode.com/files/${protobuf.name}"/>
+            </get>
+            <checksum file="/tmp/${protobuf.name}" algorithm="sha1" property="7f6ea7bc1382202fb1ce8c6933f1ef8fea0c0148" verifyproperty="sha.fail"/>
+            <condition property="cksum.fail">
+                <equals arg1="${sha.fail}" arg2="false"/>
+            </condition>
+            <fail if="cksum.fail">Checksum failed</fail>
+            <copy file="/tmp/${protobuf.name}" todir="${dir.deps.protobuf.build}"/>
+        </sequential>
+    </target>
+
+    <target name="protobuf:unpack" depends="deps:init, protobuf:download">
+        <!-- untar/unzip, etc. won't preserve executable bits... grumble... -->
+        <exec executable="tar" dir="${dir.deps.protobuf.build}" failonerror="true">
+            <arg value="xzf"/>
+            <arg value="protobuf-2.5.0.tar.gz"/>
+        </exec>
+    </target>
+
+    <target name="protobuf:build" depends="protobuf:unpack">
+        <sequential>
+            <exec executable="./configure" dir="${dir.deps.protobuf.build}/protobuf-2.5.0" output="${dir.deps.protobuf.build}/protobuf-configure.out" failonerror="true">
+                <arg value="--prefix=${dir.deps}/protobuf-2.5.0"/>
+            </exec>
+            <exec executable="make" dir="${dir.deps.protobuf.build}/protobuf-2.5.0" output="${dir.deps.protobuf.build}/protobuf-make.out" failonerror="true"/>
+            <exec executable="make" dir="${dir.deps.protobuf.build}/protobuf-2.5.0" output="${dir.deps.protobuf.build}/protobuf-make-insta.out" failonerror="true">
+                <arg value="install"/>
+            </exec>
         </sequential>
     </target>
 
