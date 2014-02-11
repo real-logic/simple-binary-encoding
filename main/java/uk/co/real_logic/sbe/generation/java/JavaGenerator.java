@@ -205,8 +205,9 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "public static class %1$s implements Iterable<%1$s>, java.util.Iterator<%1$s>\n" +
             indent + "{\n" +
-            indent + "    private final %2$s dimensions = new %2$s();\n" +
-            indent + "    private %3$s parentMessage;\n" +
+            indent + "    private static final int HEADER_SIZE = %2$d;\n" +
+            indent + "    private final %3$s dimensions = new %3$s();\n" +
+            indent + "    private %4$s parentMessage;\n" +
             indent + "    private DirectBuffer buffer;\n" +
             indent + "    private int blockLength;\n" +
             indent + "    private int actingVersion;\n" +
@@ -214,6 +215,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    private int index;\n" +
             indent + "    private int offset;\n\n",
             formatClassName(groupName),
+            dimensionHeaderSize,
             dimensionsClassName,
             parentMessageClassName
         ));
@@ -228,7 +230,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        blockLength = dimensions.blockLength();\n" +
             indent + "        this.actingVersion = actingVersion;\n" +
             indent + "        index = -1;\n" +
-            indent + "        parentMessage.limit(parentMessage.limit() + headerSize());\n" +
+            indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
             parentMessageClassName
         ));
@@ -248,7 +250,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        index = -1;\n" +
             indent + "        this.count = count;\n" +
             indent + "        blockLength = %4$d;\n" +
-            indent + "        parentMessage.limit(parentMessage.limit() + headerSize());\n" +
+            indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             javaTypeForNumInGroup,
@@ -259,9 +261,8 @@ public class JavaGenerator implements CodeGenerator
         sb.append(String.format(
             indent + "    public static int headerSize()\n" +
             indent + "    {\n" +
-            indent + "        return %d;\n" +
-            indent + "    }\n\n",
-            dimensionHeaderSize
+            indent + "        return HEADER_SIZE;\n" +
+            indent + "    }\n\n"
         ));
 
         sb.append(String.format(
