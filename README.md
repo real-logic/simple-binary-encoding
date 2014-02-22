@@ -53,6 +53,10 @@ Run the Java examples
 
     $ ant examples:java
 
+Installing into a local maven (.m2) repository
+
+    ant maven.install
+
 Distribution
 ------------
 
