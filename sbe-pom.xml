@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.co.real_logic</groupId>
     <artifactId>sbe</artifactId>
-    <version>${build.version}-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Simple Binary Encoding</name>
