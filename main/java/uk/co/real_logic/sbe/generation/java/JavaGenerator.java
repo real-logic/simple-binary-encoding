@@ -1110,23 +1110,23 @@ public class JavaGenerator implements CodeGenerator
             "    private int actingBlockLength;\n" +
             "    private int actingVersion;\n" +
             "\n" +
-            "    public %1$s blockLength()\n" +
+            "    public %1$s sbeBlockLength()\n" +
             "    {\n" +
             "        return BLOCK_LENGTH;\n" +
             "    }\n\n" +
-            "    public %3$s templateId()\n" +
+            "    public %3$s sbeTemplateId()\n" +
             "    {\n" +
             "        return TEMPLATE_ID;\n" +
             "    }\n\n" +
-            "    public %5$s schemaId()\n" +
+            "    public %5$s sbeSchemaId()\n" +
             "    {\n" +
             "        return SCHEMA_ID;\n" +
             "    }\n\n" +
-            "    public %7$s schemaVersion()\n" +
+            "    public %7$s sbeSchemaVersion()\n" +
             "    {\n" +
             "        return SCHEMA_VERSION;\n" +
             "    }\n\n" +
-            "    public String semanticType()\n" +
+            "    public String sbeSemanticType()\n" +
             "    {\n" +
             "        return \"%10$s\";\n" +
             "    }\n\n" +

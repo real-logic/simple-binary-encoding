@@ -148,7 +148,7 @@ public:
     // constructors and destructors
 
     /// Construct an Ir from a buffer with serialized tokens of len total size. Responsibility of buffer management is the applications.
-    Ir(const char *buffer = NULL, const int len = 0, const ::int64_t templateId = -1, const ::int64_t templateVersion = -1);
+    Ir(const char *buffer, const int len, const ::int64_t templateId, const ::int64_t schemaId, const ::int64_t schemaVersion = -1);
 
     /// Destroy an Ir. The buffer is NOT freed.
     virtual ~Ir();
@@ -158,9 +158,14 @@ public:
         return templateId_;
     }
 
-    ::int64_t templateVersion(void) const
+    ::int64_t id(void) const
     {
-        return templateVersion_;
+        return id_;
+    }
+
+    ::int64_t schemaVersion(void) const
+    {
+        return schemaVersion_;
     }
 
     // iterator methods for IrTokens
@@ -240,7 +245,7 @@ public:
                   TokenSignal signal,
                   TokenByteOrder byteOrder,
                   TokenPrimitiveType primitiveType,
-                  ::uint16_t schemaId,
+                  ::uint16_t fieldId,
                   const std::string &name,
                   const char *constValue = NULL,
                   int constValLength = 0);
@@ -283,7 +288,8 @@ private:
     int len_;
     int cursorOffset_;
     ::int64_t templateId_;
-    ::int64_t templateVersion_;
+    ::int64_t id_;
+    ::int64_t schemaVersion_;
 
     struct Impl;
 

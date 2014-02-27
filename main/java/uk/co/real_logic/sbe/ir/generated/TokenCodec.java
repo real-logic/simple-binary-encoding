@@ -17,27 +17,27 @@ public class TokenCodec
     private int actingBlockLength;
     private int actingVersion;
 
-    public int blockLength()
+    public int sbeBlockLength()
     {
         return BLOCK_LENGTH;
     }
 
-    public int templateId()
+    public int sbeTemplateId()
     {
         return TEMPLATE_ID;
     }
 
-    public short schemaId()
+    public short sbeSchemaId()
     {
         return SCHEMA_ID;
     }
 
-    public short schemaVersion()
+    public short sbeSchemaVersion()
     {
         return SCHEMA_VERSION;
     }
 
-    public String semanticType()
+    public String sbeSemanticType()
     {
         return "";
     }

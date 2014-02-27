@@ -1083,7 +1083,8 @@ public class Cpp98Generator implements CodeGenerator
     {
         final String blockLengthType = cpp98TypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = cpp98TypeName(ir.headerStructure().templateIdType());
-        final String templateVersionType = cpp98TypeName(ir.headerStructure().schemaVersionType());
+        final String schemaIdType = cpp98TypeName(ir.headerStructure().schemaIdType());
+        final String schemaVersionType = cpp98TypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
@@ -1095,37 +1096,41 @@ public class Cpp98Generator implements CodeGenerator
             "    int actingBlockLength_;\n" +
             "    int actingVersion_;\n\n" +
             "public:\n\n" +
-            "    static %1$s blockLength(void)\n" +
+            "    static %1$s sbeBlockLength(void)\n" +
             "    {\n" +
             "        return %2$s;\n" +
             "    }\n\n" +
-            "    static %3$s templateId(void)\n" +
+            "    static %3$s sbeTemplateId(void)\n" +
             "    {\n" +
             "        return %4$s;\n" +
             "    }\n\n" +
-            "    static %5$s templateVersion(void)\n" +
+            "    static %5$s sbeSchemaId(void)\n" +
             "    {\n" +
             "        return %6$s;\n" +
             "    }\n\n" +
-            "    static const char *semanticType(void)\n" +
+            "    static %7$s sbeSchemaVersion(void)\n" +
             "    {\n" +
-            "        return \"%8$s\";\n" +
+            "        return %8$s;\n" +
+            "    }\n\n" +
+            "    static const char *sbeSemanticType(void)\n" +
+            "    {\n" +
+            "        return \"%9$s\";\n" +
             "    }\n\n" +
             "    sbe_uint64_t offset(void) const\n" +
             "    {\n" +
             "        return offset_;\n" +
             "    }\n\n" +
-            "    %7$s &wrapForEncode(char *buffer, const int offset)\n" +
+            "    %10$s &wrapForEncode(char *buffer, const int offset)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
-            "        actingBlockLength_ = blockLength();\n" +
-            "        actingVersion_ = templateVersion();\n" +
+            "        actingBlockLength_ = sbeBlockLength();\n" +
+            "        actingVersion_ = sbeSchemaVersion();\n" +
             "        position(offset + actingBlockLength_);\n" +
             "        positionPtr_ = &position_;\n" +
             "        return *this;\n" +
             "    }\n\n" +
-            "    %7$s &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion)\n" +
+            "    %10$s &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
@@ -1159,10 +1164,12 @@ public class Cpp98Generator implements CodeGenerator
             generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
             templateIdType,
             generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
-            templateVersionType,
+            schemaIdType,
+            generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
+            schemaVersionType,
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
-            className,
-            semanticType
+            semanticType,
+            className
         );
     }
 

@@ -45,12 +45,12 @@ public:
     // save a reference to the Listener so we can print out the offset
     IrRepo(Listener &listener) : listener_(listener) {};
 
-    virtual Ir *irForTemplateId(const int templateId, const int templateVersion)
+    virtual Ir *irForTemplateId(const int templateId, const int schemaVersion)
     {
-        std::cout << "Message lookup id=" << templateId << " version " << templateVersion << " offset " << listener_.bufferOffset() << std::endl;
+        std::cout << "Message lookup id=" << templateId << " version " << schemaVersion << " offset " << listener_.bufferOffset() << std::endl;
 
         // lookup in IrCollection the IR for the template ID and version
-        return (Ir *)IrCollection::message(templateId, templateVersion);
+        return (Ir *)IrCollection::message(templateId, schemaVersion);
     };
 
 private:

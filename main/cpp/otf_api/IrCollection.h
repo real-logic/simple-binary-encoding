@@ -137,11 +137,12 @@ public:
         ret = map_.equal_range(id);
         for (std::multimap<int, Ir *>::const_iterator it = ret.first; it != ret.second; it++)
         {
-            if (it->second->templateId() == id && it->second->templateVersion() == version)
+            if (it->second->templateId() == id && it->second->schemaVersion() == version)
             {
                 return it->second;
             }
         }
+
         return NULL;
     }
 
@@ -201,7 +202,7 @@ protected:
         int offset = 0, tmpLen = 0;
         char tmp[256];
 
-        frame.wrapForDecode(buffer_, offset, frame.blockLength(), frame.templateVersion());
+        frame.wrapForDecode(buffer_, offset, frame.sbeBlockLength(), frame.sbeSchemaVersion());
 
         tmpLen = frame.getPackageName(tmp, sizeof(tmp));
         ::std::cout << "Reading IR package=\"" << std::string(tmp, tmpLen) << "\"" << ::std::endl;
@@ -233,7 +234,7 @@ protected:
             char tmp[256], name[256];
             int nameLen = 0;
 
-            token.wrapForDecode(buffer_, offset + size, token.blockLength(), token.templateVersion());
+            token.wrapForDecode(buffer_, offset + size, token.sbeBlockLength(), token.sbeSchemaVersion());
 
             nameLen = token.getName(name, sizeof(name));
             token.getConstValue(tmp, sizeof(tmp));
@@ -260,7 +261,7 @@ protected:
 
         std::cout << " length " << size << std::endl;
 
-        header_ = new Ir(buffer_ + offset, size);
+        header_ = new Ir(buffer_ + offset, size, -1, -1, -1);
 
         return size;
     }
@@ -275,7 +276,7 @@ protected:
             char tmp[256], name[256];
             int nameLen = 0;
 
-            token.wrapForDecode(buffer_, offset + size, token.blockLength(), token.templateVersion());
+            token.wrapForDecode(buffer_, offset + size, token.sbeBlockLength(), token.sbeSchemaVersion());
 
             nameLen = token.getName(name, sizeof(name));
             token.getConstValue(tmp, sizeof(tmp));
@@ -292,8 +293,8 @@ protected:
             if (token.signal() == SignalCodec::BEGIN_MESSAGE)
             {
                 std::cout << " Message name=\"" << std::string(name, nameLen) << "\"";
-                std::cout << " id=\"" << token.schemaId() << "\"";
-                std::cout << " version=\"" << token.tokenVersion() << "\"";
+                std::cout << " id=\"" << token.fieldId() << "\"";
+                std::cout << " version=\"" << token.sbeSchemaVersion() << "\"";
             }
 
             if (token.signal() == SignalCodec::END_MESSAGE)
@@ -306,7 +307,7 @@ protected:
 
         // save buffer_ + offset as start of message and size as length
 
-        map_.insert(std::pair<int, Ir *>(token.schemaId(), new Ir(buffer_ + offset, size, token.schemaId(), token.tokenVersion())));
+        map_.insert(std::pair<int, Ir *>(token.fieldId(), new Ir(buffer_ + offset, size, token.sbeSchemaId(), token.tokenVersion())));
 
         // map_[token.schemaID()] = new Ir(buffer_ + offset, size);
 

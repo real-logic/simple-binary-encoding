@@ -102,10 +102,10 @@ public class OtfExample
 
         int bufferOffset = 0;
         MESSAGE_HEADER.wrap(directBuffer, bufferOffset, ACTING_VERSION)
-                      .blockLength(CAR.blockLength())
-                      .templateId(CAR.templateId())
-                      .schemaId(CAR.schemaId())
-                      .version(CAR.schemaVersion());
+                      .blockLength(CAR.sbeBlockLength())
+                      .templateId(CAR.sbeTemplateId())
+                      .schemaId(CAR.sbeSchemaId())
+                      .version(CAR.sbeSchemaVersion());
 
         bufferOffset += MESSAGE_HEADER.size();
 

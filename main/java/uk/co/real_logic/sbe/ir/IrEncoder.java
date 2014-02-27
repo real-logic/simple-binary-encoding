@@ -119,18 +119,18 @@ public class IrEncoder implements Closeable
         throws UnsupportedEncodingException
     {
         frameCodec.wrapForEncode(directBuffer, 0)
-                  .sbeIrId(ir.id())
-                  .sbeIrVersion(0)
-                  .sbeSchemaVersion(ir.version());
+                  .irId(ir.id())
+                  .irVersion(0)
+                  .schemaVersion(ir.version());
 
-        final byte[] packageBytes = ir.packageName().getBytes(FrameCodec.sbePackageNameCharacterEncoding());
-        frameCodec.putSbePackageName(packageBytes, 0, packageBytes.length);
+        final byte[] packageBytes = ir.packageName().getBytes(FrameCodec.packageNameCharacterEncoding());
+        frameCodec.putPackageName(packageBytes, 0, packageBytes.length);
 
-        final byte[] namespaceBytes = getBytes(ir.namespaceName(), FrameCodec.sbeNamespaceNameCharacterEncoding());
-        frameCodec.putSbeNamespaceName(namespaceBytes, 0, namespaceBytes.length);
+        final byte[] namespaceBytes = getBytes(ir.namespaceName(), FrameCodec.namespaceNameCharacterEncoding());
+        frameCodec.putNamespaceName(namespaceBytes, 0, namespaceBytes.length);
 
-        final byte[] semanticVersionBytes = getBytes(ir.semanticVersion(), FrameCodec.sbeSemanticVersionCharacterEncoding());
-        frameCodec.putSbeSemanticVersion(semanticVersionBytes, 0, semanticVersionBytes.length);
+        final byte[] semanticVersionBytes = getBytes(ir.semanticVersion(), FrameCodec.semanticVersionCharacterEncoding());
+        frameCodec.putSemanticVersion(semanticVersionBytes, 0, semanticVersionBytes.length);
 
         return frameCodec.size();
     }

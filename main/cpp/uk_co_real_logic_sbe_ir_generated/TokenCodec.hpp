@@ -28,22 +28,27 @@ private:
 
 public:
 
-    static sbe_uint16_t blockLength(void)
+    static sbe_uint16_t sbeBlockLength(void)
     {
         return (sbe_uint16_t)20;
     }
 
-    static sbe_uint16_t templateId(void)
+    static sbe_uint16_t sbeTemplateId(void)
     {
         return (sbe_uint16_t)2;
     }
 
-    static sbe_uint8_t templateVersion(void)
+    static sbe_uint8_t sbeSchemaId(void)
     {
         return (sbe_uint8_t)0;
     }
 
-    static const char *semanticType(void)
+    static sbe_uint8_t sbeSchemaVersion(void)
+    {
+        return (sbe_uint8_t)0;
+    }
+
+    static const char *sbeSemanticType(void)
     {
         return "";
     }
@@ -57,8 +62,8 @@ public:
     {
         buffer_ = buffer;
         offset_ = offset;
-        actingBlockLength_ = blockLength();
-        actingVersion_ = templateVersion();
+        actingBlockLength_ = sbeBlockLength();
+        actingVersion_ = sbeSchemaVersion();
         position(offset + actingBlockLength_);
         positionPtr_ = &position_;
         return *this;

@@ -56,8 +56,8 @@ const int Ir::INVALID_ID;
 const ::uint32_t Ir::VARIABLE_SIZE;
 #endif /* WIN32 */
 
-Ir::Ir(const char *buffer, const int len, const ::int64_t templateId, const ::int64_t templateVersion) :
-    buffer_(buffer), len_(len), templateId_(templateId), templateVersion_(templateVersion)
+Ir::Ir(const char *buffer, const int len, const ::int64_t templateId, const ::int64_t schemaId, const ::int64_t schemaVersion) :
+    buffer_(buffer), len_(len), templateId_(templateId), id_(schemaId), schemaVersion_(schemaVersion)
 {
     impl_ = new Ir::Impl;
     begin();
@@ -79,8 +79,7 @@ void Ir::readTokenAtCurrentPosition()
 
     //printf("read buffer_ %p offset %d\n", buffer_, cursorOffset_);
 
-    impl_->tokenCodec.wrapForDecode((char *)buffer_, cursorOffset_,
-        impl_->tokenCodec.blockLength(), impl_->tokenCodec.templateVersion());
+    impl_->tokenCodec.wrapForDecode((char *)buffer_, cursorOffset_, impl_->tokenCodec.sbeBlockLength(), impl_->tokenCodec.sbeSchemaVersion());
 
     // read all the var data and save in Impl then save size
 
@@ -98,11 +97,6 @@ void Ir::readTokenAtCurrentPosition()
     impl_->semanticTypeLength = impl_->tokenCodec.getSemanticType(impl_->semanticType, sizeof(tmp));
 
     impl_->serializedTokenSize = impl_->tokenCodec.size();
-
-//    printf("token %p %d offset=%d size=%d id=%d signal=%d type=%d order=%d name=%s constLen=%d\n",
-//           buffer_, cursorOffset_, offset(), size(), schemaId(), signal(), primitiveType(), byteOrder(),
-//           name().c_str(), impl_->constValLength);
-
 }
 
 void Ir::begin()
@@ -169,7 +163,7 @@ Ir::TokenPresence Ir::presence() const
 
 ::int32_t Ir::schemaId() const
 {
-    return impl_->tokenCodec.schemaId();
+    return impl_->tokenCodec.fieldId();
 }
 
 ::uint64_t Ir::validValue() const
@@ -364,7 +358,7 @@ void Ir::addToken(::uint32_t offset,
                   TokenSignal signal,
                   TokenByteOrder byteOrder,
                   TokenPrimitiveType primitiveType,
-                  ::uint16_t schemaId,
+                  ::uint16_t fieldId,
                   const std::string &name,
                   const char *constValue,
                   int constValueLength)
@@ -382,7 +376,7 @@ void Ir::addToken(::uint32_t offset,
 
     tokenCodec.tokenOffset(offset)
               .tokenSize(size)
-              .schemaId(schemaId)
+              .fieldId(fieldId)
               .tokenVersion(0)
               .signal((SignalCodec::Value)signal)
               .primitiveType((PrimitiveTypeCodec::Value)primitiveType)

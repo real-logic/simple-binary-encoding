@@ -147,28 +147,27 @@ public class IrDecoder implements Closeable
     private void decodeFrame()
         throws UnsupportedEncodingException
     {
-        frameCodec.wrapForDecode(directBuffer, offset, frameCodec.blockLength(), 0);
+        frameCodec.wrapForDecode(directBuffer, offset, frameCodec.sbeBlockLength(), 0);
 
-        irId = frameCodec.sbeIrId();
+        irId = frameCodec.irId();
 
-        if (frameCodec.sbeIrVersion() != 0)
+        if (frameCodec.irVersion() != 0)
         {
-            throw new IllegalStateException("Unknown SBE version: " + frameCodec.sbeIrVersion());
+            throw new IllegalStateException("Unknown SBE version: " + frameCodec.irVersion());
         }
 
         irVersion = frameCodec.schemaVersion();
 
-        irPackageName = new String(buffer, 0, frameCodec.getSbePackageName(buffer, 0, buffer.length), FrameCodec.sbePackageNameCharacterEncoding());
+        irPackageName = new String(buffer, 0, frameCodec.getPackageName(buffer, 0, buffer.length), FrameCodec.packageNameCharacterEncoding());
 
-        irNamespaceName = new String(buffer, 0, frameCodec.getSbeNamespaceName(buffer, 0, buffer.length),
-                                     FrameCodec.sbeNamespaceNameCharacterEncoding());
+        irNamespaceName = new String(buffer, 0, frameCodec.getNamespaceName(buffer, 0, buffer.length), FrameCodec.namespaceNameCharacterEncoding());
         if (irNamespaceName.isEmpty())
         {
             irNamespaceName = null;
         }
 
         semanticVersion =
-            new String(buffer, 0, frameCodec.getSbeSemanticVersion(buffer, 0, buffer.length), FrameCodec.sbeSemanticVersionCharacterEncoding());
+            new String(buffer, 0, frameCodec.getSemanticVersion(buffer, 0, buffer.length), FrameCodec.semanticVersionCharacterEncoding());
         if (semanticVersion.isEmpty())
         {
             semanticVersion = null;
@@ -183,7 +182,7 @@ public class IrDecoder implements Closeable
         final Token.Builder tokenBuilder = new Token.Builder();
         final Encoding.Builder encBuilder = new Encoding.Builder();
 
-        tokenCodec.wrapForDecode(directBuffer, offset, tokenCodec.blockLength(), 0);
+        tokenCodec.wrapForDecode(directBuffer, offset, tokenCodec.sbeBlockLength(), 0);
 
         tokenBuilder.offset(tokenCodec.tokenOffset())
                     .size(tokenCodec.tokenSize())

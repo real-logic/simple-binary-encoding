@@ -17,27 +17,27 @@ public class FrameCodec
     private int actingBlockLength;
     private int actingVersion;
 
-    public int blockLength()
+    public int sbeBlockLength()
     {
         return BLOCK_LENGTH;
     }
 
-    public int templateId()
+    public int sbeTemplateId()
     {
         return TEMPLATE_ID;
     }
 
-    public short schemaId()
+    public short sbeSchemaId()
     {
         return SCHEMA_ID;
     }
 
-    public short schemaVersion()
+    public short sbeSchemaVersion()
     {
         return SCHEMA_VERSION;
     }
 
-    public String semanticType()
+    public String sbeSemanticType()
     {
         return "";
     }
@@ -85,12 +85,12 @@ public class FrameCodec
         this.limit = limit;
     }
 
-    public static int sbeIrIdId()
+    public static int irIdId()
     {
         return 1;
     }
 
-    public static String sbeIrIdMetaAttribute(final MetaAttribute metaAttribute)
+    public static String irIdMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -102,38 +102,38 @@ public class FrameCodec
         return "";
     }
 
-    public static int sbeIrIdNullValue()
+    public static int irIdNullValue()
     {
         return -2147483648;
     }
 
-    public static int sbeIrIdMinValue()
+    public static int irIdMinValue()
     {
         return -2147483647;
     }
 
-    public static int sbeIrIdMaxValue()
+    public static int irIdMaxValue()
     {
         return 2147483647;
     }
 
-    public int sbeIrId()
+    public int irId()
     {
         return CodecUtil.int32Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public FrameCodec sbeIrId(final int value)
+    public FrameCodec irId(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
-    public static int sbeIrVersionId()
+    public static int irVersionId()
     {
         return 2;
     }
 
-    public static String sbeIrVersionMetaAttribute(final MetaAttribute metaAttribute)
+    public static String irVersionMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -145,38 +145,38 @@ public class FrameCodec
         return "";
     }
 
-    public static int sbeIrVersionNullValue()
+    public static int irVersionNullValue()
     {
         return -2147483648;
     }
 
-    public static int sbeIrVersionMinValue()
+    public static int irVersionMinValue()
     {
         return -2147483647;
     }
 
-    public static int sbeIrVersionMaxValue()
+    public static int irVersionMaxValue()
     {
         return 2147483647;
     }
 
-    public int sbeIrVersion()
+    public int irVersion()
     {
         return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public FrameCodec sbeIrVersion(final int value)
+    public FrameCodec irVersion(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
-    public static int sbeSchemaVersionId()
+    public static int schemaVersionId()
     {
         return 3;
     }
 
-    public static String sbeSchemaVersionMetaAttribute(final MetaAttribute metaAttribute)
+    public static String schemaVersionMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -188,43 +188,43 @@ public class FrameCodec
         return "";
     }
 
-    public static int sbeSchemaVersionNullValue()
+    public static int schemaVersionNullValue()
     {
         return -2147483648;
     }
 
-    public static int sbeSchemaVersionMinValue()
+    public static int schemaVersionMinValue()
     {
         return -2147483647;
     }
 
-    public static int sbeSchemaVersionMaxValue()
+    public static int schemaVersionMaxValue()
     {
         return 2147483647;
     }
 
-    public int sbeSchemaVersion()
+    public int schemaVersion()
     {
         return CodecUtil.int32Get(buffer, offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public FrameCodec sbeSchemaVersion(final int value)
+    public FrameCodec schemaVersion(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
-    public static int sbePackageNameId()
+    public static int packageNameId()
     {
         return 4;
     }
 
-    public static String sbePackageNameCharacterEncoding()
+    public static String packageNameCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    public static String sbePackageNameMetaAttribute(final MetaAttribute metaAttribute)
+    public static String packageNameMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -236,12 +236,12 @@ public class FrameCodec
         return "";
     }
 
-    public static int sbePackageNameHeaderSize()
+    public static int packageNameHeaderSize()
     {
         return 1;
     }
 
-    public int getSbePackageName(final byte[] dst, final int dstOffset, final int length)
+    public int getPackageName(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -254,7 +254,7 @@ public class FrameCodec
         return bytesCopied;
     }
 
-    public int putSbePackageName(final byte[] src, final int srcOffset, final int length)
+    public int putPackageName(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -265,17 +265,17 @@ public class FrameCodec
         return length;
     }
 
-    public static int sbeNamespaceNameId()
+    public static int namespaceNameId()
     {
         return 5;
     }
 
-    public static String sbeNamespaceNameCharacterEncoding()
+    public static String namespaceNameCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    public static String sbeNamespaceNameMetaAttribute(final MetaAttribute metaAttribute)
+    public static String namespaceNameMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -287,12 +287,12 @@ public class FrameCodec
         return "";
     }
 
-    public static int sbeNamespaceNameHeaderSize()
+    public static int namespaceNameHeaderSize()
     {
         return 1;
     }
 
-    public int getSbeNamespaceName(final byte[] dst, final int dstOffset, final int length)
+    public int getNamespaceName(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -305,7 +305,7 @@ public class FrameCodec
         return bytesCopied;
     }
 
-    public int putSbeNamespaceName(final byte[] src, final int srcOffset, final int length)
+    public int putNamespaceName(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -316,17 +316,17 @@ public class FrameCodec
         return length;
     }
 
-    public static int sbeSemanticVersionId()
+    public static int semanticVersionId()
     {
         return 6;
     }
 
-    public static String sbeSemanticVersionCharacterEncoding()
+    public static String semanticVersionCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    public static String sbeSemanticVersionMetaAttribute(final MetaAttribute metaAttribute)
+    public static String semanticVersionMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -338,12 +338,12 @@ public class FrameCodec
         return "";
     }
 
-    public static int sbeSemanticVersionHeaderSize()
+    public static int semanticVersionHeaderSize()
     {
         return 1;
     }
 
-    public int getSbeSemanticVersion(final byte[] dst, final int dstOffset, final int length)
+    public int getSemanticVersion(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
@@ -356,7 +356,7 @@ public class FrameCodec
         return bytesCopied;
     }
 
-    public int putSbeSemanticVersion(final byte[] src, final int srcOffset, final int length)
+    public int putSemanticVersion(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();

@@ -67,9 +67,9 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int SbeIrIdId = 1;
+    public const int IrIdId = 1;
 
-    public static string SbeIrIdMetaAttribute(MetaAttribute metaAttribute)
+    public static string IrIdMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -81,13 +81,13 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int SbeIrIdNullValue = -2147483648;
+    public const int IrIdNullValue = -2147483648;
 
-    public const int SbeIrIdMinValue = -2147483647;
+    public const int IrIdMinValue = -2147483647;
 
-    public const int SbeIrIdMaxValue = 2147483647;
+    public const int IrIdMaxValue = 2147483647;
 
-    public int SbeIrId
+    public int IrId
     {
         get
         {
@@ -100,9 +100,9 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int SbeIrVersionId = 2;
+    public const int IrVersionId = 2;
 
-    public static string SbeIrVersionMetaAttribute(MetaAttribute metaAttribute)
+    public static string IrVersionMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -114,13 +114,13 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int SbeIrVersionNullValue = -2147483648;
+    public const int IrVersionNullValue = -2147483648;
 
-    public const int SbeIrVersionMinValue = -2147483647;
+    public const int IrVersionMinValue = -2147483647;
 
-    public const int SbeIrVersionMaxValue = 2147483647;
+    public const int IrVersionMaxValue = 2147483647;
 
-    public int SbeIrVersion
+    public int IrVersion
     {
         get
         {
@@ -133,9 +133,9 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int SbeSchemaVersionId = 3;
+    public const int SchemaVersionId = 3;
 
-    public static string SbeSchemaVersionMetaAttribute(MetaAttribute metaAttribute)
+    public static string SchemaVersionMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -147,13 +147,13 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int SbeSchemaVersionNullValue = -2147483648;
+    public const int SchemaVersionNullValue = -2147483648;
 
-    public const int SbeSchemaVersionMinValue = -2147483647;
+    public const int SchemaVersionMinValue = -2147483647;
 
-    public const int SbeSchemaVersionMaxValue = 2147483647;
+    public const int SchemaVersionMaxValue = 2147483647;
 
-    public int SbeSchemaVersion
+    public int SchemaVersion
     {
         get
         {
@@ -166,12 +166,12 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int SbePackageNameId = 4;
+    public const int PackageNameId = 4;
 
-    public const string SbePackageNameCharacterEncoding = "UTF-8";
+    public const string PackageNameCharacterEncoding = "UTF-8";
 
 
-    public static string SbePackageNameMetaAttribute(MetaAttribute metaAttribute)
+    public static string PackageNameMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -183,7 +183,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public int GetSbePackageName(byte[] dst, int dstOffset, int length)
+    public int GetPackageName(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -196,7 +196,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return bytesCopied;
     }
 
-    public int SetSbePackageName(byte[] src, int srcOffset, int length)
+    public int SetPackageName(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -207,12 +207,12 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int SbeNamespaceNameId = 5;
+    public const int NamespaceNameId = 5;
 
-    public const string SbeNamespaceNameCharacterEncoding = "UTF-8";
+    public const string NamespaceNameCharacterEncoding = "UTF-8";
 
 
-    public static string SbeNamespaceNameMetaAttribute(MetaAttribute metaAttribute)
+    public static string NamespaceNameMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -224,7 +224,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public int GetSbeNamespaceName(byte[] dst, int dstOffset, int length)
+    public int GetNamespaceName(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -237,7 +237,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return bytesCopied;
     }
 
-    public int SetSbeNamespaceName(byte[] src, int srcOffset, int length)
+    public int SetNamespaceName(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -248,12 +248,12 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int SbeSemanticVersionId = 6;
+    public const int SemanticVersionId = 6;
 
-    public const string SbeSemanticVersionCharacterEncoding = "UTF-8";
+    public const string SemanticVersionCharacterEncoding = "UTF-8";
 
 
-    public static string SbeSemanticVersionMetaAttribute(MetaAttribute metaAttribute)
+    public static string SemanticVersionMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -265,7 +265,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public int GetSbeSemanticVersion(byte[] dst, int dstOffset, int length)
+    public int GetSemanticVersion(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -278,7 +278,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return bytesCopied;
     }
 
-    public int SetSbeSemanticVersion(byte[] src, int srcOffset, int length)
+    public int SetSemanticVersion(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;

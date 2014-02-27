@@ -63,10 +63,10 @@ public class ExampleUsingGeneratedStubExtension
         // Setup for encoding a message
 
         MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion)
-                      .blockLength(CAR_0.blockLength())
-                      .schemaId(CAR_0.schemaId())
-                      .templateId(CAR_0.templateId())
-                      .version(CAR_0.schemaVersion());
+                      .blockLength(CAR_0.sbeBlockLength())
+                      .templateId(CAR_0.sbeTemplateId())
+                      .schemaId(CAR_0.sbeSchemaId())
+                      .version(CAR_0.sbeSchemaVersion());
 
         bufferOffset += MESSAGE_HEADER.size();
         encodingLength += MESSAGE_HEADER.size();
@@ -164,9 +164,9 @@ public class ExampleUsingGeneratedStubExtension
 
         car.wrapForDecode(directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
-        sb.append("\ncar.templateId=").append(car.templateId());
+        sb.append("\ncar.templateId=").append(car.sbeTemplateId());
         sb.append("\ncar.schemaId=").append(schemaId);
-        sb.append("\ncar.schemaVersion=").append(car.schemaVersion());
+        sb.append("\ncar.schemaVersion=").append(car.sbeSchemaVersion());
         sb.append("\ncar.serialNumber=").append(car.serialNumber());
         sb.append("\ncar.modelYear=").append(car.modelYear());
         sb.append("\ncar.available=").append(car.available());
