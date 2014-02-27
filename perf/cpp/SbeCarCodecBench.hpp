@@ -81,7 +81,7 @@ public:
 
     virtual int decode(const char *buffer)
     {
-        car.wrapForDecode((char *)buffer, 0, Car::blockLength(), Car::templateVersion());
+        car.wrapForDecode((char *)buffer, 0, Car::sbeBlockLength(), Car::sbeSchemaVersion());
 
         int64_t tmpInt;
         const char *tmpChar;

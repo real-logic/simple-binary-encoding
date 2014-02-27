@@ -96,10 +96,10 @@ public class CarBenchmark
                               final int bufferIndex)
     {
         messageHeader.wrap(buffer, bufferIndex, 0)
-                     .templateId(car.templateId())
-                     .schemaId(car.schemaId())
-                     .version(car.schemaVersion())
-                     .blockLength(car.blockLength());
+                     .blockLength(car.sbeBlockLength())
+                     .templateId(car.sbeTemplateId())
+                     .schemaId(car.sbeSchemaId())
+                     .version(car.sbeSchemaVersion());
 
         car.wrapForEncode(buffer, bufferIndex + messageHeader.size())
            .code(Model.A)

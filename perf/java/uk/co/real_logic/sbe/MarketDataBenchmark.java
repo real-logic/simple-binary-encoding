@@ -71,10 +71,10 @@ public class MarketDataBenchmark
                               final int bufferIndex)
     {
         messageHeader.wrap(buffer, bufferIndex, 0)
-                     .templateId(marketData.templateId())
-                     .schemaId(marketData.schemaId())
-                     .version(marketData.schemaVersion())
-                     .blockLength(marketData.blockLength());
+                     .blockLength(marketData.sbeBlockLength())
+                     .templateId(marketData.sbeTemplateId())
+                     .schemaId(marketData.sbeSchemaId())
+                     .version(marketData.sbeSchemaVersion());
 
         marketData.wrapForEncode(buffer, bufferIndex + messageHeader.size())
                   .transactTime(1234L)

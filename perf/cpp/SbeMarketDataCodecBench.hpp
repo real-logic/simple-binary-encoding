@@ -28,9 +28,10 @@ public:
     virtual int encode(char *buffer)
     {
         messageHeader_.wrap(buffer, 0, 0);
-        messageHeader_.templateId(marketData_.templateId());
-        messageHeader_.version(marketData_.templateVersion());
-        messageHeader_.blockLength(marketData_.blockLength());
+        messageHeader_.blockLength(marketData_.sbeBlockLength());
+        messageHeader_.templateId(marketData_.sbeTemplateId());
+        messageHeader_.schemaId(marketData_.sbeSchemaId());
+        messageHeader_.version(marketData_.sbeSchemaVersion());
 
         marketData_.wrapForEncode(buffer + messageHeader_.size(), 0);
         marketData_.transactTime(1234L);
@@ -71,8 +72,9 @@ public:
 
         messageHeader_.wrap((char *)buffer, 0, 0);
 
-        actingVersion = messageHeader_.version();
         actingBlockLength = messageHeader_.blockLength();
+        actingVersion = messageHeader_.version();
+
 
         marketData_.wrapForDecode((char *)buffer, messageHeader_.size(), actingBlockLength, actingVersion);
 
