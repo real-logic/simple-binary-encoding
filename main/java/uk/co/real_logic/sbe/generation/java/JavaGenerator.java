@@ -1099,10 +1099,10 @@ public class JavaGenerator implements CodeGenerator
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
-            "    public static final %1$s BLOCK_LENGTH = %2$s;\n\n" +
+            "    public static final %1$s BLOCK_LENGTH = %2$s;\n" +
             "    public static final %3$s TEMPLATE_ID = %4$s;\n" +
             "    public static final %5$s SCHEMA_ID = %6$s;\n" +
-            "    public static final %7$s SCHEMA_VERSION = %8$s;\n" +
+            "    public static final %7$s SCHEMA_VERSION = %8$s;\n\n" +
             "    private final %9$s parentMessage = this;\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
