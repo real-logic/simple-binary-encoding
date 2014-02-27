@@ -43,6 +43,11 @@ public:
         return (sbe_uint8_t)0;
     }
 
+    static const char *semanticType(void)
+    {
+        return "";
+    }
+
     sbe_uint64_t offset(void) const
     {
         return offset_;
@@ -59,8 +64,7 @@ public:
         return *this;
     }
 
-    TokenCodec &wrapForDecode(char *buffer, const int offset,
-                        const int actingBlockLength, const int actingVersion)
+    TokenCodec &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion)
     {
         buffer_ = buffer;
         offset_ = offset;
@@ -96,7 +100,7 @@ public:
         return actingVersion_;
     }
 
-    static int tokenOffsetSchemaId(void)
+    static int tokenOffsetId(void)
     {
         return 11;
     }
@@ -150,7 +154,7 @@ public:
         return *this;
     }
 
-    static int tokenSizeSchemaId(void)
+    static int tokenSizeId(void)
     {
         return 12;
     }
@@ -204,23 +208,23 @@ public:
         return *this;
     }
 
-    static int schemaIdSchemaId(void)
+    static int fieldIdId(void)
     {
         return 13;
     }
 
-    static int schemaIdSinceVersion(void)
+    static int fieldIdSinceVersion(void)
     {
          return 0;
     }
 
-    bool schemaIdInActingVersion(void)
+    bool fieldIdInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
     }
 
 
-    static const char *schemaIdMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    static const char *fieldIdMetaAttribute(const MetaAttribute::Attribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -232,33 +236,33 @@ public:
         return "";
     }
 
-    static sbe_int32_t schemaIdNullValue()
+    static sbe_int32_t fieldIdNullValue()
     {
         return -2147483648;
     }
 
-    static sbe_int32_t schemaIdMinValue()
+    static sbe_int32_t fieldIdMinValue()
     {
         return -2147483647;
     }
 
-    static sbe_int32_t schemaIdMaxValue()
+    static sbe_int32_t fieldIdMaxValue()
     {
         return 2147483647;
     }
 
-    sbe_int32_t schemaId(void) const
+    sbe_int32_t fieldId(void) const
     {
         return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 8)));
     }
 
-    TokenCodec &schemaId(const sbe_int32_t value)
+    TokenCodec &fieldId(const sbe_int32_t value)
     {
         *((sbe_int32_t *)(buffer_ + offset_ + 8)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;
     }
 
-    static int tokenVersionSchemaId(void)
+    static int tokenVersionId(void)
     {
         return 14;
     }
@@ -312,7 +316,7 @@ public:
         return *this;
     }
 
-    static int signalSchemaId(void)
+    static int signalId(void)
     {
         return 15;
     }
@@ -351,7 +355,7 @@ public:
         return *this;
     }
 
-    static int primitiveTypeSchemaId(void)
+    static int primitiveTypeId(void)
     {
         return 16;
     }
@@ -390,7 +394,7 @@ public:
         return *this;
     }
 
-    static int byteOrderSchemaId(void)
+    static int byteOrderId(void)
     {
         return 17;
     }
@@ -429,7 +433,7 @@ public:
         return *this;
     }
 
-    static int presenceSchemaId(void)
+    static int presenceId(void)
     {
         return 18;
     }
@@ -483,7 +487,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int nameSchemaId(void)
+    static int nameId(void)
     {
         return 19;
     }
@@ -551,7 +555,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int constValueSchemaId(void)
+    static int constValueId(void)
     {
         return 20;
     }
@@ -619,7 +623,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int minValueSchemaId(void)
+    static int minValueId(void)
     {
         return 21;
     }
@@ -687,7 +691,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int maxValueSchemaId(void)
+    static int maxValueId(void)
     {
         return 22;
     }
@@ -755,7 +759,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int nullValueSchemaId(void)
+    static int nullValueId(void)
     {
         return 23;
     }
@@ -823,7 +827,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int characterEncodingSchemaId(void)
+    static int characterEncodingId(void)
     {
         return 24;
     }
@@ -891,7 +895,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int epochSchemaId(void)
+    static int epochId(void)
     {
         return 25;
     }
@@ -959,7 +963,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int timeUnitSchemaId(void)
+    static int timeUnitId(void)
     {
         return 26;
     }
@@ -1027,7 +1031,7 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int semanticTypeSchemaId(void)
+    static int semanticTypeId(void)
     {
         return 27;
     }

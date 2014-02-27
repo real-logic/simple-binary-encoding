@@ -34,6 +34,7 @@ public class MessageSchema
 
     private final String packageName;                 // package (optional?)
     private final String description;                 // description (optional)
+    private final int id;                             // identifier for the schema (required)
     private final int version;                        // version (optional - default is 0)
     private final String semanticVersion;             // semanticVersion (optional)
     private final ByteOrder byteOrder;                // byteOrder (optional - default is littleEndian)
@@ -48,6 +49,7 @@ public class MessageSchema
 
         this.packageName = getAttributeValue(schemaNode, "package");
         this.description = getAttributeValueOrNull(schemaNode, "description");
+        this.id = Integer.parseInt(getAttributeValue(schemaNode, "id"));
         this.version = Integer.parseInt(getAttributeValue(schemaNode, "version", "0"));  // default version is 0
         this.semanticVersion = getAttributeValueOrNull(schemaNode, "semanticVersion");
         this.byteOrder = getByteOrder(getAttributeValue(schemaNode, "byteOrder", "littleEndian"));
@@ -83,6 +85,16 @@ public class MessageSchema
     public String description()
     {
         return description;
+    }
+
+    /**
+     * The id number of the schema.
+     *
+     * @return the id number of the schema.
+     */
+    public int id()
+    {
+        return id;
     }
 
     /**

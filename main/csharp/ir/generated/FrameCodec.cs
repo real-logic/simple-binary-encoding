@@ -10,7 +10,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     {
     public const ushort TemplateId = (ushort)1;
     public const byte TemplateVersion = (byte)0;
-    public const ushort BlockLength = (ushort)8;
+    public const ushort BlockLength = (ushort)12;
     public const string SematicType = "";
 
     private readonly FrameCodec _parentMessage;
@@ -36,8 +36,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         Limit = offset + _actingBlockLength;
     }
 
-    public void WrapForDecode(DirectBuffer buffer, int offset,
-                              int actingBlockLength, int actingVersion)
+    public void WrapForDecode(DirectBuffer buffer, int offset, int actingBlockLength, int actingVersion)
     {
         _buffer = buffer;
         _offset = offset;
@@ -68,7 +67,40 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int SbeIrVersionSchemaId = 1;
+    public const int SbeIrIdId = 1;
+
+    public static string SbeIrIdMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
+    public const int SbeIrIdNullValue = -2147483648;
+
+    public const int SbeIrIdMinValue = -2147483647;
+
+    public const int SbeIrIdMaxValue = 2147483647;
+
+    public int SbeIrId
+    {
+        get
+        {
+            return _buffer.Int32GetLittleEndian(_offset + 0);
+        }
+        set
+        {
+            _buffer.Int32PutLittleEndian(_offset + 0, value);
+        }
+    }
+
+
+    public const int SbeIrVersionId = 2;
 
     public static string SbeIrVersionMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -92,39 +124,6 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     {
         get
         {
-            return _buffer.Int32GetLittleEndian(_offset + 0);
-        }
-        set
-        {
-            _buffer.Int32PutLittleEndian(_offset + 0, value);
-        }
-    }
-
-
-    public const int SchemaVersionSchemaId = 2;
-
-    public static string SchemaVersionMetaAttribute(MetaAttribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute.Epoch: return "unix";
-            case MetaAttribute.TimeUnit: return "nanosecond";
-            case MetaAttribute.SemanticType: return "";
-        }
-
-        return "";
-    }
-
-    public const int SchemaVersionNullValue = -2147483648;
-
-    public const int SchemaVersionMinValue = -2147483647;
-
-    public const int SchemaVersionMaxValue = 2147483647;
-
-    public int SchemaVersion
-    {
-        get
-        {
             return _buffer.Int32GetLittleEndian(_offset + 4);
         }
         set
@@ -134,12 +133,9 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int PackageNameSchemaId = 3;
+    public const int SbeSchemaVersionId = 3;
 
-    public const string PackageNameCharacterEncoding = "UTF-8";
-
-
-    public static string PackageNameMetaAttribute(MetaAttribute metaAttribute)
+    public static string SbeSchemaVersionMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -151,7 +147,43 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public int GetPackageName(byte[] dst, int dstOffset, int length)
+    public const int SbeSchemaVersionNullValue = -2147483648;
+
+    public const int SbeSchemaVersionMinValue = -2147483647;
+
+    public const int SbeSchemaVersionMaxValue = 2147483647;
+
+    public int SbeSchemaVersion
+    {
+        get
+        {
+            return _buffer.Int32GetLittleEndian(_offset + 8);
+        }
+        set
+        {
+            _buffer.Int32PutLittleEndian(_offset + 8, value);
+        }
+    }
+
+
+    public const int SbePackageNameId = 4;
+
+    public const string SbePackageNameCharacterEncoding = "UTF-8";
+
+
+    public static string SbePackageNameMetaAttribute(MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute.Epoch: return "unix";
+            case MetaAttribute.TimeUnit: return "nanosecond";
+            case MetaAttribute.SemanticType: return "";
+        }
+
+        return "";
+    }
+
+    public int GetSbePackageName(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -164,7 +196,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return bytesCopied;
     }
 
-    public int SetPackageName(byte[] src, int srcOffset, int length)
+    public int SetSbePackageName(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -175,12 +207,12 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int NamespaceNameSchemaId = 4;
+    public const int SbeNamespaceNameId = 5;
 
-    public const string NamespaceNameCharacterEncoding = "UTF-8";
+    public const string SbeNamespaceNameCharacterEncoding = "UTF-8";
 
 
-    public static string NamespaceNameMetaAttribute(MetaAttribute metaAttribute)
+    public static string SbeNamespaceNameMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -192,7 +224,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public int GetNamespaceName(byte[] dst, int dstOffset, int length)
+    public int GetSbeNamespaceName(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -205,7 +237,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return bytesCopied;
     }
 
-    public int SetNamespaceName(byte[] src, int srcOffset, int length)
+    public int SetSbeNamespaceName(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -216,12 +248,12 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int SemanticVersionSchemaId = 5;
+    public const int SbeSemanticVersionId = 6;
 
-    public const string SemanticVersionCharacterEncoding = "UTF-8";
+    public const string SbeSemanticVersionCharacterEncoding = "UTF-8";
 
 
-    public static string SemanticVersionMetaAttribute(MetaAttribute metaAttribute)
+    public static string SbeSemanticVersionMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -233,7 +265,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public int GetSemanticVersion(byte[] dst, int dstOffset, int length)
+    public int GetSbeSemanticVersion(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;
@@ -246,7 +278,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return bytesCopied;
     }
 
-    public int SetSemanticVersion(byte[] src, int srcOffset, int length)
+    public int SetSbeSemanticVersion(byte[] src, int srcOffset, int length)
     {
         const int sizeOfLengthField = 1;
         int limit = Limit;

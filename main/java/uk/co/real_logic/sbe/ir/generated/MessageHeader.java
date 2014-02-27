@@ -19,7 +19,7 @@ public class MessageHeader
 
     public int size()
     {
-        return 6;
+        return 8;
     }
 
     public static int blockLengthNullValue()
@@ -74,6 +74,32 @@ public class MessageHeader
         return this;
     }
 
+    public static int schemaIdNullValue()
+    {
+        return 65535;
+    }
+
+    public static int schemaIdMinValue()
+    {
+        return 0;
+    }
+
+    public static int schemaIdMaxValue()
+    {
+        return 65534;
+    }
+
+    public int schemaId()
+    {
+        return CodecUtil.uint16Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
+    }
+
+    public MessageHeader schemaId(final int value)
+    {
+        CodecUtil.uint16Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return this;
+    }
+
     public static short versionNullValue()
     {
         return (short)255;
@@ -91,12 +117,12 @@ public class MessageHeader
 
     public short version()
     {
-        return CodecUtil.uint8Get(buffer, offset + 4);
+        return CodecUtil.uint8Get(buffer, offset + 6);
     }
 
     public MessageHeader version(final short value)
     {
-        CodecUtil.uint8Put(buffer, offset + 4, value);
+        CodecUtil.uint8Put(buffer, offset + 6, value);
         return this;
     }
 
@@ -117,12 +143,12 @@ public class MessageHeader
 
     public short reserved()
     {
-        return CodecUtil.uint8Get(buffer, offset + 5);
+        return CodecUtil.uint8Get(buffer, offset + 7);
     }
 
     public MessageHeader reserved(final short value)
     {
-        CodecUtil.uint8Put(buffer, offset + 5, value);
+        CodecUtil.uint8Put(buffer, offset + 7, value);
         return this;
     }
 }

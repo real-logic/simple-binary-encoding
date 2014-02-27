@@ -19,7 +19,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
             _buffer = buffer;
         }
 
-        public const int Size = 6;
+        public const int Size = 8;
 
     public const ushort BlockLengthNullValue = (ushort)65535;
 
@@ -59,6 +59,25 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
+    public const ushort SchemaIdNullValue = (ushort)65535;
+
+    public const ushort SchemaIdMinValue = (ushort)0;
+
+    public const ushort SchemaIdMaxValue = (ushort)65534;
+
+    public ushort SchemaId
+    {
+        get
+        {
+            return _buffer.Uint16GetLittleEndian(_offset + 4);
+        }
+        set
+        {
+            _buffer.Uint16PutLittleEndian(_offset + 4, value);
+        }
+    }
+
+
     public const byte VersionNullValue = (byte)255;
 
     public const byte VersionMinValue = (byte)0;
@@ -69,11 +88,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     {
         get
         {
-            return _buffer.Uint8Get(_offset + 4);
+            return _buffer.Uint8Get(_offset + 6);
         }
         set
         {
-            _buffer.Uint8Put(_offset + 4, value);
+            _buffer.Uint8Put(_offset + 6, value);
         }
     }
 
@@ -88,11 +107,11 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     {
         get
         {
-            return _buffer.Uint8Get(_offset + 5);
+            return _buffer.Uint8Get(_offset + 7);
         }
         set
         {
-            _buffer.Uint8Put(_offset + 5, value);
+            _buffer.Uint8Put(_offset + 7, value);
         }
     }
 

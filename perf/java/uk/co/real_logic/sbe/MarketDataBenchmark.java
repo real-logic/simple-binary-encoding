@@ -72,7 +72,8 @@ public class MarketDataBenchmark
     {
         messageHeader.wrap(buffer, bufferIndex, 0)
                      .templateId(marketData.templateId())
-                     .version(marketData.templateVersion())
+                     .schemaId(marketData.schemaId())
+                     .version(marketData.schemaVersion())
                      .blockLength(marketData.blockLength());
 
         marketData.wrapForEncode(buffer, bufferIndex + messageHeader.size())

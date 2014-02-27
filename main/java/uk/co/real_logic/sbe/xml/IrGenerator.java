@@ -44,7 +44,7 @@ public class IrGenerator
      */
     public Ir generate(final MessageSchema schema, final String namespace)
     {
-        final Ir ir = new Ir(schema.packageName(), namespace, schema.version(), schema.semanticVersion(), generateForHeader(schema));
+        final Ir ir = new Ir(schema.packageName(), namespace, schema.id(), schema.version(), schema.semanticVersion(), generateForHeader(schema));
 
         for (final Message message : schema.messages())
         {
@@ -97,7 +97,7 @@ public class IrGenerator
             .signal(signal)
             .name(msg.name())
             .size(msg.blockLength())
-            .schemaId(msg.id())
+            .id(msg.id())
             .version(version)
             .encoding(new Encoding.Builder()
                 .semanticType(msg.semanticType())
@@ -113,7 +113,7 @@ public class IrGenerator
             .signal(signal)
             .size(field.computedBlockLength())
             .name(field.name())
-            .schemaId(field.id())
+            .id(field.id())
             .version(field.sinceVersion())
             .encoding(new Encoding.Builder()
                 .epoch(field.epoch())

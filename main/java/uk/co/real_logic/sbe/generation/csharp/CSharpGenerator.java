@@ -302,9 +302,9 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public const long %sSchemaId = %d;\n\n",
+            indent + "    public const long %sId = %d;\n\n",
             toUpperFirstChar(groupName),
-            Integer.valueOf(token.schemaId())
+            Integer.valueOf(token.id())
         ));
 
         sb.append(String.format(
@@ -933,7 +933,7 @@ public class CSharpGenerator implements CodeGenerator
     {
         final String blockLengthType = cSharpTypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = cSharpTypeName(ir.headerStructure().templateIdType());
-        final String templateVersionType = cSharpTypeName(ir.headerStructure().templateVersionType());
+        final String templateVersionType = cSharpTypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
@@ -961,8 +961,7 @@ public class CSharpGenerator implements CodeGenerator
             "        _actingVersion = TemplateVersion;\n" +
             "        Limit = offset + _actingBlockLength;\n" +
             "    }\n\n" +
-            "    public void WrapForDecode(DirectBuffer buffer, int offset,\n" +
-            "                              int actingBlockLength, int actingVersion)\n" +
+            "    public void WrapForDecode(DirectBuffer buffer, int offset, int actingBlockLength, int actingVersion)\n" +
             "    {\n" +
             "        _buffer = buffer;\n" +
             "        _offset = offset;\n" +
@@ -990,9 +989,9 @@ public class CSharpGenerator implements CodeGenerator
             "        }\n" +
             "    }\n\n",
             templateIdType,
-            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.schemaId())),
+            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
             templateVersionType,
-            generateLiteral(ir.headerStructure().templateVersionType(), Integer.toString(token.version())),
+            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
             blockLengthType,
             generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
             semanticType,
@@ -1044,9 +1043,9 @@ public class CSharpGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-            indent + "    public const int %sSchemaId = %d;\n",
+            indent + "    public const int %sId = %d;\n",
             CSharpUtil.formatPropertyName(token.name()),
-            Integer.valueOf(token.schemaId())
+            Integer.valueOf(token.id())
         ));
     }
 
@@ -1058,21 +1057,21 @@ public class CSharpGenerator implements CodeGenerator
         final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
 
         sb.append(String.format(
-                "\n" +
-                        indent + "    public static string %sMetaAttribute(MetaAttribute metaAttribute)\n" +
-                        indent + "    {\n" +
-                        indent + "        switch (metaAttribute)\n" +
-                        indent + "        {\n" +
-                        indent + "            case MetaAttribute.Epoch: return \"%s\";\n" +
-                        indent + "            case MetaAttribute.TimeUnit: return \"%s\";\n" +
-                        indent + "            case MetaAttribute.SemanticType: return \"%s\";\n" +
-                        indent + "        }\n\n" +
-                        indent + "        return \"\";\n" +
-                        indent + "    }\n",
-                toUpperFirstChar(token.name()),
-                epoch,
-                timeUnit,
-                semanticType
+            "\n" +
+            indent + "    public static string %sMetaAttribute(MetaAttribute metaAttribute)\n" +
+            indent + "    {\n" +
+            indent + "        switch (metaAttribute)\n" +
+            indent + "        {\n" +
+            indent + "            case MetaAttribute.Epoch: return \"%s\";\n" +
+            indent + "            case MetaAttribute.TimeUnit: return \"%s\";\n" +
+            indent + "            case MetaAttribute.SemanticType: return \"%s\";\n" +
+            indent + "        }\n\n" +
+            indent + "        return \"\";\n" +
+            indent + "    }\n",
+            toUpperFirstChar(token.name()),
+            epoch,
+            timeUnit,
+            semanticType
         ));
     }
 

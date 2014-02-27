@@ -330,12 +330,12 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public static long %sSchemaId()\n" +
+            indent + "    public static long %sId()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n",
             groupName,
-            Integer.valueOf(token.schemaId())
+            Integer.valueOf(token.id())
         ));
 
         sb.append(String.format(
@@ -1094,51 +1094,56 @@ public class JavaGenerator implements CodeGenerator
     {
         final String blockLengthType = javaTypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = javaTypeName(ir.headerStructure().templateIdType());
-        final String templateVersionType = javaTypeName(ir.headerStructure().templateVersionType());
+        final String schemaIdType = javaTypeName(ir.headerStructure().schemaIdType());
+        final String schemaVersionType = javaTypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
-            "    public static final %1$s TEMPLATE_ID = %2$s;\n" +
-            "    public static final %3$s TEMPLATE_VERSION = %4$s;\n" +
-            "    public static final %5$s BLOCK_LENGTH = %6$s;\n\n" +
-            "    private final %7$s parentMessage = this;\n" +
+            "    public static final %1$s BLOCK_LENGTH = %2$s;\n\n" +
+            "    public static final %3$s TEMPLATE_ID = %4$s;\n" +
+            "    public static final %5$s SCHEMA_ID = %6$s;\n" +
+            "    public static final %7$s SCHEMA_VERSION = %8$s;\n" +
+            "    private final %9$s parentMessage = this;\n" +
             "    private DirectBuffer buffer;\n" +
             "    private int offset;\n" +
             "    private int limit;\n" +
             "    private int actingBlockLength;\n" +
             "    private int actingVersion;\n" +
             "\n" +
-            "    public %5$s blockLength()\n" +
+            "    public %1$s blockLength()\n" +
             "    {\n" +
             "        return BLOCK_LENGTH;\n" +
             "    }\n\n" +
-            "    public %1$s templateId()\n" +
+            "    public %3$s templateId()\n" +
             "    {\n" +
             "        return TEMPLATE_ID;\n" +
             "    }\n\n" +
-            "    public %3$s templateVersion()\n" +
+            "    public %5$s schemaId()\n" +
             "    {\n" +
-            "        return TEMPLATE_VERSION;\n" +
+            "        return SCHEMA_ID;\n" +
+            "    }\n\n" +
+            "    public %7$s schemaVersion()\n" +
+            "    {\n" +
+            "        return SCHEMA_VERSION;\n" +
             "    }\n\n" +
             "    public String semanticType()\n" +
             "    {\n" +
-            "        return \"%8$s\";\n" +
+            "        return \"%10$s\";\n" +
             "    }\n\n" +
             "    public int offset()\n" +
             "    {\n" +
             "        return offset;\n" +
             "    }\n\n" +
-            "    public %7$s wrapForEncode(final DirectBuffer buffer, final int offset)\n" +
+            "    public %9$s wrapForEncode(final DirectBuffer buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
             "        this.actingBlockLength = BLOCK_LENGTH;\n" +
-            "        this.actingVersion = TEMPLATE_VERSION;\n" +
+            "        this.actingVersion = SCHEMA_VERSION;\n" +
             "        limit(offset + actingBlockLength);\n\n" +
             "        return this;\n" +
             "    }\n\n" +
-            "    public %7$s wrapForDecode(final DirectBuffer buffer, final int offset,\n" +
-            "                              final int actingBlockLength, final int actingVersion)\n" +
+            "    public %9$s wrapForDecode(final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
@@ -1160,12 +1165,14 @@ public class JavaGenerator implements CodeGenerator
             "        buffer.checkLimit(limit);\n" +
             "        this.limit = limit;\n" +
             "    }\n",
-            templateIdType,
-            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.schemaId())),
-            templateVersionType,
-            generateLiteral(ir.headerStructure().templateVersionType(), Integer.toString(token.version())),
             blockLengthType,
             generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
+            templateIdType,
+            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
+            schemaIdType,
+            generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
+            schemaVersionType,
+            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
             className,
             semanticType
         );
@@ -1214,12 +1221,12 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-            indent + "    public static int %sSchemaId()\n" +
+            indent + "    public static int %sId()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n",
             token.name(),
-            Integer.valueOf(token.schemaId())
+            Integer.valueOf(token.id())
         ));
     }
 

@@ -63,8 +63,9 @@ public class ExampleUsingGeneratedStub
 
         MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion)
                       .blockLength(CAR.blockLength())
+                      .schemaId(CAR.schemaId())
                       .templateId(CAR.templateId())
-                      .version(CAR.templateVersion());
+                      .version(CAR.schemaVersion());
 
         bufferOffset += MESSAGE_HEADER.size();
         encodingLength += MESSAGE_HEADER.size();
@@ -94,11 +95,12 @@ public class ExampleUsingGeneratedStub
             throw new IllegalStateException("Template ids do not match");
         }
 
-        final short actingVersion = MESSAGE_HEADER.version();
         final int actingBlockLength = MESSAGE_HEADER.blockLength();
+        final int schemaId = MESSAGE_HEADER.schemaId();
+        final short actingVersion = MESSAGE_HEADER.version();
 
         bufferOffset += MESSAGE_HEADER.size();
-        decode(CAR, directBuffer, bufferOffset, actingBlockLength, actingVersion);
+        decode(CAR, directBuffer, bufferOffset, actingBlockLength, schemaId, actingVersion);
     }
 
     public static int encode(final Car car, final DirectBuffer directBuffer, final int bufferOffset)
@@ -150,6 +152,7 @@ public class ExampleUsingGeneratedStub
                               final DirectBuffer directBuffer,
                               final int bufferOffset,
                               final int actingBlockLength,
+                              final int schemaId,
                               final int actingVersion)
         throws Exception
     {
@@ -159,7 +162,8 @@ public class ExampleUsingGeneratedStub
         car.wrapForDecode(directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
         sb.append("\ncar.templateId=").append(car.templateId());
-        sb.append("\ncar.templateVersion=").append(car.templateVersion());
+        sb.append("\ncar.schemaId=").append(schemaId);
+        sb.append("\ncar.schemaVersion=").append(car.schemaVersion());
         sb.append("\ncar.serialNumber=").append(car.serialNumber());
         sb.append("\ncar.modelYear=").append(car.modelYear());
         sb.append("\ncar.available=").append(car.available());

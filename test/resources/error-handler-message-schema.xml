@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <messageSchema package="SBE tests"
+               id="11"
                semanticVersion="5.2"
                description="Unit Test"
                byteOrder="littleEndian">

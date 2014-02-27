@@ -30,7 +30,7 @@ public:
 
     static sbe_uint16_t blockLength(void)
     {
-        return (sbe_uint16_t)8;
+        return (sbe_uint16_t)12;
     }
 
     static sbe_uint16_t templateId(void)
@@ -41,6 +41,11 @@ public:
     static sbe_uint8_t templateVersion(void)
     {
         return (sbe_uint8_t)0;
+    }
+
+    static const char *semanticType(void)
+    {
+        return "";
     }
 
     sbe_uint64_t offset(void) const
@@ -59,8 +64,7 @@ public:
         return *this;
     }
 
-    FrameCodec &wrapForDecode(char *buffer, const int offset,
-                        const int actingBlockLength, const int actingVersion)
+    FrameCodec &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion)
     {
         buffer_ = buffer;
         offset_ = offset;
@@ -96,9 +100,63 @@ public:
         return actingVersion_;
     }
 
-    static int sbeIrVersionSchemaId(void)
+    static int sbeIrIdId(void)
     {
         return 1;
+    }
+
+    static int sbeIrIdSinceVersion(void)
+    {
+         return 0;
+    }
+
+    bool sbeIrIdInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
+    }
+
+
+    static const char *sbeIrIdMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    static sbe_int32_t sbeIrIdNullValue()
+    {
+        return -2147483648;
+    }
+
+    static sbe_int32_t sbeIrIdMinValue()
+    {
+        return -2147483647;
+    }
+
+    static sbe_int32_t sbeIrIdMaxValue()
+    {
+        return 2147483647;
+    }
+
+    sbe_int32_t sbeIrId(void) const
+    {
+        return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 0)));
+    }
+
+    FrameCodec &sbeIrId(const sbe_int32_t value)
+    {
+        *((sbe_int32_t *)(buffer_ + offset_ + 0)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
+        return *this;
+    }
+
+    static int sbeIrVersionId(void)
+    {
+        return 2;
     }
 
     static int sbeIrVersionSinceVersion(void)
@@ -141,91 +199,32 @@ public:
 
     sbe_int32_t sbeIrVersion(void) const
     {
-        return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 0)));
-    }
-
-    FrameCodec &sbeIrVersion(const sbe_int32_t value)
-    {
-        *((sbe_int32_t *)(buffer_ + offset_ + 0)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
-        return *this;
-    }
-
-    static int schemaVersionSchemaId(void)
-    {
-        return 2;
-    }
-
-    static int schemaVersionSinceVersion(void)
-    {
-         return 0;
-    }
-
-    bool schemaVersionInActingVersion(void)
-    {
-        return (actingVersion_ >= 0) ? true : false;
-    }
-
-
-    static const char *schemaVersionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
-
-    static sbe_int32_t schemaVersionNullValue()
-    {
-        return -2147483648;
-    }
-
-    static sbe_int32_t schemaVersionMinValue()
-    {
-        return -2147483647;
-    }
-
-    static sbe_int32_t schemaVersionMaxValue()
-    {
-        return 2147483647;
-    }
-
-    sbe_int32_t schemaVersion(void) const
-    {
         return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 4)));
     }
 
-    FrameCodec &schemaVersion(const sbe_int32_t value)
+    FrameCodec &sbeIrVersion(const sbe_int32_t value)
     {
         *((sbe_int32_t *)(buffer_ + offset_ + 4)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;
     }
 
-    static const char *packageNameCharacterEncoding()
-    {
-        return "UTF-8";
-    }
-
-    static int packageNameSinceVersion(void)
-    {
-         return 0;
-    }
-
-    bool packageNameInActingVersion(void)
-    {
-        return (actingVersion_ >= 0) ? true : false;
-    }
-
-    static int packageNameSchemaId(void)
+    static int sbeSchemaVersionId(void)
     {
         return 3;
     }
 
+    static int sbeSchemaVersionSinceVersion(void)
+    {
+         return 0;
+    }
 
-    static const char *packageNameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    bool sbeSchemaVersionInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
+    }
+
+
+    static const char *sbeSchemaVersionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -237,63 +236,54 @@ public:
         return "";
     }
 
-    sbe_int64_t packageNameLength(void) const
+    static sbe_int32_t sbeSchemaVersionNullValue()
     {
-        return (*((sbe_uint8_t *)(buffer_ + position())));
+        return -2147483648;
     }
 
-    const char *packageName(void)
+    static sbe_int32_t sbeSchemaVersionMinValue()
     {
-         const char *fieldPtr = (buffer_ + position() + 1);
-         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
-         return fieldPtr;
+        return -2147483647;
     }
 
-    int getPackageName(char *dst, const int length)
+    static sbe_int32_t sbeSchemaVersionMaxValue()
     {
-        sbe_uint64_t sizeOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
-        position(lengthPosition + sizeOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        int bytesToCopy = (length < dataLength) ? length : dataLength;
-        ::memcpy(dst, buffer_ + position(), bytesToCopy);
-        position(position() + (sbe_uint64_t)dataLength);
-        return bytesToCopy;
+        return 2147483647;
     }
 
-    int putPackageName(const char *src, const int length)
+    sbe_int32_t sbeSchemaVersion(void) const
     {
-        sbe_uint64_t sizeOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        position(lengthPosition + sizeOfLengthField);
-        ::memcpy(buffer_ + position(), src, length);
-        position(position() + (sbe_uint64_t)length);
-        return length;
+        return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 8)));
     }
 
-    static const char *namespaceNameCharacterEncoding()
+    FrameCodec &sbeSchemaVersion(const sbe_int32_t value)
+    {
+        *((sbe_int32_t *)(buffer_ + offset_ + 8)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
+        return *this;
+    }
+
+    static const char *sbePackageNameCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    static int namespaceNameSinceVersion(void)
+    static int sbePackageNameSinceVersion(void)
     {
          return 0;
     }
 
-    bool namespaceNameInActingVersion(void)
+    bool sbePackageNameInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int namespaceNameSchemaId(void)
+    static int sbePackageNameId(void)
     {
         return 4;
     }
 
 
-    static const char *namespaceNameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    static const char *sbePackageNameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -305,19 +295,19 @@ public:
         return "";
     }
 
-    sbe_int64_t namespaceNameLength(void) const
+    sbe_int64_t sbePackageNameLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
     }
 
-    const char *namespaceName(void)
+    const char *sbePackageName(void)
     {
          const char *fieldPtr = (buffer_ + position() + 1);
          position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
          return fieldPtr;
     }
 
-    int getNamespaceName(char *dst, const int length)
+    int getSbePackageName(char *dst, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
@@ -329,7 +319,7 @@ public:
         return bytesToCopy;
     }
 
-    int putNamespaceName(const char *src, const int length)
+    int putSbePackageName(const char *src, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
@@ -340,28 +330,28 @@ public:
         return length;
     }
 
-    static const char *semanticVersionCharacterEncoding()
+    static const char *sbeNamespaceNameCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    static int semanticVersionSinceVersion(void)
+    static int sbeNamespaceNameSinceVersion(void)
     {
          return 0;
     }
 
-    bool semanticVersionInActingVersion(void)
+    bool sbeNamespaceNameInActingVersion(void)
     {
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int semanticVersionSchemaId(void)
+    static int sbeNamespaceNameId(void)
     {
         return 5;
     }
 
 
-    static const char *semanticVersionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    static const char *sbeNamespaceNameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -373,19 +363,19 @@ public:
         return "";
     }
 
-    sbe_int64_t semanticVersionLength(void) const
+    sbe_int64_t sbeNamespaceNameLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
     }
 
-    const char *semanticVersion(void)
+    const char *sbeNamespaceName(void)
     {
          const char *fieldPtr = (buffer_ + position() + 1);
          position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
          return fieldPtr;
     }
 
-    int getSemanticVersion(char *dst, const int length)
+    int getSbeNamespaceName(char *dst, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
@@ -397,7 +387,75 @@ public:
         return bytesToCopy;
     }
 
-    int putSemanticVersion(const char *src, const int length)
+    int putSbeNamespaceName(const char *src, const int length)
+    {
+        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
+        position(lengthPosition + sizeOfLengthField);
+        ::memcpy(buffer_ + position(), src, length);
+        position(position() + (sbe_uint64_t)length);
+        return length;
+    }
+
+    static const char *sbeSemanticVersionCharacterEncoding()
+    {
+        return "UTF-8";
+    }
+
+    static int sbeSemanticVersionSinceVersion(void)
+    {
+         return 0;
+    }
+
+    bool sbeSemanticVersionInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
+    }
+
+    static int sbeSemanticVersionId(void)
+    {
+        return 6;
+    }
+
+
+    static const char *sbeSemanticVersionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    sbe_int64_t sbeSemanticVersionLength(void) const
+    {
+        return (*((sbe_uint8_t *)(buffer_ + position())));
+    }
+
+    const char *sbeSemanticVersion(void)
+    {
+         const char *fieldPtr = (buffer_ + position() + 1);
+         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         return fieldPtr;
+    }
+
+    int getSbeSemanticVersion(char *dst, const int length)
+    {
+        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + sizeOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        int bytesToCopy = (length < dataLength) ? length : dataLength;
+        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        position(position() + (sbe_uint64_t)dataLength);
+        return bytesToCopy;
+    }
+
+    int putSbeSemanticVersion(const char *src, const int length)
     {
         sbe_uint64_t sizeOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();

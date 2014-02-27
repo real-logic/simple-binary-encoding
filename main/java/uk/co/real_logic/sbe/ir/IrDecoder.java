@@ -44,6 +44,7 @@ public class IrDecoder implements Closeable
     private String irNamespaceName = null;
     private String semanticVersion = null;
     private List<Token> irHeader = null;
+    private int irId;
     private int irVersion = 0;
     private final byte[] valArray = new byte[CAPACITY];
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
@@ -94,7 +95,7 @@ public class IrDecoder implements Closeable
             i = captureHeader(tokens, 0);
         }
 
-        final Ir ir = new Ir(irPackageName, irNamespaceName, irVersion, semanticVersion, irHeader);
+        final Ir ir = new Ir(irPackageName, irNamespaceName, irId, irVersion, semanticVersion, irHeader);
 
         for (; i < size; i++)
         {
@@ -138,7 +139,7 @@ public class IrDecoder implements Closeable
         }
         while (Signal.END_MESSAGE != token.signal());
 
-        ir.addMessage(tokens.get(index).schemaId(), messageTokens);
+        ir.addMessage(tokens.get(index).id(), messageTokens);
 
         return index;
     }
@@ -148,6 +149,8 @@ public class IrDecoder implements Closeable
     {
         frameCodec.wrapForDecode(directBuffer, offset, frameCodec.blockLength(), 0);
 
+        irId = frameCodec.sbeIrId();
+
         if (frameCodec.sbeIrVersion() != 0)
         {
             throw new IllegalStateException("Unknown SBE version: " + frameCodec.sbeIrVersion());
@@ -155,16 +158,17 @@ public class IrDecoder implements Closeable
 
         irVersion = frameCodec.schemaVersion();
 
-        irPackageName = new String(buffer, 0, frameCodec.getPackageName(buffer, 0, buffer.length), FrameCodec.packageNameCharacterEncoding());
+        irPackageName = new String(buffer, 0, frameCodec.getSbePackageName(buffer, 0, buffer.length), FrameCodec.sbePackageNameCharacterEncoding());
 
-        irNamespaceName = new String(buffer, 0, frameCodec.getNamespaceName(buffer, 0, buffer.length), FrameCodec.namespaceNameCharacterEncoding());
+        irNamespaceName = new String(buffer, 0, frameCodec.getSbeNamespaceName(buffer, 0, buffer.length),
+                                     FrameCodec.sbeNamespaceNameCharacterEncoding());
         if (irNamespaceName.isEmpty())
         {
             irNamespaceName = null;
         }
 
         semanticVersion =
-            new String(buffer, 0, frameCodec.getSemanticVersion(buffer, 0, buffer.length), FrameCodec.semanticVersionCharacterEncoding());
+            new String(buffer, 0, frameCodec.getSbeSemanticVersion(buffer, 0, buffer.length), FrameCodec.sbeSemanticVersionCharacterEncoding());
         if (semanticVersion.isEmpty())
         {
             semanticVersion = null;
@@ -183,7 +187,7 @@ public class IrDecoder implements Closeable
 
         tokenBuilder.offset(tokenCodec.tokenOffset())
                     .size(tokenCodec.tokenSize())
-                    .schemaId(tokenCodec.schemaId())
+                    .id(tokenCodec.fieldId())
                     .version(tokenCodec.tokenVersion())
                     .signal(mapSignal(tokenCodec.signal()));
 

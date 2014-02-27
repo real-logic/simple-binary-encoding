@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <messageSchema package="uk.co.real_logic.sbe.ir.generated"
-               description="SBE IR Serialization"
+               id="0"
                version="0"
-               byteOrder="littleEndian">
+               byteOrder="littleEndian"
+               description="SBE IR Serialization">
     <types>
         <composite name="messageHeader">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>
@@ -63,17 +65,18 @@
     </types>
 
     <message name="FrameCodec" id="1" description="Frame Header for start of encoding IR">
-        <field name="sbeIrVersion" id="1" type="int32"/>
-        <field name="schemaVersion" id="2" type="int32"/>
-        <data name="packageName" id="3" type="varDataEncoding"/>
-        <data name="namespaceName" id="4" type="varDataEncoding"/>
-        <data name="semanticVersion" id="5" type="varDataEncoding"/>
+        <field name="sbeIrId" id="1" type="int32"/>
+        <field name="sbeIrVersion" id="2" type="int32"/>
+        <field name="sbeSchemaVersion" id="3" type="int32"/>
+        <data name="sbePackageName" id="4" type="varDataEncoding"/>
+        <data name="sbeNamespaceName" id="5" type="varDataEncoding"/>
+        <data name="sbeSemanticVersion" id="6" type="varDataEncoding"/>
     </message>
 
     <message name="TokenCodec" id="2" description="Codec for an IR Token">
         <field name="tokenOffset" id="11" type="int32"/>
         <field name="tokenSize" id="12" type="int32"/>
-        <field name="schemaId" id="13" type="int32"/>
+        <field name="fieldId" id="13" type="int32"/>
         <field name="tokenVersion" id="14" type="int32"/>
         <field name="signal" id="15" type="SignalCodec"/>
         <field name="primitiveType" id="16" type="PrimitiveTypeCodec"/>

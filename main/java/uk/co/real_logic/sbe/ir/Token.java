@@ -83,7 +83,7 @@ public class Token
 
     private final Signal signal;
     private final String name;
-    private final int schemaId;
+    private final int id;
     private final int version;
     private final int size;
     private final int offset;
@@ -94,7 +94,7 @@ public class Token
      *
      * @param signal for the token role
      * @param name of the token in the message
-     * @param schemaId as the identifier in the message declaration
+     * @param id as the identifier in the message declaration
      * @param version application within the template
      * @param size of the component part
      * @param offset in the underlying message as octets
@@ -102,7 +102,7 @@ public class Token
      */
     public Token(final Signal signal,
                  final String name,
-                 final int schemaId,
+                 final int id,
                  final int version,
                  final int size,
                  final int offset,
@@ -114,7 +114,7 @@ public class Token
 
         this.signal = signal;
         this.name = name;
-        this.schemaId = schemaId;
+        this.id = id;
         this.version = version;
         this.size = size;
         this.offset = offset;
@@ -146,9 +146,9 @@ public class Token
      *
      * @return ID of the token assigned by the specification
      */
-    public int schemaId()
+    public int id()
     {
-        return schemaId;
+        return id;
     }
 
     /**
@@ -232,7 +232,7 @@ public class Token
         return "Token{" +
             "signal=" + signal +
             ", name='" + name + '\'' +
-            ", schemaId=" + schemaId +
+            ", id=" + id +
             ", version=" + version +
             ", size=" + size +
             ", offset=" + offset +
@@ -244,7 +244,7 @@ public class Token
     {
         private Signal signal;
         private String name;
-        private int schemaId = INVALID_ID;
+        private int id = INVALID_ID;
         private int version = 0;
         private int size = 0;
         private int offset = 0;
@@ -262,9 +262,9 @@ public class Token
             return this;
         }
 
-        public Builder schemaId(final int schemaId)
+        public Builder id(final int id)
         {
-            this.schemaId = schemaId;
+            this.id = id;
             return this;
         }
 
@@ -294,7 +294,7 @@ public class Token
 
         public Token build()
         {
-            return new Token(signal, name, schemaId, version, size, offset, encoding);
+            return new Token(signal, name, id, version, size, offset, encoding);
         }
     }
 }

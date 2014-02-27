@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <messageSchema package="Examples"
+               id="14"
                description="Test dictionary"
                byteOrder="littleEndian">
 
@@ -7,9 +8,10 @@
         <type name="enumEncoding" primitiveType="char"/>
         <type name="idString" length="8" primitiveType="char" semanticType="String"/>
         <type name="timestampEncoding" primitiveType="uint64" semanticType="UTCTimestamp"/>
-        <composite name="messageHeader" description="Template ID and length of message root">
-            <type name="blockLength" primitiveType="uint16" semanticType="Length"/>
+        <composite name="messageHeader" description="Message identifiers and length of message root">
+            <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>

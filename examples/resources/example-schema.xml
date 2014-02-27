@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <messageSchema package="baseline"
+               id="1"
                version="0"
                semanticVersion="5.2"
                description="Code generation unit test support"
                byteOrder="littleEndian">
     <types>
-        <composite name="messageHeader" description="Template ID and length of message root">
+        <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint8"/>
             <type name="reserved" primitiveType="uint8"/>
         </composite>

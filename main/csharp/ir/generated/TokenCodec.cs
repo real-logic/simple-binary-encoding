@@ -36,8 +36,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         Limit = offset + _actingBlockLength;
     }
 
-    public void WrapForDecode(DirectBuffer buffer, int offset,
-                              int actingBlockLength, int actingVersion)
+    public void WrapForDecode(DirectBuffer buffer, int offset, int actingBlockLength, int actingVersion)
     {
         _buffer = buffer;
         _offset = offset;
@@ -68,7 +67,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int TokenOffsetSchemaId = 11;
+    public const int TokenOffsetId = 11;
 
     public static string TokenOffsetMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -101,7 +100,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int TokenSizeSchemaId = 12;
+    public const int TokenSizeId = 12;
 
     public static string TokenSizeMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -134,9 +133,9 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int SchemaIdSchemaId = 13;
+    public const int FieldIdId = 13;
 
-    public static string SchemaIdMetaAttribute(MetaAttribute metaAttribute)
+    public static string FieldIdMetaAttribute(MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -148,13 +147,13 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int SchemaIdNullValue = -2147483648;
+    public const int FieldIdNullValue = -2147483648;
 
-    public const int SchemaIdMinValue = -2147483647;
+    public const int FieldIdMinValue = -2147483647;
 
-    public const int SchemaIdMaxValue = 2147483647;
+    public const int FieldIdMaxValue = 2147483647;
 
-    public int SchemaId
+    public int FieldId
     {
         get
         {
@@ -167,7 +166,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int TokenVersionSchemaId = 14;
+    public const int TokenVersionId = 14;
 
     public static string TokenVersionMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -200,7 +199,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int SignalSchemaId = 15;
+    public const int SignalId = 15;
 
     public static string SignalMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -227,7 +226,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int PrimitiveTypeSchemaId = 16;
+    public const int PrimitiveTypeId = 16;
 
     public static string PrimitiveTypeMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -254,7 +253,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int ByteOrderSchemaId = 17;
+    public const int ByteOrderId = 17;
 
     public static string ByteOrderMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -281,7 +280,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int PresenceSchemaId = 18;
+    public const int PresenceId = 18;
 
     public static string PresenceMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -308,7 +307,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     }
 
 
-    public const int NameSchemaId = 19;
+    public const int NameId = 19;
 
     public const string NameCharacterEncoding = "UTF-8";
 
@@ -349,7 +348,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int ConstValueSchemaId = 20;
+    public const int ConstValueId = 20;
 
     public const string ConstValueCharacterEncoding = "UTF-8";
 
@@ -390,7 +389,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int MinValueSchemaId = 21;
+    public const int MinValueId = 21;
 
     public const string MinValueCharacterEncoding = "UTF-8";
 
@@ -431,7 +430,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int MaxValueSchemaId = 22;
+    public const int MaxValueId = 22;
 
     public const string MaxValueCharacterEncoding = "UTF-8";
 
@@ -472,7 +471,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int NullValueSchemaId = 23;
+    public const int NullValueId = 23;
 
     public const string NullValueCharacterEncoding = "UTF-8";
 
@@ -513,7 +512,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int CharacterEncodingSchemaId = 24;
+    public const int CharacterEncodingId = 24;
 
     public const string CharacterEncodingCharacterEncoding = "UTF-8";
 
@@ -554,7 +553,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int EpochSchemaId = 25;
+    public const int EpochId = 25;
 
     public const string EpochCharacterEncoding = "UTF-8";
 
@@ -595,7 +594,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int TimeUnitSchemaId = 26;
+    public const int TimeUnitId = 26;
 
     public const string TimeUnitCharacterEncoding = "UTF-8";
 
@@ -636,7 +635,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return length;
     }
 
-    public const int SemanticTypeSchemaId = 27;
+    public const int SemanticTypeId = 27;
 
     public const string SemanticTypeCharacterEncoding = "UTF-8";
 

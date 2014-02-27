@@ -61,7 +61,8 @@ public class OtfExample
         final DirectBuffer buffer = new DirectBuffer(encodedMsgBuffer);
 
         final int templateId = headerDecoder.getTemplateId(buffer, bufferOffset);
-        final int actingVersion = headerDecoder.getTemplateVersion(buffer, bufferOffset);
+        final int schemaId = headerDecoder.getSchemaId(buffer, bufferOffset);
+        final int actingVersion = headerDecoder.getSchemaVersion(buffer, bufferOffset);
         final int blockLength = headerDecoder.getBlockLength(buffer, bufferOffset);
 
         bufferOffset += headerDecoder.size();
@@ -103,7 +104,8 @@ public class OtfExample
         MESSAGE_HEADER.wrap(directBuffer, bufferOffset, ACTING_VERSION)
                       .blockLength(CAR.blockLength())
                       .templateId(CAR.templateId())
-                      .version(CAR.templateVersion());
+                      .schemaId(CAR.schemaId())
+                      .version(CAR.schemaVersion());
 
         bufferOffset += MESSAGE_HEADER.size();
 

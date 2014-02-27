@@ -97,7 +97,8 @@ public class CarBenchmark
     {
         messageHeader.wrap(buffer, bufferIndex, 0)
                      .templateId(car.templateId())
-                     .version(car.templateVersion())
+                     .schemaId(car.schemaId())
+                     .version(car.schemaVersion())
                      .blockLength(car.blockLength());
 
         car.wrapForEncode(buffer, bufferIndex + messageHeader.size())

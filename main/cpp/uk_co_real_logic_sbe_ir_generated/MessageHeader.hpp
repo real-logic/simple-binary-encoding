@@ -28,7 +28,7 @@ public:
 
     static int size(void)
     {
-        return 6;
+        return 8;
     }
 
 
@@ -84,6 +84,32 @@ public:
         return *this;
     }
 
+    static sbe_uint16_t schemaIdNullValue()
+    {
+        return (sbe_uint16_t)65535;
+    }
+
+    static sbe_uint16_t schemaIdMinValue()
+    {
+        return (sbe_uint16_t)0;
+    }
+
+    static sbe_uint16_t schemaIdMaxValue()
+    {
+        return (sbe_uint16_t)65534;
+    }
+
+    sbe_uint16_t schemaId(void) const
+    {
+        return SBE_LITTLE_ENDIAN_ENCODE_16(*((sbe_uint16_t *)(buffer_ + offset_ + 4)));
+    }
+
+    MessageHeader &schemaId(const sbe_uint16_t value)
+    {
+        *((sbe_uint16_t *)(buffer_ + offset_ + 4)) = SBE_LITTLE_ENDIAN_ENCODE_16(value);
+        return *this;
+    }
+
     static sbe_uint8_t versionNullValue()
     {
         return (sbe_uint8_t)255;
@@ -101,12 +127,12 @@ public:
 
     sbe_uint8_t version(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + offset_ + 4)));
+        return (*((sbe_uint8_t *)(buffer_ + offset_ + 6)));
     }
 
     MessageHeader &version(const sbe_uint8_t value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 4)) = (value);
+        *((sbe_uint8_t *)(buffer_ + offset_ + 6)) = (value);
         return *this;
     }
 
@@ -127,12 +153,12 @@ public:
 
     sbe_uint8_t reserved(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + offset_ + 5)));
+        return (*((sbe_uint8_t *)(buffer_ + offset_ + 7)));
     }
 
     MessageHeader &reserved(const sbe_uint8_t value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 5)) = (value);
+        *((sbe_uint8_t *)(buffer_ + offset_ + 7)) = (value);
         return *this;
     }
 };

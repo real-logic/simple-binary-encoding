@@ -299,12 +299,12 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static int %1$sSchemaId(void)\n" +
+            indent + "    static int %1$sId(void)\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n",
             groupName,
-            Long.valueOf(token.schemaId())
+            Long.valueOf(token.id())
         ));
 
         sb.append(String.format(
@@ -363,13 +363,13 @@ public class Cpp98Generator implements CodeGenerator
                     "    {\n" +
                     "        return (actingVersion_ >= %2$s) ? true : false;\n" +
                     "    }\n\n" +
-                    "    static int %1$sSchemaId(void)\n" +
+                    "    static int %1$sId(void)\n" +
                     "    {\n" +
                     "        return %3$d;\n" +
                     "    }\n\n",
                     formatPropertyName(propertyName),
                     Long.valueOf(token.version()),
-                    Integer.valueOf(token.schemaId())
+                    Integer.valueOf(token.id())
                 ));
 
                 generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
@@ -1083,7 +1083,7 @@ public class Cpp98Generator implements CodeGenerator
     {
         final String blockLengthType = cpp98TypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = cpp98TypeName(ir.headerStructure().templateIdType());
-        final String templateVersionType = cpp98TypeName(ir.headerStructure().templateVersionType());
+        final String templateVersionType = cpp98TypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
@@ -1125,8 +1125,7 @@ public class Cpp98Generator implements CodeGenerator
             "        positionPtr_ = &position_;\n" +
             "        return *this;\n" +
             "    }\n\n" +
-            "    %7$s &wrapForDecode(char *buffer, const int offset,\n" +
-            "                        const int actingBlockLength, const int actingVersion)\n" +
+            "    %7$s &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
@@ -1159,9 +1158,9 @@ public class Cpp98Generator implements CodeGenerator
             blockLengthType,
             generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
             templateIdType,
-            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.schemaId())),
+            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
             templateVersionType,
-            generateLiteral(ir.headerStructure().templateVersionType(), Integer.toString(token.version())),
+            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
             className,
             semanticType
         );
@@ -1171,7 +1170,7 @@ public class Cpp98Generator implements CodeGenerator
                                         final List<Token> tokens,
                                         final String indent)
     {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
@@ -1183,12 +1182,12 @@ public class Cpp98Generator implements CodeGenerator
 
                 sb.append(String.format(
                     "\n" +
-                    indent + "    static int %1$sSchemaId(void)\n" +
+                    indent + "    static int %1$sId(void)\n" +
                     indent + "    {\n" +
                     indent + "        return %2$d;\n" +
                     indent + "    }\n\n",
                     propertyName,
-                    Integer.valueOf(signalToken.schemaId())
+                    Integer.valueOf(signalToken.id())
                 ));
 
                 sb.append(String.format(

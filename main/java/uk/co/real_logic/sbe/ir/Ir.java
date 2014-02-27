@@ -27,6 +27,7 @@ public class Ir
 {
     private final String packageName;
     private final String namespaceName;
+    private final int id;
     private final int version;
     private final String semanticVersion;
 
@@ -44,18 +45,20 @@ public class Ir
      */
     public Ir(final String packageName,
               final String namespaceName,
+              final int id,
               final int version,
               final String semanticVersion,
               final List<Token> headerTokens)
     {
-        this.semanticVersion = semanticVersion;
         Verify.notNull(packageName, "packageName");
         Verify.notNull(headerTokens, "headerTokens");
 
         this.packageName = packageName;
         this.namespaceName = namespaceName;
-        this.headerStructure = new HeaderStructure(Collections.unmodifiableList(new ArrayList<>(headerTokens)));
+        this.id = id;
         this.version = version;
+        this.semanticVersion = semanticVersion;
+        this.headerStructure = new HeaderStructure(Collections.unmodifiableList(new ArrayList<>(headerTokens)));
     }
 
     /**
@@ -143,6 +146,16 @@ public class Ir
     public String namespaceName()
     {
         return namespaceName;
+    }
+
+    /**
+     * Get the id number of the schema.
+     *
+     * @return id number of the schema.
+     */
+    public int id()
+    {
+        return id;
     }
 
     /**

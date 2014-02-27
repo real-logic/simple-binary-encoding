@@ -99,6 +99,7 @@ public class EncodedIrTest
         IrDecoder irDecoder = new IrDecoder(buffer);
         Ir decodedIr = irDecoder.decode();
 
+        assertThat(Integer.valueOf(decodedIr.id()), is(Integer.valueOf(ir.id())));
         assertThat(Integer.valueOf(decodedIr.version()), is(Integer.valueOf(ir.version())));
         assertThat(decodedIr.semanticVersion(), is(ir.semanticVersion()));
         assertThat(decodedIr.packageName(), is(ir.packageName()));
@@ -110,7 +111,7 @@ public class EncodedIrTest
         assertThat(lhs.name(), is(rhs.name()));
         assertThat(Integer.valueOf(lhs.version()), is(Integer.valueOf(rhs.version())));
         assertThat(Integer.valueOf(lhs.offset()), is(Integer.valueOf(rhs.offset())));
-        assertThat(Long.valueOf(lhs.schemaId()), is(Long.valueOf(rhs.schemaId())));
+        assertThat(Long.valueOf(lhs.id()), is(Long.valueOf(rhs.id())));
         assertThat(lhs.signal(), is(rhs.signal()));
         assertThat(Integer.valueOf(lhs.size()), is(Integer.valueOf(rhs.size())));
 
@@ -170,7 +171,7 @@ public class EncodedIrTest
         assertThat(Integer.valueOf(decodedIr.messages().size()), is(Integer.valueOf(ir.messages().size())));
         for (final List<Token> decodedTokenList : decodedIr.messages())
         {
-            final List<Token> tokens = ir.getMessage(decodedTokenList.get(0).schemaId());
+            final List<Token> tokens = ir.getMessage(decodedTokenList.get(0).id());
 
             assertThat(Integer.valueOf(decodedTokenList.size()), is(Integer.valueOf(tokens.size())));
             for (int i = 0, size = decodedTokenList.size(); i < size; i++)

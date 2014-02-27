@@ -5,10 +5,11 @@ import uk.co.real_logic.sbe.codec.java.*;
 
 public class TokenCodec
 {
-    public static final int TEMPLATE_ID = 2;
-    public static final short TEMPLATE_VERSION = (short)0;
     public static final int BLOCK_LENGTH = 20;
 
+    public static final int TEMPLATE_ID = 2;
+    public static final short SCHEMA_ID = (short)0;
+    public static final short SCHEMA_VERSION = (short)0;
     private final TokenCodec parentMessage = this;
     private DirectBuffer buffer;
     private int offset;
@@ -26,9 +27,14 @@ public class TokenCodec
         return TEMPLATE_ID;
     }
 
-    public short templateVersion()
+    public short schemaId()
     {
-        return TEMPLATE_VERSION;
+        return SCHEMA_ID;
+    }
+
+    public short schemaVersion()
+    {
+        return SCHEMA_VERSION;
     }
 
     public String semanticType()
@@ -46,14 +52,13 @@ public class TokenCodec
         this.buffer = buffer;
         this.offset = offset;
         this.actingBlockLength = BLOCK_LENGTH;
-        this.actingVersion = TEMPLATE_VERSION;
+        this.actingVersion = SCHEMA_VERSION;
         limit(offset + actingBlockLength);
 
         return this;
     }
 
-    public TokenCodec wrapForDecode(final DirectBuffer buffer, final int offset,
-                              final int actingBlockLength, final int actingVersion)
+    public TokenCodec wrapForDecode(final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;
@@ -80,7 +85,7 @@ public class TokenCodec
         this.limit = limit;
     }
 
-    public static int tokenOffsetSchemaId()
+    public static int tokenOffsetId()
     {
         return 11;
     }
@@ -123,7 +128,7 @@ public class TokenCodec
         return this;
     }
 
-    public static int tokenSizeSchemaId()
+    public static int tokenSizeId()
     {
         return 12;
     }
@@ -166,12 +171,12 @@ public class TokenCodec
         return this;
     }
 
-    public static int schemaIdSchemaId()
+    public static int fieldIdId()
     {
         return 13;
     }
 
-    public static String schemaIdMetaAttribute(final MetaAttribute metaAttribute)
+    public static String fieldIdMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -183,33 +188,33 @@ public class TokenCodec
         return "";
     }
 
-    public static int schemaIdNullValue()
+    public static int fieldIdNullValue()
     {
         return -2147483648;
     }
 
-    public static int schemaIdMinValue()
+    public static int fieldIdMinValue()
     {
         return -2147483647;
     }
 
-    public static int schemaIdMaxValue()
+    public static int fieldIdMaxValue()
     {
         return 2147483647;
     }
 
-    public int schemaId()
+    public int fieldId()
     {
         return CodecUtil.int32Get(buffer, offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public TokenCodec schemaId(final int value)
+    public TokenCodec fieldId(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
-    public static int tokenVersionSchemaId()
+    public static int tokenVersionId()
     {
         return 14;
     }
@@ -252,7 +257,7 @@ public class TokenCodec
         return this;
     }
 
-    public static int signalSchemaId()
+    public static int signalId()
     {
         return 15;
     }
@@ -280,7 +285,7 @@ public class TokenCodec
         return this;
     }
 
-    public static int primitiveTypeSchemaId()
+    public static int primitiveTypeId()
     {
         return 16;
     }
@@ -308,7 +313,7 @@ public class TokenCodec
         return this;
     }
 
-    public static int byteOrderSchemaId()
+    public static int byteOrderId()
     {
         return 17;
     }
@@ -336,7 +341,7 @@ public class TokenCodec
         return this;
     }
 
-    public static int presenceSchemaId()
+    public static int presenceId()
     {
         return 18;
     }
@@ -364,7 +369,7 @@ public class TokenCodec
         return this;
     }
 
-    public static int nameSchemaId()
+    public static int nameId()
     {
         return 19;
     }
@@ -384,6 +389,11 @@ public class TokenCodec
         }
 
         return "";
+    }
+
+    public static int nameHeaderSize()
+    {
+        return 1;
     }
 
     public int getName(final byte[] dst, final int dstOffset, final int length)
@@ -410,7 +420,7 @@ public class TokenCodec
         return length;
     }
 
-    public static int constValueSchemaId()
+    public static int constValueId()
     {
         return 20;
     }
@@ -430,6 +440,11 @@ public class TokenCodec
         }
 
         return "";
+    }
+
+    public static int constValueHeaderSize()
+    {
+        return 1;
     }
 
     public int getConstValue(final byte[] dst, final int dstOffset, final int length)
@@ -456,7 +471,7 @@ public class TokenCodec
         return length;
     }
 
-    public static int minValueSchemaId()
+    public static int minValueId()
     {
         return 21;
     }
@@ -476,6 +491,11 @@ public class TokenCodec
         }
 
         return "";
+    }
+
+    public static int minValueHeaderSize()
+    {
+        return 1;
     }
 
     public int getMinValue(final byte[] dst, final int dstOffset, final int length)
@@ -502,7 +522,7 @@ public class TokenCodec
         return length;
     }
 
-    public static int maxValueSchemaId()
+    public static int maxValueId()
     {
         return 22;
     }
@@ -522,6 +542,11 @@ public class TokenCodec
         }
 
         return "";
+    }
+
+    public static int maxValueHeaderSize()
+    {
+        return 1;
     }
 
     public int getMaxValue(final byte[] dst, final int dstOffset, final int length)
@@ -548,7 +573,7 @@ public class TokenCodec
         return length;
     }
 
-    public static int nullValueSchemaId()
+    public static int nullValueId()
     {
         return 23;
     }
@@ -568,6 +593,11 @@ public class TokenCodec
         }
 
         return "";
+    }
+
+    public static int nullValueHeaderSize()
+    {
+        return 1;
     }
 
     public int getNullValue(final byte[] dst, final int dstOffset, final int length)
@@ -594,7 +624,7 @@ public class TokenCodec
         return length;
     }
 
-    public static int characterEncodingSchemaId()
+    public static int characterEncodingId()
     {
         return 24;
     }
@@ -614,6 +644,11 @@ public class TokenCodec
         }
 
         return "";
+    }
+
+    public static int characterEncodingHeaderSize()
+    {
+        return 1;
     }
 
     public int getCharacterEncoding(final byte[] dst, final int dstOffset, final int length)
@@ -640,7 +675,7 @@ public class TokenCodec
         return length;
     }
 
-    public static int epochSchemaId()
+    public static int epochId()
     {
         return 25;
     }
@@ -660,6 +695,11 @@ public class TokenCodec
         }
 
         return "";
+    }
+
+    public static int epochHeaderSize()
+    {
+        return 1;
     }
 
     public int getEpoch(final byte[] dst, final int dstOffset, final int length)
@@ -686,7 +726,7 @@ public class TokenCodec
         return length;
     }
 
-    public static int timeUnitSchemaId()
+    public static int timeUnitId()
     {
         return 26;
     }
@@ -706,6 +746,11 @@ public class TokenCodec
         }
 
         return "";
+    }
+
+    public static int timeUnitHeaderSize()
+    {
+        return 1;
     }
 
     public int getTimeUnit(final byte[] dst, final int dstOffset, final int length)
@@ -732,7 +777,7 @@ public class TokenCodec
         return length;
     }
 
-    public static int semanticTypeSchemaId()
+    public static int semanticTypeId()
     {
         return 27;
     }
@@ -752,6 +797,11 @@ public class TokenCodec
         }
 
         return "";
+    }
+
+    public static int semanticTypeHeaderSize()
+    {
+        return 1;
     }
 
     public int getSemanticType(final byte[] dst, final int dstOffset, final int length)
