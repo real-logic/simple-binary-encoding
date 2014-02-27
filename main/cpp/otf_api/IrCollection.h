@@ -294,7 +294,7 @@ protected:
             {
                 std::cout << " Message name=\"" << std::string(name, nameLen) << "\"";
                 std::cout << " id=\"" << token.fieldId() << "\"";
-                std::cout << " version=\"" << token.sbeSchemaVersion() << "\"";
+                std::cout << " version=\"" << (int)token.sbeSchemaVersion() << "\"";
             }
 
             if (token.signal() == SignalCodec::END_MESSAGE)
@@ -307,7 +307,7 @@ protected:
 
         // save buffer_ + offset as start of message and size as length
 
-        map_.insert(std::pair<int, Ir *>(token.fieldId(), new Ir(buffer_ + offset, size, token.sbeSchemaId(), token.tokenVersion())));
+        map_.insert(std::pair<int, Ir *>(token.fieldId(), new Ir(buffer_ + offset, size, token.fieldId(), token.sbeSchemaId(), token.tokenVersion())));
 
         // map_[token.schemaID()] = new Ir(buffer_ + offset, size);
 

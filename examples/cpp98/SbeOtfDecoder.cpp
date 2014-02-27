@@ -47,7 +47,7 @@ public:
 
     virtual Ir *irForTemplateId(const int templateId, const int schemaVersion)
     {
-        std::cout << "Message lookup id=" << templateId << " version " << schemaVersion << " offset " << listener_.bufferOffset() << std::endl;
+        std::cout << "Message lookup id=" << templateId << " version=" << schemaVersion << " offset " << listener_.bufferOffset() << std::endl;
 
         // lookup in IrCollection the IR for the template ID and version
         return (Ir *)IrCollection::message(templateId, schemaVersion);
