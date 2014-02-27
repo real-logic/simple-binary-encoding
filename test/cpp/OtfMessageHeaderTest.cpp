@@ -20,6 +20,12 @@ using namespace sbe::on_the_fly;
 using ::std::cout;
 using ::std::endl;
 
+class OtfIrMessageHeaderTestWrapper : public Ir
+{
+public:
+    OtfIrMessageHeaderTestWrapper() : Ir(NULL, 0, -1, -1, -1) {};
+};
+
 /*
  * Fixture around listener that also is an OnNext and OnError
  */
@@ -123,7 +129,7 @@ protected:
     }
 
     Listener listener_;
-    Ir ir_;
+    OtfIrMessageHeaderTestWrapper ir_;
     char *buffer_;
     int bufferLen_;
     int numFieldsSeen_;
