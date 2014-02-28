@@ -1,5 +1,11 @@
 This file contains the list of commits of Java ported to .NET (most recent at the TOP)
 
+5645842e6c66af32e3732085ccf7ec279023dacb
+[Java]: Added static methods to get the headerSize for groups and var data. Enhancement #92.
+
+afc5bea33375cbdbb60a66668d19a2729c6e6e59
+[Java]: Provided the ability to access group block length. Enhancement #92.
+
 3a5390e9590a59f6047b6cc99a9f898c9847bdd3
 [Java]: Fix for handling optionality and null values in enum types by propagating to pseudo super type for encoding. Fix for issue #77.
 

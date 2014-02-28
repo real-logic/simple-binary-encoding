@@ -235,10 +235,9 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _blockLength = _dimensions.BlockLength;\n" +
             indent + "        _actingVersion = actingVersion;\n" +
             indent + "        _index = -1;\n" +
-            indent + "        _parentMessage.Limit = parentMessage.Limit + %d;\n" +
+            indent + "        _parentMessage.Limit = parentMessage.Limit + HeaderSize;\n" +
             indent + "    }\n\n",
-            parentMessageClassName,
-            dimensionHeaderSize
+            parentMessageClassName
         ));
 
         final Integer blockLength = Integer.valueOf(tokens.get(index).size());
@@ -256,24 +255,25 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _index = -1;\n" +
             indent + "        _count = count;\n" +
             indent + "        _blockLength = %4$d;\n" +
-            indent + "        parentMessage.Limit = parentMessage.Limit + %5$d;\n" +
+            indent + "        parentMessage.Limit = parentMessage.Limit + HeaderSize;\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             typeForNumInGroup,
             typeForBlockLength,
-            blockLength,
-            dimensionHeaderSize
+            blockLength
         ));
 
         sb.append(String.format(
                 indent + "    public const int BlockLength = %d;\n",
-                blockLength
+                indent + "    public const int HeaderSize = %d;\n",
+                blockLength,
+                dimensionHeaderSize
         ));
 
         sb.append(String.format(
             indent + "    public int ActingBlockLength { get { return BlockLength; } }\n\n" +
             indent + "    public int Count { get { return _count; } }\n\n" +
-            indent + "    public bool HasNext { get { return _index + 1 < _count; } }\n\n"
+            indent + "    public bool HasNext { get { return (_index + 1) < _count; } }\n\n"
         ));
 
         sb.append(String.format(
@@ -366,6 +366,13 @@ public class CSharpGenerator implements CodeGenerator
                 final String lengthTypePrefix = toUpperFirstChar(lengthEncoding.primitiveType().primitiveName());
                 final ByteOrder byteOrder = lengthEncoding.byteOrder();
                 final String byteOrderStr = generateByteOrder(byteOrder, lengthEncoding.primitiveType().size());
+
+                sb.append(String.format(
+                        "\n" +
+                                "    public const int %sHeaderSize = %d\n",
+                        propertyName,
+                        sizeOfLengthField
+                ));
 
                 sb.append(String.format(
                     "\n" +
