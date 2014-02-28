@@ -266,6 +266,12 @@ public class CSharpGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
+                indent + "    public const int BlockLength = %d;\n",
+                blockLength
+        ));
+
+        sb.append(String.format(
+            indent + "    public int ActingBlockLength { get { return BlockLength; } }\n\n" +
             indent + "    public int Count { get { return _count; } }\n\n" +
             indent + "    public bool HasNext { get { return _index + 1 < _count; } }\n\n"
         ));
