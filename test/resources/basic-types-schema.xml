@@ -9,8 +9,7 @@
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="schemaId" primitiveType="uint16"/>
-            <type name="version" primitiveType="uint8"/>
-            <type name="reserved" primitiveType="uint8"/>
+            <type name="version" primitiveType="uint16"/>
         </composite>
         <type name="EDT" description="char array" length="20" primitiveType="char" semanticType="char"/>
         <enum name="ENUM" description="enum as uint8" encodingType="uint8" semanticType="int">

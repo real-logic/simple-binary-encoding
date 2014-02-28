@@ -6,10 +6,10 @@ import uk.co.real_logic.sbe.codec.java.*;
 public class FrameCodec
 {
     public static final int BLOCK_LENGTH = 12;
-
     public static final int TEMPLATE_ID = 1;
-    public static final short SCHEMA_ID = (short)0;
-    public static final short SCHEMA_VERSION = (short)0;
+    public static final int SCHEMA_ID = 0;
+    public static final int SCHEMA_VERSION = 0;
+
     private final FrameCodec parentMessage = this;
     private DirectBuffer buffer;
     private int offset;
@@ -27,12 +27,12 @@ public class FrameCodec
         return TEMPLATE_ID;
     }
 
-    public short sbeSchemaId()
+    public int sbeSchemaId()
     {
         return SCHEMA_ID;
     }
 
-    public short sbeSchemaVersion()
+    public int sbeSchemaVersion()
     {
         return SCHEMA_VERSION;
     }

@@ -10,8 +10,7 @@
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="schemaId" primitiveType="uint16"/>
-            <type name="version" primitiveType="uint8"/>
-            <type name="reserved" primitiveType="uint8"/>
+            <type name="version" primitiveType="uint16"/>
         </composite>
         <composite name="groupSizeEncoding" description="Repeating group dimensions" >
             <type name="blockLength" primitiveType="uint16"/>

@@ -24,12 +24,11 @@
         <type name="timestamp" primitiveType="uint64" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
         <type name="LocalMktDate" primitiveType="uint16" semanticType="LocalMktDate"/>
         <type name="optionalInt64" primitiveType="int64" presence="optional" semanticType="int"/>
-        <composite name="messageHeader" description="Template ID and length of message root">
+        <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="schemaId" primitiveType="uint16"/>
-            <type name="version" primitiveType="uint8"/>
-            <type name="reserved" primitiveType="uint8"/>
+            <type name="version" primitiveType="uint16"/>
         </composite>
         <composite name="IntQty32" semanticType="Qty">
             <type name="mantissa" primitiveType="int32"/>

@@ -12,8 +12,7 @@
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="schemaId" primitiveType="uint16"/>
-            <type name="version" primitiveType="uint8"/>
-            <type name="reserved" primitiveType="uint8"/>
+            <type name="version" primitiveType="uint16"/>
         </composite>
         <composite name="optionalDecimalEncoding" description="Optional decimal with constant exponent">
             <type name="mantissa" presence="optional" primitiveType="int64"/>

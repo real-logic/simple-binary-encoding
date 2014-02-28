@@ -6,10 +6,10 @@ import uk.co.real_logic.sbe.codec.java.*;
 public class TokenCodec
 {
     public static final int BLOCK_LENGTH = 20;
-
     public static final int TEMPLATE_ID = 2;
-    public static final short SCHEMA_ID = (short)0;
-    public static final short SCHEMA_VERSION = (short)0;
+    public static final int SCHEMA_ID = 0;
+    public static final int SCHEMA_VERSION = 0;
+
     private final TokenCodec parentMessage = this;
     private DirectBuffer buffer;
     private int offset;
@@ -27,12 +27,12 @@ public class TokenCodec
         return TEMPLATE_ID;
     }
 
-    public short sbeSchemaId()
+    public int sbeSchemaId()
     {
         return SCHEMA_ID;
     }
 
-    public short sbeSchemaVersion()
+    public int sbeSchemaVersion()
     {
         return SCHEMA_VERSION;
     }

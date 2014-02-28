@@ -110,55 +110,29 @@ public:
         return *this;
     }
 
-    static sbe_uint8_t versionNullValue()
+    static sbe_uint16_t versionNullValue()
     {
-        return (sbe_uint8_t)255;
+        return (sbe_uint16_t)65535;
     }
 
-    static sbe_uint8_t versionMinValue()
+    static sbe_uint16_t versionMinValue()
     {
-        return (sbe_uint8_t)0;
+        return (sbe_uint16_t)0;
     }
 
-    static sbe_uint8_t versionMaxValue()
+    static sbe_uint16_t versionMaxValue()
     {
-        return (sbe_uint8_t)254;
+        return (sbe_uint16_t)65534;
     }
 
-    sbe_uint8_t version(void) const
+    sbe_uint16_t version(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + offset_ + 6)));
+        return SBE_LITTLE_ENDIAN_ENCODE_16(*((sbe_uint16_t *)(buffer_ + offset_ + 6)));
     }
 
-    MessageHeader &version(const sbe_uint8_t value)
+    MessageHeader &version(const sbe_uint16_t value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 6)) = (value);
-        return *this;
-    }
-
-    static sbe_uint8_t reservedNullValue()
-    {
-        return (sbe_uint8_t)255;
-    }
-
-    static sbe_uint8_t reservedMinValue()
-    {
-        return (sbe_uint8_t)0;
-    }
-
-    static sbe_uint8_t reservedMaxValue()
-    {
-        return (sbe_uint8_t)254;
-    }
-
-    sbe_uint8_t reserved(void) const
-    {
-        return (*((sbe_uint8_t *)(buffer_ + offset_ + 7)));
-    }
-
-    MessageHeader &reserved(const sbe_uint8_t value)
-    {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 7)) = (value);
+        *((sbe_uint16_t *)(buffer_ + offset_ + 6)) = SBE_LITTLE_ENDIAN_ENCODE_16(value);
         return *this;
     }
 };

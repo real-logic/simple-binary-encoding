@@ -98,7 +98,7 @@ public class ExampleUsingGeneratedStubExtension
 
         final int actingBlockLength = MESSAGE_HEADER.blockLength();
         final int schemaId = MESSAGE_HEADER.schemaId();
-        final short actingVersion = MESSAGE_HEADER.version();
+        final int actingVersion = MESSAGE_HEADER.version();
 
         bufferOffset += MESSAGE_HEADER.size();
         decode(CAR_1, directBuffer, bufferOffset, schemaId, actingBlockLength, actingVersion);

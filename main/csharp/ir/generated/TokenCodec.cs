@@ -9,7 +9,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     public class TokenCodec
     {
     public const ushort TemplateId = (ushort)2;
-    public const byte TemplateVersion = (byte)0;
+    public const ushort TemplateVersion = (ushort)0;
     public const ushort BlockLength = (ushort)20;
     public const string SematicType = "";
 
@@ -324,6 +324,8 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
+    public const int NameHeaderSize = 1
+
     public int GetName(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
@@ -364,6 +366,8 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
 
         return "";
     }
+
+    public const int ConstValueHeaderSize = 1
 
     public int GetConstValue(byte[] dst, int dstOffset, int length)
     {
@@ -406,6 +410,8 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
+    public const int MinValueHeaderSize = 1
+
     public int GetMinValue(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
@@ -446,6 +452,8 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
 
         return "";
     }
+
+    public const int MaxValueHeaderSize = 1
 
     public int GetMaxValue(byte[] dst, int dstOffset, int length)
     {
@@ -488,6 +496,8 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
+    public const int NullValueHeaderSize = 1
+
     public int GetNullValue(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
@@ -528,6 +538,8 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
 
         return "";
     }
+
+    public const int CharacterEncodingHeaderSize = 1
 
     public int GetCharacterEncoding(byte[] dst, int dstOffset, int length)
     {
@@ -570,6 +582,8 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
+    public const int EpochHeaderSize = 1
+
     public int GetEpoch(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
@@ -611,6 +625,8 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
+    public const int TimeUnitHeaderSize = 1
+
     public int GetTimeUnit(byte[] dst, int dstOffset, int length)
     {
         const int sizeOfLengthField = 1;
@@ -651,6 +667,8 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
 
         return "";
     }
+
+    public const int SemanticTypeHeaderSize = 1
 
     public int GetSemanticType(byte[] dst, int dstOffset, int length)
     {

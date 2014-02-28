@@ -42,7 +42,7 @@ public class BasicXmlIrGenerationTest
         final Ir ir = irg.generate(schema);
         final List<Token> tokens = ir.headerStructure().tokens();
 
-        assertThat(valueOf(tokens.size()), is(valueOf(7)));
+        assertThat(valueOf(tokens.size()), is(valueOf(6)));
 
         /* assert all elements of node 0 */
         assertThat(tokens.get(0).signal(), is(Signal.BEGIN_COMPOSITE));
@@ -81,27 +81,18 @@ public class BasicXmlIrGenerationTest
         /* assert all elements of node 4 */
         assertThat(tokens.get(4).signal(), is(Signal.ENCODING));
         assertThat(tokens.get(4).name(), is("version"));
-        assertThat(tokens.get(4).encoding().primitiveType(), is(PrimitiveType.UINT8));
+        assertThat(tokens.get(4).encoding().primitiveType(), is(PrimitiveType.UINT16));
         assertThat(valueOf(tokens.get(4).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(4).size()), is(valueOf(1)));
+        assertThat(valueOf(tokens.get(4).size()), is(valueOf(2)));
         assertThat(valueOf(tokens.get(4).offset()), is(valueOf(6)));
         assertThat(tokens.get(4).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
-        /* assert all elements of node 5 */
-        assertThat(tokens.get(5).signal(), is(Signal.ENCODING));
-        assertThat(tokens.get(5).name(), is("reserved"));
-        assertThat(tokens.get(5).encoding().primitiveType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(tokens.get(5).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(5).size()), is(valueOf(1)));
-        assertThat(valueOf(tokens.get(5).offset()), is(valueOf(7)));
-        assertThat(tokens.get(4).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
-
         /* assert all elements of node 6 */
-        assertThat(tokens.get(6).signal(), is(Signal.END_COMPOSITE));
-        assertThat(tokens.get(6).name(), is("messageHeader"));
-        assertThat(valueOf(tokens.get(6).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(6).size()), is(valueOf(8)));
-        assertThat(valueOf(tokens.get(6).offset()), is(valueOf(0)));
+        assertThat(tokens.get(5).signal(), is(Signal.END_COMPOSITE));
+        assertThat(tokens.get(5).name(), is("messageHeader"));
+        assertThat(valueOf(tokens.get(5).id()), is(valueOf(Token.INVALID_ID)));
+        assertThat(valueOf(tokens.get(5).size()), is(valueOf(8)));
+        assertThat(valueOf(tokens.get(5).offset()), is(valueOf(0)));
     }
 
     @Test

@@ -38,14 +38,14 @@ public:
         return (sbe_uint16_t)1;
     }
 
-    static sbe_uint8_t sbeSchemaId(void)
+    static sbe_uint16_t sbeSchemaId(void)
     {
-        return (sbe_uint8_t)0;
+        return (sbe_uint16_t)0;
     }
 
-    static sbe_uint8_t sbeSchemaVersion(void)
+    static sbe_uint16_t sbeSchemaVersion(void)
     {
-        return (sbe_uint8_t)0;
+        return (sbe_uint16_t)0;
     }
 
     static const char *sbeSemanticType(void)

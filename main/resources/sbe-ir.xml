@@ -5,12 +5,11 @@
                byteOrder="littleEndian"
                description="SBE IR Serialization">
     <types>
-        <composite name="messageHeader">
+        <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="schemaId" primitiveType="uint16"/>
-            <type name="version" primitiveType="uint8"/>
-            <type name="reserved" primitiveType="uint8"/>
+            <type name="version" primitiveType="uint16"/>
         </composite>
         <composite name="groupSizeEncoding">
             <type name="blockLength" primitiveType="uint16"/>
