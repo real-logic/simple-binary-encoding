@@ -41,8 +41,7 @@ void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset)
        .blockLength(Car::sbeBlockLength())
        .templateId(Car::sbeTemplateId())
        .schemaId(Car::sbeSchemaId())
-       .version(Car::sbeSchemaVersion())
-       .reserved(0);
+       .version(Car::sbeSchemaVersion());
 }
 
 void decodeHdr(MessageHeader &hdr, char *buffer, int offset)
@@ -54,7 +53,6 @@ void decodeHdr(MessageHeader &hdr, char *buffer, int offset)
     cout << "messageHeader.templateId=" << hdr.templateId() << endl;
     cout << "messageHeader.schemaId=" << hdr.schemaId() << endl;
     cout << "messageHeader.schemaVersion=" << (sbe_uint32_t)hdr.version() << endl;
-    cout << "messageHeader.reserved=" << (sbe_uint32_t)hdr.reserved() << endl;
 }
 
 void encodeCar(Car &car, char *buffer, int offset)
