@@ -78,40 +78,21 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
     }
 
 
-    public const byte VersionNullValue = (byte)255;
+    public const ushort VersionNullValue = (ushort)65535;
 
-    public const byte VersionMinValue = (byte)0;
+    public const ushort VersionMinValue = (ushort)0;
 
-    public const byte VersionMaxValue = (byte)254;
+    public const ushort VersionMaxValue = (ushort)65534;
 
-    public byte Version
+    public ushort Version
     {
         get
         {
-            return _buffer.Uint8Get(_offset + 6);
+            return _buffer.Uint16GetLittleEndian(_offset + 6);
         }
         set
         {
-            _buffer.Uint8Put(_offset + 6, value);
-        }
-    }
-
-
-    public const byte ReservedNullValue = (byte)255;
-
-    public const byte ReservedMinValue = (byte)0;
-
-    public const byte ReservedMaxValue = (byte)254;
-
-    public byte Reserved
-    {
-        get
-        {
-            return _buffer.Uint8Get(_offset + 7);
-        }
-        set
-        {
-            _buffer.Uint8Put(_offset + 7, value);
+            _buffer.Uint16PutLittleEndian(_offset + 6, value);
         }
     }
 

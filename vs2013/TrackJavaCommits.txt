@@ -1,5 +1,11 @@
 This file contains the list of commits of Java ported to .NET (most recent at the TOP)
 
+dbd304c48100f04f7960517f03529eb99dd878c3
+[Java]: Reworked messageHeader in all schemas to reflect Issue #94.
+
+75a73f8678c639e59287b7da43999a38b0ecd567
+[Java]: Introduced schemaId header field.
+
 5645842e6c66af32e3732085ccf7ec279023dacb
 [Java]: Added static methods to get the headerSize for groups and var data. Enhancement #92.
 

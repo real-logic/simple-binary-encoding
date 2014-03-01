@@ -8,9 +8,10 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
 {
     public class FrameCodec
     {
-    public const ushort TemplateId = (ushort)1;
-    public const ushort TemplateVersion = (ushort)0;
     public const ushort BlockLength = (ushort)12;
+    public const ushort TemplateId = (ushort)1;
+    public const ushort SchemaId = (ushort)0;
+    public const ushort Schema_Version = (ushort)0;
     public const string SematicType = "";
 
     private readonly FrameCodec _parentMessage;
@@ -32,7 +33,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         _buffer = buffer;
         _offset = offset;
         _actingBlockLength = BlockLength;
-        _actingVersion = TemplateVersion;
+        _actingVersion = Schema_Version;
         Limit = offset + _actingBlockLength;
     }
 
@@ -183,7 +184,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int PackageNameHeaderSize = 1
+    public const int PackageNameHeaderSize = 1;
 
     public int GetPackageName(byte[] dst, int dstOffset, int length)
     {
@@ -226,7 +227,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int NamespaceNameHeaderSize = 1
+    public const int NamespaceNameHeaderSize = 1;
 
     public int GetNamespaceName(byte[] dst, int dstOffset, int length)
     {
@@ -269,7 +270,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
         return "";
     }
 
-    public const int SemanticVersionHeaderSize = 1
+    public const int SemanticVersionHeaderSize = 1;
 
     public int GetSemanticVersion(byte[] dst, int dstOffset, int length)
     {

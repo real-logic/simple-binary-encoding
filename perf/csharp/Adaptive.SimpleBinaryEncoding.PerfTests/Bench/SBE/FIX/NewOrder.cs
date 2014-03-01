@@ -10,8 +10,8 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     {
     public const ushort BlockLength = (ushort)156;
     public const ushort TemplateId = (ushort)68;
-    public const byte SchemaId = (byte)2;
-    public const byte Schema_Version = (byte)0;
+    public const ushort SchemaId = (ushort)2;
+    public const ushort Schema_Version = (ushort)0;
     public const string SematicType = "D";
 
     private readonly NewOrder _parentMessage;

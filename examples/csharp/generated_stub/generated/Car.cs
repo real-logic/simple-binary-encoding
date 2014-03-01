@@ -10,8 +10,8 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
     {
     public const ushort BlockLength = (ushort)45;
     public const ushort TemplateId = (ushort)1;
-    public const byte SchemaId = (byte)1;
-    public const byte Schema_Version = (byte)0;
+    public const ushort SchemaId = (ushort)1;
+    public const ushort Schema_Version = (ushort)0;
     public const string SematicType = "";
 
     private readonly Car _parentMessage;

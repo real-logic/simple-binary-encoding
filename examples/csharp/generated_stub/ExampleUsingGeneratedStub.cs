@@ -63,7 +63,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.generated_stub
             // In a real app you would use that to lookup the applicable flyweight to decode this type of message based on templateId and version.
             int actingBlockLength = MessageHeader.BlockLength;
             int schemaId = MessageHeader.SchemaId;
-            short actingVersion = MessageHeader.Version;
+            int actingVersion = MessageHeader.Version;
 
             bufferOffset += MessageHeader.Size;
             // now we decode the message
@@ -162,7 +162,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.generated_stub
 
             // decode the car properties on by one, directly from the buffer
             sb.Append("\ncar.templateId=").Append(Car.TemplateId);
-            sb.Append("\ncar.schemaId=").Append(Car.SchemaId);
+            sb.Append("\ncar.schemaId=").Append(schemaId);
             sb.Append("\ncar.schemaVersion=").Append(Car.Schema_Version);
             sb.Append("\ncar.serialNumber=").Append(car.SerialNumber);
             sb.Append("\ncar.modelYear=").Append(car.ModelYear);
