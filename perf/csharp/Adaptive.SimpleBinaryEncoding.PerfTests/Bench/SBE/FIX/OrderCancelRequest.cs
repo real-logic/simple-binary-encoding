@@ -8,9 +8,10 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
 {
     public class OrderCancelRequest
     {
-    public const ushort TemplateId = (ushort)70;
-    public const byte TemplateVersion = (byte)0;
     public const ushort BlockLength = (ushort)119;
+    public const ushort TemplateId = (ushort)70;
+    public const byte SchemaId = (byte)2;
+    public const byte Schema_Version = (byte)0;
     public const string SematicType = "F";
 
     private readonly OrderCancelRequest _parentMessage;
@@ -32,12 +33,11 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer = buffer;
         _offset = offset;
         _actingBlockLength = BlockLength;
-        _actingVersion = TemplateVersion;
+        _actingVersion = Schema_Version;
         Limit = offset + _actingBlockLength;
     }
 
-    public void WrapForDecode(DirectBuffer buffer, int offset,
-                              int actingBlockLength, int actingVersion)
+    public void WrapForDecode(DirectBuffer buffer, int offset, int actingBlockLength, int actingVersion)
     {
         _buffer = buffer;
         _offset = offset;
@@ -68,7 +68,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int AccountSchemaId = 1;
+    public const int AccountId = 1;
 
     public static string AccountMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -135,7 +135,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 0, src, srcOffset, length);
     }
 
-    public const int ClOrdIDSchemaId = 11;
+    public const int ClOrdIDId = 11;
 
     public static string ClOrdIDMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -202,7 +202,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 12, src, srcOffset, length);
     }
 
-    public const int OrderIDSchemaId = 37;
+    public const int OrderIDId = 37;
 
     public static string OrderIDMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -235,7 +235,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int OrigClOrdIDSchemaId = 41;
+    public const int OrigClOrdIDId = 41;
 
     public static string OrigClOrdIDMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -302,7 +302,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 40, src, srcOffset, length);
     }
 
-    public const int SideSchemaId = 54;
+    public const int SideId = 54;
 
     public static string SideMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -329,7 +329,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int SymbolSchemaId = 55;
+    public const int SymbolId = 55;
 
     public static string SymbolMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -396,7 +396,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 61, src, srcOffset, length);
     }
 
-    public const int TransactTimeSchemaId = 60;
+    public const int TransactTimeId = 60;
 
     public static string TransactTimeMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -429,7 +429,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int ManualOrderIndicatorSchemaId = 1028;
+    public const int ManualOrderIndicatorId = 1028;
 
     public static string ManualOrderIndicatorMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -456,7 +456,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int SecurityDescSchemaId = 107;
+    public const int SecurityDescId = 107;
 
     public static string SecurityDescMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -523,7 +523,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 76, src, srcOffset, length);
     }
 
-    public const int SecurityTypeSchemaId = 167;
+    public const int SecurityTypeId = 167;
 
     public static string SecurityTypeMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -590,7 +590,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 96, src, srcOffset, length);
     }
 
-    public const int CorrelationClOrdIDSchemaId = 9717;
+    public const int CorrelationClOrdIDId = 9717;
 
     public static string CorrelationClOrdIDMetaAttribute(MetaAttribute metaAttribute)
     {

@@ -12,15 +12,20 @@ namespace Adaptive.SimpleBinaryEncoding.Otf
     public class OtfHeaderDecoder
     {
         private readonly int _size;
-        private readonly int _templateIdOffset;
-        private readonly int _templateVersionOffset;
         private readonly int _blockLengthOffset;
-        private readonly PrimitiveType _templateIdType;
-        private readonly PrimitiveType _templateVersionType;
+        private readonly int _templateIdOffset;
+        private readonly int _schemaIdOffset;
+        private readonly int _schemaVersionOffset;
+
         private readonly PrimitiveType _blockLengthType;
-        private readonly ByteOrder _templateIdByteOrder;
-        private readonly ByteOrder _templateVersionByteOrder;
+        private readonly PrimitiveType _templateIdType;
+        private readonly PrimitiveType _schemaIdType;
+        private readonly PrimitiveType _schemaVersionType;
+
         private readonly ByteOrder _blockLengthByteOrder;
+        private readonly ByteOrder _templateIdByteOrder;
+        private readonly ByteOrder _schemaIdByteOrder;
+        private readonly ByteOrder _schemaVersionByteOrder;
 
         /// <summary>
         /// Read the message header structure and cache the meta data for finding the key fields for decoding messages.
@@ -34,22 +39,28 @@ namespace Adaptive.SimpleBinaryEncoding.Otf
             {
                 switch (token.Name)
                 {
+                    case HeaderStructure.BlockLength:
+                        _blockLengthOffset = token.Offset;
+                        _blockLengthType = token.Encoding.PrimitiveType;
+                        _blockLengthByteOrder = token.Encoding.ByteOrder;
+                        break;
+
                     case HeaderStructure.TemplateId:
                         _templateIdOffset = token.Offset;
                         _templateIdType = token.Encoding.PrimitiveType;
                         _templateIdByteOrder = token.Encoding.ByteOrder;
                         break;
 
-                    case HeaderStructure.TemplateVersion:
-                        _templateVersionOffset = token.Offset;
-                        _templateVersionType = token.Encoding.PrimitiveType;
-                        _templateVersionByteOrder = token.Encoding.ByteOrder;
+                    case HeaderStructure.SchemaId:
+                        _schemaIdOffset = token.Offset;
+                        _schemaIdType = token.Encoding.PrimitiveType;
+                        _schemaIdByteOrder = token.Encoding.ByteOrder;
                         break;
 
-                    case HeaderStructure.BlockLength:
-                        _blockLengthOffset = token.Offset;
-                        _blockLengthType = token.Encoding.PrimitiveType;
-                        _blockLengthByteOrder = token.Encoding.ByteOrder;
+                    case HeaderStructure.SchemaVersion:
+                        _schemaVersionOffset = token.Offset;
+                        _schemaVersionType = token.Encoding.PrimitiveType;
+                        _schemaVersionByteOrder = token.Encoding.ByteOrder;
                         break;
                 }
             }
@@ -75,15 +86,27 @@ namespace Adaptive.SimpleBinaryEncoding.Otf
             return Util.GetInt(buffer, bufferOffset + _templateIdOffset, _templateIdType, _templateIdByteOrder);
         }
 
+
         /// <summary>
-        /// Get the template version number from the message header.
+        /// Get the schema id number from the message header.
+        /// </summary>
+        /// <param name="buffer">buffer from which to read the value.</param>
+        /// <param name="bufferOffset">bufferOffset in the buffer at which the message header begins.</param>
+        /// <returns>the value of the schema id number.</returns>
+        public int GetSchemaId(DirectBuffer buffer, int bufferOffset)
+        {
+            return Util.GetInt(buffer, bufferOffset + _schemaIdOffset, _schemaIdType, _schemaIdByteOrder);
+        }
+
+        /// <summary>
+        /// Get the schema version number from the message header.
         /// </summary>
         /// <param name="buffer"> from which to read the value. </param>
         /// <param name="bufferOffset"> in the buffer at which the message header begins. </param>
-        /// <returns> the value of the template version number. </returns>
-        public virtual int GetTemplateVersion(DirectBuffer buffer, int bufferOffset)
+        /// <returns> the value of the schema version number. </returns>
+        public virtual int GetSchemaVersion(DirectBuffer buffer, int bufferOffset)
         {
-            return Util.GetInt(buffer, bufferOffset + _templateVersionOffset, _templateVersionType, _templateVersionByteOrder);
+            return Util.GetInt(buffer, bufferOffset + _schemaVersionOffset, _schemaVersionType, _schemaVersionByteOrder);
         }
 
         /// <summary>

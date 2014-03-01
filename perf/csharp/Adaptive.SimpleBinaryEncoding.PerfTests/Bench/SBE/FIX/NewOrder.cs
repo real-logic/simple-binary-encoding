@@ -8,9 +8,10 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
 {
     public class NewOrder
     {
-    public const ushort TemplateId = (ushort)68;
-    public const byte TemplateVersion = (byte)0;
     public const ushort BlockLength = (ushort)156;
+    public const ushort TemplateId = (ushort)68;
+    public const byte SchemaId = (byte)2;
+    public const byte Schema_Version = (byte)0;
     public const string SematicType = "D";
 
     private readonly NewOrder _parentMessage;
@@ -32,12 +33,11 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer = buffer;
         _offset = offset;
         _actingBlockLength = BlockLength;
-        _actingVersion = TemplateVersion;
+        _actingVersion = Schema_Version;
         Limit = offset + _actingBlockLength;
     }
 
-    public void WrapForDecode(DirectBuffer buffer, int offset,
-                              int actingBlockLength, int actingVersion)
+    public void WrapForDecode(DirectBuffer buffer, int offset, int actingBlockLength, int actingVersion)
     {
         _buffer = buffer;
         _offset = offset;
@@ -68,7 +68,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int AccountSchemaId = 1;
+    public const int AccountId = 1;
 
     public static string AccountMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -135,7 +135,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 0, src, srcOffset, length);
     }
 
-    public const int ClOrdIDSchemaId = 11;
+    public const int ClOrdIDId = 11;
 
     public static string ClOrdIDMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -202,7 +202,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 12, src, srcOffset, length);
     }
 
-    public const int HandInstSchemaId = 21;
+    public const int HandInstId = 21;
 
     public static string HandInstMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -229,7 +229,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int CustOrderHandlingInstSchemaId = 1031;
+    public const int CustOrderHandlingInstId = 1031;
 
     public static string CustOrderHandlingInstMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -256,7 +256,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int OrderQtySchemaId = 38;
+    public const int OrderQtyId = 38;
 
     public static string OrderQtyMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -281,7 +281,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
     }
 
-    public const int OrdTypeSchemaId = 40;
+    public const int OrdTypeId = 40;
 
     public static string OrdTypeMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -308,7 +308,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int PriceSchemaId = 44;
+    public const int PriceId = 44;
 
     public static string PriceMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -333,7 +333,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
     }
 
-    public const int SideSchemaId = 54;
+    public const int SideId = 54;
 
     public static string SideMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -360,7 +360,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int SymbolSchemaId = 55;
+    public const int SymbolId = 55;
 
     public static string SymbolMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -427,7 +427,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 49, src, srcOffset, length);
     }
 
-    public const int TimeInForceSchemaId = 59;
+    public const int TimeInForceId = 59;
 
     public static string TimeInForceMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -454,7 +454,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int TransactTimeSchemaId = 60;
+    public const int TransactTimeId = 60;
 
     public static string TransactTimeMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -487,7 +487,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int ManualOrderIndicatorSchemaId = 1028;
+    public const int ManualOrderIndicatorId = 1028;
 
     public static string ManualOrderIndicatorMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -514,7 +514,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int AllocAccountSchemaId = 79;
+    public const int AllocAccountId = 79;
 
     public static string AllocAccountMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -581,7 +581,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 65, src, srcOffset, length);
     }
 
-    public const int StopPxSchemaId = 99;
+    public const int StopPxId = 99;
 
     public static string StopPxMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -606,7 +606,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
     }
 
-    public const int SecurityDescSchemaId = 107;
+    public const int SecurityDescId = 107;
 
     public static string SecurityDescMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -673,7 +673,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 84, src, srcOffset, length);
     }
 
-    public const int MinQtySchemaId = 110;
+    public const int MinQtyId = 110;
 
     public static string MinQtyMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -698,7 +698,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
     }
 
-    public const int SecurityTypeSchemaId = 167;
+    public const int SecurityTypeId = 167;
 
     public static string SecurityTypeMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -765,7 +765,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 108, src, srcOffset, length);
     }
 
-    public const int CustomerOrFirmSchemaId = 204;
+    public const int CustomerOrFirmId = 204;
 
     public static string CustomerOrFirmMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -792,7 +792,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int MaxShowSchemaId = 210;
+    public const int MaxShowId = 210;
 
     public static string MaxShowMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -817,7 +817,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
     }
 
-    public const int ExpireDateSchemaId = 432;
+    public const int ExpireDateId = 432;
 
     public static string ExpireDateMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -850,7 +850,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int SelfMatchPreventionIDSchemaId = 7928;
+    public const int SelfMatchPreventionIDId = 7928;
 
     public static string SelfMatchPreventionIDMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -917,7 +917,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 118, src, srcOffset, length);
     }
 
-    public const int CtiCodeSchemaId = 9702;
+    public const int CtiCodeId = 9702;
 
     public static string CtiCodeMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -944,7 +944,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int GiveUpFirmSchemaId = 9707;
+    public const int GiveUpFirmId = 9707;
 
     public static string GiveUpFirmMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -1011,7 +1011,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 131, src, srcOffset, length);
     }
 
-    public const int CmtaGiveupCDSchemaId = 9708;
+    public const int CmtaGiveupCDId = 9708;
 
     public static string CmtaGiveupCDMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -1078,7 +1078,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer.SetBytes(_offset + 134, src, srcOffset, length);
     }
 
-    public const int CorrelationClOrdIDSchemaId = 9717;
+    public const int CorrelationClOrdIDId = 9717;
 
     public static string CorrelationClOrdIDMetaAttribute(MetaAttribute metaAttribute)
     {

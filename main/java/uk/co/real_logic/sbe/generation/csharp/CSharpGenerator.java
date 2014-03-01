@@ -264,7 +264,7 @@ public class CSharpGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-                indent + "    public const int BlockLength = %d;\n",
+                indent + "    public const int BlockLength = %d;\n" +
                 indent + "    public const int HeaderSize = %d;\n",
                 blockLength,
                 dimensionHeaderSize
@@ -369,7 +369,7 @@ public class CSharpGenerator implements CodeGenerator
 
                 sb.append(String.format(
                         "\n" +
-                                "    public const int %sHeaderSize = %d\n",
+                                "    public const int %sHeaderSize = %d;\n",
                         propertyName,
                         sizeOfLengthField
                 ));
@@ -946,15 +946,17 @@ public class CSharpGenerator implements CodeGenerator
     {
         final String blockLengthType = cSharpTypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = cSharpTypeName(ir.headerStructure().templateIdType());
-        final String templateVersionType = cSharpTypeName(ir.headerStructure().schemaVersionType());
+        final String schemaIdType = cSharpTypeName(ir.headerStructure().schemaIdType());
+        final String schemaVersionType = cSharpTypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
-            "    public const %s TemplateId = %s;\n" +
-            "    public const %s TemplateVersion = %s;\n" +
-            "    public const %s BlockLength = %s;\n" +
-            "    public const string SematicType = \"%s\";\n\n" +
-            "    private readonly %s _parentMessage;\n" +
+            "    public const %1$s BlockLength = %2$s;\n" +
+            "    public const %3$s TemplateId = %4$s;\n" +
+            "    public const %5$s SchemaId = %6$s;\n" +
+            "    public const %7$s Schema_Version = %8$s;\n" +
+            "    public const string SematicType = \"%9$s\";\n\n" +
+            "    private readonly %10$s _parentMessage;\n" +
             "    private DirectBuffer _buffer;\n" +
             "    private int _offset;\n" +
             "    private int _limit;\n" +
@@ -962,7 +964,7 @@ public class CSharpGenerator implements CodeGenerator
             "    private int _actingVersion;\n" +
             "\n" +
             "    public int Offset { get { return _offset; } }\n\n" +
-            "    public %s()\n" +
+            "    public %10$s()\n" +
             "    {\n" +
             "        _parentMessage = this;\n" +
             "    }\n\n" +
@@ -971,7 +973,7 @@ public class CSharpGenerator implements CodeGenerator
             "        _buffer = buffer;\n" +
             "        _offset = offset;\n" +
             "        _actingBlockLength = BlockLength;\n" +
-            "        _actingVersion = TemplateVersion;\n" +
+            "        _actingVersion = Schema_Version;\n" +
             "        Limit = offset + _actingBlockLength;\n" +
             "    }\n\n" +
             "    public void WrapForDecode(DirectBuffer buffer, int offset, int actingBlockLength, int actingVersion)\n" +
@@ -1001,15 +1003,16 @@ public class CSharpGenerator implements CodeGenerator
             "            _limit = value;\n" +
             "        }\n" +
             "    }\n\n",
-            templateIdType,
-            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
-            templateVersionType,
-            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
-            blockLengthType,
-            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
-            semanticType,
-            className,
-            className
+                blockLengthType,
+                generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
+                templateIdType,
+                generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
+                schemaIdType,
+                generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
+                schemaVersionType,
+                generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
+                semanticType,
+                className
         );
     }
 

@@ -10,9 +10,10 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE
             int bufferIndex)
         {
             messageHeader.Wrap(buffer, bufferIndex, 0);
-            messageHeader.TemplateId = MarketDataIncrementalRefreshTrades.TemplateId;
-            messageHeader.Version = MarketDataIncrementalRefreshTrades.TemplateVersion;
             messageHeader.BlockLength = MarketDataIncrementalRefreshTrades.BlockLength;
+            messageHeader.TemplateId = MarketDataIncrementalRefreshTrades.TemplateId;
+            messageHeader.SchemaId = MarketDataIncrementalRefreshTrades.SchemaId;
+            messageHeader.Version = MarketDataIncrementalRefreshTrades.Schema_Version;
 
             marketData.WrapForEncode(buffer, bufferIndex + MessageHeader.Size);
             marketData.TransactTime = 1234L;

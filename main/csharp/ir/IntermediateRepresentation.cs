@@ -12,6 +12,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
     {
         private readonly string _packageName;
         private readonly string _namespaceName;
+        private readonly int _id;
         private readonly int _version;
         private readonly string _semanticVersion;
         
@@ -26,9 +27,11 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         /// <param name="namespaceName"> that should be applied to generated code.</param>
         /// <param name="semanticVersion">semantic version for mapping to the application domain.</param>
         /// <param name="headerTokens"> representing the message headerStructure. </param>
+        /// <param name="id"></param>
         /// <param name="version"></param>
         public IntermediateRepresentation(string packageName, 
             string namespaceName, 
+            int id,
             int version,
             string semanticVersion,
             IList<Token> headerTokens)
@@ -37,11 +40,12 @@ namespace Adaptive.SimpleBinaryEncoding.ir
 		    Verify.NotNull(headerTokens, "headerTokens");
 
 		    _packageName = packageName;
-		    _headerStructure = new HeaderStructure(new List<Token>(headerTokens));
+            _namespaceName = namespaceName;
+            _id = id;
 		    _version = version;
             _semanticVersion = semanticVersion;
-            _namespaceName = namespaceName;
-	    }
+            _headerStructure = new HeaderStructure(new List<Token>(headerTokens));
+        }
 
         /// <summary>
         /// Return the <seealso cref="HeaderStructure"/> description for all messages.
@@ -120,6 +124,14 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         public string NamespaceName
         {
             get { return _namespaceName; }
+        }
+
+        /// <summary>
+        /// Get the id number of the schema.
+        /// </summary>
+        public int Id
+        {
+            get { return _id; }
         }
 
         /// <summary>

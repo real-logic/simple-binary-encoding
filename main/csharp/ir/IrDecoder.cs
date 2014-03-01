@@ -20,6 +20,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         private readonly DirectBuffer _valBuffer;
         private int _irVersion;
         private IList<Token> _irHeader;
+        private int _irId;
         private string _irPackageName;
         private string _irNamespaceName = null;
         private int _offset;
@@ -72,7 +73,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
                 i = CaptureHeader(tokens, 0);
             }
 
-            var ir = new IntermediateRepresentation(_irPackageName, _irNamespaceName, _irVersion, _semanticVersion, _irHeader);
+            var ir = new IntermediateRepresentation(_irPackageName, _irNamespaceName, _irId, _irVersion, _semanticVersion, _irHeader);
 
             for (; i < size; i++)
             {
@@ -114,7 +115,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
                 messageTokens.Add(token);
             } while (Signal.EndMessage != token.Signal);
 
-            ir.AddMessage(tokens[index].SchemaId, messageTokens);
+            ir.AddMessage(tokens[index].Id, messageTokens);
 
             return index;
         }
@@ -123,9 +124,11 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         {
             _frameCodec.WrapForDecode(_directBuffer, _offset, FrameCodec.BlockLength, 0);
 
-            if (_frameCodec.SbeIrVersion != 0)
+            _irId = _frameCodec.IrId;
+
+            if (_frameCodec.IrVersion != 0)
             {
-                throw new InvalidOperationException("Unknown SBE version: " + _frameCodec.SbeIrVersion);
+                throw new InvalidOperationException("Unknown SBE version: " + _frameCodec.IrVersion);
             }
 
             _irVersion = _frameCodec.SchemaVersion;
@@ -166,7 +169,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             tokenBuilder
                 .Offset(_tokenCodec.TokenOffset)
                 .Size(_tokenCodec.TokenSize)
-                .SchemaId(_tokenCodec.SchemaId)
+                .Id(_tokenCodec.FieldId)
                 .Version(_tokenCodec.TokenVersion)
                 .Signal(IrUtil.MapSignal(_tokenCodec.Signal));
 

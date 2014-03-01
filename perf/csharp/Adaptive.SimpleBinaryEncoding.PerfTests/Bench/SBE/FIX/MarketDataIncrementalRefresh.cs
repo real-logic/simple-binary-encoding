@@ -8,9 +8,10 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
 {
     public class MarketDataIncrementalRefresh
     {
-    public const ushort TemplateId = (ushort)88;
-    public const byte TemplateVersion = (byte)0;
     public const ushort BlockLength = (ushort)2;
+    public const ushort TemplateId = (ushort)88;
+    public const byte SchemaId = (byte)2;
+    public const byte Schema_Version = (byte)0;
     public const string SematicType = "X";
 
     private readonly MarketDataIncrementalRefresh _parentMessage;
@@ -32,12 +33,11 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         _buffer = buffer;
         _offset = offset;
         _actingBlockLength = BlockLength;
-        _actingVersion = TemplateVersion;
+        _actingVersion = Schema_Version;
         Limit = offset + _actingBlockLength;
     }
 
-    public void WrapForDecode(DirectBuffer buffer, int offset,
-                              int actingBlockLength, int actingVersion)
+    public void WrapForDecode(DirectBuffer buffer, int offset, int actingBlockLength, int actingVersion)
     {
         _buffer = buffer;
         _offset = offset;
@@ -68,7 +68,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
     }
 
 
-    public const int TradeDateSchemaId = 75;
+    public const int TradeDateId = 75;
 
     public static string TradeDateMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -103,7 +103,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
 
     private readonly EntriesGroup _entries = new EntriesGroup();
 
-    public const long EntriesSchemaId = 268;
+    public const long EntriesId = 268;
 
 
     public EntriesGroup Entries
@@ -141,7 +141,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            _parentMessage.Limit = parentMessage.Limit + 3;
+            _parentMessage.Limit = parentMessage.Limit + HeaderSize;
         }
 
         public void WrapForEncode(MarketDataIncrementalRefresh parentMessage, DirectBuffer buffer, int count)
@@ -154,12 +154,16 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             _index = -1;
             _count = count;
             _blockLength = 82;
-            parentMessage.Limit = parentMessage.Limit + 3;
+            parentMessage.Limit = parentMessage.Limit + HeaderSize;
         }
+
+        public const int BlockLength = 82;
+        public const int HeaderSize = 3;
+        public int ActingBlockLength { get { return BlockLength; } }
 
         public int Count { get { return _count; } }
 
-        public bool HasNext { get { return _index + 1 < _count; } }
+        public bool HasNext { get { return (_index + 1) < _count; } }
 
         public EntriesGroup Next()
         {
@@ -175,7 +179,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             return this;
         }
 
-        public const int MdUpdateActionSchemaId = 279;
+        public const int MdUpdateActionId = 279;
 
         public static string MdUpdateActionMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -202,7 +206,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int MdPriceLevelSchemaId = 1023;
+        public const int MdPriceLevelId = 1023;
 
         public static string MdPriceLevelMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -235,7 +239,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int MdEntryTypeSchemaId = 269;
+        public const int MdEntryTypeId = 269;
 
         public static string MdEntryTypeMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -262,7 +266,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int SecurityIdSourceSchemaId = 22;
+        public const int SecurityIdSourceId = 22;
 
         public static string SecurityIdSourceMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -295,7 +299,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int SecurityIdSchemaId = 48;
+        public const int SecurityIdId = 48;
 
         public static string SecurityIdMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -328,7 +332,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int RptSeqSchemaId = 83;
+        public const int RptSeqId = 83;
 
         public static string RptSeqMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -361,7 +365,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int QuoteConditionSchemaId = 276;
+        public const int QuoteConditionId = 276;
 
         public static string QuoteConditionMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -387,7 +391,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             }
         }
 
-        public const int MdEntryPxSchemaId = 270;
+        public const int MdEntryPxId = 270;
 
         public static string MdEntryPxMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -412,7 +416,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             }
         }
 
-        public const int NumberOfOrdersSchemaId = 346;
+        public const int NumberOfOrdersId = 346;
 
         public static string NumberOfOrdersMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -445,7 +449,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int MdEntryTimeSchemaId = 273;
+        public const int MdEntryTimeId = 273;
 
         public static string MdEntryTimeMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -478,7 +482,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int MdEntrySizeSchemaId = 271;
+        public const int MdEntrySizeId = 271;
 
         public static string MdEntrySizeMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -503,7 +507,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             }
         }
 
-        public const int TradingSessionIdSchemaId = 336;
+        public const int TradingSessionIdId = 336;
 
         public static string TradingSessionIdMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -530,7 +534,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int NetChgPrevDaySchemaId = 451;
+        public const int NetChgPrevDayId = 451;
 
         public static string NetChgPrevDayMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -555,7 +559,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             }
         }
 
-        public const int TickDirectionSchemaId = 274;
+        public const int TickDirectionId = 274;
 
         public static string TickDirectionMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -582,7 +586,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int OpenCloseSettleFlagSchemaId = 286;
+        public const int OpenCloseSettleFlagId = 286;
 
         public static string OpenCloseSettleFlagMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -609,7 +613,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int SettleDateSchemaId = 64;
+        public const int SettleDateId = 64;
 
         public static string SettleDateMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -642,7 +646,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int TradeConditionSchemaId = 277;
+        public const int TradeConditionId = 277;
 
         public static string TradeConditionMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -668,7 +672,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             }
         }
 
-        public const int TradeVolumeSchemaId = 1020;
+        public const int TradeVolumeId = 1020;
 
         public static string TradeVolumeMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -693,7 +697,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             }
         }
 
-        public const int MdQuoteTypeSchemaId = 1070;
+        public const int MdQuoteTypeId = 1070;
 
         public static string MdQuoteTypeMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -720,7 +724,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int FixingBracketSchemaId = 5790;
+        public const int FixingBracketId = 5790;
 
         public static string FixingBracketMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -753,7 +757,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int AggressorSideSchemaId = 5797;
+        public const int AggressorSideId = 5797;
 
         public static string AggressorSideMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -780,7 +784,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int MatchEventIndicatorSchemaId = 5799;
+        public const int MatchEventIndicatorId = 5799;
 
         public static string MatchEventIndicatorMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -807,7 +811,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
 
 
-        public const int TradeIdSchemaId = 1003;
+        public const int TradeIdId = 1003;
 
         public static string TradeIdMetaAttribute(MetaAttribute metaAttribute)
         {

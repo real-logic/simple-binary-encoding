@@ -77,7 +77,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
 
         private readonly Signal _signal;
         private readonly string _name;
-        private readonly int _schemaId;
+        private readonly int _id;
         private readonly int _version;
         private readonly int _size;
         private readonly int _offset;
@@ -88,12 +88,12 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         /// </summary>
         /// <param name="signal"> for the token role </param>
         /// <param name="name"> of the token in the message </param>
-        /// <param name="schemaId"> as the identifier in the message declaration </param>
+        /// <param name="id"> as the identifier in the message declaration </param>
         /// <param name="version"> application within the template </param>
         /// <param name="size"> of the component part </param>
         /// <param name="offset"> in the underlying message as octets </param>
         /// <param name="encoding"> of the primitive field </param>
-        public Token(Signal signal, string name, int schemaId, int version, int size, int offset, Encoding encoding)
+        public Token(Signal signal, string name, int id, int version, int size, int offset, Encoding encoding)
         {
             Verify.NotNull(signal, "signal");
             Verify.NotNull(name, "name");
@@ -101,7 +101,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
 
             _signal = signal;
             _name = name;
-            _schemaId = schemaId;
+            _id = id;
             _version = version;
             _size = size;
             _offset = offset;
@@ -130,9 +130,9 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         /// Return the ID of the token assigned by the specification
         /// </summary>
         /// <value>ID of the token assigned by the specification</value>
-        public int SchemaId
+        public int Id
         {
-            get { return _schemaId; }
+            get { return _id; }
         }
 
         /// <summary>
@@ -220,14 +220,14 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
-            return string.Format("Token{{" + "signal={0}, name='{1}\'" + ", schemaId={2}, version={3}, size={4}, offset={5}, encoding={6}{7}", Signal, Name, SchemaId, _version, _size, _offset, _encoding, '}');
+            return string.Format("Token{{" + "signal={0}, name='{1}\'" + ", id={2}, version={3}, size={4}, offset={5}, encoding={6}{7}", Signal, Name, Id, _version, _size, _offset, _encoding, '}');
         }
 
         internal class Builder
         {
             private Signal _signal;
             private string _name;
-            private int _schemaId = InvalidId;
+            private int _id = InvalidId;
             private int _version = 0;
             private int _size = 0;
             private int _offset = 0;
@@ -245,9 +245,9 @@ namespace Adaptive.SimpleBinaryEncoding.ir
                 return this;
             }
 
-            public Builder SchemaId(int schemaId)
+            public Builder Id(int id)
             {
-                this._schemaId = schemaId;
+                _id = id;
                 return this;
             }
 
@@ -277,7 +277,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
 
             public Token Build()
             {
-                return new Token(_signal, _name, _schemaId, _version, _size, _offset, _encoding);
+                return new Token(_signal, _name, _id, _version, _size, _offset, _encoding);
             }
         }
     }

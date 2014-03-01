@@ -38,7 +38,8 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Otf
             var buffer = new DirectBuffer(encodedMsgBuffer);
 
             int templateId = headerDecoder.GetTemplateId(buffer, bufferOffset);
-            int actingVersion = headerDecoder.GetTemplateVersion(buffer, bufferOffset);
+            int schemaId = headerDecoder.GetSchemaId(buffer, bufferOffset);
+            int actingVersion = headerDecoder.GetSchemaVersion(buffer, bufferOffset);
             int blockLength = headerDecoder.GetBlockLength(buffer, bufferOffset);
 
             bufferOffset += headerDecoder.Size;
@@ -65,7 +66,8 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Otf
             MESSAGE_HEADER.Wrap(directBuffer, bufferOffset, ActingVersion);
             MESSAGE_HEADER.BlockLength = Car.BlockLength;
             MESSAGE_HEADER.TemplateId = Car.TemplateId;
-            MESSAGE_HEADER.Version = Car.TemplateVersion;
+            MESSAGE_HEADER.SchemaId = Car.SchemaId;
+            MESSAGE_HEADER.Version = Car.Schema_Version;
 
             bufferOffset += MessageHeader.Size;
 

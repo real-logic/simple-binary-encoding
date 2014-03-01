@@ -8,14 +8,16 @@ namespace Adaptive.SimpleBinaryEncoding.ir
     /// </summary>
     public class HeaderStructure
     {
-        internal const string TemplateId = "templateId";
-        internal const string TemplateVersion = "version";
         internal const string BlockLength = "blockLength";
+        internal const string TemplateId = "templateId";
+        internal const string SchemaId = "schemaId";
+        internal const string SchemaVersion = "version";
 
         private readonly IList<Token> _tokens;
-        private PrimitiveType _templateIdType;
-        private PrimitiveType _templateVersionType;
         private PrimitiveType _blockLengthType;
+        private PrimitiveType _templateIdType;
+        private PrimitiveType _schemaIdType;
+        private PrimitiveType _schemaVersionType;
 
         internal HeaderStructure(IList<Token> tokens)
         {
@@ -24,9 +26,10 @@ namespace Adaptive.SimpleBinaryEncoding.ir
 
             CaptureEncodings(tokens);
 
-            Verify.NotNull(_templateIdType, "templateIdType");
-            Verify.NotNull(_templateVersionType, "templateVersionType");
             Verify.NotNull(_blockLengthType, "blockLengthType");
+            Verify.NotNull(_templateIdType, "templateIdType");
+            Verify.NotNull(_schemaIdType, "schemaIdType");
+            Verify.NotNull(_schemaVersionType, "schemaVersionType");
         }
 
         private void CaptureEncodings(IList<Token> tokens)
@@ -35,16 +38,20 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             {
                 switch (token.Name)
                 {
+                    case BlockLength:
+                        _blockLengthType = token.Encoding.PrimitiveType;
+                        break;
+
                     case TemplateId:
                         _templateIdType = token.Encoding.PrimitiveType;
                         break;
 
-                    case TemplateVersion:
-                        _templateVersionType = token.Encoding.PrimitiveType;
+                    case SchemaId:
+                        _schemaIdType = token.Encoding.PrimitiveType;
                         break;
 
-                    case BlockLength:
-                        _blockLengthType = token.Encoding.PrimitiveType;
+                    case SchemaVersion:
+                        _schemaVersionType = token.Encoding.PrimitiveType;
                         break;
                 }
             }
@@ -59,6 +66,14 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         }
 
         /// <summary>
+        /// Underyling type used to store block length information
+        /// </summary>
+        public PrimitiveType BlockLengthType
+        {
+            get { return _blockLengthType; }
+        }
+
+        /// <summary>
         /// Underyling type used to store template id infomation
         /// </summary>
         public PrimitiveType TemplateIdType
@@ -67,19 +82,19 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         }
 
         /// <summary>
-        /// Underyling type used to store template version information
+        /// Underyling type used to store schema id information
         /// </summary>
-        public PrimitiveType TemplateVersionType
+        public PrimitiveType SchemaIdType
         {
-            get { return _templateVersionType; }
+            get { return _schemaIdType; }
         }
 
         /// <summary>
-        /// Underyling type used to store block length information
+        /// Underyling type used to store schema version information
         /// </summary>
-        public PrimitiveType BlockLengthType
+        public PrimitiveType SchemaVersionType
         {
-            get { return _blockLengthType; }
+            get { return _schemaVersionType; }
         }
     }
 }

@@ -67,7 +67,7 @@
   <ItemGroup>
     <TestProjects Include="..\target\test\csharp\bin\$(BuildConfiguration)\Adaptive.SimpleBinaryEncoding.Tests.dll" />
   </ItemGroup>
-  <Target Name="RunTests" DependsOnTargets="Compile">
+  <Target Name="RunTests" DependsOnTargets="CIBuild">
     <NUnit   Assemblies="@(TestProjects)"
         ToolPath=".\packages\NUnit.Runners.lite.2.6.3.20131019\"
         OutputXmlFile="$(NUnitResultsFile)"
@@ -96,9 +96,12 @@
   </Target>
 
   <!-- This target uses SbeTool to generate the SBE stubs for FIX messages used to validate that SbeTool generates valide C# -->
+  
+  <!-- TODO enable once we get latest XML from CME -->
   <Target Name="GenerateCmeFix">
-    <Message Text="Generating stubs for CME FIX messages..." Importance="high" />
-    <Exec Command="java -Dsbe.output.dir=..\test\csharp\Generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Tests.Generated -jar ..\target\dist\sbe.jar ..\test\csharp\Generated\templates_FIXBinary.xml" />
+    <!--<Message Text="Generating stubs for CME FIX messages..." Importance="high" />
+    <Exec Command="java -Dsbe.output.dir=..\test\csharp\Generated -Dsbe.target.language=CSHARP -Dsbe.target.namespace=Adaptive.SimpleBinaryEncoding.Tests.Generated -jar ..\target\dist\sbe.jar ..\test\csharp\Generated\templates_FIXBinary.xml" />-->
+  
   </Target>
 
   <Target Name="CIBuild" DependsOnTargets="GenerateIR;GenerateExamples;GeneratePerfTestStubs;GenerateCmeFix;Compile"/>

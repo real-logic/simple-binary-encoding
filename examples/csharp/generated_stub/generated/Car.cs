@@ -8,9 +8,10 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 {
     public class Car
     {
-    public const ushort TemplateId = (ushort)1;
-    public const byte TemplateVersion = (byte)0;
     public const ushort BlockLength = (ushort)45;
+    public const ushort TemplateId = (ushort)1;
+    public const byte SchemaId = (byte)1;
+    public const byte Schema_Version = (byte)0;
     public const string SematicType = "";
 
     private readonly Car _parentMessage;
@@ -32,12 +33,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         _buffer = buffer;
         _offset = offset;
         _actingBlockLength = BlockLength;
-        _actingVersion = TemplateVersion;
+        _actingVersion = Schema_Version;
         Limit = offset + _actingBlockLength;
     }
 
-    public void WrapForDecode(DirectBuffer buffer, int offset,
-                              int actingBlockLength, int actingVersion)
+    public void WrapForDecode(DirectBuffer buffer, int offset, int actingBlockLength, int actingVersion)
     {
         _buffer = buffer;
         _offset = offset;
@@ -68,7 +68,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
     }
 
 
-    public const int SerialNumberSchemaId = 1;
+    public const int SerialNumberId = 1;
 
     public static string SerialNumberMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -101,7 +101,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
     }
 
 
-    public const int ModelYearSchemaId = 2;
+    public const int ModelYearId = 2;
 
     public static string ModelYearMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -134,7 +134,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
     }
 
 
-    public const int AvailableSchemaId = 3;
+    public const int AvailableId = 3;
 
     public static string AvailableMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -161,7 +161,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
     }
 
 
-    public const int CodeSchemaId = 4;
+    public const int CodeId = 4;
 
     public static string CodeMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -188,7 +188,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
     }
 
 
-    public const int SomeNumbersSchemaId = 5;
+    public const int SomeNumbersId = 5;
 
     public static string SomeNumbersMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -230,7 +230,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         _buffer.Int32PutLittleEndian(_offset + 12 + (index * 4), value);
     }
 
-    public const int VehicleCodeSchemaId = 6;
+    public const int VehicleCodeId = 6;
 
     public static string VehicleCodeMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -297,7 +297,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         _buffer.SetBytes(_offset + 32, src, srcOffset, length);
     }
 
-    public const int ExtrasSchemaId = 7;
+    public const int ExtrasId = 7;
 
     public static string ExtrasMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -323,7 +323,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         }
     }
 
-    public const int EngineSchemaId = 8;
+    public const int EngineId = 8;
 
     public static string EngineMetaAttribute(MetaAttribute metaAttribute)
     {
@@ -350,7 +350,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 
     private readonly FuelFiguresGroup _fuelFigures = new FuelFiguresGroup();
 
-    public const long FuelFiguresSchemaId = 9;
+    public const long FuelFiguresId = 9;
 
 
     public FuelFiguresGroup FuelFigures
@@ -388,7 +388,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            _parentMessage.Limit = parentMessage.Limit + 3;
+            _parentMessage.Limit = parentMessage.Limit + HeaderSize;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -401,12 +401,16 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _index = -1;
             _count = count;
             _blockLength = 6;
-            parentMessage.Limit = parentMessage.Limit + 3;
+            parentMessage.Limit = parentMessage.Limit + HeaderSize;
         }
+
+        public const int BlockLength = 6;
+        public const int HeaderSize = 3;
+        public int ActingBlockLength { get { return BlockLength; } }
 
         public int Count { get { return _count; } }
 
-        public bool HasNext { get { return _index + 1 < _count; } }
+        public bool HasNext { get { return (_index + 1) < _count; } }
 
         public FuelFiguresGroup Next()
         {
@@ -422,7 +426,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             return this;
         }
 
-        public const int SpeedSchemaId = 10;
+        public const int SpeedId = 10;
 
         public static string SpeedMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -455,7 +459,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         }
 
 
-        public const int MpgSchemaId = 11;
+        public const int MpgId = 11;
 
         public static string MpgMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -491,7 +495,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 
     private readonly PerformanceFiguresGroup _performanceFigures = new PerformanceFiguresGroup();
 
-    public const long PerformanceFiguresSchemaId = 12;
+    public const long PerformanceFiguresId = 12;
 
 
     public PerformanceFiguresGroup PerformanceFigures
@@ -529,7 +533,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            _parentMessage.Limit = parentMessage.Limit + 3;
+            _parentMessage.Limit = parentMessage.Limit + HeaderSize;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -542,12 +546,16 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _index = -1;
             _count = count;
             _blockLength = 1;
-            parentMessage.Limit = parentMessage.Limit + 3;
+            parentMessage.Limit = parentMessage.Limit + HeaderSize;
         }
+
+        public const int BlockLength = 1;
+        public const int HeaderSize = 3;
+        public int ActingBlockLength { get { return BlockLength; } }
 
         public int Count { get { return _count; } }
 
-        public bool HasNext { get { return _index + 1 < _count; } }
+        public bool HasNext { get { return (_index + 1) < _count; } }
 
         public PerformanceFiguresGroup Next()
         {
@@ -563,7 +571,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             return this;
         }
 
-        public const int OctaneRatingSchemaId = 13;
+        public const int OctaneRatingId = 13;
 
         public static string OctaneRatingMetaAttribute(MetaAttribute metaAttribute)
         {
@@ -598,7 +606,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 
         private readonly AccelerationGroup _acceleration = new AccelerationGroup();
 
-        public const long AccelerationSchemaId = 14;
+        public const long AccelerationId = 14;
 
 
         public AccelerationGroup Acceleration
@@ -636,7 +644,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
                 _blockLength = _dimensions.BlockLength;
                 _actingVersion = actingVersion;
                 _index = -1;
-                _parentMessage.Limit = parentMessage.Limit + 3;
+                _parentMessage.Limit = parentMessage.Limit + HeaderSize;
             }
 
             public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -649,12 +657,16 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
                 _index = -1;
                 _count = count;
                 _blockLength = 6;
-                parentMessage.Limit = parentMessage.Limit + 3;
+                parentMessage.Limit = parentMessage.Limit + HeaderSize;
             }
+
+            public const int BlockLength = 6;
+            public const int HeaderSize = 3;
+            public int ActingBlockLength { get { return BlockLength; } }
 
             public int Count { get { return _count; } }
 
-            public bool HasNext { get { return _index + 1 < _count; } }
+            public bool HasNext { get { return (_index + 1) < _count; } }
 
             public AccelerationGroup Next()
             {
@@ -670,7 +682,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
                 return this;
             }
 
-            public const int MphSchemaId = 15;
+            public const int MphId = 15;
 
             public static string MphMetaAttribute(MetaAttribute metaAttribute)
             {
@@ -703,7 +715,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             }
 
 
-            public const int SecondsSchemaId = 16;
+            public const int SecondsId = 16;
 
             public static string SecondsMetaAttribute(MetaAttribute metaAttribute)
             {
@@ -738,7 +750,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         }
     }
 
-    public const int MakeSchemaId = 17;
+    public const int MakeId = 17;
 
     public const string MakeCharacterEncoding = "UTF-8";
 
@@ -754,6 +766,8 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 
         return "";
     }
+
+    public const int MakeHeaderSize = 1;
 
     public int GetMake(byte[] dst, int dstOffset, int length)
     {
@@ -779,7 +793,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         return length;
     }
 
-    public const int ModelSchemaId = 18;
+    public const int ModelId = 18;
 
     public const string ModelCharacterEncoding = "UTF-8";
 
@@ -795,6 +809,8 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 
         return "";
     }
+
+    public const int ModelHeaderSize = 1;
 
     public int GetModel(byte[] dst, int dstOffset, int length)
     {
