@@ -119,7 +119,7 @@
                 <compilerarg value="-Xlint:unchecked"/>
                 <compilerarg value="-XDignore.symbol.file"/>
             </javac>
-            <junit printsummary="withOutAndErr" errorProperty="test.failed" failureProperty="test.failed">
+            <junit printsummary="withOutAndErr" errorProperty="test.failed" failureProperty="test.failed" fork="true">
                 <sysproperty key="results.dir" value="${dir.reports.unit}"/>
                 <classpath refid="test.classpath"/>
                 <formatter type="xml"/>
