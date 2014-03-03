@@ -304,12 +304,12 @@ public class XmlSchemaParser
     {
         if (!ValidationUtil.isSbeCppName(name))
         {
-            handleWarning(node, "name is not valid for C++: " + name);
+            handleError(node, "name is not valid for C++: " + name);
         }
 
         if (!ValidationUtil.isSbeJavaName(name))
         {
-            handleWarning(node, "name is not valid for Java: " + name);
+            handleError(node, "name is not valid for Java: " + name);
         }
     }
 

@@ -90,8 +90,8 @@ public class ErrorHandlerTest
         parseTestXmlAddToMap(map, "/types/enum", testXmlString, handler);
         parseTestXmlAddToMap(map, "/types/set", testXmlString, handler);
 
-        assertThat(valueOf(handler.errorCount()), is(valueOf(3)));
-        assertThat(valueOf(handler.warningCount()), is(valueOf(19)));
+        assertThat(valueOf(handler.errorCount()), is(valueOf(17)));
+        assertThat(valueOf(handler.warningCount()), is(valueOf(5)));
     }
 
     @Test(expected = IllegalStateException.class)
