@@ -300,6 +300,11 @@ public:
         return "";
     }
 
+    static int packageNameHeaderSize()
+    {
+        return 1;
+    }
+
     sbe_int64_t packageNameLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
@@ -368,6 +373,11 @@ public:
         return "";
     }
 
+    static int namespaceNameHeaderSize()
+    {
+        return 1;
+    }
+
     sbe_int64_t namespaceNameLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
@@ -434,6 +444,11 @@ public:
         }
 
         return "";
+    }
+
+    static int semanticVersionHeaderSize()
+    {
+        return 1;
     }
 
     sbe_int64_t semanticVersionLength(void) const

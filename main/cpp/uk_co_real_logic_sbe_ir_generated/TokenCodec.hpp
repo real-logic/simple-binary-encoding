@@ -510,6 +510,11 @@ public:
         return "";
     }
 
+    static int nameHeaderSize()
+    {
+        return 1;
+    }
+
     sbe_int64_t nameLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
@@ -576,6 +581,11 @@ public:
         }
 
         return "";
+    }
+
+    static int constValueHeaderSize()
+    {
+        return 1;
     }
 
     sbe_int64_t constValueLength(void) const
@@ -646,6 +656,11 @@ public:
         return "";
     }
 
+    static int minValueHeaderSize()
+    {
+        return 1;
+    }
+
     sbe_int64_t minValueLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
@@ -712,6 +727,11 @@ public:
         }
 
         return "";
+    }
+
+    static int maxValueHeaderSize()
+    {
+        return 1;
     }
 
     sbe_int64_t maxValueLength(void) const
@@ -782,6 +802,11 @@ public:
         return "";
     }
 
+    static int nullValueHeaderSize()
+    {
+        return 1;
+    }
+
     sbe_int64_t nullValueLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
@@ -848,6 +873,11 @@ public:
         }
 
         return "";
+    }
+
+    static int characterEncodingHeaderSize()
+    {
+        return 1;
     }
 
     sbe_int64_t characterEncodingLength(void) const
@@ -918,6 +948,11 @@ public:
         return "";
     }
 
+    static int epochHeaderSize()
+    {
+        return 1;
+    }
+
     sbe_int64_t epochLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
@@ -986,6 +1021,11 @@ public:
         return "";
     }
 
+    static int timeUnitHeaderSize()
+    {
+        return 1;
+    }
+
     sbe_int64_t timeUnitLength(void) const
     {
         return (*((sbe_uint8_t *)(buffer_ + position())));
@@ -1052,6 +1092,11 @@ public:
         }
 
         return "";
+    }
+
+    static int semanticTypeHeaderSize()
+    {
+        return 1;
     }
 
     sbe_int64_t semanticTypeLength(void) const

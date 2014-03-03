@@ -29,6 +29,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.co.real_logic.sbe.codec.java.JavaUtil.toLowerFirstChar;
 import static uk.co.real_logic.sbe.generation.cpp98.Cpp98Util.*;
 
 public class Cpp98Generator implements CodeGenerator
@@ -257,6 +258,22 @@ public class Cpp98Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
+            indent + "    static int sbeHeaderSize()\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n\n",
+            dimensionHeaderSize
+        ));
+
+        sb.append(String.format(
+            indent + "    static int sbeBlockLength()\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n\n",
+            blockLength
+        ));
+
+        sb.append(String.format(
             indent + "    int count(void) const\n" +
             indent + "    {\n" +
             indent + "        return count_;\n" +
@@ -343,53 +360,13 @@ public class Cpp98Generator implements CodeGenerator
             {
                 final String propertyName = toUpperFirstChar(token.name());
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
-
-                sb.append(String.format(
-                    "\n"  +
-                    "    static const char *%1$sCharacterEncoding()\n" +
-                    "    {\n" +
-                    "        return \"%2$s\";\n" +
-                    "    }\n\n",
-                    formatPropertyName(propertyName),
-                    characterEncoding
-                ));
-
-                sb.append(String.format(
-                    "    static int %1$sSinceVersion(void)\n" +
-                    "    {\n" +
-                    "         return %2$d;\n" +
-                    "    }\n\n" +
-                    "    bool %1$sInActingVersion(void)\n" +
-                    "    {\n" +
-                    "        return (actingVersion_ >= %2$s) ? true : false;\n" +
-                    "    }\n\n" +
-                    "    static int %1$sId(void)\n" +
-                    "    {\n" +
-                    "        return %3$d;\n" +
-                    "    }\n\n",
-                    formatPropertyName(propertyName),
-                    Long.valueOf(token.version()),
-                    Integer.valueOf(token.id())
-                ));
+                final Token lengthToken = tokens.get(i + 2);
+                final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
+                final String lengthCpp98Type = cpp98TypeName(lengthToken.encoding().primitiveType());
 
                 generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
 
-                final Token lengthToken = tokens.get(i + 2);
-                final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
-                final String lengthcpp98Type = cpp98TypeName(lengthToken.encoding().primitiveType());
-
-                sb.append(String.format(
-                    "\n" +
-                    "    sbe_int64_t %1$sLength(void) const\n" +
-                    "    {\n" +
-                            "%2$s" +
-                    "        return %3$s(*((%4$s *)(buffer_ + position())));\n" +
-                    "    }\n\n",
-                    formatPropertyName(propertyName),
-                    generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
-                    formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
-                    lengthcpp98Type
-                ));
+                generateVarDataDecriptors(sb, token, propertyName, characterEncoding, lengthToken, sizeOfLengthField, lengthCpp98Type);
 
                 sb.append(String.format(
                     "    const char *%1$s(void)\n" +
@@ -402,7 +379,7 @@ public class Cpp98Generator implements CodeGenerator
                     formatPropertyName(propertyName),
                     generateTypeFieldNotPresentCondition(token.version(), BASE_INDENT),
                     sizeOfLengthField,
-                    lengthcpp98Type
+                    lengthCpp98Type
                 ));
 
                 sb.append(String.format(
@@ -422,7 +399,7 @@ public class Cpp98Generator implements CodeGenerator
                     generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
                     sizeOfLengthField,
                     formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
-                    lengthcpp98Type
+                    lengthCpp98Type
                 ));
 
                 sb.append(String.format(
@@ -438,13 +415,74 @@ public class Cpp98Generator implements CodeGenerator
                     "    }\n",
                     propertyName,
                     sizeOfLengthField,
-                    lengthcpp98Type,
+                    lengthCpp98Type,
                     formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType())
                 ));
             }
         }
 
         return sb;
+    }
+
+    private void generateVarDataDecriptors(final StringBuilder sb,
+                                           final Token token,
+                                           final String propertyName,
+                                           final String characterEncoding,
+                                           final Token lengthToken,
+                                           final Integer sizeOfLengthField,
+                                           final String lengthCpp98Type)
+    {
+        sb.append(String.format(
+            "\n"  +
+            "    static const char *%1$sCharacterEncoding()\n" +
+            "    {\n" +
+            "        return \"%2$s\";\n" +
+            "    }\n\n",
+            formatPropertyName(propertyName),
+            characterEncoding
+        ));
+
+        sb.append(String.format(
+            "    static int %1$sSinceVersion(void)\n" +
+            "    {\n" +
+            "         return %2$d;\n" +
+            "    }\n\n" +
+            "    bool %1$sInActingVersion(void)\n" +
+            "    {\n" +
+            "        return (actingVersion_ >= %2$s) ? true : false;\n" +
+            "    }\n\n" +
+            "    static int %1$sId(void)\n" +
+            "    {\n" +
+            "        return %3$d;\n" +
+            "    }\n\n",
+            formatPropertyName(propertyName),
+            Long.valueOf(token.version()),
+            Integer.valueOf(token.id())
+        ));
+
+
+        sb.append(String.format(
+            "\n" +
+            "    static int %sHeaderSize()\n" +
+            "    {\n" +
+            "        return %d;\n" +
+            "    }\n",
+            toLowerFirstChar(propertyName),
+            sizeOfLengthField
+        ));
+
+        sb.append(String.format(
+            "\n" +
+            "    sbe_int64_t %1$sLength(void) const\n" +
+            "    {\n" +
+                    "%2$s" +
+            "        return %3$s(*((%4$s *)(buffer_ + position())));\n" +
+            "    }\n\n",
+            formatPropertyName(propertyName),
+            generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
+            formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
+            lengthCpp98Type
+        ));
     }
 
     private void generateChoiceSet(final List<Token> tokens) throws IOException
