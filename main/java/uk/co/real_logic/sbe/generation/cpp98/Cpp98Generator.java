@@ -34,9 +34,6 @@ import static uk.co.real_logic.sbe.generation.cpp98.Cpp98Util.*;
 
 public class Cpp98Generator implements CodeGenerator
 {
-    /** Class name to be used for visitor pattern that accesses the message headerStructure. */
-    public static final String MESSAGE_HEADER_TYPE = "MessageHeader";
-
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
 
