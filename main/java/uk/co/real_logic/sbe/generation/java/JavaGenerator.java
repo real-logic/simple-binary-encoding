@@ -259,14 +259,14 @@ public class JavaGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public static int headerSize()\n" +
+            indent + "    public static int sbeHeaderSize()\n" +
             indent + "    {\n" +
             indent + "        return HEADER_SIZE;\n" +
             indent + "    }\n\n"
         ));
 
         sb.append(String.format(
-            indent + "    public static int blockLength()\n" +
+            indent + "    public static int sbeBlockLength()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n\n",
