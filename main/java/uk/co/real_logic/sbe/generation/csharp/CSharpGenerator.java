@@ -1106,7 +1106,7 @@ public class CSharpGenerator implements CodeGenerator
                                               final Token token,
                                               final String indent)
     {
-        final String enumName = token.name();
+        final String enumName = formatClassName(token.name());
         final String typePrefix = toUpperFirstChar(token.encoding().primitiveType().primitiveName());
         final String enumUnderlyingType = cSharpTypeName(token.encoding().primitiveType());
         final Integer offset = Integer.valueOf(token.offset());
