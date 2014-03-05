@@ -51,7 +51,7 @@ class IrCollection
 {
 public:
     /// Construct a collection
-    IrCollection() : buffer_(NULL), header_(NULL)
+    IrCollection() : buffer_(NULL), irId_(-1), header_(NULL)
     {
     }
 
@@ -205,7 +205,7 @@ protected:
         frame.wrapForDecode(buffer_, offset, frame.sbeBlockLength(), frame.sbeSchemaVersion());
 
         tmpLen = frame.getPackageName(tmp, sizeof(tmp));
-        ::std::cout << "Reading IR package=\"" << std::string(tmp, tmpLen) << "\"" << ::std::endl;
+        ::std::cout << "Reading IR package=\"" << std::string(tmp, tmpLen) << "\" id=" << frame.irId() << ::std::endl;
 
         frame.getNamespaceName(tmp, sizeof(tmp));
         frame.getSemanticVersion(tmp, sizeof(tmp));
@@ -213,6 +213,7 @@ protected:
         offset += frame.size();
 
         headerLength_ = readHeader(offset);
+        irId_ = frame.irId();
 
         offset += headerLength_;
 
@@ -307,7 +308,7 @@ protected:
 
         // save buffer_ + offset as start of message and size as length
 
-        map_.insert(std::pair<int, Ir *>(token.fieldId(), new Ir(buffer_ + offset, size, token.fieldId(), token.sbeSchemaId(), token.tokenVersion())));
+        map_.insert(std::pair<int, Ir *>(token.fieldId(), new Ir(buffer_ + offset, size, token.fieldId(), irId_, token.tokenVersion())));
 
         // map_[token.schemaID()] = new Ir(buffer_ + offset, size);
 
@@ -319,6 +320,7 @@ private:
 
     char *buffer_;
     int length_;
+    int irId_;
 
     Ir *header_;
     int headerLength_;
