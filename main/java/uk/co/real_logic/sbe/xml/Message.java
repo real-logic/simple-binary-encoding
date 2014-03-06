@@ -365,7 +365,7 @@ public class Message
         {
             if (field.groupFields() != null)
             {
-                return field.computedOffset();
+                return blockLength;
             }
             else if (field.type() != null)
             {
@@ -387,7 +387,7 @@ public class Message
     {
         if (0 != specifiedBlockLength && computedBlockLength > specifiedBlockLength)
         {
-            handleError(node, "specified blockLength provides insufficient space");
+            handleError(node, "specified blockLength provides insufficient space " + computedBlockLength + " > " + specifiedBlockLength);
         }
     }
 }
