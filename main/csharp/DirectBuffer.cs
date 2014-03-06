@@ -8,11 +8,11 @@ namespace Adaptive.SimpleBinaryEncoding
     /// </summary>
     public sealed unsafe class DirectBuffer : IDisposable
     {
-        private readonly byte* _pBuffer;
+        private byte* _pBuffer;
         private bool _disposed;
         private GCHandle _pinnedGCHandle;
-        private readonly bool _needToFreeGCHandle;
-        private readonly int _capacity;
+        private bool _needToFreeGCHandle;
+        private int _capacity;
 
         /// <summary>
         /// Constructs a <see cref="DirectBuffer"/>
@@ -20,7 +20,32 @@ namespace Adaptive.SimpleBinaryEncoding
         /// <param name="byteArray">The byte array that will act as the backing buffer.</param>
         public DirectBuffer(byte[] byteArray)
         {
+            Reset(byteArray);
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="DirectBuffer"/> from an unmanaged byte buffer owned by external code
+        /// </summary>
+        /// <param name="pBuffer">Unmanaged byte buffer</param>
+        /// <param name="bufferLength">Length of the buffer</param>
+        public DirectBuffer(byte* pBuffer, int bufferLength)
+        {
+            Reset(pBuffer, bufferLength);
+        }
+
+        public DirectBuffer()
+        {
+        }
+
+        /// <summary>
+        /// Recycles an existing <see cref="DirectBuffer"/>
+        /// </summary>
+        /// <param name="byteArray">The byte array that will act as the backing buffer.</param>
+        public void Reset(byte[] byteArray)
+        {
             if (byteArray == null) throw new ArgumentNullException("byteArray");
+
+            FreeGCHandle();
 
             // pin the buffer so it does not get moved around by GC, this is required since we use pointers
             _pinnedGCHandle = GCHandle.Alloc(byteArray, GCHandleType.Pinned);
@@ -31,14 +56,16 @@ namespace Adaptive.SimpleBinaryEncoding
         }
 
         /// <summary>
-        /// Constructs a <see cref="DirectBuffer"/> from an unmanaged byte buffer owned by external code
+        /// Recycles an existing <see cref="DirectBuffer"/> from an unmanaged byte buffer owned by external code
         /// </summary>
         /// <param name="pBuffer">Unmanaged byte buffer</param>
         /// <param name="bufferLength">Length of the buffer</param>
-        public DirectBuffer(byte* pBuffer, int bufferLength)
+        public void Reset(byte* pBuffer, int bufferLength)
         {
             if (pBuffer == null) throw new ArgumentNullException("pBuffer");
             if (bufferLength < 0) throw new ArgumentException("Buffer size must be > 0", "bufferLength");
+
+            FreeGCHandle();
 
             _pBuffer = pBuffer;
             _capacity = bufferLength;
@@ -539,10 +566,18 @@ namespace Adaptive.SimpleBinaryEncoding
             if (_disposed)
                 return;
 
-            if (_needToFreeGCHandle)
-                _pinnedGCHandle.Free();
+            FreeGCHandle();
 
             _disposed = true;
+        }
+
+        private void FreeGCHandle()
+        {
+            if (_needToFreeGCHandle)
+            {
+                _pinnedGCHandle.Free();
+                _needToFreeGCHandle = false;
+            }
         }
     }
 }
