@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
 {
-    public class MarketDataIncrementalRefreshTrades
+    public sealed partial class MarketDataIncrementalRefreshTrades
     {
     public const ushort BlockLength = (ushort)11;
     public const ushort TemplateId = (ushort)2;
@@ -181,7 +181,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         return _mdIncGrp;
     }
 
-    public class MdIncGrpGroup
+    public sealed partial class MdIncGrpGroup
     {
         private readonly GroupSizeEncoding _dimensions = new GroupSizeEncoding();
         private MarketDataIncrementalRefreshTrades _parentMessage;

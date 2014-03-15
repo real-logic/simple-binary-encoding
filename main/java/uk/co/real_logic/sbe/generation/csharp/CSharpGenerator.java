@@ -207,7 +207,7 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "public class %1$sGroup\n" +
+            indent + "public sealed partial class %1$sGroup\n" +
             indent + "{\n" +
             indent + "    private readonly %2$s _dimensions = new %2$s();\n" +
             indent + "    private %3$s _parentMessage;\n" +
@@ -532,7 +532,7 @@ public class CSharpGenerator implements CodeGenerator
     private CharSequence generateClassDeclaration(final String className)
     {
         return String.format(
-            "    public class %s\n" +
+            "    public sealed partial class %s\n" +
             "    {\n",
             className
         );

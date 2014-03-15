@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 {
-    public class VarDataEncoding
+    public sealed partial class VarDataEncoding
     {
         private DirectBuffer _buffer;
         private int _offset;

@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
 {
-    public class TokenCodec
+    public sealed partial class TokenCodec
     {
     public const ushort BlockLength = (ushort)20;
     public const ushort TemplateId = (ushort)2;

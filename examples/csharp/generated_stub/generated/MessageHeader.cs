@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 {
-    public class MessageHeader
+    public sealed partial class MessageHeader
     {
         private DirectBuffer _buffer;
         private int _offset;

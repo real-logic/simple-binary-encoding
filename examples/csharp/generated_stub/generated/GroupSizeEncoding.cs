@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 {
-    public class GroupSizeEncoding
+    public sealed partial class GroupSizeEncoding
     {
         private DirectBuffer _buffer;
         private int _offset;

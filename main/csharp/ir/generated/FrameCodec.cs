@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
 {
-    public class FrameCodec
+    public sealed partial class FrameCodec
     {
     public const ushort BlockLength = (ushort)12;
     public const ushort TemplateId = (ushort)1;

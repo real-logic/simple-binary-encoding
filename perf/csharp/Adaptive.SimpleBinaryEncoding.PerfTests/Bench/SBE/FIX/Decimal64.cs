@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
 {
-    public class Decimal64
+    public sealed partial class Decimal64
     {
         private DirectBuffer _buffer;
         private int _offset;

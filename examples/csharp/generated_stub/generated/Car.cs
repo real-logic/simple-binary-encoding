@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
 {
-    public class Car
+    public sealed partial class Car
     {
     public const ushort BlockLength = (ushort)45;
     public const ushort TemplateId = (ushort)1;
@@ -368,7 +368,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         return _fuelFigures;
     }
 
-    public class FuelFiguresGroup
+    public sealed partial class FuelFiguresGroup
     {
         private readonly GroupSizeEncoding _dimensions = new GroupSizeEncoding();
         private Car _parentMessage;
@@ -513,7 +513,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         return _performanceFigures;
     }
 
-    public class PerformanceFiguresGroup
+    public sealed partial class PerformanceFiguresGroup
     {
         private readonly GroupSizeEncoding _dimensions = new GroupSizeEncoding();
         private Car _parentMessage;
@@ -624,7 +624,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             return _acceleration;
         }
 
-        public class AccelerationGroup
+        public sealed partial class AccelerationGroup
         {
             private readonly GroupSizeEncoding _dimensions = new GroupSizeEncoding();
             private Car _parentMessage;

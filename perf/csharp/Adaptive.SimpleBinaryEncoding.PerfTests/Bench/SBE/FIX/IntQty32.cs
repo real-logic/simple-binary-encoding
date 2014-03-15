@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
 {
-    public class IntQty32
+    public sealed partial class IntQty32
     {
         private DirectBuffer _buffer;
         private int _offset;

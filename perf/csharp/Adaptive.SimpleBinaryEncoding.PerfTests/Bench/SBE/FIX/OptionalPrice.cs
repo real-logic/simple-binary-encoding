@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
 {
-    public class OptionalPrice
+    public sealed partial class OptionalPrice
     {
         private DirectBuffer _buffer;
         private int _offset;

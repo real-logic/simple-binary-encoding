@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
 {
-    public class NewOrder
+    public sealed partial class NewOrder
     {
     public const ushort BlockLength = (ushort)156;
     public const ushort TemplateId = (ushort)68;

@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
 {
-    public class OrderCancelRequest
+    public sealed partial class OrderCancelRequest
     {
     public const ushort BlockLength = (ushort)119;
     public const ushort TemplateId = (ushort)70;

@@ -6,7 +6,7 @@ using Adaptive.SimpleBinaryEncoding;
 
 namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
 {
-    public class MassQuote
+    public sealed partial class MassQuote
     {
     public const ushort BlockLength = (ushort)62;
     public const ushort TemplateId = (ushort)105;
@@ -491,7 +491,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         return _quoteSets;
     }
 
-    public class QuoteSetsGroup
+    public sealed partial class QuoteSetsGroup
     {
         private readonly GroupSizeEncoding _dimensions = new GroupSizeEncoding();
         private MassQuote _parentMessage;
@@ -736,7 +736,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             return _quoteEntries;
         }
 
-        public class QuoteEntriesGroup
+        public sealed partial class QuoteEntriesGroup
         {
             private readonly GroupSizeEncoding _dimensions = new GroupSizeEncoding();
             private MassQuote _parentMessage;
