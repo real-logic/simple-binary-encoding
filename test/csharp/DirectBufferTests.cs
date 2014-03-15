@@ -50,7 +50,27 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
                 Assert.AreEqual(value, *(long*) (unmanagedBuffer + index));
             }
         }
-        
+
+        [Test]
+        public void Recycle()
+        {
+            var directBuffer = new DirectBuffer();
+            var firstBuffer = new Byte[16];
+            directBuffer.Reset(firstBuffer);
+
+            directBuffer.Int64PutLittleEndian(0, 1);
+            Assert.AreEqual(1, BitConverter.ToInt64(firstBuffer, 0));
+
+            var secondBuffer = new byte[16];
+            var secondBufferHandle = GCHandle.Alloc(secondBuffer, GCHandleType.Pinned);
+            var secondUnmanagedBuffer = (byte*)secondBufferHandle.AddrOfPinnedObject().ToPointer();
+            directBuffer.Reset(secondUnmanagedBuffer, 16);
+            directBuffer.Int64PutLittleEndian(0, 2);
+            Assert.AreEqual(2, BitConverter.ToInt64(secondBuffer, 0));
+
+            directBuffer.Dispose();
+        }
+
         #region Byte
 
         [TestCase(5, 0)]
