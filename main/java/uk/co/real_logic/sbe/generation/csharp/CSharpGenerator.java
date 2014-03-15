@@ -261,8 +261,8 @@ public class CSharpGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-                indent + "    public const int BlockLength = %d;\n" +
-                indent + "    public const int HeaderSize = %d;\n",
+                indent + "    public const int SbeBlockLength = %d;\n" +
+                indent + "    public const int SbeHeaderSize = %d;\n",
                 blockLength,
                 dimensionHeaderSize
         ));

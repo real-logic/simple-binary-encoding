@@ -1,5 +1,8 @@
 This file contains the list of commits of Java ported to .NET (most recent at the TOP)
 
+8d9fcff330e1a8b1f28d45293c2a6f0b8dcf083d
+[Java]: Add "sbe" to front of blockLength and headerSize in group to avoid name conflicts.
+
 dbd304c48100f04f7960517f03529eb99dd878c3
 [Java]: Reworked messageHeader in all schemas to reflect Issue #94.
 
