@@ -388,7 +388,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            _parentMessage.Limit = parentMessage.Limit + HeaderSize;
+            _parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -401,12 +401,12 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _index = -1;
             _count = count;
             _blockLength = 6;
-            parentMessage.Limit = parentMessage.Limit + HeaderSize;
+            parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
         }
 
-        public const int BlockLength = 6;
-        public const int HeaderSize = 3;
-        public int ActingBlockLength { get { return BlockLength; } }
+        public const int SbeBlockLength = 6;
+        public const int SbeHeaderSize = 3;
+        public int ActingBlockLength { get { return _blockLength; } }
 
         public int Count { get { return _count; } }
 
@@ -533,7 +533,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            _parentMessage.Limit = parentMessage.Limit + HeaderSize;
+            _parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
         }
 
         public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -546,12 +546,12 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _index = -1;
             _count = count;
             _blockLength = 1;
-            parentMessage.Limit = parentMessage.Limit + HeaderSize;
+            parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
         }
 
-        public const int BlockLength = 1;
-        public const int HeaderSize = 3;
-        public int ActingBlockLength { get { return BlockLength; } }
+        public const int SbeBlockLength = 1;
+        public const int SbeHeaderSize = 3;
+        public int ActingBlockLength { get { return _blockLength; } }
 
         public int Count { get { return _count; } }
 
@@ -644,7 +644,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
                 _blockLength = _dimensions.BlockLength;
                 _actingVersion = actingVersion;
                 _index = -1;
-                _parentMessage.Limit = parentMessage.Limit + HeaderSize;
+                _parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
             }
 
             public void WrapForEncode(Car parentMessage, DirectBuffer buffer, int count)
@@ -657,12 +657,12 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
                 _index = -1;
                 _count = count;
                 _blockLength = 6;
-                parentMessage.Limit = parentMessage.Limit + HeaderSize;
+                parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
             }
 
-            public const int BlockLength = 6;
-            public const int HeaderSize = 3;
-            public int ActingBlockLength { get { return BlockLength; } }
+            public const int SbeBlockLength = 6;
+            public const int SbeHeaderSize = 3;
+            public int ActingBlockLength { get { return _blockLength; } }
 
             public int Count { get { return _count; } }
 

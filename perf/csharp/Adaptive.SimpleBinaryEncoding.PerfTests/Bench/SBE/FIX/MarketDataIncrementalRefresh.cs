@@ -141,7 +141,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             _blockLength = _dimensions.BlockLength;
             _actingVersion = actingVersion;
             _index = -1;
-            _parentMessage.Limit = parentMessage.Limit + HeaderSize;
+            _parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
         }
 
         public void WrapForEncode(MarketDataIncrementalRefresh parentMessage, DirectBuffer buffer, int count)
@@ -154,12 +154,12 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             _index = -1;
             _count = count;
             _blockLength = 82;
-            parentMessage.Limit = parentMessage.Limit + HeaderSize;
+            parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
         }
 
-        public const int BlockLength = 82;
-        public const int HeaderSize = 3;
-        public int ActingBlockLength { get { return BlockLength; } }
+        public const int SbeBlockLength = 82;
+        public const int SbeHeaderSize = 3;
+        public int ActingBlockLength { get { return _blockLength; } }
 
         public int Count { get { return _count; } }
 

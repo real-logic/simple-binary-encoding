@@ -232,7 +232,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _blockLength = _dimensions.BlockLength;\n" +
             indent + "        _actingVersion = actingVersion;\n" +
             indent + "        _index = -1;\n" +
-            indent + "        _parentMessage.Limit = parentMessage.Limit + HeaderSize;\n" +
+            indent + "        _parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + "    }\n\n",
             parentMessageClassName
         ));
@@ -252,7 +252,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _index = -1;\n" +
             indent + "        _count = count;\n" +
             indent + "        _blockLength = %4$d;\n" +
-            indent + "        parentMessage.Limit = parentMessage.Limit + HeaderSize;\n" +
+            indent + "        parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             typeForNumInGroup,
@@ -268,7 +268,7 @@ public class CSharpGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public int ActingBlockLength { get { return BlockLength; } }\n\n" +
+            indent + "    public int ActingBlockLength { get { return _blockLength; } }\n\n" +
             indent + "    public int Count { get { return _count; } }\n\n" +
             indent + "    public bool HasNext { get { return (_index + 1) < _count; } }\n\n"
         ));

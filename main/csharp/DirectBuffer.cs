@@ -15,24 +15,27 @@ namespace Adaptive.SimpleBinaryEncoding
         private int _capacity;
 
         /// <summary>
-        /// Constructs a <see cref="DirectBuffer"/>
+        /// Attach a view to a byte[] for providing direct access.
         /// </summary>
-        /// <param name="byteArray">The byte array that will act as the backing buffer.</param>
-        public DirectBuffer(byte[] byteArray)
+        /// <param name="buffer">buffer to which the view is attached.</param>
+        public DirectBuffer(byte[] buffer)
         {
-            Reset(byteArray);
+            Wrap(buffer);
         }
 
         /// <summary>
-        /// Constructs a <see cref="DirectBuffer"/> from an unmanaged byte buffer owned by external code
+        /// Attach a view to an unmanaged buffer owned by external code
         /// </summary>
         /// <param name="pBuffer">Unmanaged byte buffer</param>
         /// <param name="bufferLength">Length of the buffer</param>
         public DirectBuffer(byte* pBuffer, int bufferLength)
         {
-            Reset(pBuffer, bufferLength);
+            Wrap(pBuffer, bufferLength);
         }
 
+        /// <summary>
+        /// Creates a DirectBuffer that can later be wrapped
+        /// </summary>
         public DirectBuffer()
         {
         }
@@ -41,7 +44,7 @@ namespace Adaptive.SimpleBinaryEncoding
         /// Recycles an existing <see cref="DirectBuffer"/>
         /// </summary>
         /// <param name="byteArray">The byte array that will act as the backing buffer.</param>
-        public void Reset(byte[] byteArray)
+        public void Wrap(byte[] byteArray)
         {
             if (byteArray == null) throw new ArgumentNullException("byteArray");
 
@@ -60,16 +63,24 @@ namespace Adaptive.SimpleBinaryEncoding
         /// </summary>
         /// <param name="pBuffer">Unmanaged byte buffer</param>
         /// <param name="bufferLength">Length of the buffer</param>
-        public void Reset(byte* pBuffer, int bufferLength)
+        public void Wrap(byte* pBuffer, int bufferLength)
         {
             if (pBuffer == null) throw new ArgumentNullException("pBuffer");
-            if (bufferLength < 0) throw new ArgumentException("Buffer size must be > 0", "bufferLength");
+            if (bufferLength <= 0) throw new ArgumentException("Buffer size must be > 0", "bufferLength");
 
             FreeGCHandle();
 
             _pBuffer = pBuffer;
             _capacity = bufferLength;
             _needToFreeGCHandle = false;
+        }
+
+        /// <summary>
+        /// Capacity of the underlying buffer
+        /// </summary>
+        public int Capacity
+        {
+            get { return _capacity; }
         }
 
         /// <summary>
