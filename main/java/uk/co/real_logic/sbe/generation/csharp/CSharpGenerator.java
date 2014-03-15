@@ -704,9 +704,9 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         return String.format(
-            indent + "        if (actingVersion < %1$d) return %2$s;\n\n",
+            indent + "        if (_actingVersion < %1$d) return %2$s;\n\n",
             Integer.valueOf(sinceVersion),
-            sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.nullValue().toString()) : "(byte)0"
+            sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString()) : "(byte)0"
         );
     }
 
@@ -1096,7 +1096,7 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         return String.format(
-            indent + "        if (actingVersion_ < %d) return %s.NULL_VALUE;\n\n",
+            indent + "        if (_actingVersion < %d) return %s.NULL_VALUE;\n\n",
             Integer.valueOf(sinceVersion),
             enumName
         );
@@ -1106,7 +1106,7 @@ public class CSharpGenerator implements CodeGenerator
                                               final Token token,
                                               final String indent)
     {
-        final String enumName = token.name();
+        final String enumName = formatClassName(token.name());
         final String typePrefix = toUpperFirstChar(token.encoding().primitiveType().primitiveName());
         final String enumUnderlyingType = cSharpTypeName(token.encoding().primitiveType());
         final Integer offset = Integer.valueOf(token.offset());
