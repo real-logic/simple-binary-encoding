@@ -306,7 +306,7 @@ int Listener::process(void)
                 switch (ir->primitiveType())
                 {
                 case Ir::CHAR:
-                    *calculatedOffset += processEncoding(ir, (::int64_t)*((char *)(valuePosition)));
+                    *calculatedOffset += processEncoding(ir, (::uint64_t)*((char *)(valuePosition)));
                     break;
 
                 case Ir::INT8:
