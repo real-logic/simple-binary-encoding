@@ -8,9 +8,9 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
 {
     public enum PresenceCodec : byte
     {
-        REQUIRED = 0,
-        OPTIONAL = 1,
-        CONSTANT = 2,
+        SBE_REQUIRED = 0,
+        SBE_OPTIONAL = 1,
+        SBE_CONSTANT = 2,
         NULL_VALUE = 255
     }
 }

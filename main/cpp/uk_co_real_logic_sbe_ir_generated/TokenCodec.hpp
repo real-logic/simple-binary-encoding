@@ -6,11 +6,11 @@
 #include <math.h>
 #include "sbe/sbe.hpp"
 
-#include "uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp"
 #include "uk_co_real_logic_sbe_ir_generated/ByteOrderCodec.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/SignalCodec.hpp"
 #include "uk_co_real_logic_sbe_ir_generated/PresenceCodec.hpp"
 #include "uk_co_real_logic_sbe_ir_generated/PrimitiveTypeCodec.hpp"
-#include "uk_co_real_logic_sbe_ir_generated/SignalCodec.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp"
 
 using namespace sbe;
 
@@ -477,6 +477,18 @@ public:
         return *this;
     }
 
+    static const char *nameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *nameCharacterEncoding()
     {
         return "UTF-8";
@@ -497,18 +509,6 @@ public:
         return 19;
     }
 
-
-    static const char *nameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int nameHeaderSize()
     {
@@ -550,6 +550,18 @@ public:
         return length;
     }
 
+    static const char *constValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *constValueCharacterEncoding()
     {
         return "UTF-8";
@@ -570,18 +582,6 @@ public:
         return 20;
     }
 
-
-    static const char *constValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int constValueHeaderSize()
     {
@@ -623,6 +623,18 @@ public:
         return length;
     }
 
+    static const char *minValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *minValueCharacterEncoding()
     {
         return "UTF-8";
@@ -643,18 +655,6 @@ public:
         return 21;
     }
 
-
-    static const char *minValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int minValueHeaderSize()
     {
@@ -696,6 +696,18 @@ public:
         return length;
     }
 
+    static const char *maxValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *maxValueCharacterEncoding()
     {
         return "UTF-8";
@@ -716,18 +728,6 @@ public:
         return 22;
     }
 
-
-    static const char *maxValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int maxValueHeaderSize()
     {
@@ -769,6 +769,18 @@ public:
         return length;
     }
 
+    static const char *nullValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *nullValueCharacterEncoding()
     {
         return "UTF-8";
@@ -789,18 +801,6 @@ public:
         return 23;
     }
 
-
-    static const char *nullValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int nullValueHeaderSize()
     {
@@ -842,6 +842,18 @@ public:
         return length;
     }
 
+    static const char *characterEncodingMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *characterEncodingCharacterEncoding()
     {
         return "UTF-8";
@@ -862,18 +874,6 @@ public:
         return 24;
     }
 
-
-    static const char *characterEncodingMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int characterEncodingHeaderSize()
     {
@@ -915,6 +915,18 @@ public:
         return length;
     }
 
+    static const char *epochMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *epochCharacterEncoding()
     {
         return "UTF-8";
@@ -935,18 +947,6 @@ public:
         return 25;
     }
 
-
-    static const char *epochMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int epochHeaderSize()
     {
@@ -988,6 +988,18 @@ public:
         return length;
     }
 
+    static const char *timeUnitMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *timeUnitCharacterEncoding()
     {
         return "UTF-8";
@@ -1008,18 +1020,6 @@ public:
         return 26;
     }
 
-
-    static const char *timeUnitMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int timeUnitHeaderSize()
     {
@@ -1061,6 +1061,18 @@ public:
         return length;
     }
 
+    static const char *semanticTypeMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *semanticTypeCharacterEncoding()
     {
         return "UTF-8";
@@ -1081,18 +1093,6 @@ public:
         return 27;
     }
 
-
-    static const char *semanticTypeMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int semanticTypeHeaderSize()
     {

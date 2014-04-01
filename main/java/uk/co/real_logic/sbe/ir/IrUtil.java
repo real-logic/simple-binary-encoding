@@ -398,10 +398,10 @@ public class IrUtil
     {
         switch (presence)
         {
-            case OPTIONAL:
+            case SBE_OPTIONAL:
                 return Encoding.Presence.OPTIONAL;
 
-            case CONSTANT:
+            case SBE_CONSTANT:
                 return Encoding.Presence.CONSTANT;
         }
 
@@ -413,12 +413,12 @@ public class IrUtil
         switch (presence)
         {
             case OPTIONAL:
-                return PresenceCodec.OPTIONAL;
+                return PresenceCodec.SBE_OPTIONAL;
 
             case CONSTANT:
-                return PresenceCodec.CONSTANT;
+                return PresenceCodec.SBE_CONSTANT;
         }
 
-        return PresenceCodec.REQUIRED;
+        return PresenceCodec.SBE_REQUIRED;
     }
 }

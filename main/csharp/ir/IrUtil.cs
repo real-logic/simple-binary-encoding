@@ -373,10 +373,10 @@ namespace Adaptive.SimpleBinaryEncoding.ir
         {
             switch (presence)
             {
-                case PresenceCodec.OPTIONAL:
+                case PresenceCodec.SBE_OPTIONAL:
                     return Presence.Optional;
 
-                case PresenceCodec.CONSTANT:
+                case PresenceCodec.SBE_CONSTANT:
                     return Presence.Constant;
             }
 
@@ -388,13 +388,13 @@ namespace Adaptive.SimpleBinaryEncoding.ir
             switch (presence)
             {
                 case Presence.Optional:
-                    return PresenceCodec.OPTIONAL;
+                    return PresenceCodec.SBE_OPTIONAL;
 
                 case Presence.Constant:
-                    return PresenceCodec.CONSTANT;
+                    return PresenceCodec.SBE_CONSTANT;
             }
 
-            return PresenceCodec.REQUIRED;
+            return PresenceCodec.SBE_REQUIRED;
         }
     }
 }

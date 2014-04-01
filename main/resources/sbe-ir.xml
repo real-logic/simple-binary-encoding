@@ -57,9 +57,9 @@
             <validValue name="SBE_BIG_ENDIAN">1</validValue>
         </enum>
         <enum name="PresenceCodec" encodingType="uint8">
-            <validValue name="REQUIRED">0</validValue>
-            <validValue name="OPTIONAL">1</validValue>
-            <validValue name="CONSTANT">2</validValue>
+            <validValue name="SBE_REQUIRED">0</validValue>
+            <validValue name="SBE_OPTIONAL">1</validValue>
+            <validValue name="SBE_CONSTANT">2</validValue>
         </enum>
     </types>
 

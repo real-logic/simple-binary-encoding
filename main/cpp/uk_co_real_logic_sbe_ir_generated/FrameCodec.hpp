@@ -6,11 +6,11 @@
 #include <math.h>
 #include "sbe/sbe.hpp"
 
-#include "uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp"
 #include "uk_co_real_logic_sbe_ir_generated/ByteOrderCodec.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/SignalCodec.hpp"
 #include "uk_co_real_logic_sbe_ir_generated/PresenceCodec.hpp"
 #include "uk_co_real_logic_sbe_ir_generated/PrimitiveTypeCodec.hpp"
-#include "uk_co_real_logic_sbe_ir_generated/SignalCodec.hpp"
+#include "uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp"
 
 using namespace sbe;
 
@@ -267,6 +267,18 @@ public:
         return *this;
     }
 
+    static const char *packageNameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *packageNameCharacterEncoding()
     {
         return "UTF-8";
@@ -287,18 +299,6 @@ public:
         return 4;
     }
 
-
-    static const char *packageNameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int packageNameHeaderSize()
     {
@@ -340,6 +340,18 @@ public:
         return length;
     }
 
+    static const char *namespaceNameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *namespaceNameCharacterEncoding()
     {
         return "UTF-8";
@@ -360,18 +372,6 @@ public:
         return 5;
     }
 
-
-    static const char *namespaceNameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int namespaceNameHeaderSize()
     {
@@ -413,6 +413,18 @@ public:
         return length;
     }
 
+    static const char *semanticVersionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
     static const char *semanticVersionCharacterEncoding()
     {
         return "UTF-8";
@@ -433,18 +445,6 @@ public:
         return 6;
     }
 
-
-    static const char *semanticVersionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::EPOCH: return "unix";
-            case MetaAttribute::TIME_UNIT: return "nanosecond";
-            case MetaAttribute::SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
 
     static int semanticVersionHeaderSize()
     {
