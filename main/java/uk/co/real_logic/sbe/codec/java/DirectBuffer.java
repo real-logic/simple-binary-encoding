@@ -58,6 +58,17 @@ public class DirectBuffer
     }
 
     /**
+     * Attach a view to an off-heap memory region by address.
+     *
+     * @param address where the memory begins off-heap
+     * @param capacity of the buffer from the given address
+     */
+    public DirectBuffer(final long address, final int capacity)
+    {
+        wrap(address, capacity);
+    }
+
+    /**
      * Attach a view to a byte[] for providing direct access.
      *
      * @param buffer to which the view is attached.
@@ -92,6 +103,20 @@ public class DirectBuffer
         }
 
         capacity = buffer.capacity();
+    }
+
+    /**
+     * Attach a view to an off-heap memory region by address.
+     *
+     * @param address where the memory begins off-heap
+     * @param capacity of the buffer from the given address
+     */
+    public void wrap(final long address, final int capacity)
+    {
+        addressOffset = address;
+        this.capacity = capacity;
+        byteArray = null;
+        byteBuffer = null;
     }
 
     /**
@@ -153,17 +178,27 @@ public class DirectBuffer
      */
     public ByteBuffer duplicateByteBuffer()
     {
+        final ByteBuffer duplicate;
+
         if (null == byteBuffer)
         {
-            return ByteBuffer.wrap(byteArray);
+            if (null != byteArray)
+            {
+                duplicate = ByteBuffer.wrap(byteArray);
+            }
+            else
+            {
+                duplicate = BitUtil.resetAddressAndCapacity(ByteBuffer.allocateDirect(0), addressOffset, capacity);
+            }
         }
         else
         {
-            final ByteBuffer duplicate = byteBuffer.duplicate();
-            duplicate.clear();
-
-            return duplicate;
+            duplicate = byteBuffer.duplicate();
         }
+
+        duplicate.clear();
+
+        return duplicate;
     }
 
     /**

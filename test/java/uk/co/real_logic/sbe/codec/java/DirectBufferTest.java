@@ -20,6 +20,7 @@ import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+import uk.co.real_logic.sbe.util.BitUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -55,6 +56,10 @@ public class DirectBufferTest
     @DataPoint
     public static final DirectBuffer HEAP_BYTE_BUFFER_SLICE =
         new DirectBuffer(((ByteBuffer)(ByteBuffer.allocate(BUFFER_CAPACITY * 2).position(BUFFER_CAPACITY))).slice());
+
+    // Note this will leak memory and a real world application would need to reclaim the allocated memory!!!
+    @DataPoint
+    public static final DirectBuffer OFF_HEAP_BUFFER = new DirectBuffer(BitUtil.getUnsafe().allocateMemory(BUFFER_CAPACITY), BUFFER_CAPACITY);
 
     @Theory
     @Test(expected = IndexOutOfBoundsException.class)
@@ -298,6 +303,7 @@ public class DirectBufferTest
 
         assertThat(buff, is(testBytes));
     }
+
     @Theory
     public void shouldPutBytesToBufferFromDirectBuffer(final DirectBuffer buffer)
     {
@@ -315,12 +321,12 @@ public class DirectBufferTest
 
         assertThat(buff, is(testBytes));
     }
+
     @Theory
     public void shouldPutBytesToBufferFromSlice(final DirectBuffer buffer)
     {
         final byte[] testBytes = "Hello World".getBytes();
-        final ByteBuffer srcBuffer =
-                ((ByteBuffer) ByteBuffer.allocate(testBytes.length*2).position(testBytes.length)).slice();
+        final ByteBuffer srcBuffer = ((ByteBuffer) ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice();
 
         srcBuffer.put(testBytes);
         srcBuffer.flip();
