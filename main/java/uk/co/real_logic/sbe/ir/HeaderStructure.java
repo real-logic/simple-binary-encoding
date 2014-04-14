@@ -91,7 +91,7 @@ public class HeaderStructure
 
     public PrimitiveType schemaIdType()
     {
-        return schemaVersionType;
+        return schemaIdType;
     }
 
     public PrimitiveType schemaVersionType()
