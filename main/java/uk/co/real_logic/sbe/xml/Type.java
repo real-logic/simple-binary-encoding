@@ -87,7 +87,7 @@ public abstract class Type
 
     /**
      * The size (in octets) of the Type.
-     * <p/>
+     *
      * Overridden by subtypes. This returns 0 by default.
      *
      * @return size of the type in octets

@@ -23,9 +23,9 @@ import java.util.List;
 
 /**
  * On-the-fly decoder that dynamically decodes messages based on the IR for a schema.
- * <p/>
+ *
  * The contents of the messages are structurally decomposed and passed to a {@link TokenListener} for decoding the primitive values.
- * <p/>
+ *
  * The design keeps all state on the stack to maximise performance and avoid object allocation. The message decoder can be used reused by
  * repeatably calling {@link OtfMessageDecoder#decode(DirectBuffer, int, int, int, java.util.List, TokenListener)}
  * and is thread safe to be used across multiple threads.

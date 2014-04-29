@@ -140,6 +140,8 @@ public class MessageSchema
 
     /**
      * Return the byte order specified by the messageSchema
+     *
+     * @return {@link ByteOrder} of the message encoding.
      */
     public ByteOrder byteOrder()
     {

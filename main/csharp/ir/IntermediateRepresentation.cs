@@ -136,7 +136,7 @@ namespace Adaptive.SimpleBinaryEncoding.ir
 
         /// <summary>
         /// Get the namespaceName to be used for generated code.
-        /// <p/>
+        ///
         /// If <seealso cref="NamespaceName"/> is null then <seealso cref="PackageName"/> is used.
         /// </summary>
         /// <returns> the namespaceName to be used for generated code. </returns>

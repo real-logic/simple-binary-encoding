@@ -3,7 +3,7 @@
     /// <summary>
     /// Primitive types from which all other types are composed.
     /// 
-    /// <p/>
+    ///
     /// <table>
     ///     <thead>
     ///         <tr>

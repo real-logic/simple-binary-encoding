@@ -33,7 +33,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
  * An SBE message containing a list of {@link Field} objects and SBE message attributes.
- * <p/>
+ *
  * What is difference between {@link Message} and the Intermediate Representation (IR)?
  * <ul>
  * <li>IR is intentionally platform, schema, and language independent.</li>
@@ -61,9 +61,10 @@ public class Message
      *
      * @param messageNode   from the XML Schema Parsing
      * @param typeByNameMap holding type information for message
+     * @throws XPathExpressionException on invalid XPath
      */
     public Message(final Node messageNode, final Map<String, Type> typeByNameMap)
-        throws XPathExpressionException, IllegalArgumentException
+        throws XPathExpressionException
     {
         id = Integer.parseInt(getAttributeValue(messageNode, "id"));                        // required
         name = getAttributeValue(messageNode, "name");                                      // required
@@ -112,6 +113,8 @@ public class Message
 
     /**
      * The semanticType of the message (if set) or null
+     *
+     * @return the semanticType of the message (if set) or null
      */
     public String semanticType()
     {
@@ -140,6 +143,8 @@ public class Message
 
     /**
      * Return the {@link String} representing the {@link Type} for the headerStructure of this message
+     *
+     * @return the {@link String} representing the {@link Type} for the headerStructure of this message
      */
     public String headerType()
     {
@@ -147,7 +152,7 @@ public class Message
     }
 
     private List<Field> parseFieldsAndGroups(final Node node)
-        throws XPathExpressionException, IllegalArgumentException
+        throws XPathExpressionException
     {
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, XPathConstants.NODESET);

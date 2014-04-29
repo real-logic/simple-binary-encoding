@@ -25,74 +25,6 @@ import static java.nio.charset.Charset.forName;
 
 /**
  * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
- * <p/>
- *
- * <table>
- *     <thead>
- *         <tr>
- *             <th>PrimitiveType</th>
- *             <th>Null</th>
- *             <th>Min</th>
- *             <th>Max</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>char</td>
- *             <td>0</td>
- *             <td>0x20</td>
- *             <td>0x7E</td>
- *         </tr>
- *         <tr>
- *             <td>int8</td>
- *             <td>-128</td>
- *             <td>-127</td>
- *             <td>127</td>
- *         </tr>
- *         <tr>
- *             <td>uint8</td>
- *             <td>255</td>
- *             <td>0</td>
- *             <td>254</td>
- *         </tr>
- *         <tr>
- *             <td>int16</td>
- *             <td>-32768</td>
- *             <td>-32767</td>
- *             <td>32767</td>
- *         </tr>
- *         <tr>
- *             <td>uint16</td>
- *             <td>65535</td>
- *             <td>0</td>
- *             <td>65534</td>
- *         </tr>
- *         <tr>
- *             <td>int32</td>
- *             <td>2^31</td>
- *             <td>-2^31 + 1</td>
- *             <td>2^31 - 1</td>
- *         </tr>
- *         <tr>
- *             <td>uint32</td>
- *             <td>2^32 - 1</td>
- *             <td>0</td>
- *             <td>2^32 - 2</td>
- *         </tr>
- *         <tr>
- *             <td>int64</td>
- *             <td>2^63</td>
- *             <td>-2^63 + 1</td>
- *             <td>2^63 - 1</td>
- *         </tr>
- *         <tr>
- *             <td>uint64</td>
- *             <td>2^64 - 1</td>
- *             <td>0</td>
- *             <td>2^64 - 2</td>
- *         </tr>
- *     </tbody>
- * </table>
  */
 public class PrimitiveValue
 {
@@ -161,6 +93,7 @@ public class PrimitiveValue
      * Construct and fill in value as a long.
      *
      * @param value in long format
+     * @param size of the type in bytes
      */
     public PrimitiveValue(final long value, final int size)
     {
@@ -174,7 +107,9 @@ public class PrimitiveValue
 
     /**
      * Construct and fill in value as a double.
+     *
      * @param value in double format
+     * @param size of the type in bytes
      */
     public PrimitiveValue(final double value, final int size)
     {
@@ -190,6 +125,8 @@ public class PrimitiveValue
      * Construct and fill in value as a byte array.
      *
      * @param value as a byte array
+     * @param characterEncoding of the characters
+     * @param size of string in characters
      */
     public PrimitiveValue(final byte[] value, final String characterEncoding, final int size)
     {

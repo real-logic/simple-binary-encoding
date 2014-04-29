@@ -49,9 +49,10 @@ public class EnumType extends Type
      * Construct a new enumType from XML Schema.
      *
      * @param node from the XML Schema Parsing
+     * @throws XPathExpressionException if the XPath is invalid
      */
     public EnumType(final Node node)
-        throws XPathExpressionException, IllegalArgumentException
+        throws XPathExpressionException
     {
         super(node);
 

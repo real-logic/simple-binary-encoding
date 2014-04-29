@@ -84,15 +84,18 @@ public class BitUtil
 
     /**
      * Set the private address of direct {@link ByteBuffer}.
-     * </p>
+     *
      * <b>Note:</b> It is assumed a cleaner is not responsible for reclaiming the memory under this buffer and that
      * the caller is responsible for memory allocation and reclamation.
      *
      * @param byteBuffer to set the address on.
      * @param address to set for the underlying buffer.
+     * @param capacity of the new underlying buffer.
      * @return the modified {@link ByteBuffer}
      */
-    public static ByteBuffer resetAddressAndCapacity(final ByteBuffer byteBuffer, final long address, final int capacity)
+    public static ByteBuffer resetAddressAndCapacity(final ByteBuffer byteBuffer,
+                                                     final long address,
+                                                     final int capacity)
     {
         if (!byteBuffer.isDirect())
         {

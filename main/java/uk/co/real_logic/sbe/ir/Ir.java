@@ -40,6 +40,8 @@ public class Ir
      *
      * @param packageName     that should be applied to generated code.
      * @param namespaceName   that should be applied to generated code.
+     * @param id              identifier for the schema.
+     * @param version         of the schema
      * @param semanticVersion semantic version for mapping to the application domain.
      * @param headerTokens    representing the message headerStructure.
      */
@@ -180,7 +182,7 @@ public class Ir
 
     /**
      * Get the namespaceName to be used for generated code.
-     * <p/>
+     *
      * If {@link #namespaceName} is null then {@link #packageName} is used.
      *
      * @return the namespaceName to be used for generated code.

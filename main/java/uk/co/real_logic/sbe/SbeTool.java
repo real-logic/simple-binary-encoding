@@ -31,16 +31,14 @@ import java.io.FileInputStream;
 
 /**
  * A tool for running the SBE parser, validator, and code generator.
- * <p/>
+ *
  * Usage:
- * <code>
- *     <pre>
+ * <pre>
  *     $ java -jar sbe.jar &lt;filename.xml&gt;
  *     $ java -Doption=value -jar sbe.jar &lt;filename.xml&gt;
  *     $ java -Doption=value -jar sbe.jar &lt;filename.sbeir&gt;
- *     </pre>
- * </code>
- * <p/>
+ * </pre>
+ *
  * Properties
  * <ul>
  *     <li><code>sbe.validation.xsd</code>: Use XSD to validate or not.</li>

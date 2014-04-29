@@ -44,6 +44,8 @@ public class SetType extends Type
      * Construct a new SetType from XML Schema.
      *
      * @param node from the XML Schema Parsing
+     * @throws XPathExpressionException on invalid XPath.
+     * @throws IllegalArgumentException on illegal encoding type.
      */
     public SetType(final Node node)
         throws XPathExpressionException, IllegalArgumentException

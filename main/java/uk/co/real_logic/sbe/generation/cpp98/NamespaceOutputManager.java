@@ -33,6 +33,7 @@ public class NamespaceOutputManager implements OutputManager
      *
      * @param baseDirectoryName for the generated source code.
      * @param namespaceName for the generated source code relative to the baseDirectoryName.
+     * @throws IOException if an error occurs during output
      */
     public NamespaceOutputManager(final String baseDirectoryName, final String namespaceName)
         throws IOException
@@ -56,7 +57,7 @@ public class NamespaceOutputManager implements OutputManager
 
     /**
      * Create a new output which will be a C++98 source file in the given package.
-     * <p/>
+     *
      * The {@link java.io.Writer} should be closed once the caller has finished with it. The Writer is
      * buffer for efficient IO operations.
      *

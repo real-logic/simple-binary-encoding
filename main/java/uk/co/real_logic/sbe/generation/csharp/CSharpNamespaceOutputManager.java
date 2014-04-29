@@ -21,7 +21,9 @@ import uk.co.real_logic.sbe.util.Verify;
 import java.io.*;
 
 /**
- * {@link uk.co.real_logic.sbe.generation.OutputManager} for managing the creation of C# source files as the target of code generation.
+ * {@link uk.co.real_logic.sbe.generation.OutputManager} for managing the creation of C# source files
+ * as the target of code generation.
+ *
  * The character encoding for the {@link java.io.Writer} is UTF-8.
  */
 public class CSharpNamespaceOutputManager implements OutputManager
@@ -29,10 +31,12 @@ public class CSharpNamespaceOutputManager implements OutputManager
     private final File outputDir;
 
     /**
-     * Create a new {@link uk.co.real_logic.sbe.generation.OutputManager} for generating C# source files into a given package.
+     * Create a new {@link uk.co.real_logic.sbe.generation.OutputManager} for generating C# source
+     * files into a given package.
      *
      * @param baseDirectoryName for the generated source code.
      * @param packageName for the generated source code relative to the baseDirectoryName.
+     * @throws IOException if an error occurs during output
      */
     public CSharpNamespaceOutputManager(final String baseDirectoryName, final String packageName) throws IOException
     {
@@ -52,7 +56,7 @@ public class CSharpNamespaceOutputManager implements OutputManager
 
     /**
      * Create a new output which will be a C# source file in the given package.
-     * <p/>
+     *
      * The {@link java.io.Writer} should be closed once the caller has finished with it. The Writer is
      * buffer for efficient IO operations.
      *

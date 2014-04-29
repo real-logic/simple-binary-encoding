@@ -509,6 +509,7 @@ public class DirectBuffer
      *
      * @param index     in the underlying buffer to start from.
      * @param srcBuffer to copy the bytes from.
+     * @param length    of the source buffer in bytes to copy
      * @return count of bytes copied.
      */
     public int putBytes(final int index, final ByteBuffer srcBuffer, final int length)
