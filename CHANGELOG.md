@@ -1,7 +1,5 @@
 # Changelog
 
-## 0.1 (2014-02-10)
+## 1.0 (2014-04-30)
 
 Initial public release
-
-*
