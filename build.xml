@@ -40,6 +40,14 @@
 
     <property name="dir.main.csharp.src" location="main/csharp/ir/generated"/>
 
+    <property name="jar" value="${dir.dist}/${module.name}-${build.version}.jar"/>
+    <property name="javadoc.jar" value="${dir.dist}/${module.name}-${build.version}-javadoc.jar"/>
+    <property name="sources.jar" value="${dir.dist}/${module.name}-${build.version}-sources.jar"/>
+
+    <property name="ossrh.snapshots.repository.url" value="https://oss.sonatype.org/content/repositories/snapshots"/>
+    <property name="ossrh.staging.repository.url" value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
+    <property name="ossrh.server.id" value="ossrh"/>
+
     <path id="test.classpath">
         <pathelement path="${dir.main.build}"/>
         <pathelement path="${dir.test.build}"/>
@@ -77,11 +85,50 @@
     <artifact:pom id="sbe.pom" file="sbe-pom.xml"/>
 
     <target name="maven.install" depends="clean, checkstyle, build, test, javadoc, dist" description="maven install">
-        <artifact:install file="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar">
+        <artifact:install file="${jar}">
             <artifact:pom refid="sbe.pom"/>
-            <artifact:attach file="${dir.dist}/${module.name}-src-${build.version}-${DSTAMP}.jar" type="jar" classifier="sources"/>
-            <artifact:attach file="${dir.dist}/${module.name}-api-${build.version}-${DSTAMP}.jar" type="jar" classifier="javadoc"/>
+            <artifact:attach file="${sources.jar}" type="jar" classifier="sources"/>
+            <artifact:attach file="${javadoc.jar}" type="jar" classifier="javadoc"/>
         </artifact:install>
+    </target>
+
+    <target name="maven.deploy" depends="clean, checkstyle, build, test, javadoc, dist" description="maven deploy">
+        <artifact:mvn>
+            <artifact:arg value="org.apache.maven.plugins:maven-deploy-plugin:2.6:deploy-file"/>
+            <artifact:arg value="-Durl=${ossrh.snapshots.repository.url}" />
+            <artifact:arg value="-DrepositoryId=${ossrh.server.id}" />
+            <artifact:arg value="-DpomFile=sbe-pom.xml" />
+            <artifact:arg value="-Dfile=${jar}" />
+        </artifact:mvn>
+    </target>
+
+    <target name="maven.stage" depends="clean, checkstyle, build, test, javadoc, dist" description="maven stage">
+        <artifact:mvn>
+            <artifact:arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
+            <artifact:arg value="-Durl=${ossrh.staging.repository.url}" />
+            <artifact:arg value="-DrepositoryId=${ossrh.server.id}" />
+            <artifact:arg value="-DpomFile=sbe-pom.xml" />
+            <artifact:arg value="-Dfile=${jar}" />
+            <artifact:arg value="-Pgpg"/>
+        </artifact:mvn>
+        <artifact:mvn>
+            <artifact:arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
+            <artifact:arg value="-Durl=${ossrh.staging.repository.url}" />
+            <artifact:arg value="-DrepositoryId=${ossrh.server.id}" />
+            <artifact:arg value="-DpomFile=sbe-pom.xml" />
+            <artifact:arg value="-Dfile=${sources.jar}" />
+            <artifact:arg value="-Dclassifier=sources"/>
+            <artifact:arg value="-Pgpg"/>
+        </artifact:mvn>
+        <artifact:mvn>
+            <artifact:arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
+            <artifact:arg value="-Durl=${ossrh.staging.repository.url}" />
+            <artifact:arg value="-DrepositoryId=${ossrh.server.id}" />
+            <artifact:arg value="-DpomFile=sbe-pom.xml" />
+            <artifact:arg value="-Dfile=${javadoc.jar}" />
+            <artifact:arg value="-Dclassifier=javadoc"/>
+            <artifact:arg value="-Pgpg"/>
+        </artifact:mvn>
     </target>
 
     <target name="checkstyle" depends="init">
@@ -179,25 +226,25 @@
     </target>
 
     <target name="dist" depends="build, javadoc" description="Generate the distribution">
-        <jar destfile="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar">
+        <jar destfile="${jar}">
             <manifest>
                 <attribute name="Main-Class" value="uk.co.real_logic.sbe.SbeTool"/>
             </manifest>
             <fileset dir="${dir.main.build}"/>
         </jar>
-        <jar destfile="${dir.dist}/${module.name}-api-${build.version}-${DSTAMP}.jar">
+        <jar destfile="${javadoc.jar}">
             <fileset dir="${dir.docs.java}"/>
         </jar>
-        <jar destfile="${dir.dist}/${module.name}-src-${build.version}-${DSTAMP}.jar">
+        <jar destfile="${sources.jar}">
             <fileset dir="${dir.main.src}"/>
         </jar>
 
         <!-- Copying SbeTool to a constant name (without timestamp and version number, which makes life easier for other builds..) -->
-        <copy file="${dir.dist}/${module.name}-${build.version}-${DSTAMP}.jar" tofile="${dir.dist}/sbe.jar"/>
+        <copy file="${jar}" tofile="${dir.dist}/sbe.jar"/>
     </target>
 
     <target name="cpp:dist" depends="cpp:compile, cpp:doc">
-        <zip destfile="${dir.dist}/${module.name}-otfcpp-doc-${build.version}-${DSTAMP}.zip">
+        <zip destfile="${dir.dist}/${module.name}-otfcpp-doc-${build.version}.zip">
             <fileset dir="${dir.docs.cpp}"/>
         </zip>
     </target>
