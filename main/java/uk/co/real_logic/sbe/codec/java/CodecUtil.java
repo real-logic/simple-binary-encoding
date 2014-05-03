@@ -449,7 +449,7 @@ public class CodecUtil
                                       final boolean switchOn)
     {
         byte bits = buffer.getByte(index);
-        bits = (byte)((switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex)));
+        bits = (byte)(switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex));
         buffer.putByte(index, bits);
     }
 
@@ -486,7 +486,7 @@ public class CodecUtil
                                        final ByteOrder byteOrder)
     {
         short bits = buffer.getShort(index, byteOrder);
-        bits = (short)((switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex)));
+        bits = (short)(switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex));
         buffer.putShort(index, bits, byteOrder);
     }
 
