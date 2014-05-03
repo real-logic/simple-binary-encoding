@@ -139,7 +139,7 @@
     <XmlUpdate
        XmlFileName="@(NuSpecFile)"
        XPath="/package/metadata/version"
-       Value="%(AssemblyIdentity.Version)-beta" />
+       Value="%(AssemblyIdentity.Version)" />
 
     <Exec Command=".nuget\nuget.exe pack .nuget\sbe.nuspec -OutputDirectory $(DistributionDirectory)" />
   </Target>
