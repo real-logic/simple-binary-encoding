@@ -25,6 +25,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+Binaries
+--------
+
+Binaries and dependency information for Maven, Ivy, Gradle, and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22uk.co.real-logic%22%20AND%20a%3A%22sbe%22).
+
+Example for Maven:
+
+```xml
+<dependency>
+    <groupId>uk.co.real-logic</groupId>
+    <artifactId>sbe</artifactId>
+    <version>1.0-RC2</version>
+</dependency>
+```
+
 Directory Layout
 ----------------
 
