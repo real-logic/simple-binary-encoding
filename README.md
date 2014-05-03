@@ -85,3 +85,12 @@ C# Build
 --------
 
 See [readme.md](https://github.com/real-logic/simple-binary-encoding/tree/master/vs2013) in vs2013 directory
+
+
+NuGET (.NET)
+------------
+
+Search for 'SBE' in NuGet or run the following command line in the NuGet console
+
+    Install-Package Adaptive.SBE
+
