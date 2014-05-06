@@ -925,11 +925,9 @@ public class Cpp98Generator implements CodeGenerator
             "\n" +
             indent + "    static int %1$sLength(void)\n" +
             indent + "    {\n" +
-                              "%2$s" +
-            indent + "        return %3$d;\n" +
+            indent + "        return %2$d;\n" +
             indent + "    }\n\n",
             propertyName,
-            generateArrayFieldNotPresentCondition(token.version(), indent),
             Integer.valueOf(token.arrayLength())
         ));
 
