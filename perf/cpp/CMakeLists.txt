@@ -19,7 +19,8 @@ option(USE_PROTOBUF "Build Protobuf installed in PROTOBUF_HOME." OFF)
 option(RETRIEVE_AND_BUILD_PROTOBUF "Retrieve and build protobuf in PROTOBUF_HOME. Not Windows!!" OFF)
 
 if(UNIX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Ofast")
+	# added -DNDEBUG from #128
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Ofast -DNDEBUG")
 endif()
 
 if(APPLE)
@@ -83,7 +84,7 @@ set(DEV_DIR $ENV{HOME}/dev CACHE PATH "Path to dependencies")
 
 set(PROTOBUF_VSN "protobuf-2.5.0")
 set(PROTOBUF_HOME ${DEV_DIR}/${PROTOBUF_VSN} CACHE PATH "Path to protobuf install directory")
-set(PROTOBUF_TARGET_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen/cpp)
+set(PROTOBUF_TARGET_DIR ${CMAKE_CURRENT_BINARY_DIR}/cpp)
 
 if(RETRIEVE_AND_BUILD_PROTOBUF)
 	if(EXISTS ${PROTOBUF_HOME})

@@ -23,6 +23,12 @@
 
 using namespace uk::co::real_logic::protobuf::examples;
 
+/*
+ * This test is deliberately setup to be unfair to SBE. SBE tests use a messageHeader for length, etc. In
+ * these PB tests, we will use a static length field at the start of the message to contain the length. A full
+ * comparison would use another PB with the equivalent messageHeader fields.
+ */
+
 class PbMarketDataCodecBench : public CodecBench<PbMarketDataCodecBench>
 {
 public:
@@ -55,14 +61,27 @@ public:
         mdIncGrp->set_aggressorside(MdIncGrp_Side_SELL);
         mdIncGrp->set_mdentrytype(MdIncGrp_MdEntryType_OFFER);
 
-        marketData_.SerializeToArray(buffer, marketData_.ByteSize());
+        // grab and cache size. This will scan the message. Refer to Kenton Varda #128
+        int len = marketData_.ByteSize();
 
-        return marketData_.ByteSize();
+        // add length field so decode knows length (SBE will have full messageHeader instead)
+        *((int *)buffer) = len;
+
+        // Refer to Kenton Varda #128
+        marketData_.SerializeWithCachedSizesToArray((::google::protobuf::uint8*)(buffer + sizeof(int)));
+
+        return len;
     };
 
     virtual int decode(const char *buffer)
     {
-        marketData_.ParseFromArray(buffer, 10000);
+        int len = *((int *)buffer);
+
+        if (marketData_.ParseFromArray(buffer + sizeof(int), len) == false)
+        {
+            std::cout << "error in PB parse" << std::endl;
+            exit(1);
+        }
 
         marketData_.transacttime();
         marketData_.eventtimedelta();
@@ -82,7 +101,8 @@ public:
             mdIncGrp.mdentrytype();
         }
 
-        return marketData_.ByteSize();
+        // just return len. No need to call ByteSize() which will scan message
+        return len;
     };
 
 private:
