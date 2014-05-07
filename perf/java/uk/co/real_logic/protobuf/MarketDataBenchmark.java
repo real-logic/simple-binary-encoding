@@ -20,64 +20,50 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import uk.co.real_logic.protobuf.fix.Fix;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
 public class MarketDataBenchmark
 {
     @State(Scope.Benchmark)
     public static class MyState
     {
-        final Fix.MarketDataIncrementalRefreshTrades.Builder marketData = Fix.MarketDataIncrementalRefreshTrades.newBuilder();
         final byte[] decodeBuffer;
-
-        final ByteArrayInputStream in;
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         {
             try
             {
-                encode(marketData, out);
+                decodeBuffer = encode();
             }
             catch (final Exception ex)
             {
                 throw new RuntimeException(ex);
             }
-
-            decodeBuffer = out.toByteArray();
-            in = new ByteArrayInputStream(decodeBuffer);
         }
     }
 
     @GenerateMicroBenchmark
-    public int testEncode(final MyState state) throws Exception
+    public byte[] testEncode(final MyState state) throws Exception
     {
-        final Fix.MarketDataIncrementalRefreshTrades.Builder marketData = state.marketData;
-        final ByteArrayOutputStream out = state.out;
-
-        return encode(marketData,  out);
+        return encode();
     }
 
     @GenerateMicroBenchmark
-    public int testDecode(final MyState state) throws Exception
+    public Fix.MarketDataIncrementalRefreshTrades testDecode(final MyState state) throws Exception
     {
-        final Fix.MarketDataIncrementalRefreshTrades.Builder marketData = state.marketData;
-        final ByteArrayInputStream in = state.in;
+        final byte[] buffer = state.decodeBuffer;
 
-        return decode(marketData, in);
+        return decode(buffer);
     }
 
-    private static int encode(final Fix.MarketDataIncrementalRefreshTrades.Builder marketData,
-                              final ByteArrayOutputStream out) throws Exception
+    private static byte[] encode() throws Exception
     {
-        out.reset();
+        final Fix.MarketDataIncrementalRefreshTrades.Builder marketData
+            = Fix.MarketDataIncrementalRefreshTrades.newBuilder();
 
         marketData.clear()
                   .setTransactTime(1234L)
                   .setEventTimeDelta(987)
                   .setMatchEventIndicator(Fix.MarketDataIncrementalRefreshTrades.MatchEventIndicator.END_EVENT);
 
-        final Fix.MdIncGrp.Builder mdIncGroupBuilder1 = marketData.addMdIncGroupBuilder();
+        final Fix.MdIncGrp.Builder mdIncGroupBuilder1 = Fix.MdIncGrp.newBuilder();
         mdIncGroupBuilder1.setTradeId(1234L);
         mdIncGroupBuilder1.setSecurityId(56789L);
         mdIncGroupBuilder1.getMdEntryPxBuilder().setMantissa(50);
@@ -87,8 +73,9 @@ public class MarketDataBenchmark
         mdIncGroupBuilder1.setRepSeq(1);
         mdIncGroupBuilder1.setAggressorSide(Fix.MdIncGrp.Side.BUY);
         mdIncGroupBuilder1.setMdEntryType(Fix.MdIncGrp.MdEntryType.BID);
+        marketData.addMdIncGroup(mdIncGroupBuilder1);
 
-        final Fix.MdIncGrp.Builder mdIncGroupBuilder2 = marketData.addMdIncGroupBuilder();
+        final Fix.MdIncGrp.Builder mdIncGroupBuilder2 = Fix.MdIncGrp.newBuilder();
         mdIncGroupBuilder2.setTradeId(1234L);
         mdIncGroupBuilder2.setSecurityId(56789L);
         mdIncGroupBuilder2.getMdEntryPxBuilder().setMantissa(50);
@@ -98,19 +85,15 @@ public class MarketDataBenchmark
         mdIncGroupBuilder2.setRepSeq(1);
         mdIncGroupBuilder2.setAggressorSide(Fix.MdIncGrp.Side.BUY);
         mdIncGroupBuilder2.setMdEntryType(Fix.MdIncGrp.MdEntryType.BID);
+        marketData.addMdIncGroup(mdIncGroupBuilder2);
 
-        marketData.build().writeTo(out);
-
-        return out.size();
+        return marketData.build().toByteArray();
     }
 
-    private static int decode(final Fix.MarketDataIncrementalRefreshTrades.Builder marketData,
-                              final ByteArrayInputStream in) throws Exception
+    private static Fix.MarketDataIncrementalRefreshTrades decode(final byte[] buffer) throws Exception
     {
-        in.mark(in.available());
-
-        marketData.clear();
-        marketData.mergeFrom(in);
+        final Fix.MarketDataIncrementalRefreshTrades marketData
+            = Fix.MarketDataIncrementalRefreshTrades.parseFrom(buffer);
 
         marketData.getTransactTime();
         marketData.getEventTimeDelta();
@@ -129,9 +112,7 @@ public class MarketDataBenchmark
             mdIncGrp.getMdEntryType();
         }
 
-        in.reset();
-
-        return in.available();
+        return marketData;
     }
 
     /*
@@ -153,10 +134,11 @@ public class MarketDataBenchmark
         final MyState state = new MyState();
         final MarketDataBenchmark benchmark = new MarketDataBenchmark();
 
+        byte[] marketData = null;
         final long start = System.nanoTime();
         for (int i = 0; i < reps; i++)
         {
-            benchmark.testEncode(state);
+            marketData = benchmark.testEncode(state);
         }
 
         final long totalDuration = System.nanoTime() - start;
@@ -165,7 +147,7 @@ public class MarketDataBenchmark
                           Integer.valueOf(runNumber),
                           Long.valueOf(totalDuration / reps),
                           benchmark.getClass().getName(),
-                          Integer.valueOf(state.marketData.getMdIncGroupCount()));
+                          Integer.valueOf(marketData.length));
     }
 
     private static void perfTestDecode(final int runNumber) throws Exception
@@ -174,10 +156,11 @@ public class MarketDataBenchmark
         final MyState state = new MyState();
         final MarketDataBenchmark benchmark = new MarketDataBenchmark();
 
+        Fix.MarketDataIncrementalRefreshTrades marketData = null;
         final long start = System.nanoTime();
         for (int i = 0; i < reps; i++)
         {
-            benchmark.testDecode(state);
+            marketData = benchmark.testDecode(state);
         }
 
         final long totalDuration = System.nanoTime() - start;
@@ -186,6 +169,6 @@ public class MarketDataBenchmark
                           Integer.valueOf(runNumber),
                           Long.valueOf(totalDuration / reps),
                           benchmark.getClass().getName(),
-                          Integer.valueOf(state.marketData.getMdIncGroupCount()));
+                          Integer.valueOf(marketData.getMdIncGroupCount()));
     }
 }
