@@ -23,9 +23,6 @@ import uk.co.real_logic.protobuf.examples.Examples;
 import uk.co.real_logic.protobuf.examples.Examples.Car.Model;
 import uk.co.real_logic.protobuf.examples.Examples.PerformanceFigures;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
 public class CarBenchmark
 {
     private static final String VEHICLE_CODE = "abcdef";
@@ -36,51 +33,39 @@ public class CarBenchmark
     @State(Scope.Benchmark)
     public static class MyState
     {
-        final Examples.Car.Builder car = Examples.Car.newBuilder();
         final byte[] decodeBuffer;
-
-        final ByteArrayInputStream in;
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         {
             try
             {
-                encode(car, out);
+                decodeBuffer = encode();
             }
             catch (final Exception ex)
             {
                 throw new RuntimeException(ex);
             }
-
-            decodeBuffer = out.toByteArray();
-            in = new ByteArrayInputStream(decodeBuffer);
         }
     }
 
     @GenerateMicroBenchmark
-    public int testEncode(final MyState state) throws Exception
+    public byte[] testEncode(final MyState state) throws Exception
     {
-        final Examples.Car.Builder car = state.car;
-        final ByteArrayOutputStream out = state.out;
-
-        return encode(car,  out);
+        return encode();
     }
 
     @GenerateMicroBenchmark
-    public int testDecode(final MyState state) throws Exception
+    public Examples.Car testDecode(final MyState state) throws Exception
     {
-        final Examples.Car.Builder car = state.car;
-        final ByteArrayInputStream in = state.in;
+        final byte[] buffer = state.decodeBuffer;
 
-        return decode(car, in);
+        return decode(buffer);
     }
 
-    private static int encode(final Examples.Car.Builder car, final ByteArrayOutputStream out) throws Exception
+    private static byte[] encode() throws Exception
     {
-        out.reset();
+        final Examples.Car.Builder car = Examples.Car.newBuilder();
 
-        car.clear()
-           .setCode(Model.A)
+        car.setCode(Model.A)
            .setModelYear(2005)
            .setSerialNumber(12345)
            .setAvailable(true)
@@ -98,35 +83,29 @@ public class CarBenchmark
            .setNumCylinders(8)
            .setManufacturerCode(ENG_MAN_CODE);
 
-        car.addFuelFiguresBuilder().setSpeed(30).setMpg(35.9F);
-        car.addFuelFiguresBuilder().setSpeed(30).setMpg(49.0F);
-        car.addFuelFiguresBuilder().setSpeed(30).setMpg(40.0F);
+        car.addFuelFigures(Examples.FuelFigures.newBuilder().setSpeed(30).setMpg(35.9f));
+        car.addFuelFigures(Examples.FuelFigures.newBuilder().setSpeed(50).setMpg(35.9f));
+        car.addFuelFigures(Examples.FuelFigures.newBuilder().setSpeed(70).setMpg(35.9f));
 
         final PerformanceFigures.Builder perf1 = car.addPerformanceBuilder().setOctaneRating(95);
-        perf1.addAccelerationBuilder().setMph(30).setSeconds(4.0f);
-        perf1.addAccelerationBuilder().setMph(60).setSeconds(7.5f);
-        perf1.addAccelerationBuilder().setMph(100).setSeconds(12.2f);
+        perf1.addAcceleration(Examples.Acceleration.newBuilder().setMph(30).setSeconds(4.0f));
+        perf1.addAcceleration(Examples.Acceleration.newBuilder().setMph(60).setSeconds(7.5f));
+        perf1.addAcceleration(Examples.Acceleration.newBuilder().setMph(100).setSeconds(12.2f));
 
-        final PerformanceFigures.Builder perf2 = car.addPerformanceBuilder().setOctaneRating(95);
-        perf2.addAccelerationBuilder().setMph(30).setSeconds(3.8f);
-        perf2.addAccelerationBuilder().setMph(60).setSeconds(7.1f);
-        perf2.addAccelerationBuilder().setMph(100).setSeconds(11.8f);
+        final PerformanceFigures.Builder perf2 = car.addPerformanceBuilder().setOctaneRating(99);
+        perf2.addAcceleration(Examples.Acceleration.newBuilder().setMph(30).setSeconds(3.8f));
+        perf2.addAcceleration(Examples.Acceleration.newBuilder().setMph(60).setSeconds(7.1f));
+        perf2.addAcceleration(Examples.Acceleration.newBuilder().setMph(100).setSeconds(11.8f));
 
         car.setMake(MAKE);
         car.setModel(MODEL);
 
-        car.build().writeTo(out);
-
-        return out.size();
+        return car.build().toByteArray();
     }
 
-    private static int decode(final Examples.Car.Builder car,
-                              final ByteArrayInputStream in) throws Exception
+    private static Examples.Car decode(final byte[] buffer) throws Exception
     {
-        in.mark(in.available());
-
-        car.clear();
-        car.mergeFrom(in);
+        final Examples.Car car = Examples.Car.parseFrom(buffer);
 
         car.getSerialNumber();
         car.getModelYear();
@@ -172,9 +151,7 @@ public class CarBenchmark
         car.getMake();
         car.getModel();
 
-        in.reset();
-
-        return in.available();
+        return car;
     }
 
     /*
@@ -196,10 +173,11 @@ public class CarBenchmark
         final MyState state = new MyState();
         final CarBenchmark benchmark = new CarBenchmark();
 
+        byte[] encodedBuffer = null;
         final long start = System.nanoTime();
         for (int i = 0; i < reps; i++)
         {
-            benchmark.testEncode(state);
+            encodedBuffer = benchmark.testEncode(state);
         }
 
         final long totalDuration = System.nanoTime() - start;
@@ -208,7 +186,7 @@ public class CarBenchmark
                           Integer.valueOf(runNumber),
                           Long.valueOf(totalDuration / reps),
                           benchmark.getClass().getName(),
-                          Integer.valueOf(state.car.getSomeNumbersCount()));
+                          Integer.valueOf(encodedBuffer.length));
     }
 
     private static void perfTestDecode(final int runNumber) throws Exception
@@ -217,10 +195,11 @@ public class CarBenchmark
         final MyState state = new MyState();
         final CarBenchmark benchmark = new CarBenchmark();
 
+        Examples.Car car = null;
         final long start = System.nanoTime();
         for (int i = 0; i < reps; i++)
         {
-            benchmark.testDecode(state);
+            car = benchmark.testDecode(state);
         }
 
         final long totalDuration = System.nanoTime() - start;
@@ -229,6 +208,6 @@ public class CarBenchmark
                           Integer.valueOf(runNumber),
                           Long.valueOf(totalDuration / reps),
                           benchmark.getClass().getName(),
-                          Integer.valueOf(state.car.getSomeNumbersCount()));
+                          Integer.valueOf(car.getSomeNumbersCount()));
     }
 }
