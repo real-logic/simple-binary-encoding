@@ -470,7 +470,19 @@
         </cc>
     </target>
 
-    <target name="cpp:test" depends="init, cpp:compile, gtest:compile">
+    <target name="cpp:test:codegen" depends="dist">
+        <sequential>
+            <mkdir dir="${dir.gen.cpp98}"/>
+            <java classname="uk.co.real_logic.sbe.SbeTool">
+                <classpath refid="examples.classpath"/>
+                <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
+                <sysproperty key="sbe.target.language" value="cpp98"/>
+                <arg value="${dir.test.resources}/code-generation-schema-cpp.xml"/>
+            </java>
+        </sequential>
+    </target>
+
+    <target name="cpp:test" depends="init, cpp:compile, gtest:compile, cpp:test:codegen">
         <!-- all tests are placed in the main runner -->
         <cc outtype="executable"
             subsystem="console"
@@ -482,6 +494,7 @@
             <includepath path="${dir.gtest.include}"/>
             <includepath path="${dir.main.cpp.src}"/>
             <includepath path="${dir.test.cpp.include}"/>
+            <includepath path="${dir.gen.cpp98}"/>
             <compilerarg value="/wd4514" if="windows"/>
             <compiler name="msvc" if="windows"/>
             <linker name="msvc" if="windows"/>
