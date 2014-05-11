@@ -79,7 +79,7 @@ void Ir::readTokenAtCurrentPosition()
 
     //printf("read buffer_ %p offset %d\n", buffer_, cursorOffset_);
 
-    impl_->tokenCodec.wrapForDecode((char *)buffer_, cursorOffset_, impl_->tokenCodec.sbeBlockLength(), impl_->tokenCodec.sbeSchemaVersion());
+    impl_->tokenCodec.wrapForDecode((char *)buffer_, cursorOffset_, impl_->tokenCodec.sbeBlockLength(), impl_->tokenCodec.sbeSchemaVersion(), len_);
 
     // read all the var data and save in Impl then save size
 
@@ -372,7 +372,7 @@ void Ir::addToken(::uint32_t offset,
 
     //printf("buffer_ %p offset %d\n", buffer_, cursorOffset_);
 
-    tokenCodec.wrapForEncode((char *)buffer_, cursorOffset_);
+    tokenCodec.wrapForEncode((char *)buffer_, cursorOffset_, 4098);
 
     tokenCodec.tokenOffset(offset)
               .tokenSize(size)

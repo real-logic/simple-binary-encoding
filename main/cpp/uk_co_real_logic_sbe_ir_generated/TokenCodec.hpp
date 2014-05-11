@@ -20,6 +20,7 @@ class TokenCodec
 {
 private:
     char *buffer_;
+    int bufferLength_;
     int *positionPtr_;
     int offset_;
     int position_;
@@ -58,10 +59,11 @@ public:
         return offset_;
     }
 
-    TokenCodec &wrapForEncode(char *buffer, const int offset)
+    TokenCodec &wrapForEncode(char *buffer, const int offset, const int bufferLength)
     {
         buffer_ = buffer;
         offset_ = offset;
+        bufferLength_ = bufferLength;
         actingBlockLength_ = sbeBlockLength();
         actingVersion_ = sbeSchemaVersion();
         position(offset + actingBlockLength_);
@@ -69,10 +71,11 @@ public:
         return *this;
     }
 
-    TokenCodec &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion)
+    TokenCodec &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion,                         const int bufferLength)
     {
         buffer_ = buffer;
         offset_ = offset;
+        bufferLength_ = bufferLength;
         actingBlockLength_ = actingBlockLength;
         actingVersion_ = actingVersion;
         positionPtr_ = &position_;
@@ -87,6 +90,10 @@ public:
 
     void position(const sbe_uint64_t position)
     {
+        if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), 0))
+        {
+            throw "buffer too short";
+        }
         position_ = position;
     }
 
@@ -534,8 +541,9 @@ public:
         position(lengthPosition + sizeOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
-        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)dataLength);
+        ::memcpy(dst, buffer_ + pos, bytesToCopy);
         return bytesToCopy;
     }
 
@@ -545,8 +553,9 @@ public:
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + sizeOfLengthField);
-        ::memcpy(buffer_ + position(), src, length);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
+        ::memcpy(buffer_ + pos, src, length);
         return length;
     }
 
@@ -607,8 +616,9 @@ public:
         position(lengthPosition + sizeOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
-        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)dataLength);
+        ::memcpy(dst, buffer_ + pos, bytesToCopy);
         return bytesToCopy;
     }
 
@@ -618,8 +628,9 @@ public:
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + sizeOfLengthField);
-        ::memcpy(buffer_ + position(), src, length);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
+        ::memcpy(buffer_ + pos, src, length);
         return length;
     }
 
@@ -680,8 +691,9 @@ public:
         position(lengthPosition + sizeOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
-        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)dataLength);
+        ::memcpy(dst, buffer_ + pos, bytesToCopy);
         return bytesToCopy;
     }
 
@@ -691,8 +703,9 @@ public:
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + sizeOfLengthField);
-        ::memcpy(buffer_ + position(), src, length);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
+        ::memcpy(buffer_ + pos, src, length);
         return length;
     }
 
@@ -753,8 +766,9 @@ public:
         position(lengthPosition + sizeOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
-        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)dataLength);
+        ::memcpy(dst, buffer_ + pos, bytesToCopy);
         return bytesToCopy;
     }
 
@@ -764,8 +778,9 @@ public:
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + sizeOfLengthField);
-        ::memcpy(buffer_ + position(), src, length);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
+        ::memcpy(buffer_ + pos, src, length);
         return length;
     }
 
@@ -826,8 +841,9 @@ public:
         position(lengthPosition + sizeOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
-        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)dataLength);
+        ::memcpy(dst, buffer_ + pos, bytesToCopy);
         return bytesToCopy;
     }
 
@@ -837,8 +853,9 @@ public:
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + sizeOfLengthField);
-        ::memcpy(buffer_ + position(), src, length);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
+        ::memcpy(buffer_ + pos, src, length);
         return length;
     }
 
@@ -899,8 +916,9 @@ public:
         position(lengthPosition + sizeOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
-        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)dataLength);
+        ::memcpy(dst, buffer_ + pos, bytesToCopy);
         return bytesToCopy;
     }
 
@@ -910,8 +928,9 @@ public:
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + sizeOfLengthField);
-        ::memcpy(buffer_ + position(), src, length);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
+        ::memcpy(buffer_ + pos, src, length);
         return length;
     }
 
@@ -972,8 +991,9 @@ public:
         position(lengthPosition + sizeOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
-        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)dataLength);
+        ::memcpy(dst, buffer_ + pos, bytesToCopy);
         return bytesToCopy;
     }
 
@@ -983,8 +1003,9 @@ public:
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + sizeOfLengthField);
-        ::memcpy(buffer_ + position(), src, length);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
+        ::memcpy(buffer_ + pos, src, length);
         return length;
     }
 
@@ -1045,8 +1066,9 @@ public:
         position(lengthPosition + sizeOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
-        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)dataLength);
+        ::memcpy(dst, buffer_ + pos, bytesToCopy);
         return bytesToCopy;
     }
 
@@ -1056,8 +1078,9 @@ public:
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + sizeOfLengthField);
-        ::memcpy(buffer_ + position(), src, length);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
+        ::memcpy(buffer_ + pos, src, length);
         return length;
     }
 
@@ -1118,8 +1141,9 @@ public:
         position(lengthPosition + sizeOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
-        ::memcpy(dst, buffer_ + position(), bytesToCopy);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)dataLength);
+        ::memcpy(dst, buffer_ + pos, bytesToCopy);
         return bytesToCopy;
     }
 
@@ -1129,8 +1153,9 @@ public:
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + sizeOfLengthField);
-        ::memcpy(buffer_ + position(), src, length);
+        sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
+        ::memcpy(buffer_ + pos, src, length);
         return length;
     }
 };

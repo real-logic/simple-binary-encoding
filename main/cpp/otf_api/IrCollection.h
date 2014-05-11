@@ -202,7 +202,7 @@ protected:
         int offset = 0, tmpLen = 0;
         char tmp[256];
 
-        frame.wrapForDecode(buffer_, offset, frame.sbeBlockLength(), frame.sbeSchemaVersion());
+        frame.wrapForDecode(buffer_, offset, frame.sbeBlockLength(), frame.sbeSchemaVersion(), length_);
 
         tmpLen = frame.getPackageName(tmp, sizeof(tmp));
         ::std::cout << "Reading IR package=\"" << std::string(tmp, tmpLen) << "\" id=" << frame.irId() << ::std::endl;
@@ -235,7 +235,7 @@ protected:
             char tmp[256], name[256];
             int nameLen = 0;
 
-            token.wrapForDecode(buffer_, offset + size, token.sbeBlockLength(), token.sbeSchemaVersion());
+            token.wrapForDecode(buffer_, offset + size, token.sbeBlockLength(), token.sbeSchemaVersion(), length_);
 
             nameLen = token.getName(name, sizeof(name));
             token.getConstValue(tmp, sizeof(tmp));
@@ -277,7 +277,7 @@ protected:
             char tmp[256], name[256];
             int nameLen = 0;
 
-            token.wrapForDecode(buffer_, offset + size, token.sbeBlockLength(), token.sbeSchemaVersion());
+            token.wrapForDecode(buffer_, offset + size, token.sbeBlockLength(), token.sbeSchemaVersion(), length_);
 
             nameLen = token.getName(name, sizeof(name));
             token.getConstValue(tmp, sizeof(tmp));

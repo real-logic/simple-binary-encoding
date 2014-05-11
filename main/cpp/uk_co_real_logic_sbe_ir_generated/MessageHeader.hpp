@@ -18,8 +18,12 @@ private:
     int actingVersion_;
 
 public:
-    MessageHeader &wrap(char *buffer, const int offset, const int actingVersion)
+    MessageHeader &wrap(char *buffer, const int offset, const int actingVersion, const int bufferLength)
     {
+        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - 8)), 0))
+        {
+            throw "buffer too short for flyweight";
+        }
         buffer_ = buffer;
         offset_ = offset;
         actingVersion_ = actingVersion;
