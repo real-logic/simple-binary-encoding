@@ -30,18 +30,18 @@ using namespace code_generation_test;
 #define SPORTS_PACK (true)
 #define SUNROOF (false)
 
-char VEHICLE_CODE[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
-char MANUFACTURER_CODE[] = { '1', '2', '3' };
-const char *MAKE = "Honda";
-const char *MODEL = "Civic VTi";
+static char VEHICLE_CODE[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
+static char MANUFACTURER_CODE[] = { '1', '2', '3' };
+static const char *MAKE = "Honda";
+static const char *MODEL = "Civic VTi";
 
 class CodeGenTest : public testing::Test
 {
 public:
 
-    virtual int encodeHdr(char *buffer, int offset)
+    virtual int encodeHdr(char *buffer, int offset, int bufferLength)
     {
-        hdr_.wrap(buffer, offset, 0)
+        hdr_.wrap(buffer, offset, 0, bufferLength)
             .blockLength(Car::sbeBlockLength())
             .templateId(Car::sbeTemplateId())
             .schemaId(Car::sbeSchemaId())
@@ -50,9 +50,9 @@ public:
         return hdr_.size();
     }
 
-    virtual int encodeCar(char *buffer, int offset)
+    virtual int encodeCar(char *buffer, int offset, int bufferLength)
     {
-        car_.wrapForEncode(buffer, offset)
+        car_.wrapForEncode(buffer, offset, bufferLength)
             .serialNumber(SERIAL_NUMBER)
             .modelYear(MODEL_YEAR)
             .available(AVAILABLE)
@@ -124,7 +124,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
 {
     char buffer[2048];
 
-    int sz = encodeHdr(buffer, 0);
+    int sz = encodeHdr(buffer, 0, sizeof(buffer));
 
     EXPECT_EQ(*((::uint16_t *)buffer), Car::sbeBlockLength());
     EXPECT_EQ(*((::uint16_t *)(buffer + 2)), Car::sbeTemplateId());
@@ -137,9 +137,9 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeAndDecodeMessageHeaderCorrectly)
 {
     char buffer[2048];
 
-    encodeHdr(buffer, 0);
+    encodeHdr(buffer, 0, sizeof(buffer));
 
-    hdrDecoder_.wrap(buffer, 0, 0);
+    hdrDecoder_.wrap(buffer, 0, 0, sizeof(buffer));
     EXPECT_EQ(hdrDecoder_.blockLength(), Car::sbeBlockLength());
     EXPECT_EQ(hdrDecoder_.templateId(), Car::sbeTemplateId());
     EXPECT_EQ(hdrDecoder_.schemaId(), Car::sbeSchemaId());
@@ -173,7 +173,7 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarFieldIdsAndCharacterEncoding)
 TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
 {
     char buffer[2048];
-    int sz = encodeCar(buffer, 0);
+    int sz = encodeCar(buffer, 0, sizeof(buffer));
 
     EXPECT_EQ(sz, 105);
 
@@ -233,8 +233,8 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeHeaderPlusCarCorrectly)
 {
     char buffer[2048];
 
-    int hdrSz = encodeHdr(buffer, 0);
-    int carSz = encodeCar(buffer, hdr_.size());
+    int hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
+    int carSz = encodeCar(buffer, hdr_.size(), sizeof(buffer) - hdr_.size());
 
     EXPECT_EQ(hdrSz, 8);
     EXPECT_EQ(carSz, 105);
@@ -248,20 +248,20 @@ TEST_F(CodeGenTest, shouldbeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
 {
     char buffer[2048];
 
-    int hdrSz = encodeHdr(buffer, 0);
-    int carSz = encodeCar(buffer, hdr_.size());
+    int hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
+    int carSz = encodeCar(buffer, hdr_.size(), sizeof(buffer) - hdr_.size());
 
     EXPECT_EQ(hdrSz, 8);
     EXPECT_EQ(carSz, 105);
 
-    hdrDecoder_.wrap(buffer, 0, 0);
+    hdrDecoder_.wrap(buffer, 0, 0, sizeof(buffer));
 
     EXPECT_EQ(hdrDecoder_.blockLength(), Car::sbeBlockLength());
     EXPECT_EQ(hdrDecoder_.templateId(), Car::sbeTemplateId());
     EXPECT_EQ(hdrDecoder_.schemaId(), Car::sbeSchemaId());
     EXPECT_EQ(hdrDecoder_.version(), Car::sbeSchemaVersion());
 
-    carDecoder_.wrapForDecode(buffer, hdr_.size(), Car::sbeBlockLength(), Car::sbeSchemaVersion());
+    carDecoder_.wrapForDecode(buffer, hdr_.size(), Car::sbeBlockLength(), Car::sbeSchemaVersion(), sizeof(buffer));
 
     EXPECT_EQ(std::string(carDecoder_.charConst(), 1), std::string("g", 1));
     EXPECT_EQ(carDecoder_.serialNumber(), SERIAL_NUMBER);

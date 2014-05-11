@@ -205,6 +205,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "{\n" +
             indent + "private:\n" +
             indent + "    char *buffer_;\n" +
+            indent + "    int bufferLength_;\n" +
             indent + "    int *positionPtr_;\n" +
             indent + "    int blockLength_;\n" +
             indent + "    int count_;\n" +
@@ -218,10 +219,11 @@ public class Cpp98Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    void wrapForDecode(char *buffer, int *pos, const int actingVersion)\n" +
+            indent + "    void wrapForDecode(char *buffer, int *pos, const int actingVersion, const int bufferLength)\n" +
             indent + "    {\n" +
             indent + "        buffer_ = buffer;\n" +
-            indent + "        dimensions_.wrap(buffer_, *pos, actingVersion);\n" +
+            indent + "        bufferLength_ = bufferLength;\n" +
+            indent + "        dimensions_.wrap(buffer_, *pos, actingVersion, bufferLength);\n" +
             indent + "        count_ = dimensions_.numInGroup();\n" +
             indent + "        blockLength_ = dimensions_.blockLength();\n" +
             indent + "        index_ = -1;\n" +
@@ -238,10 +240,11 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             indent + "    void wrapForEncode(char *buffer, const int count,\n" +
-            indent + "                       int *pos, const int actingVersion)\n" +
+            indent + "                       int *pos, const int actingVersion, const int bufferLength)\n" +
             indent + "    {\n" +
             indent + "        buffer_ = buffer;\n" +
-            indent + "        dimensions_.wrap(buffer_, *pos, actingVersion);\n" +
+            indent + "        bufferLength_ = bufferLength;\n" +
+            indent + "        dimensions_.wrap(buffer_, *pos, actingVersion, bufferLength);\n" +
             indent + "        dimensions_.numInGroup((%1$s)count);\n" +
             indent + "        dimensions_.blockLength((%2$s)%3$d);\n" +
             indent + "        index_ = -1;\n" +
@@ -285,6 +288,10 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    %1$s &next(void)\n" +
             indent + "    {\n" +
             indent + "        offset_ = *positionPtr_;\n" +
+            indent + "        if (SBE_BOUNDS_CHECK_EXPECT(( (offset_ + blockLength_) >= bufferLength_ ),0))\n" +
+            indent + "        {\n" +
+            indent + "            throw \"buffer too short to support next group index\";\n" +
+            indent + "        }\n" +
             indent + "        *positionPtr_ = offset_ + blockLength_;\n" +
             indent + "        ++index_;\n\n" +
             indent + "        return *this;\n" +
@@ -325,7 +332,7 @@ public class Cpp98Generator implements CodeGenerator
             "\n" +
             indent + "    %1$s &%2$s(void)\n" +
             indent + "    {\n" +
-            indent + "        %2$s_.wrapForDecode(buffer_, positionPtr_, actingVersion_);\n" +
+            indent + "        %2$s_.wrapForDecode(buffer_, positionPtr_, actingVersion_, bufferLength_);\n" +
             indent + "        return %2$s_;\n" +
             indent + "    }\n",
             className,
@@ -336,7 +343,7 @@ public class Cpp98Generator implements CodeGenerator
             "\n" +
             indent + "    %1$s &%2$sCount(const int count)\n" +
             indent + "    {\n" +
-            indent + "        %2$s_.wrapForEncode(buffer_, count, positionPtr_, actingVersion_);\n" +
+            indent + "        %2$s_.wrapForEncode(buffer_, count, positionPtr_, actingVersion_, bufferLength_);\n" +
             indent + "        return %2$s_;\n" +
             indent + "    }\n",
             className,
@@ -388,8 +395,9 @@ public class Cpp98Generator implements CodeGenerator
                     "        position(lengthPosition + sizeOfLengthField);\n" +
                     "        sbe_int64_t dataLength = %4$s(*((%5$s *)(buffer_ + lengthPosition)));\n" +
                     "        int bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
-                    "        ::memcpy(dst, buffer_ + position(), bytesToCopy);\n" +
+                    "        sbe_uint64_t pos = position();\n" +
                     "        position(position() + (sbe_uint64_t)dataLength);\n" +
+                    "        ::memcpy(dst, buffer_ + pos, bytesToCopy);\n" +
                     "        return bytesToCopy;\n" +
                     "    }\n\n",
                     propertyName,
@@ -406,8 +414,9 @@ public class Cpp98Generator implements CodeGenerator
                     "        sbe_uint64_t lengthPosition = position();\n" +
                     "        *((%3$s *)(buffer_ + lengthPosition)) = %4$s((%3$s)length);\n" +
                     "        position(lengthPosition + sizeOfLengthField);\n" +
-                    "        ::memcpy(buffer_ + position(), src, length);\n" +
+                    "        sbe_uint64_t pos = position();\n" +
                     "        position(position() + (sbe_uint64_t)length);\n" +
+                    "        ::memcpy(buffer_ + pos, src, length);\n" +
                     "        return length;\n" +
                     "    }\n",
                     propertyName,
@@ -1096,8 +1105,12 @@ public class Cpp98Generator implements CodeGenerator
             "    int offset_;\n" +
             "    int actingVersion_;\n\n" +
             "public:\n" +
-            "    %1$s &wrap(char *buffer, const int offset, const int actingVersion)\n" +
+            "    %1$s &wrap(char *buffer, const int offset, const int actingVersion, const int bufferLength)\n" +
             "    {\n" +
+            "        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - %2$s)), 0))\n" +
+            "        {\n" +
+            "            throw \"buffer too short for flyweight\";\n" +
+            "        }\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
             "        actingVersion_ = actingVersion;\n" +
@@ -1123,6 +1136,7 @@ public class Cpp98Generator implements CodeGenerator
         return String.format(
             "private:\n" +
             "    char *buffer_;\n" +
+            "    int bufferLength_;\n" +
             "    int *positionPtr_;\n" +
             "    int offset_;\n" +
             "    int position_;\n" +
@@ -1153,20 +1167,23 @@ public class Cpp98Generator implements CodeGenerator
             "    {\n" +
             "        return offset_;\n" +
             "    }\n\n" +
-            "    %10$s &wrapForEncode(char *buffer, const int offset)\n" +
+            "    %10$s &wrapForEncode(char *buffer, const int offset, const int bufferLength)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
+            "        bufferLength_ = bufferLength;\n" +
             "        actingBlockLength_ = sbeBlockLength();\n" +
             "        actingVersion_ = sbeSchemaVersion();\n" +
             "        position(offset + actingBlockLength_);\n" +
             "        positionPtr_ = &position_;\n" +
             "        return *this;\n" +
             "    }\n\n" +
-            "    %10$s &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion)\n" +
+            "    %10$s &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion," +
+            "                         const int bufferLength)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
+            "        bufferLength_ = bufferLength;\n" +
             "        actingBlockLength_ = actingBlockLength;\n" +
             "        actingVersion_ = actingVersion;\n" +
             "        positionPtr_ = &position_;\n" +
@@ -1179,6 +1196,10 @@ public class Cpp98Generator implements CodeGenerator
             "    }\n\n" +
             "    void position(const sbe_uint64_t position)\n" +
             "    {\n" +
+            "        if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), 0))\n" +
+            "        {\n" +
+            "            throw \"buffer too short\";\n" +
+            "        }\n" +
             "        position_ = position;\n" +
             "    }\n\n" +
             "    int size(void) const\n" +
@@ -1375,7 +1396,7 @@ public class Cpp98Generator implements CodeGenerator
             "\n" +
             indent + "    %1$s &%2$s()\n" +
             indent + "    {\n" +
-            indent + "        %2$s_.wrap(buffer_, offset_ + %3$d, actingVersion_);\n" +
+            indent + "        %2$s_.wrap(buffer_, offset_ + %3$d, actingVersion_, bufferLength_);\n" +
             indent + "        return %2$s_;\n" +
             indent + "    }\n",
             bitsetName,
@@ -1406,7 +1427,7 @@ public class Cpp98Generator implements CodeGenerator
             "\n" +
             indent + "    %1$s &%2$s(void)\n" +
             indent + "    {\n" +
-            indent + "        %2$s_.wrap(buffer_, offset_ + %3$d, actingVersion_);\n" +
+            indent + "        %2$s_.wrap(buffer_, offset_ + %3$d, actingVersion_, bufferLength_);\n" +
             indent + "        return %2$s_;\n" +
             indent + "    }\n",
             compositeName,

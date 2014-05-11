@@ -34,19 +34,19 @@ const char *MAKE = "Honda";
 const char *MODEL = "Civic VTi";
 const int messageHeaderVersion = 0;
 
-void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset)
+void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset, int bufferLength)
 {
     // encode the header
-    hdr.wrap(buffer, offset, messageHeaderVersion)
+    hdr.wrap(buffer, offset, messageHeaderVersion, bufferLength)
        .blockLength(Car::sbeBlockLength())
        .templateId(Car::sbeTemplateId())
        .schemaId(Car::sbeSchemaId())
        .version(Car::sbeSchemaVersion());
 }
 
-void decodeHdr(MessageHeader &hdr, char *buffer, int offset)
+void decodeHdr(MessageHeader &hdr, char *buffer, int offset, int bufferLength)
 {
-    hdr.wrap(buffer, offset, messageHeaderVersion);
+    hdr.wrap(buffer, offset, messageHeaderVersion, bufferLength);
 
     // decode the header
     cout << "messageHeader.blockLength=" << hdr.blockLength() << endl;
@@ -55,9 +55,9 @@ void decodeHdr(MessageHeader &hdr, char *buffer, int offset)
     cout << "messageHeader.schemaVersion=" << (sbe_uint32_t)hdr.version() << endl;
 }
 
-void encodeCar(Car &car, char *buffer, int offset)
+void encodeCar(Car &car, char *buffer, int offset, int bufferLength)
 {
-    car.wrapForEncode(buffer, offset)
+    car.wrapForEncode(buffer, offset, bufferLength)
        .serialNumber(1234)
        .modelYear(2013)
        .available(BooleanType::TRUE)
@@ -164,9 +164,9 @@ const char *format(bool value)
     }
 }
 
-void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int actingVersion)
+void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int actingVersion, int bufferLength)
 {
-    car.wrapForDecode(buffer, offset, actingBlockLength, actingVersion);
+    car.wrapForDecode(buffer, offset, actingBlockLength, actingVersion, bufferLength);
     std::string sb;
 
     sb.append("\ncar.serialNumberId=").append(format(Car::serialNumberId()));
@@ -272,12 +272,12 @@ int main(int argc, const char* argv[])
     MessageHeader hdr;
     Car car;
 
-    encodeHdr(hdr, car, buffer, 0);
-    encodeCar(car, buffer, hdr.size());
+    encodeHdr(hdr, car, buffer, 0, sizeof(buffer));
+    encodeCar(car, buffer, hdr.size(), sizeof(buffer));
 
     cout << "Encoding size is " << hdr.size() << " + " << car.size() << endl;
 
-    decodeHdr(hdr, buffer, 0);
-    decodeCar(car, buffer, hdr.size(), hdr.blockLength(), hdr.version());
+    decodeHdr(hdr, buffer, 0, sizeof(buffer));
+    decodeCar(car, buffer, hdr.size(), hdr.blockLength(), hdr.version(), sizeof(buffer));
     return 0;
 }

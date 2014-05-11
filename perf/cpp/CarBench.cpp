@@ -25,7 +25,7 @@ public:
     virtual void setUp(void)
     {
         buffer_ = new char[MAX_CAR_BUFFER];
-        bench_.runEncode(buffer_, MAX_N);  // set buffer up for decoding runs
+        bench_.runEncode(buffer_, MAX_N, MAX_CAR_BUFFER);  // set buffer up for decoding runs
         std::cout << "MAX N = " << MAX_N << " [for Multiple runs]" << std::endl;
     };
 
@@ -45,35 +45,15 @@ static struct Benchmark::Config cfg[] = {
 
 BENCHMARK_CONFIG(SbeCarBench, RunSingleEncode, cfg)
 {
-    bench_.runEncode(buffer_);
+    bench_.runEncode(buffer_, MAX_CAR_BUFFER);
 }
 
 BENCHMARK_CONFIG(SbeCarBench, RunSingleDecode, cfg)
 {
-    bench_.runDecode(buffer_);
+    bench_.runDecode(buffer_, MAX_CAR_BUFFER);
 }
 
 BENCHMARK_CONFIG(SbeCarBench, RunSingleEncodeAndDecode, cfg)
 {
-    bench_.runEncodeAndDecode(buffer_);
-}
-
-static struct Benchmark::Config cfgMulti[] = {
-    { Benchmark::ITERATIONS, "100000" },
-    { Benchmark::BATCHES, "20" }
-};
-
-BENCHMARK_CONFIG(SbeCarBench, RunMultipleEncode, cfgMulti)
-{
-    bench_.runEncode(buffer_, MAX_N);
-}
-
-BENCHMARK_CONFIG(SbeCarBench, RunMultipleDecode, cfgMulti)
-{
-    bench_.runDecode(buffer_, MAX_N);
-}
-
-BENCHMARK_CONFIG(SbeCarBench, RunMultipleEncodeAndDecode, cfgMulti)
-{
-    bench_.runEncodeAndDecode(buffer_, MAX_N);
+    bench_.runEncodeAndDecode(buffer_, MAX_CAR_BUFFER);
 }

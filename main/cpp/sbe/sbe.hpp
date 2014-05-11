@@ -38,7 +38,6 @@ namespace sbe {
 
 /*
  * Define some byte ordering macros
- * These use gcc builtins. MSVC should be similar.
  */
 #if defined(WIN32)
     #define SBE_BIG_ENDIAN_ENCODE_16(v) _byteswap_ushort(v)
@@ -63,6 +62,14 @@ namespace sbe {
     #define SBE_BIG_ENDIAN_ENCODE_64(v) (v)
 #else
     #error "Byte Ordering of platform not determined. Set __BYTE_ORDER__ manually before including this file."
+#endif
+
+#if defined(SBE_NO_BOUNDS_CHECK)
+    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (false)
+#elif defined(WIN32)
+    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (exp)
+#else
+    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))
 #endif
 
 class MetaAttribute

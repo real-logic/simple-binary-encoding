@@ -24,7 +24,7 @@ public:
     virtual void setUp(void)
     {
         buffer_ = new char[MAX_MD_BUFFER];
-        bench_.runEncode(buffer_);  // set buffer up for decoding runs
+        bench_.runEncode(buffer_, MAX_MD_BUFFER);  // set buffer up for decoding runs
     };
 
     virtual void tearDown(void)
@@ -43,15 +43,15 @@ static struct Benchmark::Config cfg[] = {
 
 BENCHMARK_CONFIG(SbeMarketDataBench, RunSingleEncode, cfg)
 {
-    bench_.runEncode(buffer_);
+    bench_.runEncode(buffer_, MAX_MD_BUFFER);
 }
 
 BENCHMARK_CONFIG(SbeMarketDataBench, RunSingleDecode, cfg)
 {
-    bench_.runDecode(buffer_);
+    bench_.runDecode(buffer_, MAX_MD_BUFFER);
 }
 
 BENCHMARK_CONFIG(SbeMarketDataBench, RunSingleEncodeAndDecode, cfg)
 {
-    bench_.runEncodeAndDecode(buffer_);
+    bench_.runEncodeAndDecode(buffer_, MAX_MD_BUFFER);
 }

@@ -32,9 +32,9 @@ int MODELLEN = strlen(MODEL);
 class SbeCarCodecBench : public CodecBench<SbeCarCodecBench>
 {
 public:
-    int encode(char *buffer)
+    int encode(char *buffer, const int bufferLength)
     {
-        car.wrapForEncode(buffer, 0)
+        car.wrapForEncode(buffer, 0, bufferLength)
            .serialNumber(1234)
            .modelYear(2013)
            .available(BooleanType::YES)
@@ -79,9 +79,9 @@ public:
         return car.size();
     };
 
-    virtual int decode(const char *buffer)
+    virtual int decode(const char *buffer, const int bufferLength)
     {
-        car.wrapForDecode((char *)buffer, 0, Car::sbeBlockLength(), Car::sbeSchemaVersion());
+        car.wrapForDecode((char *)buffer, 0, Car::sbeBlockLength(), Car::sbeSchemaVersion(), bufferLength);
 
         int64_t tmpInt;
         const char *tmpChar;

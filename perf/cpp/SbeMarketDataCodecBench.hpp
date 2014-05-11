@@ -25,15 +25,15 @@ using namespace uk_co_real_logic_sbe_samples_fix;
 class SbeMarketDataCodecBench : public CodecBench<SbeMarketDataCodecBench>
 {
 public:
-    virtual int encode(char *buffer)
+    virtual int encode(char *buffer, const int bufferLength)
     {
-        messageHeader_.wrap(buffer, 0, 0);
+        messageHeader_.wrap(buffer, 0, 0, bufferLength);
         messageHeader_.blockLength(marketData_.sbeBlockLength());
         messageHeader_.templateId(marketData_.sbeTemplateId());
         messageHeader_.schemaId(marketData_.sbeSchemaId());
         messageHeader_.version(marketData_.sbeSchemaVersion());
 
-        marketData_.wrapForEncode(buffer + messageHeader_.size(), 0);
+        marketData_.wrapForEncode(buffer + messageHeader_.size(), 0, bufferLength);
         marketData_.transactTime(1234L);
         marketData_.eventTimeDelta(987);
         marketData_.matchEventIndicator(MatchEventIndicator::END_EVENT);
@@ -65,18 +65,18 @@ public:
         return MessageHeader::size() + marketData_.size();
     };
 
-    virtual int decode(const char *buffer)
+    virtual int decode(const char *buffer, const int bufferLength)
     {
         int64_t actingVersion;
         int64_t actingBlockLength;
 
-        messageHeader_.wrap((char *)buffer, 0, 0);
+        messageHeader_.wrap((char *)buffer, 0, 0, bufferLength);
 
         actingBlockLength = messageHeader_.blockLength();
         actingVersion = messageHeader_.version();
 
 
-        marketData_.wrapForDecode((char *)buffer, messageHeader_.size(), actingBlockLength, actingVersion);
+        marketData_.wrapForDecode((char *)buffer, messageHeader_.size(), actingBlockLength, actingVersion, bufferLength);
 
         marketData_.transactTime();
         marketData_.eventTimeDelta();
