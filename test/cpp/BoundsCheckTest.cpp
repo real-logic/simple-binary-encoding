@@ -50,6 +50,18 @@ public:
         return hdr_.size();
     }
 
+    virtual int decodeHdr(char *buffer, int offset, int bufferLength)
+    {
+        hdrDecoder_.wrap(buffer, offset, 0, bufferLength);
+
+        EXPECT_EQ(hdrDecoder_.blockLength(), Car::sbeBlockLength());
+        EXPECT_EQ(hdrDecoder_.templateId(), Car::sbeTemplateId());
+        EXPECT_EQ(hdrDecoder_.schemaId(), Car::sbeSchemaId());
+        EXPECT_EQ(hdrDecoder_.version(), Car::sbeSchemaVersion());
+
+        return hdrDecoder_.size();
+    }
+
     virtual int encodeCarRoot(char *buffer, int offset, int bufferLength)
     {
         car_.wrapForEncode(buffer, offset, bufferLength)
@@ -111,6 +123,118 @@ public:
         return car_.size();
     }
 
+    virtual int decodeCarRoot(char *buffer, const int offset, const int bufferLength)
+    {
+        carDecoder_.wrapForDecode(buffer, offset, Car::sbeBlockLength(), Car::sbeSchemaVersion(), bufferLength);
+        EXPECT_EQ(std::string(carDecoder_.charConst(), 1), std::string("g", 1));
+        EXPECT_EQ(carDecoder_.serialNumber(), SERIAL_NUMBER);
+        EXPECT_EQ(carDecoder_.modelYear(), MODEL_YEAR);
+        EXPECT_EQ(carDecoder_.available(), AVAILABLE);
+        EXPECT_EQ(carDecoder_.code(), CODE);
+        EXPECT_EQ(carDecoder_.vehicleCodeLength(), 6);
+        EXPECT_EQ(std::string(carDecoder_.vehicleCode(), 6), std::string(VEHICLE_CODE, 6));
+        EXPECT_EQ(carDecoder_.extras().cruiseControl(), true);
+        EXPECT_EQ(carDecoder_.extras().sportsPack(), true);
+        EXPECT_EQ(carDecoder_.extras().sunRoof(), false);
+
+        Engine &engine = carDecoder_.engine();
+        EXPECT_EQ(engine.capacity(), 2000);
+        EXPECT_EQ(engine.numCylinders(), 4);
+        EXPECT_EQ(engine.maxRpm(), 9000);
+        EXPECT_EQ(engine.manufacturerCodeLength(), 3);
+        EXPECT_EQ(std::string(engine.manufacturerCode(), 3), std::string(MANUFACTURER_CODE, 3));
+        EXPECT_EQ(engine.fuelLength(), 6);
+        EXPECT_EQ(std::string(engine.fuel(), 6), std::string("Petrol"));
+
+        return carDecoder_.size();
+    }
+
+    virtual int decodeCarFuelFigures()
+    {
+        Car::FuelFigures &fuelFigures = carDecoder_.fuelFigures();
+        EXPECT_EQ(fuelFigures.count(), 3);
+
+        EXPECT_TRUE(fuelFigures.hasNext());
+        fuelFigures.next();
+        EXPECT_EQ(fuelFigures.speed(), 30);
+        EXPECT_EQ(fuelFigures.mpg(), 35.9f);
+
+        EXPECT_TRUE(fuelFigures.hasNext());
+        fuelFigures.next();
+        EXPECT_EQ(fuelFigures.speed(), 55);
+        EXPECT_EQ(fuelFigures.mpg(), 49.0f);
+
+        EXPECT_TRUE(fuelFigures.hasNext());
+        fuelFigures.next();
+        EXPECT_EQ(fuelFigures.speed(), 75);
+        EXPECT_EQ(fuelFigures.mpg(), 40.0f);
+
+        return carDecoder_.size();
+    }
+
+    virtual int decodeCarPerformanceFigures()
+    {
+        Car::PerformanceFigures &performanceFigures = carDecoder_.performanceFigures();
+        EXPECT_EQ(performanceFigures.count(), 2);
+
+        EXPECT_TRUE(performanceFigures.hasNext());
+        performanceFigures.next();
+        EXPECT_EQ(performanceFigures.octaneRating(), 95);
+
+        Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
+        EXPECT_EQ(acceleration.count(), 3);
+        EXPECT_TRUE(acceleration.hasNext());
+        acceleration.next();
+        EXPECT_EQ(acceleration.mph(), 30);
+        EXPECT_EQ(acceleration.seconds(), 4.0f);
+
+        EXPECT_TRUE(acceleration.hasNext());
+        acceleration.next();
+        EXPECT_EQ(acceleration.mph(), 60);
+        EXPECT_EQ(acceleration.seconds(), 7.5f);
+
+        EXPECT_TRUE(acceleration.hasNext());
+        acceleration.next();
+        EXPECT_EQ(acceleration.mph(), 100);
+        EXPECT_EQ(acceleration.seconds(), 12.2f);
+
+        EXPECT_TRUE(performanceFigures.hasNext());
+        performanceFigures.next();
+        EXPECT_EQ(performanceFigures.octaneRating(), 99);
+
+        acceleration = performanceFigures.acceleration();
+        EXPECT_EQ(acceleration.count(), 3);
+        EXPECT_TRUE(acceleration.hasNext());
+        acceleration.next();
+        EXPECT_EQ(acceleration.mph(), 30);
+        EXPECT_EQ(acceleration.seconds(), 3.8f);
+
+        EXPECT_TRUE(acceleration.hasNext());
+        acceleration.next();
+        EXPECT_EQ(acceleration.mph(), 60);
+        EXPECT_EQ(acceleration.seconds(), 7.1f);
+
+        EXPECT_TRUE(acceleration.hasNext());
+        acceleration.next();
+        EXPECT_EQ(acceleration.mph(), 100);
+        EXPECT_EQ(acceleration.seconds(), 11.8f);
+
+        return carDecoder_.size();
+    }
+
+    virtual int decodeCarMakeAndModel()
+    {
+        EXPECT_EQ(carDecoder_.makeLength(), 5);
+        EXPECT_EQ(std::string(carDecoder_.make(), 5), "Honda");
+
+        EXPECT_EQ(carDecoder_.modelLength(), 9);
+        EXPECT_EQ(std::string(carDecoder_.model(), 9), "Civic VTi");
+
+        EXPECT_EQ(carDecoder_.size(), 105);
+
+        return carDecoder_.size();
+    }
+
     MessageHeader hdr_;
     MessageHeader hdrDecoder_;
     Car car_;
@@ -143,7 +267,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForHeaderWrap)
     });
 }
 
-TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForCarWraps)
+TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForCarWrapForEncodes)
 {
     // 0 offset
     EXPECT_THROW(
@@ -168,6 +292,36 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForCarWraps)
     });
 }
 
+TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForCarWrapForDecodes)
+{
+    int actingBlockLength = Car::sbeBlockLength();
+    int actingVersion = Car::sbeSchemaVersion();
+
+    encodeCarRoot(buffer, 0, sizeof(buffer));
+
+    // 0 offset
+    EXPECT_THROW(
+    {
+        carDecoder_.wrapForDecode(buffer, 0, actingBlockLength, actingVersion, Car::sbeBlockLength() - 1);
+    }, const char *);
+
+    EXPECT_NO_THROW(
+    {
+        carDecoder_.wrapForDecode(buffer, 0, actingBlockLength, actingVersion, Car::sbeBlockLength());
+    });
+
+    // non-0 offset
+    EXPECT_THROW(
+    {
+        carDecoder_.wrapForDecode(buffer, 5, actingBlockLength, actingVersion, Car::sbeBlockLength() + 4);
+    }, const char *);
+
+    EXPECT_NO_THROW(
+    {
+        carDecoder_.wrapForDecode(buffer, 5, actingBlockLength, actingVersion, Car::sbeBlockLength() + 5);
+    });
+}
+
 TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFiguresEncode)
 {
     int sz = Car::sbeBlockLength() + Car::FuelFigures::sbeHeaderSize() - 1;
@@ -186,13 +340,16 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFiguresDecode)
 {
     int sz = Car::sbeBlockLength() + Car::FuelFigures::sbeHeaderSize() - 1;
 
+    encodeCarRoot(buffer, 0, sizeof(buffer));
+    encodeCarFuelFigures();
+
     ASSERT_NO_THROW(
-        carDecoder_.wrapForDecode(buffer, 0, 0, 0, sz);
+        carDecoder_.wrapForDecode(buffer, 0, Car::sbeBlockLength(), Car::sbeSchemaVersion(), sz);
     );
 
     EXPECT_THROW(
     {
-        car_.fuelFigures();
+        carDecoder_.fuelFigures();
     }, const char *);
 }
 
@@ -213,8 +370,11 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFigures1stNextDe
 {
     int sz = Car::sbeBlockLength() + Car::FuelFigures::sbeHeaderSize() + Car::FuelFigures::sbeBlockLength() - 1;
 
-    car_.wrapForEncode(buffer, 0, sz);
-    Car::FuelFigures &fuelFigures = car_.fuelFigures();
+    encodeCarRoot(buffer, 0, sizeof(buffer));
+    encodeCarFuelFigures();
+
+    carDecoder_.wrapForDecode(buffer, 0, Car::sbeBlockLength(), Car::sbeSchemaVersion(), sz);
+    Car::FuelFigures &fuelFigures = carDecoder_.fuelFigures();
 
     EXPECT_THROW(
     {
@@ -240,8 +400,11 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFigures2ndNextDe
 {
     int sz = Car::sbeBlockLength() + Car::FuelFigures::sbeHeaderSize() + (Car::FuelFigures::sbeBlockLength() * 2) - 1;
 
-    car_.wrapForEncode(buffer, 0, sz);
-    Car::FuelFigures &fuelFigures = car_.fuelFigures();
+    encodeCarRoot(buffer, 0, sizeof(buffer));
+    encodeCarFuelFigures();
+
+    carDecoder_.wrapForDecode(buffer, 0, Car::sbeBlockLength(), Car::sbeSchemaVersion(), sz);
+    Car::FuelFigures &fuelFigures = carDecoder_.fuelFigures();
     fuelFigures.next();
 
     EXPECT_THROW(
@@ -259,7 +422,7 @@ TEST_F(BoundsCheckTest, shouldEncodeCorrectSizesAtEachStage)
     EXPECT_EQ(encodeCarMakeAndModel(), 105);
 }
 
-TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForPerformanceFigures)
+TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingPerformanceFigures)
 {
     // fail in outer dimensions
     encodeCarRoot(buffer, 0, 43);
@@ -302,7 +465,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForPerformanceFigures)
     }, const char *);
 }
 
-TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForMakeAndModel)
+TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingMakeAndModel)
 {
     // fail short of string
     encodeCarRoot(buffer, 0, 90);
@@ -341,7 +504,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForMakeAndModel)
     }, const char *);
 }
 
-TEST_F(BoundsCheckTest, shouldExceptionWhenBufferJustRightForEntireEncode)
+TEST_F(BoundsCheckTest, shouldNotExceptionWhenBufferJustRightForEntireEncode)
 {
     ASSERT_NO_THROW(
     {
@@ -352,3 +515,146 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferJustRightForEntireEncode)
         encodeCarMakeAndModel();
     });
 }
+
+TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingPerformanceFigures)
+{
+    ASSERT_NO_THROW(
+    {
+        encodeCarRoot(buffer, 0, sizeof(buffer));
+        encodeCarFuelFigures();
+        encodeCarPerformanceFigures();
+        encodeCarMakeAndModel();
+    });
+
+    // fail in dimensions 43
+    decodeCarRoot(buffer, 0, 43);
+    decodeCarFuelFigures();
+
+    EXPECT_THROW(
+    {
+        decodeCarPerformanceFigures();
+    }, const char *);
+
+    // fail in 1st inner dimensions 47
+    decodeCarRoot(buffer, 0, 47);
+    decodeCarFuelFigures();
+
+    EXPECT_THROW(
+    {
+        decodeCarPerformanceFigures();
+    }, const char *);
+
+    // fail in accel 51
+    decodeCarRoot(buffer, 0, 51);
+    decodeCarFuelFigures();
+
+    EXPECT_THROW(
+    {
+        decodeCarPerformanceFigures();
+    }, const char *);
+
+    // fail in random spot before end 63
+    decodeCarRoot(buffer, 0, 63);
+    decodeCarFuelFigures();
+
+    EXPECT_THROW(
+    {
+        decodeCarPerformanceFigures();
+    }, const char *);
+
+    // fail just short of end 88
+    decodeCarRoot(buffer, 0, 88);
+    decodeCarFuelFigures();
+
+    EXPECT_THROW(
+    {
+        decodeCarPerformanceFigures();
+    }, const char *);
+}
+
+TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingMakeAndModel)
+{
+    ASSERT_NO_THROW(
+    {
+        encodeCarRoot(buffer, 0, sizeof(buffer));
+        encodeCarFuelFigures();
+        encodeCarPerformanceFigures();
+        encodeCarMakeAndModel();
+    });
+
+    // fail short of string
+    decodeCarRoot(buffer, 0, 90);
+    decodeCarFuelFigures();
+    decodeCarPerformanceFigures();
+    EXPECT_THROW(
+    {
+        decodeCarMakeAndModel();
+    }, const char *);
+
+    // fail in string
+    decodeCarRoot(buffer, 0, 92);
+    decodeCarFuelFigures();
+    decodeCarPerformanceFigures();
+    EXPECT_THROW(
+    {
+        decodeCarMakeAndModel();
+    }, const char *);
+
+    // fail short of string
+    decodeCarRoot(buffer, 0, 95);
+    decodeCarFuelFigures();
+    decodeCarPerformanceFigures();
+    EXPECT_THROW(
+    {
+        decodeCarMakeAndModel();
+    }, const char *);
+
+    // fail in string
+    decodeCarRoot(buffer, 0, 104);
+    decodeCarFuelFigures();
+    decodeCarPerformanceFigures();
+    EXPECT_THROW(
+    {
+        decodeCarMakeAndModel();
+    }, const char *);
+}
+
+TEST_F(BoundsCheckTest, shouldDecodeCorrectSizesAtEachStage)
+{
+    ASSERT_NO_THROW(
+    {
+        encodeHdr(buffer, 0, sizeof(buffer));
+        encodeCarRoot(buffer, hdr_.size(), sizeof(buffer));
+        encodeCarFuelFigures();
+        encodeCarPerformanceFigures();
+        encodeCarMakeAndModel();
+    });
+
+    EXPECT_EQ(decodeHdr(buffer, 0, sizeof(buffer)), 8);
+    EXPECT_EQ(decodeCarRoot(buffer, hdrDecoder_.size(), sizeof(buffer)), 21);
+    EXPECT_EQ(decodeCarFuelFigures(), 42);
+    EXPECT_EQ(decodeCarPerformanceFigures(), 89);
+    EXPECT_EQ(decodeCarMakeAndModel(), 105);
+}
+
+TEST_F(BoundsCheckTest, shouldNotExceptionWhenBufferJustRightForEntireDecode)
+{
+    ASSERT_NO_THROW(
+    {
+        encodeHdr(buffer, 0, sizeof(buffer));
+        encodeCarRoot(buffer, hdr_.size(), sizeof(buffer));
+        encodeCarFuelFigures();
+        encodeCarPerformanceFigures();
+        encodeCarMakeAndModel();
+    });
+
+    ASSERT_NO_THROW(
+    {
+        decodeHdr(buffer, 0, 113);
+        decodeCarRoot(buffer, hdr_.size(), 113);
+        decodeCarFuelFigures();
+        decodeCarPerformanceFigures();
+        decodeCarMakeAndModel();
+    });
+}
+

@@ -117,7 +117,7 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarStaticFields)
     EXPECT_EQ(Car::sbeTemplateId(), 1);
     EXPECT_EQ(Car::sbeSchemaId(), 6);
     EXPECT_EQ(Car::sbeSchemaVersion(), 0);
-    EXPECT_EQ(Car::sbeSemanticType(), "");
+    EXPECT_EQ(std::string(Car::sbeSemanticType()), std::string(""));
 }
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
@@ -166,8 +166,8 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarFieldIdsAndCharacterEncoding)
     EXPECT_EQ(Car::PerformanceFigures::Acceleration::secondsId(), 15);
     EXPECT_EQ(Car::makeId(), 16);
     EXPECT_EQ(Car::modelId(), 17);
-    EXPECT_EQ(Car::makeCharacterEncoding(), "UTF-8");
-    EXPECT_EQ(Car::modelCharacterEncoding(), "UTF-8");
+    EXPECT_EQ(std::string(Car::makeCharacterEncoding()), std::string("UTF-8"));
+    EXPECT_EQ(std::string(Car::modelCharacterEncoding()), std::string("UTF-8"));
 }
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
