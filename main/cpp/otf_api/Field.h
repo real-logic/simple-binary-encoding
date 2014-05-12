@@ -323,9 +323,9 @@ protected:
 
     void addMeta(const Ir *ir)
     {
-        metaEpoch_.push_back(std::pair<const char *, int>(ir->epoch(), ir->epochLen()));
-        metaTimeUnit_.push_back(std::pair<const char *, int>(ir->timeUnit(), ir->timeUnitLen()));
-        metaSemanticType_.push_back(std::pair<const char *, int>(ir->semanticType(), ir->semanticTypeLen()));
+        metaEpoch_.push_back(std::pair<const char *, ::int64_t>(ir->epoch(), ir->epochLen()));
+        metaTimeUnit_.push_back(std::pair<const char *, ::int64_t>(ir->timeUnit(), ir->timeUnitLen()));
+        metaSemanticType_.push_back(std::pair<const char *, ::int64_t>(ir->semanticType(), ir->semanticTypeLen()));
     }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
@@ -438,9 +438,9 @@ private:
     std::vector<EncodingValue> encodingValues_;
     std::vector<int> encodingLengths_;
     std::vector<Ir::TokenPresence> presence_;
-    std::vector<std::pair<const char *, int> > metaEpoch_;
-    std::vector<std::pair<const char *, int> > metaTimeUnit_;
-    std::vector<std::pair<const char *, int> > metaSemanticType_;
+    std::vector<std::pair<const char *, ::int64_t> > metaEpoch_;
+    std::vector<std::pair<const char *, ::int64_t> > metaTimeUnit_;
+    std::vector<std::pair<const char *, ::int64_t> > metaSemanticType_;
 
     std::vector<std::string> choiceValues_;
 
