@@ -36,7 +36,8 @@
     <property name="dir.gtest.build" location="target/test/cpp/gtest/obj"/>
     <property name="dir.test.cpp.src" location="test/cpp"/>
     <property name="dir.test.cpp.include" location="test/cpp"/>
-    <property name="exec.test.cpp" location="target/test/cpp/gtest-runner"/>
+    <property name="dir.exec.test.cpp" location="target/test/cpp"/>
+    <property name="exec.test.cpp" location="${dir.exec.test.cpp}/gtest-runner"/>
 
     <property name="dir.main.csharp.src" location="main/csharp/ir/generated"/>
 
@@ -477,8 +478,10 @@
                 <classpath refid="examples.classpath"/>
                 <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
                 <sysproperty key="sbe.target.language" value="cpp98"/>
+                <sysproperty key="sbe.generate.ir" value="true"/>
                 <arg value="${dir.test.resources}/code-generation-schema-cpp.xml"/>
             </java>
+            <copy file="${dir.gen.cpp98}/code-generation-schema-cpp.sbeir" todir="${dir.exec.test.cpp}"/>
         </sequential>
     </target>
 
