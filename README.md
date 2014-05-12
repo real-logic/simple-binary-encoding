@@ -76,7 +76,7 @@ Run the Java examples
 
 Installing into a local maven (.m2) repository
 
-    ant maven.install
+    $ ant maven.install
 
 Distribution
 ------------
