@@ -372,7 +372,7 @@ public class JavaGenerator implements CodeGenerator
                 generateFieldIdMethod(sb, token, BASE_INDENT);
 
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
-                generateCharacterEncodingMethod(sb, token.name(), characterEncoding);
+                generateCharacterEncodingMethod(sb, token.name(), characterEncoding, BASE_INDENT);
                 generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
 
                 final String propertyName = toUpperFirstChar(token.name());
@@ -930,7 +930,7 @@ public class JavaGenerator implements CodeGenerator
 
         if (token.encoding().primitiveType() == PrimitiveType.CHAR)
         {
-            generateCharacterEncodingMethod(sb, propertyName, token.encoding().characterEncoding());
+            generateCharacterEncodingMethod(sb, propertyName, token.encoding().characterEncoding(), indent);
 
             sb.append(String.format(
                 "\n" +
@@ -972,14 +972,14 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private void generateCharacterEncodingMethod(final StringBuilder sb, final String propertyName, final String encoding)
+    private void generateCharacterEncodingMethod(final StringBuilder sb, final String propertyName, final String encoding, final String indent)
     {
         sb.append(String.format(
             "\n" +
-            "    public static String %sCharacterEncoding()\n" +
-            "    {\n" +
-            "        return \"%s\";\n" +
-            "    }\n",
+            indent + "    public static String %sCharacterEncoding()\n" +
+            indent + "    {\n" +
+            indent + "        return \"%s\";\n" +
+            indent + "    }\n",
             formatPropertyName(propertyName),
             encoding
         ));
