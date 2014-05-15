@@ -16,6 +16,7 @@
 package uk.co.real_logic.sbe.generation;
 
 import uk.co.real_logic.sbe.generation.cpp98.Cpp98Generator;
+import uk.co.real_logic.sbe.generation.cpp11.Cpp11Generator;
 import uk.co.real_logic.sbe.generation.csharp.CSharpGenerator;
 import uk.co.real_logic.sbe.generation.csharp.CSharpNamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.cpp98.NamespaceOutputManager;
@@ -45,6 +46,15 @@ public enum TargetCodeGenerator
             throws IOException
         {
             return new Cpp98Generator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
+        }
+    },
+
+    CPP11()
+    {
+        public CodeGenerator newInstance(final Ir ir, final String outputDir)
+            throws IOException
+        {
+            return new Cpp11Generator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 
