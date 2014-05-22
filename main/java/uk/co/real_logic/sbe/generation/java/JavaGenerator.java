@@ -280,14 +280,17 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return count;\n" +
             indent + "    }\n\n" +
+            indent + "    @Override\n" +
             indent + "    public java.util.Iterator<%s> iterator()\n" +
             indent + "    {\n" +
             indent + "        return this;\n" +
             indent + "    }\n\n" +
+            indent + "    @Override\n" +
             indent + "    public void remove()\n" +
             indent + "    {\n" +
             indent + "        throw new UnsupportedOperationException();\n" +
             indent + "    }\n\n" +
+            indent + "    @Override\n" +
             indent + "    public boolean hasNext()\n" +
             indent + "    {\n" +
             indent + "        return (index + 1) < count;\n" +
@@ -296,6 +299,7 @@ public class JavaGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
+            indent + "    @Override\n" +
             indent + "    public %s next()\n" +
             indent + "    {\n" +
             indent + "        if (index + 1 >= count)\n" +
