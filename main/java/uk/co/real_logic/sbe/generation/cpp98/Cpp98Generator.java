@@ -738,8 +738,17 @@ public class Cpp98Generator implements CodeGenerator
         sb.append(String.format(
             "#ifndef _%1$s_HPP_\n" +
             "#define _%1$s_HPP_\n\n" +
+            "#if defined(SBE_HAVE_CMATH)\n" +
+            "/* cmath needed for std::numeric_limits<double>::quiet_NaN() */\n" +
+            "#  include <cmath>\n" +
+            "#  define SBE_FLOAT_NAN std::numeric_limits<float>::quiet_NaN()\n" +
+            "#  define SBE_DOUBLE_NAN std::numeric_limits<double>::quiet_NaN()\n" +
+            "#else\n" +
             "/* math.h needed for NAN */\n" +
-            "#include <math.h>\n" +
+            "#  include <math.h>\n" +
+            "#  define SBE_FLOAT_NAN NAN\n" +
+            "#  define SBE_DOUBLE_NAN NAN\n" +
+            "#endif\n\n" +
             "#include \"sbe/sbe.hpp\"\n\n",
             className.toUpperCase()
         ));
@@ -1461,7 +1470,7 @@ public class Cpp98Generator implements CodeGenerator
             case FLOAT:
                 if (value.endsWith("NaN"))
                 {
-                    literal = "NAN";
+                    literal = "SBE_FLOAT_NAN";
                 }
                 else
                 {
@@ -1480,11 +1489,11 @@ public class Cpp98Generator implements CodeGenerator
             case DOUBLE:
                 if (value.endsWith("NaN"))
                 {
-                    literal = "NAN";
+                    literal = "SBE_DOUBLE_NAN";
                 }
                 else
                 {
-                    literal = value + "d";
+                    literal = value;
                 }
         }
 
