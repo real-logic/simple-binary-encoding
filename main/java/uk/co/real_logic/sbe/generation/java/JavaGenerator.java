@@ -223,8 +223,8 @@ public class JavaGenerator implements CodeGenerator
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
             indent + "        dimensions.wrap(buffer, parentMessage.limit(), actingVersion);\n" +
-            indent + "        count = dimensions.numInGroup();\n" +
             indent + "        blockLength = dimensions.blockLength();\n" +
+            indent + "        count = dimensions.numInGroup();\n" +
             indent + "        this.actingVersion = actingVersion;\n" +
             indent + "        index = -1;\n" +
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
@@ -243,17 +243,17 @@ public class JavaGenerator implements CodeGenerator
             indent + "        this.buffer = buffer;\n" +
             indent + "        actingVersion = SCHEMA_VERSION;\n" +
             indent + "        dimensions.wrap(buffer, parentMessage.limit(), actingVersion);\n" +
-            indent + "        dimensions.numInGroup((%2$s)count);\n" +
-            indent + "        dimensions.blockLength((%3$s)%4$d);\n" +
+            indent + "        dimensions.blockLength((%2$s)%3$d);\n" +
+            indent + "        dimensions.numInGroup((%4$s)count);\n" +
             indent + "        index = -1;\n" +
             indent + "        this.count = count;\n" +
             indent + "        blockLength = %4$d;\n" +
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
-            javaTypeForNumInGroup,
             javaTypeForBlockLength,
-            blockLength
+            blockLength,
+            javaTypeForNumInGroup
         ));
 
         sb.append(String.format(

@@ -228,8 +228,8 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _parentMessage = parentMessage;\n" +
             indent + "        _buffer = buffer;\n" +
             indent + "        _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);\n" +
-            indent + "        _count = _dimensions.NumInGroup;\n" +
             indent + "        _blockLength = _dimensions.BlockLength;\n" +
+            indent + "        _count = _dimensions.NumInGroup;\n" +
             indent + "        _actingVersion = actingVersion;\n" +
             indent + "        _index = -1;\n" +
             indent + "        _parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
@@ -247,17 +247,17 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _parentMessage = parentMessage;\n" +
             indent + "        _buffer = buffer;\n" +
             indent + "        _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);\n" +
-            indent + "        _dimensions.NumInGroup = (%2$s)count;\n" +
-            indent + "        _dimensions.BlockLength = (%3$s)%4$d;\n" +
+            indent + "        _dimensions.BlockLength = (%2$s)%3$d;\n" +
+            indent + "        _dimensions.NumInGroup = (%4$s)count;\n" +
             indent + "        _index = -1;\n" +
             indent + "        _count = count;\n" +
             indent + "        _blockLength = %4$d;\n" +
             indent + "        parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + "    }\n\n",
             parentMessageClassName,
-            typeForNumInGroup,
             typeForBlockLength,
             blockLength
+            typeForNumInGroup,
         ));
 
         sb.append(String.format(
