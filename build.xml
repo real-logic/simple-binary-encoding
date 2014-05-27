@@ -49,8 +49,6 @@
     <property name="ossrh.staging.repository.url" value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
     <property name="ossrh.server.id" value="ossrh"/>
 
-    <property name="cpp.have.cmath" value="false"/>
-
     <path id="test.classpath">
         <pathelement path="${dir.main.build}"/>
         <pathelement path="${dir.test.build}"/>
@@ -363,7 +361,7 @@
             <defineset if="windows">
                 <define name="WIN32" value="1"/>
             </defineset>
-            <defineset if="cpp.has.cmath">
+            <defineset if="cpp.have.cmath">
                 <define name="SBE_HAVE_CMATH" value="1"/>
             </defineset>
             <syslibset libs="stdc++"/>
@@ -390,7 +388,7 @@
                 <defineset if="windows">
                     <define name="WIN32" value="1"/>
                 </defineset>
-                <defineset if="cpp.has.cmath">
+                <defineset if="cpp.have.cmath">
                     <define name="SBE_HAVE_CMATH" value="1"/>
                 </defineset>
                <syslibset libs="stdc++"/>
@@ -455,7 +453,7 @@
             <defineset if="windows">
                 <define name="WIN32" value="1"/>
             </defineset>
-            <defineset if="cpp.has.cmath">
+            <defineset if="cpp.have.cmath">
                 <define name="SBE_HAVE_CMATH" value="1"/>
             </defineset>
             <fileset dir="${dir.gtest.src}">
@@ -478,7 +476,7 @@
             <defineset if="windows">
                 <define name="WIN32" value="1"/>
             </defineset>
-            <defineset if="cpp.has.cmath">
+            <defineset if="cpp.have.cmath">
                 <define name="SBE_HAVE_CMATH" value="1"/>
             </defineset>
             <fileset dir="${dir.main.cpp.src}" includes="**/*.cpp"/>
@@ -518,7 +516,7 @@
             <defineset if="windows">
                 <define name="WIN32" value="1"/>
             </defineset>
-            <defineset if="cpp.has.cmath">
+            <defineset if="cpp.have.cmath">
                 <define name="SBE_HAVE_CMATH" value="1"/>
             </defineset>
             <fileset dir="${dir.main.cpp.build}" includes="*.o*"/>
