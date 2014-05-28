@@ -749,7 +749,7 @@ public class Cpp98Generator implements CodeGenerator
             "#  define SBE_FLOAT_NAN NAN\n" +
             "#  define SBE_DOUBLE_NAN NAN\n" +
             "#endif\n\n" +
-            "#include \"sbe/sbe.hpp\"\n\n",
+            "#include <sbe/sbe.hpp>\n\n",
             className.toUpperCase()
         ));
 
@@ -758,7 +758,7 @@ public class Cpp98Generator implements CodeGenerator
             for (final String incName : typesToInclude)
             {
                 sb.append(String.format(
-                    "#include \"%1$s/%2$s.hpp\"\n",
+                    "#include <%1$s/%2$s.hpp>\n",
                     namespaceName,
                     toUpperFirstChar(incName)
                 ));
