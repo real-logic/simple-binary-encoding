@@ -247,10 +247,9 @@ public class Cpp98Generator implements CodeGenerator
             indent + "        dimensions_.wrap(buffer_, *pos, actingVersion, bufferLength);\n" +
             indent + "        dimensions_.blockLength((%1$s)%2$d);\n" +
             indent + "        dimensions_.numInGroup((%3$s)count);\n" +
-            
             indent + "        index_ = -1;\n" +
             indent + "        count_ = count;\n" +
-            indent + "        blockLength_ = %3$d;\n" +
+            indent + "        blockLength_ = %2$d;\n" +
             indent + "        actingVersion_ = actingVersion;\n" +
             indent + "        positionPtr_ = pos;\n" +
             indent + "        *positionPtr_ = *positionPtr_ + %4$d;\n" +

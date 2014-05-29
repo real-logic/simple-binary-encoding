@@ -251,13 +251,13 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        _dimensions.NumInGroup = (%4$s)count;\n" +
             indent + "        _index = -1;\n" +
             indent + "        _count = count;\n" +
-            indent + "        _blockLength = %4$d;\n" +
+            indent + "        _blockLength = %3$d;\n" +
             indent + "        parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             typeForBlockLength,
-            blockLength
-            typeForNumInGroup,
+            blockLength,
+            typeForNumInGroup
         ));
 
         sb.append(String.format(

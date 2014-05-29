@@ -247,7 +247,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        dimensions.numInGroup((%4$s)count);\n" +
             indent + "        index = -1;\n" +
             indent + "        this.count = count;\n" +
-            indent + "        blockLength = %4$d;\n" +
+            indent + "        blockLength = %3$d;\n" +
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
