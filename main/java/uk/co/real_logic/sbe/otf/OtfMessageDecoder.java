@@ -30,8 +30,8 @@ import static uk.co.real_logic.sbe.otf.Util.getInt;
  * primitive values.
  *
  * The design keeps all state on the stack to maximise performance and avoid object allocation. The message decoder can
- * be reused repeatably calling {@link OtfMessageDecoder#decode(DirectBuffer, int, int, int, List, TokenListener)}
- * and is thread safe to be used across multiple threads.
+ * be reused repeatably by calling {@link OtfMessageDecoder#decode(DirectBuffer, int, int, int, List, TokenListener)}
+ * which is thread safe to be used across multiple threads.
  */
 public class OtfMessageDecoder
 {
