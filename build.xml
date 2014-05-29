@@ -361,6 +361,9 @@
             <defineset if="windows">
                 <define name="WIN32" value="1"/>
             </defineset>
+            <defineset if="cpp.have.cmath">
+                <define name="SBE_HAVE_CMATH" value="1"/>
+            </defineset>
             <syslibset libs="stdc++"/>
             <fileset dir="${dir.examples.cpp98.src}" includes="SbeExample.cpp"/>
         </cc>
@@ -385,7 +388,10 @@
                 <defineset if="windows">
                     <define name="WIN32" value="1"/>
                 </defineset>
-                <syslibset libs="stdc++"/>
+                <defineset if="cpp.have.cmath">
+                    <define name="SBE_HAVE_CMATH" value="1"/>
+                </defineset>
+               <syslibset libs="stdc++"/>
                 <fileset dir="${dir.main.cpp.build}" includes="*.o*"/>
                 <fileset dir="${dir.examples.cpp98.src}" includes="SbeOtfDecoder.cpp"/>
             </cc>
@@ -447,6 +453,9 @@
             <defineset if="windows">
                 <define name="WIN32" value="1"/>
             </defineset>
+            <defineset if="cpp.have.cmath">
+                <define name="SBE_HAVE_CMATH" value="1"/>
+            </defineset>
             <fileset dir="${dir.gtest.src}">
                 <include name="src/gtest-all.cc"/>
                 <include name="src/gtest_main.cc"/>
@@ -466,6 +475,9 @@
             <compiler name="msvc" if="windows"/>
             <defineset if="windows">
                 <define name="WIN32" value="1"/>
+            </defineset>
+            <defineset if="cpp.have.cmath">
+                <define name="SBE_HAVE_CMATH" value="1"/>
             </defineset>
             <fileset dir="${dir.main.cpp.src}" includes="**/*.cpp"/>
         </cc>
@@ -503,6 +515,9 @@
             <linker name="msvc" if="windows"/>
             <defineset if="windows">
                 <define name="WIN32" value="1"/>
+            </defineset>
+            <defineset if="cpp.have.cmath">
+                <define name="SBE_HAVE_CMATH" value="1"/>
             </defineset>
             <fileset dir="${dir.main.cpp.build}" includes="*.o*"/>
             <fileset dir="${dir.gtest.build}" includes="*.o*"/>
