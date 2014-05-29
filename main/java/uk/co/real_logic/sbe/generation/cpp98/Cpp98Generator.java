@@ -224,8 +224,8 @@ public class Cpp98Generator implements CodeGenerator
             indent + "        buffer_ = buffer;\n" +
             indent + "        bufferLength_ = bufferLength;\n" +
             indent + "        dimensions_.wrap(buffer_, *pos, actingVersion, bufferLength);\n" +
-            indent + "        count_ = dimensions_.numInGroup();\n" +
             indent + "        blockLength_ = dimensions_.blockLength();\n" +
+            indent + "        count_ = dimensions_.numInGroup();\n" +
             indent + "        index_ = -1;\n" +
             indent + "        actingVersion_ = actingVersion;\n" +
             indent + "        positionPtr_ = pos;\n" +
@@ -245,8 +245,9 @@ public class Cpp98Generator implements CodeGenerator
             indent + "        buffer_ = buffer;\n" +
             indent + "        bufferLength_ = bufferLength;\n" +
             indent + "        dimensions_.wrap(buffer_, *pos, actingVersion, bufferLength);\n" +
-            indent + "        dimensions_.numInGroup((%1$s)count);\n" +
-            indent + "        dimensions_.blockLength((%2$s)%3$d);\n" +
+            indent + "        dimensions_.blockLength((%1$s)%2$d);\n" +
+            indent + "        dimensions_.numInGroup((%3$s)count);\n" +
+            
             indent + "        index_ = -1;\n" +
             indent + "        count_ = count;\n" +
             indent + "        blockLength_ = %3$d;\n" +
@@ -254,7 +255,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "        positionPtr_ = pos;\n" +
             indent + "        *positionPtr_ = *positionPtr_ + %4$d;\n" +
             indent + "    }\n\n",
-            cpp98TypeForNumInGroup, cpp98TypeForBlockLength, blockLength, dimensionHeaderSize
+            cpp98TypeForBlockLength, blockLength, cpp98TypeForNumInGroup, dimensionHeaderSize
         ));
 
         sb.append(String.format(
