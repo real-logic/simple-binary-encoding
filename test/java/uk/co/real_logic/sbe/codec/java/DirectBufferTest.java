@@ -59,7 +59,8 @@ public class DirectBufferTest
 
     // Note this will leak memory and a real world application would need to reclaim the allocated memory!!!
     @DataPoint
-    public static final DirectBuffer OFF_HEAP_BUFFER = new DirectBuffer(BitUtil.getUnsafe().allocateMemory(BUFFER_CAPACITY), BUFFER_CAPACITY);
+    public static final DirectBuffer OFF_HEAP_BUFFER =
+        new DirectBuffer(BitUtil.getUnsafe().allocateMemory(BUFFER_CAPACITY), BUFFER_CAPACITY);
 
     @Theory
     @Test(expected = IndexOutOfBoundsException.class)
@@ -236,6 +237,7 @@ public class DirectBufferTest
 
         assertThat(dstBuffer.array(), is(testBytes));
     }
+
     @Theory
     public void shouldGetBytesFromBufferToDirectBuffer(final DirectBuffer buffer)
     {
@@ -264,7 +266,7 @@ public class DirectBufferTest
         duplicateBuffer.put(testBytes);
 
         final ByteBuffer dstBuffer =
-            ((ByteBuffer) ByteBuffer.allocate(testBytes.length*2).position(testBytes.length)).slice();
+            ((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice();
 
         buffer.getBytes(INDEX, dstBuffer, testBytes.length);
 
@@ -278,7 +280,8 @@ public class DirectBufferTest
     public void shouldGetBytesToDirectBufferFromDirectBuffer(final DirectBuffer buffer)
     {
         final byte[] testBytes = "Hello World!".getBytes();
-        final DirectBuffer dstBuffer = new DirectBuffer(((ByteBuffer) ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice());
+        final ByteBuffer testBuff = (ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length);
+        final DirectBuffer dstBuffer = new DirectBuffer(testBuff.slice());
 
         buffer.putBytes(INDEX, testBytes);
         buffer.getBytes(INDEX, dstBuffer, 0, testBytes.length);
@@ -340,7 +343,8 @@ public class DirectBufferTest
     public void shouldPutBytesToBufferFromSlice(final DirectBuffer buffer)
     {
         final byte[] testBytes = "Hello World".getBytes();
-        final ByteBuffer srcBuffer = ((ByteBuffer) ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice();
+        final ByteBuffer srcBuffer =
+            ((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice();
 
         srcBuffer.put(testBytes);
         srcBuffer.flip();
@@ -359,11 +363,12 @@ public class DirectBufferTest
     public void shouldPutBytesToDirectBufferFromDirectBuffer(final DirectBuffer buffer)
     {
         final byte[] testBytes = "Hello World!".getBytes();
-        final DirectBuffer srcBuffer = new DirectBuffer(((ByteBuffer) ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice());
+        final DirectBuffer srcBuffer =
+            new DirectBuffer(((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice());
 
         srcBuffer.putBytes(0, testBytes);
         buffer.putBytes(INDEX, srcBuffer, 0, testBytes.length);
-        
+
         final byte[] buff = new byte[testBytes.length];
         buffer.getBytes(INDEX, buff);
 

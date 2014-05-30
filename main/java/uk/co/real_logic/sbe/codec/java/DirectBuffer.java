@@ -455,6 +455,7 @@ public class DirectBuffer
         int count = Math.min(length, capacity - index);
         count = Math.min(count, dst.capacity - offset);
         UNSAFE.copyMemory(byteArray, addressOffset + index, dst.byteArray, dst.addressOffset + offset, count);
+
         return count;
     }
 
