@@ -31,33 +31,33 @@ struct Ir::Impl
 {
     TokenCodec tokenCodec;
     char name[256];
-    char constVal[256];
-    char minVal[256];
-    char maxVal[256];
-    char nullVal[256];
+    char constValue[256];
+    char minValue[256];
+    char maxValue[256];
+    char nullValue[256];
     char characterEncoding[256];
     char epoch[256];
     char timeUnit[256];
     char semanticType[256];
     int nameLength;
-    int constValLength;
-    int minValLength;
-    int maxValLength;
-    int nullValLength;
+    int constValueLength;
+    int minValueLength;
+    int maxValueLength;
+    int nullValueLength;
     int characterEncodingLength;
     int epochLength;
     int timeUnitLength;
     int semanticTypeLength;
-    uint32_t serializedTokenSize;
+    ::uint32_t serializedTokenSize;
 };
 
 #if !defined(WIN32)
 const int Ir::INVALID_ID;
-const uint32_t Ir::VARIABLE_SIZE;
+const ::uint32_t Ir::VARIABLE_SIZE;
 #endif /* WIN32 */
 
-Ir::Ir(const char *buffer, const int len, const int64_t templateId, const int64_t templateVersion) :
-    buffer_(buffer), len_(len), templateId_(templateId), templateVersion_(templateVersion)
+Ir::Ir(const char *buffer, const int len, const ::int64_t templateId, const ::int64_t schemaId, const ::int64_t schemaVersion) :
+    buffer_(buffer), len_(len), templateId_(templateId), id_(schemaId), schemaVersion_(schemaVersion)
 {
     impl_ = new Ir::Impl;
     begin();
@@ -79,30 +79,24 @@ void Ir::readTokenAtCurrentPosition()
 
     //printf("read buffer_ %p offset %d\n", buffer_, cursorOffset_);
 
-    impl_->tokenCodec.wrapForDecode((char *)buffer_, cursorOffset_,
-        impl_->tokenCodec.blockLength(), impl_->tokenCodec.templateVersion());
+    impl_->tokenCodec.wrapForDecode((char *)buffer_, cursorOffset_, impl_->tokenCodec.sbeBlockLength(), impl_->tokenCodec.sbeSchemaVersion(), len_);
 
     // read all the var data and save in Impl then save size
 
     impl_->nameLength = impl_->tokenCodec.getName(impl_->name, sizeof(impl_->name));
 
-    impl_->constValLength = impl_->tokenCodec.getConstVal(impl_->constVal, sizeof(impl_->constVal));
+    impl_->constValueLength = impl_->tokenCodec.getConstValue(impl_->constValue, sizeof(impl_->constValue));
 
     // don't really do anything with min/max/null/encoding right now
-    impl_->minValLength = impl_->tokenCodec.getMinVal(impl_->minVal, sizeof(tmp));
-    impl_->maxValLength = impl_->tokenCodec.getMaxVal(impl_->maxVal, sizeof(tmp));
-    impl_->nullValLength = impl_->tokenCodec.getNullVal(impl_->nullVal, sizeof(tmp));
+    impl_->minValueLength = impl_->tokenCodec.getMinValue(impl_->minValue, sizeof(tmp));
+    impl_->maxValueLength = impl_->tokenCodec.getMaxValue(impl_->maxValue, sizeof(tmp));
+    impl_->nullValueLength = impl_->tokenCodec.getNullValue(impl_->nullValue, sizeof(tmp));
     impl_->characterEncodingLength = impl_->tokenCodec.getCharacterEncoding(impl_->characterEncoding, sizeof(tmp));
     impl_->epochLength = impl_->tokenCodec.getEpoch(impl_->epoch, sizeof(tmp));
     impl_->timeUnitLength = impl_->tokenCodec.getTimeUnit(impl_->timeUnit, sizeof(tmp));
     impl_->semanticTypeLength = impl_->tokenCodec.getSemanticType(impl_->semanticType, sizeof(tmp));
 
     impl_->serializedTokenSize = impl_->tokenCodec.size();
-
-//    printf("token %p %d offset=%d size=%d id=%d signal=%d type=%d order=%d name=%s constLen=%d\n",
-//           buffer_, cursorOffset_, offset(), size(), schemaId(), signal(), primitiveType(), byteOrder(),
-//           name().c_str(), impl_->constValLength);
-
 }
 
 void Ir::begin()
@@ -134,12 +128,12 @@ bool Ir::end() const
     return true;
 }
 
-int32_t Ir::offset() const
+::int32_t Ir::offset() const
 {
     return impl_->tokenCodec.tokenOffset();
 }
 
-int32_t Ir::size() const
+::int32_t Ir::size() const
 {
     return impl_->tokenCodec.tokenSize();
 }
@@ -167,22 +161,22 @@ Ir::TokenPresence Ir::presence() const
     return (Ir::TokenPresence)impl_->tokenCodec.presence();
 }
 
-int32_t Ir::schemaId() const
+::int32_t Ir::schemaId() const
 {
-    return impl_->tokenCodec.schemaId();
+    return impl_->tokenCodec.fieldId();
 }
 
-uint64_t Ir::validValue() const
+::uint64_t Ir::validValue() const
 {
     // constVal holds the validValue. primitiveType holds the type
     switch (primitiveType())
     {
         case Ir::CHAR:
-            return impl_->constVal[0];
+            return impl_->constValue[0];
             break;
 
         case Ir::UINT8:
-            return impl_->constVal[0];
+            return impl_->constValue[0];
             break;
 
         default:
@@ -191,25 +185,25 @@ uint64_t Ir::validValue() const
     }
 }
 
-uint64_t Ir::choiceValue() const
+::uint64_t Ir::choiceValue() const
 {
     // constVal holds the validValue. primitiveType holds the type
     switch (primitiveType())
     {
         case Ir::UINT8:
-            return impl_->constVal[0];
+            return impl_->constValue[0];
             break;
 
         case Ir::UINT16:
-            return *(uint16_t *)(impl_->constVal);
+            return *(::uint16_t *)(impl_->constValue);
             break;
 
         case Ir::UINT32:
-            return *(uint32_t *)(impl_->constVal);
+            return *(::uint32_t *)(impl_->constValue);
             break;
 
         case Ir::UINT64:
-            return *(uint64_t *)(impl_->constVal);
+            return *(::uint64_t *)(impl_->constValue);
             break;
 
         default:
@@ -218,7 +212,7 @@ uint64_t Ir::choiceValue() const
     }
 }
 
-int64_t Ir::nameLen() const
+::int64_t Ir::nameLen() const
 {
     return impl_->nameLength;
 }
@@ -228,67 +222,67 @@ std::string Ir::name() const
     return std::string(impl_->name, nameLen());
 }
 
-int64_t Ir::constLen() const
+::int64_t Ir::constLen() const
 {
-    return impl_->constValLength;
+    return impl_->constValueLength;
 }
 
-const char *Ir::constVal() const
+const char *Ir::constValue() const
 {
     if (constLen() == 0)
     {
         return NULL;
     }
 
-    return impl_->constVal;
+    return impl_->constValue;
 }
 
-int64_t Ir::minLen() const
+::int64_t Ir::minLen() const
 {
-    return impl_->minValLength;
+    return impl_->minValueLength;
 }
 
-const char *Ir::minVal() const
+const char *Ir::minValue() const
 {
     if (minLen() == 0)
     {
         return NULL;
     }
 
-    return impl_->minVal;
+    return impl_->minValue;
 }
 
-int64_t Ir::maxLen() const
+::int64_t Ir::maxLen() const
 {
-    return impl_->maxValLength;
+    return impl_->maxValueLength;
 }
 
-const char *Ir::maxVal() const
+const char *Ir::maxValue() const
 {
     if (maxLen() == 0)
     {
         return NULL;
     }
 
-    return impl_->maxVal;
+    return impl_->maxValue;
 }
 
-int64_t Ir::nullLen() const
+::int64_t Ir::nullLen() const
 {
-    return impl_->nullValLength;
+    return impl_->nullValueLength;
 }
 
-const char *Ir::nullVal() const
+const char *Ir::nullValue() const
 {
     if (nullLen() == 0)
     {
         return NULL;
     }
 
-    return impl_->nullVal;
+    return impl_->nullValue;
 }
 
-int64_t Ir::characterEncodingLen() const
+::int64_t Ir::characterEncodingLen() const
 {
     return impl_->characterEncodingLength;
 }
@@ -303,7 +297,7 @@ const char *Ir::characterEncoding() const
     return impl_->characterEncoding;
 }
 
-int64_t Ir::epochLen() const
+::int64_t Ir::epochLen() const
 {
     return impl_->epochLength;
 }
@@ -318,7 +312,7 @@ const char *Ir::epoch() const
     return impl_->epoch;
 }
 
-int64_t Ir::timeUnitLen() const
+::int64_t Ir::timeUnitLen() const
 {
     return impl_->timeUnitLength;
 }
@@ -333,7 +327,7 @@ const char *Ir::timeUnit() const
     return impl_->timeUnit;
 }
 
-int64_t Ir::semanticTypeLen() const
+::int64_t Ir::semanticTypeLen() const
 {
     return impl_->semanticTypeLength;
 }
@@ -359,15 +353,15 @@ void Ir::position(const int pos)
     readTokenAtCurrentPosition();
 }
 
-void Ir::addToken(uint32_t offset,
-                  uint32_t size,
+void Ir::addToken(::uint32_t offset,
+                  ::uint32_t size,
                   TokenSignal signal,
                   TokenByteOrder byteOrder,
                   TokenPrimitiveType primitiveType,
-                  uint16_t schemaId,
+                  ::uint16_t fieldId,
                   const std::string &name,
-                  const char *constVal,
-                  int constValLength)
+                  const char *constValue,
+                  int constValueLength)
 {
     TokenCodec tokenCodec;
 
@@ -378,21 +372,22 @@ void Ir::addToken(uint32_t offset,
 
     //printf("buffer_ %p offset %d\n", buffer_, cursorOffset_);
 
-    tokenCodec.wrapForEncode((char *)buffer_, cursorOffset_);
+    tokenCodec.wrapForEncode((char *)buffer_, cursorOffset_, 4098);
 
     tokenCodec.tokenOffset(offset)
               .tokenSize(size)
-              .schemaId(schemaId)
+              .fieldId(fieldId)
               .tokenVersion(0)
               .signal((SignalCodec::Value)signal)
               .primitiveType((PrimitiveTypeCodec::Value)primitiveType)
-              .byteOrder((ByteOrderCodec::Value)byteOrder);
+              .byteOrder((ByteOrderCodec::Value)byteOrder)
+              .presence((constValue != NULL ? PresenceCodec::SBE_OPTIONAL : PresenceCodec::SBE_REQUIRED));
 
     tokenCodec.putName(name.c_str(), name.size());
-    tokenCodec.putConstVal(constVal, constValLength);
-    tokenCodec.putMinVal(NULL, 0);
-    tokenCodec.putMaxVal(NULL, 0);
-    tokenCodec.putNullVal(NULL, 0);
+    tokenCodec.putConstValue(constValue, constValueLength);
+    tokenCodec.putMinValue(NULL, 0);
+    tokenCodec.putMaxValue(NULL, 0);
+    tokenCodec.putNullValue(NULL, 0);
     tokenCodec.putCharacterEncoding(NULL, 0);
     tokenCodec.putEpoch(NULL, 0);
     tokenCodec.putTimeUnit(NULL, 0);

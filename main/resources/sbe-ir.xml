@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <messageSchema package="uk.co.real_logic.sbe.ir.generated"
-               description="SBE IR Serialization"
+               id="0"
                version="0"
-               byteOrder="littleEndian">
+               byteOrder="littleEndian"
+               description="SBE IR Serialization">
     <types>
-        <composite name="messageHeader">
+        <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
-            <type name="version" primitiveType="uint8"/>
-            <type name="reserved" primitiveType="uint8"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
         </composite>
         <composite name="groupSizeEncoding">
             <type name="blockLength" primitiveType="uint16"/>
@@ -56,35 +57,38 @@
             <validValue name="SBE_BIG_ENDIAN">1</validValue>
         </enum>
         <enum name="PresenceCodec" encodingType="uint8">
-            <validValue name="REQUIRED">0</validValue>
-            <validValue name="OPTIONAL">1</validValue>
-            <validValue name="CONSTANT">2</validValue>
+            <validValue name="SBE_REQUIRED">0</validValue>
+            <validValue name="SBE_OPTIONAL">1</validValue>
+            <validValue name="SBE_CONSTANT">2</validValue>
         </enum>
     </types>
 
     <message name="FrameCodec" id="1" description="Frame Header for start of encoding IR">
-        <field name="sbeIrVersion" id="1" type="int32"/>
-        <field name="schemaVersion" id="2" type="int32"/>
-        <data name="packageVal" id="4" type="varDataEncoding"/>
+        <field name="irId" id="1" type="int32"/>
+        <field name="irVersion" id="2" type="int32"/>
+        <field name="schemaVersion" id="3" type="int32"/>
+        <data name="packageName" id="4" type="varDataEncoding"/>
+        <data name="namespaceName" id="5" type="varDataEncoding"/>
+        <data name="semanticVersion" id="6" type="varDataEncoding"/>
     </message>
 
     <message name="TokenCodec" id="2" description="Codec for an IR Token">
         <field name="tokenOffset" id="11" type="int32"/>
         <field name="tokenSize" id="12" type="int32"/>
-        <field name="schemaId" id="13" type="int32"/>
-        <field name="tokenVersion" id="17" type="int32"/>
-        <field name="signal" id="14" type="SignalCodec"/>
-        <field name="primitiveType" id="15" type="PrimitiveTypeCodec"/>
-        <field name="byteOrder" id="16" type="ByteOrderCodec"/>
-        <field name="presence" id="17" type="PresenceCodec"/>
-        <data name="name" id="18" type="varDataEncoding"/>
-        <data name="constVal" id="19" type="varDataEncoding"/>
-        <data name="minVal" id="20" type="varDataEncoding"/>
-        <data name="maxVal" id="21" type="varDataEncoding"/>
-        <data name="nullVal" id="22" type="varDataEncoding"/>
-        <data name="characterEncoding" id="23" type="varDataEncoding"/>
-        <data name="epoch" id="24" type="varDataEncoding"/>
-        <data name="timeUnit" id="25" type="varDataEncoding"/>
-        <data name="semanticType" id="26" type="varDataEncoding"/>
+        <field name="fieldId" id="13" type="int32"/>
+        <field name="tokenVersion" id="14" type="int32"/>
+        <field name="signal" id="15" type="SignalCodec"/>
+        <field name="primitiveType" id="16" type="PrimitiveTypeCodec"/>
+        <field name="byteOrder" id="17" type="ByteOrderCodec"/>
+        <field name="presence" id="18" type="PresenceCodec"/>
+        <data name="name" id="19" type="varDataEncoding"/>
+        <data name="constValue" id="20" type="varDataEncoding"/>
+        <data name="minValue" id="21" type="varDataEncoding"/>
+        <data name="maxValue" id="22" type="varDataEncoding"/>
+        <data name="nullValue" id="23" type="varDataEncoding"/>
+        <data name="characterEncoding" id="24" type="varDataEncoding"/>
+        <data name="epoch" id="25" type="varDataEncoding"/>
+        <data name="timeUnit" id="26" type="varDataEncoding"/>
+        <data name="semanticType" id="27" type="varDataEncoding"/>
     </message>
 </messageSchema>

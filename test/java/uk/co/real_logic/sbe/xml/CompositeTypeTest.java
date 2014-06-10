@@ -133,14 +133,14 @@ public class CompositeTypeTest
         final String testXmlString =
             "<types>" +
             "<composite name=\"PRICENULL\" description=\"Price NULL\" semanticType=\"Price\">" +
-            "    <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullVal=\"" + nullValStr + "\" primitiveType=\"int64\"/>" +
+            "    <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" + nullValStr + "\" primitiveType=\"int64\"/>" +
             "    <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">-7</type>" +
             "</composite>" +
             "</types>";
 
         Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         CompositeType c = (CompositeType)map.get("PRICENULL");
-        assertThat((c.getType("mantissa")).nullVal(), is(PrimitiveValue.parse(nullValStr, PrimitiveType.INT64)));
+        assertThat((c.getType("mantissa")).nullValue(), is(PrimitiveValue.parse(nullValStr, PrimitiveType.INT64)));
     }
 
     @Test(expected = IllegalArgumentException.class)

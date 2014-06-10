@@ -21,7 +21,7 @@ import uk.co.real_logic.sbe.generation.csharp.CSharpNamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.cpp98.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.generation.java.PackageOutputManager;
-import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
+import uk.co.real_logic.sbe.ir.Ir;
 
 import java.io.IOException;
 
@@ -32,28 +32,28 @@ public enum TargetCodeGenerator
 {
     JAVA()
     {
-        public CodeGenerator newInstance(final IntermediateRepresentation ir, final String outputDir)
+        public CodeGenerator newInstance(final Ir ir, final String outputDir)
             throws IOException
         {
-            return new JavaGenerator(ir, new PackageOutputManager(outputDir, ir.packageName()));
+            return new JavaGenerator(ir, new PackageOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 
     CPP98()
     {
-        public CodeGenerator newInstance(final IntermediateRepresentation ir, final String outputDir)
+        public CodeGenerator newInstance(final Ir ir, final String outputDir)
             throws IOException
         {
-            return new Cpp98Generator(ir, new NamespaceOutputManager(outputDir, ir.namespaceName()));
+            return new Cpp98Generator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 
     CSHARP()
     {
-        public CodeGenerator newInstance(final IntermediateRepresentation ir, final String outputDir)
+        public CodeGenerator newInstance(final Ir ir, final String outputDir)
                 throws IOException
         {
-            return new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.namespaceName()));
+            return new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     };
 
@@ -66,7 +66,7 @@ public enum TargetCodeGenerator
      * @return a new instance of a {@link CodeGenerator} for the given target language.
      * @throws IOException if an error occurs when dealing with the output directory.
      */
-    public abstract CodeGenerator newInstance(final IntermediateRepresentation ir, final String outputDir) throws IOException;
+    public abstract CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException;
 
     /**
      * Do a case insensitive lookup of a target language for code generation.

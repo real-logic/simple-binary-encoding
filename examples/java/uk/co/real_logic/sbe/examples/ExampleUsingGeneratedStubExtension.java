@@ -63,9 +63,10 @@ public class ExampleUsingGeneratedStubExtension
         // Setup for encoding a message
 
         MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion)
-                      .blockLength(CAR_0.blockLength())
-                      .templateId(CAR_0.templateId())
-                      .version(CAR_0.templateVersion());
+                      .blockLength(CAR_0.sbeBlockLength())
+                      .templateId(CAR_0.sbeTemplateId())
+                      .schemaId(CAR_0.sbeSchemaId())
+                      .version(CAR_0.sbeSchemaVersion());
 
         bufferOffset += MESSAGE_HEADER.size();
         encodingLength += MESSAGE_HEADER.size();
@@ -95,11 +96,12 @@ public class ExampleUsingGeneratedStubExtension
             throw new IllegalStateException("Template ids do not match");
         }
 
-        final short actingVersion = MESSAGE_HEADER.version();
         final int actingBlockLength = MESSAGE_HEADER.blockLength();
+        final int schemaId = MESSAGE_HEADER.schemaId();
+        final int actingVersion = MESSAGE_HEADER.version();
 
         bufferOffset += MESSAGE_HEADER.size();
-        decode(CAR_1, directBuffer, bufferOffset, actingBlockLength, actingVersion);
+        decode(CAR_1, directBuffer, bufferOffset, schemaId, actingBlockLength, actingVersion);
     }
 
     public static int encode(final baseline.Car car,
@@ -152,6 +154,7 @@ public class ExampleUsingGeneratedStubExtension
     public static void decode(final extension.Car car,
                               final DirectBuffer directBuffer,
                               final int bufferOffset,
+                              final int schemaId,
                               final int actingBlockLength,
                               final int actingVersion)
         throws Exception
@@ -161,8 +164,9 @@ public class ExampleUsingGeneratedStubExtension
 
         car.wrapForDecode(directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
-        sb.append("\ncar.templateId=").append(car.templateId());
-        sb.append("\ncar.templateVersion=").append(car.templateVersion());
+        sb.append("\ncar.templateId=").append(car.sbeTemplateId());
+        sb.append("\ncar.schemaId=").append(schemaId);
+        sb.append("\ncar.schemaVersion=").append(car.sbeSchemaVersion());
         sb.append("\ncar.serialNumber=").append(car.serialNumber());
         sb.append("\ncar.modelYear=").append(car.modelYear());
         sb.append("\ncar.available=").append(car.available());
@@ -197,7 +201,7 @@ public class ExampleUsingGeneratedStubExtension
 
         sb.append("\ncar.engine.fuel=").append(new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
 
-        final String cupHolderCount = car.cupHolderCount() == Car.cupHolderCountNullVal() ? "null" : car.cupHolderCount() + "";
+        final String cupHolderCount = car.cupHolderCount() == Car.cupHolderCountNullValue() ? "null" : car.cupHolderCount() + "";
         sb.append("\ncar.cutHolderCount=").append(cupHolderCount);
 
         for (final extension.Car.FuelFigures fuelFigures : car.fuelFigures())

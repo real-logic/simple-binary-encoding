@@ -25,14 +25,16 @@ import java.util.List;
  */
 public class HeaderStructure
 {
-    public static final String TEMPLATE_ID = "templateId";
-    public static final String TEMPLATE_VERSION = "version";
     public static final String BLOCK_LENGTH = "blockLength";
+    public static final String TEMPLATE_ID = "templateId";
+    public static final String SCHEMA_ID = "schemaId";
+    public static final String SCHEMA_VERSION = "version";
 
     private final List<Token> tokens;
-    private PrimitiveType templateIdType;
-    private PrimitiveType templateVersionType;
     private PrimitiveType blockLengthType;
+    private PrimitiveType templateIdType;
+    private PrimitiveType schemaIdType;
+    private PrimitiveType schemaVersionType;
 
     public HeaderStructure(final List<Token> tokens)
     {
@@ -41,9 +43,10 @@ public class HeaderStructure
 
         captureEncodings(tokens);
 
-        Verify.notNull(templateIdType, "templateIdType");
-        Verify.notNull(templateVersionType, "templateVersionType");
         Verify.notNull(blockLengthType, "blockLengthType");
+        Verify.notNull(templateIdType, "templateIdType");
+        Verify.notNull(schemaIdType, "schemaIdType");
+        Verify.notNull(schemaVersionType, "schemaVersionType");
     }
 
     private void captureEncodings(final List<Token> tokens)
@@ -52,16 +55,20 @@ public class HeaderStructure
         {
             switch (token.name())
             {
+                case BLOCK_LENGTH:
+                    blockLengthType = token.encoding().primitiveType();
+                    break;
+
                 case TEMPLATE_ID:
                     templateIdType = token.encoding().primitiveType();
                     break;
 
-                case TEMPLATE_VERSION:
-                    templateVersionType = token.encoding().primitiveType();
+                case SCHEMA_ID:
+                    schemaIdType = token.encoding().primitiveType();
                     break;
 
-                case BLOCK_LENGTH:
-                    blockLengthType = token.encoding().primitiveType();
+                case SCHEMA_VERSION:
+                    schemaVersionType = token.encoding().primitiveType();
                     break;
             }
         }
@@ -72,18 +79,23 @@ public class HeaderStructure
         return tokens;
     }
 
+    public PrimitiveType blockLengthType()
+    {
+        return blockLengthType;
+    }
+
     public PrimitiveType templateIdType()
     {
         return templateIdType;
     }
 
-    public PrimitiveType templateVersionType()
+    public PrimitiveType schemaIdType()
     {
-        return templateVersionType;
+        return schemaIdType;
     }
 
-    public PrimitiveType blockLengthType()
+    public PrimitiveType schemaVersionType()
     {
-        return blockLengthType;
+        return schemaVersionType;
     }
 }

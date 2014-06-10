@@ -34,7 +34,7 @@ class Field
 {
 public:
     /// Invalid Schema ID value
-    static const int32_t INVALID_ID = -1;
+    static const ::int32_t INVALID_ID = -1;
     /// Index for the Field itself
     static const int FIELD_INDEX = -1;
 
@@ -57,13 +57,13 @@ public:
     class EncodingValue
     {
     public:
-        EncodingValue(const int64_t value) : int64Value_(value) {};
-        EncodingValue(const uint64_t value) : uint64Value_(value) {};
+        EncodingValue(const ::int64_t value) : int64Value_(value) {};
+        EncodingValue(const ::uint64_t value) : uint64Value_(value) {};
         EncodingValue(const double value) : doubleValue_(value) {};
         EncodingValue(const char *value) : arrayValue_((char *)value) {};
 
-        int64_t int64Value_;
-        uint64_t uint64Value_;
+        ::int64_t int64Value_;
+        ::uint64_t uint64Value_;
         double doubleValue_;
         char *arrayValue_;   // this holds a pointer into the buffer. We don't alloc our own copy since Field is reused.
     };
@@ -97,7 +97,7 @@ public:
     bool isVariableData() const { return (VAR_DATA == type_) ? true : false; };
 
     /// Return the ID assigned by the schema for this Field. May be set to Ir::INVALID_ID to indicate no ID assigned.
-    int32_t schemaId() const
+    ::int32_t schemaId() const
     {
         return schemaId_;
     }
@@ -165,7 +165,7 @@ public:
      * \param index of the encoding to return the value of. May be Field::FIELD_INDEX if only a single encoding.
      * \return the signed integer value of the encoding
      */
-    int64_t getInt(const int index = FIELD_INDEX) const
+    ::int64_t getInt(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingValues_[0].int64Value_ : encodingValues_[index].int64Value_;
     }
@@ -178,7 +178,7 @@ public:
      * \param index of the encoding to return the value of. May be Field::FIELD_INDEX if only a single encoding.
      * \return the unsigned integer value of the encoding
      */
-    uint64_t getUInt(const int index = FIELD_INDEX) const
+    ::uint64_t getUInt(const int index = FIELD_INDEX) const
     {
         return (index == FIELD_INDEX) ? encodingValues_[0].uint64Value_ : encodingValues_[index].uint64Value_;
     }
@@ -285,7 +285,7 @@ public:
 
 protected:
     // builder-ish pattern - set by Listener
-    Field &numEncodings(const uint16_t numEncodings)
+    Field &numEncodings(const ::uint16_t numEncodings)
     {
         numEncodings_ = numEncodings;
         return *this;
@@ -315,7 +315,7 @@ protected:
         return *this;
     }
 
-    Field &schemaId(const uint16_t id)
+    Field &schemaId(const ::uint16_t id)
     {
         schemaId_ = id;
         return *this;
@@ -323,13 +323,13 @@ protected:
 
     void addMeta(const Ir *ir)
     {
-        metaEpoch_.push_back(std::pair<const char *, int>(ir->epoch(), ir->epochLen()));
-        metaTimeUnit_.push_back(std::pair<const char *, int>(ir->timeUnit(), ir->timeUnitLen()));
-        metaSemanticType_.push_back(std::pair<const char *, int>(ir->semanticType(), ir->semanticTypeLen()));
+        metaEpoch_.push_back(std::pair<const char *, ::int64_t>(ir->epoch(), ir->epochLen()));
+        metaTimeUnit_.push_back(std::pair<const char *, ::int64_t>(ir->timeUnit(), ir->timeUnitLen()));
+        metaSemanticType_.push_back(std::pair<const char *, ::int64_t>(ir->semanticType(), ir->semanticTypeLen()));
     }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
-                       const int64_t value, const Ir *ir)
+                       const ::int64_t value, const Ir *ir)
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
@@ -342,7 +342,7 @@ protected:
     }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,
-                       const uint64_t value, const Ir *ir)
+                       const ::uint64_t value, const Ir *ir)
     {
         encodingNames_.push_back(name);
         primitiveTypes_.push_back(type);
@@ -392,13 +392,13 @@ protected:
         return *this;
     }
 
-    Field &varDataLength(const uint64_t value)
+    Field &varDataLength(const ::uint64_t value)
     {
         varDataLength_ = value;
         return *this;
     }
 
-    uint64_t varDataLength(void)
+    ::uint64_t varDataLength(void)
     {
         return varDataLength_;
     }
@@ -429,18 +429,18 @@ private:
     std::string name_;
     std::string compositeName_;
     std::string validValue_;
-    int32_t schemaId_;
-    uint16_t numEncodings_;
-    uint64_t varDataLength_;
+    ::int32_t schemaId_;
+    ::uint16_t numEncodings_;
+    ::uint64_t varDataLength_;
 
     std::vector<std::string> encodingNames_;
     std::vector<Ir::TokenPrimitiveType> primitiveTypes_;
     std::vector<EncodingValue> encodingValues_;
     std::vector<int> encodingLengths_;
     std::vector<Ir::TokenPresence> presence_;
-    std::vector<std::pair<const char *, int> > metaEpoch_;
-    std::vector<std::pair<const char *, int> > metaTimeUnit_;
-    std::vector<std::pair<const char *, int> > metaSemanticType_;
+    std::vector<std::pair<const char *, ::int64_t> > metaEpoch_;
+    std::vector<std::pair<const char *, ::int64_t> > metaTimeUnit_;
+    std::vector<std::pair<const char *, ::int64_t> > metaSemanticType_;
 
     std::vector<std::string> choiceValues_;
 

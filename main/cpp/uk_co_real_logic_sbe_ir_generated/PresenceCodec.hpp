@@ -16,9 +16,9 @@ public:
 
     enum Value 
     {
-        REQUIRED = (sbe_uint8_t)0,
-        OPTIONAL = (sbe_uint8_t)1,
-        CONSTANT = (sbe_uint8_t)2,
+        SBE_REQUIRED = (sbe_uint8_t)0,
+        SBE_OPTIONAL = (sbe_uint8_t)1,
+        SBE_CONSTANT = (sbe_uint8_t)2,
         NULL_VALUE = (sbe_uint8_t)255
     };
 
@@ -26,9 +26,9 @@ public:
     {
         switch (value)
         {
-            case 0: return REQUIRED;
-            case 1: return OPTIONAL;
-            case 2: return CONSTANT;
+            case 0: return SBE_REQUIRED;
+            case 1: return SBE_OPTIONAL;
+            case 2: return SBE_CONSTANT;
             case 255: return NULL_VALUE;
         }
 

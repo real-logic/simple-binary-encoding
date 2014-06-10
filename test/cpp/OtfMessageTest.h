@@ -16,6 +16,12 @@
 #ifndef _OTFMESSAGETEST_H_
 #define _OTFMESSAGETEST_H_
 
+class OtfIrMessageTestWrapper : public Ir
+{
+public:
+    OtfIrMessageTestWrapper() : Ir(NULL, 0, -1, -1, -1) {};
+};
+
 /*
  * Fixture around listener
  */
@@ -106,8 +112,8 @@ protected:
         return &messageIr_;
     };
 
-    Ir messageHeaderIr_;
-    Ir messageIr_;
+    OtfIrMessageTestWrapper messageHeaderIr_;
+    OtfIrMessageTestWrapper messageIr_;
     Listener listener_;
     char *buffer_;
     int bufferLen_;

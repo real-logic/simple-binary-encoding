@@ -263,7 +263,7 @@ protected:
             EXPECT_EQ(f.primitiveType(8), Ir::UINT64);
             EXPECT_EQ(f.primitiveType(9), Ir::FLOAT);
             EXPECT_EQ(f.primitiveType(10), Ir::DOUBLE);
-            EXPECT_EQ(f.getInt(0), FIELD_CHAR_VALUE);
+            EXPECT_EQ(f.getUInt(0), FIELD_CHAR_VALUE);
             EXPECT_EQ(f.getInt(1), FIELD_INT8_VALUE);
             EXPECT_EQ(f.getInt(2), FIELD_INT16_VALUE);
             EXPECT_EQ(f.getInt(3), FIELD_INT32_VALUE);
@@ -625,7 +625,7 @@ protected:
             EXPECT_EQ(f.primitiveType(8), Ir::UINT64);
             EXPECT_EQ(f.primitiveType(9), Ir::FLOAT);
             EXPECT_EQ(f.primitiveType(10), Ir::DOUBLE);
-            EXPECT_EQ(f.getInt(0), FIELD_CHAR_VALUE);
+            EXPECT_EQ(f.getUInt(0), FIELD_CHAR_VALUE);
             EXPECT_EQ(f.getInt(1), FIELD_INT8_VALUE);
             EXPECT_EQ(f.getInt(2), FIELD_INT16_VALUE);
             EXPECT_EQ(f.getInt(3), FIELD_INT32_VALUE);

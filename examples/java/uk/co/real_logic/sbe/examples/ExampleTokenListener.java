@@ -76,7 +76,7 @@ public class ExampleTokenListener implements TokenListener
         String value = null;
         for (int i = beginIndex + 1; i < endIndex; i++)
         {
-            if (encodedValue == tokens.get(i).encoding().constVal().longValue())
+            if (encodedValue == tokens.get(i).encoding().constValue().longValue())
             {
                 value = tokens.get(i).name();
                 break;
@@ -105,7 +105,7 @@ public class ExampleTokenListener implements TokenListener
         {
             out.append(' ').append(tokens.get(i).name()).append('=');
 
-            final long bitPosition = tokens.get(i).encoding().constVal().longValue();
+            final long bitPosition = tokens.get(i).encoding().constValue().longValue();
             final boolean flag = (encodedValue & (1L << bitPosition)) != 0;
 
             out.append(Boolean.toString(flag));
@@ -196,13 +196,13 @@ public class ExampleTokenListener implements TokenListener
         final Encoding encoding = token.encoding();
         if (Encoding.Presence.CONSTANT == encoding.presence())
         {
-            return encoding.constVal();
+            return encoding.constValue();
         }
         else if (Encoding.Presence.OPTIONAL == encoding.presence())
         {
             if (token.version() < actingVersion)
             {
-                return encoding.applicableNullVal();
+                return encoding.applicableNullValue();
             }
         }
 

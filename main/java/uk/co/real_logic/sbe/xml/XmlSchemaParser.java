@@ -59,6 +59,7 @@ public class XmlSchemaParser
      *
      * @param in stream from which schema is read.
      * @return {@link MessageSchema} encoding for the schema.
+     * @throws Exception on parsing error.
      */
     public static MessageSchema parse(final InputStream in)
         throws Exception
@@ -102,6 +103,7 @@ public class XmlSchemaParser
      * @param document for the XML parsing
      * @param xPath    for XPath expression reuse
      * @return {@link java.util.Map} of name {@link java.lang.String} to Type
+     * @throws Exception on parsing error.
      */
     public static Map<String, Type> findTypes(final Document document, final XPath xPath) throws Exception
     {
@@ -166,6 +168,7 @@ public class XmlSchemaParser
      * @param xPath         for XPath expression reuse
      * @param typeByNameMap to use for Type objects
      * @return {@link java.util.Map} of schemaId to Message
+     * @throws Exception on parsing error.
      */
     public static Map<Long, Message> findMessages(final Document document,
                                                   final XPath xPath,
@@ -186,7 +189,12 @@ public class XmlSchemaParser
         return messageByIdMap;
     }
 
-    /** Handle an error condition as consequence of parsing. */
+    /**
+     * Handle an error condition as consequence of parsing.
+     *
+     * @param node that is the context of the warning.
+     * @param msg associated with the error.
+     */
     public static void handleError(final Node node, final String msg)
     {
         final ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(ERROR_HANDLER_KEY);
@@ -201,7 +209,12 @@ public class XmlSchemaParser
         }
     }
 
-    /** Handle a warning condition as a consequence of parsing. */
+    /**
+     * Handle a warning condition as a consequence of parsing.
+     *
+     * @param node as the context for the warning.
+     * @param msg associated with the warning.
+     */
     public static void handleWarning(final Node node, final String msg)
     {
         final ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(ERROR_HANDLER_KEY);
@@ -297,21 +310,25 @@ public class XmlSchemaParser
         }
     }
 
+
     /**
      * Check name against validity for C++ and Java naming. Warning if not valid.
+     *
+     * @param node to have the name checked.
+     * @param name of the node to be checked.
      */
     public static void checkForValidName(final Node node, final String name)
     {
         if (!ValidationUtil.isSbeCppName(name))
         {
-            handleWarning(node, "name is not valid for C++: " + name);
+            handleError(node, "name is not valid for C++: " + name);
         }
+
         if (!ValidationUtil.isSbeJavaName(name))
         {
-            handleWarning(node, "name is not valid for Java: " + name);
+            handleError(node, "name is not valid for Java: " + name);
         }
     }
-
 
     private static void addTypeWithNameCheck(final Map<String, Type> typeByNameMap, final Type type, final Node node)
     {

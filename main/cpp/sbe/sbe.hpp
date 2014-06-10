@@ -23,14 +23,14 @@
  * Types used by C++ codec. Might have to be platform specific at some stage.
  */
 typedef char sbe_char_t;
-typedef int8_t sbe_int8_t;
-typedef int16_t sbe_int16_t;
-typedef int32_t sbe_int32_t;
-typedef int64_t sbe_int64_t;
-typedef uint8_t sbe_uint8_t;
-typedef uint16_t sbe_uint16_t;
-typedef uint32_t sbe_uint32_t;
-typedef uint64_t sbe_uint64_t;
+typedef ::int8_t sbe_int8_t;
+typedef ::int16_t sbe_int16_t;
+typedef ::int32_t sbe_int32_t;
+typedef ::int64_t sbe_int64_t;
+typedef ::uint8_t sbe_uint8_t;
+typedef ::uint16_t sbe_uint16_t;
+typedef ::uint32_t sbe_uint32_t;
+typedef ::uint64_t sbe_uint64_t;
 typedef float sbe_float_t;
 typedef double sbe_double_t;
 
@@ -38,7 +38,6 @@ namespace sbe {
 
 /*
  * Define some byte ordering macros
- * These use gcc builtins. MSVC should be similar.
  */
 #if defined(WIN32)
     #define SBE_BIG_ENDIAN_ENCODE_16(v) _byteswap_ushort(v)
@@ -63,6 +62,14 @@ namespace sbe {
     #define SBE_BIG_ENDIAN_ENCODE_64(v) (v)
 #else
     #error "Byte Ordering of platform not determined. Set __BYTE_ORDER__ manually before including this file."
+#endif
+
+#if defined(SBE_NO_BOUNDS_CHECK)
+    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (false)
+#elif defined(WIN32)
+    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (exp)
+#else
+    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))
 #endif
 
 class MetaAttribute

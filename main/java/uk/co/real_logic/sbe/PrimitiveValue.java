@@ -17,80 +17,14 @@
 package uk.co.real_logic.sbe;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.Arrays;
 
 import static java.lang.Double.doubleToLongBits;
 import static java.nio.charset.Charset.forName;
 
 /**
- * Class used to encapsulate values for primitives. Used for nullVal, minVal, maxVal, and constants
- * <p/>
- * <table>
- *     <thead>
- *         <tr>
- *             <th>PrimitiveType</th>
- *             <th>Null</th>
- *             <th>Min</th>
- *             <th>Max</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>char</td>
- *             <td>0</td>
- *             <td>0x20</td>
- *             <td>0x7E</td>
- *         </tr>
- *         <tr>
- *             <td>int8</td>
- *             <td>-128</td>
- *             <td>-127</td>
- *             <td>127</td>
- *         </tr>
- *         <tr>
- *             <td>uint8</td>
- *             <td>255</td>
- *             <td>0</td>
- *             <td>254</td>
- *         </tr>
- *         <tr>
- *             <td>int16</td>
- *             <td>-32768</td>
- *             <td>-32767</td>
- *             <td>32767</td>
- *         </tr>
- *         <tr>
- *             <td>uint16</td>
- *             <td>65535</td>
- *             <td>0</td>
- *             <td>65534</td>
- *         </tr>
- *         <tr>
- *             <td>int32</td>
- *             <td>2^31</td>
- *             <td>-2^31 + 1</td>
- *             <td>2^31 - 1</td>
- *         </tr>
- *         <tr>
- *             <td>uint32</td>
- *             <td>2^32 - 1</td>
- *             <td>0</td>
- *             <td>2^32 - 2</td>
- *         </tr>
- *         <tr>
- *             <td>int64</td>
- *             <td>2^63</td>
- *             <td>-2^63 + 1</td>
- *             <td>2^63 - 1</td>
- *         </tr>
- *         <tr>
- *             <td>uint64</td>
- *             <td>2^64 - 1</td>
- *             <td>0</td>
- *             <td>2^64 - 2</td>
- *         </tr>
- *     </tbody>
- * </table>
+ * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
  */
 public class PrimitiveValue
 {
@@ -129,21 +63,23 @@ public class PrimitiveValue
     public static final long MAX_VALUE_UINT32 = 4294967293L; // 0xFFFFFFFD
     public static final long NULL_VALUE_UINT32 = 4294967294L; // 0xFFFFFFFE
 
-    public static final long MIN_VALUE_INT64 = Long.MIN_VALUE + 1;  // -2^63 + 1
-    public static final long MAX_VALUE_INT64 = Long.MAX_VALUE;      //  2^63 - 1  (SBE spec says -2^63 - 1)
-    public static final long NULL_VALUE_INT64 = Long.MIN_VALUE;     // -2^63
+    public static final long MIN_VALUE_INT64 = Long.MIN_VALUE + 1;  // (-2 ^ 63) + 1
+    public static final long MAX_VALUE_INT64 = Long.MAX_VALUE;      // (2 ^ 63) - 1  (SBE spec says (-2 ^ 63) - 1)
+    public static final long NULL_VALUE_INT64 = Long.MIN_VALUE;     // (-2 ^ 63)
 
     public static final long MIN_VALUE_UINT64 = 0;
-    public static final long MAX_VALUE_UINT64 = Long.MAX_VALUE;  // TODO: placeholder for now (replace with BigInteger?)
-    public static final long NULL_VALUE_UINT64 = Long.MIN_VALUE; // TODO: placeholder for now (replace with BigInteger?)
+    public static final BigInteger BI_MAX_VALUE_UINT64 = new BigInteger("18446744073709551614");
+    public static final long MAX_VALUE_UINT64 = BI_MAX_VALUE_UINT64.longValue(); // (2 ^ 64)- 2
+    public static final BigInteger BI_NULL_VALUE_UINT64 = new BigInteger("18446744073709551615");
+    public static final long NULL_VALUE_UINT64 = BI_NULL_VALUE_UINT64.longValue(); // (2 ^ 64)- 1
 
     public static final float MIN_VALUE_FLOAT = Float.MIN_VALUE;
     public static final float MAX_VALUE_FLOAT = Float.MAX_VALUE;
-    public static final float NULL_VALUE_FLOAT = Float.NaN;         // TODO: can NOT be used as a normal equality check
+    public static final float NULL_VALUE_FLOAT = Float.NaN;
 
     public static final double MIN_VALUE_DOUBLE = Double.MIN_VALUE;
     public static final double MAX_VALUE_DOUBLE = Double.MAX_VALUE;
-    public static final double NULL_VALUE_DOUBLE = Double.NaN;      // TODO: can NOT be used as a normal equality check
+    public static final double NULL_VALUE_DOUBLE = Double.NaN;
 
     private final Representation representation;
     private final long longValue;
@@ -157,6 +93,7 @@ public class PrimitiveValue
      * Construct and fill in value as a long.
      *
      * @param value in long format
+     * @param size of the type in bytes
      */
     public PrimitiveValue(final long value, final int size)
     {
@@ -170,7 +107,9 @@ public class PrimitiveValue
 
     /**
      * Construct and fill in value as a double.
+     *
      * @param value in double format
+     * @param size of the type in bytes
      */
     public PrimitiveValue(final double value, final int size)
     {
@@ -186,6 +125,8 @@ public class PrimitiveValue
      * Construct and fill in value as a byte array.
      *
      * @param value as a byte array
+     * @param characterEncoding of the characters
+     * @param size of string in characters
      */
     public PrimitiveValue(final byte[] value, final String characterEncoding, final int size)
     {
@@ -217,32 +158,36 @@ public class PrimitiveValue
                 return new PrimitiveValue((long)value.getBytes()[0], 1);
 
             case INT8:
-                return new PrimitiveValue(Long.parseLong(value), 1);
+                return new PrimitiveValue(Byte.parseByte(value), 1);
 
             case INT16:
-                return new PrimitiveValue(Long.parseLong(value), 2);
+                return new PrimitiveValue(Short.parseShort(value), 2);
 
             case INT32:
-                return new PrimitiveValue(Long.parseLong(value), 4);
+                return new PrimitiveValue(Integer.parseInt(value), 4);
 
             case INT64:
                 return new PrimitiveValue(Long.parseLong(value), 8);
 
             case UINT8:
-                return new PrimitiveValue(Long.parseLong(value), 1);
+                return new PrimitiveValue(Short.parseShort(value), 1);
 
             case UINT16:
-                return new PrimitiveValue(Long.parseLong(value), 2);
+                return new PrimitiveValue(Integer.parseInt(value), 2);
 
             case UINT32:
                 return new PrimitiveValue(Long.parseLong(value), 4);
 
             case UINT64:
-                // TODO: not entirely adequate, but then again, Java doesn't have unsigned 64-bit integers...
-                return new PrimitiveValue(Long.parseLong(value), 8);
+                final BigInteger biValue = new BigInteger(value);
+                if (biValue.compareTo(BI_NULL_VALUE_UINT64) > 0)
+                {
+                    throw new IllegalArgumentException("Value greater than UINT64 allows: value=" + value);
+                }
+                return new PrimitiveValue(biValue.longValue(), 8);
 
             case FLOAT:
-                return new PrimitiveValue(Double.parseDouble(value), 4);
+                return new PrimitiveValue(Float.parseFloat(value), 4);
 
             case DOUBLE:
                 return new PrimitiveValue(Double.parseDouble(value), 8);
@@ -337,6 +282,7 @@ public class PrimitiveValue
             byteArrayValueForLong[0] = (byte)longValue;
             return byteArrayValueForLong;
         }
+
         throw new IllegalStateException("PrimitiveValue is not a byte[] representation");
     }
 
@@ -400,7 +346,7 @@ public class PrimitiveValue
     {
         if (null != value && value instanceof PrimitiveValue)
         {
-            PrimitiveValue rhs = (PrimitiveValue)value;
+            final PrimitiveValue rhs = (PrimitiveValue)value;
 
             if (representation == rhs.representation)
             {

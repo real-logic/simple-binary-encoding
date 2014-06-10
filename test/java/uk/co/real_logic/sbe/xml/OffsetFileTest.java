@@ -36,17 +36,17 @@ public class OffsetFileTest
     public void shouldHandleAllTypeOffsets()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BasicTypesSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("basic-types-schema.xml"));
         List<Field> fields = schema.getMessage(1).fields();
         assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(6)));
-        assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(6)));
+        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(8)));
+        assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(8)));
         assertThat(valueOf(fields.get(1).type().size()), is(valueOf(20)));
-        assertThat(valueOf(fields.get(2).computedOffset()), is(valueOf(26)));
+        assertThat(valueOf(fields.get(2).computedOffset()), is(valueOf(28)));
         assertThat(valueOf(fields.get(2).type().size()), is(valueOf(1)));
-        assertThat(valueOf(fields.get(3).computedOffset()), is(valueOf(27)));
+        assertThat(valueOf(fields.get(3).computedOffset()), is(valueOf(29)));
         assertThat(valueOf(fields.get(3).type().size()), is(valueOf(4)));
-        assertThat(valueOf(fields.get(4).computedOffset()), is(valueOf(31)));
+        assertThat(valueOf(fields.get(4).computedOffset()), is(valueOf(33)));
         assertThat(valueOf(fields.get(4).type().size()), is(valueOf(8)));
     }
 
@@ -54,10 +54,10 @@ public class OffsetFileTest
     public void shouldHandleAllTypeOffsetsSetByXML()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BasicTypesSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("basic-types-schema.xml"));
         List<Field> fields = schema.getMessage(2).fields();
         assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(6)));
+        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(8)));
         assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(8)));
         assertThat(valueOf(fields.get(1).type().size()), is(valueOf(20)));
         assertThat(valueOf(fields.get(2).computedOffset()), is(valueOf(32)));
@@ -72,13 +72,13 @@ public class OffsetFileTest
     public void shouldCalculateGroupOffsetWithNoPaddingFromBlockLength()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BlockLengthFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("block-length-schema.xml"));
         Message msg = schema.getMessage(1);
-        assertThat(valueOf(msg.blockLength()), is(valueOf(6)));
+        assertThat(valueOf(msg.blockLength()), is(valueOf(8)));
         List<Field> fields = msg.fields();
         assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(6)));
-        assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(6)));
+        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(8)));
+        assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(8)));
         Assert.assertNull(fields.get(1).type());
         List<Field> groupFields = fields.get(1).groupFields();
         assertThat(valueOf(groupFields.size()), is(valueOf(2)));
@@ -92,10 +92,10 @@ public class OffsetFileTest
     public void shouldCalculateGroupOffsetWithPaddingFromBlockLength()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BlockLengthFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("block-length-schema.xml"));
         List<Field> fields = schema.getMessage(2).fields();
         assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(6)));
+        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(8)));
         assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(64)));
         Assert.assertNull(fields.get(1).type());
         assertThat(valueOf(fields.get(1).computedBlockLength()), is(valueOf(12)));
@@ -111,10 +111,10 @@ public class OffsetFileTest
     public void shouldCalculateGroupOffsetWithPaddingFromBlockLengthAndGroupBlockLength()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BlockLengthFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("block-length-schema.xml"));
         List<Field> fields = schema.getMessage(3).fields();
         assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(6)));
+        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(8)));
         assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(64)));
         Assert.assertNull(fields.get(1).type());
         assertThat(valueOf(fields.get(1).computedBlockLength()), is(valueOf(16)));
@@ -130,10 +130,10 @@ public class OffsetFileTest
     public void shouldCalculateDataOffsetWithPaddingFromBlockLength()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BlockLengthFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("block-length-schema.xml"));
         List<Field> fields = schema.getMessage(4).fields();
         assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(6)));
+        assertThat(valueOf(fields.get(0).type().size()), is(valueOf(8)));
         assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(64)));
         assertThat(valueOf(fields.get(1).type().size()), is(valueOf(-1)));
     }

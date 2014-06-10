@@ -5,13 +5,6 @@ import uk.co.real_logic.sbe.codec.java.*;
 
 public class VarDataEncoding
 {
-    public enum MetaAttribute
-    {
-        EPOCH,
-        TIME_UNIT,
-        SEMANTIC_TYPE
-    }
-
     private DirectBuffer buffer;
     private int offset;
     private int actingVersion;
@@ -29,17 +22,17 @@ public class VarDataEncoding
         return -1;
     }
 
-    public static short lengthNullVal()
+    public static short lengthNullValue()
     {
         return (short)255;
     }
 
-    public static short lengthMinVal()
+    public static short lengthMinValue()
     {
         return (short)0;
     }
 
-    public static short lengthMaxVal()
+    public static short lengthMaxValue()
     {
         return (short)254;
     }
@@ -55,17 +48,17 @@ public class VarDataEncoding
         return this;
     }
 
-    public static short varDataNullVal()
+    public static short varDataNullValue()
     {
         return (short)255;
     }
 
-    public static short varDataMinVal()
+    public static short varDataMinValue()
     {
         return (short)0;
     }
 
-    public static short varDataMaxVal()
+    public static short varDataMaxValue()
     {
         return (short)254;
     }

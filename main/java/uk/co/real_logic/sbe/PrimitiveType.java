@@ -18,74 +18,6 @@ package uk.co.real_logic.sbe;
 
 /**
  * Primitive types from which all other types are composed.
- *
- * <p/>
- * <table>
- *     <thead>
- *         <tr>
- *             <th>PrimitiveType Type</th>
- *             <th>Description</th>
- *             <th>Length (octets)</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>char</td>
- *             <td>Character</td>
- *             <td>1</td>
- *         </tr>
- *         <tr>
- *             <td>int8</td>
- *             <td>Signed byte</td>
- *             <td>1</td>
- *         </tr>
- *         <tr>
- *             <td>uint8</td>
- *             <td>Unsigned Byte / single byte character</td>
- *             <td>1</td>
- *         </tr>
- *         <tr>
- *             <td>int16</td>
- *             <td>Signed integer</td>
- *             <td>2</td>
- *         </tr>
- *         <tr>
- *             <td>uint16</td>
- *             <td>Unsigned integer</td>
- *             <td>2</td>
- *         </tr>
- *         <tr>
- *             <td>int32</td>
- *             <td>Signed integer</td>
- *             <td>4</td>
- *         </tr>
- *         <tr>
- *             <td>uint32</td>
- *             <td>Unsigned integer</td>
- *             <td>4</td>
- *         </tr>
- *         <tr>
- *             <td>int64</td>
- *             <td>Signed integer</td>
- *             <td>8</td>
- *         </tr>
- *         <tr>
- *             <td>uint64</td>
- *             <td>Unsigned integer</td>
- *             <td>8</td>
- *         </tr>
- *         <tr>
- *             <td>float</td>
- *             <td>Single precision floating point</td>
- *             <td>4</td>
- *         </tr>
- *         <tr>
- *             <td>double</td>
- *             <td>Double precision floating point</td>
- *             <td>8</td>
- *         </tr>
- *     </tbody>
- * </table>
  */
 public enum PrimitiveType
 {
@@ -103,26 +35,26 @@ public enum PrimitiveType
 
     private final String name;
     private final int size;
-    private final PrimitiveValue minVal;
-    private final PrimitiveValue maxVal;
-    private final PrimitiveValue nullVal;
+    private final PrimitiveValue minValue;
+    private final PrimitiveValue maxValue;
+    private final PrimitiveValue nullValue;
 
-    PrimitiveType(final String name, final int size, final long minVal, final long maxVal, final long nullVal)
+    PrimitiveType(final String name, final int size, final long minValue, final long maxValue, final long nullValue)
     {
         this.name = name;
         this.size = size;
-        this.minVal = new PrimitiveValue(minVal, size);
-        this.maxVal = new PrimitiveValue(maxVal, size);
-        this.nullVal = new PrimitiveValue(nullVal, size);
+        this.minValue = new PrimitiveValue(minValue, size);
+        this.maxValue = new PrimitiveValue(maxValue, size);
+        this.nullValue = new PrimitiveValue(nullValue, size);
     }
 
-    PrimitiveType(final String name, final int size, final double minVal, final double maxVal, final double nullVal)
+    PrimitiveType(final String name, final int size, final double minValue, final double maxValue, final double nullValue)
     {
         this.name = name;
         this.size = size;
-        this.minVal = new PrimitiveValue(minVal, size);
-        this.maxVal = new PrimitiveValue(maxVal, size);
-        this.nullVal = new PrimitiveValue(nullVal, size);
+        this.minValue = new PrimitiveValue(minValue, size);
+        this.maxValue = new PrimitiveValue(maxValue, size);
+        this.nullValue = new PrimitiveValue(nullValue, size);
     }
 
     /**
@@ -146,33 +78,33 @@ public enum PrimitiveType
     }
 
     /**
-     * The minVal of the primitive type.
+     * The minValue of the primitive type.
      *
-     * @return default minVal of the primitive type
+     * @return default minValue of the primitive type
      */
-    public PrimitiveValue minVal()
+    public PrimitiveValue minValue()
     {
-        return minVal;
+        return minValue;
     }
 
     /**
-     * The maxVal of the primitive type.
+     * The maxValue of the primitive type.
      *
-     * @return default maxVal of the primitive type
+     * @return default maxValue of the primitive type
      */
-    public PrimitiveValue maxVal()
+    public PrimitiveValue maxValue()
     {
-        return maxVal;
+        return maxValue;
     }
 
     /**
-     * The nullVal of the primitive type.
+     * The nullValue of the primitive type.
      *
-     * @return default nullVal of the primitive type
+     * @return default nullValue of the primitive type
      */
-    public PrimitiveValue nullVal()
+    public PrimitiveValue nullValue()
     {
-        return nullVal;
+        return nullValue;
     }
 
     /**

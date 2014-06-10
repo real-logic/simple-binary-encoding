@@ -34,10 +34,10 @@ public class EncodedDataType extends Type
 {
     private final PrimitiveType primitiveType;
     private final int length;
-    private final PrimitiveValue constVal;
-    private final PrimitiveValue minVal;
-    private final PrimitiveValue maxVal;
-    private final PrimitiveValue nullVal;
+    private final PrimitiveValue constValue;
+    private final PrimitiveValue minValue;
+    private final PrimitiveValue maxValue;
+    private final PrimitiveValue nullValue;
     private final String characterEncoding;
     private final int sinceVersion;
     private boolean varLen;
@@ -61,8 +61,8 @@ public class EncodedDataType extends Type
         {
             if (node.getFirstChild() == null)
             {
-                handleError(node, "type has declared presence \"constant\" but XML node has no data");
-                constVal = null;
+                handleError(node, "type has declared presence as \"constant\" but XML node has no data");
+                constValue = null;
             }
             else
             {
@@ -71,43 +71,43 @@ public class EncodedDataType extends Type
                 {
                     if (nodeValue.length() == 1)
                     {
-                        constVal = PrimitiveValue.parse(nodeValue, primitiveType);
+                        constValue = PrimitiveValue.parse(nodeValue, primitiveType);
                     }
                     else
                     {
-                        constVal = PrimitiveValue.parse(nodeValue, primitiveType, nodeValue.length(), characterEncoding);
+                        constValue = PrimitiveValue.parse(nodeValue, primitiveType, nodeValue.length(), characterEncoding);
                     }
                 }
                 else
                 {
-                    constVal = PrimitiveValue.parse(nodeValue, primitiveType);
+                    constValue = PrimitiveValue.parse(nodeValue, primitiveType);
                 }
             }
         }
         else
         {
-            constVal = null;
+            constValue = null;
         }
 
-        final String minValStr = getAttributeValueOrNull(node, "minVal");
-        minVal =  minValStr != null ? PrimitiveValue.parse(minValStr, primitiveType) : null;
+        final String minValStr = getAttributeValueOrNull(node, "minValue");
+        minValue =  minValStr != null ? PrimitiveValue.parse(minValStr, primitiveType) : null;
 
-        final String maxValStr = getAttributeValueOrNull(node, "maxVal");
-        maxVal = maxValStr != null ? PrimitiveValue.parse(maxValStr, primitiveType) : null;
+        final String maxValStr = getAttributeValueOrNull(node, "maxValue");
+        maxValue = maxValStr != null ? PrimitiveValue.parse(maxValStr, primitiveType) : null;
 
-        final String nullValStr = getAttributeValueOrNull(node, "nullVal");
+        final String nullValStr = getAttributeValueOrNull(node, "nullValue");
         if (nullValStr != null)
         {
             if (presence() != Presence.OPTIONAL)
             {
-                handleWarning(node, "nullVal set, but presence is not optional");
+                handleWarning(node, "nullValue set, but presence is not optional");
             }
 
-            nullVal = PrimitiveValue.parse(nullValStr, primitiveType);
+            nullValue = PrimitiveValue.parse(nullValStr, primitiveType);
         }
         else
         {
-            nullVal = null;
+            nullValue = null;
         }
     }
 
@@ -135,10 +135,10 @@ public class EncodedDataType extends Type
         this.primitiveType = primitiveType;
         this.length = length;
         this.varLen = varLen;
-        this.constVal = null;
-        this.minVal = null;
-        this.maxVal = null;
-        this.nullVal = null;
+        this.constValue = null;
+        this.minValue = null;
+        this.maxValue = null;
+        this.nullValue = null;
         characterEncoding = null;
         sinceVersion = 0;
     }
@@ -211,37 +211,37 @@ public class EncodedDataType extends Type
             throw new IllegalStateException("type is not of constant presence");
         }
 
-        return constVal;
+        return constValue;
     }
 
     /**
-     * The minVal of the type
+     * The minValue of the type
      *
-     * @return value of the minVal
+     * @return value of the minValue
      */
-    public PrimitiveValue minVal()
+    public PrimitiveValue minValue()
     {
-        return minVal;
+        return minValue;
     }
 
     /**
-     * The maxVal of the type
+     * The maxValue of the type
      *
-     * @return value of the maxVal
+     * @return value of the maxValue
      */
-    public PrimitiveValue maxVal()
+    public PrimitiveValue maxValue()
     {
-        return maxVal;
+        return maxValue;
     }
 
     /**
-     * The nullVal of the type
+     * The nullValue of the type
      *
-     * @return value of the nullVal primitiveType or type
+     * @return value of the nullValue primitiveType or type
      */
-    public PrimitiveValue nullVal()
+    public PrimitiveValue nullValue()
     {
-        return nullVal;
+        return nullValue;
     }
 
     /**

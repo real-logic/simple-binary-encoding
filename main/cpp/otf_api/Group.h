@@ -58,7 +58,7 @@ public:
     }
 
     /// Return the schema ID of the group as given in the schema and Ir
-    int64_t schemaId() const
+    ::int64_t schemaId() const
     {
         return schemaId_;
     }
@@ -82,7 +82,7 @@ protected:
         return *this;
     }
 
-    Group &schemaId(const int32_t id)
+    Group &schemaId(const ::int32_t id)
     {
         schemaId_ = id;
         return *this;
@@ -120,7 +120,7 @@ private:
     Event event_;
     int iteration_;
     int numInGroup_;
-    int32_t schemaId_;
+    ::int32_t schemaId_;
 
     friend class Listener;
 };

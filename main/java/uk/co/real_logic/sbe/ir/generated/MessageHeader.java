@@ -5,13 +5,6 @@ import uk.co.real_logic.sbe.codec.java.*;
 
 public class MessageHeader
 {
-    public enum MetaAttribute
-    {
-        EPOCH,
-        TIME_UNIT,
-        SEMANTIC_TYPE
-    }
-
     private DirectBuffer buffer;
     private int offset;
     private int actingVersion;
@@ -26,20 +19,20 @@ public class MessageHeader
 
     public int size()
     {
-        return 6;
+        return 8;
     }
 
-    public static int blockLengthNullVal()
+    public static int blockLengthNullValue()
     {
         return 65535;
     }
 
-    public static int blockLengthMinVal()
+    public static int blockLengthMinValue()
     {
         return 0;
     }
 
-    public static int blockLengthMaxVal()
+    public static int blockLengthMaxValue()
     {
         return 65534;
     }
@@ -55,17 +48,17 @@ public class MessageHeader
         return this;
     }
 
-    public static int templateIdNullVal()
+    public static int templateIdNullValue()
     {
         return 65535;
     }
 
-    public static int templateIdMinVal()
+    public static int templateIdMinValue()
     {
         return 0;
     }
 
-    public static int templateIdMaxVal()
+    public static int templateIdMaxValue()
     {
         return 65534;
     }
@@ -81,55 +74,55 @@ public class MessageHeader
         return this;
     }
 
-    public static short versionNullVal()
+    public static int schemaIdNullValue()
     {
-        return (short)255;
+        return 65535;
     }
 
-    public static short versionMinVal()
+    public static int schemaIdMinValue()
     {
-        return (short)0;
+        return 0;
     }
 
-    public static short versionMaxVal()
+    public static int schemaIdMaxValue()
     {
-        return (short)254;
+        return 65534;
     }
 
-    public short version()
+    public int schemaId()
     {
-        return CodecUtil.uint8Get(buffer, offset + 4);
+        return CodecUtil.uint16Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public MessageHeader version(final short value)
+    public MessageHeader schemaId(final int value)
     {
-        CodecUtil.uint8Put(buffer, offset + 4, value);
+        CodecUtil.uint16Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
-    public static short reservedNullVal()
+    public static int versionNullValue()
     {
-        return (short)255;
+        return 65535;
     }
 
-    public static short reservedMinVal()
+    public static int versionMinValue()
     {
-        return (short)0;
+        return 0;
     }
 
-    public static short reservedMaxVal()
+    public static int versionMaxValue()
     {
-        return (short)254;
+        return 65534;
     }
 
-    public short reserved()
+    public int version()
     {
-        return CodecUtil.uint8Get(buffer, offset + 5);
+        return CodecUtil.uint16Get(buffer, offset + 6, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public MessageHeader reserved(final short value)
+    public MessageHeader version(final int value)
     {
-        CodecUtil.uint8Put(buffer, offset + 5, value);
+        CodecUtil.uint16Put(buffer, offset + 6, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 }

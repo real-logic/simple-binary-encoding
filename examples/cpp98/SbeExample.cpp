@@ -34,30 +34,30 @@ const char *MAKE = "Honda";
 const char *MODEL = "Civic VTi";
 const int messageHeaderVersion = 0;
 
-void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset)
+void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset, int bufferLength)
 {
     // encode the header
-    hdr.wrap(buffer, offset, messageHeaderVersion)
-       .blockLength(Car::blockLength())
-       .templateId(Car::templateId())
-       .version(Car::templateVersion())
-       .reserved(0);
+    hdr.wrap(buffer, offset, messageHeaderVersion, bufferLength)
+       .blockLength(Car::sbeBlockLength())
+       .templateId(Car::sbeTemplateId())
+       .schemaId(Car::sbeSchemaId())
+       .version(Car::sbeSchemaVersion());
 }
 
-void decodeHdr(MessageHeader &hdr, char *buffer, int offset)
+void decodeHdr(MessageHeader &hdr, char *buffer, int offset, int bufferLength)
 {
-    hdr.wrap(buffer, offset, messageHeaderVersion);
+    hdr.wrap(buffer, offset, messageHeaderVersion, bufferLength);
 
     // decode the header
     cout << "messageHeader.blockLength=" << hdr.blockLength() << endl;
     cout << "messageHeader.templateId=" << hdr.templateId() << endl;
-    cout << "messageHeader.version=" << (sbe_uint32_t)hdr.version() << endl;
-    cout << "messageHeader.reserved=" << (sbe_uint32_t)hdr.reserved() << endl;
+    cout << "messageHeader.schemaId=" << hdr.schemaId() << endl;
+    cout << "messageHeader.schemaVersion=" << (sbe_uint32_t)hdr.version() << endl;
 }
 
-void encodeCar(Car &car, char *buffer, int offset)
+void encodeCar(Car &car, char *buffer, int offset, int bufferLength)
 {
-    car.wrapForEncode(buffer, offset)
+    car.wrapForEncode(buffer, offset, bufferLength)
        .serialNumber(1234)
        .modelYear(2013)
        .available(BooleanType::TRUE)
@@ -164,31 +164,31 @@ const char *format(bool value)
     }
 }
 
-void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int actingVersion)
+void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int actingVersion, int bufferLength)
 {
-    car.wrapForDecode(buffer, offset, actingBlockLength, actingVersion);
+    car.wrapForDecode(buffer, offset, actingBlockLength, actingVersion, bufferLength);
     std::string sb;
 
-    sb.append("\ncar.serialNumberId=").append(format(Car::serialNumberSchemaId()));
-    sb.append("\ncar.modelYearId=").append(format(Car::modelYearSchemaId()));
-    sb.append("\ncar.availableId=").append(format(Car::availableSchemaId()));
-    sb.append("\ncar.codeId=").append(format(Car::codeSchemaId()));
-    sb.append("\ncar.someNumbersId=").append(format(Car::someNumbersSchemaId()));
-    sb.append("\ncar.vehicleCodeId=").append(format(Car::vehicleCodeSchemaId()));
-    sb.append("\ncar.extrasId=").append(format(Car::extrasSchemaId()));
-    sb.append("\ncar.engineId=").append(format(Car::engineSchemaId()));
-    sb.append("\ncar.fuelFiguresId=").append(format(Car::fuelFiguresSchemaId()));
-    sb.append("\ncar.fuelFigures.speedId=").append(format(Car::FuelFigures::speedSchemaId()));
-    sb.append("\ncar.fuelFigures.mpgId=").append(format(Car::FuelFigures::mpgSchemaId()));
-    sb.append("\ncar.performanceFiguresId=").append(format(Car::performanceFiguresSchemaId()));
-    sb.append("\ncar.performanceFigures.octaneRatingId=").append(format(Car::PerformanceFigures::octaneRatingSchemaId()));
-    sb.append("\ncar.performanceFigures.accelerationId=").append(format(Car::PerformanceFigures::accelerationSchemaId()));
-    sb.append("\ncar.performanceFigures.acceleration.mphId=").append(format(Car::PerformanceFigures::Acceleration::mphSchemaId()));
-    sb.append("\ncar.performanceFigures.acceleration.secondsId=").append(format(Car::PerformanceFigures::Acceleration::secondsSchemaId()));
-    sb.append("\ncar.makeId=").append(format(Car::makeSchemaId()));
+    sb.append("\ncar.serialNumberId=").append(format(Car::serialNumberId()));
+    sb.append("\ncar.modelYearId=").append(format(Car::modelYearId()));
+    sb.append("\ncar.availableId=").append(format(Car::availableId()));
+    sb.append("\ncar.codeId=").append(format(Car::codeId()));
+    sb.append("\ncar.someNumbersId=").append(format(Car::someNumbersId()));
+    sb.append("\ncar.vehicleCodeId=").append(format(Car::vehicleCodeId()));
+    sb.append("\ncar.extrasId=").append(format(Car::extrasId()));
+    sb.append("\ncar.engineId=").append(format(Car::engineId()));
+    sb.append("\ncar.fuelFiguresId=").append(format(Car::fuelFiguresId()));
+    sb.append("\ncar.fuelFigures.speedId=").append(format(Car::FuelFigures::speedId()));
+    sb.append("\ncar.fuelFigures.mpgId=").append(format(Car::FuelFigures::mpgId()));
+    sb.append("\ncar.performanceFiguresId=").append(format(Car::performanceFiguresId()));
+    sb.append("\ncar.performanceFigures.octaneRatingId=").append(format(Car::PerformanceFigures::octaneRatingId()));
+    sb.append("\ncar.performanceFigures.accelerationId=").append(format(Car::PerformanceFigures::accelerationId()));
+    sb.append("\ncar.performanceFigures.acceleration.mphId=").append(format(Car::PerformanceFigures::Acceleration::mphId()));
+    sb.append("\ncar.performanceFigures.acceleration.secondsId=").append(format(Car::PerformanceFigures::Acceleration::secondsId()));
+    sb.append("\ncar.makeId=").append(format(Car::makeId()));
     sb.append("\ncar.makeCharacterEncoding=").append(Car::makeCharacterEncoding());
     sb.append("\ncar.makeMetaAttribute.SEMANTIC_TYPE=").append(Car::makeMetaAttribute(MetaAttribute::SEMANTIC_TYPE));
-    sb.append("\ncar.modelId=").append(format(Car::modelSchemaId()));
+    sb.append("\ncar.modelId=").append(format(Car::modelId()));
     sb.append("\ncar.modelCharacterEncoding=").append(Car::modelCharacterEncoding());
 
     sb.append("\n");
@@ -272,12 +272,12 @@ int main(int argc, const char* argv[])
     MessageHeader hdr;
     Car car;
 
-    encodeHdr(hdr, car, buffer, 0);
-    encodeCar(car, buffer, hdr.size());
+    encodeHdr(hdr, car, buffer, 0, sizeof(buffer));
+    encodeCar(car, buffer, hdr.size(), sizeof(buffer));
 
     cout << "Encoding size is " << hdr.size() << " + " << car.size() << endl;
 
-    decodeHdr(hdr, buffer, 0);
-    decodeCar(car, buffer, hdr.size(), hdr.blockLength(), hdr.version());
+    decodeHdr(hdr, buffer, 0, sizeof(buffer));
+    decodeCar(car, buffer, hdr.size(), hdr.blockLength(), hdr.version(), sizeof(buffer));
     return 0;
 }

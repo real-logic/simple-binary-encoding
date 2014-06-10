@@ -25,17 +25,17 @@
  */
 
 #if defined(WIN32)
-    #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ushort((uint16_t)v))
-    #define BSWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ulong((uint32_t)v))
-    #define BSWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_uint64((uint64_t)v))
+    #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ushort((::uint16_t)v))
+    #define BSWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ulong((::uint32_t)v))
+    #define BSWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_uint64((::uint64_t)v))
 #elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap16((uint16_t)v))
-    #define BSWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap32((uint32_t)v))
-    #define BSWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap64((uint64_t)v))
+    #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap16((::uint16_t)v))
+    #define BSWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap32((::uint32_t)v))
+    #define BSWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap64((::uint64_t)v))
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-    #define BSWAP16(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap16((uint16_t)v))
-    #define BSWAP32(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap32((uint32_t)v))
-    #define BSWAP64(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap64((uint64_t)v))
+    #define BSWAP16(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap16((::uint16_t)v))
+    #define BSWAP32(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap32((::uint32_t)v))
+    #define BSWAP64(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap64((::uint64_t)v))
 #else
     #error "Byte Ordering of platform not determined. Set __BYTE_ORDER__ manually before including this file."
 #endif /* byte ordering */
@@ -45,7 +45,7 @@ using ::std::cout;
 using ::std::endl;
 
 #if !defined(WIN32)
-const int32_t Field::INVALID_ID;
+const ::int32_t Field::INVALID_ID;
 const int Field::FIELD_INDEX;
 #else
 #define snprintf _snprintf
@@ -111,7 +111,7 @@ int Listener::subscribe(OnNext *onNext,
                 {
                     char message[1024];
 
-                    ::snprintf(message, sizeof(message)-1, "no IR found for message with templateId=%lld and version=%lld", templateId_, templateVersion_);
+                    ::snprintf(message, sizeof(message)-1, "no IR found for message with templateId=%ld and version=%ld", templateId_, templateVersion_);
                     onError_->onError(Error(message));
                     result = -1;
                 }
@@ -210,7 +210,7 @@ int Listener::process(void)
                     break;
 
                 case Ir::UINT8:
-                    bufferOffset_ += processBeginEnum(ir, *((uint8_t *)valuePosition));
+                    bufferOffset_ += processBeginEnum(ir, *((::uint8_t *)valuePosition));
                     break;
 
                 default:
@@ -235,19 +235,19 @@ int Listener::process(void)
                 switch (ir->primitiveType())
                 {
                 case Ir::UINT8:
-                    bufferOffset_ += processBeginSet(ir, *((uint8_t *)valuePosition));
+                    bufferOffset_ += processBeginSet(ir, *((::uint8_t *)valuePosition));
                     break;
 
                 case Ir::UINT16:
-                    bufferOffset_ += processBeginSet(ir, (uint64_t)BSWAP16(ir->byteOrder(), *((uint16_t *)valuePosition)));
+                    bufferOffset_ += processBeginSet(ir, (::uint64_t)BSWAP16(ir->byteOrder(), *((::uint16_t *)valuePosition)));
                     break;
 
                 case Ir::UINT32:
-                    bufferOffset_ += processBeginSet(ir, (uint64_t)BSWAP32(ir->byteOrder(), *((uint32_t *)valuePosition)));
+                    bufferOffset_ += processBeginSet(ir, (::uint64_t)BSWAP32(ir->byteOrder(), *((::uint32_t *)valuePosition)));
                     break;
 
                 case Ir::UINT64:
-                    bufferOffset_ += processBeginSet(ir, (uint64_t)BSWAP64(ir->byteOrder(), *((uint64_t *)valuePosition)));
+                    bufferOffset_ += processBeginSet(ir, (::uint64_t)BSWAP64(ir->byteOrder(), *((::uint64_t *)valuePosition)));
                     break;
 
                 default:
@@ -283,14 +283,14 @@ int Listener::process(void)
             {
                 updateBufferOffsetFromIr(ir);
                 const char *valuePosition = buffer_ + bufferOffset_;
-                const char *constVal = ir->constVal();
+                const char *constValue = ir->constValue();
                 int *calculatedOffset = &bufferOffset_;
                 int constOffset;
 
-                // use ir->constVal() for value if this token is a constant
-                if (constVal != NULL)
+                // use ir->constValue() for value if this token is a constant
+                if (constValue != NULL)
                 {
-                    valuePosition = constVal;
+                    valuePosition = constValue;
                     calculatedOffset = &constOffset;  // use a dummy variable for offset as constant comes from IR
                 }
 
@@ -306,39 +306,39 @@ int Listener::process(void)
                 switch (ir->primitiveType())
                 {
                 case Ir::CHAR:
-                    *calculatedOffset += processEncoding(ir, (int64_t)*((char *)(valuePosition)));
+                    *calculatedOffset += processEncoding(ir, (::uint64_t)*((char *)(valuePosition)));
                     break;
 
                 case Ir::INT8:
-                    *calculatedOffset += processEncoding(ir, (int64_t)*((int8_t *)(valuePosition)));
+                    *calculatedOffset += processEncoding(ir, (::int64_t)*((::int8_t *)(valuePosition)));
                     break;
 
                 case Ir::INT16:
-                    *calculatedOffset += processEncoding(ir, (int64_t)((int16_t)BSWAP16(ir->byteOrder(), *((int16_t *)(valuePosition)))));
+                    *calculatedOffset += processEncoding(ir, (::int64_t)((::int16_t)BSWAP16(ir->byteOrder(), *((::int16_t *)(valuePosition)))));
                     break;
 
                 case Ir::INT32:
-                    *calculatedOffset += processEncoding(ir, (int64_t)((int32_t)BSWAP32(ir->byteOrder(), *((int32_t *)(valuePosition)))));
+                    *calculatedOffset += processEncoding(ir, (::int64_t)((::int32_t)BSWAP32(ir->byteOrder(), *((::int32_t *)(valuePosition)))));
                     break;
 
                 case Ir::INT64:
-                    *calculatedOffset += processEncoding(ir, (int64_t)((int64_t)BSWAP64(ir->byteOrder(), *((int64_t *)(valuePosition)))));
+                    *calculatedOffset += processEncoding(ir, (::int64_t)((::int64_t)BSWAP64(ir->byteOrder(), *((::int64_t *)(valuePosition)))));
                     break;
 
                 case Ir::UINT8:
-                    *calculatedOffset += processEncoding(ir, (uint64_t)*((uint8_t *)(valuePosition)));
+                    *calculatedOffset += processEncoding(ir, (::uint64_t)*((::uint8_t *)(valuePosition)));
                     break;
 
                 case Ir::UINT16:
-                    *calculatedOffset += processEncoding(ir, (uint64_t)BSWAP16(ir->byteOrder(), *((uint16_t *)(valuePosition))));
+                    *calculatedOffset += processEncoding(ir, (::uint64_t)BSWAP16(ir->byteOrder(), *((::uint16_t *)(valuePosition))));
                     break;
 
                 case Ir::UINT32:
-                    *calculatedOffset += processEncoding(ir, (uint64_t)BSWAP32(ir->byteOrder(), *((uint32_t *)(valuePosition))));
+                    *calculatedOffset += processEncoding(ir, (::uint64_t)BSWAP32(ir->byteOrder(), *((::uint32_t *)(valuePosition))));
                     break;
 
                 case Ir::UINT64:
-                    *calculatedOffset += processEncoding(ir, (uint64_t)BSWAP64(ir->byteOrder(), *((uint64_t *)(valuePosition))));
+                    *calculatedOffset += processEncoding(ir, (::uint64_t)BSWAP64(ir->byteOrder(), *((::uint64_t *)(valuePosition))));
                     break;
 
                 case Ir::FLOAT:
@@ -449,17 +449,17 @@ void Listener::processEndField(void)
     cachedField_.reset();
 }
 
-uint64_t Listener::processBeginEnum(const Ir *ir, const char value)
+::uint64_t Listener::processBeginEnum(const Ir *ir, const char value)
 {
     cachedField_.type(Field::ENUM)
-                .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value, ir);
+                .addEncoding(ir->name(), ir->primitiveType(), (::uint64_t)value, ir);
     return ir->size();
 }
 
-uint64_t Listener::processBeginEnum(const Ir *ir, uint8_t value)
+::uint64_t Listener::processBeginEnum(const Ir *ir, ::uint8_t value)
 {
     cachedField_.type(Field::ENUM)
-                .addEncoding(ir->name(), ir->primitiveType(), (uint64_t)value, ir);
+                .addEncoding(ir->name(), ir->primitiveType(), (::uint64_t)value, ir);
     return ir->size();
 }
 
@@ -477,7 +477,7 @@ void Listener::processEndEnum(void)
     // not much to do
 }
 
-uint64_t Listener::processBeginSet(const Ir *ir, const uint64_t value)
+::uint64_t Listener::processBeginSet(const Ir *ir, const ::uint64_t value)
 {
     cachedField_.type(Field::SET)
                 .addEncoding(ir->name(), ir->primitiveType(), value, ir);
@@ -486,7 +486,7 @@ uint64_t Listener::processBeginSet(const Ir *ir, const uint64_t value)
 
 void Listener::processSetChoice(const Ir *ir)
 {
-    if (cachedField_.getUInt() & ((uint64_t)0x1 << ir->choiceValue()))
+    if (cachedField_.getUInt() & ((::uint64_t)0x1 << ir->choiceValue()))
     {
         cachedField_.addChoice(ir->name());
     }
@@ -510,13 +510,13 @@ void Listener::processEndVarData(void)
     cachedField_.reset();
 }
 
-uint64_t Listener::processEncoding(const Ir *ir, const int64_t value)
+::uint64_t Listener::processEncoding(const Ir *ir, const ::int64_t value)
 {
     cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir);
     return ir->size();
 }
 
-uint64_t Listener::processEncoding(const Ir *ir, const uint64_t value)
+::uint64_t Listener::processEncoding(const Ir *ir, const ::uint64_t value)
 {
     cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir);
 
@@ -552,13 +552,13 @@ uint64_t Listener::processEncoding(const Ir *ir, const uint64_t value)
     return ir->size();
 }
 
-uint64_t Listener::processEncoding(const Ir *ir, const double value)
+::uint64_t Listener::processEncoding(const Ir *ir, const double value)
 {
     cachedField_.addEncoding(ir->name(), ir->primitiveType(), value, ir);
     return ir->size();
 }
 
-uint64_t Listener::processEncoding(const Ir *ir, const char *value, const int size)
+::uint64_t Listener::processEncoding(const Ir *ir, const char *value, const int size)
 {
     // arrays and variable length fields both come through here
     if (cachedField_.type() == Field::VAR_DATA)

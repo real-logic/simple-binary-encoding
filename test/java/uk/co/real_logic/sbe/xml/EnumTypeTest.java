@@ -98,7 +98,7 @@ public class EnumTypeTest
         final String testXmlString =
             "<types>" +
             "<enum name=\"optionalBoolean\" encodingType=\"uint8\" presence=\"optional\"" +
-            "      nullVal=\"" + nullValueStr + "\" semanticType=\"Boolean\">" +
+            "      nullValue=\"" + nullValueStr + "\" semanticType=\"Boolean\">" +
             "    <validValue name=\"False\">0</validValue>" +
             "    <validValue name=\"True\">1</validValue>" +
             "</enum>" +
@@ -231,7 +231,7 @@ public class EnumTypeTest
     public void shouldHandleEncodingTypesWithNamedTypes()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("EncodingTypesFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("encoding-types-schema.xml"));
         List<Field> fields = schema.getMessage(1).fields();
         assertNotNull(fields);
         EnumType type = (EnumType)fields.get(1).type();

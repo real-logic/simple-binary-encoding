@@ -15,7 +15,7 @@ If you have used Google Protocol Buffer in the past, this should sound familiar.
 1. SBE Schema
 -------------
 
-This NuGet package contains a sample schema in \sample\TestSchema.xml (all files referenced in this readme file can be found in \packages\Adaptive.SBE.{version}\ folder contained in your solution directory)
+This NuGet package contains a sample schema in \sample\example-schema.xml (all files referenced in this readme file can be found in \packages\Adaptive.SBE.{version}\ folder contained in your solution directory)
 
 We will use this schema 'as is' in this example but you can use it later as a starting point to define your own schema.
 
@@ -47,9 +47,8 @@ Move all the generated files (\sample\output\*.cs) to the root of the project.
 
 You will also need to add \lib\net40\sbe.dll as a reference to your project, if it's not already there (if you added the NuGet package to an existing project it should already be there).
 
-The package also contains a sample class which manipulates the generated code to encode a message and then decode it (\sample\SbeProgram.cs)
-Add this file to your project and configure it as an entry point for the project (Project properties > Application > Startup object) 
-and also change the project type to console application if it's not already one.
+The package also contains a sample class which manipulates the generated code to encode a message and then decode it (\sample\ExampleUsingGeneratedStub.cs)
+Add this file to your project, from your project entry point (ie. Main method) call ExampleUsingGeneratedStub.Main()and also change the project type to console application if it's not already one.
 
 You should also go through this code to get a better idea how to use the generated code API for encoding and decoding.
 
@@ -61,6 +60,9 @@ This was just a quick sample but hopefully now you have an idea of the overall p
 To get all the details please refer to our wiki (https://github.com/real-logic/simple-binary-encoding/wiki/) and especially the following sections:
  - schema definition: https://github.com/real-logic/simple-binary-encoding/wiki/FIX-SBE-XML-Primer
  - SBE Tool command line: https://github.com/real-logic/simple-binary-encoding/wiki/Sbe-Tool-Guide
+ - blog posts:
+   - http://blog.weareadaptive.com/2013/12/10/sbe-1/
+   - http://blog.weareadaptive.com/2013/12/15/design-principles-for-sbe-the-ultra-low-latency-marshaling-api/
 
  If you face an issue, a suggestion or a question, please use the issue tracker on the main GitHub repo: https://github.com/real-logic/simple-binary-encoding/issues?state=open
 

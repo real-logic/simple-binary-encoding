@@ -20,6 +20,7 @@ import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+import uk.co.real_logic.sbe.util.BitUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -56,12 +57,17 @@ public class DirectBufferTest
     public static final DirectBuffer HEAP_BYTE_BUFFER_SLICE =
         new DirectBuffer(((ByteBuffer)(ByteBuffer.allocate(BUFFER_CAPACITY * 2).position(BUFFER_CAPACITY))).slice());
 
+    // Note this will leak memory and a real world application would need to reclaim the allocated memory!!!
+    @DataPoint
+    public static final DirectBuffer OFF_HEAP_BUFFER =
+        new DirectBuffer(BitUtil.getUnsafe().allocateMemory(BUFFER_CAPACITY), BUFFER_CAPACITY);
+
     @Theory
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowExceptionForPositionAboveCapacity(final DirectBuffer buffer)
+    public void shouldThrowExceptionForLimitAboveCapacity(final DirectBuffer buffer)
     {
         final int position = BUFFER_CAPACITY + 1;
-        buffer.checkPosition(position);
+        buffer.checkLimit(position);
     }
 
     @Theory
@@ -231,6 +237,7 @@ public class DirectBufferTest
 
         assertThat(dstBuffer.array(), is(testBytes));
     }
+
     @Theory
     public void shouldGetBytesFromBufferToDirectBuffer(final DirectBuffer buffer)
     {
@@ -259,13 +266,28 @@ public class DirectBufferTest
         duplicateBuffer.put(testBytes);
 
         final ByteBuffer dstBuffer =
-            ((ByteBuffer) ByteBuffer.allocate(testBytes.length*2).position(testBytes.length)).slice();
+            ((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice();
 
         buffer.getBytes(INDEX, dstBuffer, testBytes.length);
 
         byte[] result = new byte[testBytes.length];
         dstBuffer.flip();
         dstBuffer.get(result);
+        assertThat(result, is(testBytes));
+    }
+
+    @Theory
+    public void shouldGetBytesToDirectBufferFromDirectBuffer(final DirectBuffer buffer)
+    {
+        final byte[] testBytes = "Hello World!".getBytes();
+        final ByteBuffer testBuff = (ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length);
+        final DirectBuffer dstBuffer = new DirectBuffer(testBuff.slice());
+
+        buffer.putBytes(INDEX, testBytes);
+        buffer.getBytes(INDEX, dstBuffer, 0, testBytes.length);
+
+        byte[] result = new byte[testBytes.length];
+        dstBuffer.getBytes(0, result);
         assertThat(result, is(testBytes));
     }
 
@@ -298,6 +320,7 @@ public class DirectBufferTest
 
         assertThat(buff, is(testBytes));
     }
+
     @Theory
     public void shouldPutBytesToBufferFromDirectBuffer(final DirectBuffer buffer)
     {
@@ -315,12 +338,13 @@ public class DirectBufferTest
 
         assertThat(buff, is(testBytes));
     }
+
     @Theory
     public void shouldPutBytesToBufferFromSlice(final DirectBuffer buffer)
     {
         final byte[] testBytes = "Hello World".getBytes();
         final ByteBuffer srcBuffer =
-                ((ByteBuffer) ByteBuffer.allocate(testBytes.length*2).position(testBytes.length)).slice();
+            ((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice();
 
         srcBuffer.put(testBytes);
         srcBuffer.flip();
@@ -331,6 +355,22 @@ public class DirectBufferTest
         final ByteBuffer duplicateBuffer = buffer.duplicateByteBuffer().order(BYTE_ORDER);
         duplicateBuffer.position(INDEX);
         duplicateBuffer.get(buff);
+
+        assertThat(buff, is(testBytes));
+    }
+
+    @Theory
+    public void shouldPutBytesToDirectBufferFromDirectBuffer(final DirectBuffer buffer)
+    {
+        final byte[] testBytes = "Hello World!".getBytes();
+        final DirectBuffer srcBuffer =
+            new DirectBuffer(((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice());
+
+        srcBuffer.putBytes(0, testBytes);
+        buffer.putBytes(INDEX, srcBuffer, 0, testBytes.length);
+
+        final byte[] buff = new byte[testBytes.length];
+        buffer.getBytes(INDEX, buff);
 
         assertThat(buff, is(testBytes));
     }

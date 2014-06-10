@@ -24,17 +24,52 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
         [Test]
         public void CheckPositionShouldNotThrowWhenPositionIsInRange()
         {
-            _directBuffer.CheckPosition(0);
-            _directBuffer.CheckPosition(15);
+            _directBuffer.CheckLimit(_buffer.Length);
         }
 
         [Test]
         [ExpectedException(typeof(IndexOutOfRangeException))]
         public void CheckPositionShouldThrowWhenPositionIsNotInRange()
         {
-            _directBuffer.CheckPosition(16);
+            _directBuffer.CheckLimit(_buffer.Length + 1);
         }
 
+        [Test]
+        public void ConstructFromNativeBuffer()
+        {
+            var managedBuffer = new Byte[16];
+            var handle = GCHandle.Alloc(managedBuffer, GCHandleType.Pinned);
+            var unmanagedBuffer = (byte*) handle.AddrOfPinnedObject().ToPointer();
+
+            const int value = 5;
+            const int index = 0;
+            
+            using (var directBufferFromUnmanagedbuffer = new DirectBuffer(unmanagedBuffer, managedBuffer.Length))
+            {
+                directBufferFromUnmanagedbuffer.Int64PutLittleEndian(index, value);
+                Assert.AreEqual(value, *(long*) (unmanagedBuffer + index));
+            }
+        }
+
+        [Test]
+        public void Recycle()
+        {
+            var directBuffer = new DirectBuffer();
+            var firstBuffer = new Byte[16];
+            directBuffer.Wrap(firstBuffer);
+
+            directBuffer.Int64PutLittleEndian(0, 1);
+            Assert.AreEqual(1, BitConverter.ToInt64(firstBuffer, 0));
+
+            var secondBuffer = new byte[16];
+            var secondBufferHandle = GCHandle.Alloc(secondBuffer, GCHandleType.Pinned);
+            var secondUnmanagedBuffer = (byte*)secondBufferHandle.AddrOfPinnedObject().ToPointer();
+            directBuffer.Wrap(secondUnmanagedBuffer, 16);
+            directBuffer.Int64PutLittleEndian(0, 2);
+            Assert.AreEqual(2, BitConverter.ToInt64(secondBuffer, 0));
+
+            directBuffer.Dispose();
+        }
 
         #region Byte
 

@@ -5,37 +5,41 @@ import uk.co.real_logic.sbe.codec.java.*;
 
 public class TokenCodec
 {
-    public enum MetaAttribute
-    {
-        EPOCH,
-        TIME_UNIT,
-        SEMANTIC_TYPE
-    }
-
-    public static final int TEMPLATE_ID = 2;
-    public static final short TEMPLATE_VERSION = (short)0;
     public static final int BLOCK_LENGTH = 20;
+    public static final int TEMPLATE_ID = 2;
+    public static final int SCHEMA_ID = 0;
+    public static final int SCHEMA_VERSION = 0;
 
     private final TokenCodec parentMessage = this;
     private DirectBuffer buffer;
     private int offset;
-    private int position;
+    private int limit;
     private int actingBlockLength;
     private int actingVersion;
 
-    public int blockLength()
+    public int sbeBlockLength()
     {
         return BLOCK_LENGTH;
     }
 
-    public int templateId()
+    public int sbeTemplateId()
     {
         return TEMPLATE_ID;
     }
 
-    public short templateVersion()
+    public int sbeSchemaId()
     {
-        return TEMPLATE_VERSION;
+        return SCHEMA_ID;
+    }
+
+    public int sbeSchemaVersion()
+    {
+        return SCHEMA_VERSION;
+    }
+
+    public String sbeSemanticType()
+    {
+        return "";
     }
 
     public int offset()
@@ -48,41 +52,40 @@ public class TokenCodec
         this.buffer = buffer;
         this.offset = offset;
         this.actingBlockLength = BLOCK_LENGTH;
-        this.actingVersion = TEMPLATE_VERSION;
-        position(offset + actingBlockLength);
+        this.actingVersion = SCHEMA_VERSION;
+        limit(offset + actingBlockLength);
 
         return this;
     }
 
-    public TokenCodec wrapForDecode(final DirectBuffer buffer, final int offset,
-                              final int actingBlockLength, final int actingVersion)
+    public TokenCodec wrapForDecode(final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;
         this.actingBlockLength = actingBlockLength;
         this.actingVersion = actingVersion;
-        position(offset + actingBlockLength);
+        limit(offset + actingBlockLength);
 
         return this;
     }
 
     public int size()
     {
-        return position - offset;
+        return limit - offset;
     }
 
-    public int position()
+    public int limit()
     {
-        return position;
+        return limit;
     }
 
-    public void position(final int position)
+    public void limit(final int limit)
     {
-        buffer.checkPosition(position);
-        this.position = position;
+        buffer.checkLimit(limit);
+        this.limit = limit;
     }
 
-    public static int tokenOffsetSchemaId()
+    public static int tokenOffsetId()
     {
         return 11;
     }
@@ -99,17 +102,17 @@ public class TokenCodec
         return "";
     }
 
-    public static int tokenOffsetNullVal()
+    public static int tokenOffsetNullValue()
     {
         return -2147483648;
     }
 
-    public static int tokenOffsetMinVal()
+    public static int tokenOffsetMinValue()
     {
         return -2147483647;
     }
 
-    public static int tokenOffsetMaxVal()
+    public static int tokenOffsetMaxValue()
     {
         return 2147483647;
     }
@@ -125,7 +128,7 @@ public class TokenCodec
         return this;
     }
 
-    public static int tokenSizeSchemaId()
+    public static int tokenSizeId()
     {
         return 12;
     }
@@ -142,17 +145,17 @@ public class TokenCodec
         return "";
     }
 
-    public static int tokenSizeNullVal()
+    public static int tokenSizeNullValue()
     {
         return -2147483648;
     }
 
-    public static int tokenSizeMinVal()
+    public static int tokenSizeMinValue()
     {
         return -2147483647;
     }
 
-    public static int tokenSizeMaxVal()
+    public static int tokenSizeMaxValue()
     {
         return 2147483647;
     }
@@ -168,12 +171,12 @@ public class TokenCodec
         return this;
     }
 
-    public static int schemaIdSchemaId()
+    public static int fieldIdId()
     {
         return 13;
     }
 
-    public static String schemaIdMetaAttribute(final MetaAttribute metaAttribute)
+    public static String fieldIdMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -185,35 +188,35 @@ public class TokenCodec
         return "";
     }
 
-    public static int schemaIdNullVal()
+    public static int fieldIdNullValue()
     {
         return -2147483648;
     }
 
-    public static int schemaIdMinVal()
+    public static int fieldIdMinValue()
     {
         return -2147483647;
     }
 
-    public static int schemaIdMaxVal()
+    public static int fieldIdMaxValue()
     {
         return 2147483647;
     }
 
-    public int schemaId()
+    public int fieldId()
     {
         return CodecUtil.int32Get(buffer, offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public TokenCodec schemaId(final int value)
+    public TokenCodec fieldId(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
 
-    public static int tokenVersionSchemaId()
+    public static int tokenVersionId()
     {
-        return 17;
+        return 14;
     }
 
     public static String tokenVersionMetaAttribute(final MetaAttribute metaAttribute)
@@ -228,17 +231,17 @@ public class TokenCodec
         return "";
     }
 
-    public static int tokenVersionNullVal()
+    public static int tokenVersionNullValue()
     {
         return -2147483648;
     }
 
-    public static int tokenVersionMinVal()
+    public static int tokenVersionMinValue()
     {
         return -2147483647;
     }
 
-    public static int tokenVersionMaxVal()
+    public static int tokenVersionMaxValue()
     {
         return 2147483647;
     }
@@ -254,9 +257,9 @@ public class TokenCodec
         return this;
     }
 
-    public static int signalSchemaId()
+    public static int signalId()
     {
-        return 14;
+        return 15;
     }
 
     public static String signalMetaAttribute(final MetaAttribute metaAttribute)
@@ -282,9 +285,9 @@ public class TokenCodec
         return this;
     }
 
-    public static int primitiveTypeSchemaId()
+    public static int primitiveTypeId()
     {
-        return 15;
+        return 16;
     }
 
     public static String primitiveTypeMetaAttribute(final MetaAttribute metaAttribute)
@@ -310,9 +313,9 @@ public class TokenCodec
         return this;
     }
 
-    public static int byteOrderSchemaId()
+    public static int byteOrderId()
     {
-        return 16;
+        return 17;
     }
 
     public static String byteOrderMetaAttribute(final MetaAttribute metaAttribute)
@@ -338,9 +341,9 @@ public class TokenCodec
         return this;
     }
 
-    public static int presenceSchemaId()
+    public static int presenceId()
     {
-        return 17;
+        return 18;
     }
 
     public static String presenceMetaAttribute(final MetaAttribute metaAttribute)
@@ -366,9 +369,9 @@ public class TokenCodec
         return this;
     }
 
-    public static int nameSchemaId()
+    public static int nameId()
     {
-        return 18;
+        return 19;
     }
 
     public static String nameCharacterEncoding()
@@ -388,15 +391,20 @@ public class TokenCodec
         return "";
     }
 
+    public static int nameHeaderSize()
+    {
+        return 1;
+    }
+
     public int getName(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        buffer.checkPosition(position + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, position);
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        position(position + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -404,71 +412,25 @@ public class TokenCodec
     public int putName(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        position(position + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, position, (short)length);
-        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public static int constValSchemaId()
-    {
-        return 19;
-    }
-
-    public static String constValCharacterEncoding()
-    {
-        return "UTF-8";
-    }
-
-    public static String constValMetaAttribute(final MetaAttribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
-        }
-
-        return "";
-    }
-
-    public int getConstVal(final byte[] dst, final int dstOffset, final int length)
-    {
-        final int sizeOfLengthField = 1;
-        final int position = position();
-        buffer.checkPosition(position + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, position);
-        final int bytesCopied = Math.min(length, dataLength);
-        position(position + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);
-
-        return bytesCopied;
-    }
-
-    public int putConstVal(final byte[] src, final int srcOffset, final int length)
-    {
-        final int sizeOfLengthField = 1;
-        final int position = position();
-        position(position + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, position, (short)length);
-        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
-    }
-
-    public static int minValSchemaId()
+    public static int constValueId()
     {
         return 20;
     }
 
-    public static String minValCharacterEncoding()
+    public static String constValueCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    public static String minValMetaAttribute(final MetaAttribute metaAttribute)
+    public static String constValueMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -480,41 +442,46 @@ public class TokenCodec
         return "";
     }
 
-    public int getMinVal(final byte[] dst, final int dstOffset, final int length)
+    public static int constValueHeaderSize()
+    {
+        return 1;
+    }
+
+    public int getConstValue(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        buffer.checkPosition(position + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, position);
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        position(position + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putMinVal(final byte[] src, final int srcOffset, final int length)
+    public int putConstValue(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        position(position + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, position, (short)length);
-        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public static int maxValSchemaId()
+    public static int minValueId()
     {
         return 21;
     }
 
-    public static String maxValCharacterEncoding()
+    public static String minValueCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    public static String maxValMetaAttribute(final MetaAttribute metaAttribute)
+    public static String minValueMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -526,41 +493,46 @@ public class TokenCodec
         return "";
     }
 
-    public int getMaxVal(final byte[] dst, final int dstOffset, final int length)
+    public static int minValueHeaderSize()
+    {
+        return 1;
+    }
+
+    public int getMinValue(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        buffer.checkPosition(position + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, position);
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        position(position + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putMaxVal(final byte[] src, final int srcOffset, final int length)
+    public int putMinValue(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        position(position + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, position, (short)length);
-        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public static int nullValSchemaId()
+    public static int maxValueId()
     {
         return 22;
     }
 
-    public static String nullValCharacterEncoding()
+    public static String maxValueCharacterEncoding()
     {
         return "UTF-8";
     }
 
-    public static String nullValMetaAttribute(final MetaAttribute metaAttribute)
+    public static String maxValueMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
         {
@@ -572,33 +544,89 @@ public class TokenCodec
         return "";
     }
 
-    public int getNullVal(final byte[] dst, final int dstOffset, final int length)
+    public static int maxValueHeaderSize()
+    {
+        return 1;
+    }
+
+    public int getMaxValue(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        buffer.checkPosition(position + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, position);
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        position(position + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putNullVal(final byte[] src, final int srcOffset, final int length)
+    public int putMaxValue(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        position(position + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, position, (short)length);
-        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public static int characterEncodingSchemaId()
+    public static int nullValueId()
     {
         return 23;
+    }
+
+    public static String nullValueCharacterEncoding()
+    {
+        return "UTF-8";
+    }
+
+    public static String nullValueMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    public static int nullValueHeaderSize()
+    {
+        return 1;
+    }
+
+    public int getNullValue(final byte[] dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
+    }
+
+    public int putNullValue(final byte[] src, final int srcOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+
+        return length;
+    }
+
+    public static int characterEncodingId()
+    {
+        return 24;
     }
 
     public static String characterEncodingCharacterEncoding()
@@ -618,15 +646,20 @@ public class TokenCodec
         return "";
     }
 
+    public static int characterEncodingHeaderSize()
+    {
+        return 1;
+    }
+
     public int getCharacterEncoding(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        buffer.checkPosition(position + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, position);
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        position(position + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -634,17 +667,17 @@ public class TokenCodec
     public int putCharacterEncoding(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        position(position + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, position, (short)length);
-        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public static int epochSchemaId()
+    public static int epochId()
     {
-        return 24;
+        return 25;
     }
 
     public static String epochCharacterEncoding()
@@ -664,15 +697,20 @@ public class TokenCodec
         return "";
     }
 
+    public static int epochHeaderSize()
+    {
+        return 1;
+    }
+
     public int getEpoch(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        buffer.checkPosition(position + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, position);
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        position(position + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -680,17 +718,17 @@ public class TokenCodec
     public int putEpoch(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        position(position + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, position, (short)length);
-        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public static int timeUnitSchemaId()
+    public static int timeUnitId()
     {
-        return 25;
+        return 26;
     }
 
     public static String timeUnitCharacterEncoding()
@@ -710,15 +748,20 @@ public class TokenCodec
         return "";
     }
 
+    public static int timeUnitHeaderSize()
+    {
+        return 1;
+    }
+
     public int getTimeUnit(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        buffer.checkPosition(position + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, position);
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        position(position + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -726,17 +769,17 @@ public class TokenCodec
     public int putTimeUnit(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        position(position + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, position, (short)length);
-        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public static int semanticTypeSchemaId()
+    public static int semanticTypeId()
     {
-        return 26;
+        return 27;
     }
 
     public static String semanticTypeCharacterEncoding()
@@ -756,15 +799,20 @@ public class TokenCodec
         return "";
     }
 
+    public static int semanticTypeHeaderSize()
+    {
+        return 1;
+    }
+
     public int getSemanticType(final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        buffer.checkPosition(position + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, position);
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        position(position + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, position + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + dataLength);
+        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -772,10 +820,10 @@ public class TokenCodec
     public int putSemanticType(final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int position = position();
-        position(position + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, position, (short)length);
-        CodecUtil.int8sPut(buffer, position + sizeOfLengthField, src, srcOffset, length);
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }

@@ -48,7 +48,7 @@ public class ErrorHandlerTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"NullBoolean\" encodingType=\"uint8\" nullVal=\"255\" semanticType=\"Boolean\">" +
+            "<enum name=\"NullBoolean\" encodingType=\"uint8\" nullValue=\"255\" semanticType=\"Boolean\">" +
             "    <validValue name=\"false\">0</validValue>" +
             "    <validValue name=\"true\">1</validValue>" +
             "</enum>" +
@@ -76,7 +76,7 @@ public class ErrorHandlerTest
             "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
             "</composite>" +
             "<type name=\"ConstButNoValue\" primitiveType=\"char\" presence=\"constant\"></type>" +
-            "<type name=\"NullButNotOptional\" primitiveType=\"int8\" presence=\"required\" nullVal=\"10\"/>" +
+            "<type name=\"NullButNotOptional\" primitiveType=\"int8\" presence=\"required\" nullValue=\"10\"/>" +
             "</types>";
 
         final Map<String, Type> map = new HashMap<>();
@@ -90,8 +90,8 @@ public class ErrorHandlerTest
         parseTestXmlAddToMap(map, "/types/enum", testXmlString, handler);
         parseTestXmlAddToMap(map, "/types/set", testXmlString, handler);
 
-        assertThat(valueOf(handler.errorCount()), is(valueOf(3)));
-        assertThat(valueOf(handler.warningCount()), is(valueOf(19)));
+        assertThat(valueOf(handler.errorCount()), is(valueOf(17)));
+        assertThat(valueOf(handler.warningCount()), is(valueOf(5)));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -104,7 +104,7 @@ public class ErrorHandlerTest
 
         try
         {
-            parse(TestUtil.getLocalResource("ErrorHandlerTypesTest.xml"));
+            parse(TestUtil.getLocalResource("error-handler-types-schema.xml"));
         }
         catch (final IllegalArgumentException shouldHaveOnly2Errors)
         {
@@ -124,7 +124,7 @@ public class ErrorHandlerTest
 
         try
         {
-            parse(TestUtil.getLocalResource("ErrorHandlerTypesDupTest.xml"));
+            parse(TestUtil.getLocalResource("error-handler-types-dup-schema.xml"));
         }
         catch (final IllegalArgumentException shouldHaveOnly1Warning)
         {
@@ -144,7 +144,7 @@ public class ErrorHandlerTest
 
         try
         {
-            parse(TestUtil.getLocalResource("ErrorHandlerDupMessageTest.xml"));
+            parse(TestUtil.getLocalResource("error-handler-dup-message-schema.xml"));
         }
         catch (final IllegalArgumentException shouldHaveOnly1Error)
         {
@@ -164,7 +164,7 @@ public class ErrorHandlerTest
 
         try
         {
-            parse(TestUtil.getLocalResource("ErrorHandlerMessageTest.xml"));
+            parse(TestUtil.getLocalResource("error-handler-message-schema.xml"));
         }
         catch (final IllegalArgumentException shouldHaveOnly12Errors)
         {
@@ -184,7 +184,7 @@ public class ErrorHandlerTest
 
         try
         {
-            parse(TestUtil.getLocalResource("ErrorHandlerGroupDimensionsTest.xml"));
+            parse(TestUtil.getLocalResource("error-handler-group-dimensions-schema.xml"));
         }
         catch (final IllegalArgumentException shouldHaveOnly1Error)
         {

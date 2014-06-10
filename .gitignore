@@ -13,3 +13,6 @@ out
 .settings
 *.sublime-project
 *.sublime-workspace
+build-local.properties
+deps
+/bin

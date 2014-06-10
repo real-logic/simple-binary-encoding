@@ -18,7 +18,7 @@ package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.ir.Encoding;
-import uk.co.real_logic.sbe.ir.IntermediateRepresentation;
+import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 
@@ -26,7 +26,9 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Class to hold the state while generating the {@link IntermediateRepresentation}. */
+/**
+ * Class to hold the state while generating the {@link uk.co.real_logic.sbe.ir.Ir}.
+ */
 public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
@@ -34,15 +36,15 @@ public class IrGenerator
     private int version = 0;
 
     /**
-     * Generate a complete {@link IntermediateRepresentation} for a given schema.
+     * Generate a complete {@link uk.co.real_logic.sbe.ir.Ir} for a given schema.
      *
-     * @param schema from which the {@link IntermediateRepresentation} should be generated.
-     * @return complete {@link IntermediateRepresentation} for a given schema.
+     * @param schema    from which the {@link uk.co.real_logic.sbe.ir.Ir} should be generated.
+     * @param namespace for the generated code.
+     * @return complete {@link uk.co.real_logic.sbe.ir.Ir} for a given schema.
      */
-    public IntermediateRepresentation generate(final MessageSchema schema)
+    public Ir generate(final MessageSchema schema, final String namespace)
     {
-        final IntermediateRepresentation ir =
-            new IntermediateRepresentation(schema.packageName(), generateForHeader(schema), schema.version());
+        final Ir ir = new Ir(schema.packageName(), namespace, schema.id(), schema.version(), schema.semanticVersion(), generateForHeader(schema));
 
         for (final Message message : schema.messages())
         {
@@ -51,6 +53,17 @@ public class IrGenerator
         }
 
         return ir;
+    }
+
+    /**
+     * Generate a complete {@link uk.co.real_logic.sbe.ir.Ir} for a given schema.
+     *
+     * @param schema    from which the {@link uk.co.real_logic.sbe.ir.Ir} should be generated.
+     * @return complete {@link uk.co.real_logic.sbe.ir.Ir} for a given schema.
+     */
+    public Ir generate(final MessageSchema schema)
+    {
+        return generate(schema, null);
     }
 
     private List<Token> generateForMessage(final MessageSchema schema, final long messageId)
@@ -84,8 +97,11 @@ public class IrGenerator
             .signal(signal)
             .name(msg.name())
             .size(msg.blockLength())
-            .schemaId(msg.id())
+            .id(msg.id())
             .version(version)
+            .encoding(new Encoding.Builder()
+                .semanticType(msg.semanticType())
+                .build())
             .build();
 
         tokenList.add(token);
@@ -97,12 +113,13 @@ public class IrGenerator
             .signal(signal)
             .size(field.computedBlockLength())
             .name(field.name())
-            .schemaId(field.id())
+            .id(field.id())
             .version(field.sinceVersion())
             .encoding(new Encoding.Builder()
-                          .epoch(field.epoch())
-                          .timeUnit(field.timeUnit())
-                          .semanticType(semanticTypeOf(null, field)).build())
+                .epoch(field.epoch())
+                .timeUnit(field.timeUnit())
+                .semanticType(semanticTypeOf(null, field))
+                .build())
             .build();
 
         tokenList.add(token);
@@ -165,7 +182,8 @@ public class IrGenerator
             .offset(currOffset)
             .size(type.size())
             .encoding(new Encoding.Builder()
-                          .semanticType(semanticTypeOf(type, field)).build());
+                .semanticType(semanticTypeOf(type, field))
+                .build());
 
         if (field != null)
         {
@@ -194,7 +212,7 @@ public class IrGenerator
 
         if (type.presence() == Presence.OPTIONAL)
         {
-            encodingBuilder.nullVal(encodingType.nullVal());
+            encodingBuilder.nullValue(encodingType.nullValue());
         }
 
         final Token.Builder builder = new Token.Builder()
@@ -227,10 +245,10 @@ public class IrGenerator
             .signal(Signal.VALID_VALUE)
             .name(value.name())
             .encoding(new Encoding.Builder()
-                          .byteOrder(byteOrder)
-                          .primitiveType(encodingType)
-                          .constVal(value.primitiveValue())
-                          .build());
+                .byteOrder(byteOrder)
+                .primitiveType(encodingType)
+                .constValue(value.primitiveValue())
+                .build());
 
         if (field != null)
         {
@@ -250,9 +268,9 @@ public class IrGenerator
             .size(encodingType.size())
             .offset(offset)
             .encoding(new Encoding.Builder()
-                          .semanticType(semanticTypeOf(type, field))
-                          .primitiveType(encodingType)
-                          .build());
+                .semanticType(semanticTypeOf(type, field))
+                .primitiveType(encodingType)
+                .build());
 
         if (field != null)
         {
@@ -277,10 +295,10 @@ public class IrGenerator
             .signal(Signal.CHOICE)
             .name(value.name())
             .encoding(new Encoding.Builder()
-                          .constVal(value.primitiveValue())
-                          .byteOrder(byteOrder)
-                          .primitiveType(encodingType)
-                          .build());
+                .constValue(value.primitiveValue())
+                .byteOrder(byteOrder)
+                .primitiveType(encodingType)
+                .build());
 
         if (field != null)
         {
@@ -319,25 +337,25 @@ public class IrGenerator
         {
             case REQUIRED:
                 encodingBuilder.presence(Encoding.Presence.REQUIRED)
-                               .minVal(type.minVal())
-                               .maxVal(type.maxVal());
+                    .minValue(type.minValue())
+                    .maxValue(type.maxValue());
                 break;
 
             case OPTIONAL:
                 encodingBuilder.presence(Encoding.Presence.OPTIONAL)
-                               .minVal(type.minVal())
-                               .maxVal(type.maxVal())
-                               .nullVal(type.nullVal());
+                    .minValue(type.minValue())
+                    .maxValue(type.maxValue())
+                    .nullValue(type.nullValue());
                 break;
 
             case CONSTANT:
                 encodingBuilder.presence(Encoding.Presence.CONSTANT)
-                               .constVal(type.constVal());
+                    .constValue(type.constVal());
                 break;
         }
 
         final Token token = tokenBuilder.encoding(encodingBuilder.build())
-                                        .build();
+            .build();
 
         tokenList.add(token);
     }
@@ -347,7 +365,7 @@ public class IrGenerator
         final String typeSemanticType = null != type ? type.semanticType() : null;
         if (typeSemanticType != null)
         {
-            return  typeSemanticType;
+            return typeSemanticType;
         }
 
         return null != field ? field.semanticType() : null;

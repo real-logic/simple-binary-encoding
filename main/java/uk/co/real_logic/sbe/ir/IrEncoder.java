@@ -36,14 +36,14 @@ public class IrEncoder implements Closeable
     private final ByteBuffer resultBuffer;
     private final ByteBuffer buffer;
     private final DirectBuffer directBuffer;
-    private final IntermediateRepresentation ir;
+    private final Ir ir;
     private final FrameCodec frameCodec = new FrameCodec();
     private final TokenCodec tokenCodec = new TokenCodec();
     private final byte[] valArray = new byte[CAPACITY];
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
     private int totalSize = 0;
 
-    public IrEncoder(final String fileName, final IntermediateRepresentation ir)
+    public IrEncoder(final String fileName, final Ir ir)
         throws FileNotFoundException
     {
         channel = new FileOutputStream(fileName).getChannel();
@@ -53,7 +53,7 @@ public class IrEncoder implements Closeable
         this.ir = ir;
     }
 
-    public IrEncoder(final ByteBuffer buffer, final IntermediateRepresentation ir)
+    public IrEncoder(final ByteBuffer buffer, final Ir ir)
     {
         channel = null;
         resultBuffer = buffer;
@@ -116,12 +116,21 @@ public class IrEncoder implements Closeable
     }
 
     private int encodeFrame()
+        throws UnsupportedEncodingException
     {
         frameCodec.wrapForEncode(directBuffer, 0)
-                  .sbeIrVersion(0)
+                  .irId(ir.id())
+                  .irVersion(0)
                   .schemaVersion(ir.version());
 
-        frameCodec.putPackageVal(ir.packageName().getBytes(), 0, ir.packageName().getBytes().length);
+        final byte[] packageBytes = ir.packageName().getBytes(FrameCodec.packageNameCharacterEncoding());
+        frameCodec.putPackageName(packageBytes, 0, packageBytes.length);
+
+        final byte[] namespaceBytes = getBytes(ir.namespaceName(), FrameCodec.namespaceNameCharacterEncoding());
+        frameCodec.putNamespaceName(namespaceBytes, 0, namespaceBytes.length);
+
+        final byte[] semanticVersionBytes = getBytes(ir.semanticVersion(), FrameCodec.semanticVersionCharacterEncoding());
+        frameCodec.putSemanticVersion(semanticVersionBytes, 0, semanticVersionBytes.length);
 
         return frameCodec.size();
     }
@@ -135,7 +144,7 @@ public class IrEncoder implements Closeable
         tokenCodec.wrapForEncode(directBuffer, 0)
                   .tokenOffset(token.offset())
                   .tokenSize(token.size())
-                  .schemaId(token.schemaId())
+                  .fieldId(token.id())
                   .tokenVersion(token.version())
                   .signal(mapSignal(token.signal()))
                   .primitiveType(mapPrimitiveType(type))
@@ -145,10 +154,10 @@ public class IrEncoder implements Closeable
         final byte[] nameBytes = token.name().getBytes(TokenCodec.nameCharacterEncoding());
         tokenCodec.putName(nameBytes, 0, nameBytes.length);
 
-        tokenCodec.putConstVal(valArray, 0, put(valBuffer, encoding.constVal(), type));
-        tokenCodec.putMinVal(valArray, 0, put(valBuffer, encoding.minVal(), type));
-        tokenCodec.putMaxVal(valArray, 0, put(valBuffer, encoding.maxVal(), type));
-        tokenCodec.putNullVal(valArray, 0, put(valBuffer, encoding.nullVal(), type));
+        tokenCodec.putConstValue(valArray, 0, put(valBuffer, encoding.constValue(), type));
+        tokenCodec.putMinValue(valArray, 0, put(valBuffer, encoding.minValue(), type));
+        tokenCodec.putMaxValue(valArray, 0, put(valBuffer, encoding.maxValue(), type));
+        tokenCodec.putNullValue(valArray, 0, put(valBuffer, encoding.nullValue(), type));
 
         final byte[] charEncodingBytes = getBytes(encoding.characterEncoding(), TokenCodec.characterEncodingCharacterEncoding());
         tokenCodec.putCharacterEncoding(charEncodingBytes, 0, charEncodingBytes.length);

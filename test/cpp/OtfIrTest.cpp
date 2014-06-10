@@ -17,10 +17,17 @@
 
 #include "gtest/gtest.h"
 #include "otf_api/Ir.h"
+#include "otf_api/IrCollection.h"
 
 using namespace sbe::on_the_fly;
 using ::std::cout;
 using ::std::endl;
+
+class OtfIrTestWrapper : public Ir
+{
+public:
+    OtfIrTestWrapper() : Ir(NULL, 0, -1, -1, -1) {};
+};
 
 /*
  * Fixture around IR for testing that it works correctly
@@ -46,7 +53,7 @@ protected:
         ir_.addToken(0, 0, Ir::END_COMPOSITE, byteOrder, Ir::NONE, schemaId, messageHeaderStr);
     };
 
-    Ir ir_;
+    OtfIrTestWrapper ir_;
 };
 
 TEST_F(OtfIrTest, shouldBeAbleToAddTokens)
@@ -107,4 +114,9 @@ TEST_F(OtfIrTest, shouldBeAbleToIterate)
     EXPECT_EQ(ir_.name(), std::string("messageHeader"));
     ir_.next();
     EXPECT_EQ(ir_.end(), true);
+}
+
+TEST(OtfIrCollectionTest, shouldHandleEmptyIrCollection)
+{
+    IrCollection irCollection;
 }

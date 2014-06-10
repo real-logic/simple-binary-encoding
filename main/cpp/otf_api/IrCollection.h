@@ -45,19 +45,23 @@ namespace on_the_fly {
 
 /**
  * \brief Collection that holds the Ir for several message template IDs as well as a header for
- * dispatching them. Equivalent to the Java IntermediateRepresentation class.
+ * dispatching them. Equivalent to the Java Ir class.
  */
 class IrCollection
 {
 public:
     /// Construct a collection
-    IrCollection() : header_(NULL)
+    IrCollection() : buffer_(NULL), irId_(-1), header_(NULL)
     {
     }
 
     virtual ~IrCollection()
     {
-        delete[] buffer_;
+        if (buffer_ != NULL)
+        {
+            delete[] buffer_;
+        }
+
         for (std::multimap<int, Ir *>::iterator it = map_.begin(); it != map_.end(); ++it)
         {
 //            std::cout << (*it).first << " => " << (*it).second << '\n';
@@ -65,6 +69,7 @@ public:
             delete ir;
             (*it).second = NULL;
         }
+
         if (header_ != NULL)
         {
             delete header_;
@@ -132,12 +137,23 @@ public:
         ret = map_.equal_range(id);
         for (std::multimap<int, Ir *>::const_iterator it = ret.first; it != ret.second; it++)
         {
-            if (it->second->templateId() == id && it->second->templateVersion() == version)
+            if (it->second->templateId() == id && it->second->schemaVersion() == version)
             {
                 return it->second;
             }
         }
+
         return NULL;
+    }
+
+    /**
+     * \brief Return the underlying map of templateId to Ir objects
+     *
+     * \return map of templateId as int to Ir
+     */
+    std::multimap<int, Ir *> &map(void)
+    {
+        return map_;
     }
 
 protected:
@@ -156,7 +172,7 @@ protected:
 
     static int readFileIntoBuffer(char *buffer, const char *filename, int length)
     {
-        FILE *fptr = ::fopen(filename, "r");
+        FILE *fptr = ::fopen(filename, "rb");
         int remaining = length;
 
         if (fptr == NULL)
@@ -174,7 +190,9 @@ protected:
                 break;
             }
         }
+
         fclose(fptr);
+
         return (remaining == 0) ? 0 : -1;
     }
 
@@ -184,14 +202,18 @@ protected:
         int offset = 0, tmpLen = 0;
         char tmp[256];
 
-        frame.wrapForDecode(buffer_, offset, frame.blockLength(), frame.templateVersion());
-        tmpLen = frame.getPackageVal(tmp, sizeof(tmp));
+        frame.wrapForDecode(buffer_, offset, frame.sbeBlockLength(), frame.sbeSchemaVersion(), length_);
 
-        ::std::cout << "Reading IR package=\"" << std::string(tmp, tmpLen) << "\"" << ::std::endl;
+        tmpLen = frame.getPackageName(tmp, sizeof(tmp));
+        ::std::cout << "Reading IR package=\"" << std::string(tmp, tmpLen) << "\" id=" << frame.irId() << ::std::endl;
+
+        frame.getNamespaceName(tmp, sizeof(tmp));
+        frame.getSemanticVersion(tmp, sizeof(tmp));
 
         offset += frame.size();
 
         headerLength_ = readHeader(offset);
+        irId_ = frame.irId();
 
         offset += headerLength_;
 
@@ -213,13 +235,13 @@ protected:
             char tmp[256], name[256];
             int nameLen = 0;
 
-            token.wrapForDecode(buffer_, offset + size, token.blockLength(), token.templateVersion());
+            token.wrapForDecode(buffer_, offset + size, token.sbeBlockLength(), token.sbeSchemaVersion(), length_);
 
             nameLen = token.getName(name, sizeof(name));
-            token.getConstVal(tmp, sizeof(tmp));
-            token.getMinVal(tmp, sizeof(tmp));
-            token.getMaxVal(tmp, sizeof(tmp));
-            token.getNullVal(tmp, sizeof(tmp));
+            token.getConstValue(tmp, sizeof(tmp));
+            token.getMinValue(tmp, sizeof(tmp));
+            token.getMaxValue(tmp, sizeof(tmp));
+            token.getNullValue(tmp, sizeof(tmp));
             token.getCharacterEncoding(tmp, sizeof(tmp));
             token.getEpoch(tmp, sizeof(tmp));
             token.getTimeUnit(tmp, sizeof(tmp));
@@ -240,7 +262,7 @@ protected:
 
         std::cout << " length " << size << std::endl;
 
-        header_ = new Ir(buffer_ + offset, size);
+        header_ = new Ir(buffer_ + offset, size, -1, -1, -1);
 
         return size;
     }
@@ -255,13 +277,13 @@ protected:
             char tmp[256], name[256];
             int nameLen = 0;
 
-            token.wrapForDecode(buffer_, offset + size, token.blockLength(), token.templateVersion());
+            token.wrapForDecode(buffer_, offset + size, token.sbeBlockLength(), token.sbeSchemaVersion(), length_);
 
             nameLen = token.getName(name, sizeof(name));
-            token.getConstVal(tmp, sizeof(tmp));
-            token.getMinVal(tmp, sizeof(tmp));
-            token.getMaxVal(tmp, sizeof(tmp));
-            token.getNullVal(tmp, sizeof(tmp));
+            token.getConstValue(tmp, sizeof(tmp));
+            token.getMinValue(tmp, sizeof(tmp));
+            token.getMaxValue(tmp, sizeof(tmp));
+            token.getNullValue(tmp, sizeof(tmp));
             token.getCharacterEncoding(tmp, sizeof(tmp));
             token.getEpoch(tmp, sizeof(tmp));
             token.getTimeUnit(tmp, sizeof(tmp));
@@ -272,8 +294,8 @@ protected:
             if (token.signal() == SignalCodec::BEGIN_MESSAGE)
             {
                 std::cout << " Message name=\"" << std::string(name, nameLen) << "\"";
-                std::cout << " id=\"" << token.schemaId() << "\"";
-                std::cout << " version=\"" << token.tokenVersion() << "\"";
+                std::cout << " id=\"" << token.fieldId() << "\"";
+                std::cout << " version=\"" << (int)token.sbeSchemaVersion() << "\"";
             }
 
             if (token.signal() == SignalCodec::END_MESSAGE)
@@ -286,7 +308,7 @@ protected:
 
         // save buffer_ + offset as start of message and size as length
 
-        map_.insert(std::pair<int, Ir *>(token.schemaId(), new Ir(buffer_ + offset, size, token.schemaId(), token.tokenVersion())));
+        map_.insert(std::pair<int, Ir *>(token.fieldId(), new Ir(buffer_ + offset, size, token.fieldId(), irId_, token.tokenVersion())));
 
         // map_[token.schemaID()] = new Ir(buffer_ + offset, size);
 
@@ -298,6 +320,7 @@ private:
 
     char *buffer_;
     int length_;
+    int irId_;
 
     Ir *header_;
     int headerLength_;

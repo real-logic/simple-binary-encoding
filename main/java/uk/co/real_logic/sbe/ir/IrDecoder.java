@@ -41,10 +41,14 @@ public class IrDecoder implements Closeable
     private int offset;
     private final long size;
     private String irPackageName = null;
+    private String irNamespaceName = null;
+    private String semanticVersion = null;
     private List<Token> irHeader = null;
+    private int irId;
     private int irVersion = 0;
     private final byte[] valArray = new byte[CAPACITY];
     private final DirectBuffer valBuffer = new DirectBuffer(valArray);
+    private final byte[] buffer = new byte[1024];
 
     public IrDecoder(final String fileName)
         throws IOException
@@ -73,7 +77,7 @@ public class IrDecoder implements Closeable
         }
     }
 
-    public IntermediateRepresentation decode()
+    public Ir decode()
         throws IOException
     {
         decodeFrame();
@@ -91,7 +95,7 @@ public class IrDecoder implements Closeable
             i = captureHeader(tokens, 0);
         }
 
-        final IntermediateRepresentation ir = new IntermediateRepresentation(irPackageName, irHeader, irVersion);
+        final Ir ir = new Ir(irPackageName, irNamespaceName, irId, irVersion, semanticVersion, irHeader);
 
         for (; i < size; i++)
         {
@@ -122,7 +126,7 @@ public class IrDecoder implements Closeable
         return index;
     }
 
-    private int captureMessage(final List<Token> tokens, int index, final IntermediateRepresentation ir)
+    private int captureMessage(final List<Token> tokens, int index, final Ir ir)
     {
         final List<Token> messageTokens = new ArrayList<>();
 
@@ -135,24 +139,39 @@ public class IrDecoder implements Closeable
         }
         while (Signal.END_MESSAGE != token.signal());
 
-        ir.addMessage(tokens.get(index).schemaId(), messageTokens);
+        ir.addMessage(tokens.get(index).id(), messageTokens);
 
         return index;
     }
 
     private void decodeFrame()
+        throws UnsupportedEncodingException
     {
-        frameCodec.wrapForDecode(directBuffer, offset, frameCodec.blockLength(), 0);
+        frameCodec.wrapForDecode(directBuffer, offset, frameCodec.sbeBlockLength(), 0);
 
-        if (frameCodec.sbeIrVersion() != 0)
+        irId = frameCodec.irId();
+
+        if (frameCodec.irVersion() != 0)
         {
-            throw new IllegalStateException("Unknown SBE version: " + frameCodec.sbeIrVersion());
+            throw new IllegalStateException("Unknown SBE version: " + frameCodec.irVersion());
         }
 
-        final byte[] buffer = new byte[1024];
-
         irVersion = frameCodec.schemaVersion();
-        irPackageName = new String(buffer, 0, frameCodec.getPackageVal(buffer, 0, buffer.length));
+
+        irPackageName = new String(buffer, 0, frameCodec.getPackageName(buffer, 0, buffer.length), FrameCodec.packageNameCharacterEncoding());
+
+        irNamespaceName = new String(buffer, 0, frameCodec.getNamespaceName(buffer, 0, buffer.length), FrameCodec.namespaceNameCharacterEncoding());
+        if (irNamespaceName.isEmpty())
+        {
+            irNamespaceName = null;
+        }
+
+        semanticVersion =
+            new String(buffer, 0, frameCodec.getSemanticVersion(buffer, 0, buffer.length), FrameCodec.semanticVersionCharacterEncoding());
+        if (semanticVersion.isEmpty())
+        {
+            semanticVersion = null;
+        }
 
         offset += frameCodec.size();
     }
@@ -163,13 +182,11 @@ public class IrDecoder implements Closeable
         final Token.Builder tokenBuilder = new Token.Builder();
         final Encoding.Builder encBuilder = new Encoding.Builder();
 
-        final byte[] buffer = new byte[1024];
-
-        tokenCodec.wrapForDecode(directBuffer, offset, tokenCodec.blockLength(), 0);
+        tokenCodec.wrapForDecode(directBuffer, offset, tokenCodec.sbeBlockLength(), 0);
 
         tokenBuilder.offset(tokenCodec.tokenOffset())
                     .size(tokenCodec.tokenSize())
-                    .schemaId(tokenCodec.schemaId())
+                    .id(tokenCodec.fieldId())
                     .version(tokenCodec.tokenVersion())
                     .signal(mapSignal(tokenCodec.signal()));
 
@@ -181,10 +198,10 @@ public class IrDecoder implements Closeable
 
         tokenBuilder.name(new String(buffer, 0, tokenCodec.getName(buffer, 0, buffer.length), TokenCodec.nameCharacterEncoding()));
 
-        encBuilder.constVal(get(valBuffer, type, tokenCodec.getConstVal(valArray, 0, valArray.length)));
-        encBuilder.minVal(get(valBuffer, type, tokenCodec.getMinVal(valArray, 0, valArray.length)));
-        encBuilder.maxVal(get(valBuffer, type, tokenCodec.getMaxVal(valArray, 0, valArray.length)));
-        encBuilder.nullVal(get(valBuffer, type, tokenCodec.getNullVal(valArray, 0, valArray.length)));
+        encBuilder.constValue(get(valBuffer, type, tokenCodec.getConstValue(valArray, 0, valArray.length)));
+        encBuilder.minValue(get(valBuffer, type, tokenCodec.getMinValue(valArray, 0, valArray.length)));
+        encBuilder.maxValue(get(valBuffer, type, tokenCodec.getMaxValue(valArray, 0, valArray.length)));
+        encBuilder.nullValue(get(valBuffer, type, tokenCodec.getNullValue(valArray, 0, valArray.length)));
 
         final String characterEncoding = new String(buffer, 0, tokenCodec.getCharacterEncoding(buffer, 0, buffer.length),
                                                     TokenCodec.characterEncodingCharacterEncoding());

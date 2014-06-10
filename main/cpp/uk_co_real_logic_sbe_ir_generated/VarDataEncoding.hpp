@@ -18,8 +18,12 @@ private:
     int actingVersion_;
 
 public:
-    VarDataEncoding &wrap(char *buffer, const int offset, const int actingVersion)
+    VarDataEncoding &wrap(char *buffer, const int offset, const int actingVersion, const int bufferLength)
     {
+        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - -1)), 0))
+        {
+            throw "buffer too short for flyweight";
+        }
         buffer_ = buffer;
         offset_ = offset;
         actingVersion_ = actingVersion;
@@ -32,17 +36,17 @@ public:
     }
 
 
-    static sbe_uint8_t lengthNullVal()
+    static sbe_uint8_t lengthNullValue()
     {
         return (sbe_uint8_t)255;
     }
 
-    static sbe_uint8_t lengthMinVal()
+    static sbe_uint8_t lengthMinValue()
     {
         return (sbe_uint8_t)0;
     }
 
-    static sbe_uint8_t lengthMaxVal()
+    static sbe_uint8_t lengthMaxValue()
     {
         return (sbe_uint8_t)254;
     }
@@ -58,17 +62,17 @@ public:
         return *this;
     }
 
-    static sbe_uint8_t varDataNullVal()
+    static sbe_uint8_t varDataNullValue()
     {
         return (sbe_uint8_t)255;
     }
 
-    static sbe_uint8_t varDataMinVal()
+    static sbe_uint8_t varDataMinValue()
     {
         return (sbe_uint8_t)0;
     }
 
-    static sbe_uint8_t varDataMaxVal()
+    static sbe_uint8_t varDataMaxValue()
     {
         return (sbe_uint8_t)254;
     }

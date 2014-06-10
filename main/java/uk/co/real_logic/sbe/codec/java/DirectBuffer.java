@@ -17,67 +17,126 @@ package uk.co.real_logic.sbe.codec.java;
 
 import sun.misc.Unsafe;
 import uk.co.real_logic.sbe.util.BitUtil;
-import uk.co.real_logic.sbe.util.Verify;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * Direct buffer which can wrap a byte[] or a {@link ByteBuffer} that is heap or direct allocated for direct access
- * with native types.
+ * Direct buffer which can wrap a byte[] or a {@link ByteBuffer} that is heap or direct allocated
+ * for direct access with native types.
  */
 public class DirectBuffer
 {
     private static final ByteOrder NATIVE_BYTE_ORDER = ByteOrder.nativeOrder();
-
     private static final Unsafe UNSAFE = BitUtil.getUnsafe();
     private static final long BYTE_ARRAY_OFFSET = UNSAFE.arrayBaseOffset(byte[].class);
 
-    private final byte[] byteArray;
-    private final ByteBuffer byteBuffer;
-
-    private final long baseOffset;
-    private final int capacity;
+    private byte[] byteArray;
+    private ByteBuffer byteBuffer;
+    private long addressOffset;
+    private int capacity;
 
     /**
      * Attach a view to a byte[] for providing direct access.
      *
-     * @param byteArray to which the view is attached.
+     * @param buffer to which the view is attached.
      */
-    public DirectBuffer(final byte[] byteArray)
+    public DirectBuffer(final byte[] buffer)
     {
-        Verify.notNull(byteArray, "byteArray");
-
-        baseOffset = BYTE_ARRAY_OFFSET;
-        capacity = byteArray.length;
-        this.byteArray = byteArray;
-        this.byteBuffer = ByteBuffer.wrap(byteArray).order(ByteOrder.nativeOrder());
+        wrap(buffer);
     }
 
     /**
      * Attach a view to a {@link ByteBuffer} for providing direct access, the {@link ByteBuffer} can be
      * heap based or direct.
      *
-     * @param byteBuffer to which the view is attached.
+     * @param buffer to which the view is attached.
      */
-    public DirectBuffer(final ByteBuffer byteBuffer)
+    public DirectBuffer(final ByteBuffer buffer)
     {
-        Verify.notNull(byteBuffer, "byteBuffer");
+        wrap(buffer);
+    }
 
-        this.byteBuffer = byteBuffer.duplicate().order(ByteOrder.nativeOrder());
+    /**
+     * Attach a view to an off-heap memory region by address.
+     *
+     * @param address where the memory begins off-heap
+     * @param capacity of the buffer from the given address
+     */
+    public DirectBuffer(final long address, final int capacity)
+    {
+        wrap(address, capacity);
+    }
 
-        if (byteBuffer.hasArray())
+    /**
+     * Attach a view to a byte[] for providing direct access.
+     *
+     * @param buffer to which the view is attached.
+     */
+    public void wrap(final byte[] buffer)
+    {
+        addressOffset = BYTE_ARRAY_OFFSET;
+        capacity = buffer.length;
+        byteArray = buffer;
+        byteBuffer = null;
+    }
+
+    /**
+     * Attach a view to a {@link ByteBuffer} for providing direct access, the {@link ByteBuffer} can be
+     * heap based or direct.
+     *
+     * @param buffer to which the view is attached.
+     */
+    public void wrap(final ByteBuffer buffer)
+    {
+        byteBuffer = buffer;
+
+        if (buffer.hasArray())
         {
-            byteArray = byteBuffer.array();
-            baseOffset = BYTE_ARRAY_OFFSET + byteBuffer.arrayOffset();
+            byteArray = buffer.array();
+            addressOffset = BYTE_ARRAY_OFFSET + buffer.arrayOffset();
         }
         else
         {
             byteArray = null;
-            baseOffset = ((sun.nio.ch.DirectBuffer)byteBuffer).address();
+            addressOffset = ((sun.nio.ch.DirectBuffer)buffer).address();
         }
 
-        capacity = byteBuffer.capacity();
+        capacity = buffer.capacity();
+    }
+
+    /**
+     * Attach a view to an off-heap memory region by address.
+     *
+     * @param address where the memory begins off-heap
+     * @param capacity of the buffer from the given address
+     */
+    public void wrap(final long address, final int capacity)
+    {
+        addressOffset = address;
+        this.capacity = capacity;
+        byteArray = null;
+        byteBuffer = null;
+    }
+
+    /**
+     * Return the underlying byte[] for this buffer or null if none is attached.
+     *
+     * @return the underlying byte[] for this buffer.
+     */
+    public byte[] array()
+    {
+        return byteArray;
+    }
+
+    /**
+     * Return the underlying {@link ByteBuffer} if one is attached.
+     *
+     * @return the underlying {@link ByteBuffer} if one is attached.
+     */
+    public ByteBuffer byteBuffer()
+    {
+        return byteBuffer;
     }
 
     /**
@@ -91,19 +150,19 @@ public class DirectBuffer
     }
 
     /**
-     * Check that a given position is within the capacity of a buffer from a given offset.
+     * Check that a given limit is not greater than the capacity of a buffer from a given offset.
      *
-     * Can be overridden in a DirectBuffer subclass to enable an extensible buffer.
+     * Can be overridden in a DirectBuffer subclass to enable an extensible buffer or handle retry after a flush.
      *
-     * @param position access is required to.
-     * @throws IndexOutOfBoundsException if position is beyond buffer capacity.
+     * @param limit access is required to.
+     * @throws IndexOutOfBoundsException if limit is beyond buffer capacity.
      */
-    public void checkPosition(final int position)
+    public void checkLimit(final int limit)
     {
-        if (position > capacity)
+        if (limit > capacity)
         {
-            final String msg = String.format("position=%d is beyond capacity=%d",
-                                             Integer.valueOf(position),
+            final String msg = String.format("limit=%d is beyond capacity=%d",
+                                             Integer.valueOf(limit),
                                              Integer.valueOf(capacity));
 
             throw new IndexOutOfBoundsException(msg);
@@ -113,13 +172,33 @@ public class DirectBuffer
     /**
      * Create a duplicate {@link ByteBuffer} for the view in native byte order.
      * The duplicate {@link ByteBuffer} shares the underlying memory so all changes are reflected.
+     * If no {@link ByteBuffer} is attached then one will be created.
      *
-     * @return a duplicate of the underlying memory wrapped as a {@link ByteBuffer}
+     * @return a duplicate of the underlying {@link ByteBuffer}
      */
     public ByteBuffer duplicateByteBuffer()
     {
-        byteBuffer.clear();
-        return byteBuffer.duplicate();
+        final ByteBuffer duplicate;
+
+        if (null == byteBuffer)
+        {
+            if (null != byteArray)
+            {
+                duplicate = ByteBuffer.wrap(byteArray);
+            }
+            else
+            {
+                duplicate = BitUtil.resetAddressAndCapacity(ByteBuffer.allocateDirect(0), addressOffset, capacity);
+            }
+        }
+        else
+        {
+            duplicate = byteBuffer.duplicate();
+        }
+
+        duplicate.clear();
+
+        return duplicate;
     }
 
     /**
@@ -131,7 +210,7 @@ public class DirectBuffer
      */
     public long getLong(final int index, final ByteOrder byteOrder)
     {
-        long bits = UNSAFE.getLong(byteArray, baseOffset + index);
+        long bits = UNSAFE.getLong(byteArray, addressOffset + index);
         if (NATIVE_BYTE_ORDER != byteOrder)
         {
             bits = Long.reverseBytes(bits);
@@ -155,7 +234,7 @@ public class DirectBuffer
             bits = Long.reverseBytes(bits);
         }
 
-        UNSAFE.putLong(byteArray, baseOffset + index, bits);
+        UNSAFE.putLong(byteArray, addressOffset + index, bits);
     }
 
     /**
@@ -167,7 +246,7 @@ public class DirectBuffer
      */
     public int getInt(final int index, final ByteOrder byteOrder)
     {
-        int bits = UNSAFE.getInt(byteArray, baseOffset + index);
+        int bits = UNSAFE.getInt(byteArray, addressOffset + index);
         if (NATIVE_BYTE_ORDER != byteOrder)
         {
             bits = Integer.reverseBytes(bits);
@@ -191,7 +270,7 @@ public class DirectBuffer
             bits = Integer.reverseBytes(bits);
         }
 
-        UNSAFE.putInt(byteArray, baseOffset + index, bits);
+        UNSAFE.putInt(byteArray, addressOffset + index, bits);
     }
 
     /**
@@ -205,12 +284,12 @@ public class DirectBuffer
     {
         if (NATIVE_BYTE_ORDER != byteOrder)
         {
-            long bits = UNSAFE.getLong(byteArray, baseOffset + index);
+            long bits = UNSAFE.getLong(byteArray, addressOffset + index);
             return Double.longBitsToDouble(Long.reverseBytes(bits));
         }
         else
         {
-            return UNSAFE.getDouble(byteArray, baseOffset + index);
+            return UNSAFE.getDouble(byteArray, addressOffset + index);
         }
     }
 
@@ -226,11 +305,11 @@ public class DirectBuffer
         if (NATIVE_BYTE_ORDER != byteOrder)
         {
             long bits = Long.reverseBytes(Double.doubleToRawLongBits(value));
-            UNSAFE.putLong(byteArray, baseOffset + index, bits);
+            UNSAFE.putLong(byteArray, addressOffset + index, bits);
         }
         else
         {
-            UNSAFE.putDouble(byteArray, baseOffset + index, value);
+            UNSAFE.putDouble(byteArray, addressOffset + index, value);
         }
     }
 
@@ -245,12 +324,12 @@ public class DirectBuffer
     {
         if (NATIVE_BYTE_ORDER != byteOrder)
         {
-            int bits = UNSAFE.getInt(byteArray, baseOffset + index);
+            int bits = UNSAFE.getInt(byteArray, addressOffset + index);
             return Float.intBitsToFloat(Integer.reverseBytes(bits));
         }
         else
         {
-            return UNSAFE.getFloat(byteArray, baseOffset + index);
+            return UNSAFE.getFloat(byteArray, addressOffset + index);
         }
     }
 
@@ -266,11 +345,11 @@ public class DirectBuffer
         if (NATIVE_BYTE_ORDER != byteOrder)
         {
             int bits = Integer.reverseBytes(Float.floatToRawIntBits(value));
-            UNSAFE.putLong(byteArray, baseOffset + index, bits);
+            UNSAFE.putLong(byteArray, addressOffset + index, bits);
         }
         else
         {
-            UNSAFE.putFloat(byteArray, baseOffset + index, value);
+            UNSAFE.putFloat(byteArray, addressOffset + index, value);
         }
     }
 
@@ -283,7 +362,7 @@ public class DirectBuffer
      */
     public short getShort(final int index, final ByteOrder byteOrder)
     {
-        short bits = UNSAFE.getShort(byteArray, baseOffset + index);
+        short bits = UNSAFE.getShort(byteArray, addressOffset + index);
         if (NATIVE_BYTE_ORDER != byteOrder)
         {
             bits = Short.reverseBytes(bits);
@@ -307,7 +386,7 @@ public class DirectBuffer
             bits = Short.reverseBytes(bits);
         }
 
-        UNSAFE.putShort(byteArray, baseOffset + index, bits);
+        UNSAFE.putShort(byteArray, addressOffset + index, bits);
     }
 
     /**
@@ -318,7 +397,7 @@ public class DirectBuffer
      */
     public byte getByte(final int index)
     {
-        return UNSAFE.getByte(byteArray, baseOffset + index);
+        return UNSAFE.getByte(byteArray, addressOffset + index);
     }
 
     /**
@@ -329,7 +408,7 @@ public class DirectBuffer
      */
     public void putByte(final int index, final byte value)
     {
-        UNSAFE.putByte(byteArray, baseOffset + index, value);
+        UNSAFE.putByte(byteArray, addressOffset + index, value);
     }
 
     /**
@@ -357,7 +436,25 @@ public class DirectBuffer
     public int getBytes(final int index, final byte[] dst, final int offset, final int length)
     {
         final int count = Math.min(length, capacity - index);
-        UNSAFE.copyMemory(byteArray, baseOffset + index, dst, BYTE_ARRAY_OFFSET + offset, count);
+        UNSAFE.copyMemory(byteArray, addressOffset + index, dst, BYTE_ARRAY_OFFSET + offset, count);
+
+        return count;
+    }
+
+    /**
+     * Get bytes from the underlying buffer into a supplied DirectBuffer
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param dst    into which the bytes will be copied.
+     * @param offset in the supplied buffer to start the copy
+     * @param length of the supplied buffer to use.
+     * @return count of bytes copied.
+     */
+    public int getBytes(final int index, final DirectBuffer dst, final int offset, final int length)
+    {
+        int count = Math.min(length, capacity - index);
+        count = Math.min(count, dst.capacity - offset);
+        UNSAFE.copyMemory(byteArray, addressOffset + index, dst.byteArray, dst.addressOffset + offset, count);
 
         return count;
     }
@@ -389,7 +486,7 @@ public class DirectBuffer
             dstBaseOffset = ((sun.nio.ch.DirectBuffer)dstBuffer).address();
         }
 
-        UNSAFE.copyMemory(byteArray, baseOffset + index, dstByteArray, dstBaseOffset + dstOffset, count);
+        UNSAFE.copyMemory(byteArray, addressOffset + index, dstByteArray, dstBaseOffset + dstOffset, count);
         dstBuffer.position(dstBuffer.position() + count);
 
         return count;
@@ -419,9 +516,23 @@ public class DirectBuffer
     public int putBytes(final int index, final byte[] src, final int offset, final int length)
     {
         final int count = Math.min(length, capacity - index);
-        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + offset, byteArray, baseOffset + index,  count);
+        UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + offset, byteArray, addressOffset + index,  count);
 
         return count;
+    }
+
+    /**
+     * Put bytes from a DirectBuffer into the underlying buffer.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param src    to be copied to the underlying buffer.
+     * @param offset in the supplied buffer to begin the copy.
+     * @param length of the supplied buffer to copy.
+     * @return count of bytes copied.
+     */
+    public int putBytes(final int index, final DirectBuffer src, final int offset, final int length)
+    {
+        return src.getBytes(offset, this, index, length);
     }
 
     /**
@@ -430,6 +541,7 @@ public class DirectBuffer
      *
      * @param index     in the underlying buffer to start from.
      * @param srcBuffer to copy the bytes from.
+     * @param length    of the source buffer in bytes to copy
      * @return count of bytes copied.
      */
     public int putBytes(final int index, final ByteBuffer srcBuffer, final int length)
@@ -451,7 +563,7 @@ public class DirectBuffer
             srcBaseOffset = ((sun.nio.ch.DirectBuffer)srcBuffer).address();
         }
 
-        UNSAFE.copyMemory(srcByteArray, srcBaseOffset + srcOffset, byteArray, baseOffset + index,  count);
+        UNSAFE.copyMemory(srcByteArray, srcBaseOffset + srcOffset, byteArray, addressOffset + index,  count);
         srcBuffer.position(srcBuffer.position() + count);
 
         return count;

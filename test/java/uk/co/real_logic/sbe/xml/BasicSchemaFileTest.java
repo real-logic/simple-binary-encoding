@@ -31,28 +31,28 @@ public class BasicSchemaFileTest
     public void shouldHandleBasicFile()
         throws Exception
     {
-        parse(TestUtil.getLocalResource("BasicSchemaFileTest.xml"));
+        parse(TestUtil.getLocalResource("basic-schema.xml"));
     }
 
     @Test
     public void shouldHandleBasicFileWithGroup()
         throws Exception
     {
-        parse(TestUtil.getLocalResource("BasicGroupSchemaFileTest.xml"));
+        parse(TestUtil.getLocalResource("basic-group-schema.xml"));
     }
 
     @Test
     public void shouldHandleBasicFileWithVariableLengthData()
         throws Exception
     {
-        parse(TestUtil.getLocalResource("BasicVariableLengthSchemaFileTest.xml"));
+        parse(TestUtil.getLocalResource("basic-variable-length-schema.xml"));
     }
 
     @Test
     public void shouldHandleBasicAllTypes()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("BasicTypesSchemaFileTest.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("basic-types-schema.xml"));
         List<Field> fields = schema.getMessage(1).fields();
         assertThat(fields.get(0).name(), is("header"));
         assertThat(fields.get(1).name(), is("EDTField"));
