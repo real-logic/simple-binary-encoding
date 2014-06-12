@@ -435,7 +435,8 @@ public class DirectBuffer
      */
     public int getBytes(final int index, final byte[] dst, final int offset, final int length)
     {
-        final int count = Math.min(length, capacity - index);
+        int count = Math.min(length, capacity - index);
+        count = Math.min(count, dst.length - offset);
         UNSAFE.copyMemory(byteArray, addressOffset + index, dst, BYTE_ARRAY_OFFSET + offset, count);
 
         return count;
@@ -515,7 +516,8 @@ public class DirectBuffer
      */
     public int putBytes(final int index, final byte[] src, final int offset, final int length)
     {
-        final int count = Math.min(length, capacity - index);
+        int count = Math.min(length, capacity - index);
+        count = Math.min(count, src.length - offset);
         UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + offset, byteArray, addressOffset + index,  count);
 
         return count;
