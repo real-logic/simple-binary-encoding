@@ -45,13 +45,14 @@ public class DirectBufferTest
     private static final double DOUBLE_VALUE = 7.0d;
 
     @Rule
-    public ExpectedException exceptionRule = ExpectedException.none(); 
+    public final ExpectedException exceptionRule = ExpectedException.none();
 
     @DataPoint
     public static final ByteOrder NATIVE_BYTE_ORDER = ByteOrder.nativeOrder();
 
     @DataPoint
-    public static final ByteOrder NONNATIVE_BYTE_ORDER = (NATIVE_BYTE_ORDER == ByteOrder.BIG_ENDIAN) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    public static final ByteOrder NONNATIVE_BYTE_ORDER =
+        (NATIVE_BYTE_ORDER == ByteOrder.BIG_ENDIAN) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
 
     @DataPoint
     public static final DirectBuffer BYTE_ARRAY_BACKED = new DirectBuffer(new byte[BUFFER_CAPACITY]);
@@ -81,7 +82,7 @@ public class DirectBufferTest
     }
 
     @Theory
-    public void shouldNotThrowExceptionForLimitAboveCapacity(final DirectBuffer buffer)
+    public void shouldNotThrowExceptionForLimitAtCapacity(final DirectBuffer buffer)
     {
         final int position = BUFFER_CAPACITY;
 
@@ -394,7 +395,7 @@ public class DirectBufferTest
     }
 
     @Theory
-    public void shouldGetByteArrayFromBufferNPE(final DirectBuffer buffer)
+    public void shouldGetByteArrayFromBufferNpe(final DirectBuffer buffer)
     {
         exceptionRule.expect(NullPointerException.class);
         final byte[] testBytes = null;
@@ -403,7 +404,7 @@ public class DirectBufferTest
     }
 
     @Theory
-    public void shouldPutByteArrayToBufferNPE(final DirectBuffer buffer)
+    public void shouldPutByteArrayToBufferNpe(final DirectBuffer buffer)
     {
         exceptionRule.expect(NullPointerException.class);
         final byte[] testBytes = null;
@@ -412,39 +413,39 @@ public class DirectBufferTest
     }
 
     @Theory
-    public void shouldGetBytesFromBufferNPE(final DirectBuffer buffer)
+    public void shouldGetBytesFromBufferNpe(final DirectBuffer buffer)
     {
         exceptionRule.expect(NullPointerException.class);
-        final ByteBuffer testBytes = null;
+        final ByteBuffer testBuffer = null;
 
-        buffer.getBytes(INDEX, testBytes, 10);
+        buffer.getBytes(INDEX, testBuffer, 10);
     }
 
     @Theory
-    public void shouldPutBytesToBufferNPE(final DirectBuffer buffer)
+    public void shouldPutBytesToBufferNpe(final DirectBuffer buffer)
     {
         exceptionRule.expect(NullPointerException.class);
-        final ByteBuffer testBytes = null;
+        final ByteBuffer testBuffer = null;
 
-        buffer.putBytes(INDEX, testBytes, 10);
+        buffer.putBytes(INDEX, testBuffer, 10);
     }
 
     @Theory
-    public void shouldGetDirectBytesFromBufferNPE(final DirectBuffer buffer)
+    public void shouldGetDirectBytesFromBufferNpe(final DirectBuffer buffer)
     {
         exceptionRule.expect(NullPointerException.class);
-        final DirectBuffer testBytes = null;
+        final DirectBuffer testBuffer = null;
 
-        buffer.getBytes(INDEX, testBytes, 0, 10);
+        buffer.getBytes(INDEX, testBuffer, 0, 10);
     }
 
     @Theory
-    public void shouldPutDirectBytesToBufferNPE(final DirectBuffer buffer)
+    public void shouldPutDirectBytesToBufferNpe(final DirectBuffer buffer)
     {
         exceptionRule.expect(NullPointerException.class);
-        final DirectBuffer testBytes = null;
+        final DirectBuffer testBuffer = null;
 
-        buffer.putBytes(INDEX, testBytes, 0, 10);
+        buffer.putBytes(INDEX, testBuffer, 0, 10);
     }
 
     @Theory
@@ -452,9 +453,9 @@ public class DirectBufferTest
     {
         final byte[] testBytes = new byte[10];
 
-        int result = buffer.getBytes(INDEX, testBytes, 0, 21);
+        final int result = buffer.getBytes(INDEX, testBytes, 0, 21);
 
-        assertThat(result, is(10));
+        assertThat(Integer.valueOf(result), is(Integer.valueOf(10)));
     }
 
     @Theory
@@ -462,9 +463,9 @@ public class DirectBufferTest
     {
         final byte[] testBytes = new byte[11];
 
-        int result = buffer.putBytes(INDEX, testBytes, 0, 20);
+        final int result = buffer.putBytes(INDEX, testBytes, 0, 20);
 
-        assertThat(result, is(11));
+        assertThat(Integer.valueOf(result), is(Integer.valueOf(11)));
     }
 
     @Theory
@@ -472,9 +473,9 @@ public class DirectBufferTest
     {
         final ByteBuffer testBytes = ByteBuffer.allocate(12);
 
-        int result = buffer.getBytes(INDEX, testBytes, 20);
+        final int result = buffer.getBytes(INDEX, testBytes, 20);
 
-        assertThat(result, is(12));
+        assertThat(Integer.valueOf(result), is(Integer.valueOf(12)));
     }
 
     @Theory
@@ -482,9 +483,9 @@ public class DirectBufferTest
     {
         final ByteBuffer testBytes = ByteBuffer.allocate(13);
 
-        int result = buffer.putBytes(INDEX, testBytes, 20);
+        final int result = buffer.putBytes(INDEX, testBytes, 20);
 
-        assertThat(result, is(13));
+        assertThat(Integer.valueOf(result), is(Integer.valueOf(13)));
     }
 
     @Theory
@@ -492,9 +493,9 @@ public class DirectBufferTest
     {
         final DirectBuffer testBytes = new DirectBuffer(new byte[14]);
 
-        int result = buffer.getBytes(INDEX, testBytes, 0, 20);
+        final int result = buffer.getBytes(INDEX, testBytes, 0, 20);
 
-        assertThat(result, is(14));
+        assertThat(Integer.valueOf(result), is(Integer.valueOf(14)));
     }
 
     @Theory
@@ -502,8 +503,8 @@ public class DirectBufferTest
     {
         final DirectBuffer testBytes = new DirectBuffer(new byte[15]);
 
-        int result = buffer.putBytes(INDEX, testBytes, 0, 20);
+        final int result = buffer.putBytes(INDEX, testBytes, 0, 20);
 
-        assertThat(result, is(15));
+        assertThat(Integer.valueOf(result), is(Integer.valueOf(15)));
     }
 }
