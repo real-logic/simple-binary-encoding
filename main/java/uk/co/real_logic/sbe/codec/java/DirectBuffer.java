@@ -435,8 +435,27 @@ public class DirectBuffer
      */
     public int getBytes(final int index, final byte[] dst, final int offset, final int length)
     {
-        final int count = Math.min(length, capacity - index);
+        int count = Math.min(length, capacity - index);
+        count = Math.min(count, dst.length - offset);
         UNSAFE.copyMemory(byteArray, addressOffset + index, dst, BYTE_ARRAY_OFFSET + offset, count);
+
+        return count;
+    }
+
+    /**
+     * Get bytes from the underlying buffer into a supplied DirectBuffer
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param dst    into which the bytes will be copied.
+     * @param offset in the supplied buffer to start the copy
+     * @param length of the supplied buffer to use.
+     * @return count of bytes copied.
+     */
+    public int getBytes(final int index, final DirectBuffer dst, final int offset, final int length)
+    {
+        int count = Math.min(length, capacity - index);
+        count = Math.min(count, dst.capacity - offset);
+        UNSAFE.copyMemory(byteArray, addressOffset + index, dst.byteArray, dst.addressOffset + offset, count);
 
         return count;
     }
@@ -497,10 +516,25 @@ public class DirectBuffer
      */
     public int putBytes(final int index, final byte[] src, final int offset, final int length)
     {
-        final int count = Math.min(length, capacity - index);
+        int count = Math.min(length, capacity - index);
+        count = Math.min(count, src.length - offset);
         UNSAFE.copyMemory(src, BYTE_ARRAY_OFFSET + offset, byteArray, addressOffset + index,  count);
 
         return count;
+    }
+
+    /**
+     * Put bytes from a DirectBuffer into the underlying buffer.
+     *
+     * @param index  in the underlying buffer to start from.
+     * @param src    to be copied to the underlying buffer.
+     * @param offset in the supplied buffer to begin the copy.
+     * @param length of the supplied buffer to copy.
+     * @return count of bytes copied.
+     */
+    public int putBytes(final int index, final DirectBuffer src, final int offset, final int length)
+    {
+        return src.getBytes(offset, this, index, length);
     }
 
     /**
