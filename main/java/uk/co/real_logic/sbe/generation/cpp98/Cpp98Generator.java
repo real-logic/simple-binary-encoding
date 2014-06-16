@@ -1151,7 +1151,9 @@ public class Cpp98Generator implements CodeGenerator
             "    int position_;\n" +
             "    int actingBlockLength_;\n" +
             "    int actingVersion_;\n\n" +
+            "    %10$s(const %10$s&) {}\n\n" +
             "public:\n\n" +
+            "    %10$s(void) : buffer_(NULL), bufferLength_(0), offset_(0) {}\n\n" +
             "    static %1$s sbeBlockLength(void)\n" +
             "    {\n" +
             "        return %2$s;\n" +
@@ -1187,7 +1189,7 @@ public class Cpp98Generator implements CodeGenerator
             "        positionPtr_ = &position_;\n" +
             "        return *this;\n" +
             "    }\n\n" +
-            "    %10$s &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion," +
+            "    %10$s &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion,\n" +
             "                         const int bufferLength)\n" +
             "    {\n" +
             "        buffer_ = buffer;\n" +
