@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2-RC2-SNAPSHOT ()
+
+*
+
 ## 1.0.1-RC2 (2014-06-16)
 
 * Java codecs will not emit imports for enums (#166)
