@@ -465,7 +465,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace()));
+            out.append(generateEnumFileHeader(ir.applicableNamespace()));
             out.append(generateEnumDeclaration(enumName));
 
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1)));
@@ -640,6 +640,15 @@ public class JavaGenerator implements CodeGenerator
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
             "package %s;\n\n" +
             "import uk.co.real_logic.sbe.codec.java.*;\n\n",
+            packageName
+        );
+    }
+
+    private CharSequence generateEnumFileHeader(final String packageName)
+    {
+        return String.format(
+            "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
+            "package %s;\n\n\n",
             packageName
         );
     }
