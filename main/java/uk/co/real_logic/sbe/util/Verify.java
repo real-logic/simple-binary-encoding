@@ -45,7 +45,7 @@ public class Verify
      * @throws NullPointerException if map or key is null
      * @throws IllegalStateException if the entry does not exist.
      */
-    public static void present(final Map map, final Object key, final String name)
+    public static void present(final Map<?, ?> map, final Object key, final String name)
     {
         if (null == map.get(key))
         {

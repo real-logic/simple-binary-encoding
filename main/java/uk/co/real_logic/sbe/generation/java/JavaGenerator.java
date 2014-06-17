@@ -648,7 +648,7 @@ public class JavaGenerator implements CodeGenerator
     {
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
-            "package %s;\n\n\n",
+            "package %s;\n\n",
             packageName
         );
     }

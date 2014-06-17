@@ -10,9 +10,12 @@ out
 *.iml
 .project
 .classpath
+.factorypath
+.apt_generated
 .settings
 *.sublime-project
 *.sublime-workspace
 build-local.properties
 deps
 /bin
+
