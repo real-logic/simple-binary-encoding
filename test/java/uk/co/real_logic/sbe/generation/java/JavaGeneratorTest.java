@@ -205,7 +205,7 @@ public class JavaGeneratorTest
 
         final Object msgFlyweight = clazz.newInstance();
         msgFlyweight.getClass().getDeclaredMethod("wrapForEncode", DirectBuffer.class, int.class)
-                               .invoke(msgFlyweight, mockBuffer, Integer.valueOf(0));
+                               .invoke(msgFlyweight, buffer, Integer.valueOf(0));
 
         final Integer initialPosition = (Integer)msgFlyweight.getClass().getDeclaredMethod("limit").invoke(msgFlyweight);
 

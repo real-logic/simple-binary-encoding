@@ -43,7 +43,7 @@ public class CompilerUtil
 
         if (!task.call().booleanValue())
         {
-            for (final Diagnostic diagnostic : diagnostics.getDiagnostics())
+            for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics())
             {
                 System.err.println(diagnostic.getCode());
                 System.err.println(diagnostic.getKind());
@@ -81,7 +81,7 @@ public class CompilerUtil
 
         if (!task.call().booleanValue())
         {
-            for (final Diagnostic diagnostic : diagnostics.getDiagnostics())
+            for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics())
             {
                 System.err.println(diagnostic.getCode());
                 System.err.println(diagnostic.getKind());

@@ -1,8 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.codec.java.*;
-
 public enum PrimitiveTypeCodec
 {
     NONE((short)0),
