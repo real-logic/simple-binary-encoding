@@ -92,7 +92,7 @@ public class OtfExample
         {
             final MessageSchema schema = XmlSchemaParser.parse(in);
             final Ir ir = new IrGenerator().generate(schema);
-            try(IrEncoder irEncoder = new IrEncoder(buffer, ir))
+            try (IrEncoder irEncoder = new IrEncoder(buffer, ir))
             {
                 irEncoder.encode();
             }
@@ -120,7 +120,7 @@ public class OtfExample
     private static Ir decodeIr(final ByteBuffer buffer)
         throws IOException
     {
-        try(final IrDecoder irDecoder = new IrDecoder(buffer))
+        try (final IrDecoder irDecoder = new IrDecoder(buffer))
         {
             return irDecoder.decode();
         }

@@ -56,7 +56,8 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateFileHeader(ir.applicableNamespace()));
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
             out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
-            out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE,
+                                                          tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");
         }
@@ -372,72 +373,74 @@ public class JavaGenerator implements CodeGenerator
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
             final Token token = tokens.get(i);
-            if (token.signal() == Signal.BEGIN_VAR_DATA)
+            if (token.signal() != Signal.BEGIN_VAR_DATA)
             {
-                generateFieldIdMethod(sb, token, BASE_INDENT);
-
-                final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
-                generateCharacterEncodingMethod(sb, token.name(), characterEncoding, BASE_INDENT);
-                generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
-
-                final String propertyName = toUpperFirstChar(token.name());
-                final Token lengthToken = tokens.get(i + 2);
-                final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
-                final Encoding lengthEncoding = lengthToken.encoding();
-                final String lengthJavaType = javaTypeName(lengthEncoding.primitiveType());
-                final String lengthTypePrefix = lengthEncoding.primitiveType().primitiveName();
-                final ByteOrder byteOrder = lengthEncoding.byteOrder();
-                final String byteOrderStr = lengthEncoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
-
-                sb.append(String.format(
-                    "\n" +
-                    "    public static int %sHeaderSize()\n" +
-                    "    {\n" +
-                    "        return %d;\n" +
-                    "    }\n",
-                    toLowerFirstChar(propertyName),
-                    sizeOfLengthField
-                ));
-
-                sb.append(String.format(
-                    "\n" +
-                    "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
-                    "    {\n" +
-                    "%s" +
-                    "        final int sizeOfLengthField = %d;\n" +
-                    "        final int limit = limit();\n" +
-                    "        buffer.checkLimit(limit + sizeOfLengthField);\n" +
-                    "        final int dataLength = CodecUtil.%sGet(buffer, limit%s);\n" +
-                    "        final int bytesCopied = Math.min(length, dataLength);\n" +
-                    "        limit(limit + sizeOfLengthField + dataLength);\n" +
-                    "        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
-                    "        return bytesCopied;\n" +
-                    "    }\n",
-                    propertyName,
-                    generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
-                    sizeOfLengthField,
-                    lengthTypePrefix,
-                    byteOrderStr
-                ));
-
-                sb.append(String.format(
-                    "\n" +
-                    "    public int put%s(final byte[] src, final int srcOffset, final int length)\n" +
-                    "    {\n" +
-                    "        final int sizeOfLengthField = %d;\n" +
-                    "        final int limit = limit();\n" +
-                    "        limit(limit + sizeOfLengthField + length);\n" +
-                    "        CodecUtil.%sPut(buffer, limit, (%s)length%s);\n" +
-                    "        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);\n\n" +
-                    "        return length;\n" +
-                    "    }\n",
-                    propertyName,
-                    sizeOfLengthField,
-                    lengthTypePrefix,
-                    lengthJavaType,
-                    byteOrderStr
-                ));
+                continue;
             }
+
+            generateFieldIdMethod(sb, token, BASE_INDENT);
+
+            final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
+            generateCharacterEncodingMethod(sb, token.name(), characterEncoding, BASE_INDENT);
+            generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
+
+            final String propertyName = toUpperFirstChar(token.name());
+            final Token lengthToken = tokens.get(i + 2);
+            final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
+            final Encoding lengthEncoding = lengthToken.encoding();
+            final String lengthJavaType = javaTypeName(lengthEncoding.primitiveType());
+            final String lengthTypePrefix = lengthEncoding.primitiveType().primitiveName();
+            final ByteOrder byteOrder = lengthEncoding.byteOrder();
+            final String byteOrderStr = lengthEncoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
+
+            sb.append(String.format(
+                "\n" +
+                "    public static int %sHeaderSize()\n" +
+                "    {\n" +
+                "        return %d;\n" +
+                "    }\n",
+                toLowerFirstChar(propertyName),
+                sizeOfLengthField
+            ));
+
+            sb.append(String.format(
+                "\n" +
+                "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
+                "    {\n" +
+                "%s" +
+                "        final int sizeOfLengthField = %d;\n" +
+                "        final int limit = limit();\n" +
+                "        buffer.checkLimit(limit + sizeOfLengthField);\n" +
+                "        final int dataLength = CodecUtil.%sGet(buffer, limit%s);\n" +
+                "        final int bytesCopied = Math.min(length, dataLength);\n" +
+                "        limit(limit + sizeOfLengthField + dataLength);\n" +
+                "        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
+                "        return bytesCopied;\n" +
+                "    }\n",
+                propertyName,
+                generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
+                sizeOfLengthField,
+                lengthTypePrefix,
+                byteOrderStr
+            ));
+
+            sb.append(String.format(
+                "\n" +
+                "    public int put%s(final byte[] src, final int srcOffset, final int length)\n" +
+                "    {\n" +
+                "        final int sizeOfLengthField = %d;\n" +
+                "        final int limit = limit();\n" +
+                "        limit(limit + sizeOfLengthField + length);\n" +
+                "        CodecUtil.%sPut(buffer, limit, (%s)length%s);\n" +
+                "        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);\n\n" +
+                "        return length;\n" +
+                "    }\n",
+                propertyName,
+                sizeOfLengthField,
+                lengthTypePrefix,
+                lengthJavaType,
+                byteOrderStr
+            ));
         }
 
         return sb;
@@ -497,18 +500,19 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        final String typePrefix = token.encoding().primitiveType().primitiveName();
-        final String literalValue = generateLiteral(token.encoding().primitiveType(), "0");
-        final ByteOrder byteOrder = token.encoding().byteOrder();
-        final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
+        final Encoding encoding = token.encoding();
+        final String typePrefix = encoding.primitiveType().primitiveName();
+        final String literalValue = generateLiteral(encoding.primitiveType(), "0");
+        final ByteOrder byteOrder = encoding.byteOrder();
+        final String byteOrderStr = encoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
         sb.append(String.format(
             "\n" +
-                "    public %s clear()\n" +
-                "    {\n" +
-                "        CodecUtil.%sPut(buffer, offset, %s%s);\n" +
-                "        return this;\n" +
-                "    }\n",
+            "    public %s clear()\n" +
+            "    {\n" +
+            "        CodecUtil.%sPut(buffer, offset, %s%s);\n" +
+            "        return this;\n" +
+            "    }\n",
             bitSetClassName,
             typePrefix,
             literalValue,
@@ -527,10 +531,11 @@ public class JavaGenerator implements CodeGenerator
             if (token.signal() == Signal.CHOICE)
             {
                 final String choiceName = token.name();
-                final String typePrefix = token.encoding().primitiveType().primitiveName();
-                final String choiceBitPosition = token.encoding().constValue().toString();
-                final ByteOrder byteOrder = token.encoding().byteOrder();
-                final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
+                final Encoding encoding = token.encoding();
+                final String typePrefix = encoding.primitiveType().primitiveName();
+                final String choiceBitPosition = encoding.constValue().toString();
+                final ByteOrder byteOrder = encoding.byteOrder();
+                final String byteOrderStr = encoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
                 sb.append(String.format(
                     "\n" +
@@ -565,12 +570,14 @@ public class JavaGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            final CharSequence constVal = generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString());
+            final Encoding encoding = token.encoding();
+            final CharSequence constVal = generateLiteral(encoding.primitiveType(), encoding.constValue().toString());
             sb.append("    ").append(token.name()).append('(').append(constVal).append("),\n");
         }
 
         final Token token = tokens.get(0);
-        final CharSequence nullVal = generateLiteral(token.encoding().primitiveType(), token.encoding().applicableNullValue().toString());
+        final Encoding encoding = token.encoding();
+        final CharSequence nullVal = generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString());
         sb.append("    ").append("NULL_VAL").append('(').append(nullVal).append(')');
 
         sb.append(";\n\n");
@@ -742,7 +749,9 @@ public class JavaGenerator implements CodeGenerator
         return "";
     }
 
-    private CharSequence generatePrimitiveFieldMetaData(final String propertyName, final Token token, final String indent)
+    private CharSequence generatePrimitiveFieldMetaData(final String propertyName,
+                                                        final Token token,
+                                                        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -790,11 +799,12 @@ public class JavaGenerator implements CodeGenerator
                                                      final Token token,
                                                      final String indent)
     {
-        final String javaTypeName = javaTypeName(token.encoding().primitiveType());
-        final String typePrefix = token.encoding().primitiveType().primitiveName();
+        final Encoding encoding = token.encoding();
+        final String javaTypeName = javaTypeName(encoding.primitiveType());
+        final String typePrefix = encoding.primitiveType().primitiveName();
         final Integer offset = Integer.valueOf(token.offset());
-        final ByteOrder byteOrder = token.encoding().byteOrder();
-        final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
+        final ByteOrder byteOrder = encoding.byteOrder();
+        final String byteOrderStr = encoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
         final StringBuilder sb = new StringBuilder();
 
@@ -807,7 +817,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n\n",
             javaTypeName,
             propertyName,
-            generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
+            generateFieldNotPresentCondition(token.version(), encoding, indent),
             typePrefix,
             offset,
             byteOrderStr
@@ -830,7 +840,9 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFieldNotPresentCondition(final int sinceVersion, final Encoding encoding, final String indent)
+    private CharSequence generateFieldNotPresentCondition(final int sinceVersion,
+                                                          final Encoding encoding,
+                                                          final String indent)
     {
         if (0 == sinceVersion)
         {
@@ -884,13 +896,14 @@ public class JavaGenerator implements CodeGenerator
                                                final Token token,
                                                final String indent)
     {
-        final String javaTypeName = javaTypeName(token.encoding().primitiveType());
-        final String typePrefix = token.encoding().primitiveType().primitiveName();
+        final Encoding encoding = token.encoding();
+        final String javaTypeName = javaTypeName(encoding.primitiveType());
+        final String typePrefix = encoding.primitiveType().primitiveName();
         final Integer offset = Integer.valueOf(token.offset());
-        final ByteOrder byteOrder = token.encoding().byteOrder();
-        final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
+        final ByteOrder byteOrder = encoding.byteOrder();
+        final String byteOrderStr = encoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
         final Integer fieldLength = Integer.valueOf(token.arrayLength());
-        final Integer typeSize = Integer.valueOf(token.encoding().primitiveType().size());
+        final Integer typeSize = Integer.valueOf(encoding.primitiveType().size());
 
         final StringBuilder sb = new StringBuilder();
 
@@ -917,7 +930,7 @@ public class JavaGenerator implements CodeGenerator
             javaTypeName,
             propertyName,
             fieldLength,
-            generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
+            generateFieldNotPresentCondition(token.version(), encoding, indent),
             typePrefix,
             offset,
             typeSize,
@@ -942,9 +955,9 @@ public class JavaGenerator implements CodeGenerator
             byteOrderStr
         ));
 
-        if (token.encoding().primitiveType() == PrimitiveType.CHAR)
+        if (encoding.primitiveType() == PrimitiveType.CHAR)
         {
-            generateCharacterEncodingMethod(sb, propertyName, token.encoding().characterEncoding(), indent);
+            generateCharacterEncodingMethod(sb, propertyName, encoding.characterEncoding(), indent);
 
             sb.append(String.format(
                 "\n" +
@@ -986,7 +999,10 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private void generateCharacterEncodingMethod(final StringBuilder sb, final String propertyName, final String encoding, final String indent)
+    private void generateCharacterEncodingMethod(final StringBuilder sb,
+                                                 final String propertyName,
+                                                 final String encoding,
+                                                 final String indent)
     {
         sb.append(String.format(
             "\n" +
@@ -1001,25 +1017,26 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateConstPropertyMethods(final String propertyName, final Token token, final String indent)
     {
-        if (token.encoding().primitiveType() != PrimitiveType.CHAR)
+        final Encoding encoding = token.encoding();
+        if (encoding.primitiveType() != PrimitiveType.CHAR)
         {
             return String.format(
                 "\n" +
-                    indent + "    public %s %s()\n" +
-                    indent + "    {\n" +
-                    indent + "        return %s;\n" +
-                    indent + "    }\n",
-                javaTypeName(token.encoding().primitiveType()),
+                indent + "    public %s %s()\n" +
+                indent + "    {\n" +
+                indent + "        return %s;\n" +
+                indent + "    }\n",
+                javaTypeName(encoding.primitiveType()),
                 propertyName,
-                generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString())
+                generateLiteral(encoding.primitiveType(), encoding.constValue().toString())
             );
         }
 
         final StringBuilder sb = new StringBuilder();
 
-        final String javaTypeName = javaTypeName(token.encoding().primitiveType());
-        final byte[] constantValue = token.encoding().constValue().byteArrayValue(token.encoding().primitiveType());
-        final CharSequence values = generateByteLiteralList(token.encoding().constValue().byteArrayValue(token.encoding().primitiveType()));
+        final String javaTypeName = javaTypeName(encoding.primitiveType());
+        final byte[] constantValue = encoding.constValue().byteArrayValue(encoding.primitiveType());
+        final CharSequence values = generateByteLiteralList(encoding.constValue().byteArrayValue(encoding.primitiveType()));
 
         sb.append(String.format(
             "\n" +
@@ -1273,10 +1290,11 @@ public class JavaGenerator implements CodeGenerator
                                               final String indent)
     {
         final String enumName = token.name();
-        final String typePrefix = token.encoding().primitiveType().primitiveName();
+        final Encoding encoding = token.encoding();
+        final String typePrefix = encoding.primitiveType().primitiveName();
         final Integer offset = Integer.valueOf(token.offset());
-        final ByteOrder byteOrder = token.encoding().byteOrder();
-        final String byteOrderStr = token.encoding().primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
+        final ByteOrder byteOrder = encoding.byteOrder();
+        final String byteOrderStr = encoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
         final StringBuilder sb = new StringBuilder();
 
