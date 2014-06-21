@@ -1,1 +1,4 @@
 protobuf.home=/home/martin/opt/protobuf
+android.sdk.dir=/home/martin/opt/android-sdk
+android.target=android-19
+android.build.tools.version=20.0.0

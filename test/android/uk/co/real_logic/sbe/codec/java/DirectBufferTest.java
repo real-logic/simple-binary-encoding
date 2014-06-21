@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
@@ -34,7 +35,6 @@ import java.nio.channels.FileChannel;
 import static java.lang.Integer.valueOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static uk.co.real_logic.sbe.codec.java.BitUtil.SIZE_OF_BYTE;
 
 @RunWith(Theories.class)
 public class DirectBufferTest
@@ -75,11 +75,11 @@ public class DirectBufferTest
     @DataPoint
     public static final DirectBuffer MEMORY_MAPPED_BUFFER = new DirectBuffer(createMemoryMappedBuffer());
 
-    private static long memoryBlockAddress = BitUtil.getUnsafe().allocateMemory(BUFFER_CAPACITY);
+    // private static long memoryBlockAddress = BitUtil.getUnsafe().allocateMemory(BUFFER_CAPACITY);
 
-    @DataPoint
-    public static final DirectBuffer OFF_HEAP_BUFFER =
-        new DirectBuffer(memoryBlockAddress, BUFFER_CAPACITY);
+    // @DataPoint //not valid for android
+    // public static final DirectBuffer OFF_HEAP_BUFFER =
+    //     new DirectBuffer(memoryBlockAddress, BUFFER_CAPACITY);
 
     @Theory
     public void shouldThrowExceptionForLimitAboveCapacity(final DirectBuffer buffer)
@@ -227,7 +227,7 @@ public class DirectBufferTest
         for (final byte v : testArray)
         {
             buffer.putByte(i, v);
-            i += SIZE_OF_BYTE;
+            i += Byte.SIZE / 8;
         }
 
         final byte[] result = new byte[testArray.length];
@@ -545,7 +545,9 @@ public class DirectBufferTest
         {
             //if we do not unmap the buffer, the temporary file is not deleted on exit
             //forcibly free the buffer
-            ((sun.nio.ch.DirectBuffer) buffer).cleaner().clean();
+            Method cleanMethod = buffer.getClass().getMethod("free");
+            cleanMethod.setAccessible(true);
+            cleanMethod.invoke(buffer);
 
             memoryMappedFile.close();
             tempFile.delete();
@@ -554,8 +556,5 @@ public class DirectBufferTest
         {
             e.printStackTrace();
         }
-
-        BitUtil.getUnsafe().freeMemory(memoryBlockAddress);
-        memoryBlockAddress = 0;
     }
 }
