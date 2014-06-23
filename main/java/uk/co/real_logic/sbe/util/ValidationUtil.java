@@ -15,7 +15,6 @@
  */
 package uk.co.real_logic.sbe.util;
 
-import javax.lang.model.SourceVersion;
 
 /** Various validation utilities used across parser, IR, and generator */
 public class ValidationUtil
@@ -164,11 +163,108 @@ public class ValidationUtil
     /**
      * Check string for validity of usage as a Java identifier. Avoiding keywords.
      *
+     * http://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.9
+     *
+     * @see javax.lang.model.SourceVersion#isName(CharSequence)
+     *
      * @param string to check
      * @return true for validity as a Java name. false if not.
      */
     public static boolean isSbeJavaName(final String string)
     {
-        return SourceVersion.isName(string);
+        String id = string.toString();
+
+        for(String token : id.split("\\.", -1))
+        {
+            if (possibleJavaKeyword(token))
+            {
+                switch (token)
+                {
+                    case "abstract":
+                    case "assert":
+                    case "boolean":
+                    case "break":
+                    case "byte":
+                    case "case":
+                    case "catch":
+                    case "char":
+                    case "class":
+                    case "const":
+                    case "continue":
+                    case "default":
+                    case "do":
+                    case "double":
+                    case "else":
+                    case "enum":
+                    case "extends":
+                    case "final":
+                    case "finally":
+                    case "float":
+                    case "for":
+                    case "goto":
+                    case "if":
+                    case "implements":
+                    case "import":
+                    case "instanceof":
+                    case "int":
+                    case "interface":
+                    case "long":
+                    case "native":
+                    case "new":
+                    case "package":
+                    case "private":
+                    case "protected":
+                    case "public":
+                    case "return":
+                    case "short":
+                    case "static":
+                    case "strictfp":
+                    case "super":
+                    case "switch":
+                    case "synchronized":
+                    case "this":
+                    case "throw":
+                    case "throws":
+                    case "transient":
+                    case "try":
+                    case "void":
+                    case "volatile":
+                    case "while":
+                    // literals
+                    case "null":
+                    case "true":
+                    case "false":
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static boolean possibleJavaKeyword(final String stringVal)
+    {
+        if (stringVal.length() == 0)
+        {
+            return false;
+        }
+
+        for (int i = 0, size = stringVal.length(); i < size; i++)
+        {
+            char c = stringVal.charAt(i);
+
+            if (i == 0 && Character.isJavaIdentifierStart(c))
+            {
+                continue;
+            }
+
+            if (Character.isJavaIdentifierPart(c))
+            {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 }
