@@ -8,6 +8,15 @@ namespace Adaptive.SimpleBinaryEncoding
     /// </summary>
     public sealed unsafe class DirectBuffer : IDisposable
     {
+        /// <summary>
+        /// Delegate invoked if buffer size is too small. 
+        /// </summary>
+        /// <param name="existingBufferSize"></param>
+        /// <param name="requestedBufferSize"></param>
+        /// <returns>New buffer, or null if reallocation is not possible</returns>
+        public delegate byte[] BufferOverflowDelegate(int existingBufferSize, int requestedBufferSize);
+        private readonly BufferOverflowDelegate bufferOverflow;
+
         private byte* _pBuffer;
         private bool _disposed;
         private GCHandle _pinnedGCHandle;
@@ -18,8 +27,18 @@ namespace Adaptive.SimpleBinaryEncoding
         /// Attach a view to a byte[] for providing direct access.
         /// </summary>
         /// <param name="buffer">buffer to which the view is attached.</param>
-        public DirectBuffer(byte[] buffer)
+        public DirectBuffer(byte[] buffer) : this(buffer, null)
         {
+        }
+
+        /// <summary>
+        /// Attach a view to a byte[] for providing direct access
+        /// </summary>
+        /// <param name="buffer">buffer to which the view is attached.</param>
+        /// <param name="bufferOverflow">delegate to allow reallocation of buffer</param>
+        public DirectBuffer(byte[] buffer, BufferOverflowDelegate bufferOverflow)
+        {
+            this.bufferOverflow = bufferOverflow;
             Wrap(buffer);
         }
 
@@ -28,16 +47,35 @@ namespace Adaptive.SimpleBinaryEncoding
         /// </summary>
         /// <param name="pBuffer">Unmanaged byte buffer</param>
         /// <param name="bufferLength">Length of the buffer</param>
-        public DirectBuffer(byte* pBuffer, int bufferLength)
+        public DirectBuffer(byte* pBuffer, int bufferLength) : this(pBuffer, bufferLength, null)
         {
+        }
+
+        /// <summary>
+        /// Attach a view to an unmanaged buffer owned by external code
+        /// </summary>
+        /// <param name="pBuffer">Unmanaged byte buffer</param>
+        /// <param name="bufferLength">Length of the buffer</param>
+        /// <param name="bufferOverflow">delegate to allow reallocation of buffer</param>
+        public DirectBuffer(byte* pBuffer, int bufferLength, BufferOverflowDelegate bufferOverflow)
+        {
+            this.bufferOverflow = bufferOverflow;
             Wrap(pBuffer, bufferLength);
         }
 
         /// <summary>
         /// Creates a DirectBuffer that can later be wrapped
         /// </summary>
-        public DirectBuffer()
+        public DirectBuffer() 
         {
+        }
+
+        /// <summary>
+        /// Creates a DirectBuffer that can later be wrapped
+        /// </summary>
+        public DirectBuffer(BufferOverflowDelegate bufferOverflow)
+        {
+            this.bufferOverflow = bufferOverflow;
         }
 
         /// <summary>
@@ -91,7 +129,16 @@ namespace Adaptive.SimpleBinaryEncoding
         {
             if (limit > _capacity)
             {
-                throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _capacity));
+                if (bufferOverflow == null)
+                    throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _capacity));
+
+                var newBuffer = bufferOverflow(_capacity, limit);
+
+                if (newBuffer == null)
+                    throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _capacity));
+
+                Marshal.Copy((IntPtr)_pBuffer, newBuffer, 0, _capacity);
+                Wrap(newBuffer);
             }
         }
 
