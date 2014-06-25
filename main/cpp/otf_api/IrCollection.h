@@ -262,6 +262,12 @@ protected:
 
         std::cout << " length " << size << std::endl;
 
+        if (header_ != NULL)
+        {
+            delete header_;
+            header_ = NULL;
+        }
+        
         header_ = new Ir(buffer_ + offset, size, -1, -1, -1);
 
         return size;
