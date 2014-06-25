@@ -62,7 +62,7 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         }
         set
         {
-            _buffer.CheckLimit(_limit);
+            _buffer.CheckLimit(value);
             _limit = value;
         }
     }
@@ -82,11 +82,11 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
         return "";
     }
 
-    public const ulong TransactTimeNullValue = 0x8000000000000000UL;
+    public const ulong TransactTimeNullValue = 0xffffffffffffffffUL;
 
     public const ulong TransactTimeMinValue = 0x0UL;
 
-    public const ulong TransactTimeMaxValue = 0x7fffffffffffffffUL;
+    public const ulong TransactTimeMaxValue = 0xfffffffffffffffeUL;
 
     public ulong TransactTime
     {
@@ -197,8 +197,8 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             _parentMessage = parentMessage;
             _buffer = buffer;
             _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);
-            _count = _dimensions.NumInGroup;
             _blockLength = _dimensions.BlockLength;
+            _count = _dimensions.NumInGroup;
             _actingVersion = actingVersion;
             _index = -1;
             _parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
@@ -209,8 +209,8 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             _parentMessage = parentMessage;
             _buffer = buffer;
             _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);
-            _dimensions.NumInGroup = (byte)count;
             _dimensions.BlockLength = (ushort)34;
+            _dimensions.NumInGroup = (byte)count;
             _index = -1;
             _count = count;
             _blockLength = 34;
@@ -253,11 +253,11 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             return "";
         }
 
-        public const ulong TradeIdNullValue = 0x8000000000000000UL;
+        public const ulong TradeIdNullValue = 0xffffffffffffffffUL;
 
         public const ulong TradeIdMinValue = 0x0UL;
 
-        public const ulong TradeIdMaxValue = 0x7fffffffffffffffUL;
+        public const ulong TradeIdMaxValue = 0xfffffffffffffffeUL;
 
         public ulong TradeId
         {
@@ -286,11 +286,11 @@ namespace Adaptive.SimpleBinaryEncoding.PerfTests.Bench.SBE.FIX
             return "";
         }
 
-        public const ulong SecurityIdNullValue = 0x8000000000000000UL;
+        public const ulong SecurityIdNullValue = 0xffffffffffffffffUL;
 
         public const ulong SecurityIdMinValue = 0x0UL;
 
-        public const ulong SecurityIdMaxValue = 0x7fffffffffffffffUL;
+        public const ulong SecurityIdMaxValue = 0xfffffffffffffffeUL;
 
         public ulong SecurityId
         {
