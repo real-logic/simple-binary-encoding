@@ -62,7 +62,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         }
         set
         {
-            _buffer.CheckLimit(_limit);
+            _buffer.CheckLimit(value);
             _limit = value;
         }
     }
@@ -82,11 +82,11 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
         return "";
     }
 
-    public const ulong SerialNumberNullValue = 0x8000000000000000UL;
+    public const ulong SerialNumberNullValue = 0xffffffffffffffffUL;
 
     public const ulong SerialNumberMinValue = 0x0UL;
 
-    public const ulong SerialNumberMaxValue = 0x7fffffffffffffffUL;
+    public const ulong SerialNumberMaxValue = 0xfffffffffffffffeUL;
 
     public ulong SerialNumber
     {
@@ -384,8 +384,8 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _parentMessage = parentMessage;
             _buffer = buffer;
             _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);
-            _count = _dimensions.NumInGroup;
             _blockLength = _dimensions.BlockLength;
+            _count = _dimensions.NumInGroup;
             _actingVersion = actingVersion;
             _index = -1;
             _parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
@@ -396,8 +396,8 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _parentMessage = parentMessage;
             _buffer = buffer;
             _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);
-            _dimensions.NumInGroup = (byte)count;
             _dimensions.BlockLength = (ushort)6;
+            _dimensions.NumInGroup = (byte)count;
             _index = -1;
             _count = count;
             _blockLength = 6;
@@ -529,8 +529,8 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _parentMessage = parentMessage;
             _buffer = buffer;
             _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);
-            _count = _dimensions.NumInGroup;
             _blockLength = _dimensions.BlockLength;
+            _count = _dimensions.NumInGroup;
             _actingVersion = actingVersion;
             _index = -1;
             _parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
@@ -541,8 +541,8 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
             _parentMessage = parentMessage;
             _buffer = buffer;
             _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);
-            _dimensions.NumInGroup = (byte)count;
             _dimensions.BlockLength = (ushort)1;
+            _dimensions.NumInGroup = (byte)count;
             _index = -1;
             _count = count;
             _blockLength = 1;
@@ -640,8 +640,8 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
                 _parentMessage = parentMessage;
                 _buffer = buffer;
                 _dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);
-                _count = _dimensions.NumInGroup;
                 _blockLength = _dimensions.BlockLength;
+                _count = _dimensions.NumInGroup;
                 _actingVersion = actingVersion;
                 _index = -1;
                 _parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;
@@ -652,8 +652,8 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Generated
                 _parentMessage = parentMessage;
                 _buffer = buffer;
                 _dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);
-                _dimensions.NumInGroup = (byte)count;
                 _dimensions.BlockLength = (ushort)6;
+                _dimensions.NumInGroup = (byte)count;
                 _index = -1;
                 _count = count;
                 _blockLength = 6;

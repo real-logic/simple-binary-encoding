@@ -996,7 +996,7 @@ public class CSharpGenerator implements CodeGenerator
             "        }\n" +
             "        set\n" +
             "        {\n" +
-            "            _buffer.CheckLimit(_limit);\n" +
+            "            _buffer.CheckLimit(value);\n" +
             "            _limit = value;\n" +
             "        }\n" +
             "    }\n\n",

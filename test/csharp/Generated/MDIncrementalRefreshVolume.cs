@@ -62,7 +62,7 @@ namespace Adaptive.SimpleBinaryEncoding.Tests.Generated
         }
         set
         {
-            _buffer.CheckLimit(_limit);
+            _buffer.CheckLimit(value);
             _limit = value;
         }
     }
