@@ -23,7 +23,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.SbeTool;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -424,9 +423,8 @@ public class EncodedDataTypeTest
         NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
         Map<String, Type> map = new HashMap<>();
 
-        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "true");
-        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
-        document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, new ErrorHandler(), null);
+        ParserOptions options = ParserOptions.builder().stopOnError(true).suppressOutput(true).build();
+        document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, new ErrorHandler(options), null);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {

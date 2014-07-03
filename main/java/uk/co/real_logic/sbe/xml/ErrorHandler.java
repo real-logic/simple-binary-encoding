@@ -16,8 +16,6 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.SbeTool;
-
 import java.io.PrintStream;
 
 /**
@@ -36,21 +34,24 @@ public class ErrorHandler
      * Construct a new {@link ErrorHandler} that outputs to a provided {@link PrintStream}.
      *
      * @param stream to which output should be sent.
+     * @param options the parsing options.
      */
-    public ErrorHandler(final PrintStream stream)
+    public ErrorHandler(final PrintStream stream, ParserOptions options)
     {
         out = stream;
-        stopOnError = Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_STOP_ON_ERROR));
-        warningsFatal = Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_WARNINGS_FATAL));
-        suppressOutput = Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT));
+        stopOnError = options.stopOnError();
+        warningsFatal = options.warningsFatal();
+        suppressOutput = options.suppressOutput();
     }
 
     /**
      * Default {@link ErrorHandler} that outputs to {@link System#err}.
+     *
+     * @param options the parsing options.
      */
-    public ErrorHandler()
+    public ErrorHandler(ParserOptions options)
     {
-        this(System.err);
+        this(System.err, options);
     }
 
     /**

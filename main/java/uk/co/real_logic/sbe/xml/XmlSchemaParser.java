@@ -20,7 +20,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.util.ValidationUtil;
 
 import javax.xml.XMLConstants;
@@ -61,12 +60,12 @@ public class XmlSchemaParser
      * @return {@link MessageSchema} encoding for the schema.
      * @throws Exception on parsing error.
      */
-    public static MessageSchema parse(final InputStream in)
+    public static MessageSchema parse(final InputStream in, ParserOptions options)
         throws Exception
     {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-        final String xsdFilename = System.getProperty(SbeTool.VALIDATION_XSD);
+        final String xsdFilename = options.xsdFilename();
         if (xsdFilename != null)
         {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -76,7 +75,7 @@ public class XmlSchemaParser
         final Document document = factory.newDocumentBuilder().parse(in);
         final XPath xPath = XPathFactory.newInstance().newXPath();
 
-        final ErrorHandler errorHandler = new ErrorHandler();
+        final ErrorHandler errorHandler = new ErrorHandler(options);
         document.setUserData(ERROR_HANDLER_KEY, errorHandler, null);
 
         final Map<String, Type> typeByNameMap = findTypes(document, xPath);

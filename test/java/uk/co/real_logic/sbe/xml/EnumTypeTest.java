@@ -16,8 +16,6 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.SbeTool;
-
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -231,7 +229,7 @@ public class EnumTypeTest
     public void shouldHandleEncodingTypesWithNamedTypes()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("encoding-types-schema.xml"));
+        MessageSchema schema = parse(TestUtil.getLocalResource("encoding-types-schema.xml"), ParserOptions.DEFAULT);
         List<Field> fields = schema.getMessage(1).fields();
         assertNotNull(fields);
         EnumType type = (EnumType)fields.get(1).type();
@@ -248,10 +246,8 @@ public class EnumTypeTest
         final NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
         final Map<String, Type> map = new HashMap<>();
 
-        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "true");
-        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
-        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "true");
-        document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, new ErrorHandler(), null);
+        ParserOptions options = ParserOptions.builder().stopOnError(true).suppressOutput(true).warningsFatal(true).build();
+        document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, new ErrorHandler(options), null);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {

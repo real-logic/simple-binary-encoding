@@ -17,7 +17,6 @@ package uk.co.real_logic.sbe.generation.java;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.generation.java.util.CompilerUtil;
@@ -25,6 +24,7 @@ import uk.co.real_logic.sbe.generation.java.util.StringWriterOutputManager;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
+import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.lang.reflect.Method;
 import java.nio.ByteOrder;
@@ -48,9 +48,8 @@ public class JavaGeneratorTest
     @Before
     public void setUp() throws Exception
     {
-        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "true");
-
-        final MessageSchema schema = parse(TestUtil.getLocalResource("code-generation-schema.xml"));
+        ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+        final MessageSchema schema = parse(TestUtil.getLocalResource("code-generation-schema.xml"), options);
         final IrGenerator irg = new IrGenerator();
         ir = irg.generate(schema);
 

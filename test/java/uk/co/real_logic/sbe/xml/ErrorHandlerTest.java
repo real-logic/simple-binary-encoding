@@ -16,7 +16,6 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.TestUtil;
 
 import org.junit.Test;
@@ -80,10 +79,8 @@ public class ErrorHandlerTest
             "</types>";
 
         final Map<String, Type> map = new HashMap<>();
-        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
-        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
-        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "false");
-        ErrorHandler handler = new ErrorHandler();
+        ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
+        ErrorHandler handler = new ErrorHandler(options);
 
         parseTestXmlAddToMap(map, "/types/composite", testXmlString, handler);
         parseTestXmlAddToMap(map, "/types/type", testXmlString, handler);
@@ -98,13 +95,11 @@ public class ErrorHandlerTest
     public void shouldExitAfterTypes()
         throws Exception
     {
-        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
-        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
-        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "false");
+        ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
 
         try
         {
-            parse(TestUtil.getLocalResource("error-handler-types-schema.xml"));
+            parse(TestUtil.getLocalResource("error-handler-types-schema.xml"), options);
         }
         catch (final IllegalArgumentException shouldHaveOnly2Errors)
         {
@@ -118,13 +113,11 @@ public class ErrorHandlerTest
     public void shouldExitAfterTypesWhenDupTypesDefined()
         throws Exception
     {
-        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
-        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
-        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "true");
+        ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
         try
         {
-            parse(TestUtil.getLocalResource("error-handler-types-dup-schema.xml"));
+            parse(TestUtil.getLocalResource("error-handler-types-dup-schema.xml"), options);
         }
         catch (final IllegalArgumentException shouldHaveOnly1Warning)
         {
@@ -138,13 +131,11 @@ public class ErrorHandlerTest
     public void shouldExitAfterMessageWhenDupMessageIdsDefined()
         throws Exception
     {
-        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
-        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
-        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "true");
+        ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
         try
         {
-            parse(TestUtil.getLocalResource("error-handler-dup-message-schema.xml"));
+            parse(TestUtil.getLocalResource("error-handler-dup-message-schema.xml"), options);
         }
         catch (final IllegalArgumentException shouldHaveOnly1Error)
         {
@@ -158,13 +149,11 @@ public class ErrorHandlerTest
     public void shouldExitAfterMessage()
         throws Exception
     {
-        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
-        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
-        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "true");
+        ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
         try
         {
-            parse(TestUtil.getLocalResource("error-handler-message-schema.xml"));
+            parse(TestUtil.getLocalResource("error-handler-message-schema.xml"), options);
         }
         catch (final IllegalArgumentException shouldHaveOnly12Errors)
         {
@@ -178,13 +167,11 @@ public class ErrorHandlerTest
     public void shouldExitAfterMessageWhenGroupDimensionsNotComposite()
         throws Exception
     {
-        System.setProperty(SbeTool.VALIDATION_STOP_ON_ERROR, "false");
-        System.setProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT, "true");
-        System.setProperty(SbeTool.VALIDATION_WARNINGS_FATAL, "true");
+        ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
         try
         {
-            parse(TestUtil.getLocalResource("error-handler-group-dimensions-schema.xml"));
+            parse(TestUtil.getLocalResource("error-handler-group-dimensions-schema.xml"), options);
         }
         catch (final IllegalArgumentException shouldHaveOnly1Error)
         {
