@@ -55,8 +55,7 @@ public class MarketDataBenchmark
 
     private static byte[] encode() throws Exception
     {
-        final Fix.MarketDataIncrementalRefreshTrades.Builder marketData
-            = Fix.MarketDataIncrementalRefreshTrades.newBuilder();
+        final Fix.MarketDataIncrementalRefreshTrades.Builder marketData = Fix.MarketDataIncrementalRefreshTrades.newBuilder();
 
         marketData.clear()
                   .setTransactTime(1234L)
@@ -92,8 +91,7 @@ public class MarketDataBenchmark
 
     private static Fix.MarketDataIncrementalRefreshTrades decode(final byte[] buffer) throws Exception
     {
-        final Fix.MarketDataIncrementalRefreshTrades marketData
-            = Fix.MarketDataIncrementalRefreshTrades.parseFrom(buffer);
+        final Fix.MarketDataIncrementalRefreshTrades marketData = Fix.MarketDataIncrementalRefreshTrades.parseFrom(buffer);
 
         marketData.getTransactTime();
         marketData.getEventTimeDelta();

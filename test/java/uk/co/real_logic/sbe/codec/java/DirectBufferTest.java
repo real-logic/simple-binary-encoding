@@ -21,7 +21,6 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import uk.co.real_logic.sbe.util.BitUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -29,7 +28,7 @@ import java.nio.ByteOrder;
 import static java.lang.Integer.valueOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static uk.co.real_logic.sbe.util.BitUtil.SIZE_OF_BYTE;
+import static uk.co.real_logic.sbe.codec.java.BitUtil.SIZE_OF_BYTE;
 
 @RunWith(Theories.class)
 public class DirectBufferTest

@@ -27,7 +27,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.codec.java.JavaUtil.*;
+import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 
 public class JavaGenerator implements CodeGenerator
 {

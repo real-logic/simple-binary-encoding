@@ -29,7 +29,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.codec.java.JavaUtil.toLowerFirstChar;
 import static uk.co.real_logic.sbe.generation.cpp98.Cpp98Util.*;
 
 public class Cpp98Generator implements CodeGenerator

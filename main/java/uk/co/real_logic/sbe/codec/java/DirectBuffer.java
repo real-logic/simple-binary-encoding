@@ -16,7 +16,6 @@
 package uk.co.real_logic.sbe.codec.java;
 
 import sun.misc.Unsafe;
-import uk.co.real_logic.sbe.util.BitUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
