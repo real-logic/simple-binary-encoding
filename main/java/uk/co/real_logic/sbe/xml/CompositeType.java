@@ -192,6 +192,11 @@ public class CompositeType extends Type
             XmlSchemaParser.handleError(node, "composite for message header must have \"templateId\"");
         }
 
+        if (compositeMap.get("schemaId") == null)
+        {
+            XmlSchemaParser.handleError(node, "composite for message header must have \"schemaId\"");
+        }
+
         if (compositeMap.get("version") == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"version\"");

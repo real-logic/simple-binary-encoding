@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<messageSchema package="extension"
-               id="1"
-               version="1"
-               semanticVersion="5.2"
-               description="Code generation unit test support"
-               byteOrder="littleEndian">
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+                   package="extension"
+                   id="1"
+                   version="1"
+                   semanticVersion="5.2"
+                   description="Code generation unit test support"
+                   byteOrder="littleEndian">
     <types>
+        <type name="cupHolderCount_t" primitiveType="uint8" presence="optional"/>
         <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="schemaId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint16"/>
         </composite>
-        <composite name="groupSizeEncoding" description="Repeating group dimensions" >
+        <composite name="groupSizeEncoding" description="Repeating group dimensions">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="numInGroup" primitiveType="uint8"/>
         </composite>
@@ -48,7 +50,7 @@
             <choice name="cruiseControl">2</choice>
         </set>
     </types>
-    <message name="Car" id="1" description="Description of a basic Car">
+    <sbe:message name="Car" id="1" description="Description of a basic Car">
         <field name="serialNumber" id="1" type="uint64"/>
         <field name="modelYear" id="2" type="ModelYear"/>
         <field name="available" id="3" type="BooleanType"/>
@@ -57,7 +59,7 @@
         <field name="vehicleCode" id="6" type="VehicleCode"/>
         <field name="extras" id="7" type="OptionalExtras"/>
         <field name="engine" id="8" type="Engine"/>
-        <field name="cupHolderCount" id="100" type="uint8" presence="optional" sinceVersion="1"/>
+        <field name="cupHolderCount" id="100" type="cupHolderCount_t" sinceVersion="1"/>
         <group name="fuelFigures" id="9" dimensionType="groupSizeEncoding">
             <field name="speed" id="10" type="uint16"/>
             <field name="mpg" id="11" type="float"/>
@@ -69,7 +71,7 @@
                 <field name="seconds" id="16" type="float"/>
             </group>
         </group>
-        <data name="make" id="17" type="varDataEncoding" semanticType="Make"/>
+        <data name="make" id="17" type="varDataEncoding"/>
         <data name="model" id="18" type="varDataEncoding"/>
-    </message>
-</messageSchema>
+    </sbe:message>
+</sbe:messageSchema>
