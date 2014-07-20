@@ -56,10 +56,11 @@ public class XmlSchemaParser
      * Exceptions are passed back up for any problems.
      *
      * @param in stream from which schema is read.
+     * @param options to be applied during parsing.
      * @return {@link MessageSchema} encoding for the schema.
      * @throws Exception on parsing error.
      */
-    public static MessageSchema parse(final InputStream in, ParserOptions options)
+    public static MessageSchema parse(final InputStream in, final ParserOptions options)
         throws Exception
     {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -233,7 +234,7 @@ public class XmlSchemaParser
         if (attrNode == null || "".equals(attrNode.getNodeValue()))
         {
             throw new IllegalStateException("Element '" + elementNode.getNodeName() +
-                                             "' has empty or missing attribute: " + attrName);
+                                            "' has empty or missing attribute: " + attrName);
         }
 
         return attrNode.getNodeValue();

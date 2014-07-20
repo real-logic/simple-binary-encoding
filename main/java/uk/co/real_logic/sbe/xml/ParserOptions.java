@@ -36,7 +36,7 @@ public final class ParserOptions
      * @param suppressOutput specifies whether to suppress the output of errors and warnings.
      * @param xsdFilename the name of the schema file.
      */
-    private ParserOptions(boolean stopOnError, boolean warningsFatal, boolean suppressOutput, String xsdFilename)
+    private ParserOptions(final boolean stopOnError, final boolean warningsFatal, final boolean suppressOutput, final String xsdFilename)
     {
         this.stopOnError = stopOnError;
         this.warningsFatal = warningsFatal;
@@ -117,7 +117,7 @@ public final class ParserOptions
          * @param stopOnError the new value for the parameter.
          * @return this instance
          */
-        public Builder stopOnError(boolean stopOnError)
+        public Builder stopOnError(final boolean stopOnError)
         {
             this.stopOnError = stopOnError;
             return this;
@@ -139,7 +139,7 @@ public final class ParserOptions
          * @param warningsFatal the new value for the parameter.
          * @return this instance
          */
-        public Builder warningsFatal(boolean warningsFatal)
+        public Builder warningsFatal(final boolean warningsFatal)
         {
             this.warningsFatal = warningsFatal;
             return this;
@@ -161,7 +161,7 @@ public final class ParserOptions
          * @param suppressOutput the new value for the parameter.
          * @return this instance
          */
-        public Builder suppressOutput(boolean suppressOutput)
+        public Builder suppressOutput(final boolean suppressOutput)
         {
             this.suppressOutput = suppressOutput;
             return this;
@@ -183,7 +183,7 @@ public final class ParserOptions
          * @param xsdFilename the name of the schema file.
          * @return this instance
          */
-        public Builder xsdFilename(String xsdFilename)
+        public Builder xsdFilename(final String xsdFilename)
         {
             this.xsdFilename = xsdFilename;
             return this;
