@@ -23,6 +23,7 @@ import uk.co.real_logic.sbe.ir.IrDecoder;
 import uk.co.real_logic.sbe.ir.IrEncoder;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
+import uk.co.real_logic.sbe.xml.ParserOptions;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
 import javax.xml.XMLConstants;
@@ -178,9 +179,15 @@ public class SbeTool
      */
     public static MessageSchema parseSchema(final String sbeSchemaFilename) throws Exception
     {
+        ParserOptions.Builder optionsBuilder = ParserOptions.builder();
+        optionsBuilder.xsdFilename(System.getProperty(SbeTool.VALIDATION_XSD));
+        optionsBuilder.stopOnError(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_STOP_ON_ERROR)));
+        optionsBuilder.warningsFatal(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_WARNINGS_FATAL)));
+        optionsBuilder.suppressOutput(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT)));
+        ParserOptions options = optionsBuilder.build();
         try (final BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename)))
         {
-            return XmlSchemaParser.parse(in);
+            return XmlSchemaParser.parse(in, options);
         }
     }
 

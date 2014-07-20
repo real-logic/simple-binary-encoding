@@ -23,6 +23,7 @@ import uk.co.real_logic.sbe.otf.OtfMessageDecoder;
 import uk.co.real_logic.sbe.otf.OtfHeaderDecoder;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
+import uk.co.real_logic.sbe.xml.ParserOptions;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
 import java.io.*;
@@ -90,7 +91,7 @@ public class OtfExample
     {
         try (final InputStream in = new FileInputStream("examples/resources/example-schema.xml"))
         {
-            final MessageSchema schema = XmlSchemaParser.parse(in);
+            final MessageSchema schema = XmlSchemaParser.parse(in, ParserOptions.DEFAULT);
             final Ir ir = new IrGenerator().generate(schema);
             try (IrEncoder irEncoder = new IrEncoder(buffer, ir))
             {

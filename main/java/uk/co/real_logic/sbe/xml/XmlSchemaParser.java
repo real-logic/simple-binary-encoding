@@ -59,7 +59,7 @@ public class XmlSchemaParser
      * @return {@link MessageSchema} encoding for the schema.
      * @throws Exception on parsing error.
      */
-    public static MessageSchema parse(final InputStream in)
+    public static MessageSchema parse(final InputStream in, ParserOptions options)
         throws Exception
     {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -67,7 +67,7 @@ public class XmlSchemaParser
         final Document document = factory.newDocumentBuilder().parse(in);
         final XPath xPath = XPathFactory.newInstance().newXPath();
 
-        final ErrorHandler errorHandler = new ErrorHandler();
+        final ErrorHandler errorHandler = new ErrorHandler(options);
         document.setUserData(ERROR_HANDLER_KEY, errorHandler, null);
 
         final Map<String, Type> typeByNameMap = findTypes(document, xPath);

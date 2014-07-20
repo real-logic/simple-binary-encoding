@@ -182,12 +182,6 @@
                 <batchtest todir="${dir.reports.unit}">
                     <fileset dir="${dir.test.src}">
                         <include name="**/*Test.java"/>
-                        <exclude name="**/JavaGeneratorTest.java"/>
-                    </fileset>
-                </batchtest>
-                <batchtest fork="true" todir="${dir.reports.unit}">
-                    <fileset dir="${dir.test.src}">
-                        <include name="**/JavaGeneratorTest.java"/>
                     </fileset>
                 </batchtest>
             </junit>
@@ -290,7 +284,7 @@
         </java>
     </target>
 
-    <target name="generate:chsarp:sbeir-stubs"
+    <target name="generate:csharp:sbeir-stubs"
             depends="dist"
             description="Generate serialized IR stubs for C#">
         <java classname="uk.co.real_logic.sbe.SbeTool">
@@ -303,7 +297,7 @@
     </target>
 
     <target name="generate:sbeir-stubs"
-            depends="generate:java:sbeir-stubs, generate:cpp98:sbeir-stubs, generate:chsarp:sbeir-stubs"
+            depends="generate:java:sbeir-stubs, generate:cpp98:sbeir-stubs, generate:csharp:sbeir-stubs"
             description="Generate serialized IR code for all languages"/>
 
     <!-- SBE Examples targets -->

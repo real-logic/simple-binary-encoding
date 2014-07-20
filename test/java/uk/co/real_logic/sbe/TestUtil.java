@@ -15,15 +15,21 @@
  */
 package uk.co.real_logic.sbe;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 public class TestUtil
 {
-    public static InputStream getLocalResource(final String name) throws FileNotFoundException
+    public static InputStream getLocalResource(final String name) throws IOException
     {
-        final String pathToResources = System.getProperty("test.resources.dir", "test/resources/");
-        return new FileInputStream(pathToResources + name);
+        final String pathToResources = System.getProperty("test.resources.dir", "");
+        URL url = TestUtil.class.getClassLoader().getResource(pathToResources + name);
+        if (url == null)
+        {
+            throw new FileNotFoundException(pathToResources + name);
+        }
+        return url.openStream();
     }
 }
