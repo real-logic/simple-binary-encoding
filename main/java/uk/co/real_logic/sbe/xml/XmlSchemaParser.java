@@ -19,21 +19,20 @@ package uk.co.real_logic.sbe.xml;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.util.ValidationUtil;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
+
+import static uk.co.real_logic.sbe.PrimitiveType.*;
+import static uk.co.real_logic.sbe.xml.Presence.REQUIRED;
 
 /**
  * Encapsulate the XML Schema parsing for SBE so that other representations may be
@@ -65,13 +64,6 @@ public class XmlSchemaParser
     {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-        final String xsdFilename = options.xsdFilename();
-        if (xsdFilename != null)
-        {
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            factory.setSchema(schemaFactory.newSchema(new File(xsdFilename)));
-        }
-
         final Document document = factory.newDocumentBuilder().parse(in);
         final XPath xPath = XPathFactory.newInstance().newXPath();
 
@@ -91,8 +83,6 @@ public class XmlSchemaParser
 
         errorHandler.checkIfShouldExit();
 
-        // TODO: run additional checks and validation on Messages in Message Map
-
         return messageSchema;
     }
 
@@ -109,17 +99,17 @@ public class XmlSchemaParser
         final Map<String, Type> typeByNameMap = new HashMap<>();
 
         // Add primitiveTypes to typeByNameMap - these could be in a static XInclude that is always brought in...
-        typeByNameMap.put("char", new EncodedDataType("char", Presence.REQUIRED, null, null, PrimitiveType.CHAR, 1, false));
-        typeByNameMap.put("int8", new EncodedDataType("int8", Presence.REQUIRED, null, null, PrimitiveType.INT8, 1, false));
-        typeByNameMap.put("int16", new EncodedDataType("int16", Presence.REQUIRED, null, null, PrimitiveType.INT16, 1, false));
-        typeByNameMap.put("int32", new EncodedDataType("int32", Presence.REQUIRED, null, null, PrimitiveType.INT32, 1, false));
-        typeByNameMap.put("int64", new EncodedDataType("int64", Presence.REQUIRED, null, null, PrimitiveType.INT64, 1, false));
-        typeByNameMap.put("uint8", new EncodedDataType("uint8", Presence.REQUIRED, null, null, PrimitiveType.UINT8, 1, false));
-        typeByNameMap.put("uint16", new EncodedDataType("uint16", Presence.REQUIRED, null, null, PrimitiveType.UINT16, 1, false));
-        typeByNameMap.put("uint32", new EncodedDataType("uint32", Presence.REQUIRED, null, null, PrimitiveType.UINT32, 1, false));
-        typeByNameMap.put("uint64", new EncodedDataType("uint64", Presence.REQUIRED, null, null, PrimitiveType.UINT64, 1, false));
-        typeByNameMap.put("float", new EncodedDataType("float", Presence.REQUIRED, null, null, PrimitiveType.FLOAT, 1, false));
-        typeByNameMap.put("double", new EncodedDataType("double", Presence.REQUIRED, null, null, PrimitiveType.DOUBLE, 1, false));
+        typeByNameMap.put("char", new EncodedDataType("char", REQUIRED, null, null, CHAR, 1, false));
+        typeByNameMap.put("int8", new EncodedDataType("int8", REQUIRED, null, null, INT8, 1, false));
+        typeByNameMap.put("int16", new EncodedDataType("int16", REQUIRED, null, null, INT16, 1, false));
+        typeByNameMap.put("int32", new EncodedDataType("int32", REQUIRED, null, null, INT32, 1, false));
+        typeByNameMap.put("int64", new EncodedDataType("int64", REQUIRED, null, null, INT64, 1, false));
+        typeByNameMap.put("uint8", new EncodedDataType("uint8", REQUIRED, null, null, UINT8, 1, false));
+        typeByNameMap.put("uint16", new EncodedDataType("uint16", REQUIRED, null, null, UINT16, 1, false));
+        typeByNameMap.put("uint32", new EncodedDataType("uint32", REQUIRED, null, null, UINT32, 1, false));
+        typeByNameMap.put("uint64", new EncodedDataType("uint64", REQUIRED, null, null, UINT64, 1, false));
+        typeByNameMap.put("float", new EncodedDataType("float", REQUIRED, null, null, FLOAT, 1, false));
+        typeByNameMap.put("double", new EncodedDataType("double", REQUIRED, null, null, DOUBLE, 1, false));
 
         forEach((NodeList)xPath.compile(TYPE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
                 new NodeFunction()
@@ -341,7 +331,9 @@ public class XmlSchemaParser
         typeByNameMap.put(type.name(), type);
     }
 
-    private static void addMessageWithIdCheck(final Map<Long, Message> messageByIdMap, final Message message, final Node node)
+    private static void addMessageWithIdCheck(final Map<Long, Message> messageByIdMap,
+                                              final Message message,
+                                              final Node node)
     {
         if (messageByIdMap.get(Long.valueOf(message.id())) != null)
         {
@@ -359,18 +351,19 @@ public class XmlSchemaParser
 
         return "at " +
             "<" + parentNode.getNodeName() +
-            (getAttributeValueOrNull(parentNode, "name") == null ? ">" : (" name=\"" + getAttributeValueOrNull(parentNode, "name") + "\"> ")) +
+            (getAttributeValueOrNull(parentNode, "name") == null ?
+                ">" : (" name=\"" + getAttributeValueOrNull(parentNode, "name") + "\"> ")) +
             "<" + node.getNodeName() +
-            (getAttributeValueOrNull(node, "name") == null ? ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
+            (getAttributeValueOrNull(node, "name") == null
+                ? ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
     }
 
-    private interface NodeFunction
+    interface NodeFunction
     {
         void execute(final Node node) throws XPathExpressionException;
     }
 
-    private static void forEach(final NodeList nodeList, final NodeFunction func)
-        throws Exception
+    private static void forEach(final NodeList nodeList, final NodeFunction func) throws Exception
     {
         for (int i = 0, size = nodeList.getLength(); i < size; i++)
         {

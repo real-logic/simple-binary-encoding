@@ -26,6 +26,9 @@ import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.validation.SchemaFactory;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -100,6 +103,12 @@ public class SbeTool
             final Ir ir;
             if (fileName.endsWith(".xml"))
             {
+                final String xsdFilename = System.getProperty(SbeTool.VALIDATION_XSD);
+                if (xsdFilename != null)
+                {
+                    validateAgainstSchema(fileName, xsdFilename);
+                }
+
                 ir = new IrGenerator().generate(parseSchema(fileName), System.getProperty(TARGET_NAMESPACE));
             }
             else if (fileName.endsWith(".sbeir"))
@@ -141,13 +150,34 @@ public class SbeTool
     }
 
     /**
+     * Validate the SBE Schema against the XSD.
+     *
+     * @param sbeSchemaFilename to be validated
+     * @param xsdFilename XSD against which to validate
+     * @throws Exception if an error occurs while validating
+     */
+    public static void validateAgainstSchema(final String sbeSchemaFilename, final String xsdFilename) throws Exception
+    {
+        try (final BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename)))
+        {
+            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+            factory.setSchema(schemaFactory.newSchema(new File(xsdFilename)));
+            factory.setNamespaceAware(true);
+
+            factory.newDocumentBuilder().parse(in);
+        }
+    }
+
+    /**
      * Parse the message schema specification.
      *
-     * @param messageSchemaFileName file containing the SBE specification for the
+     * @param sbeSchemaFilename file containing the SBE specification for the
      * @return the parsed {@link MessageSchema} for the specification found in the file.
      * @throws Exception if an error occurs when parsing the specification.
      */
-    public static MessageSchema parseSchema(final String messageSchemaFileName) throws Exception
+    public static MessageSchema parseSchema(final String sbeSchemaFilename) throws Exception
     {
         ParserOptions.Builder optionsBuilder = ParserOptions.builder();
         optionsBuilder.xsdFilename(System.getProperty(SbeTool.VALIDATION_XSD));
@@ -155,7 +185,7 @@ public class SbeTool
         optionsBuilder.warningsFatal(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_WARNINGS_FATAL)));
         optionsBuilder.suppressOutput(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT)));
         ParserOptions options = optionsBuilder.build();
-        try (final BufferedInputStream in = new BufferedInputStream(new FileInputStream(messageSchemaFileName)))
+        try (final BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename)))
         {
             return XmlSchemaParser.parse(in, options);
         }

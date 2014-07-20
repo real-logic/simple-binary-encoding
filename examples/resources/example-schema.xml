@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<messageSchema package="baseline"
-               id="1"
-               version="0"
-               semanticVersion="5.2"
-               description="Code generation unit test support"
-               byteOrder="littleEndian">
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+                   package="baseline"
+                   id="1"
+                   version="0"
+                   semanticVersion="5.2"
+                   description="Code generation unit test support"
+                   byteOrder="littleEndian">
     <types>
         <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
@@ -48,7 +49,7 @@
             <choice name="cruiseControl">2</choice>
         </set>
     </types>
-    <message name="Car" id="1" description="Description of a basic Car">
+    <sbe:message name="Car" id="1" description="Description of a basic Car">
         <field name="serialNumber" id="1" type="uint64"/>
         <field name="modelYear" id="2" type="ModelYear"/>
         <field name="available" id="3" type="BooleanType"/>
@@ -68,7 +69,7 @@
                 <field name="seconds" id="16" type="float"/>
             </group>
         </group>
-        <data name="make" id="17" type="varDataEncoding" semanticType="Make"/>
+        <data name="make" id="17" type="varDataEncoding"/>
         <data name="model" id="18" type="varDataEncoding"/>
-    </message>
-</messageSchema>
+    </sbe:message>
+</sbe:messageSchema>

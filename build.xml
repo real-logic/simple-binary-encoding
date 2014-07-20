@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Real-Logic-SBE" default="all" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="Real-Logic-SBE"
+         default="all"
+         basedir="."
+         xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
     <property file="build.properties"/>
     <property name="module.name" value="sbe"/>
@@ -259,7 +262,9 @@
         </fileset>
     </path>
 
-    <target name="generate:java:sbeir-stubs" depends="dist" description="Generate serialized IR stubs for Java">
+    <target name="generate:java:sbeir-stubs"
+            depends="dist"
+            description="Generate serialized IR stubs for Java">
         <java classname="uk.co.real_logic.sbe.SbeTool">
             <classpath refid="sbetool.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.main.src}"/>
@@ -268,7 +273,9 @@
         </java>
     </target>
 
-    <target name="generate:cpp98:sbeir-stubs" depends="dist" description="Generate serialized IR stubs for C++98">
+    <target name="generate:cpp98:sbeir-stubs"
+            depends="dist"
+            description="Generate serialized IR stubs for C++98">
         <java classname="uk.co.real_logic.sbe.SbeTool">
             <classpath refid="sbetool.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.main.cpp.src}"/>
@@ -277,7 +284,9 @@
         </java>
     </target>
 
-    <target name="generate:csharp:sbeir-stubs" depends="dist" description="Generate serialized IR stubs for C#">
+    <target name="generate:csharp:sbeir-stubs"
+            depends="dist"
+            description="Generate serialized IR stubs for C#">
         <java classname="uk.co.real_logic.sbe.SbeTool">
             <classpath refid="sbetool.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.main.csharp.src}"/>
@@ -287,7 +296,8 @@
         </java>
     </target>
 
-    <target name="generate:sbeir-stubs" depends="generate:java:sbeir-stubs, generate:cpp98:sbeir-stubs, generate:csharp:sbeir-stubs"
+    <target name="generate:sbeir-stubs"
+            depends="generate:java:sbeir-stubs, generate:cpp98:sbeir-stubs, generate:csharp:sbeir-stubs"
             description="Generate serialized IR code for all languages"/>
 
     <!-- SBE Examples targets -->
@@ -310,11 +320,14 @@
         </fileset>
     </path>
 
-    <target name="examples:java" depends="dist">
+    <target name="examples:java"
+            depends="dist">
         <mkdir dir="${dir.gen.java}"/>
         <mkdir dir="${dir.examples.build}"/>
         <java classname="uk.co.real_logic.sbe.SbeTool">
             <classpath refid="examples.classpath"/>
+            <sysproperty key="sbe.validation.xsd" value="main/resources/fpl/SimpleBinary1-0.xsd"/>
+            <sysproperty key="sbe.validation.stop.on.error" value="true"/>
             <sysproperty key="sbe.output.dir" value="${dir.gen.java}"/>
             <sysproperty key="sbe.target.language" value="Java"/>
             <arg value="${dir.examples.resources}/example-schema.xml"/>
@@ -337,7 +350,9 @@
         </java>
     </target>
 
-    <target name="cpp:examples:gen" depends="dist" description="Generate and run C++ generated code example">
+    <target name="cpp:examples:gen"
+            depends="dist"
+            description="Generate and run C++ generated code example">
         <mkdir dir="${dir.gen.cpp98}"/>
         <java classname="uk.co.real_logic.sbe.SbeTool">
             <classpath refid="examples.classpath"/>
@@ -368,7 +383,9 @@
         <exec executable="${exec.example.cpp98}" failonerror="true"/>
     </target>
 
-    <target name="cpp:examples:otf" depends="dist, examples:java, cpp:compile" description="Generate and run OTF C++ example">
+    <target name="cpp:examples:otf"
+            depends="dist, examples:java, cpp:compile"
+            description="Generate and run OTF C++ example">
         <sequential>
             <mkdir dir="${dir.gen.cpp98}"/>
             <cc outtype="executable"
@@ -411,7 +428,9 @@
         </sequential>
     </target>
 
-    <target name="examples:cpp" depends="cpp:examples:gen, cpp:examples:otf" description="Compile and run C++98 examples"/>
+    <target name="examples:cpp"
+            depends="cpp:examples:gen, cpp:examples:otf"
+            description="Compile and run C++98 examples"/>
 
     <target name="update:gtest" depends="">
         <sequential>
@@ -422,7 +441,10 @@
             <get dest="/tmp">
                 <url url="https://googletest.googlecode.com/files/${gtest.name}"/>
             </get>
-            <checksum file="/tmp/${gtest.name}" algorithm="sha1" property="f85f6d2481e2c6c4a18539e391aa4ea8ab0394af" verifyproperty="sha.fail"/>
+            <checksum file="/tmp/${gtest.name}"
+                      algorithm="sha1"
+                      property="f85f6d2481e2c6c4a18539e391aa4ea8ab0394af"
+                      verifyproperty="sha.fail"/>
             <condition property="cksum.fail">
                 <equals arg1="${sha.fail}" arg2="false"/>
             </condition>

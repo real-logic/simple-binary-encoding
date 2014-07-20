@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema targetNamespace="http://www.fixprotocol.org/ns/simple/1.0"
-           elementFormDefault="unqualified" xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+           elementFormDefault="unqualified"
+           xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
            xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <xs:annotation>
@@ -13,8 +14,7 @@
     <xs:element name="messageSchema">
         <xs:annotation>
             <xs:documentation>
-                Root of XML document, holds all message templates
-                and their elements
+                Root of XML document, holds all message templates and their elements
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -24,44 +24,40 @@
                         <xs:documentation>
                             More than one set of types may be provided,
                             e.g. built-in and custom.
-                            Names must be unique across all encoding
-                            types.
+                            Names must be unique across all encoding types.
                         </xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="type" type="sbe:encodedDataType"
-                                        maxOccurs="unbounded" />
+                                        minOccurs="0" maxOccurs="unbounded"/>
                             <xs:element name="composite" type="sbe:compositeDataType"
-                                        maxOccurs="unbounded" />
+                                        minOccurs="0" maxOccurs="unbounded"/>
                             <xs:element name="enum" type="sbe:enumType"
-                                        minOccurs="0" maxOccurs="unbounded" />
-                            <xs:element name="set" type="sbe:setType" minOccurs="0"
-                                        maxOccurs="unbounded" />
+                                        minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element name="set" type="sbe:setType"
+                                        minOccurs="0" maxOccurs="unbounded"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
-                <xs:element ref="sbe:message" maxOccurs="unbounded" />
+                <xs:element ref="sbe:message" maxOccurs="unbounded"/>
             </xs:sequence>
-            <xs:attribute name="package" type="xs:string" />
+            <xs:attribute name="package" type="xs:string"/>
             <!-- New schemas should assign a unique ID. Defaults to zero to maintain compatibility with RC1 -->
-            <xs:attribute name="id" type="xs:unsignedShort" default="0" />
-            <xs:attribute name="version" type="xs:nonNegativeInteger" use="required" />
+            <xs:attribute name="id" type="xs:unsignedShort" default="0"/>
+            <xs:attribute name="version" type="xs:nonNegativeInteger" use="required"/>
             <!-- May map to FIX version, such as 'FIX.5.0_SP' -->
-            <xs:attribute name="semanticVersion" type="xs:string"
-                          use="optional" />
-            <xs:attribute name="description" type="xs:string"
-                          use="optional" />
+            <xs:attribute name="semanticVersion" type="xs:string" use="optional"/>
+            <xs:attribute name="description" type="xs:string" use="optional"/>
             <xs:attribute name="byteOrder" default="littleEndian">
                 <xs:simpleType>
                     <xs:restriction base="xs:token">
-                        <xs:enumeration value="bigEndian" />
-                        <xs:enumeration value="littleEndian" />
+                        <xs:enumeration value="bigEndian"/>
+                        <xs:enumeration value="littleEndian"/>
                     </xs:restriction>
                 </xs:simpleType>
             </xs:attribute>
-            <xs:attribute name="headerType" type="sbe:symbolicName_t"
-                          default="messageHeader">
+            <xs:attribute name="headerType" type="sbe:symbolicName_t" default="messageHeader">
                 <xs:annotation>
                     <xs:documentation>
                         Name of the encoding type of the message header,
@@ -83,26 +79,22 @@
         <xs:complexType mixed="true">
             <xs:sequence>
                 <xs:element name="field" type="sbe:fieldType"
-                            minOccurs="0" maxOccurs="unbounded" />
+                            minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element name="group" type="sbe:groupType"
-                            minOccurs="0" maxOccurs="unbounded" />
+                            minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element name="data" type="sbe:fieldType" minOccurs="0"
-                            maxOccurs="unbounded" />
+                            maxOccurs="unbounded"/>
             </xs:sequence>
-            <xs:attribute name="name" type="sbe:symbolicName_t" use="required" />
+            <xs:attribute name="name" type="sbe:symbolicName_t" use="required"/>
             <!-- Unique ID of this message template -->
-            <xs:attribute name="id" type="xs:unsignedShort" use="required" />
-            <xs:attribute name="description" type="xs:string"
-                          use="optional" />
+            <xs:attribute name="id" type="xs:unsignedShort" use="required"/>
+            <xs:attribute name="description" type="xs:string" use="optional"/>
             <!-- Space reserved for root level of message, not include groups or variable-length
                 data elements. -->
-            <xs:attribute name="blockLength" type="xs:nonNegativeInteger"
-                          use="optional" />
+            <xs:attribute name="blockLength" type="xs:nonNegativeInteger" use="optional"/>
             <!-- May map to MsgType value, such as 'D' for NewOrderSingle message -->
-            <xs:attribute name="semanticType" type="xs:token"
-                          use="optional" />
-            <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger"
-                          default="0">
+            <xs:attribute name="semanticType" type="xs:token" use="optional"/>
+            <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger" default="0">
                 <xs:annotation>
                     <xs:documentation>
                         The version of the schema in which the message
@@ -120,22 +112,19 @@
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:element name="field" type="sbe:fieldType" minOccurs="0"
-                        maxOccurs="unbounded" />
-            <xs:element name="group" type="sbe:groupType" minOccurs="0"
-                        maxOccurs="unbounded" />
+            <xs:element name="field" type="sbe:fieldType"
+                        minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="group" type="sbe:groupType"
+                        minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
-        <xs:attribute name="name" type="sbe:symbolicName_t" use="optional" />
+        <xs:attribute name="name" type="sbe:symbolicName_t" use="optional"/>
         <!-- Maps to FIX Repository repeating group ComponentID -->
-        <xs:attribute name="id" type="xs:unsignedShort" use="required" />
-        <xs:attribute name="description" type="xs:string" use="optional" />
+        <xs:attribute name="id" type="xs:unsignedShort" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="optional"/>
         <!-- Space reserved for an entry -->
-        <xs:attribute name="blockLength" type="xs:nonNegativeInteger"
-                      use="optional" />
-        <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger"
-                      default="0" />
-        <xs:attribute name="dimensionType" type="sbe:symbolicName_t"
-                      default="groupSizeEncoding" />
+        <xs:attribute name="blockLength" type="xs:nonNegativeInteger" use="optional"/>
+        <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger" default="0"/>
+        <xs:attribute name="dimensionType" type="sbe:symbolicName_t" default="groupSizeEncoding"/>
     </xs:complexType>
 
     <xs:complexType name="encodedDataType" mixed="true">
@@ -146,54 +135,52 @@
         </xs:annotation>
         <xs:simpleContent>
             <xs:extension base="xs:token">
-                <xs:attribute name="name" type="sbe:symbolicName_t" use="required" />
-                <xs:attribute name="description" type="xs:string"
-                              use="optional" />
+                <xs:attribute name="name" type="sbe:symbolicName_t" use="required"/>
+                <xs:attribute name="description" type="xs:string" use="optional"/>
                 <xs:attribute name="presence" default="required">
                     <xs:simpleType>
                         <xs:restriction base="xs:token">
                             <!-- The value must always be populated -->
-                            <xs:enumeration value="required" />
+                            <xs:enumeration value="required"/>
                             <!-- Value set to nullValue to indicate value not set -->
-                            <xs:enumeration value="optional" />
+                            <xs:enumeration value="optional"/>
                             <!-- Value does not vary -->
-                            <xs:enumeration value="constant" />
+                            <xs:enumeration value="constant"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:attribute>
                 <!-- Special values in string format -->
                 <!-- Override of default null indicator -->
-                <xs:attribute name="nullValue" type="xs:string" use="optional" />
+                <xs:attribute name="nullValue" type="xs:string" use="optional"/>
                 <!-- Valid numerical range -->
-                <xs:attribute name="minValue" type="xs:string" use="optional" />
-                <xs:attribute name="maxValue" type="xs:string" use="optional" />
+                <xs:attribute name="minValue" type="xs:string" use="optional"/>
+                <xs:attribute name="maxValue" type="xs:string" use="optional"/>
                 <!-- Number of elements of the primitiveType. Special value zero indicates
                     variable length. -->
-                <xs:attribute name="length" type="xs:nonNegativeInteger"
-                              default="1" />
+                <xs:attribute name="length" type="xs:nonNegativeInteger" default="1"/>
                 <!-- Offset from start of a composite type -->
-                <xs:attribute name="offset" type="xs:unsignedInt" use="optional" />
+                <xs:attribute name="offset" type="xs:unsignedInt" use="optional"/>
                 <xs:attribute name="primitiveType" use="required">
                     <xs:simpleType>
                         <xs:restriction base="xs:token">
-                            <xs:enumeration value="char" />
-                            <xs:enumeration value="int8" />
-                            <xs:enumeration value="int16" />
-                            <xs:enumeration value="int32" />
-                            <xs:enumeration value="int64" />
-                            <xs:enumeration value="uint8" />
-                            <xs:enumeration value="uint16" />
-                            <xs:enumeration value="uint32" />
-                            <xs:enumeration value="uint64" />
-                            <xs:enumeration value="float" />
-                            <xs:enumeration value="double" />
+                            <xs:enumeration value="char"/>
+                            <xs:enumeration value="int8"/>
+                            <xs:enumeration value="int16"/>
+                            <xs:enumeration value="int32"/>
+                            <xs:enumeration value="int64"/>
+                            <xs:enumeration value="uint8"/>
+                            <xs:enumeration value="uint16"/>
+                            <xs:enumeration value="uint32"/>
+                            <xs:enumeration value="uint64"/>
+                            <xs:enumeration value="float"/>
+                            <xs:enumeration value="double"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:attribute>
                 <!-- If a field contains character data, the default encoding is UTF-8 -->
-                <xs:attribute name="characterEncoding" type="xs:string" use="optional" />
-                <xs:attributeGroup ref="sbe:fieldAttributes" />
-                <xs:attributeGroup ref="sbe:encodingAttributes" />
+                <xs:attribute name="characterEncoding" type="xs:string" use="optional"/>
+                <xs:attributeGroup ref="sbe:fieldAttributes"/>
+                <xs:attributeGroup ref="sbe:encodingAttributes"/>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
@@ -206,13 +193,13 @@
         </xs:annotation>
         <xs:sequence>
             <xs:element name="type" type="sbe:encodedDataType"
-                        minOccurs="0" maxOccurs="unbounded" />
+                        minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="composite" type="sbe:compositeDataType"
-                        minOccurs="0" maxOccurs="unbounded" />
+                        minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
-        <xs:attribute name="name" type="sbe:symbolicName_t" use="required" />
-        <xs:attribute name="description" type="xs:string" use="optional" />
-        <xs:attributeGroup ref="sbe:fieldAttributes" />
+        <xs:attribute name="name" type="sbe:symbolicName_t" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="optional"/>
+        <xs:attributeGroup ref="sbe:fieldAttributes"/>
     </xs:complexType>
 
     <xs:complexType name="messageHeaderType" mixed="true">
@@ -241,7 +228,7 @@
                             <xs:documentation>Message schema version</xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:element name="reserved" type="sbe:encodedDataType" />
+                    <xs:element name="reserved" type="sbe:encodedDataType"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -258,8 +245,8 @@
         <xs:complexContent>
             <xs:extension base="sbe:compositeDataType">
                 <xs:sequence>
-                    <xs:element name="length" type="sbe:encodedDataType" />
-                    <xs:element name="varData" type="sbe:encodedDataType" />
+                    <xs:element name="length" type="sbe:encodedDataType"/>
+                    <xs:element name="varData" type="sbe:encodedDataType"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -297,15 +284,12 @@
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:element name="validValue" type="sbe:validValue"
-                        maxOccurs="unbounded" />
+            <xs:element name="validValue" type="sbe:validValue" maxOccurs="unbounded"/>
         </xs:sequence>
-        <xs:attribute name="name" type="sbe:symbolicName_t" use="required" />
-        <xs:attribute name="encodingType" type="sbe:symbolicName_t"
-                      use="required" />
-        <xs:attribute name="description" type="xs:string" use="optional" />
-        <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger"
-                      default="0" />
+        <xs:attribute name="name" type="sbe:symbolicName_t" use="required"/>
+        <xs:attribute name="encodingType" type="sbe:symbolicName_t" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="optional"/>
+        <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger" default="0"/>
     </xs:complexType>
 
     <xs:complexType name="validValue">
@@ -316,11 +300,9 @@
         </xs:annotation>
         <xs:simpleContent>
             <xs:extension base="xs:token">
-                <xs:attribute name="name" type="sbe:symbolicName_t" use="required" />
-                <xs:attribute name="description" type="xs:string"
-                              use="optional" />
-                <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger"
-                              default="0" />
+                <xs:attribute name="name" type="sbe:symbolicName_t" use="required"/>
+                <xs:attribute name="description" type="xs:string" use="optional"/>
+                <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger" default="0"/>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
@@ -332,31 +314,26 @@
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:element name="choice" type="sbe:choice" maxOccurs="64" />
+            <xs:element name="choice" type="sbe:choice" maxOccurs="64"/>
         </xs:sequence>
-        <xs:attribute name="name" type="sbe:symbolicName_t" use="required" />
-        <xs:attribute name="encodingType" type="sbe:symbolicName_t"
-                      use="required" />
-        <xs:attribute name="description" type="xs:string" use="optional" />
-        <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger"
-                      default="0" />
+        <xs:attribute name="name" type="sbe:symbolicName_t" use="required"/>
+        <xs:attribute name="encodingType" type="sbe:symbolicName_t" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="optional"/>
+        <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger" default="0"/>
     </xs:complexType>
 
     <xs:complexType name="choice">
         <xs:annotation>
             <xs:documentation>
-                A choice within a multi value set
-                Value is the
+                A choice within a multi value set Value is the
                 position within a bitset (zero-based index).
             </xs:documentation>
         </xs:annotation>
         <xs:simpleContent>
             <xs:extension base="xs:nonNegativeInteger">
-                <xs:attribute name="name" type="sbe:symbolicName_t" use="required" />
-                <xs:attribute name="description" type="xs:string"
-                              use="optional" />
-                <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger"
-                              default="0" />
+                <xs:attribute name="name" type="sbe:symbolicName_t" use="required"/>
+                <xs:attribute name="description" type="xs:string" use="optional"/>
+                <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger" default="0"/>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
@@ -367,26 +344,24 @@
                 A field of a message of a specified dataType
             </xs:documentation>
         </xs:annotation>
-        <xs:attribute name="name" type="sbe:symbolicName_t" use="required" />
-        <xs:attribute name="id" type="xs:unsignedShort" use="required" />
+        <xs:attribute name="name" type="sbe:symbolicName_t" use="required"/>
+        <xs:attribute name="id" type="xs:unsignedShort" use="required"/>
         <!-- A simple or composite encoding type -->
-        <xs:attribute name="type" type="sbe:symbolicName_t" use="required" />
+        <xs:attribute name="type" type="sbe:symbolicName_t" use="required"/>
         <!-- Reference to a validValue by name -->
-        <xs:attribute name="valueRef" type="sbe:symbolicName_t" use="optional" />
-        <xs:attribute name="description" type="xs:string" use="optional" />
+        <xs:attribute name="valueRef" type="sbe:symbolicName_t" use="optional"/>
+        <xs:attribute name="description" type="xs:string" use="optional"/>
         <!-- Offset from start of a block -->
-        <xs:attribute name="offset" type="xs:unsignedInt" use="optional" />
+        <xs:attribute name="offset" type="xs:unsignedInt" use="optional"/>
         <!-- start of time period - default is UNIX epoch -->
-        <xs:attribute name="epoch" type="xs:string" default="unix" />
+        <xs:attribute name="epoch" type="xs:string" default="unix"/>
         <!-- time period - default is nanosecond -->
-        <xs:attribute name="timeUnit" type="xs:string"
-                      default="nanosecond" />
-        <xs:attributeGroup ref="sbe:fieldAttributes" />
+        <xs:attribute name="timeUnit" type="xs:string" default="nanosecond"/>
+        <xs:attributeGroup ref="sbe:fieldAttributes"/>
     </xs:complexType>
 
     <xs:attributeGroup name="fieldAttributes">
-        <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger"
-                      default="0">
+        <xs:attribute name="sinceVersion" type="xs:nonNegativeInteger" default="0">
             <xs:annotation>
                 <xs:documentation>
                     The schema version in which a field was added
@@ -401,39 +376,39 @@
             </xs:annotation>
             <xs:simpleType>
                 <xs:restriction base="xs:token">
-                    <xs:enumeration value="int" />
-                    <xs:enumeration value="Length" />
-                    <xs:enumeration value="TagNum" />
-                    <xs:enumeration value="SeqNum" />
-                    <xs:enumeration value="NumInGroup" />
-                    <xs:enumeration value="DayOfMonth" />
-                    <xs:enumeration value="float" />
-                    <xs:enumeration value="Qty" />
-                    <xs:enumeration value="Price" />
-                    <xs:enumeration value="Amt" />
-                    <xs:enumeration value="Percentage" />
-                    <xs:enumeration value="char" />
-                    <xs:enumeration value="Boolean" />
-                    <xs:enumeration value="String" />
-                    <xs:enumeration value="MultipleCharValue" />
-                    <xs:enumeration value="MultipleStringValue" />
-                    <xs:enumeration value="Country" />
-                    <xs:enumeration value="Currency" />
-                    <xs:enumeration value="Exchange" />
-                    <xs:enumeration value="MonthYear" />
-                    <xs:enumeration value="UTCTimestamp" />
-                    <xs:enumeration value="UTCTimeOnly" />
-                    <xs:enumeration value="UTCDateOnly" />
-                    <xs:enumeration value="LocalMktDate" />
-                    <xs:enumeration value="TZTimeOnly" />
-                    <xs:enumeration value="TZTimestamp" />
-                    <xs:enumeration value="data" />
-                    <xs:enumeration value="Pattern" />
-                    <xs:enumeration value="Reserved100Plus" />
-                    <xs:enumeration value="Reserved1000Plus" />
-                    <xs:enumeration value="Reserved4000Plus" />
-                    <xs:enumeration value="XMLData" />
-                    <xs:enumeration value="Language" />
+                    <xs:enumeration value="int"/>
+                    <xs:enumeration value="Length"/>
+                    <xs:enumeration value="TagNum"/>
+                    <xs:enumeration value="SeqNum"/>
+                    <xs:enumeration value="NumInGroup"/>
+                    <xs:enumeration value="DayOfMonth"/>
+                    <xs:enumeration value="float"/>
+                    <xs:enumeration value="Qty"/>
+                    <xs:enumeration value="Price"/>
+                    <xs:enumeration value="Amt"/>
+                    <xs:enumeration value="Percentage"/>
+                    <xs:enumeration value="char"/>
+                    <xs:enumeration value="Boolean"/>
+                    <xs:enumeration value="String"/>
+                    <xs:enumeration value="MultipleCharValue"/>
+                    <xs:enumeration value="MultipleStringValue"/>
+                    <xs:enumeration value="Country"/>
+                    <xs:enumeration value="Currency"/>
+                    <xs:enumeration value="Exchange"/>
+                    <xs:enumeration value="MonthYear"/>
+                    <xs:enumeration value="UTCTimestamp"/>
+                    <xs:enumeration value="UTCTimeOnly"/>
+                    <xs:enumeration value="UTCDateOnly"/>
+                    <xs:enumeration value="LocalMktDate"/>
+                    <xs:enumeration value="TZTimeOnly"/>
+                    <xs:enumeration value="TZTimestamp"/>
+                    <xs:enumeration value="data"/>
+                    <xs:enumeration value="Pattern"/>
+                    <xs:enumeration value="Reserved100Plus"/>
+                    <xs:enumeration value="Reserved1000Plus"/>
+                    <xs:enumeration value="Reserved4000Plus"/>
+                    <xs:enumeration value="XMLData"/>
+                    <xs:enumeration value="Language"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
@@ -441,24 +416,25 @@
 
     <xs:attributeGroup name="encodingAttributes">
         <xs:annotation>
-            <xs:documentation>Reserved names for composite type subfields
+            <xs:documentation>
+                Reserved names for composite type subfields
             </xs:documentation>
         </xs:annotation>
         <xs:attribute name="subFieldEncodingName" use="optional">
             <xs:simpleType>
                 <xs:restriction base="xs:token">
                     <!-- decimal encoding subfield names -->
-                    <xs:enumeration value="mantissa" />
-                    <xs:enumeration value="exponent" />
+                    <xs:enumeration value="mantissa"/>
+                    <xs:enumeration value="exponent"/>
                     <!-- MonthYear subfield names -->
-                    <xs:enumeration value="year" />
-                    <xs:enumeration value="month" />
-                    <xs:enumeration value="day" />
-                    <xs:enumeration value="week" />
+                    <xs:enumeration value="year"/>
+                    <xs:enumeration value="month"/>
+                    <xs:enumeration value="day"/>
+                    <xs:enumeration value="week"/>
                     <!-- TZ time subfield names -->
-                    <xs:enumeration value="time" />
-                    <xs:enumeration value="timezoneHour" />
-                    <xs:enumeration value="timezoneMinute" />
+                    <xs:enumeration value="time"/>
+                    <xs:enumeration value="timezoneHour"/>
+                    <xs:enumeration value="timezoneMinute"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
