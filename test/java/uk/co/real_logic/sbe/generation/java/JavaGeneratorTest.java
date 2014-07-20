@@ -48,7 +48,7 @@ public class JavaGeneratorTest
     @Before
     public void setUp() throws Exception
     {
-        ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final MessageSchema schema = parse(TestUtil.getLocalResource("code-generation-schema.xml"), options);
         final IrGenerator irg = new IrGenerator();
         ir = irg.generate(schema);

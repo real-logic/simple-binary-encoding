@@ -52,12 +52,15 @@ public class EncodedDataTypeTest
             "    <type name=\"testType\" presence=\"required\" primitiveType=\"char\" length=\"1\" variableLength=\"false\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         // assert that testType is in map and name of Type is correct
-        Type t = map.get("testType");
+        final Type t = map.get("testType");
+
         assertThat(t.name(), is("testType"));
         assertThat(t.presence(), is(Presence.REQUIRED));
-        EncodedDataType d = (EncodedDataType)t;
+
+        final EncodedDataType d = (EncodedDataType)t;
+
         assertThat(d.primitiveType(), is(PrimitiveType.CHAR));
         assertThat(valueOf(d.length()), is(valueOf(1)));
         assertThat(valueOf(d.isVariableLength()), is(Boolean.FALSE));
@@ -73,7 +76,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testType2\" presence=\"required\" primitiveType=\"int8\" length=\"1\" variableLength=\"false\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         // assert that testType is in map and name of Type is correct
         assertThat(valueOf(map.size()), is(valueOf(2)));
         assertThat(map.get("testType1").name(), is("testType1"));
@@ -112,7 +116,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeConstant\" presence=\"constant\" primitiveType=\"char\">A</type>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         assertThat(map.get("testTypeDefault").presence(), is(Presence.REQUIRED));
         assertThat(map.get("testTypeRequired").presence(), is(Presence.REQUIRED));
         assertThat(map.get("testTypeOptional").presence(), is(Presence.OPTIONAL));
@@ -174,7 +179,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeDouble\" primitiveType=\"double\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         assertThat(((EncodedDataType)map.get("testTypeChar")).primitiveType(), is(PrimitiveType.CHAR));
         assertThat(((EncodedDataType)map.get("testTypeInt8")).primitiveType(), is(PrimitiveType.INT8));
         assertThat(((EncodedDataType)map.get("testTypeInt16")).primitiveType(), is(PrimitiveType.INT16));
@@ -219,7 +225,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeDouble\" primitiveType=\"double\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         assertThat(valueOf(map.get("testTypeChar").size()), is(valueOf(1)));
         assertThat(valueOf(map.get("testTypeInt8").size()), is(valueOf(1)));
         assertThat(valueOf(map.get("testTypeInt16").size()), is(valueOf(2)));
@@ -243,7 +250,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeDescription\" primitiveType=\"char\" description=\"" + desc + "\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         assertThat(map.get("testTypeDescription").description(), is(desc));
     }
 
@@ -256,8 +264,9 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeNoDescription\" primitiveType=\"char\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        String description = map.get("testTypeNoDescription").description();
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final String description = map.get("testTypeNoDescription").description();
+
         Assert.assertNull(description);
     }
 
@@ -271,7 +280,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testType\" primitiveType=\"char\" semanticType=\"" + semanticType + "\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         assertThat(map.get("testType").semanticType(), is(semanticType));
     }
 
@@ -284,7 +294,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testType\" primitiveType=\"char\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         Assert.assertNull(map.get("testType").semanticType());
     }
 
@@ -309,10 +320,10 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\">F</type>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         final String expectedString = "F";
         final PrimitiveValue expectedValue = parse(expectedString, PrimitiveType.CHAR);
+
         assertThat((((EncodedDataType)map.get("testTypePresenceConst")).constVal()), is(expectedValue));
     }
 
@@ -328,7 +339,8 @@ public class EncodedDataTypeTest
                  ">" + strConst + "</type>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         assertThat((((EncodedDataType)map.get("testTypeConstString")).constVal()),
                    is(parse(strConst, PrimitiveType.CHAR, strConst.length(), "UTF-8")));
     }
@@ -342,7 +354,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeDefaultCharMinValue\" primitiveType=\"char\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         Assert.assertNull(((EncodedDataType)map.get("testTypeDefaultCharMinValue")).minValue());
     }
 
@@ -355,7 +368,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeDefaultCharMaxValue\" primitiveType=\"char\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         Assert.assertNull(((EncodedDataType)map.get("testTypeDefaultCharMaxValue")).maxValue());
     }
 
@@ -368,7 +382,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeDefaultCharNullValue\" primitiveType=\"char\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         Assert.assertNull(((EncodedDataType)map.get("testTypeDefaultCharNullValue")).nullValue());
     }
 
@@ -396,7 +411,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeInt8MaxValue\" primitiveType=\"int8\" maxValue=\"" + maxVal + "\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         assertThat((((EncodedDataType)map.get("testTypeInt8MaxValue")).maxValue()), is(parse(maxVal, PrimitiveType.INT8)));
     }
 
@@ -410,7 +426,8 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeInt8NullValue\" primitiveType=\"int8\" presence=\"optional\" nullValue=\"" + nullVal + "\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
         assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).nullValue()),
                    is(parse(nullVal, PrimitiveType.INT8)));
     }
@@ -418,12 +435,12 @@ public class EncodedDataTypeTest
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-        Map<String, Type> map = new HashMap<>();
+        final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+        final XPath xPath = XPathFactory.newInstance().newXPath();
+        final NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
+        final Map<String, Type> map = new HashMap<>();
 
-        ParserOptions options = ParserOptions.builder().stopOnError(true).suppressOutput(true).build();
+        final ParserOptions options = ParserOptions.builder().stopOnError(true).suppressOutput(true).build();
         document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, new ErrorHandler(options), null);
 
         for (int i = 0, size = list.getLength(); i < size; i++)

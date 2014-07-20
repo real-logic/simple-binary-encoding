@@ -25,11 +25,12 @@ public class TestUtil
     public static InputStream getLocalResource(final String name) throws IOException
     {
         final String pathToResources = System.getProperty("test.resources.dir", "");
-        URL url = TestUtil.class.getClassLoader().getResource(pathToResources + name);
+        final URL url = TestUtil.class.getClassLoader().getResource(pathToResources + name);
         if (url == null)
         {
             throw new FileNotFoundException(pathToResources + name);
         }
+
         return url.openStream();
     }
 }

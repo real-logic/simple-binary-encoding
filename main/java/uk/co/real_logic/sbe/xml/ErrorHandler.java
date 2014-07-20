@@ -36,7 +36,7 @@ public class ErrorHandler
      * @param stream to which output should be sent.
      * @param options the parsing options.
      */
-    public ErrorHandler(final PrintStream stream, ParserOptions options)
+    public ErrorHandler(final PrintStream stream, final ParserOptions options)
     {
         out = stream;
         stopOnError = options.stopOnError();
@@ -49,7 +49,7 @@ public class ErrorHandler
      *
      * @param options the parsing options.
      */
-    public ErrorHandler(ParserOptions options)
+    public ErrorHandler(final ParserOptions options)
     {
         this(System.err, options);
     }

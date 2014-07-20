@@ -149,6 +149,7 @@ public class EnumTypeTest
             }
             count++;
         }
+
         assertThat(valueOf(count), is(valueOf(3)));
         assertThat(valueOf(foundOn), is(valueOf(1)));
         assertThat(valueOf(foundOff), is(valueOf(1)));
@@ -169,8 +170,9 @@ public class EnumTypeTest
             "</enum>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
-        EnumType e = (EnumType)map.get("mixed");
+        final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
+        final EnumType e = (EnumType)map.get("mixed");
+
         assertThat(e.encodingType(), is(PrimitiveType.CHAR));
         assertThat(e.getValidValue("Cee").primitiveValue(), is(PrimitiveValue.parse("C", PrimitiveType.CHAR)));
         assertThat(e.getValidValue("One").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.CHAR)));
@@ -229,12 +231,17 @@ public class EnumTypeTest
     public void shouldHandleEncodingTypesWithNamedTypes()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("encoding-types-schema.xml"), ParserOptions.DEFAULT);
-        List<Field> fields = schema.getMessage(1).fields();
+        final MessageSchema schema = parse(TestUtil.getLocalResource("encoding-types-schema.xml"), ParserOptions.DEFAULT);
+        final List<Field> fields = schema.getMessage(1).fields();
+
         assertNotNull(fields);
+
         EnumType type = (EnumType)fields.get(1).type();
+
         assertThat(type.encodingType(), is(PrimitiveType.CHAR));
+
         type = (EnumType)fields.get(2).type();
+
         assertThat(type.encodingType(), is(PrimitiveType.UINT8));
     }
 
@@ -246,7 +253,7 @@ public class EnumTypeTest
         final NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
         final Map<String, Type> map = new HashMap<>();
 
-        ParserOptions options = ParserOptions.builder().stopOnError(true).suppressOutput(true).warningsFatal(true).build();
+        final ParserOptions options = ParserOptions.builder().stopOnError(true).suppressOutput(true).warningsFatal(true).build();
         document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, new ErrorHandler(options), null);
 
         for (int i = 0, size = list.getLength(); i < size; i++)

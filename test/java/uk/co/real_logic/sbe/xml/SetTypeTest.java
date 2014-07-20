@@ -56,8 +56,9 @@ public class SetTypeTest
             "</set>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
-        SetType e = (SetType)map.get("biOp");
+        final Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
+        final SetType e = (SetType)map.get("biOp");
+
         assertThat(e.name(), is("biOp"));
         assertThat(e.encodingType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(e.choices().size()), is(valueOf(2)));
@@ -79,8 +80,9 @@ public class SetTypeTest
             "</set>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
-        SetType e = (SetType)map.get("listed");
+        final Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
+        final SetType e = (SetType)map.get("listed");
+
         assertThat(e.encodingType(), is(PrimitiveType.UINT8));
 
         int foundBit0 = 0, foundBit1 = 0, foundBit2 = 0, foundBit3 = 0, count = 0;
@@ -176,28 +178,37 @@ public class SetTypeTest
      public void shouldHandleEncodingTypesWithNamedTypes()
          throws Exception
      {
-         MessageSchema schema = parse(TestUtil.getLocalResource("encoding-types-schema.xml"), ParserOptions.DEFAULT);
-         List<Field> fields = schema.getMessage(1).fields();
+         final MessageSchema schema = parse(TestUtil.getLocalResource("encoding-types-schema.xml"), ParserOptions.DEFAULT);
+         final List<Field> fields = schema.getMessage(1).fields();
+
          assertNotNull(fields);
+
          SetType type = (SetType)fields.get(3).type();
+
          assertThat(type.encodingType(), is(PrimitiveType.UINT8));
+
          type = (SetType)fields.get(4).type();
+
          assertThat(type.encodingType(), is(PrimitiveType.UINT16));
+
          type = (SetType)fields.get(5).type();
+
          assertThat(type.encodingType(), is(PrimitiveType.UINT32));
+
          type = (SetType)fields.get(6).type();
+
          assertThat(type.encodingType(), is(PrimitiveType.UINT64));
      }
 
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-        Map<String, Type> map = new HashMap<>();
+        final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+        final XPath xPath = XPathFactory.newInstance().newXPath();
+        final NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
+        final Map<String, Type> map = new HashMap<>();
 
-        ParserOptions options = ParserOptions.builder().stopOnError(true).suppressOutput(true).warningsFatal(true).build();
+        final ParserOptions options = ParserOptions.builder().stopOnError(true).suppressOutput(true).warningsFatal(true).build();
         document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, new ErrorHandler(options), null);
 
         for (int i = 0, size = list.getLength(); i < size; i++)

@@ -79,8 +79,8 @@ public class ErrorHandlerTest
             "</types>";
 
         final Map<String, Type> map = new HashMap<>();
-        ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
-        ErrorHandler handler = new ErrorHandler(options);
+        final ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
+        final ErrorHandler handler = new ErrorHandler(options);
 
         parseTestXmlAddToMap(map, "/types/composite", testXmlString, handler);
         parseTestXmlAddToMap(map, "/types/type", testXmlString, handler);
@@ -95,7 +95,7 @@ public class ErrorHandlerTest
     public void shouldExitAfterTypes()
         throws Exception
     {
-        ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
+        final ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
 
         try
         {
@@ -113,7 +113,7 @@ public class ErrorHandlerTest
     public void shouldExitAfterTypesWhenDupTypesDefined()
         throws Exception
     {
-        ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
+        final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
         try
         {
@@ -131,7 +131,7 @@ public class ErrorHandlerTest
     public void shouldExitAfterMessageWhenDupMessageIdsDefined()
         throws Exception
     {
-        ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
+        final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
         try
         {
@@ -149,7 +149,7 @@ public class ErrorHandlerTest
     public void shouldExitAfterMessage()
         throws Exception
     {
-        ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
+        final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
         try
         {
@@ -167,7 +167,7 @@ public class ErrorHandlerTest
     public void shouldExitAfterMessageWhenGroupDimensionsNotComposite()
         throws Exception
     {
-        ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
+        final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
         try
         {
