@@ -72,7 +72,7 @@
     <property name="javadoc.jar" value="${dir.dist}/${module.name}-${build.version}-javadoc.jar"/>
     <property name="sources.jar" value="${dir.dist}/${module.name}-${build.version}-sources.jar"/>
 
-    <property name="android.libcore.io.memory.jar" value="main/lib/libcore.io.memory.jar"/>
+    <property name="android.libcore.io.memory.jar" value="main/lib/android/libcore.io.memory.jar"/>
     <property name="sbe.android.jar" value="${dir.dist}/${module.name.android}-${build.version}.jar"/>
     <property name="sbe.android.javadoc.jar" value="${dir.dist}/${module.name.android}-${build.version}-javadoc.jar"/>
     <property name="sbe.android.sources.jar" value="${dir.dist}/${module.name.android}-${build.version}-sources.jar"/>
@@ -87,7 +87,6 @@
         <pathelement path="${dir.test.resources}"/>
         <fileset dir="${dir.test.lib}">
             <include name="*.jar"/>
-            <exclude name="dexmaker*.jar"/>
         </fileset>
     </path>
 
@@ -97,6 +96,7 @@
         <pathelement path="${dir.test.resources}"/>
         <fileset dir="${dir.test.lib}">
             <include name="*.jar"/>
+            <include name="android/*.jar"/>
         </fileset>
     </path>
 
@@ -112,9 +112,6 @@
         <tstamp/>
         <mkdir dir="${dir.main.build}"/>
         <mkdir dir="${dir.test.build}"/>
-        <mkdir dir="${dir.main.android.build}"/>
-        <mkdir dir="${dir.main.android.libcore.build}"/>
-        <mkdir dir="${dir.test.android.build}"/>
         <mkdir dir="${dir.dist}"/>
         <mkdir dir="${dir.docs.java}"/>
         <mkdir dir="${dir.docs.cpp}"/>
@@ -141,12 +138,10 @@
         <property name="adb.exe" value="${android.sdk.dir}/platform-tools/adb${exe}" />
         <mkdir dir="${dir.main.android.build}"/>
         <mkdir dir="${dir.main.android.libcore.build}"/>
-        <mkdir dir="${dir.test.android.dexedLibs}"/>
-        <mkdir dir="${dir.test.android.testpackage}"/>
-        <mkdir dir="${dir.reports.android.unit}"/>
         <mkdir dir="${dir.test.android.build}"/>
         <mkdir dir="${dir.test.android.dexedLibs}"/>
         <mkdir dir="${dir.test.android.testpackage}"/>
+        <mkdir dir="${dir.reports.android.unit}"/>
     </target>
 
     <target name="-android:checkDebugKey">
@@ -244,6 +239,34 @@
         </javac>
     </target>
 
+    <target name="test" depends="build" description="Unit Test">
+        <sequential>
+            <javac srcdir="${dir.test.src}" destdir="${dir.test.build}" includeAntRuntime="false" debug="true">
+                <classpath refid="test.classpath"/>
+                <compilerarg value="-Xlint:unchecked"/>
+                <compilerarg value="-XDignore.symbol.file"/>
+            </javac>
+            <junit printsummary="withOutAndErr" errorProperty="test.failed" failureProperty="test.failed" fork="true">
+                <sysproperty key="results.dir" value="${dir.reports.unit}"/>
+                <classpath refid="test.classpath"/>
+                <formatter type="xml"/>
+                <formatter type="plain" usefile="false"/>
+                <batchtest todir="${dir.reports.unit}">
+                    <fileset dir="${dir.test.src}">
+                        <include name="**/*Test.java"/>
+                    </fileset>
+                </batchtest>
+            </junit>
+            <junitreport todir="${dir.reports.unit}">
+                <fileset dir="${dir.reports.unit}">
+                    <include name="TEST-*.xml"/>
+                </fileset>
+                <report todir="${dir.reports.unit}"/>
+            </junitreport>
+            <fail message="Tests failed. Check log and/or reports." if="test.failed"/>
+        </sequential>
+    </target>
+
     <target name="androidlibcore:build" depends="-android:init" description="Build the jar containin libcore.io.Memory class">
         <sequential>
             <javac srcdir="${dir.main.android.src}" destdir="${dir.main.android.libcore.build}" includeAntRuntime="false" debug="true"
@@ -272,8 +295,8 @@
                 bootclasspath="${android.bootclasspath}">
                 <exclude name="uk/co/real_logic/sbe/codec/java/**/*.java"/>
                 <!-- Code generator classes may be excluded -->
-                <!-- exclude name="uk/co/real_logic/sbe/SbeTool.java"/>
-                <exclude name="uk/co/real_logic/sbe/generation/**/*.java"/ -->
+                <exclude name="uk/co/real_logic/sbe/SbeTool.java"/>
+                <exclude name="uk/co/real_logic/sbe/generation/**/*.java"/>
                 <classpath path="${dir.main.android.build}"/>
                 <classpath path="${android.libcore.io.memory.jar}"/>
                 <compilerarg value="-Xlint:unchecked"/>
@@ -361,7 +384,7 @@
             </javac>
             <!--
                  Ideally, we would want to compile/run all the test on the android platform too.
-                 The test package "uk/co/real_logic/sbe/generation/java" won't compile against android,
+                 The test package "uk/co/real_logic/sbe/generation" won't compile against android,
                  because android is missing "javax.tools" and "java.nio.file" packages.
                  Nevertheless, we don't need to run the code generator tests on android,
                  because no code will be generated on android platform
@@ -369,19 +392,21 @@
             <javac srcdir="${dir.test.src}" destdir="${dir.test.android.build}" includeAntRuntime="false" debug="true"
                 bootclasspath="${android.bootclasspath}">
                 <exclude name="uk/co/real_logic/sbe/codec/java/**/*.java"/>
-                <exclude name="uk/co/real_logic/sbe/generation/java/**/*.java"/>
+                <!-- Code generator classes may be excluded -->
+                <exclude name="uk/co/real_logic/sbe/SbeToolTest.java"/>
+                <exclude name="uk/co/real_logic/sbe/generation/**/*.java"/>
                 <classpath refid="android.test.classpath"/>
                 <compilerarg value="-Xlint:unchecked"/>
                 <compilerarg value="-XDignore.symbol.file"/>
             </javac>
 
-            <dex src="${dir.test.lib}/android-junit4-0.3.jar" destfile="${dir.test.android.dexedLibs}/android-junit4-0.3-dexed.jar"/>
+            <dex src="${dir.test.lib}/android/android-junit4-0.3.jar" destfile="${dir.test.android.dexedLibs}/android-junit4-0.3-dexed.jar"/>
             <dex src="${dir.test.lib}/junit-4.11.jar" destfile="${dir.test.android.dexedLibs}/junit-4.11-dexed.jar"/>
             <dex src="${dir.test.lib}/hamcrest-core-1.3.jar" destfile="${dir.test.android.dexedLibs}/hamcrest-core-1.3-dexed.jar"/>
             <dex src="${dir.test.lib}/hamcrest-library-1.3.jar" destfile="${dir.test.android.dexedLibs}/hamcrest-library-1.3-dexed.jar"/>
             <dex src="${dir.test.lib}/mockito-core-1.9.5.jar" destfile="${dir.test.android.dexedLibs}/mockito-core-1.9.5-dexed.jar"/>
-            <dex src="${dir.test.lib}/dexmaker-1.1.jar" destfile="${dir.test.android.dexedLibs}/dexmaker-1.1-dexed.jar"/>
-            <dex src="${dir.test.lib}/dexmaker-mockito-1.1.jar" destfile="${dir.test.android.dexedLibs}/dexmaker-mockito-1.1-dexed.jar"/>
+            <dex src="${dir.test.lib}/android/dexmaker-1.1.jar" destfile="${dir.test.android.dexedLibs}/dexmaker-1.1-dexed.jar"/>
+            <dex src="${dir.test.lib}/android/dexmaker-mockito-1.1.jar" destfile="${dir.test.android.dexedLibs}/dexmaker-mockito-1.1-dexed.jar"/>
             <dex src="${dir.test.lib}/objenesis-2.1.jar" destfile="${dir.test.android.dexedLibs}/objenesis-2.1-dexed.jar"/>
             <dex checkupdated="false" src="${dir.test.android.build}" destfile="${dir.test.android.dexedLibs}/sbe-test-dexed.jar"/>
             <dex checkupdated="false" src="${dir.main.android.build}" destfile="${dir.test.android.dexedLibs}/sbe-main-dexed.jar"/>
@@ -428,34 +453,6 @@
                    <arg value="uk.co.real_logic.sbe.android.test"/>
                 </args>
             </adb>
-        </sequential>
-    </target>
-
-    <target name="test" depends="build" description="Unit Test">
-        <sequential>
-            <javac srcdir="${dir.test.src}" destdir="${dir.test.build}" includeAntRuntime="false" debug="true">
-                <classpath refid="test.classpath"/>
-                <compilerarg value="-Xlint:unchecked"/>
-                <compilerarg value="-XDignore.symbol.file"/>
-            </javac>
-            <junit printsummary="withOutAndErr" errorProperty="test.failed" failureProperty="test.failed" fork="true">
-                <sysproperty key="results.dir" value="${dir.reports.unit}"/>
-                <classpath refid="test.classpath"/>
-                <formatter type="xml"/>
-                <formatter type="plain" usefile="false"/>
-                <batchtest todir="${dir.reports.unit}">
-                    <fileset dir="${dir.test.src}">
-                        <include name="**/*Test.java"/>
-                    </fileset>
-                </batchtest>
-            </junit>
-            <junitreport todir="${dir.reports.unit}">
-                <fileset dir="${dir.reports.unit}">
-                    <include name="TEST-*.xml"/>
-                </fileset>
-                <report todir="${dir.reports.unit}"/>
-            </junitreport>
-            <fail message="Tests failed. Check log and/or reports." if="test.failed"/>
         </sequential>
     </target>
 
@@ -516,6 +513,9 @@
         <jar destfile="${sbe.android.sources.jar}">
             <fileset dir="${dir.main.src}">
                 <exclude name="uk/co/real_logic/sbe/codec/java/**/*.java"/>
+                <!-- Code generator classes may be excluded -->
+                <exclude name="uk/co/real_logic/sbe/SbeTool.java"/>
+                <exclude name="uk/co/real_logic/sbe/generation/**/*.java"/>
             </fileset>
             <fileset dir="${dir.main.android.src}">
                 <include name="uk/co/real_logic/sbe/codec/java/**/*.java"/>
