@@ -26,9 +26,6 @@ import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.validation.SchemaFactory;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -179,13 +176,7 @@ public class SbeTool
     {
         try (final BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename)))
         {
-            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-
-            factory.setSchema(schemaFactory.newSchema(new File(xsdFilename)));
-            factory.setNamespaceAware(true);
-
-            factory.newDocumentBuilder().parse(in);
+            XmlSchemaParser.validate(xsdFilename, in);
         }
     }
 

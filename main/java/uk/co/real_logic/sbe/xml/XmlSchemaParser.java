@@ -21,11 +21,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import uk.co.real_logic.sbe.util.ValidationUtil;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.HashMap;
@@ -47,8 +51,28 @@ public class XmlSchemaParser
     public static final String COMPOSITE_XPATH_EXPR = "/messageSchema/types/composite";
     public static final String ENUM_XPATH_EXPR = "/messageSchema/types/enum";
     public static final String SET_XPATH_EXPR = "/messageSchema/types/set";
-    public static final String MESSAGE_XPATH_EXPR = "/messageSchema/message";
     public static final String MESSAGE_SCHEMA_XPATH_EXPR = "/messageSchema";
+
+    public static final String MESSAGE_XPATH_EXPR = "/messageSchema/message";
+
+    /**
+     * Validate the document against a given schema. Error will be written to {@link java.lang.System#err}
+     *
+     * @param xsdFilename schema to validate against.
+     * @param in document to be validated.
+     * @throws Exception if an error occurs when parsing the document or schema.
+     */
+    public static void validate(final String xsdFilename, final BufferedInputStream in)
+        throws Exception
+    {
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+        factory.setSchema(schemaFactory.newSchema(new File(xsdFilename)));
+        factory.setNamespaceAware(true);
+
+        factory.newDocumentBuilder().parse(in);
+    }
 
     /**
      * Take an {@link InputStream} and parse it generating map of template ID to Message objects, types, and schema
@@ -279,6 +303,7 @@ public class XmlSchemaParser
         return attrNode.getNodeValue();
     }
 
+
     /**
      * Helper function to convert a schema byteOrderName into a {@link ByteOrder}
      *
@@ -299,7 +324,6 @@ public class XmlSchemaParser
                 return ByteOrder.LITTLE_ENDIAN;
         }
     }
-
 
     /**
      * Check name against validity for C++ and Java naming. Warning if not valid.
