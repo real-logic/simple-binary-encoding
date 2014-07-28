@@ -363,10 +363,16 @@
 
     <macrodef name="adb">
         <attribute name="command"/>
+        <attribute name="description" default=""/>
+        <attribute name="outputproperty" default=""/>
+        <attribute name="resultproperty" default=""/>
+        <attribute name="failonerror" default="true"/>
         <element name="args"/>
         <sequential>
-            <echo taskname="adb" message="Running @{command}"/>
-            <exec taskname="adb" executable="${adb.exe}" failonerror="true">
+            <echo taskname="adb" message="Running @{command}: @{description}"/>
+            <exec taskname="adb" executable="${adb.exe}" failonerror="@{failonerror}"
+                resultproperty="@{resultproperty}">
+                <redirector outputproperty="@{outputproperty}" alwayslog="true"/>
                 <arg value="@{command}"/>
                 <args/>
             </exec>
@@ -400,7 +406,7 @@
                 <compilerarg value="-XDignore.symbol.file"/>
             </javac>
 
-            <dex src="${dir.test.lib}/android/android-junit4-0.3.jar" destfile="${dir.test.android.dexedLibs}/android-junit4-0.3-dexed.jar"/>
+            <dex src="${dir.test.lib}/android/android-junit4-0.5.jar" destfile="${dir.test.android.dexedLibs}/android-junit4-0.5-dexed.jar"/>
             <dex src="${dir.test.lib}/junit-4.11.jar" destfile="${dir.test.android.dexedLibs}/junit-4.11-dexed.jar"/>
             <dex src="${dir.test.lib}/hamcrest-core-1.3.jar" destfile="${dir.test.android.dexedLibs}/hamcrest-core-1.3-dexed.jar"/>
             <dex src="${dir.test.lib}/hamcrest-library-1.3.jar" destfile="${dir.test.android.dexedLibs}/hamcrest-library-1.3-dexed.jar"/>
@@ -431,26 +437,52 @@
 
     <target name="android:test" depends="android:build:testpackage">
         <sequential>
+            <property name="project.app.package" value="uk.co.real_logic.sbe.android.test"/>
+            <property name="test.runner" value="com.uphyca.testing.JUnit4XMLInstrumentationTestRunner"/>
             <adb command="install">
                 <args>
                    <arg value="-r"/>
                    <arg path="${file.test.android.testapk.final}"/>
                 </args>
             </adb>
-            <adb command="shell">
+            <adb command="shell" description="Running tests">
                 <args>
-                   <arg line="am instrument -w -e xml true uk.co.real_logic.sbe.android.test/com.uphyca.testing.JUnit4XMLInstrumentationTestRunner"/>
+                   <arg line="am instrument -w -e xml true ${project.app.package}/${test.runner}"/>
                 </args>
             </adb>
-            <adb command="pull">
+            <!-- trying to get the test-results.xml file from one of the 2 possible locations-->
+            <!-- /data/data/${project.app.package}/files/test-results.xml -->
+            <!-- $EXTERNAL_STORAGE/Android/data/uk.co.real_logic.sbe.android.test/files/test-results.xml --> 
+            <adb command="shell" outputproperty="EXTERNAL_STORAGE" description="Get EXTERNAL_STORAGE property value">
                 <args>
-                   <arg value="/data/data/uk.co.real_logic.sbe.android.test/files/test-results.xml"/>
+                    <arg line="echo $EXTERNAL_STORAGE"/>
+                </args>
+            </adb>
+            <adb command="shell" outputproperty="FILE_ON_EXTERNAL_STORAGE" description="Check if test-results.xml file is present on the external storage">
+                <args>
+                    <arg line="ls ${EXTERNAL_STORAGE}/Android/data/uk.co.real_logic.sbe.android.test/files/test-results.xml >/dev/null 2>&amp;1 &amp;&amp; echo true || echo false"/>
+                </args>
+            </adb>
+            <property name="test-results"
+                value="${EXTERNAL_STORAGE}/Android/data/uk.co.real_logic.sbe.android.test/files/test-results.xml"
+                if:true="${FILE_ON_EXTERNAL_STORAGE}"/>
+            <property name="test-results"
+                value="/data/data/uk.co.real_logic.sbe.android.test/files/test-results.xml"
+                unless:true="${FILE_ON_EXTERNAL_STORAGE}"/>
+            <adb command="shell">
+                <args>
+                   <arg line="run-as ${project.app.package} chmod 644 ${test-results}"/>
+                </args>
+            </adb>
+            <adb command="pull" description="Pulling the test results from: ${test-results}">
+                <args>
+                   <arg value="${test-results}"/>
                    <arg path="${dir.reports.android.unit}/test-results.xml"/>
                 </args>
             </adb>
             <adb command="uninstall">
                 <args>
-                   <arg value="uk.co.real_logic.sbe.android.test"/>
+                   <arg value="${project.app.package}"/>
                 </args>
             </adb>
         </sequential>
