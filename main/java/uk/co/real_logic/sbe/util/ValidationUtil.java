@@ -15,6 +15,9 @@
  */
 package uk.co.real_logic.sbe.util;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Various validation utilities used across parser, IR, and generator */
 public class ValidationUtil
@@ -28,6 +31,28 @@ public class ValidationUtil
     {
         return Character.isLetterOrDigit(c) || c == '_';
     }
+
+    private static final Set<String> CPP_KEYWORDS = new HashSet<String>(Arrays.asList(new String[]
+            { "alignas", "and", "and_eq", "asm", "auto",
+            "bitand", "bitor", "bool", "break", "case",
+            "catch", "char", "class", "compl", "const",
+            "const_cast", "continue", "char16_t", "char32_t", "default",
+            "delete", "do", "double", "dynamic_cast", "else",
+            "enum", "explicit", "export", "extern", "false",
+            "float", "for", "friend", "goto", "if",
+            "inline", "int", "long", "mutable", "namespace",
+            "new", "not", "not_eq", "noexcept", "operator",
+            "or", "or_eq", "private", "protected", "public",
+            "register", "reinterpret_cast", "return", "short", "signed",
+            "sizeof", "static", "static_cast", "struct", "switch",
+            "template", "this", "throw", "true", "try",
+            "typedef", "typeid", "typename", "union", "unsigned",
+            "using", "virtual", "void", "volatile", "wchar_t",
+            "while", "xor", "xor_eq", "override",
+            // since C++11
+            "alignof", "constexpr", "decltype", "nullptr", "static_assert", "thread_local",
+            // since C++11 have special meaning, so avoid
+            "final" }));
 
     /**
      * Check value for validity of usage as a C++ identifier. A programmatic variable
@@ -43,96 +68,14 @@ public class ValidationUtil
     {
         if (possibleCppKeyword(value))
         {
-            switch (value)
+            if (CPP_KEYWORDS.contains(value))
             {
-                case "alignas":
-                case "alignof": // since C++11
-                case "and":
-                case "and_eq":
-                case "asm":
-                case "auto":
-                case "bitand":
-                case "bitor":
-                case "bool":
-                case "break":
-                case "case":
-                case "catch":
-                case "char":
-                case "class":
-                case "compl":
-                case "const":
-                case "const_cast":
-                case "continue":
-                case "char16_t":
-                case "char32_t":
-                case "constexpr": // since C++11
-                case "default":
-                case "delete":
-                case "do":
-                case "double":
-                case "dynamic_cast":
-                case "decltype": // since C++11
-                case "else":
-                case "enum":
-                case "explicit":
-                case "export":
-                case "extern":
-                case "false":
-                case "float":
-                case "for":
-                case "friend":
-                case "goto":
-                case "if":
-                case "inline":
-                case "int":
-                case "long":
-                case "mutable":
-                case "namespace":
-                case "new":
-                case "not":
-                case "not_eq":
-                case "noexcept":
-                case "nullptr": // since C++11
-                case "operator":
-                case "or":
-                case "or_eq":
-                case "private":
-                case "protected":
-                case "public":
-                case "register":
-                case "reinterpret_cast":
-                case "return":
-                case "short":
-                case "signed":
-                case "sizeof":
-                case "static":
-                case "static_cast":
-                case "struct":
-                case "switch":
-                case "static_assert": // since C++11
-                case "template":
-                case "this":
-                case "throw":
-                case "true":
-                case "try":
-                case "typedef":
-                case "typeid":
-                case "typename":
-                case "thread_local": // since C++11
-                case "union":
-                case "unsigned":
-                case "using":
-                case "virtual":
-                case "void":
-                case "volatile":
-                case "wchar_t":
-                case "while":
-                case "xor":
-                case "xor_eq":
-                case "override":
-                case "final": // since C++11 have special meaning, so avoid
                     return false;
             }
+        }
+        else
+        {
+            return false;
         }
 
         return true;
@@ -160,6 +103,20 @@ public class ValidationUtil
         return true;
     }
 
+    private static final Set<String> JAVA_KEYWORDS = new HashSet<String>(Arrays.asList(new String[]
+            { "abstract", "assert", "boolean", "break", "byte",
+            "case", "catch", "char", "class", "const",
+            "continue", "default", "do", "double", "else",
+            "enum", "extends", "final", "finally", "float",
+            "for", "goto", "if", "implements", "import",
+            "instanceof", "int", "interface", "long", "native",
+            "new", "package", "private", "protected", "public",
+            "return", "short", "static", "strictfp", "super",
+            "switch", "synchronized", "this", "throw", "throws",
+            "transient", "try", "void", "volatile", "while",
+            // literals
+            "null", "true", "false" }));
+
     /**
      * Check string for validity of usage as a Java identifier. Avoiding keywords.
      *
@@ -178,64 +135,14 @@ public class ValidationUtil
         {
             if (possibleJavaKeyword(token))
             {
-                switch (token)
+                if (JAVA_KEYWORDS.contains(token))
                 {
-                    case "abstract":
-                    case "assert":
-                    case "boolean":
-                    case "break":
-                    case "byte":
-                    case "case":
-                    case "catch":
-                    case "char":
-                    case "class":
-                    case "const":
-                    case "continue":
-                    case "default":
-                    case "do":
-                    case "double":
-                    case "else":
-                    case "enum":
-                    case "extends":
-                    case "final":
-                    case "finally":
-                    case "float":
-                    case "for":
-                    case "goto":
-                    case "if":
-                    case "implements":
-                    case "import":
-                    case "instanceof":
-                    case "int":
-                    case "interface":
-                    case "long":
-                    case "native":
-                    case "new":
-                    case "package":
-                    case "private":
-                    case "protected":
-                    case "public":
-                    case "return":
-                    case "short":
-                    case "static":
-                    case "strictfp":
-                    case "super":
-                    case "switch":
-                    case "synchronized":
-                    case "this":
-                    case "throw":
-                    case "throws":
-                    case "transient":
-                    case "try":
-                    case "void":
-                    case "volatile":
-                    case "while":
-                    // literals
-                    case "null":
-                    case "true":
-                    case "false":
-                        return false;
+                    return false;
                 }
+            }
+            else
+            {
+                return false;
             }
         }
         return true;
