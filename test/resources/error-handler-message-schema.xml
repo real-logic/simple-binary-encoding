@@ -20,40 +20,40 @@
     </types>
 
     <!-- blockLength too small for start of group -->
-    <message name="Message 1" id="1" blockLength="2">
+    <message name="Message_1" id="1" blockLength="2">
         <!-- mismatched semanticType -->
-        <field name="mismatched semanticType" id="1" type="NamedCharType" semanticType="int"/>
+        <field name="mismatched_semanticType" id="1" type="NamedCharType" semanticType="int"/>
 
         <!-- field has no semanticType -->
-        <field name="no field semanticType" id="2" type="NamedCharType"/>
+        <field name="no_field_semanticType" id="2" type="NamedCharType"/>
 
         <!-- field has semanticType, type does not -->
-        <field name="no type semanticType" id="3" type="CharTypeNoFixUsage"/>
+        <field name="no_type_semanticType" id="3" type="CharTypeNoFixUsage"/>
 
         <!-- unknown type for field -->
-        <field name="unknown type" id="4" type="XXXX"/>
+        <field name="unknown_type" id="4" type="XXXX"/>
 
         <!-- field offset too small -->
-        <field name="offset too small" id="5" type="uint8" offset="1" semanticType="int"/>
+        <field name="offset_too_small" id="5" type="uint8" offset="1" semanticType="int"/>
 
         <!-- no matching dimensionType composite and blockLength too small -->
-        <group name="group 1" id="100" blockLength="3">
-            <field name="just a name" id="10" type="uint64" semanticType="int"/>
+        <group name="group_1" id="100" blockLength="3">
+            <field name="just_a_name" id="10" type="uint64" semanticType="int"/>
         </group>
 
         <!-- dimensionType is invalid (2 missing fields) -->
-        <group name="group 2" id="101" dimensionType="invalidGroupSizeEncoding">
-            <field name="just another name" id="11" type="uint64" semanticType="int"/>
+        <group name="group_2" id="101" dimensionType="invalidGroupSizeEncoding">
+            <field name="just_another_name" id="11" type="uint64" semanticType="int"/>
         </group>
 
         <!-- invalid variable length field (2 missing fields) -->
-        <data name="has no length field" id="100" type="invalidVarDataEncoding"/>
+        <data name="has_no_length_field" id="100" type="invalidVarDataEncoding"/>
 
         <!-- variable length field without right type-->
-        <data name="has invalid type" id="101" type="RawData"/>
+        <data name="has_invalid_type" id="101" type="RawData"/>
 
         <!-- field declared after group -->
-        <field name="field misordered" id="20" type="uint32" semanticType="int"/>
+        <field name="field_misordered" id="20" type="uint32" semanticType="int"/>
 
     </message>
 </messageSchema>

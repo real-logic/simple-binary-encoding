@@ -6,8 +6,8 @@
                byteOrder="littleEndian">
     <types>
         <enum name="NullBoolean" encodingType="uint8" nullValue="255" semanticType="Boolean">
-            <validValue name="false">0</validValue>
-            <validValue name="true">1</validValue>
+            <validValue name="FALSE">0</validValue>
+            <validValue name="TRUE">1</validValue>
         </enum>
         <type name="ConstButNoValue" primitiveType="char" presence="constant"></type>
     </types>

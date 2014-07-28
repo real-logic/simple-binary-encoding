@@ -18,7 +18,9 @@ package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.TestUtil;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -29,6 +31,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -41,6 +44,9 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class ErrorHandlerTest
 {
+    @Rule
+    public final ExpectedException exceptionRule = ExpectedException.none();
+
     @Test
     public void shouldNotExitOnTypeErrorsAndWarnings()
         throws Exception
@@ -91,94 +97,76 @@ public class ErrorHandlerTest
         assertThat(valueOf(handler.warningCount()), is(valueOf(5)));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldExitAfterTypes()
         throws Exception
     {
+        exceptionRule.expect(IllegalStateException.class);
+        exceptionRule.expectMessage("had 2 errors");
+
         final ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
 
-        try
-        {
-            parse(TestUtil.getLocalResource("error-handler-types-schema.xml"), options);
-        }
-        catch (final IllegalArgumentException shouldHaveOnly2Errors)
-        {
-            assertThat(shouldHaveOnly2Errors.getMessage(), is("had 2 errors"));
-
-            throw shouldHaveOnly2Errors;
-        }
+        parse(TestUtil.getLocalResource("error-handler-types-schema.xml"), options);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldExitAfterTypesWhenDupTypesDefined()
         throws Exception
     {
+        exceptionRule.expect(IllegalStateException.class);
+        exceptionRule.expectMessage("had 1 warnings");
+
         final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
-        try
-        {
-            parse(TestUtil.getLocalResource("error-handler-types-dup-schema.xml"), options);
-        }
-        catch (final IllegalArgumentException shouldHaveOnly1Warning)
-        {
-            assertThat(shouldHaveOnly1Warning.getMessage(), is("had 1 warnings"));
-
-            throw shouldHaveOnly1Warning;
-        }
+        parse(TestUtil.getLocalResource("error-handler-types-dup-schema.xml"), options);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldExitAfterMessageWhenDupMessageIdsDefined()
         throws Exception
     {
+        exceptionRule.expect(IllegalStateException.class);
+        exceptionRule.expectMessage("had 1 errors");
+
         final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
-        try
-        {
-            parse(TestUtil.getLocalResource("error-handler-dup-message-schema.xml"), options);
-        }
-        catch (final IllegalArgumentException shouldHaveOnly1Error)
-        {
-            assertThat(shouldHaveOnly1Error.getMessage(), is("had 1 errors"));
-
-            throw shouldHaveOnly1Error;
-        }
+        parse(TestUtil.getLocalResource("error-handler-dup-message-schema.xml"), options);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldExitAfterMessage()
         throws Exception
     {
+        exceptionRule.expect(IllegalStateException.class);
+        exceptionRule.expectMessage("had 11 errors");
+
         final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
-        try
-        {
-            parse(TestUtil.getLocalResource("error-handler-message-schema.xml"), options);
-        }
-        catch (final IllegalArgumentException shouldHaveOnly12Errors)
-        {
-            assertThat(shouldHaveOnly12Errors.getMessage(), is("had 12 errors"));
-
-            throw shouldHaveOnly12Errors;
-        }
+        parse(TestUtil.getLocalResource("error-handler-message-schema.xml"), options);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldExitAfterMessageWhenGroupDimensionsNotComposite()
         throws Exception
     {
+        exceptionRule.expect(IllegalStateException.class);
+        exceptionRule.expectMessage("had 1 errors");
+
         final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
-        try
-        {
-            parse(TestUtil.getLocalResource("error-handler-group-dimensions-schema.xml"), options);
-        }
-        catch (final IllegalArgumentException shouldHaveOnly1Error)
-        {
-            assertThat(shouldHaveOnly1Error.getMessage(), is("had 1 errors"));
+        parse(TestUtil.getLocalResource("error-handler-group-dimensions-schema.xml"), options);
+    }
 
-            throw shouldHaveOnly1Error;
-        }
+    @Test
+    public void shouldExitInvalidFieldNames()
+        throws Exception
+    {
+        exceptionRule.expect(IllegalStateException.class);
+        exceptionRule.expectMessage("had 8 errors");
+
+        final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
+
+        parse(TestUtil.getLocalResource("error-handler-invalid-name.xml"), options);
     }
 
     /*
