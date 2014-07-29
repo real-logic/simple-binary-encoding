@@ -497,6 +497,7 @@
                  use="true"
                  windowtitle="Simple Binary Encoding">
             <arg value="-XDignore.symbol.file"/>
+            <link href="http://docs.oracle.com/javase/7/docs/api/"/>
             <doctitle><![CDATA[<h1>Simple Binary Encoding</h1>]]></doctitle>
             <bottom><![CDATA[<i>Copyright &#169; 2013 Real Logic Ltd. All Rights Reserved.</i>]]></bottom>
         </javadoc>

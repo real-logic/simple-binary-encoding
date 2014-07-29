@@ -42,7 +42,7 @@ public class DirectBuffer
 
     //
     //"effectiveDirectAddress" type changed from int to long in changeset: 0121106d9dc1ba713b53822886355e4d9339e852 (Android 4.3 - api 18)
-    //at the same time, methods inside libcore.io.Memory where changed to use long addresses instead of ints 
+    //at the same time, methods inside libcore.io.Memory where changed to use long addresses instead of ints
     //https://android.googlesource.com/platform/libcore/+/0121106d9dc1ba713b53822886355e4d9339e852%5E%21/luni/src/main/java/java/nio/Buffer.java
     //
     //Added to Buffer in changeset: bd8ecd863aa83df50d7ce8f5950d8645ab6356af (Android 2.3 - api 9)
