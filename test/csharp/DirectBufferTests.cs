@@ -71,6 +71,53 @@ namespace Adaptive.SimpleBinaryEncoding.Tests
             directBuffer.Dispose();
         }
 
+        [Test]
+        public void Reallocate()
+        {
+            const int initialBufferSize = 8;
+            var initialBuffer = new Byte[initialBufferSize];
+            
+            const int biggerBufferSize = 100;
+            var biggerBuffer = new byte[biggerBufferSize];
+            
+            var reallocableBuffer = new DirectBuffer(initialBuffer, 
+                (existingSize, requestedSize) =>
+                {
+                    Assert.AreEqual(initialBufferSize, existingSize);
+                    Assert.AreEqual(16, requestedSize);
+                    return biggerBuffer;
+                });
+            
+            reallocableBuffer.CheckLimit(8);
+            reallocableBuffer.Int64PutLittleEndian(0, 1);
+            Assert.AreEqual(initialBufferSize, reallocableBuffer.Capacity);
+
+            reallocableBuffer.CheckLimit(16);
+            reallocableBuffer.Int64PutLittleEndian(8, 2);
+            Assert.AreEqual(biggerBufferSize, reallocableBuffer.Capacity);
+
+            Assert.AreEqual(1, BitConverter.ToInt64(biggerBuffer, 0));
+            Assert.AreEqual(2, BitConverter.ToInt64(biggerBuffer, 8));
+        }
+
+        [Test]
+        public void ReallocateFailure()
+        {
+            const int initialBufferSize = 8;
+            var initialBuffer = new Byte[initialBufferSize];
+            var reallocableBuffer = new DirectBuffer(initialBuffer, (existingSize, requestedSize) =>
+            {
+                Assert.AreEqual(initialBufferSize, existingSize);
+                Assert.AreEqual(16, requestedSize);
+                return null;
+            });
+
+            reallocableBuffer.CheckLimit(8);
+            reallocableBuffer.Int64PutLittleEndian(0, 1);
+            Assert.AreEqual(initialBufferSize, reallocableBuffer.Capacity);
+            Assert.Throws<IndexOutOfRangeException>(() => reallocableBuffer.CheckLimit(16));
+        }
+
         #region Byte
 
         [TestCase(5, 0)]
