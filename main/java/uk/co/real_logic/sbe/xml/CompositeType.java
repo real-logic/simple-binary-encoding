@@ -35,8 +35,8 @@ import java.util.Map;
  */
 public class CompositeType extends Type
 {
-    private final List<EncodedDataType> compositeList = new ArrayList<>();
-    private final Map<String, EncodedDataType> compositeMap = new HashMap<>();
+    private final List<EncodedDataType> containedTypeList = new ArrayList<>();
+    private final Map<String, EncodedDataType> containedTypeByNameMap = new HashMap<>();
     private final int sinceVersion;
 
     /**
@@ -58,14 +58,14 @@ public class CompositeType extends Type
         {
             final EncodedDataType type = new EncodedDataType(list.item(i));
 
-            if (compositeMap.get(type.name()) != null)
+            if (containedTypeByNameMap.get(type.name()) != null)
             {
-                XmlSchemaParser.handleError(node, "composite already has type name: " + type.name());
+                XmlSchemaParser.handleError(node, "composite already contains type named: " + type.name());
             }
             else
             {
-                compositeList.add(type);
-                compositeMap.put(type.name(), type);
+                containedTypeList.add(type);
+                containedTypeByNameMap.put(type.name(), type);
             }
         }
     }
@@ -78,7 +78,7 @@ public class CompositeType extends Type
      */
     public EncodedDataType getType(final String name)
     {
-        return compositeMap.get(name);
+        return containedTypeByNameMap.get(name);
     }
 
     /**
@@ -90,7 +90,7 @@ public class CompositeType extends Type
     {
         int size = 0;
 
-        for (final EncodedDataType t : compositeList)
+        for (final EncodedDataType t : containedTypeList)
         {
             if (t.isVariableLength())
             {
@@ -120,7 +120,7 @@ public class CompositeType extends Type
      */
     public List<EncodedDataType> getTypeList()
     {
-        return compositeList;
+        return containedTypeList;
     }
 
     /**
@@ -129,7 +129,7 @@ public class CompositeType extends Type
      */
     public void makeDataFieldCompositeType()
     {
-        final EncodedDataType edt = compositeMap.get("varData");
+        final EncodedDataType edt = containedTypeByNameMap.get("varData");
         if (edt != null)
         {
             edt.variableLength(true);
@@ -144,12 +144,12 @@ public class CompositeType extends Type
      */
     public void checkForWellFormedGroupSizeEncoding(final Node node)
     {
-        if (compositeMap.get("blockLength") == null)
+        if (containedTypeByNameMap.get("blockLength") == null)
         {
             XmlSchemaParser.handleError(node, "composite for group size encoding must have \"blockLength\"");
         }
 
-        if (compositeMap.get("numInGroup") == null)
+        if (containedTypeByNameMap.get("numInGroup") == null)
         {
             XmlSchemaParser.handleError(node, "composite for group size encoding must have \"numInGroup\"");
         }
@@ -163,12 +163,12 @@ public class CompositeType extends Type
      */
     public void checkForWellFormedVariableLengthDataEncoding(final Node node)
     {
-        if (compositeMap.get("length") == null)
+        if (containedTypeByNameMap.get("length") == null)
         {
             XmlSchemaParser.handleError(node, "composite for variable length data encoding must have \"length\"");
         }
 
-        if (compositeMap.get("varData") == null)
+        if (containedTypeByNameMap.get("varData") == null)
         {
             XmlSchemaParser.handleError(node, "composite for variable length data encoding must have \"varData\"");
         }
@@ -182,22 +182,22 @@ public class CompositeType extends Type
      */
     public void checkForWellFormedMessageHeader(final Node node)
     {
-        if (compositeMap.get("blockLength") == null)
+        if (containedTypeByNameMap.get("blockLength") == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"blockLength\"");
         }
 
-        if (compositeMap.get("templateId") == null)
+        if (containedTypeByNameMap.get("templateId") == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"templateId\"");
         }
 
-        if (compositeMap.get("schemaId") == null)
+        if (containedTypeByNameMap.get("schemaId") == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"schemaId\"");
         }
 
-        if (compositeMap.get("version") == null)
+        if (containedTypeByNameMap.get("version") == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"version\"");
         }
