@@ -175,4 +175,33 @@ public final class Memory {
     public static native void pokeIntArray(long address, int[] src, int offset, int count, boolean swap);
     public static native void pokeLongArray(long address, long[] src, int offset, int count, boolean swap);
     public static native void pokeShortArray(long address, short[] src, int offset, int count, boolean swap);
+    
+    /*
+     * old versions with int address
+     */
+    public static native byte peekByte(int address);
+    public static native int peekInt(int address, boolean swap);
+    public static native long peekLong(int address, boolean swap);
+    public static native short peekShort(int address, boolean swap);
+
+    public static native void peekByteArray(int address, byte[] dst, int dstOffset, int byteCount);
+    public static native void peekCharArray(int address, char[] dst, int dstOffset, int charCount, boolean swap);
+    public static native void peekDoubleArray(int address, double[] dst, int dstOffset, int doubleCount, boolean swap);
+    public static native void peekFloatArray(int address, float[] dst, int dstOffset, int floatCount, boolean swap);
+    public static native void peekIntArray(int address, int[] dst, int dstOffset, int intCount, boolean swap);
+    public static native void peekLongArray(int address, long[] dst, int dstOffset, int longCount, boolean swap);
+    public static native void peekShortArray(int address, short[] dst, int dstOffset, int shortCount, boolean swap);
+
+    public static native void pokeByte(int address, byte value);
+    public static native void pokeInt(int address, int value, boolean swap);
+    public static native void pokeLong(int address, long value, boolean swap);
+    public static native void pokeShort(int address, short value, boolean swap);
+
+    public static native void pokeByteArray(int address, byte[] src, int offset, int count);
+    public static native void pokeCharArray(int address, char[] src, int offset, int count, boolean swap);
+    public static native void pokeDoubleArray(int address, double[] src, int offset, int count, boolean swap);
+    public static native void pokeFloatArray(int address, float[] src, int offset, int count, boolean swap);
+    public static native void pokeIntArray(int address, int[] src, int offset, int count, boolean swap);
+    public static native void pokeLongArray(int address, long[] src, int offset, int count, boolean swap);
+    public static native void pokeShortArray(int address, short[] src, int offset, int count, boolean swap);
 }

@@ -45,11 +45,15 @@ public class DirectBuffer
     //at the same time, methods inside libcore.io.Memory where changed to use long addresses instead of ints
     //https://android.googlesource.com/platform/libcore/+/0121106d9dc1ba713b53822886355e4d9339e852%5E%21/luni/src/main/java/java/nio/Buffer.java
     //
+    //In api 14 org/apache/harmony/luni/platform/OSMemory.java was renamed to libcore/io/Memory.java
+    //https://android.googlesource.com/platform/libcore/+/f934c3d2c8dd9e6bc5299cef41adace2a671637d
+    //DirectBuffer class supports api 14 or later.
+    //
     //Added to Buffer in changeset: bd8ecd863aa83df50d7ce8f5950d8645ab6356af (Android 2.3 - api 9)
     //https://android.googlesource.com/platform/libcore/+/bd8ecd863aa83df50d7ce8f5950d8645ab6356af%5E%21/nio/src/main/java/java/nio/Buffer.java
 
     private static final Field EFFECTIVE_DIRECT_ADDRESS_FIELD;
-    // private static final boolean USE_LONG_ADDRESS;
+    private static final boolean USE_LONG_ADDRESS;
 
     static
     {
@@ -66,7 +70,7 @@ public class DirectBuffer
             };
 
             EFFECTIVE_DIRECT_ADDRESS_FIELD = AccessController.doPrivileged(action);
-            // USE_LONG_ADDRESS = EFFECTIVE_DIRECT_ADDRESS_FIELD.getType() == long.class;
+            USE_LONG_ADDRESS = EFFECTIVE_DIRECT_ADDRESS_FIELD.getType() == long.class;
         }
         catch (final Exception ex)
         {
@@ -120,21 +124,12 @@ public class DirectBuffer
     {
         byteBuffer = buffer;
 
-        if (buffer.isDirect())
+        if (!buffer.hasArray())
         {
             byteArray = null;
             theBuffer = byteBuffer;
             offset = 0;
-            try
-            {
-                effectiveDirectAddress = EFFECTIVE_DIRECT_ADDRESS_FIELD.getLong(buffer);
-                // effectiveDirectAddress = (USE_LONG_ADDRESS) ? EFFECTIVE_DIRECT_ADDRESS_FIELD.getLong(buffer)
-                //         : EFFECTIVE_DIRECT_ADDRESS_FIELD.getInt(buffer);
-            }
-            catch (IllegalAccessException | IllegalArgumentException e)
-            {
-                e.printStackTrace();
-            }
+            effectiveDirectAddress = getEffectiveAddress(buffer);
         }
         else
         {
@@ -232,13 +227,15 @@ public class DirectBuffer
      */
     public long getLong(final int index, final ByteOrder byteOrder)
     {
-        if (byteArray != null)
+        if (byteArray == null)
         {
-            return Memory.peekLong(byteArray, offset + index, byteOrder);
+            final long address = effectiveDirectAddress + index;
+            final boolean swapBytes = NATIVE_BYTE_ORDER != byteOrder;
+            return USE_LONG_ADDRESS ? Memory.peekLong(address, swapBytes) : Memory.peekLong((int) address, swapBytes);
         }
         else
         {
-            return Memory.peekLong(effectiveDirectAddress + index, NATIVE_BYTE_ORDER != byteOrder);
+            return Memory.peekLong(byteArray, offset + index, byteOrder);
         }
     }
 
@@ -251,13 +248,22 @@ public class DirectBuffer
      */
     public void putLong(final int index, final long value, final ByteOrder byteOrder)
     {
-        if (byteArray != null)
+        if (byteArray == null)
         {
-            Memory.pokeLong(byteArray, offset + index, value, byteOrder);
+            final long address = effectiveDirectAddress + index;
+            final boolean swapBytes = NATIVE_BYTE_ORDER != byteOrder;
+            if (USE_LONG_ADDRESS)
+            {
+                Memory.pokeLong(address, value, swapBytes);
+            }
+            else
+            {
+                Memory.pokeLong((int) address, value, swapBytes);
+            }
         }
         else
         {
-            Memory.pokeLong(effectiveDirectAddress + index, value, NATIVE_BYTE_ORDER != byteOrder);
+            Memory.pokeLong(byteArray, offset + index, value, byteOrder);
         }
     }
 
@@ -270,13 +276,15 @@ public class DirectBuffer
      */
     public int getInt(final int index, final ByteOrder byteOrder)
     {
-        if (byteArray != null)
+        if (byteArray == null)
         {
-            return Memory.peekInt(byteArray, offset + index, byteOrder);
+            final long address = effectiveDirectAddress + index;
+            final boolean swapBytes = NATIVE_BYTE_ORDER != byteOrder;
+            return USE_LONG_ADDRESS ? Memory.peekInt(address, swapBytes) : Memory.peekInt((int) address, swapBytes);
         }
         else
         {
-            return Memory.peekInt(effectiveDirectAddress + index, NATIVE_BYTE_ORDER != byteOrder);
+            return Memory.peekInt(byteArray, offset + index, byteOrder);
         }
     }
 
@@ -289,13 +297,22 @@ public class DirectBuffer
      */
     public void putInt(final int index, final int value, final ByteOrder byteOrder)
     {
-        if (byteArray != null)
+        if (byteArray == null)
         {
-            Memory.pokeInt(byteArray, offset + index, value, byteOrder);
+            final long address = effectiveDirectAddress + index;
+            final boolean swapBytes = NATIVE_BYTE_ORDER != byteOrder;
+            if (USE_LONG_ADDRESS)
+            {
+                Memory.pokeInt(address, value, swapBytes);
+            }
+            else
+            {
+                Memory.pokeInt((int) address, value, swapBytes);
+            }
         }
         else
         {
-            Memory.pokeInt(effectiveDirectAddress + index, value, NATIVE_BYTE_ORDER != byteOrder);
+            Memory.pokeInt(byteArray, offset + index, value, byteOrder);
         }
     }
 
@@ -356,13 +373,15 @@ public class DirectBuffer
      */
     public short getShort(final int index, final ByteOrder byteOrder)
     {
-        if (byteArray != null)
+        if (byteArray == null)
         {
-            return Memory.peekShort(byteArray, offset + index, byteOrder);
+            final long address = effectiveDirectAddress + index;
+            final boolean swapBytes = NATIVE_BYTE_ORDER != byteOrder;
+            return USE_LONG_ADDRESS ? Memory.peekShort(address, swapBytes) : Memory.peekShort((int) address, swapBytes);
         }
         else
         {
-            return Memory.peekShort(effectiveDirectAddress + index, NATIVE_BYTE_ORDER != byteOrder);
+            return Memory.peekShort(byteArray, offset + index, byteOrder);
         }
     }
 
@@ -375,13 +394,22 @@ public class DirectBuffer
      */
     public void putShort(final int index, final short value, final ByteOrder byteOrder)
     {
-        if (byteArray != null)
+        if (byteArray == null)
         {
-            Memory.pokeShort(byteArray, offset + index, value, byteOrder);
+            final long address = effectiveDirectAddress + index;
+            final boolean swapBytes = NATIVE_BYTE_ORDER != byteOrder;
+            if (USE_LONG_ADDRESS)
+            {
+                Memory.pokeShort(address, value, swapBytes);
+            }
+            else
+            {
+                Memory.pokeShort((int) address, value, swapBytes);
+            }
         }
         else
         {
-            Memory.pokeShort(effectiveDirectAddress + index, value, NATIVE_BYTE_ORDER != byteOrder);
+            Memory.pokeShort(byteArray, offset + index, value, byteOrder);
         }
     }
 
@@ -393,13 +421,14 @@ public class DirectBuffer
      */
     public byte getByte(final int index)
     {
-        if (byteArray != null)
+        if (byteArray == null)
         {
-            return byteArray[offset + index];
+            final long address = effectiveDirectAddress + index;
+            return USE_LONG_ADDRESS ? Memory.peekByte(address) : Memory.peekByte((int) address);
         }
         else
         {
-            return Memory.peekByte(effectiveDirectAddress + index);
+            return byteArray[offset + index];
         }
     }
 
@@ -411,13 +440,21 @@ public class DirectBuffer
      */
     public void putByte(final int index, final byte value)
     {
-        if (byteArray != null)
+        if (byteArray == null)
         {
-            byteArray[offset + index] = value;
+            final long address = effectiveDirectAddress + index;
+            if (USE_LONG_ADDRESS)
+            {
+                Memory.pokeByte(address, value);
+            }
+            else
+            {
+                Memory.pokeByte((int) address, value);
+            }
         }
         else
         {
-            Memory.pokeByte(effectiveDirectAddress + index, value);
+            byteArray[offset + index] = value;
         }
     }
 
@@ -485,7 +522,7 @@ public class DirectBuffer
 
         final int dstOffset;
         final Object theDstBuffer;
-        if (dstBuffer.isDirect())
+        if (!dstBuffer.hasArray())
         {
             theDstBuffer = dstBuffer;
             dstOffset = dstBuffer.position();
@@ -562,7 +599,7 @@ public class DirectBuffer
 
         final int srcOffset;
         final Object theSrcBuffer;
-        if (srcBuffer.isDirect())
+        if (!srcBuffer.hasArray())
         {
             theSrcBuffer = srcBuffer;
             srcOffset = srcBuffer.position();
@@ -577,5 +614,28 @@ public class DirectBuffer
         srcBuffer.position(srcBuffer.position() + count);
 
         return count;
+    }
+
+    private static long getEffectiveAddress(final ByteBuffer buffer)
+    {
+        try
+        {
+            if (USE_LONG_ADDRESS)
+            {
+                return EFFECTIVE_DIRECT_ADDRESS_FIELD.getLong(buffer);
+            }
+            else
+            {
+                return EFFECTIVE_DIRECT_ADDRESS_FIELD.getInt(buffer) & 0xFFFFFFFF;
+            }
+        }
+        catch (IllegalArgumentException e)
+        {
+            return 0;
+        }
+        catch (IllegalAccessException e)
+        {
+            return 0;
+        }
     }
 }
