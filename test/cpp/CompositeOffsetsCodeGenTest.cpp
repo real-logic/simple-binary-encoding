@@ -106,7 +106,7 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeAndDecodeMessageHeaderCo
     EXPECT_EQ(hdrDecoder_.version(), TestMessage1::sbeSchemaVersion());
 }
 
-TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeCarCorrectly)
+TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageCorrectly)
 {
     char buffer[2048];
     int sz = encodeMsg(buffer, 0, sizeof(buffer));
@@ -119,5 +119,39 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeCarCorrectly)
     EXPECT_EQ(*(::int64_t *)(buffer + 16), 20);
     EXPECT_EQ(*(::uint64_t *)(buffer + 24), 30);
     EXPECT_EQ(*(::int64_t *)(buffer + 32), 40);
+}
+
+TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToDecodeHeaderAndMsgCorrectly)
+{
+    char buffer[2048];
+    int hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
+    int sz = encodeMsg(buffer, hdrSz, sizeof(buffer));
+
+    EXPECT_EQ(hdrSz, 12);
+    EXPECT_EQ(sz, 40);
+
+    hdrDecoder_.wrap(buffer, 0, 0, hdrSz + sz);
+
+    EXPECT_EQ(hdrDecoder_.blockLength(), TestMessage1::sbeBlockLength());
+    EXPECT_EQ(hdrDecoder_.templateId(), TestMessage1::sbeTemplateId());
+    EXPECT_EQ(hdrDecoder_.schemaId(), TestMessage1::sbeSchemaId());
+    EXPECT_EQ(hdrDecoder_.version(), TestMessage1::sbeSchemaVersion());
+
+    msgDecoder_.wrapForDecode(buffer, hdrSz, TestMessage1::sbeBlockLength(), TestMessage1::sbeSchemaVersion(), hdrSz + sz);
+
+    TestMessage1::Entries entries = msgDecoder_.entries();
+    EXPECT_EQ(entries.count(), 2);
+
+    ASSERT_TRUE(entries.hasNext());
+    entries.next();
+    EXPECT_EQ(entries.tagGroup1(), 10);
+    EXPECT_EQ(entries.tagGroup2(), 20);
+
+    ASSERT_TRUE(entries.hasNext());
+    entries.next();
+    EXPECT_EQ(entries.tagGroup1(), 30);
+    EXPECT_EQ(entries.tagGroup2(), 40);
+
+    EXPECT_EQ(msgDecoder_.size(), 40);
 }
 
