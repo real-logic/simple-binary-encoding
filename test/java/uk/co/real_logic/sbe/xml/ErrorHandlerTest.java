@@ -158,6 +158,18 @@ public class ErrorHandlerTest
     }
 
     @Test
+    public void shouldExitAfterTypesWhenCompositeOffsetsIncorrect()
+        throws Exception
+    {
+        exceptionRule.expect(IllegalStateException.class);
+        exceptionRule.expectMessage("had 2 errors");
+
+        final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
+
+        parse(TestUtil.getLocalResource("error-handler-invalid-composite-offsets-schema.xml"), options);
+    }
+
+    @Test
     public void shouldExitInvalidFieldNames()
         throws Exception
     {

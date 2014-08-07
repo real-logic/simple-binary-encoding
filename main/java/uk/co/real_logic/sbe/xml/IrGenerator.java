@@ -195,6 +195,11 @@ public class IrGenerator
         int offset = 0;
         for (final EncodedDataType edt : type.getTypeList())
         {
+            if (edt.offsetAttribute() != -1)
+            {
+                offset = edt.offsetAttribute();
+            }
+
             add(edt, offset, field);
             offset += edt.size();
         }

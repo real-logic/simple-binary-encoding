@@ -149,4 +149,24 @@ public class OffsetFileTest
         assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(64)));
         assertThat(valueOf(fields.get(1).type().size()), is(valueOf(-1)));
     }
+
+    @Test
+    public void shouldCalculateCompositeSizeWithOffsetsSpecified()
+        throws Exception
+    {
+        final MessageSchema schema = parse(TestUtil.getLocalResource("composite-offsets-schema.xml"), ParserOptions.DEFAULT);
+        final CompositeType header = schema.messageHeader();
+
+        assertThat(header.size(), is(valueOf(12)));
+    }
+
+    @Test
+    public void shouldCalculateDimensionSizeWithOffsetsSpecified()
+        throws Exception
+    {
+        final MessageSchema schema = parse(TestUtil.getLocalResource("composite-offsets-schema.xml"), ParserOptions.DEFAULT);
+        final CompositeType dimensions = schema.getMessage(1).fields().get(0).dimensionType();
+
+        assertThat(dimensions.size(), is(valueOf(8)));
+    }
 }
