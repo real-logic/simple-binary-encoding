@@ -216,6 +216,7 @@
                 <include name="**/*.java"/>
                 <exclude name="**/ir/generated/**"/>
                 <exclude name="libcore/**/*.java"/>
+                <exclude name="sun/misc/*.java"/>
             </fileset>
             <fileset dir="${dir.test.src}">
                 <include name="**/*.java"/>
@@ -272,11 +273,12 @@
             <javac srcdir="${dir.main.android.src}" destdir="${dir.main.android.libcore.build}" includeAntRuntime="false" debug="true"
                 bootclasspath="${android.bootclasspath}">
                 <include name="libcore/**/*.java"/>
+            	<include name="sun/misc/*.java"/>
                 <compilerarg value="-Xlint:unchecked"/>
                 <compilerarg value="-XDignore.symbol.file"/>
             </javac>
             <jar destfile="${android.libcore.io.memory.jar}">
-                <fileset dir="${dir.main.android.src}" includes="libcore/,NOTICE"/>
+                <fileset dir="${dir.main.android.src}" includes="libcore/,sun/,NOTICE"/>
                 <fileset dir="${dir.main.android.libcore.build}"/>
             </jar>
         </sequential>
@@ -541,7 +543,7 @@
 
     <target name="distWithAndroid" depends="android:build, dist" description="Generate the distribution">
         <jar destfile="${sbe.android.jar}">
-            <fileset dir="${dir.main.android.build}" excludes="libcore/"/>
+            <fileset dir="${dir.main.android.build}" excludes="libcore/,sun/"/>
         </jar>
         <jar destfile="${sbe.android.sources.jar}">
             <fileset dir="${dir.main.src}">
