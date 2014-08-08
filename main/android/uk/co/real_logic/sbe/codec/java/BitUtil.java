@@ -30,7 +30,8 @@ final class BitUtil
     private static final long EFFECTIVE_DIRECT_ADDRESS_FIELD_OFFSET;
     static final long POSITION_FIELD_OFFSET;
     private static final Unsafe UNSAFE;
-    static final boolean USE_LONG_ADDRESS;
+    private static final MemoryAccess MEMORY_ACCESS;
+    private static final boolean USE_LONG_ADDRESS;
 
     static
     {
@@ -42,6 +43,7 @@ final class BitUtil
             Field effectiveDirectAddressField = getField(Buffer.class, "effectiveDirectAddress");
             EFFECTIVE_DIRECT_ADDRESS_FIELD_OFFSET = UNSAFE.objectFieldOffset(effectiveDirectAddressField);
             USE_LONG_ADDRESS = effectiveDirectAddressField.getType() == long.class;
+            MEMORY_ACCESS = USE_LONG_ADDRESS ? new MemoryAccessLongAddress() : new MemoryAccessIntAddress();
         }
         catch (final Exception ex)
         {
@@ -74,6 +76,11 @@ final class BitUtil
     static Unsafe getUnsafe()
     {
         return UNSAFE;
+    }
+
+    public static MemoryAccess getMemoryAccess()
+    {
+        return MEMORY_ACCESS;
     }
 
     static <T> T getStaticFieldValue(final Class<?> clazz, final String name) throws PrivilegedActionException
