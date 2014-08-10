@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013 Real Logic Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package uk.co.real_logic.sbe.codec.java;
 
 import java.lang.reflect.Field;
@@ -41,6 +56,7 @@ final class BitUtil
             Field positionField = getField(Buffer.class, "position");
             POSITION_FIELD_OFFSET = UNSAFE.objectFieldOffset(positionField);
             Field effectiveDirectAddressField = getField(Buffer.class, "effectiveDirectAddress");
+
             EFFECTIVE_DIRECT_ADDRESS_FIELD_OFFSET = UNSAFE.objectFieldOffset(effectiveDirectAddressField);
             USE_LONG_ADDRESS = effectiveDirectAddressField.getType() == long.class;
             MEMORY_ACCESS = USE_LONG_ADDRESS ? new MemoryAccessLongAddress() : new MemoryAccessIntAddress();
@@ -78,11 +94,24 @@ final class BitUtil
         return UNSAFE;
     }
 
+    /**
+     * Get the instance of {@link MemoryAccess}.
+     *
+     * @return the instance of MemoryAccess
+     */
     public static MemoryAccess getMemoryAccess()
     {
         return MEMORY_ACCESS;
     }
 
+    /**
+     * Gets the value of a static field.
+     * 
+     * @param clazz from which to get the field value
+     * @param name the name of the field
+     * @return the value of the field.
+     * @throws PrivilegedActionException
+     */
     static <T> T getStaticFieldValue(final Class<?> clazz, final String name) throws PrivilegedActionException
     {
         final PrivilegedExceptionAction<T> action = new PrivilegedExceptionAction<T>()
@@ -98,6 +127,14 @@ final class BitUtil
         return AccessController.doPrivileged(action);
     }
 
+    /**
+     * Extracts a field from a class using reflection.
+     * 
+     * @param clazz from which to get the field object
+     * @param name the name of the field object
+     * @return the field object.
+     * @throws PrivilegedActionException
+     */
     static Field getField(final Class<?> clazz, final String name) throws PrivilegedActionException
     {
         final PrivilegedExceptionAction<Field> action = new PrivilegedExceptionAction<Field>()

@@ -23,6 +23,8 @@ import org.junit.experimental.theories.Theory;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -43,10 +45,10 @@ public class DirectBufferTest
     private static final int INDEX = 8;
 
     private static final byte BYTE_VALUE = 1;
-    private static final short SHORT_VALUE = 2;
-    private static final int INT_VALUE = 4;
+    private static final short SHORT_VALUE = 22345;
+    private static final int INT_VALUE = 41244325;
     private static final float FLOAT_VALUE = 5.0f;
-    private static final long LONG_VALUE = 6;
+    private static final long LONG_VALUE = 1234567890123L;
     private static final double DOUBLE_VALUE = 7.0d;
 
     @Rule
@@ -533,6 +535,7 @@ public class DirectBufferTest
         }
         catch (IOException e)
         {
+            Log.e(DirectBufferTest.class.getName(), "Exception encountered", e);
             e.printStackTrace();
         }
         return null;
@@ -554,6 +557,7 @@ public class DirectBufferTest
         }
         catch (Exception e)
         {
+            Log.e(DirectBufferTest.class.getName(), "Exception encountered", e);
             e.printStackTrace();
         }
     }
