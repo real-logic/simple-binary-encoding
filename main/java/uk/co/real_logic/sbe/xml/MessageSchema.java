@@ -30,7 +30,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
  */
 public class MessageSchema
 {
-    private static final String MESSAGE_HEADER_KEY = "messageHeader";
+    public static final String HEADER_TYPE_DEFAULT = "messageHeader";
 
     private final String packageName;                 // package (optional?)
     private final String description;                 // description (optional)
@@ -38,6 +38,7 @@ public class MessageSchema
     private final int version;                        // version (optional - default is 0)
     private final String semanticVersion;             // semanticVersion (optional)
     private final ByteOrder byteOrder;                // byteOrder (optional - default is littleEndian)
+    private final String headerType;                  // headerType (optional - default to messageHeader)
     private final Map<String, Type> typeByNameMap;
     private final Map<Long, Message> messageByIdMap;
 
@@ -45,26 +46,30 @@ public class MessageSchema
                          final Map<String, Type> typeByNameMap,
                          final Map<Long, Message> messageByIdMap)
     {
-        Verify.present(typeByNameMap, MESSAGE_HEADER_KEY, "Message header");
-
         this.packageName = getAttributeValue(schemaNode, "package");
         this.description = getAttributeValueOrNull(schemaNode, "description");
         this.id = Integer.parseInt(getAttributeValue(schemaNode, "id"));
-        this.version = Integer.parseInt(getAttributeValue(schemaNode, "version", "0"));  // default version is 0
+        this.version = Integer.parseInt(getAttributeValue(schemaNode, "version", "0"));
         this.semanticVersion = getAttributeValueOrNull(schemaNode, "semanticVersion");
         this.byteOrder = getByteOrder(getAttributeValue(schemaNode, "byteOrder", "littleEndian"));
         this.typeByNameMap = typeByNameMap;
         this.messageByIdMap = messageByIdMap;
 
-        ((CompositeType)typeByNameMap.get(MESSAGE_HEADER_KEY)).checkForWellFormedMessageHeader(schemaNode);
+        final String headerType = getAttributeValueOrNull(schemaNode, "headerType");
+        this.headerType = null == headerType ? HEADER_TYPE_DEFAULT : headerType;
+        Verify.present(typeByNameMap, this.headerType, "Message header");
+
+        ((CompositeType)typeByNameMap.get(this.headerType)).checkForWellFormedMessageHeader(schemaNode);
     }
 
     /**
-     * @return the Schema messageHeader type or null if not defined. This should be a {@link CompositeType}.
+     * The Schema headerType for message headers. This should be a {@link CompositeType}.
+     *
+     * @return the Schema headerType for message headers
      */
     public CompositeType messageHeader()
     {
-        return (CompositeType)typeByNameMap.get(MESSAGE_HEADER_KEY);
+        return (CompositeType)typeByNameMap.get(headerType);
     }
 
     /**
@@ -80,7 +85,7 @@ public class MessageSchema
     /**
      * The description of the schema.
      *
-     * @return the description of the scheam.
+     * @return the description of the schema.
      */
     public String description()
     {
