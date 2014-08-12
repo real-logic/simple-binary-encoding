@@ -50,6 +50,7 @@
     <property name="checkstyle.output.file" location="${dir.reports.checkstyle}/results.xml"/>
 
     <property name="dir.docs.java" value="target/docs/java"/>
+    <property name="dir.docs.android" value="target/docs/android"/>
     <property name="dir.docs.cpp" value="target/docs/cpp"/>
 
     <property name="cpptasks.lib" location="main/lib/cpptasks-1.0b5.jar"/>
@@ -136,12 +137,15 @@
         <property name="aapt.exe" value="${android.sdk.dir}/build-tools/${android.build.tools.version}/aapt${exe}" />
         <property name="zipalign.exe" value="${android.sdk.dir}/build-tools/${android.build.tools.version}/zipalign${exe}" />
         <property name="adb.exe" value="${android.sdk.dir}/platform-tools/adb${exe}" />
+        <mkdir dir="${dir.dist}"/>
         <mkdir dir="${dir.main.android.build}"/>
         <mkdir dir="${dir.main.android.libcore.build}"/>
         <mkdir dir="${dir.test.android.build}"/>
         <mkdir dir="${dir.test.android.dexedLibs}"/>
         <mkdir dir="${dir.test.android.testpackage}"/>
+        <mkdir dir="${dir.reports}"/>
         <mkdir dir="${dir.reports.android.unit}"/>
+        <mkdir dir="${dir.docs.android}"/>
     </target>
 
     <target name="-android:checkDebugKey">
@@ -216,7 +220,6 @@
                 <include name="**/*.java"/>
                 <exclude name="**/ir/generated/**"/>
                 <exclude name="libcore/**/*.java"/>
-                <exclude name="sun/misc/*.java"/>
             </fileset>
             <fileset dir="${dir.test.src}">
                 <include name="**/*.java"/>
@@ -273,12 +276,11 @@
             <javac srcdir="${dir.main.android.src}" destdir="${dir.main.android.libcore.build}" includeAntRuntime="false" debug="true"
                 bootclasspath="${android.bootclasspath}">
                 <include name="libcore/**/*.java"/>
-            	<include name="sun/misc/*.java"/>
                 <compilerarg value="-Xlint:unchecked"/>
                 <compilerarg value="-XDignore.symbol.file"/>
             </javac>
             <jar destfile="${android.libcore.io.memory.jar}">
-                <fileset dir="${dir.main.android.src}" includes="libcore/,sun/,NOTICE"/>
+                <fileset dir="${dir.main.android.src}" includes="libcore/,NOTICE"/>
                 <fileset dir="${dir.main.android.libcore.build}"/>
             </jar>
         </sequential>
@@ -490,6 +492,33 @@
         </sequential>
     </target>
 
+    <target name="android:javadoc" depends="android:build">
+        <javadoc destdir="${dir.docs.android}"
+                 overview="${dir.main.src}/overview.html"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="Simple Binary Encoding (Android)"
+                 bootclasspath="${android.bootclasspath}">
+            <classpath path="${android.libcore.io.memory.jar}"/>
+            <fileset dir="${dir.main.src}" >
+                <include name="**/*.java"/>
+                <exclude name="uk/co/real_logic/sbe/codec/java/**/*.java"/>
+                <!-- Code generator classes may be excluded -->
+                <exclude name="uk/co/real_logic/sbe/SbeTool.java"/>
+                <exclude name="uk/co/real_logic/sbe/generation/**/*.java"/>
+            </fileset>
+                <fileset dir="${dir.main.android.src}">
+                <include name="uk/co/real_logic/sbe/codec/java/**/*.java"/>
+            </fileset>
+            <arg value="-XDignore.symbol.file"/>
+            <link href="http://docs.oracle.com/javase/7/docs/api/"/>
+            <link offline="true" href="http://d.android.com/reference" packagelistloc="${android.sdk.dir}/docs/reference"/>
+            <doctitle><![CDATA[<h1>Simple Binary Encoding (Android)</h1>]]></doctitle>
+            <bottom><![CDATA[<i>Copyright &#169; 2013 Real Logic Ltd. All Rights Reserved.</i>]]></bottom>
+        </javadoc>
+    </target>
+
     <target name="javadoc" depends="build">
         <javadoc sourcepath="${dir.main.src}"
                  destdir="${dir.docs.java}"
@@ -541,9 +570,9 @@
         <copy file="${jar}" tofile="${dir.dist}/sbe.jar"/>
     </target>
 
-    <target name="distWithAndroid" depends="android:build, dist" description="Generate the distribution">
+    <target name="android:dist" depends="android:build, android:javadoc" description="Generate the distribution">
         <jar destfile="${sbe.android.jar}">
-            <fileset dir="${dir.main.android.build}" excludes="libcore/,sun/"/>
+            <fileset dir="${dir.main.android.build}" excludes="libcore/"/>
         </jar>
         <jar destfile="${sbe.android.sources.jar}">
             <fileset dir="${dir.main.src}">
@@ -555,6 +584,9 @@
             <fileset dir="${dir.main.android.src}">
                 <include name="uk/co/real_logic/sbe/codec/java/**/*.java"/>
             </fileset>
+        </jar>
+        <jar destfile="${sbe.android.javadoc.jar}">
+            <fileset dir="${dir.docs.android}"/>
         </jar>
     </target>
 

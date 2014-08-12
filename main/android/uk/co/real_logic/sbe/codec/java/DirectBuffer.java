@@ -459,7 +459,8 @@ public final class DirectBuffer
                 DirectBuffer.MEMORY_ACCESS.pokeByteArray(address, byteArray, this.offset + index, count);
             }
         }
-        else {
+        else
+        {
             if (dst.hasArray)
             {
                 final long address = effectiveDirectAddress + index;
@@ -496,7 +497,7 @@ public final class DirectBuffer
             getBytesFromMemory(index, dstBuffer, count);
         }
 
-        BitUtil.setBufferPosition(dstBuffer, dstBuffer.position() + count);
+        dstBuffer.position(dstBuffer.position() + count);
 
         return count;
     }
@@ -577,7 +578,7 @@ public final class DirectBuffer
             putBytesToMemory(index, srcBuffer, count);
         }
 
-        BitUtil.setBufferPosition(srcBuffer, srcBuffer.position() + count);
+        srcBuffer.position(srcBuffer.position() + count);
 
         return count;
     }

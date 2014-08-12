@@ -21,7 +21,8 @@ package uk.co.real_logic.sbe.codec.java;
  * which was changed in Android 4.3 (API 18) to use longs as addresses instead of integers.
  * The libcore.io.Memory class is available starting with Android 4.0 (API 14).
  */
-interface MemoryAccess {
+interface MemoryAccess
+{
 
     byte peekByte(long address);
 

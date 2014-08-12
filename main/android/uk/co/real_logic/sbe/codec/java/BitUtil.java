@@ -22,8 +22,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
-import sun.misc.Unsafe;
-
 /**
  * Miscellaneous useful functions for dealing with low level bits and bytes.
  */
@@ -42,9 +40,7 @@ final class BitUtil
     //Added to Buffer in changeset: bd8ecd863aa83df50d7ce8f5950d8645ab6356af (Android 2.3 - api 9)
     //https://android.googlesource.com/platform/libcore/+/bd8ecd863aa83df50d7ce8f5950d8645ab6356af%5E%21/nio/src/main/java/java/nio/Buffer.java
 
-    private static final long EFFECTIVE_DIRECT_ADDRESS_FIELD_OFFSET;
-    static final long POSITION_FIELD_OFFSET;
-    private static final Unsafe UNSAFE;
+    private static final Field EFFECTIVE_DIRECT_ADDRESS_FIELD;
     private static final MemoryAccess MEMORY_ACCESS;
     private static final boolean USE_LONG_ADDRESS;
 
@@ -52,13 +48,9 @@ final class BitUtil
     {
         try
         {
-            UNSAFE = getStaticFieldValue(Unsafe.class, "THE_ONE");
-            Field positionField = getField(Buffer.class, "position");
-            POSITION_FIELD_OFFSET = UNSAFE.objectFieldOffset(positionField);
-            Field effectiveDirectAddressField = getField(Buffer.class, "effectiveDirectAddress");
+            EFFECTIVE_DIRECT_ADDRESS_FIELD = getField(Buffer.class, "effectiveDirectAddress");
 
-            EFFECTIVE_DIRECT_ADDRESS_FIELD_OFFSET = UNSAFE.objectFieldOffset(effectiveDirectAddressField);
-            USE_LONG_ADDRESS = effectiveDirectAddressField.getType() == long.class;
+            USE_LONG_ADDRESS = EFFECTIVE_DIRECT_ADDRESS_FIELD.getType() == long.class;
             MEMORY_ACCESS = USE_LONG_ADDRESS ? new MemoryAccessLongAddress() : new MemoryAccessIntAddress();
         }
         catch (final Exception ex)
@@ -71,27 +63,21 @@ final class BitUtil
     {
     }
 
-    static void setBufferPosition(final ByteBuffer dstBuffer, int position)
-    {
-        UNSAFE.putInt(dstBuffer, POSITION_FIELD_OFFSET, position);
-    }
-
     static long getEffectiveDirectAddress(final ByteBuffer buffer)
     {
-        return USE_LONG_ADDRESS ? UNSAFE.getLong(buffer,
-                EFFECTIVE_DIRECT_ADDRESS_FIELD_OFFSET) : UNSAFE.getInt(buffer,
-                    EFFECTIVE_DIRECT_ADDRESS_FIELD_OFFSET);
-    }
-
-
-    /**
-     * Get the instance of {@link sun.misc.Unsafe}.
-     *
-     * @return the instance of Unsafe
-     */
-    static Unsafe getUnsafe()
-    {
-        return UNSAFE;
+        try
+        {
+            return USE_LONG_ADDRESS ? EFFECTIVE_DIRECT_ADDRESS_FIELD.getLong(buffer)
+                    : EFFECTIVE_DIRECT_ADDRESS_FIELD.getInt(buffer);
+        }
+        catch (IllegalArgumentException e)
+        {
+            return 0;
+        }
+        catch (IllegalAccessException e)
+        {
+            return 0;
+        }
     }
 
     /**
@@ -99,14 +85,14 @@ final class BitUtil
      *
      * @return the instance of MemoryAccess
      */
-    public static MemoryAccess getMemoryAccess()
+    static MemoryAccess getMemoryAccess()
     {
         return MEMORY_ACCESS;
     }
 
     /**
      * Gets the value of a static field.
-     * 
+     *
      * @param clazz from which to get the field value
      * @param name the name of the field
      * @return the value of the field.
@@ -129,7 +115,7 @@ final class BitUtil
 
     /**
      * Extracts a field from a class using reflection.
-     * 
+     *
      * @param clazz from which to get the field object
      * @param name the name of the field object
      * @return the field object.
