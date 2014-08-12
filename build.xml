@@ -434,7 +434,7 @@
                   srcdir="${dir.test.android.testpackage}"/>
             <signjar keystore="${file.test.android.debugkey}" storepass="android" alias="androiddebugkey"
                 jar="${file.test.android.testapk.unsigned}" signedjar="${file.test.android.testapk.signed}"
-                verbose="true"/>
+                verbose="true" sigalg="SHA1withRSA" digestalg="SHA1"/>
             <zipalign srcfile="${file.test.android.testapk.signed}" destfile="${file.test.android.testapk.final}"/>
         </sequential>
     </target>
