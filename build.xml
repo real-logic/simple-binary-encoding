@@ -274,7 +274,7 @@
     <target name="androidlibcore:build" depends="-android:init" description="Build the jar containin libcore.io.Memory class">
         <sequential>
             <javac srcdir="${dir.main.android.src}" destdir="${dir.main.android.libcore.build}" includeAntRuntime="false" debug="true"
-                bootclasspath="${android.bootclasspath}">
+                bootclasspath="${android.bootclasspath}" source="1.6" target="1.6">
                 <include name="libcore/**/*.java"/>
                 <compilerarg value="-Xlint:unchecked"/>
                 <compilerarg value="-XDignore.symbol.file"/>
