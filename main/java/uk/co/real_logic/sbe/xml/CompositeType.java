@@ -68,6 +68,8 @@ public class CompositeType extends Type
                 containedTypeByNameMap.put(type.name(), type);
             }
         }
+
+        checkForValidOffsets(node);
     }
 
     /**
@@ -88,7 +90,8 @@ public class CompositeType extends Type
      */
     public int size()
     {
-        int size = 0;
+        int offset = 0;
+
 
         for (final EncodedDataType t : containedTypeList)
         {
@@ -97,10 +100,15 @@ public class CompositeType extends Type
                 return Token.VARIABLE_SIZE;
             }
 
-            size += t.size();
+            if (t.offsetAttribute() != -1)
+            {
+                offset = t.offsetAttribute();
+            }
+
+            offset += t.size();
         }
 
-        return size;
+        return offset;
     }
 
     /**
@@ -200,6 +208,34 @@ public class CompositeType extends Type
         if (containedTypeByNameMap.get("version") == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"version\"");
+        }
+    }
+
+    /**
+     * Check the composite for any specified offsets and validate they are correctly specified.
+     *
+     * @param node of the XML for this composite
+     */
+    public void checkForValidOffsets(final Node node)
+    {
+        int offset = 0;
+
+        for (final EncodedDataType edt : containedTypeList)
+        {
+            final int offsetAttribute = edt.offsetAttribute();
+
+            if (-1 != offsetAttribute)
+            {
+                if (offsetAttribute < offset)
+                {
+                    XmlSchemaParser.handleError(node,
+                        String.format("composite element \"%s\" has incorrect offset specified", edt.name()));
+                }
+
+                offset = offsetAttribute;
+            }
+
+            offset += edt.size();
         }
     }
 }

@@ -859,6 +859,14 @@
                 <arg value="${dir.test.resources}/code-generation-schema-cpp.xml"/>
             </java>
             <copy file="${dir.gen.cpp98}/code-generation-schema-cpp.sbeir" todir="${dir.exec.test.cpp}"/>
+            <java classname="uk.co.real_logic.sbe.SbeTool">
+                <classpath refid="examples.classpath"/>
+                <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
+                <sysproperty key="sbe.target.language" value="cpp98"/>
+                <sysproperty key="sbe.generate.ir" value="true"/>
+                <arg value="${dir.test.resources}/composite-offsets-schema.xml"/>
+            </java>
+            <copy file="${dir.gen.cpp98}/composite-offsets-schema.sbeir" todir="${dir.exec.test.cpp}"/>
         </sequential>
     </target>
 

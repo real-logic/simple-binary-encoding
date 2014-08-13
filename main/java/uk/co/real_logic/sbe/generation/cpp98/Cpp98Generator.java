@@ -287,7 +287,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    %1$s &next(void)\n" +
             indent + "    {\n" +
             indent + "        offset_ = *positionPtr_;\n" +
-            indent + "        if (SBE_BOUNDS_CHECK_EXPECT(( (offset_ + blockLength_) >= bufferLength_ ),0))\n" +
+            indent + "        if (SBE_BOUNDS_CHECK_EXPECT(( (offset_ + blockLength_) > bufferLength_ ),0))\n" +
             indent + "        {\n" +
             indent + "            throw \"buffer too short to support next group index\";\n" +
             indent + "        }\n" +

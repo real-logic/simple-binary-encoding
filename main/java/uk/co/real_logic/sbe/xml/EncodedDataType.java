@@ -40,6 +40,7 @@ public class EncodedDataType extends Type
     private final PrimitiveValue nullValue;
     private final String characterEncoding;
     private final int sinceVersion;
+    private final int offsetAttribute;
     private boolean varLen;
 
     /**
@@ -56,6 +57,7 @@ public class EncodedDataType extends Type
         varLen = Boolean.parseBoolean(getAttributeValue(node, "variableLength", "false"));
         characterEncoding = getAttributeValue(node, "characterEncoding", "UTF-8");
         sinceVersion = Integer.parseInt(getAttributeValue(node, "sinceVersion", "0"));
+        offsetAttribute = Integer.parseInt(getAttributeValue(node, "offset", "-1"));
 
         if (presence() == Presence.CONSTANT)
         {
@@ -141,6 +143,7 @@ public class EncodedDataType extends Type
         this.nullValue = null;
         characterEncoding = null;
         sinceVersion = 0;
+        offsetAttribute = -1;
     }
 
     /**
@@ -262,5 +265,15 @@ public class EncodedDataType extends Type
     public int sinceVersion()
     {
         return sinceVersion;
+    }
+
+    /**
+     * Return the offset attribute of the {@link EncodedDataType} from the schema
+     *
+     * @return the offset attribute value or -1 to indicate not set by the schema
+     */
+    public int offsetAttribute()
+    {
+        return offsetAttribute;
     }
 }
