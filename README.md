@@ -85,6 +85,24 @@ Jars for the executable, source, and javadoc can be found in
 
     target/dist
 
+Android Build
+-------------
+
+In order to build the android binaries you need to run the android:dist target 
+
+    $ ant android:dist
+
+As a prerequisite, you need Android SDK to be installed and the path needs to be configured inside `build-local.properties` file. 
+You need at least Android target 19 (it comes with Java 7 support) and Android build tools version at least 20.0.0. E.g. 
+
+    android.sdk.dir=/opt/android-sdk-linux
+    android.target=android-19
+    android.build.tools.version=20.0.0
+
+Android jars for the codec, source, and javadoc can be found in
+
+    target/dist
+
 C++ Build
 ---------
 
