@@ -257,7 +257,7 @@ public class Cpp98Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    static int sbeHeaderSize()\n" +
+            indent + "    static const int sbeHeaderSize()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n\n",
@@ -265,7 +265,7 @@ public class Cpp98Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    static int sbeBlockLength()\n" +
+            indent + "    static const int sbeBlockLength()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n\n",
@@ -319,7 +319,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static int %1$sId(void)\n" +
+            indent + "    static const int %1$sId(void)\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n",
@@ -448,7 +448,7 @@ public class Cpp98Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            "    static int %1$sSinceVersion(void)\n" +
+            "    static const int %1$sSinceVersion(void)\n" +
             "    {\n" +
             "         return %2$d;\n" +
             "    }\n\n" +
@@ -456,7 +456,7 @@ public class Cpp98Generator implements CodeGenerator
             "    {\n" +
             "        return (actingVersion_ >= %2$s) ? true : false;\n" +
             "    }\n\n" +
-            "    static int %1$sId(void)\n" +
+            "    static const int %1$sId(void)\n" +
             "    {\n" +
             "        return %3$d;\n" +
             "    }\n\n",
@@ -468,7 +468,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            "    static int %sHeaderSize()\n" +
+            "    static const int %sHeaderSize()\n" +
             "    {\n" +
             "        return %d;\n" +
             "    }\n",
@@ -854,7 +854,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static %1$s %2$sNullValue()\n" +
+            indent + "    static const %1$s %2$sNullValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",
@@ -865,7 +865,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static %1$s %2$sMinValue()\n" +
+            indent + "    static const %1$s %2$sMinValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",
@@ -876,7 +876,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static %1$s %2$sMaxValue()\n" +
+            indent + "    static const %1$s %2$sMaxValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",
@@ -940,7 +940,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static int %1$sLength(void)\n" +
+            indent + "    static const int %1$sLength(void)\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n",
@@ -1060,7 +1060,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static int %1$sLength(void)\n" +
+            indent + "    static const int %1$sLength(void)\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n",
@@ -1124,7 +1124,7 @@ public class Cpp98Generator implements CodeGenerator
             "        actingVersion_ = actingVersion;\n" +
             "        return *this;\n" +
             "    }\n\n" +
-            "    static int size(void)\n" +
+            "    static const int size(void)\n" +
             "    {\n" +
             "        return %2$s;\n" +
             "    }\n\n",
@@ -1153,19 +1153,19 @@ public class Cpp98Generator implements CodeGenerator
             "    %10$s(const %10$s&) {}\n\n" +
             "public:\n\n" +
             "    %10$s(void) : buffer_(NULL), bufferLength_(0), offset_(0) {}\n\n" +
-            "    static %1$s sbeBlockLength(void)\n" +
+            "    static const %1$s sbeBlockLength(void)\n" +
             "    {\n" +
             "        return %2$s;\n" +
             "    }\n\n" +
-            "    static %3$s sbeTemplateId(void)\n" +
+            "    static const %3$s sbeTemplateId(void)\n" +
             "    {\n" +
             "        return %4$s;\n" +
             "    }\n\n" +
-            "    static %5$s sbeSchemaId(void)\n" +
+            "    static const %5$s sbeSchemaId(void)\n" +
             "    {\n" +
             "        return %6$s;\n" +
             "    }\n\n" +
-            "    static %7$s sbeSchemaVersion(void)\n" +
+            "    static const %7$s sbeSchemaVersion(void)\n" +
             "    {\n" +
             "        return %8$s;\n" +
             "    }\n\n" +
@@ -1253,7 +1253,7 @@ public class Cpp98Generator implements CodeGenerator
 
                 sb.append(String.format(
                     "\n" +
-                    indent + "    static int %1$sId(void)\n" +
+                    indent + "    static const int %1$sId(void)\n" +
                     indent + "    {\n" +
                     indent + "        return %2$d;\n" +
                     indent + "    }\n\n",
@@ -1262,7 +1262,7 @@ public class Cpp98Generator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    indent + "    static int %1$sSinceVersion(void)\n" +
+                    indent + "    static const int %1$sSinceVersion(void)\n" +
                     indent + "    {\n" +
                     indent + "         return %2$d;\n" +
                     indent + "    }\n\n" +
