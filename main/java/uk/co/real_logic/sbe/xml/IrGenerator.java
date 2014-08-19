@@ -114,6 +114,7 @@ public class IrGenerator
             .size(field.computedBlockLength())
             .name(field.name())
             .id(field.id())
+            .offset(field.computedOffset())
             .version(field.sinceVersion())
             .encoding(new Encoding.Builder()
                 .epoch(field.epoch())

@@ -190,13 +190,13 @@ public:
 
     virtual int onCompleted()
     {
-        EXPECT_EQ(eventNumber_, 9);
+        EXPECT_EQ(eventNumber_, 11);
         return 0;
     }
 
 };
 
-TEST_F(MessageBlockLengthIrTest, DISABLED_shouldHandleAllEventsCorrectltInOrder)
+TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
 {
 
     int sz = encodeHdrAndMsg();
@@ -210,7 +210,7 @@ TEST_F(MessageBlockLengthIrTest, DISABLED_shouldHandleAllEventsCorrectltInOrder)
     EXPECT_EQ(*((::uint64_t *)(buffer + 8)), 187); // field 1
     EXPECT_EQ(*((::uint8_t *)(buffer + 16)), 0x2); // field 2
 
-    EXPECT_EQ(*((::uint16_t *)(buffer + 19)), 32); // groupSizeEncoding blockLength
+    EXPECT_EQ(*((::uint16_t *)(buffer + 19)), 16); // groupSizeEncoding blockLength
     EXPECT_EQ(*((::uint8_t *)(buffer + 21)), 2);   // groupSizeEncoding numInGroup
 
     ASSERT_GE(IrCollection::loadFromFile("target/test/cpp/message-block-length-test.sbeir"), 0);
