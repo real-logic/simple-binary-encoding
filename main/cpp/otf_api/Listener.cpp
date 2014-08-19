@@ -69,6 +69,7 @@ Listener &Listener::resetForDecode(const char *data, const int length)
     bufferOffset_ = 0;
     templateId_ = Ir::INVALID_ID;
     templateVersion_ = -1;
+    messageBlockLength_ = -1;
     while (!stack_.empty())
     {
         stack_.pop();
@@ -136,11 +137,11 @@ inline void Listener::updateBufferOffsetFromIr(const Ir *ir)
         newOffset += ir->offset();
     }
 
-    //cout << "updating offset " << relativeOffsetAnchor_ << " + " << ir->offset() << " = " << newOffset << " or " << bufferOffset_;
+    // cout << "updating offset " << relativeOffsetAnchor_ << " + " << ir->offset() << " = " << newOffset << " or " << bufferOffset_;
 
     // take the max of the bufferOffset_ and the newOffset
     bufferOffset_ = (bufferOffset_ > newOffset) ? bufferOffset_ : newOffset;
-    //cout << " = bufferOffset = " << bufferOffset_ << endl;
+    // cout << " = bufferOffset = " << bufferOffset_ << endl;
 }
 
 // protected
@@ -154,8 +155,8 @@ int Listener::process(void)
     // layer to coalesce for higher up
     for (; !ir->end(); ir->next())
     {
-        //cout << "IR @ " << ir->position() << " " << ir->signal() << endl;
-        //cout << "offsets " << bufferOffset_ << "/" << bufferLen_ << endl;
+        // cout << "IR @ " << ir->position() << " " << ir->signal() << endl;
+        // cout << "offsets " << bufferOffset_ << "/" << bufferLen_ << endl;
         if (bufferOffset_ > bufferLen_)
         {
             if (onError_ != NULL)
@@ -370,11 +371,14 @@ void Listener::processBeginMessage(const Ir *ir)
 {
     stack_.top().scopeName_ = ir->name();
     relativeOffsetAnchor_ = bufferOffset_;
+    messageBlockLength_ = ir->size();
+    // cout << "message blockLength " << messageBlockLength_ << endl;
 }
 
 void Listener::processEndMessage(void)
 {
     stack_.top().scopeName_ = "";
+    messageBlockLength_ = -1;
 }
 
 void Listener::processBeginComposite(const Ir *ir)

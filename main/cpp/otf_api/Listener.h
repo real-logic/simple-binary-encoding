@@ -239,6 +239,7 @@ private:
     int bufferLen_;
     int bufferOffset_;
     int relativeOffsetAnchor_;
+    int messageBlockLength_;
 
     /*
      * Cached and reused Field and Group objects
