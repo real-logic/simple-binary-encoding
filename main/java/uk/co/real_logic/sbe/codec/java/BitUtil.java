@@ -26,7 +26,7 @@ import java.security.PrivilegedExceptionAction;
 /**
  * Miscellaneous useful functions for dealing with low level bits and bytes.
  */
-public class BitUtil
+class BitUtil
 {
     /** Size of a byte in bytes */
     public static final int SIZE_OF_BYTE = 1;
