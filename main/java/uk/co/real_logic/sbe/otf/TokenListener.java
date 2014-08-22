@@ -107,6 +107,14 @@ public interface TokenListener
     void onEndComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex);
 
     /**
+     * Group encountered.
+     *
+     * @param token describing the group.
+     * @param numInGroup number of times the group will be repeated.
+     */
+    void onGroupHeader(Token token, int numInGroup);
+
+    /**
      * Beginning of group encoded type encountered.
      *
      * @param token describing the group.

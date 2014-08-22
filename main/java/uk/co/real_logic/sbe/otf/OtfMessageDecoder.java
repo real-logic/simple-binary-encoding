@@ -123,6 +123,8 @@ public class OtfMessageDecoder
                 final int nextGroupIndex = findNextOrLimit(tokens, beginFieldsIndex, toIndex, Signal.BEGIN_GROUP);
                 final int endOfFieldsIndex = Math.min(endGroupIndex, nextGroupIndex) - 1;
 
+                listener.onGroupHeader(token, numInGroup);
+
                 for (int g = 0; g < numInGroup; g++)
                 {
                     listener.onBeginGroup(token, g, numInGroup);

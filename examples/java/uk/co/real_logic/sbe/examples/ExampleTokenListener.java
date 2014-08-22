@@ -124,6 +124,15 @@ public class ExampleTokenListener implements TokenListener
         namedScope.pop();
     }
 
+    public void onGroupHeader(final Token token, final int numInGroup)
+    {
+        printScope();
+        out.append(token.name())
+           .append(" Group Header : numInGroup=")
+           .append(Integer.toString(numInGroup))
+           .println();
+    }
+
     public void onBeginGroup(final Token token, final int groupIndex, final int numInGroup)
     {
         namedScope.push(token.name() + ".");
