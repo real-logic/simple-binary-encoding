@@ -17,6 +17,8 @@ package uk.co.real_logic.sbe.codec.java;
 
 import org.junit.Test;
 
+import android.test.suitebuilder.annotation.SmallTest;
+
 import java.nio.ByteOrder;
 
 import static org.hamcrest.Matchers.is;
@@ -24,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+@SmallTest
 public class CodecUtilTest
 {
     private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();

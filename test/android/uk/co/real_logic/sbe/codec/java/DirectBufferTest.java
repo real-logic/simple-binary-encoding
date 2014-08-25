@@ -23,6 +23,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Log;
 
 import java.io.File;
@@ -38,6 +39,7 @@ import static java.lang.Integer.valueOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+@SmallTest
 @RunWith(Theories.class)
 public class DirectBufferTest
 {
@@ -77,7 +79,7 @@ public class DirectBufferTest
     @DataPoint
     public static final DirectBuffer MEMORY_MAPPED_BUFFER = new DirectBuffer(createMemoryMappedBuffer());
 
-    // private static long memoryBlockAddress = BitUtil.getUnsafe().allocateMemory(BUFFER_CAPACITY);
+    // private static long memoryBlockAddress = 0;
 
     // @DataPoint //not valid for android
     // public static final DirectBuffer OFF_HEAP_BUFFER =
@@ -521,14 +523,12 @@ public class DirectBufferTest
 
     private static RandomAccessFile memoryMappedFile;
     private static MappedByteBuffer buffer;
-    private static File tempFile;
 
     private static ByteBuffer createMemoryMappedBuffer()
     {
         try
         {
-            tempFile = File.createTempFile("tempDirectBufferTest", ".tmp");
-            tempFile.deleteOnExit();
+            File tempFile = new File("/dev/zero");
             memoryMappedFile = new RandomAccessFile(tempFile, "rw");
             buffer = memoryMappedFile.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, BUFFER_CAPACITY);
             return buffer;
@@ -553,7 +553,6 @@ public class DirectBufferTest
             cleanMethod.invoke(buffer);
 
             memoryMappedFile.close();
-            tempFile.delete();
         }
         catch (Exception e)
         {
