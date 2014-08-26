@@ -2,15 +2,25 @@
 #ifndef _TOKENCODEC_HPP_
 #define _TOKENCODEC_HPP_
 
+#if defined(SBE_HAVE_CMATH)
+/* cmath needed for std::numeric_limits<double>::quiet_NaN() */
+#  include <cmath>
+#  define SBE_FLOAT_NAN std::numeric_limits<float>::quiet_NaN()
+#  define SBE_DOUBLE_NAN std::numeric_limits<double>::quiet_NaN()
+#else
 /* math.h needed for NAN */
-#include <math.h>
-#include "sbe/sbe.hpp"
+#  include <math.h>
+#  define SBE_FLOAT_NAN NAN
+#  define SBE_DOUBLE_NAN NAN
+#endif
 
-#include "uk_co_real_logic_sbe_ir_generated/ByteOrderCodec.hpp"
-#include "uk_co_real_logic_sbe_ir_generated/SignalCodec.hpp"
-#include "uk_co_real_logic_sbe_ir_generated/PresenceCodec.hpp"
-#include "uk_co_real_logic_sbe_ir_generated/PrimitiveTypeCodec.hpp"
-#include "uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp"
+#include <sbe/sbe.hpp>
+
+#include <uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp>
+#include <uk_co_real_logic_sbe_ir_generated/ByteOrderCodec.hpp>
+#include <uk_co_real_logic_sbe_ir_generated/PresenceCodec.hpp>
+#include <uk_co_real_logic_sbe_ir_generated/PrimitiveTypeCodec.hpp>
+#include <uk_co_real_logic_sbe_ir_generated/SignalCodec.hpp>
 
 using namespace sbe;
 
@@ -27,24 +37,28 @@ private:
     int actingBlockLength_;
     int actingVersion_;
 
+    TokenCodec(const TokenCodec&) {}
+
 public:
 
-    static sbe_uint16_t sbeBlockLength(void)
+    TokenCodec(void) : buffer_(NULL), bufferLength_(0), offset_(0) {}
+
+    static const sbe_uint16_t sbeBlockLength(void)
     {
         return (sbe_uint16_t)20;
     }
 
-    static sbe_uint16_t sbeTemplateId(void)
+    static const sbe_uint16_t sbeTemplateId(void)
     {
         return (sbe_uint16_t)2;
     }
 
-    static sbe_uint16_t sbeSchemaId(void)
+    static const sbe_uint16_t sbeSchemaId(void)
     {
         return (sbe_uint16_t)0;
     }
 
-    static sbe_uint16_t sbeSchemaVersion(void)
+    static const sbe_uint16_t sbeSchemaVersion(void)
     {
         return (sbe_uint16_t)0;
     }
@@ -71,7 +85,8 @@ public:
         return *this;
     }
 
-    TokenCodec &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion,                         const int bufferLength)
+    TokenCodec &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion,
+                         const int bufferLength)
     {
         buffer_ = buffer;
         offset_ = offset;
@@ -112,12 +127,12 @@ public:
         return actingVersion_;
     }
 
-    static int tokenOffsetId(void)
+    static const int tokenOffsetId(void)
     {
         return 11;
     }
 
-    static int tokenOffsetSinceVersion(void)
+    static const int tokenOffsetSinceVersion(void)
     {
          return 0;
     }
@@ -140,17 +155,17 @@ public:
         return "";
     }
 
-    static sbe_int32_t tokenOffsetNullValue()
+    static const sbe_int32_t tokenOffsetNullValue()
     {
         return -2147483648;
     }
 
-    static sbe_int32_t tokenOffsetMinValue()
+    static const sbe_int32_t tokenOffsetMinValue()
     {
         return -2147483647;
     }
 
-    static sbe_int32_t tokenOffsetMaxValue()
+    static const sbe_int32_t tokenOffsetMaxValue()
     {
         return 2147483647;
     }
@@ -166,12 +181,12 @@ public:
         return *this;
     }
 
-    static int tokenSizeId(void)
+    static const int tokenSizeId(void)
     {
         return 12;
     }
 
-    static int tokenSizeSinceVersion(void)
+    static const int tokenSizeSinceVersion(void)
     {
          return 0;
     }
@@ -194,17 +209,17 @@ public:
         return "";
     }
 
-    static sbe_int32_t tokenSizeNullValue()
+    static const sbe_int32_t tokenSizeNullValue()
     {
         return -2147483648;
     }
 
-    static sbe_int32_t tokenSizeMinValue()
+    static const sbe_int32_t tokenSizeMinValue()
     {
         return -2147483647;
     }
 
-    static sbe_int32_t tokenSizeMaxValue()
+    static const sbe_int32_t tokenSizeMaxValue()
     {
         return 2147483647;
     }
@@ -220,12 +235,12 @@ public:
         return *this;
     }
 
-    static int fieldIdId(void)
+    static const int fieldIdId(void)
     {
         return 13;
     }
 
-    static int fieldIdSinceVersion(void)
+    static const int fieldIdSinceVersion(void)
     {
          return 0;
     }
@@ -248,17 +263,17 @@ public:
         return "";
     }
 
-    static sbe_int32_t fieldIdNullValue()
+    static const sbe_int32_t fieldIdNullValue()
     {
         return -2147483648;
     }
 
-    static sbe_int32_t fieldIdMinValue()
+    static const sbe_int32_t fieldIdMinValue()
     {
         return -2147483647;
     }
 
-    static sbe_int32_t fieldIdMaxValue()
+    static const sbe_int32_t fieldIdMaxValue()
     {
         return 2147483647;
     }
@@ -274,12 +289,12 @@ public:
         return *this;
     }
 
-    static int tokenVersionId(void)
+    static const int tokenVersionId(void)
     {
         return 14;
     }
 
-    static int tokenVersionSinceVersion(void)
+    static const int tokenVersionSinceVersion(void)
     {
          return 0;
     }
@@ -302,17 +317,17 @@ public:
         return "";
     }
 
-    static sbe_int32_t tokenVersionNullValue()
+    static const sbe_int32_t tokenVersionNullValue()
     {
         return -2147483648;
     }
 
-    static sbe_int32_t tokenVersionMinValue()
+    static const sbe_int32_t tokenVersionMinValue()
     {
         return -2147483647;
     }
 
-    static sbe_int32_t tokenVersionMaxValue()
+    static const sbe_int32_t tokenVersionMaxValue()
     {
         return 2147483647;
     }
@@ -328,12 +343,12 @@ public:
         return *this;
     }
 
-    static int signalId(void)
+    static const int signalId(void)
     {
         return 15;
     }
 
-    static int signalSinceVersion(void)
+    static const int signalSinceVersion(void)
     {
          return 0;
     }
@@ -367,12 +382,12 @@ public:
         return *this;
     }
 
-    static int primitiveTypeId(void)
+    static const int primitiveTypeId(void)
     {
         return 16;
     }
 
-    static int primitiveTypeSinceVersion(void)
+    static const int primitiveTypeSinceVersion(void)
     {
          return 0;
     }
@@ -406,12 +421,12 @@ public:
         return *this;
     }
 
-    static int byteOrderId(void)
+    static const int byteOrderId(void)
     {
         return 17;
     }
 
-    static int byteOrderSinceVersion(void)
+    static const int byteOrderSinceVersion(void)
     {
          return 0;
     }
@@ -445,12 +460,12 @@ public:
         return *this;
     }
 
-    static int presenceId(void)
+    static const int presenceId(void)
     {
         return 18;
     }
 
-    static int presenceSinceVersion(void)
+    static const int presenceSinceVersion(void)
     {
          return 0;
     }
@@ -501,7 +516,7 @@ public:
         return "UTF-8";
     }
 
-    static int nameSinceVersion(void)
+    static const int nameSinceVersion(void)
     {
          return 0;
     }
@@ -511,13 +526,13 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int nameId(void)
+    static const int nameId(void)
     {
         return 19;
     }
 
 
-    static int nameHeaderSize()
+    static const int nameHeaderSize()
     {
         return 1;
     }
@@ -576,7 +591,7 @@ public:
         return "UTF-8";
     }
 
-    static int constValueSinceVersion(void)
+    static const int constValueSinceVersion(void)
     {
          return 0;
     }
@@ -586,13 +601,13 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int constValueId(void)
+    static const int constValueId(void)
     {
         return 20;
     }
 
 
-    static int constValueHeaderSize()
+    static const int constValueHeaderSize()
     {
         return 1;
     }
@@ -651,7 +666,7 @@ public:
         return "UTF-8";
     }
 
-    static int minValueSinceVersion(void)
+    static const int minValueSinceVersion(void)
     {
          return 0;
     }
@@ -661,13 +676,13 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int minValueId(void)
+    static const int minValueId(void)
     {
         return 21;
     }
 
 
-    static int minValueHeaderSize()
+    static const int minValueHeaderSize()
     {
         return 1;
     }
@@ -726,7 +741,7 @@ public:
         return "UTF-8";
     }
 
-    static int maxValueSinceVersion(void)
+    static const int maxValueSinceVersion(void)
     {
          return 0;
     }
@@ -736,13 +751,13 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int maxValueId(void)
+    static const int maxValueId(void)
     {
         return 22;
     }
 
 
-    static int maxValueHeaderSize()
+    static const int maxValueHeaderSize()
     {
         return 1;
     }
@@ -801,7 +816,7 @@ public:
         return "UTF-8";
     }
 
-    static int nullValueSinceVersion(void)
+    static const int nullValueSinceVersion(void)
     {
          return 0;
     }
@@ -811,13 +826,13 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int nullValueId(void)
+    static const int nullValueId(void)
     {
         return 23;
     }
 
 
-    static int nullValueHeaderSize()
+    static const int nullValueHeaderSize()
     {
         return 1;
     }
@@ -876,7 +891,7 @@ public:
         return "UTF-8";
     }
 
-    static int characterEncodingSinceVersion(void)
+    static const int characterEncodingSinceVersion(void)
     {
          return 0;
     }
@@ -886,13 +901,13 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int characterEncodingId(void)
+    static const int characterEncodingId(void)
     {
         return 24;
     }
 
 
-    static int characterEncodingHeaderSize()
+    static const int characterEncodingHeaderSize()
     {
         return 1;
     }
@@ -951,7 +966,7 @@ public:
         return "UTF-8";
     }
 
-    static int epochSinceVersion(void)
+    static const int epochSinceVersion(void)
     {
          return 0;
     }
@@ -961,13 +976,13 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int epochId(void)
+    static const int epochId(void)
     {
         return 25;
     }
 
 
-    static int epochHeaderSize()
+    static const int epochHeaderSize()
     {
         return 1;
     }
@@ -1026,7 +1041,7 @@ public:
         return "UTF-8";
     }
 
-    static int timeUnitSinceVersion(void)
+    static const int timeUnitSinceVersion(void)
     {
          return 0;
     }
@@ -1036,13 +1051,13 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int timeUnitId(void)
+    static const int timeUnitId(void)
     {
         return 26;
     }
 
 
-    static int timeUnitHeaderSize()
+    static const int timeUnitHeaderSize()
     {
         return 1;
     }
@@ -1101,7 +1116,7 @@ public:
         return "UTF-8";
     }
 
-    static int semanticTypeSinceVersion(void)
+    static const int semanticTypeSinceVersion(void)
     {
          return 0;
     }
@@ -1111,13 +1126,13 @@ public:
         return (actingVersion_ >= 0) ? true : false;
     }
 
-    static int semanticTypeId(void)
+    static const int semanticTypeId(void)
     {
         return 27;
     }
 
 
-    static int semanticTypeHeaderSize()
+    static const int semanticTypeHeaderSize()
     {
         return 1;
     }

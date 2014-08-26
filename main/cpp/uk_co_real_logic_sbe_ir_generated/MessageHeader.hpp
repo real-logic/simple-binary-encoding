@@ -2,9 +2,19 @@
 #ifndef _MESSAGEHEADER_HPP_
 #define _MESSAGEHEADER_HPP_
 
+#if defined(SBE_HAVE_CMATH)
+/* cmath needed for std::numeric_limits<double>::quiet_NaN() */
+#  include <cmath>
+#  define SBE_FLOAT_NAN std::numeric_limits<float>::quiet_NaN()
+#  define SBE_DOUBLE_NAN std::numeric_limits<double>::quiet_NaN()
+#else
 /* math.h needed for NAN */
-#include <math.h>
-#include "sbe/sbe.hpp"
+#  include <math.h>
+#  define SBE_FLOAT_NAN NAN
+#  define SBE_DOUBLE_NAN NAN
+#endif
+
+#include <sbe/sbe.hpp>
 
 using namespace sbe;
 
@@ -30,23 +40,23 @@ public:
         return *this;
     }
 
-    static int size(void)
+    static const int size(void)
     {
         return 8;
     }
 
 
-    static sbe_uint16_t blockLengthNullValue()
+    static const sbe_uint16_t blockLengthNullValue()
     {
         return (sbe_uint16_t)65535;
     }
 
-    static sbe_uint16_t blockLengthMinValue()
+    static const sbe_uint16_t blockLengthMinValue()
     {
         return (sbe_uint16_t)0;
     }
 
-    static sbe_uint16_t blockLengthMaxValue()
+    static const sbe_uint16_t blockLengthMaxValue()
     {
         return (sbe_uint16_t)65534;
     }
@@ -62,17 +72,17 @@ public:
         return *this;
     }
 
-    static sbe_uint16_t templateIdNullValue()
+    static const sbe_uint16_t templateIdNullValue()
     {
         return (sbe_uint16_t)65535;
     }
 
-    static sbe_uint16_t templateIdMinValue()
+    static const sbe_uint16_t templateIdMinValue()
     {
         return (sbe_uint16_t)0;
     }
 
-    static sbe_uint16_t templateIdMaxValue()
+    static const sbe_uint16_t templateIdMaxValue()
     {
         return (sbe_uint16_t)65534;
     }
@@ -88,17 +98,17 @@ public:
         return *this;
     }
 
-    static sbe_uint16_t schemaIdNullValue()
+    static const sbe_uint16_t schemaIdNullValue()
     {
         return (sbe_uint16_t)65535;
     }
 
-    static sbe_uint16_t schemaIdMinValue()
+    static const sbe_uint16_t schemaIdMinValue()
     {
         return (sbe_uint16_t)0;
     }
 
-    static sbe_uint16_t schemaIdMaxValue()
+    static const sbe_uint16_t schemaIdMaxValue()
     {
         return (sbe_uint16_t)65534;
     }
@@ -114,17 +124,17 @@ public:
         return *this;
     }
 
-    static sbe_uint16_t versionNullValue()
+    static const sbe_uint16_t versionNullValue()
     {
         return (sbe_uint16_t)65535;
     }
 
-    static sbe_uint16_t versionMinValue()
+    static const sbe_uint16_t versionMinValue()
     {
         return (sbe_uint16_t)0;
     }
 
-    static sbe_uint16_t versionMaxValue()
+    static const sbe_uint16_t versionMaxValue()
     {
         return (sbe_uint16_t)65534;
     }

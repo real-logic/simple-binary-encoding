@@ -2,9 +2,19 @@
 #ifndef _VARDATAENCODING_HPP_
 #define _VARDATAENCODING_HPP_
 
+#if defined(SBE_HAVE_CMATH)
+/* cmath needed for std::numeric_limits<double>::quiet_NaN() */
+#  include <cmath>
+#  define SBE_FLOAT_NAN std::numeric_limits<float>::quiet_NaN()
+#  define SBE_DOUBLE_NAN std::numeric_limits<double>::quiet_NaN()
+#else
 /* math.h needed for NAN */
-#include <math.h>
-#include "sbe/sbe.hpp"
+#  include <math.h>
+#  define SBE_FLOAT_NAN NAN
+#  define SBE_DOUBLE_NAN NAN
+#endif
+
+#include <sbe/sbe.hpp>
 
 using namespace sbe;
 
@@ -30,23 +40,23 @@ public:
         return *this;
     }
 
-    static int size(void)
+    static const int size(void)
     {
         return -1;
     }
 
 
-    static sbe_uint8_t lengthNullValue()
+    static const sbe_uint8_t lengthNullValue()
     {
         return (sbe_uint8_t)255;
     }
 
-    static sbe_uint8_t lengthMinValue()
+    static const sbe_uint8_t lengthMinValue()
     {
         return (sbe_uint8_t)0;
     }
 
-    static sbe_uint8_t lengthMaxValue()
+    static const sbe_uint8_t lengthMaxValue()
     {
         return (sbe_uint8_t)254;
     }
@@ -62,17 +72,17 @@ public:
         return *this;
     }
 
-    static sbe_uint8_t varDataNullValue()
+    static const sbe_uint8_t varDataNullValue()
     {
         return (sbe_uint8_t)255;
     }
 
-    static sbe_uint8_t varDataMinValue()
+    static const sbe_uint8_t varDataMinValue()
     {
         return (sbe_uint8_t)0;
     }
 
-    static sbe_uint8_t varDataMaxValue()
+    static const sbe_uint8_t varDataMaxValue()
     {
         return (sbe_uint8_t)254;
     }
