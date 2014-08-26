@@ -221,7 +221,7 @@ public class JavaGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    public void wrapForDecode(" +
+            indent + "    public void wrapForDecode(\n" +
             indent + "        final %s parentMessage, final DirectBuffer buffer, final int actingVersion)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
