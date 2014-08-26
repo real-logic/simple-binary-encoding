@@ -2,9 +2,19 @@
 #ifndef _PRIMITIVETYPECODEC_HPP_
 #define _PRIMITIVETYPECODEC_HPP_
 
+#if defined(SBE_HAVE_CMATH)
+/* cmath needed for std::numeric_limits<double>::quiet_NaN() */
+#  include <cmath>
+#  define SBE_FLOAT_NAN std::numeric_limits<float>::quiet_NaN()
+#  define SBE_DOUBLE_NAN std::numeric_limits<double>::quiet_NaN()
+#else
 /* math.h needed for NAN */
-#include <math.h>
-#include "sbe/sbe.hpp"
+#  include <math.h>
+#  define SBE_FLOAT_NAN NAN
+#  define SBE_DOUBLE_NAN NAN
+#endif
+
+#include <sbe/sbe.hpp>
 
 using namespace sbe;
 
