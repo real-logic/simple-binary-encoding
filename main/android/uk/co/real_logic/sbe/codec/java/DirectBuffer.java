@@ -147,10 +147,11 @@ public final class DirectBuffer
     {
         if (limit > capacity)
         {
-            final String msg = String.format(Locale.US,
-                                             "limit=%d is beyond capacity=%d",
-                                             Integer.valueOf(limit),
-                                             Integer.valueOf(capacity));
+            final String msg = String.format(
+                Locale.US,
+                "limit=%d is beyond capacity=%d",
+                Integer.valueOf(limit),
+                Integer.valueOf(capacity));
 
             throw new IndexOutOfBoundsException(msg);
         }
@@ -184,7 +185,7 @@ public final class DirectBuffer
     /**
      * Get the value at a given index.
      *
-     * @param index in bytes from which to get.
+     * @param index     in bytes from which to get.
      * @param byteOrder of the value to be read.
      * @return the value for at a given index
      */
@@ -205,8 +206,8 @@ public final class DirectBuffer
     /**
      * Put a value to a given index.
      *
-     * @param index in bytes for where to put.
-     * @param value for at a given index
+     * @param index     in bytes for where to put.
+     * @param value     for at a given index
      * @param byteOrder of the value when written
      */
     public void putLong(final int index, final long value, final ByteOrder byteOrder)
@@ -226,7 +227,7 @@ public final class DirectBuffer
     /**
      * Get the value at a given index.
      *
-     * @param index in bytes from which to get.
+     * @param index     in bytes from which to get.
      * @param byteOrder of the value to be read.
      * @return the value at a given index.
      */
@@ -247,8 +248,8 @@ public final class DirectBuffer
     /**
      * Put a value to a given index.
      *
-     * @param index in bytes for where to put.
-     * @param value to be written
+     * @param index     in bytes for where to put.
+     * @param value     to be written
      * @param byteOrder of the value when written
      */
     public void putInt(final int index, final int value, final ByteOrder byteOrder)
@@ -268,7 +269,7 @@ public final class DirectBuffer
     /**
      * Get the value at a given index.
      *
-     * @param index in bytes from which to get.
+     * @param index     in bytes from which to get.
      * @param byteOrder of the value to be read.
      * @return the value at a given index.
      */
@@ -280,8 +281,8 @@ public final class DirectBuffer
     /**
      * Put a value to a given index.
      *
-     * @param index in bytes for where to put.
-     * @param value to be written
+     * @param index     in bytes for where to put.
+     * @param value     to be written
      * @param byteOrder of the value when written.
      */
     public void putDouble(final int index, final double value, final ByteOrder byteOrder)
@@ -292,7 +293,7 @@ public final class DirectBuffer
     /**
      * Get the value at a given index.
      *
-     * @param index in bytes from which to get.
+     * @param index     in bytes from which to get.
      * @param byteOrder of the value to be read.
      * @return the value at a given index.
      */
@@ -304,8 +305,8 @@ public final class DirectBuffer
     /**
      * Put a value to a given index.
      *
-     * @param index in bytes for where to put.
-     * @param value to be written
+     * @param index     in bytes for where to put.
+     * @param value     to be written
      * @param byteOrder of the value when written.
      */
     public void putFloat(final int index, final float value, final ByteOrder byteOrder)
@@ -316,7 +317,7 @@ public final class DirectBuffer
     /**
      * Get the value at a given index.
      *
-     * @param index in bytes from which to get.
+     * @param index     in bytes from which to get.
      * @param byteOrder of the value to be read.
      * @return the value at a given index.
      */
@@ -337,8 +338,8 @@ public final class DirectBuffer
     /**
      * Put a value to a given index.
      *
-     * @param index in bytes for where to put.
-     * @param value to be written
+     * @param index     in bytes for where to put.
+     * @param value     to be written
      * @param byteOrder of the value when written.
      */
     public void putShort(final int index, final short value, final ByteOrder byteOrder)
@@ -465,7 +466,7 @@ public final class DirectBuffer
             {
                 final long address = effectiveDirectAddress + index;
                 MEMORY_ACCESS.peekByteArray(address, dst.byteArray, dst.offset + offset, count);
-             }
+            }
             else
             {
                 Memory.memmove(dst.byteBuffer, dst.offset + offset, byteBuffer, this.offset + index, count);

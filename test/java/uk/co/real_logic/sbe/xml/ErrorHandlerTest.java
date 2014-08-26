@@ -187,13 +187,12 @@ public class ErrorHandlerTest
      * dup field id? (not currently tracked)
      */
 
-    private static void parseTestXmlAddToMap(final Map<String, Type> map,
-                                             final String xPathExpr,
-                                             final String xml,
-                                             final ErrorHandler handler)
+    private static void parseTestXmlAddToMap(
+        final Map<String, Type> map, final String xPathExpr, final String xml, final ErrorHandler handler)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
-        final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+        final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+            new ByteArrayInputStream(xml.getBytes()));
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
 

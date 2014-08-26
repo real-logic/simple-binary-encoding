@@ -29,15 +29,21 @@ public class Encoding
     /**
      * Indicates the presence status of a primitive encoded field in a message.
      */
-    public static enum Presence
+    public enum Presence
     {
-        /** The field presence is required. */
+        /**
+         * The field presence is required.
+         */
         REQUIRED,
 
-        /** The field presence is optional. */
+        /**
+         * The field presence is optional.
+         */
         OPTIONAL,
 
-        /** The field presence is a constant. */
+        /**
+         * The field presence is a constant.
+         */
         CONSTANT
     }
 
@@ -68,17 +74,18 @@ public class Encoding
         semanticType = null;
     }
 
-    public Encoding(final PrimitiveType primitiveType,
-                    final Presence presence,
-                    final ByteOrder byteOrder,
-                    final PrimitiveValue minValue,
-                    final PrimitiveValue maxValue,
-                    final PrimitiveValue nullValue,
-                    final PrimitiveValue constValue,
-                    final String characterEncoding,
-                    final String epoch,
-                    final String timeUnit,
-                    final String semanticType)
+    public Encoding(
+        final PrimitiveType primitiveType,
+        final Presence presence,
+        final ByteOrder byteOrder,
+        final PrimitiveValue minValue,
+        final PrimitiveValue maxValue,
+        final PrimitiveValue nullValue,
+        final PrimitiveValue constValue,
+        final String characterEncoding,
+        final String epoch,
+        final String timeUnit,
+        final String semanticType)
     {
         Verify.notNull(presence, "presence");
         Verify.notNull(byteOrder, "byteOrder");
@@ -163,7 +170,7 @@ public class Encoding
      */
     public Presence presence()
     {
-        return  presence;
+        return presence;
     }
 
     /**
@@ -354,17 +361,18 @@ public class Encoding
 
         public Encoding build()
         {
-            return new Encoding(primitiveType,
-                                presence,
-                                byteOrder,
-                                minValue,
-                                maxValue,
-                                nullValue,
-                                constValue,
-                                characterEncoding,
-                                epoch,
-                                timeUnit,
-                                semanticType);
+            return new Encoding(
+                primitiveType,
+                presence,
+                byteOrder,
+                minValue,
+                maxValue,
+                nullValue,
+                constValue,
+                characterEncoding,
+                epoch,
+                timeUnit,
+                semanticType);
         }
     }
 }

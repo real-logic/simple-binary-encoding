@@ -184,9 +184,8 @@ public class XmlSchemaParser
      * @return {@link java.util.Map} of schemaId to Message
      * @throws Exception on parsing error.
      */
-    public static Map<Long, Message> findMessages(final Document document,
-                                                  final XPath xPath,
-                                                  final Map<String, Type> typeByNameMap)
+    public static Map<Long, Message> findMessages(
+        final Document document, final XPath xPath, final Map<String, Type> typeByNameMap)
         throws Exception
     {
         final Map<Long, Message> messageByIdMap = new HashMap<>();
@@ -257,8 +256,8 @@ public class XmlSchemaParser
 
         if (attrNode == null || "".equals(attrNode.getNodeValue()))
         {
-            throw new IllegalStateException("Element '" + elementNode.getNodeName() +
-                                            "' has empty or missing attribute: " + attrName);
+            throw new IllegalStateException(
+                "Element '" + elementNode.getNodeName() + "' has empty or missing attribute: " + attrName);
         }
 
         return attrNode.getNodeValue();
@@ -302,7 +301,6 @@ public class XmlSchemaParser
 
         return attrNode.getNodeValue();
     }
-
 
     /**
      * Helper function to convert a schema byteOrderName into a {@link ByteOrder}
@@ -356,9 +354,8 @@ public class XmlSchemaParser
         typeByNameMap.put(type.name(), type);
     }
 
-    private static void addMessageWithIdCheck(final Map<Long, Message> messageByIdMap,
-                                              final Message message,
-                                              final Node node)
+    private static void addMessageWithIdCheck(
+        final Map<Long, Message> messageByIdMap, final Message message, final Node node)
     {
         if (messageByIdMap.get(Long.valueOf(message.id())) != null)
         {
@@ -385,7 +382,7 @@ public class XmlSchemaParser
 
     interface NodeFunction
     {
-        void execute(final Node node) throws XPathExpressionException;
+        void execute(Node node) throws XPathExpressionException;
     }
 
     private static void forEach(final NodeList nodeList, final NodeFunction func) throws Exception

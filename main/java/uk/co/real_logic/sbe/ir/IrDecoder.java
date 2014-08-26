@@ -158,16 +158,18 @@ public class IrDecoder implements Closeable
 
         irVersion = frameCodec.schemaVersion();
 
-        irPackageName = new String(buffer, 0, frameCodec.getPackageName(buffer, 0, buffer.length), FrameCodec.packageNameCharacterEncoding());
+        irPackageName = new String(
+            buffer, 0, frameCodec.getPackageName(buffer, 0, buffer.length), FrameCodec.packageNameCharacterEncoding());
 
-        irNamespaceName = new String(buffer, 0, frameCodec.getNamespaceName(buffer, 0, buffer.length), FrameCodec.namespaceNameCharacterEncoding());
+        irNamespaceName = new String(
+            buffer, 0, frameCodec.getNamespaceName(buffer, 0, buffer.length), FrameCodec.namespaceNameCharacterEncoding());
         if (irNamespaceName.isEmpty())
         {
             irNamespaceName = null;
         }
 
-        semanticVersion =
-            new String(buffer, 0, frameCodec.getSemanticVersion(buffer, 0, buffer.length), FrameCodec.semanticVersionCharacterEncoding());
+        semanticVersion = new String(
+            buffer, 0, frameCodec.getSemanticVersion(buffer, 0, buffer.length), FrameCodec.semanticVersionCharacterEncoding());
         if (semanticVersion.isEmpty())
         {
             semanticVersion = null;
@@ -196,27 +198,29 @@ public class IrDecoder implements Closeable
                   .byteOrder(mapByteOrder(tokenCodec.byteOrder()))
                   .presence(mapPresence(tokenCodec.presence()));
 
-        tokenBuilder.name(new String(buffer, 0, tokenCodec.getName(buffer, 0, buffer.length), TokenCodec.nameCharacterEncoding()));
+        tokenBuilder.name(new String(
+            buffer, 0, tokenCodec.getName(buffer, 0, buffer.length), TokenCodec.nameCharacterEncoding()));
 
         encBuilder.constValue(get(valBuffer, type, tokenCodec.getConstValue(valArray, 0, valArray.length)));
         encBuilder.minValue(get(valBuffer, type, tokenCodec.getMinValue(valArray, 0, valArray.length)));
         encBuilder.maxValue(get(valBuffer, type, tokenCodec.getMaxValue(valArray, 0, valArray.length)));
         encBuilder.nullValue(get(valBuffer, type, tokenCodec.getNullValue(valArray, 0, valArray.length)));
 
-        final String characterEncoding = new String(buffer, 0, tokenCodec.getCharacterEncoding(buffer, 0, buffer.length),
-                                                    TokenCodec.characterEncodingCharacterEncoding());
+        final String characterEncoding = new String(
+            buffer, 0, tokenCodec.getCharacterEncoding(buffer, 0, buffer.length),
+            TokenCodec.characterEncodingCharacterEncoding());
         encBuilder.characterEncoding(characterEncoding.isEmpty() ? null : characterEncoding);
 
-        final String epoch = new String(buffer, 0, tokenCodec.getEpoch(buffer, 0, buffer.length),
-                                        TokenCodec.epochCharacterEncoding());
+        final String epoch = new String(
+            buffer, 0, tokenCodec.getEpoch(buffer, 0, buffer.length), TokenCodec.epochCharacterEncoding());
         encBuilder.epoch(epoch.isEmpty() ? null : epoch);
 
-        final String timeUnit = new String(buffer, 0, tokenCodec.getTimeUnit(buffer, 0, buffer.length),
-                                           TokenCodec.timeUnitCharacterEncoding());
+        final String timeUnit = new String(
+            buffer, 0, tokenCodec.getTimeUnit(buffer, 0, buffer.length), TokenCodec.timeUnitCharacterEncoding());
         encBuilder.timeUnit(timeUnit.isEmpty() ? null : timeUnit);
 
-        final String semanticType = new String(buffer, 0, tokenCodec.getSemanticType(buffer, 0, buffer.length),
-                                               TokenCodec.semanticTypeCharacterEncoding());
+        final String semanticType = new String(
+            buffer, 0, tokenCodec.getSemanticType(buffer, 0, buffer.length), TokenCodec.semanticTypeCharacterEncoding());
         encBuilder.semanticType(semanticType.isEmpty() ? null : semanticType);
 
         offset += tokenCodec.size();

@@ -54,10 +54,7 @@ public abstract class Type
      * @param description of the type or null
      * @param semanticType of the type or null
      */
-    public Type(final String name,
-                final Presence presence,
-                final String description,
-                final String semanticType)
+    public Type(final String name, final Presence presence, final String description, final String semanticType)
     {
         this.name = name;
         this.presence = presence;

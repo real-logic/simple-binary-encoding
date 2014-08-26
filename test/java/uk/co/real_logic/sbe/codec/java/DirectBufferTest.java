@@ -69,8 +69,8 @@ public class DirectBufferTest
     public static final DirectBuffer DIRECT_BYTE_BUFFER = new DirectBuffer(ByteBuffer.allocateDirect(BUFFER_CAPACITY));
 
     @DataPoint
-    public static final DirectBuffer HEAP_BYTE_BUFFER_SLICE =
-        new DirectBuffer(((ByteBuffer)(ByteBuffer.allocate(BUFFER_CAPACITY * 2).position(BUFFER_CAPACITY))).slice());
+    public static final DirectBuffer HEAP_BYTE_BUFFER_SLICE = new DirectBuffer(
+        ((ByteBuffer)(ByteBuffer.allocate(BUFFER_CAPACITY * 2).position(BUFFER_CAPACITY))).slice());
 
     @DataPoint
     public static final DirectBuffer MEMORY_MAPPED_BUFFER = new DirectBuffer(createMemoryMappedBuffer());
@@ -78,8 +78,7 @@ public class DirectBufferTest
     private static long memoryBlockAddress = BitUtil.getUnsafe().allocateMemory(BUFFER_CAPACITY);
 
     @DataPoint
-    public static final DirectBuffer OFF_HEAP_BUFFER =
-        new DirectBuffer(memoryBlockAddress, BUFFER_CAPACITY);
+    public static final DirectBuffer OFF_HEAP_BUFFER = new DirectBuffer(memoryBlockAddress, BUFFER_CAPACITY);
 
     @Theory
     public void shouldThrowExceptionForLimitAboveCapacity(final DirectBuffer buffer)
@@ -293,8 +292,7 @@ public class DirectBufferTest
         duplicateBuffer.position(INDEX);
         duplicateBuffer.put(testBytes);
 
-        final ByteBuffer dstBuffer =
-            ((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice();
+        final ByteBuffer dstBuffer = ((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice();
 
         buffer.getBytes(INDEX, dstBuffer, testBytes.length);
 
@@ -371,8 +369,7 @@ public class DirectBufferTest
     public void shouldPutBytesToBufferFromSlice(final DirectBuffer buffer, final ByteOrder byteOrder)
     {
         final byte[] testBytes = "Hello World".getBytes();
-        final ByteBuffer srcBuffer =
-            ((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice();
+        final ByteBuffer srcBuffer = ((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice();
 
         srcBuffer.put(testBytes);
         srcBuffer.flip();
@@ -391,8 +388,8 @@ public class DirectBufferTest
     public void shouldPutBytesToDirectBufferFromDirectBuffer(final DirectBuffer buffer)
     {
         final byte[] testBytes = "Hello World!".getBytes();
-        final DirectBuffer srcBuffer =
-            new DirectBuffer(((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice());
+        final DirectBuffer srcBuffer = new DirectBuffer(
+            ((ByteBuffer)ByteBuffer.allocate(testBytes.length * 2).position(testBytes.length)).slice());
 
         srcBuffer.putBytes(0, testBytes);
         buffer.putBytes(INDEX, srcBuffer, 0, testBytes.length);
@@ -550,9 +547,9 @@ public class DirectBufferTest
             memoryMappedFile.close();
             tempFile.delete();
         }
-        catch (Exception e)
+        catch (final Exception ex)
         {
-            e.printStackTrace();
+            ex.printStackTrace();
         }
 
         BitUtil.getUnsafe().freeMemory(memoryBlockAddress);

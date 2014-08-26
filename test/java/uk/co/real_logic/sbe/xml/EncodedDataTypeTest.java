@@ -423,19 +423,20 @@ public class EncodedDataTypeTest
         final String nullVal = "10";
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeInt8NullValue\" primitiveType=\"int8\" presence=\"optional\" nullValue=\"" + nullVal + "\"/>" +
+            "    <type name=\"testTypeInt8NullValue\" primitiveType=\"int8\" presence=\"optional\" nullValue=\"" +
+                nullVal + "\"/>" +
             "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
-        assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).nullValue()),
-                   is(parse(nullVal, PrimitiveType.INT8)));
+        assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).nullValue()), is(parse(nullVal, PrimitiveType.INT8)));
     }
 
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
-        final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+        final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+            new ByteArrayInputStream(xml.getBytes()));
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
         final Map<String, Type> map = new HashMap<>();

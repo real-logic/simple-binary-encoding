@@ -32,8 +32,8 @@ public class PackageOutputManager implements OutputManager
      * Create a new {@link OutputManager} for generating Java source files into a given package.
      *
      * @param baseDirectoryName for the generated source code.
-     * @param packageName for the generated source code relative to the baseDirectoryName.
-     * @throws IOException if an error occurs during ouput.
+     * @param packageName       for the generated source code relative to the baseDirectoryName.
+     * @throws IOException if an error occurs during output.
      */
     public PackageOutputManager(final String baseDirectoryName, final String packageName) throws IOException
     {
@@ -42,8 +42,8 @@ public class PackageOutputManager implements OutputManager
 
         final String dirName =
             (baseDirectoryName.endsWith("" + File.separatorChar) ?
-                 baseDirectoryName : baseDirectoryName + File.separatorChar) +
-            packageName.replace('.', File.separatorChar);
+                baseDirectoryName : baseDirectoryName + File.separatorChar) +
+                packageName.replace('.', File.separatorChar);
 
         outputDir = new File(dirName);
         if (!outputDir.exists())

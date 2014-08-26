@@ -42,9 +42,8 @@ public class MessageSchema
     private final Map<String, Type> typeByNameMap;
     private final Map<Long, Message> messageByIdMap;
 
-    public MessageSchema(final Node schemaNode,
-                         final Map<String, Type> typeByNameMap,
-                         final Map<Long, Message> messageByIdMap)
+    public MessageSchema(
+        final Node schemaNode, final Map<String, Type> typeByNameMap, final Map<Long, Message> messageByIdMap)
     {
         this.packageName = getAttributeValue(schemaNode, "package");
         this.description = getAttributeValueOrNull(schemaNode, "description");

@@ -33,7 +33,8 @@ public class EmbeddedLengthAndCountFileTest
     public void shouldHandleEmbeddedCountForGroup()
         throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(
+            TestUtil.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
 
         assertThat(fields.get(1).name(), is("ListOrdGrp"));

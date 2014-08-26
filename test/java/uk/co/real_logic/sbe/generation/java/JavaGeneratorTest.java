@@ -161,7 +161,8 @@ public class JavaGeneratorTest
         final String className = "Engine";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
-        when(Short.valueOf(mockBuffer.getShort(capacityFieldOffset, BYTE_ORDER))).thenReturn(Short.valueOf((short)expectedEngineCapacity));
+        when(Short.valueOf(mockBuffer.getShort(capacityFieldOffset, BYTE_ORDER)))
+            .thenReturn(Short.valueOf((short)expectedEngineCapacity));
 
         final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
         javaGenerator.generateTypeStubs();
@@ -209,7 +210,8 @@ public class JavaGeneratorTest
         final Integer initialPosition = (Integer)msgFlyweight.getClass().getDeclaredMethod("limit").invoke(msgFlyweight);
 
         final Object groupFlyweight = clazz.getDeclaredMethod("fuelFigures").invoke(msgFlyweight);
-        assertThat((Integer)msgFlyweight.getClass().getDeclaredMethod("limit").invoke(msgFlyweight), greaterThan(initialPosition));
+        assertThat(
+            (Integer)msgFlyweight.getClass().getDeclaredMethod("limit").invoke(msgFlyweight), greaterThan(initialPosition));
 
         final Integer count = (Integer)groupFlyweight.getClass().getDeclaredMethod("count").invoke(groupFlyweight);
         assertThat(count, is(Integer.valueOf(0)));

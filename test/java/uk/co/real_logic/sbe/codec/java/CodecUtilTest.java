@@ -129,8 +129,8 @@ public class CodecUtilTest
     public void shouldSetBitInInt()
     {
         final int bufferIndex = 8;
-
         long total = 0;
+
         for (int i = 0; i < 32; i++)
         {
             CodecUtil.uint32PutChoice(buffer, bufferIndex, i, true, BYTE_ORDER);

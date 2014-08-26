@@ -39,7 +39,8 @@ public class PackageOutputManagerTest
         Writer out = pom.createOutput(exampleClassName);
         out.close();
 
-        final String fullyQualifiedFilename = (tempDirName.endsWith("" + File.separatorChar) ? tempDirName : tempDirName + File.separatorChar) +
+        final String fullyQualifiedFilename =
+            (tempDirName.endsWith("" + File.separatorChar) ? tempDirName : tempDirName + File.separatorChar) +
             packageName.replace('.', File.separatorChar) +
             File.separatorChar + exampleClassName + ".java";
 

@@ -92,7 +92,7 @@ public class EncodedDataType extends Type
         }
 
         final String minValStr = getAttributeValueOrNull(node, "minValue");
-        minValue =  minValStr != null ? PrimitiveValue.parse(minValStr, primitiveType) : null;
+        minValue = minValStr != null ? PrimitiveValue.parse(minValStr, primitiveType) : null;
 
         final String maxValStr = getAttributeValueOrNull(node, "maxValue");
         maxValue = maxValStr != null ? PrimitiveValue.parse(maxValStr, primitiveType) : null;
@@ -124,13 +124,14 @@ public class EncodedDataType extends Type
      * @param length        of the EncodedDataType
      * @param varLen        of the EncodedDataType
      */
-    public EncodedDataType(final String name,
-                           final Presence presence,
-                           final String description,
-                           final String semanticType,
-                           final PrimitiveType primitiveType,
-                           final int length,
-                           final boolean varLen)
+    public EncodedDataType(
+        final String name,
+        final Presence presence,
+        final String description,
+        final String semanticType,
+        final PrimitiveType primitiveType,
+        final int length,
+        final boolean varLen)
     {
         super(name, presence, description, semanticType);
 

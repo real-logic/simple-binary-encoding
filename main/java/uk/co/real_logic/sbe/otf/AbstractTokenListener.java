@@ -23,7 +23,8 @@ import java.util.List;
 /**
  * Abstract {@link TokenListener} that can be extended when not all callback methods are required.
  *
- * By extending this class their is a possibility for the optimizer to elide unused methods otherwise requiring polymorphic dispatch.
+ * By extending this class their is a possibility for the optimizer to elide unused methods otherwise
+ * requiring polymorphic dispatch.
  */
 public abstract class AbstractTokenListener implements TokenListener
 {
@@ -37,19 +38,32 @@ public abstract class AbstractTokenListener implements TokenListener
         // no op
     }
 
-    public void onEncoding(final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final Token typeToken, final int actingVersion)
+    public void onEncoding(
+        final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final Token typeToken, final int actingVersion)
     {
         // no op
     }
 
-    public void onEnum(final Token fieldToken, final DirectBuffer buffer, final int bufferIndex,
-                       final List<Token> tokens, final int fromIndex, final int toIndex, final int actingVersion)
+    public void onEnum(
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final List<Token> tokens,
+        final int fromIndex,
+        final int toIndex,
+        final int actingVersion)
     {
         // no op
     }
 
-    public void onBitSet(final Token fieldToken, final DirectBuffer buffer,
-                         final int bufferIndex, final List<Token> tokens, final int fromIndex, final int toIndex, final int actingVersion)
+    public void onBitSet(
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final List<Token> tokens,
+        final int fromIndex,
+        final int toIndex,
+        final int actingVersion)
     {
         // no op
     }
@@ -79,7 +93,8 @@ public abstract class AbstractTokenListener implements TokenListener
         // no op
     }
 
-    public void onVarData(final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final int length, final Token typeToken)
+    public void onVarData(
+        final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final int length, final Token typeToken)
     {
         // no op
     }

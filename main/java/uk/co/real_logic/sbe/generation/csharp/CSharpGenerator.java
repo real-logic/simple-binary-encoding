@@ -163,11 +163,8 @@ public class CSharpGenerator implements CodeGenerator
         return index;
     }
 
-    private int generateGroups(final StringBuilder sb,
-                               final String parentMessageClassName,
-                               final List<Token> tokens,
-                               int index,
-                               final String indent)
+    private int generateGroups(
+        final StringBuilder sb, final String parentMessageClassName, final List<Token> tokens, int index, final String indent)
     {
         for (int size = tokens.size(); index < size; index++)
         {
@@ -195,12 +192,13 @@ public class CSharpGenerator implements CodeGenerator
         return index;
     }
 
-    private void generateGroupClassHeader(final StringBuilder sb,
-                                          final String groupName,
-                                          final String parentMessageClassName,
-                                          final List<Token> tokens,
-                                          final int index,
-                                          final String indent)
+    private void generateGroupClassHeader(
+        final StringBuilder sb,
+        final String groupName,
+        final String parentMessageClassName,
+        final List<Token> tokens,
+        final int index,
+        final String indent)
     {
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
         final Integer dimensionHeaderSize = Integer.valueOf(tokens.get(index + 1).size());
@@ -494,7 +492,8 @@ public class CSharpGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            sb.append(INDENT).append(INDENT).append(token.name()).append(" = ").append(token.encoding().constValue()).append(",\n");
+            sb.append(INDENT).append(INDENT).append(token.name()).append(" = ")
+              .append(token.encoding().constValue()).append(",\n");
         }
 
         final PrimitiveValue nullVal = encoding.applicableNullValue();
@@ -562,7 +561,7 @@ public class CSharpGenerator implements CodeGenerator
         if (addFlagsAttribute)
         {
             result += "    [Flags]\n";
-    }
+        }
 
         result +=
             "    public enum " + name + " : " + primitiveType + "\n" +
@@ -571,8 +570,7 @@ public class CSharpGenerator implements CodeGenerator
         return result;
     }
 
-    private CharSequence generatePrimitivePropertyEncodings(final List<Token> tokens,
-                                                            final String indent)
+    private CharSequence generatePrimitivePropertyEncodings(final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -587,9 +585,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generatePrimitiveProperty(final String propertyName,
-                                                   final Token token,
-                                                   final String indent)
+    private CharSequence generatePrimitiveProperty(final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -607,9 +603,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generatePrimitivePropertyMethods(final String propertyName,
-                                                          final Token token,
-                                                          final String indent)
+    private CharSequence generatePrimitivePropertyMethods(final String propertyName, final Token token, final String indent)
     {
         final int arrayLength = token.arrayLength();
 
@@ -633,35 +627,33 @@ public class CSharpGenerator implements CodeGenerator
         final String typeName = cSharpTypeName(primitiveType);
 
         sb.append(String.format(
-                "\n" +
-                        indent + "    public const %s %sNullValue = %s;\n",
-                typeName,
-                toUpperFirstChar(propertyName),
-                generateLiteral(primitiveType, token.encoding().applicableNullValue().toString())
+            "\n" +
+                    indent + "    public const %s %sNullValue = %s;\n",
+            typeName,
+            toUpperFirstChar(propertyName),
+            generateLiteral(primitiveType, token.encoding().applicableNullValue().toString())
         ));
 
         sb.append(String.format(
-                "\n" +
-                        indent + "    public const %s %sMinValue = %s;\n",
-                typeName,
-                toUpperFirstChar(propertyName),
-                generateLiteral(primitiveType, token.encoding().applicableMinValue().toString())
+            "\n" +
+                    indent + "    public const %s %sMinValue = %s;\n",
+            typeName,
+            toUpperFirstChar(propertyName),
+            generateLiteral(primitiveType, token.encoding().applicableMinValue().toString())
         ));
 
         sb.append(String.format(
-                "\n" +
-                        indent + "    public const %s %sMaxValue = %s;\n",
-                typeName,
-                toUpperFirstChar(propertyName),
-                generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())
+            "\n" +
+                    indent + "    public const %s %sMaxValue = %s;\n",
+            typeName,
+            toUpperFirstChar(propertyName),
+            generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())
         ));
 
         return sb;
     }
 
-    private CharSequence generateSingleValueProperty(final String propertyName,
-                                                     final Token token,
-                                                     final String indent)
+    private CharSequence generateSingleValueProperty(final String propertyName, final Token token, final String indent)
     {
         final String typeName = cSharpTypeName(token.encoding().primitiveType());
         final String typePrefix = toUpperFirstChar(token.encoding().primitiveType().primitiveName());
@@ -736,9 +728,7 @@ public class CSharpGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateArrayProperty(final String propertyName,
-                                               final Token token,
-                                               final String indent)
+    private CharSequence generateArrayProperty(final String propertyName, final Token token, final String indent)
     {
         final String typeName = cSharpTypeName(token.encoding().primitiveType());
         final String typePrefix = toUpperFirstChar(token.encoding().primitiveType().primitiveName());
@@ -806,7 +796,8 @@ public class CSharpGenerator implements CodeGenerator
                 indent + "        const int length = %2$d;\n" +
                 indent + "        if (dstOffset < 0 || dstOffset > (dst.Length - length))\n" +
                 indent + "        {\n" +
-                indent + "            throw new IndexOutOfRangeException(\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
+                indent + "            throw new IndexOutOfRangeException(" +
+                    "\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
                 "%3$s" +
                 indent + "        _buffer.GetBytes(_offset + %4$d, dst, dstOffset, length);\n" +
@@ -824,7 +815,8 @@ public class CSharpGenerator implements CodeGenerator
                 indent + "        const int length = %2$d;\n" +
                 indent + "        if (srcOffset < 0 || srcOffset > (src.Length - length))\n" +
                 indent + "        {\n" +
-                indent + "            throw new IndexOutOfRangeException(\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
+                indent + "            throw new IndexOutOfRangeException(" +
+                    "\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
                 indent + "        }\n\n" +
                 indent + "        _buffer.SetBytes(_offset + %3$d, src, srcOffset, length);\n" +
                 indent + "    }\n",
@@ -865,7 +857,8 @@ public class CSharpGenerator implements CodeGenerator
 
         final String javaTypeName = cSharpTypeName(token.encoding().primitiveType());
         final byte[] constantValue = token.encoding().constValue().byteArrayValue(token.encoding().primitiveType());
-        final CharSequence values = generateByteLiteralList(token.encoding().constValue().byteArrayValue(token.encoding().primitiveType()));
+        final CharSequence values = generateByteLiteralList(
+            token.encoding().constValue().byteArrayValue(token.encoding().primitiveType()));
 
         sb.append(String.format(
             "\n" +
@@ -952,7 +945,7 @@ public class CSharpGenerator implements CodeGenerator
             "    public const %3$s TemplateId = %4$s;\n" +
             "    public const %5$s SchemaId = %6$s;\n" +
             "    public const %7$s Schema_Version = %8$s;\n" +
-            "    public const string SematicType = \"%9$s\";\n\n" +
+            "    public const string SemanticType = \"%9$s\";\n\n" +
             "    private readonly %10$s _parentMessage;\n" +
             "    private DirectBuffer _buffer;\n" +
             "    private int _offset;\n" +
@@ -1000,16 +993,16 @@ public class CSharpGenerator implements CodeGenerator
             "            _limit = value;\n" +
             "        }\n" +
             "    }\n\n",
-                blockLengthType,
-                generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
-                templateIdType,
-                generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
-                schemaIdType,
-                generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
-                schemaVersionType,
-                generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
-                semanticType,
-                className
+            blockLengthType,
+            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
+            templateIdType,
+            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
+            schemaIdType,
+            generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
+            schemaVersionType,
+            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
+            semanticType,
+            className
         );
     }
 
@@ -1102,9 +1095,7 @@ public class CSharpGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateEnumProperty(final String propertyName,
-                                              final Token token,
-                                              final String indent)
+    private CharSequence generateEnumProperty(final String propertyName, final Token token, final String indent)
     {
         final String enumName = formatClassName(token.name());
         final String typePrefix = toUpperFirstChar(token.encoding().primitiveType().primitiveName());
@@ -1194,7 +1185,6 @@ public class CSharpGenerator implements CodeGenerator
             toLowerFirstChar(propertyName),
             compositeName
         ));
-
 
         sb.append(String.format(
             "\n" +

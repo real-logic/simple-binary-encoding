@@ -50,7 +50,7 @@ public class ExampleUsingGeneratedStubExtension
         }
     }
 
-    public static void main(final String[] args)throws Exception
+    public static void main(final String[] args) throws Exception
     {
         System.out.println("\n*** Extension Stub Example ***");
 
@@ -104,9 +104,7 @@ public class ExampleUsingGeneratedStubExtension
         decode(CAR_1, directBuffer, bufferOffset, schemaId, actingBlockLength, actingVersion);
     }
 
-    public static int encode(final baseline.Car car,
-                             final DirectBuffer directBuffer,
-                             final int bufferOffset)
+    public static int encode(final baseline.Car car, final DirectBuffer directBuffer, final int bufferOffset)
     {
         final int srcOffset = 0;
 
@@ -123,27 +121,27 @@ public class ExampleUsingGeneratedStubExtension
         }
 
         car.extras().clear()
-                    .cruiseControl(true)
-                    .sportsPack(true)
-                    .sunRoof(false);
+           .cruiseControl(true)
+           .sportsPack(true)
+           .sunRoof(false);
 
         car.engine().capacity(2000)
-                    .numCylinders((short)4)
-                    .putManufacturerCode(MANUFACTURER_CODE, srcOffset);
+           .numCylinders((short)4)
+           .putManufacturerCode(MANUFACTURER_CODE, srcOffset);
 
         car.fuelFiguresCount(3).next().speed(30).mpg(35.9f)
-                               .next().speed(55).mpg(49.0f)
-                               .next().speed(75).mpg(40.0f);
+           .next().speed(55).mpg(49.0f)
+           .next().speed(75).mpg(40.0f);
 
         final baseline.Car.PerformanceFigures perfFigures = car.performanceFiguresCount(2);
         perfFigures.next().octaneRating((short)95)
-                          .accelerationCount(3).next().mph(30).seconds(4.0f)
-                                               .next().mph(60).seconds(7.5f)
-                                               .next().mph(100).seconds(12.2f);
+                   .accelerationCount(3).next().mph(30).seconds(4.0f)
+                   .next().mph(60).seconds(7.5f)
+                   .next().mph(100).seconds(12.2f);
         perfFigures.next().octaneRating((short)99)
-                          .accelerationCount(3).next().mph(30).seconds(3.8f)
-                                               .next().mph(60).seconds(7.1f)
-                                               .next().mph(100).seconds(11.8f);
+                   .accelerationCount(3).next().mph(30).seconds(3.8f)
+                   .next().mph(60).seconds(7.1f)
+                   .next().mph(100).seconds(11.8f);
 
         car.putMake(MAKE, srcOffset, MAKE.length);
         car.putModel(MODEL, srcOffset, MODEL.length);
@@ -151,12 +149,13 @@ public class ExampleUsingGeneratedStubExtension
         return car.size();
     }
 
-    public static void decode(final extension.Car car,
-                              final DirectBuffer directBuffer,
-                              final int bufferOffset,
-                              final int schemaId,
-                              final int actingBlockLength,
-                              final int actingVersion)
+    public static void decode(
+        final extension.Car car,
+        final DirectBuffer directBuffer,
+        final int bufferOffset,
+        final int schemaId,
+        final int actingBlockLength,
+        final int actingVersion)
         throws Exception
     {
         final byte[] buffer = new byte[128];
@@ -222,9 +221,11 @@ public class ExampleUsingGeneratedStubExtension
         }
 
         sb.append("\ncar.make.semanticType=").append(extension.Car.makeMetaAttribute(extension.MetaAttribute.SEMANTIC_TYPE));
-        sb.append("\ncar.make=").append(new String(buffer, 0, car.getMake(buffer, 0, buffer.length), extension.Car.makeCharacterEncoding()));
+        sb.append("\ncar.make=").append(
+            new String(buffer, 0, car.getMake(buffer, 0, buffer.length), extension.Car.makeCharacterEncoding()));
 
-        sb.append("\ncar.model=").append(new String(buffer, 0, car.getModel(buffer, 0, buffer.length), extension.Car.modelCharacterEncoding()));
+        sb.append("\ncar.model=").append(
+            new String(buffer, 0, car.getModel(buffer, 0, buffer.length), extension.Car.modelCharacterEncoding()));
 
         sb.append("\ncar.size=").append(car.size());
 

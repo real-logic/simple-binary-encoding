@@ -28,24 +28,40 @@ import java.security.PrivilegedExceptionAction;
  */
 class BitUtil
 {
-    /** Size of a byte in bytes */
+    /**
+     * Size of a byte in bytes
+     */
     public static final int SIZE_OF_BYTE = 1;
-    /** Size of a boolean in bytes */
+    /**
+     * Size of a boolean in bytes
+     */
     public static final int SIZE_OF_BOOLEAN = 1;
 
-    /** Size of a char in bytes */
+    /**
+     * Size of a char in bytes
+     */
     public static final int SIZE_OF_CHAR = 2;
-    /** Size of a short in bytes */
+    /**
+     * Size of a short in bytes
+     */
     public static final int SIZE_OF_SHORT = 2;
 
-    /** Size of an int in bytes */
+    /**
+     * Size of an int in bytes
+     */
     public static final int SIZE_OF_INT = 4;
-    /** Size of a a float in bytes */
+    /**
+     * Size of a a float in bytes
+     */
     public static final int SIZE_OF_FLOAT = 4;
 
-    /** Size of a long in bytes */
+    /**
+     * Size of a long in bytes
+     */
     public static final int SIZE_OF_LONG = 8;
-    /** Size of a double in bytes */
+    /**
+     * Size of a double in bytes
+     */
     public static final int SIZE_OF_DOUBLE = 8;
 
     private static final Unsafe UNSAFE;
@@ -89,13 +105,11 @@ class BitUtil
      * the caller is responsible for memory allocation and reclamation.
      *
      * @param byteBuffer to set the address on.
-     * @param address to set for the underlying buffer.
-     * @param capacity of the new underlying buffer.
+     * @param address    to set for the underlying buffer.
+     * @param capacity   of the new underlying buffer.
      * @return the modified {@link ByteBuffer}
      */
-    public static ByteBuffer resetAddressAndCapacity(final ByteBuffer byteBuffer,
-                                                     final long address,
-                                                     final int capacity)
+    public static ByteBuffer resetAddressAndCapacity(final ByteBuffer byteBuffer, final long address, final int capacity)
     {
         if (!byteBuffer.isDirect())
         {

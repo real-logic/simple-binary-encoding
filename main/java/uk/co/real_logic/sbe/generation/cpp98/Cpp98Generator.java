@@ -57,7 +57,8 @@ public class Cpp98Generator implements CodeGenerator
             out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), MESSAGE_HEADER_TYPE, null));
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
             out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
-            out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            out.append(
+                generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("};\n}\n#endif\n");
         }
@@ -189,11 +190,8 @@ public class Cpp98Generator implements CodeGenerator
         return index;
     }
 
-    private void generateGroupClassHeader(final StringBuilder sb,
-                                          final String groupName,
-                                          final List<Token> tokens,
-                                          final int index,
-                                          final String indent)
+    private void generateGroupClassHeader(
+        final StringBuilder sb, final String groupName, final List<Token> tokens, final int index, final String indent)
     {
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
         final Integer dimensionHeaderSize = Integer.valueOf(tokens.get(index + 1).size());
@@ -299,9 +297,7 @@ public class Cpp98Generator implements CodeGenerator
         ));
     }
 
-    private CharSequence generateGroupProperty(final String groupName,
-                                               final Token token,
-                                               final String indent)
+    private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -369,7 +365,8 @@ public class Cpp98Generator implements CodeGenerator
 
                 generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
 
-                generateVarDataDecriptors(sb, token, propertyName, characterEncoding, lengthToken, sizeOfLengthField, lengthCpp98Type);
+                generateVarDataDescriptors(
+                    sb, token, propertyName, characterEncoding, lengthToken, sizeOfLengthField, lengthCpp98Type);
 
                 sb.append(String.format(
                     "    const char *%1$s(void)\n" +
@@ -429,13 +426,14 @@ public class Cpp98Generator implements CodeGenerator
         return sb;
     }
 
-    private void generateVarDataDecriptors(final StringBuilder sb,
-                                           final Token token,
-                                           final String propertyName,
-                                           final String characterEncoding,
-                                           final Token lengthToken,
-                                           final Integer sizeOfLengthField,
-                                           final String lengthCpp98Type)
+    private void generateVarDataDescriptors(
+        final StringBuilder sb,
+        final Token token,
+        final String propertyName,
+        final String characterEncoding,
+        final Token lengthToken,
+        final Integer sizeOfLengthField,
+        final String lengthCpp98Type)
     {
         sb.append(String.format(
             "\n"  +
@@ -464,7 +462,6 @@ public class Cpp98Generator implements CodeGenerator
             Long.valueOf(token.version()),
             Integer.valueOf(token.id())
         ));
-
 
         sb.append(String.format(
             "\n" +
@@ -578,7 +575,8 @@ public class Cpp98Generator implements CodeGenerator
                 final String choiceName = token.name();
                 final String typeName = cpp98TypeName(token.encoding().primitiveType());
                 final String choiceBitPosition = token.encoding().constValue().toString();
-                final String byteOrderStr = formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType());
+                final String byteOrderStr = formatByteOrderEncoding(
+                    token.encoding().byteOrder(), token.encoding().primitiveType());
 
                 sb.append(String.format(
                     "\n" +
@@ -626,7 +624,8 @@ public class Cpp98Generator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            final CharSequence constVal = generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString());
+            final CharSequence constVal = generateLiteral(
+                token.encoding().primitiveType(), token.encoding().constValue().toString());
             sb.append("        ").append(token.name()).append(" = ").append(constVal).append(",\n");
         }
 
@@ -724,9 +723,7 @@ public class Cpp98Generator implements CodeGenerator
         );
     }
 
-    private CharSequence generateFileHeader(final String namespaceName,
-                                            final String className,
-                                            final List<String> typesToInclude)
+    private CharSequence generateFileHeader(final String namespaceName, final String className, final List<String> typesToInclude)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -788,9 +785,8 @@ public class Cpp98Generator implements CodeGenerator
         return "class " + name + "\n{\npublic:\n\n";
     }
 
-    private CharSequence generatePrimitivePropertyEncodings(final String containingClassName,
-                                                            final List<Token> tokens,
-                                                            final String indent)
+    private CharSequence generatePrimitivePropertyEncodings(
+        final String containingClassName, final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -805,10 +801,8 @@ public class Cpp98Generator implements CodeGenerator
        return sb;
     }
 
-    private CharSequence generatePrimitiveProperty(final String containingClassName,
-                                                   final String propertyName,
-                                                   final Token token,
-                                                   final String indent)
+    private CharSequence generatePrimitiveProperty(
+        final String containingClassName, final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -826,10 +820,8 @@ public class Cpp98Generator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generatePrimitivePropertyMethods(final String containingClassName,
-                                                          final String propertyName,
-                                                          final Token token,
-                                                          final String indent)
+    private CharSequence generatePrimitivePropertyMethods(
+        final String containingClassName, final String propertyName, final Token token, final String indent)
     {
         final int arrayLength = token.arrayLength();
 
@@ -888,10 +880,8 @@ public class Cpp98Generator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateSingleValueProperty(final String containingClassName,
-                                                     final String propertyName,
-                                                     final Token token,
-                                                     final String indent)
+    private CharSequence generateSingleValueProperty(
+        final String containingClassName, final String propertyName, final Token token, final String indent)
     {
         final String cpp98TypeName = cpp98TypeName(token.encoding().primitiveType());
         final Integer offset = Integer.valueOf(token.offset());
@@ -928,10 +918,8 @@ public class Cpp98Generator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateArrayProperty(final String containingClassName,
-                                               final String propertyName,
-                                               final Token token,
-                                               final String indent)
+    private CharSequence generateArrayProperty(
+        final String containingClassName, final String propertyName, final Token token, final String indent)
     {
         final String cpp98TypeName = cpp98TypeName(token.encoding().primitiveType());
         final Integer offset = Integer.valueOf(token.offset());
@@ -1237,9 +1225,7 @@ public class Cpp98Generator implements CodeGenerator
         );
     }
 
-    private CharSequence generateFields(final String containingClassName,
-                                        final List<Token> tokens,
-                                        final String indent)
+    private CharSequence generateFields(final String containingClassName, final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1343,10 +1329,8 @@ public class Cpp98Generator implements CodeGenerator
         );
     }
 
-    private CharSequence generateEnumProperty(final String containingClassName,
-                                              final String propertyName,
-                                              final Token token,
-                                              final String indent)
+    private CharSequence generateEnumProperty(
+        final String containingClassName, final String propertyName, final Token token, final String indent)
     {
         final String enumName = token.name();
         final String typeName = cpp98TypeName(token.encoding().primitiveType());
@@ -1425,12 +1409,12 @@ public class Cpp98Generator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-                "\n" +
-                "private:\n" +
-                indent + "    %1$s %2$s_;\n\n" +
-                "public:\n",
-                compositeName,
-                propertyName
+            "\n" +
+            "private:\n" +
+            indent + "    %1$s %2$s_;\n\n" +
+            "public:\n",
+            compositeName,
+            propertyName
         ));
 
         sb.append(String.format(

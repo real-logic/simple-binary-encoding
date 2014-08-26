@@ -157,7 +157,7 @@ public class OffsetFileTest
         final MessageSchema schema = parse(TestUtil.getLocalResource("composite-offsets-schema.xml"), ParserOptions.DEFAULT);
         final CompositeType header = schema.messageHeader();
 
-        assertThat(header.size(), is(valueOf(12)));
+        assertThat(valueOf(header.size()), is(valueOf(12)));
     }
 
     @Test
@@ -167,6 +167,6 @@ public class OffsetFileTest
         final MessageSchema schema = parse(TestUtil.getLocalResource("composite-offsets-schema.xml"), ParserOptions.DEFAULT);
         final CompositeType dimensions = schema.getMessage(1).fields().get(0).dimensionType();
 
-        assertThat(dimensions.size(), is(valueOf(8)));
+        assertThat(valueOf(dimensions.size()), is(valueOf(8)));
     }
 }

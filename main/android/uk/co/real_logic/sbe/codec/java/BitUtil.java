@@ -29,16 +29,19 @@ final class BitUtil
 {
 
     //
-    //"effectiveDirectAddress" type changed from int to long in changeset: 0121106d9dc1ba713b53822886355e4d9339e852 (Android 4.3 - api 18)
+    //"effectiveDirectAddress" type changed from int to long in changeset:
+    // 0121106d9dc1ba713b53822886355e4d9339e852 (Android 4.3 - api 18)
     //at the same time, methods inside libcore.io.Memory where changed to use long addresses instead of ints
-    //https://android.googlesource.com/platform/libcore/+/0121106d9dc1ba713b53822886355e4d9339e852%5E%21/luni/src/main/java/java/nio/Buffer.java
+    //https://android.googlesource.com/platform/libcore/+/0121106d9dc1ba713b53822886355e4d9339e852%5E%21/
+    //     luni/src/main/java/java/nio/Buffer.java
     //
     //In api 14 org/apache/harmony/luni/platform/OSMemory.java was renamed to libcore/io/Memory.java
     //https://android.googlesource.com/platform/libcore/+/f934c3d2c8dd9e6bc5299cef41adace2a671637d
     //DirectBuffer class supports api 14 or later.
     //
     //Added to Buffer in changeset: bd8ecd863aa83df50d7ce8f5950d8645ab6356af (Android 2.3 - api 9)
-    //https://android.googlesource.com/platform/libcore/+/bd8ecd863aa83df50d7ce8f5950d8645ab6356af%5E%21/nio/src/main/java/java/nio/Buffer.java
+    //https://android.googlesource.com/platform/libcore/+/bd8ecd863aa83df50d7ce8f5950d8645ab6356af%5E%21/
+    //     nio/src/main/java/java/nio/Buffer.java
 
     private static final Field EFFECTIVE_DIRECT_ADDRESS_FIELD;
     private static final MemoryAccess MEMORY_ACCESS;
@@ -70,11 +73,11 @@ final class BitUtil
             return USE_LONG_ADDRESS ? EFFECTIVE_DIRECT_ADDRESS_FIELD.getLong(buffer)
                     : EFFECTIVE_DIRECT_ADDRESS_FIELD.getInt(buffer);
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             return 0;
         }
-        catch (IllegalAccessException e)
+        catch (final IllegalAccessException e)
         {
             return 0;
         }
@@ -110,6 +113,7 @@ final class BitUtil
                 return (T) field.get(null);
             }
         };
+
         return AccessController.doPrivileged(action);
     }
 
@@ -132,6 +136,7 @@ final class BitUtil
                 return field;
             }
         };
+
         return AccessController.doPrivileged(action);
     }
 }

@@ -36,7 +36,8 @@ public final class ParserOptions
      * @param suppressOutput specifies whether to suppress the output of errors and warnings.
      * @param xsdFilename the name of the schema file.
      */
-    private ParserOptions(final boolean stopOnError, final boolean warningsFatal, final boolean suppressOutput, final String xsdFilename)
+    private ParserOptions(
+        final boolean stopOnError, final boolean warningsFatal, final boolean suppressOutput, final String xsdFilename)
     {
         this.stopOnError = stopOnError;
         this.warningsFatal = warningsFatal;

@@ -135,7 +135,8 @@ public class CompositeTypeTest
         final String testXmlString =
             "<types>" +
             "<composite name=\"PRICENULL\" description=\"Price NULL\" semanticType=\"Price\">" +
-            "    <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" + nullValStr + "\" primitiveType=\"int64\"/>" +
+            "    <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" +
+                nullValStr + "\" primitiveType=\"int64\"/>" +
             "    <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">-7</type>" +
             "</composite>" +
             "</types>";
@@ -165,7 +166,8 @@ public class CompositeTypeTest
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {
-        final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+        final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+            new ByteArrayInputStream(xml.getBytes()));
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
         final Map<String, Type> map = new HashMap<>();

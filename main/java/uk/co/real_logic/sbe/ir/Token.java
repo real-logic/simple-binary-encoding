@@ -58,27 +58,38 @@ import uk.co.real_logic.sbe.util.Verify;
  * <li>Token 3 - Signal = END_FIELD</li>
  * <li>Token 4 - Signal = END_MESSAGE</li>
  * </ul>
- *
  */
 public class Token
 {
-    /** Indicates how the version field should be interpreted. */
+    /**
+     * Indicates how the version field should be interpreted.
+     */
     public enum VersionContext
     {
-        /** Indicates the version is for the template itself. */
+        /**
+         * Indicates the version is for the template itself.
+         */
         TEMPLATE_VERSION,
 
-        /** Indicates the field was introduced since this template version. */
+        /**
+         * Indicates the field was introduced since this template version.
+         */
         SINCE_TEMPLATE_VERSION
     }
 
-    /** Invalid ID value. */
+    /**
+     * Invalid ID value.
+     */
     public static final int INVALID_ID = -1;
 
-    /** Size not determined */
+    /**
+     * Size not determined
+     */
     public static final int VARIABLE_SIZE = -1;
 
-    /** Offset not computed or set */
+    /**
+     * Offset not computed or set
+     */
     public static final int UNKNOWN_OFFSET = -1;
 
     private final Signal signal;
@@ -92,21 +103,22 @@ public class Token
     /**
      * Construct an {@link Token} by providing values for all fields.
      *
-     * @param signal for the token role
-     * @param name of the token in the message
-     * @param id as the identifier in the message declaration
-     * @param version application within the template
-     * @param size of the component part
-     * @param offset in the underlying message as octets
+     * @param signal   for the token role
+     * @param name     of the token in the message
+     * @param id       as the identifier in the message declaration
+     * @param version  application within the template
+     * @param size     of the component part
+     * @param offset   in the underlying message as octets
      * @param encoding of the primitive field
      */
-    public Token(final Signal signal,
-                 final String name,
-                 final int id,
-                 final int version,
-                 final int size,
-                 final int offset,
-                 final Encoding encoding)
+    public Token(
+        final Signal signal,
+        final String name,
+        final int id,
+        final int version,
+        final int size,
+        final int offset,
+        final Encoding encoding)
     {
         Verify.notNull(signal, "signal");
         Verify.notNull(name, "name");
@@ -183,7 +195,7 @@ public class Token
      * The size of this token in bytes.
      *
      * @return the size of this node. A value of 0 means the node has no size when encoded. A value of
-     *         {@link Token#VARIABLE_SIZE} means this node represents a variable length field.
+     * {@link Token#VARIABLE_SIZE} means this node represents a variable length field.
      */
     public int size()
     {
@@ -209,8 +221,8 @@ public class Token
      * The offset for this token in the message.
      *
      * @return the offset of this Token. A value of 0 means the node has no relevant offset. A value of
-     *         {@link Token#UNKNOWN_OFFSET} means this nodes true offset is dependent on variable length
-     *         fields ahead of it in the encoding.
+     * {@link Token#UNKNOWN_OFFSET} means this nodes true offset is dependent on variable length
+     * fields ahead of it in the encoding.
      */
     public int offset()
     {

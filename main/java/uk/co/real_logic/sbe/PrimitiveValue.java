@@ -207,10 +207,8 @@ public class PrimitiveValue
      * @return a new {@link PrimitiveValue} for the value.
      * @throws IllegalArgumentException if parsing malformed type
      */
-    public static PrimitiveValue parse(final String value,
-                                       final PrimitiveType primitiveType,
-                                       final int length,
-                                       final String characterEncoding)
+    public static PrimitiveValue parse(
+        final String value, final PrimitiveType primitiveType, final int length, final String characterEncoding)
     {
         // TODO: handle incorrect length, characterEncoding, etc.
         return new PrimitiveValue(value.getBytes(forName(characterEncoding)), characterEncoding, length);

@@ -76,7 +76,7 @@ public class EnumType extends Type
                 // might not have ran into this type yet, so look for it
                 final Node encodingTypeNode =
                     (Node)xPath.compile(String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
-                    .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
+                               .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
 
                 if (null == encodingTypeNode)
                 {
@@ -87,7 +87,8 @@ public class EnumType extends Type
 
                 if (encodedDataType.length() != 1)
                 {
-                    throw new IllegalArgumentException("illegal encodingType for enum " + encodingTypeStr + " length not equal to 1");
+                    throw new IllegalArgumentException(
+                        "illegal encodingType for enum " + encodingTypeStr + " length not equal to 1");
                 }
 
                 encodingType = encodedDataType.primitiveType();

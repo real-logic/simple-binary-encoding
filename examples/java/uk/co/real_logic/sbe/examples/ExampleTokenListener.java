@@ -50,11 +50,12 @@ public class ExampleTokenListener implements TokenListener
         namedScope.pop();
     }
 
-    public void onEncoding(final Token fieldToken,
-                           final DirectBuffer buffer,
-                           final int index,
-                           final Token typeToken,
-                           final int actingVersion)
+    public void onEncoding(
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int index,
+        final Token typeToken,
+        final int actingVersion)
     {
         final CharSequence value = readEncodingAsString(buffer, index, typeToken, actingVersion);
 
@@ -65,10 +66,14 @@ public class ExampleTokenListener implements TokenListener
            .println();
     }
 
-    public void onEnum(final Token fieldToken,
-                       final DirectBuffer buffer, final int bufferIndex,
-                       final List<Token> tokens, final int beginIndex, final int endIndex,
-                       final int actingVersion)
+    public void onEnum(
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final List<Token> tokens,
+        final int beginIndex,
+        final int endIndex,
+        final int actingVersion)
     {
         final Token typeToken = tokens.get(beginIndex + 1);
         final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, actingVersion);
@@ -90,10 +95,14 @@ public class ExampleTokenListener implements TokenListener
            .println();
     }
 
-    public void onBitSet(final Token fieldToken,
-                         final DirectBuffer buffer, final int bufferIndex,
-                         final List<Token> tokens, final int beginIndex, final int endIndex,
-                         final int actingVersion)
+    public void onBitSet(
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final List<Token> tokens,
+        final int beginIndex,
+        final int endIndex,
+        final int actingVersion)
     {
         final Token typeToken = tokens.get(beginIndex + 1);
         final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, actingVersion);
@@ -143,12 +152,14 @@ public class ExampleTokenListener implements TokenListener
         namedScope.pop();
     }
 
-    public void onVarData(final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final int length, final Token typeToken)
+    public void onVarData(
+        final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final int length, final Token typeToken)
     {
         final String value;
         try
         {
-            value = new String(tempBuffer, 0, buffer.getBytes(bufferIndex, tempBuffer, 0, length), typeToken.encoding().characterEncoding());
+            value = new String(
+                tempBuffer, 0, buffer.getBytes(bufferIndex, tempBuffer, 0, length), typeToken.encoding().characterEncoding());
         }
         catch (final UnsupportedEncodingException ex)
         {
@@ -163,10 +174,8 @@ public class ExampleTokenListener implements TokenListener
            .println();
     }
 
-    private static CharSequence readEncodingAsString(final DirectBuffer buffer,
-                                                     final int index,
-                                                     final Token typeToken,
-                                                     final int actingVersion)
+    private static CharSequence readEncodingAsString(
+        final DirectBuffer buffer, final int index, final Token typeToken, final int actingVersion)
     {
         final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, actingVersion);
         if (null != constOrNotPresentValue)
@@ -189,7 +198,8 @@ public class ExampleTokenListener implements TokenListener
         return sb;
     }
 
-    private long readEncodingAsLong(final DirectBuffer buffer, final int bufferIndex, final Token typeToken, final int actingVersion)
+    private long readEncodingAsLong(
+        final DirectBuffer buffer, final int bufferIndex, final Token typeToken, final int actingVersion)
     {
         final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, actingVersion);
         if (null != constOrNotPresentValue)
@@ -218,7 +228,8 @@ public class ExampleTokenListener implements TokenListener
         return null;
     }
 
-    private static void mapEncodingToString(final StringBuilder sb, final DirectBuffer buffer, final int index, final Encoding encoding)
+    private static void mapEncodingToString(
+        final StringBuilder sb, final DirectBuffer buffer, final int index, final Encoding encoding)
     {
         switch (encoding.primitiveType())
         {

@@ -29,10 +29,10 @@ public class Util
     /**
      * Get an integer value from a buffer at a given index.
      *
-     * @param buffer from which to read.
+     * @param buffer      from which to read.
      * @param bufferIndex at which he integer should be read.
-     * @param type of the integer encoded in the buffer.
-     * @param byteOrder of the integer in the buffer.
+     * @param type        of the integer encoded in the buffer.
+     * @param byteOrder   of the integer in the buffer.
      * @return the value of the encoded integer.
      */
     static int getInt(final DirectBuffer buffer, final int bufferIndex, final PrimitiveType type, final ByteOrder byteOrder)
@@ -52,7 +52,7 @@ public class Util
                 return CodecUtil.uint16Get(buffer, bufferIndex, byteOrder);
 
             case INT32:
-                 return CodecUtil.int32Get(buffer, bufferIndex, byteOrder);
+                return CodecUtil.int32Get(buffer, bufferIndex, byteOrder);
 
             default:
                 throw new IllegalArgumentException("Unsupported type: " + type);

@@ -258,9 +258,7 @@ public class IrUtil
         }
     }
 
-    public static int put(final DirectBuffer buffer,
-                          final PrimitiveValue value,
-                          final PrimitiveType type)
+    public static int put(final DirectBuffer buffer, final PrimitiveValue value, final PrimitiveType type)
     {
         if (value == null)
         {

@@ -45,12 +45,13 @@ public class Ir
      * @param semanticVersion semantic version for mapping to the application domain.
      * @param headerTokens    representing the message headerStructure.
      */
-    public Ir(final String packageName,
-              final String namespaceName,
-              final int id,
-              final int version,
-              final String semanticVersion,
-              final List<Token> headerTokens)
+    public Ir(
+        final String packageName,
+        final String namespaceName,
+        final int id,
+        final int version,
+        final String semanticVersion,
+        final List<Token> headerTokens)
     {
         Verify.notNull(packageName, "packageName");
         Verify.notNull(headerTokens, "headerTokens");

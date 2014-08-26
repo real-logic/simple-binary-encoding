@@ -77,7 +77,8 @@ public class CompilerUtil
 
         final Collection<File> files = persist(sources);
         final Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromFiles(files);
-        final JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null, compilationUnits);
+        final JavaCompiler.CompilationTask task = compiler.getTask(
+            null, fileManager, diagnostics, options, null, compilationUnits);
 
         if (!task.call().booleanValue())
         {
@@ -117,8 +118,9 @@ public class CompilerUtil
             {
                 className = fqClassName.substring(indexOfLastDot + 1, fqClassName.length());
 
-                path = Paths.get(TEMP_DIR_NAME + File.separatorChar +
-                                     fqClassName.substring(0, indexOfLastDot).replace('.', File.separatorChar));
+                path = Paths.get(
+                    TEMP_DIR_NAME + File.separatorChar +
+                    fqClassName.substring(0, indexOfLastDot).replace('.', File.separatorChar));
                 Files.createDirectories(path);
             }
 

@@ -97,7 +97,7 @@ public class MarketDataBenchmark
         marketData.getEventTimeDelta();
         marketData.getMatchEventIndicator();
 
-        for (final Fix.MdIncGrp  mdIncGrp : marketData.getMdIncGroupList())
+        for (final Fix.MdIncGrp mdIncGrp : marketData.getMdIncGroupList())
         {
             mdIncGrp.getTradeId();
             mdIncGrp.getSecurityId();
@@ -141,11 +141,12 @@ public class MarketDataBenchmark
 
         final long totalDuration = System.nanoTime() - start;
 
-        System.out.printf("%d - %d(ns) average duration for %s.testEncode() - message size %d\n",
-                          Integer.valueOf(runNumber),
-                          Long.valueOf(totalDuration / reps),
-                          benchmark.getClass().getName(),
-                          Integer.valueOf(marketData.length));
+        System.out.printf(
+            "%d - %d(ns) average duration for %s.testEncode() - message size %d\n",
+            Integer.valueOf(runNumber),
+            Long.valueOf(totalDuration / reps),
+            benchmark.getClass().getName(),
+            Integer.valueOf(marketData.length));
     }
 
     private static void perfTestDecode(final int runNumber) throws Exception
@@ -163,10 +164,11 @@ public class MarketDataBenchmark
 
         final long totalDuration = System.nanoTime() - start;
 
-        System.out.printf("%d - %d(ns) average duration for %s.testDecode() - message size %d\n",
-                          Integer.valueOf(runNumber),
-                          Long.valueOf(totalDuration / reps),
-                          benchmark.getClass().getName(),
-                          Integer.valueOf(marketData.getMdIncGroupCount()));
+        System.out.printf(
+            "%d - %d(ns) average duration for %s.testDecode() - message size %d\n",
+            Integer.valueOf(runNumber),
+            Long.valueOf(totalDuration / reps),
+            benchmark.getClass().getName(),
+            Integer.valueOf(marketData.getMdIncGroupCount()));
     }
 }

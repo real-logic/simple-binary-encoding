@@ -46,10 +46,8 @@ public class ClassFileManager<M extends JavaFileManager> extends ForwardingJavaF
         };
     }
 
-    public JavaFileObject getJavaFileForOutput(final Location location,
-                                               final String className,
-                                               final JavaFileObject.Kind kind,
-                                               final FileObject sibling)
+    public JavaFileObject getJavaFileForOutput(
+        final Location location, final String className, final JavaFileObject.Kind kind, final FileObject sibling)
         throws IOException
     {
         final JavaClassObject javaClassObject = new JavaClassObject(className, kind);

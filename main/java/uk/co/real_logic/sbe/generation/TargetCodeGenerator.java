@@ -31,37 +31,37 @@ import java.io.IOException;
 public enum TargetCodeGenerator
 {
     JAVA()
-    {
-        public CodeGenerator newInstance(final Ir ir, final String outputDir)
-            throws IOException
         {
-            return new JavaGenerator(ir, new PackageOutputManager(outputDir, ir.applicableNamespace()));
-        }
-    },
+            public CodeGenerator newInstance(final Ir ir, final String outputDir)
+                throws IOException
+            {
+                return new JavaGenerator(ir, new PackageOutputManager(outputDir, ir.applicableNamespace()));
+            }
+        },
 
     CPP98()
-    {
-        public CodeGenerator newInstance(final Ir ir, final String outputDir)
-            throws IOException
         {
-            return new Cpp98Generator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
-        }
-    },
+            public CodeGenerator newInstance(final Ir ir, final String outputDir)
+                throws IOException
+            {
+                return new Cpp98Generator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
+            }
+        },
 
     CSHARP()
-    {
-        public CodeGenerator newInstance(final Ir ir, final String outputDir)
-                throws IOException
         {
-            return new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
-        }
-    };
+            public CodeGenerator newInstance(final Ir ir, final String outputDir)
+                throws IOException
+            {
+                return new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
+            }
+        };
 
 
     /**
      * Get a new {@link CodeGenerator} for the given target language.
      *
-     * @param ir describing the message schemas from which code should generated.
+     * @param ir        describing the message schemas from which code should generated.
      * @param outputDir to which the generated code with be written.
      * @return a new instance of a {@link CodeGenerator} for the given target language.
      * @throws IOException if an error occurs when dealing with the output directory.

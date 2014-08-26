@@ -73,12 +73,13 @@ public class OtfExample
 
         final List<Token> msgTokens = ir.getMessage(templateId);
 
-        bufferOffset = OtfMessageDecoder.decode(buffer,
-                                                bufferOffset,
-                                                actingVersion,
-                                                blockLength,
-                                                msgTokens,
-                                                new ExampleTokenListener(new PrintWriter(System.out, true)));
+        bufferOffset = OtfMessageDecoder.decode(
+            buffer,
+            bufferOffset,
+            actingVersion,
+            blockLength,
+            msgTokens,
+            new ExampleTokenListener(new PrintWriter(System.out, true)));
 
         if (bufferOffset != encodedMsgBuffer.position())
         {
@@ -93,7 +94,7 @@ public class OtfExample
         {
             final MessageSchema schema = XmlSchemaParser.parse(in, ParserOptions.DEFAULT);
             final Ir ir = new IrGenerator().generate(schema);
-            try (IrEncoder irEncoder = new IrEncoder(buffer, ir))
+            try (final IrEncoder irEncoder = new IrEncoder(buffer, ir))
             {
                 irEncoder.encode();
             }

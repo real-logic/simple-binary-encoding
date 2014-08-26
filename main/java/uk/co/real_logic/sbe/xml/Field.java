@@ -41,24 +41,25 @@ public class Field
     private final boolean variableLength;      // true for data (false for field/group)
     private final int sinceVersion;            // optional
     private List<Field> groupFieldList;        // used by group fields as the list of child fields in the group
-    private int computedOffset;                // used to hold the calculated offset of this field from top level <message> or <group>
+    private int computedOffset;                // holds the calculated offset of this field from top level <message> or <group>
     private int computedBlockLength;           // used to hold the calculated block length of this group
     private final String epoch;                // optional, epoch from which a timestamps start, defaults to "unix"
     private final String timeUnit;             // optional, defaults to "nanosecond".
 
-    public Field(final String name,
-                 final String description,
-                 final int id,
-                 final Type type,
-                 final int offset,
-                 final String semanticType,
-                 final Presence presence,
-                 final int blockLength,
-                 final CompositeType dimensionType,
-                 final boolean variableLength,
-                 final int sinceVersion,
-                 final String epoch,
-                 final String timeUnit)
+    public Field(
+        final String name,
+        final String description,
+        final int id,
+        final Type type,
+        final int offset,
+        final String semanticType,
+        final Presence presence,
+        final int blockLength,
+        final CompositeType dimensionType,
+        final boolean variableLength,
+        final int sinceVersion,
+        final String epoch,
+        final String timeUnit)
     {
         this.name = name;
         this.description = description;
@@ -299,19 +300,20 @@ public class Field
 
         public Field build()
         {
-            return new Field(name,
-                             description,
-                             id,
-                             type,
-                             offset,
-                             semanticType,
-                             presence,
-                             blockLength,
-                             dimensionType,
-                             variableLength,
-                             sinceVersion,
-                             epoch,
-                             timeUnit);
+            return new Field(
+                name,
+                description,
+                id,
+                type,
+                offset,
+                semanticType,
+                presence,
+                blockLength,
+                dimensionType,
+                variableLength,
+                sinceVersion,
+                epoch,
+                timeUnit);
         }
     }
 }

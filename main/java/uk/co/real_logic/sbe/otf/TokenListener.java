@@ -65,10 +65,14 @@ public interface TokenListener
      * @param toIndex at which the enum metadata ends.
      * @param actingVersion of the encoded message for determining validity of extension fields.
      */
-    void onEnum(Token fieldToken,
-                DirectBuffer buffer, int bufferIndex,
-                List<Token> tokens, int fromIndex, int toIndex,
-                int actingVersion);
+    void onEnum(
+        Token fieldToken,
+        DirectBuffer buffer,
+        int bufferIndex,
+        List<Token> tokens,
+        int fromIndex,
+        int toIndex,
+        int actingVersion);
 
     /**
      * BitSet encoded type encountered.
@@ -81,10 +85,14 @@ public interface TokenListener
      * @param toIndex at which the bit set metadata ends.
      * @param actingVersion of the encoded message for determining validity of extension fields.
      */
-    void onBitSet(Token fieldToken,
-                  DirectBuffer buffer, int bufferIndex,
-                  List<Token> tokens, int fromIndex, int toIndex,
-                  int actingVersion);
+    void onBitSet(
+        Token fieldToken,
+        DirectBuffer buffer,
+        int bufferIndex,
+        List<Token> tokens,
+        int fromIndex,
+        int toIndex,
+        int actingVersion);
 
     /**
      * Beginning of Composite encoded type encountered.

@@ -31,5 +31,5 @@ public interface OutputManager
      * @return A {@link Writer} to which the code generation should be output.
      * @throws IOException if an error occurs during output.
      */
-    Writer createOutput(final String name) throws IOException;
+    Writer createOutput(String name) throws IOException;
 }

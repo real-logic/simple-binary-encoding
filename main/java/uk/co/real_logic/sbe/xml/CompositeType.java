@@ -228,7 +228,8 @@ public class CompositeType extends Type
             {
                 if (offsetAttribute < offset)
                 {
-                    XmlSchemaParser.handleError(node,
+                    XmlSchemaParser.handleError(
+                        node,
                         String.format("composite element \"%s\" has incorrect offset specified", edt.name()));
                 }
 

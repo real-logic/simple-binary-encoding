@@ -34,6 +34,7 @@ public class MarketDataBenchmark
         final DirectBuffer encodeBuffer = new DirectBuffer(ByteBuffer.allocateDirect(1024));
 
         final DirectBuffer decodeBuffer = new DirectBuffer(ByteBuffer.allocateDirect(1024));
+
         {
             MarketDataBenchmark.encode(messageHeader, marketData, decodeBuffer, bufferIndex);
         }
@@ -65,10 +66,11 @@ public class MarketDataBenchmark
         return marketData.size();
     }
 
-    public static void encode(final MessageHeader messageHeader,
-                              final MarketDataIncrementalRefreshTrades marketData,
-                              final DirectBuffer buffer,
-                              final int bufferIndex)
+    public static void encode(
+        final MessageHeader messageHeader,
+        final MarketDataIncrementalRefreshTrades marketData,
+        final DirectBuffer buffer,
+        final int bufferIndex)
     {
         messageHeader.wrap(buffer, bufferIndex, 0)
                      .blockLength(marketData.sbeBlockLength())
@@ -107,10 +109,11 @@ public class MarketDataBenchmark
     }
 
 
-    private static void decode(final MessageHeader messageHeader,
-                               final MarketDataIncrementalRefreshTrades marketData,
-                               final DirectBuffer buffer,
-                               final int bufferIndex)
+    private static void decode(
+        final MessageHeader messageHeader,
+        final MarketDataIncrementalRefreshTrades marketData,
+        final DirectBuffer buffer,
+        final int bufferIndex)
     {
         messageHeader.wrap(buffer, bufferIndex, 0);
 
@@ -164,11 +167,12 @@ public class MarketDataBenchmark
 
         final long totalDuration = System.nanoTime() - start;
 
-        System.out.printf("%d - %d(ns) average duration for %s.testEncode() - message size %d\n",
-                          Integer.valueOf(runNumber),
-                          Long.valueOf(totalDuration / reps),
-                          benchmark.getClass().getName(),
-                          Integer.valueOf(state.marketData.size() + state.messageHeader.size()));
+        System.out.printf(
+            "%d - %d(ns) average duration for %s.testEncode() - message size %d\n",
+            Integer.valueOf(runNumber),
+            Long.valueOf(totalDuration / reps),
+            benchmark.getClass().getName(),
+            Integer.valueOf(state.marketData.size() + state.messageHeader.size()));
     }
 
     private static void perfTestDecode(final int runNumber)
@@ -185,10 +189,11 @@ public class MarketDataBenchmark
 
         final long totalDuration = System.nanoTime() - start;
 
-        System.out.printf("%d - %d(ns) average duration for %s.testDecode() - message size %d\n",
-                          Integer.valueOf(runNumber),
-                          Long.valueOf(totalDuration / reps),
-                          benchmark.getClass().getName(),
-                          Integer.valueOf(state.marketData.size() + state.messageHeader.size()));
+        System.out.printf(
+            "%d - %d(ns) average duration for %s.testDecode() - message size %d\n",
+            Integer.valueOf(runNumber),
+            Long.valueOf(totalDuration / reps),
+            benchmark.getClass().getName(),
+            Integer.valueOf(state.marketData.size() + state.messageHeader.size()));
     }
 }
