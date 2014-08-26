@@ -31,9 +31,9 @@ import java.util.List;
 
 public class ExampleTokenListener implements TokenListener
 {
-    final PrintWriter out;
-    final Deque<String> namedScope = new ArrayDeque<>();
-    final byte[] tempBuffer = new byte[1024];
+    private final PrintWriter out;
+    private final Deque<String> namedScope = new ArrayDeque<>();
+    private final byte[] tempBuffer = new byte[1024];
 
     public ExampleTokenListener(final PrintWriter out)
     {
