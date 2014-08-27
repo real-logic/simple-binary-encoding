@@ -12,7 +12,7 @@ namespace Adaptive.SimpleBinaryEncoding.Ir.Generated
     public const ushort TemplateId = (ushort)2;
     public const ushort SchemaId = (ushort)0;
     public const ushort Schema_Version = (ushort)0;
-    public const string SematicType = "";
+    public const string SemanticType = "";
 
     private readonly TokenCodec _parentMessage;
     private DirectBuffer _buffer;

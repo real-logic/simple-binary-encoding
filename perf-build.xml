@@ -42,13 +42,13 @@
     </target>
 
     <target name="java:codegen" depends="init">
-        <java classname="uk.co.real_logic.sbe.SbeTool">
+        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
             <classpath refid="perf.tools.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.target.perf.java}"/>
             <sysproperty key="sbe.target.language" value="Java"/>
             <arg value="${dir.resources.sbe}/car.xml"/>
         </java>
-        <java classname="uk.co.real_logic.sbe.SbeTool">
+        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
             <classpath refid="perf.tools.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.target.perf.java}"/>
             <sysproperty key="sbe.target.language" value="Java"/>
@@ -57,7 +57,7 @@
 
         <fail unless="protobuf.home" message="protobuf.home is not defined (please add a build-local.properties and define it."/>
 
-        <exec executable="${protobuf.home}/bin/protoc">
+        <exec executable="${protobuf.home}/bin/protoc" failonerror="true">
             <arg value="-I${dir.resources.protobuf}"/>
             <arg value="--java_out"/>
             <arg value="${dir.target.perf.java}"/>
@@ -88,7 +88,7 @@
     </target>
 
     <target name="java:perf:test" depends="java:compile">
-        <exec executable="java">
+        <exec executable="java" failonerror="true">
             <arg value="-jar"/>
             <arg value="target/perf/dist/microbenchmarks.jar"/>
             <arg value="-wi"/>
@@ -100,13 +100,13 @@
     </target>
 
     <target name="cpp:codegen" depends="init">
-        <java classname="uk.co.real_logic.sbe.SbeTool">
+        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
             <classpath refid="perf.tools.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.target.perf.cpp}"/>
             <sysproperty key="sbe.target.language" value="Cpp98"/>
             <arg value="${dir.resources.sbe}/car-c.xml"/>
         </java>
-        <java classname="uk.co.real_logic.sbe.SbeTool">
+        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
             <classpath refid="perf.tools.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.target.perf.cpp}"/>
             <sysproperty key="sbe.target.language" value="Cpp98"/>
@@ -116,17 +116,17 @@
 
     <target name="cpp:compile" depends="clean, init, cpp:codegen">
         <sequential>
-            <exec executable="cmake" dir="target/perf">
+            <exec executable="cmake" dir="target/perf" failonerror="true">
                 <arg value="../../perf/cpp"/>
             </exec>
-            <exec executable="make" dir="target/perf"/>
+            <exec executable="make" dir="target/perf" failonerror="true"/>
         </sequential>
     </target>
 
     <target name="cpp:perf:test" depends="cpp:compile">
         <sequential>
-            <exec executable="target/perf/benchlet-sbe-md-runner"/>
-            <exec executable="target/perf/benchlet-sbe-car-runner"/>
+            <exec executable="target/perf/benchlet-sbe-md-runner" failonerror="true"/>
+            <exec executable="target/perf/benchlet-sbe-car-runner" failonerror="true"/>
         </sequential>
     </target>
 

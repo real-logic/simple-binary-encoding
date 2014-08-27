@@ -610,7 +610,7 @@
     <target name="generate:java:sbeir-stubs"
             depends="dist"
             description="Generate serialized IR stubs for Java">
-        <java classname="uk.co.real_logic.sbe.SbeTool">
+        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
             <classpath refid="sbetool.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.main.src}"/>
             <sysproperty key="sbe.target.language" value="Java"/>
@@ -621,7 +621,7 @@
     <target name="generate:cpp98:sbeir-stubs"
             depends="dist"
             description="Generate serialized IR stubs for C++98">
-        <java classname="uk.co.real_logic.sbe.SbeTool">
+        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
             <classpath refid="sbetool.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.main.cpp.src}"/>
             <sysproperty key="sbe.target.language" value="cpp98"/>
@@ -632,7 +632,7 @@
     <target name="generate:csharp:sbeir-stubs"
             depends="dist"
             description="Generate serialized IR stubs for C#">
-        <java classname="uk.co.real_logic.sbe.SbeTool">
+        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
             <classpath refid="sbetool.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.main.csharp.src}"/>
             <sysproperty key="sbe.target.language" value="csharp"/>
@@ -669,7 +669,7 @@
             depends="dist">
         <mkdir dir="${dir.gen.java}"/>
         <mkdir dir="${dir.examples.build}"/>
-        <java classname="uk.co.real_logic.sbe.SbeTool">
+        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
             <classpath refid="examples.classpath"/>
             <sysproperty key="sbe.validation.xsd" value="main/resources/fpl/SimpleBinary1-0.xsd"/>
             <sysproperty key="sbe.validation.stop.on.error" value="true"/>
@@ -684,13 +684,13 @@
         <javac srcdir="${dir.examples.src}" destdir="${dir.examples.build}" includeAntRuntime="false" debug="true">
             <classpath refid="examples.classpath"/>
         </javac>
-        <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub">
+        <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub" failonerror="true" fork="true">
             <classpath refid="examples.classpath"/>
         </java>
-        <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension">
+        <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension" failonerror="true" fork="true">
             <classpath refid="examples.classpath"/>
         </java>
-        <java classname="uk.co.real_logic.sbe.examples.OtfExample">
+        <java classname="uk.co.real_logic.sbe.examples.OtfExample" failonerror="true" fork="true">
             <classpath refid="examples.classpath"/>
         </java>
     </target>
@@ -699,7 +699,7 @@
             depends="dist"
             description="Generate and run C++ generated code example">
         <mkdir dir="${dir.gen.cpp98}"/>
-        <java classname="uk.co.real_logic.sbe.SbeTool">
+        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
             <classpath refid="examples.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
             <sysproperty key="sbe.target.language" value="cpp98"/>
@@ -755,14 +755,14 @@
                 <fileset dir="${dir.main.cpp.build}" includes="*.o*"/>
                 <fileset dir="${dir.examples.cpp98.src}" includes="SbeOtfDecoder.cpp"/>
             </cc>
-            <java classname="uk.co.real_logic.sbe.SbeTool">
+            <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
                 <classpath refid="examples.classpath"/>
                 <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
                 <sysproperty key="sbe.generate.stubs" value="false"/>
                 <sysproperty key="sbe.generate.ir" value="true"/>
                 <arg value="${dir.examples.resources}/example-schema.xml"/>
             </java>
-            <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub">
+            <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub" failonerror="true" fork="true">
                 <classpath refid="examples.classpath"/>
                 <sysproperty key="sbe.encoding.filename" value="${dir.gen.cpp98}/Car.data"/>
             </java>
@@ -851,7 +851,7 @@
     <target name="cpp:test:codegen" depends="dist">
         <sequential>
             <mkdir dir="${dir.gen.cpp98}"/>
-            <java classname="uk.co.real_logic.sbe.SbeTool">
+            <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
                 <classpath refid="examples.classpath"/>
                 <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
                 <sysproperty key="sbe.target.language" value="cpp98"/>
@@ -859,7 +859,7 @@
                 <arg value="${dir.test.resources}/code-generation-schema-cpp.xml"/>
             </java>
             <copy file="${dir.gen.cpp98}/code-generation-schema-cpp.sbeir" todir="${dir.exec.test.cpp}"/>
-            <java classname="uk.co.real_logic.sbe.SbeTool">
+            <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
                 <classpath refid="examples.classpath"/>
                 <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
                 <sysproperty key="sbe.target.language" value="cpp98"/>
@@ -867,7 +867,7 @@
                 <arg value="${dir.test.resources}/composite-offsets-schema.xml"/>
             </java>
             <copy file="${dir.gen.cpp98}/composite-offsets-schema.sbeir" todir="${dir.exec.test.cpp}"/>
-            <java classname="uk.co.real_logic.sbe.SbeTool">
+            <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
                 <classpath refid="examples.classpath"/>
                 <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
                 <sysproperty key="sbe.target.language" value="cpp98"/>
