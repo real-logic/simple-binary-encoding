@@ -58,7 +58,8 @@ public class TokenCodec
         return this;
     }
 
-    public TokenCodec wrapForDecode(final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
+    public TokenCodec wrapForDecode(
+        final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;

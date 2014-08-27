@@ -58,7 +58,8 @@ public class FrameCodec
         return this;
     }
 
-    public FrameCodec wrapForDecode(final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
+    public FrameCodec wrapForDecode(
+        final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;
