@@ -312,13 +312,22 @@
     <macrodef name="dex">
         <attribute name="destfile" default="classes.dex"/>
         <attribute name="src"/>
-        <attribute name="checkupdated" default="true"/>
         <sequential>
-            <local name="updated"/>
-            <uptodate property="updated" targetfile="@{destfile}" srcfile="@{src}" if:true="@{checkupdated}"/>
+            <local name="dexuptodate"/>
+            <local name="isFile"/>
+            <local name="isDirectory"/>
+            <available file="@{src}" type="file" property="isFile"/>
+            <available file="@{src}" type="dir" property="isDirectory"/>
+            <uptodate property="dexuptodate" srcfile="@{src}" targetfile="@{destfile}" if:true="${isFile}"/>
+            <uptodate property="dexuptodate" targetfile="@{destfile}" if:true="${isDirectory}">
+                <srcresources>
+                    <fileset dir="@{src}"/>
+                    <dirset dir="@{src}"/>
+                </srcresources>
+            </uptodate>
             <echo taskname="dex" message="@{src} -> @{destfile}"/>
-            <echo taskname="dex" message="@{destfile} already up to date." if:true="${updated}"/>
-            <java taskname="dex" fork="yes" jar="${dx.jar}" failonerror="true" unless:true="${updated}">
+            <echo taskname="dex" message="@{destfile} already up to date." if:true="${dexuptodate}"/>
+            <java taskname="dex" fork="yes" jar="${dx.jar}" failonerror="true" unless:true="${dexuptodate}">
                 <arg value="--dex"/>
                 <arg value="--output"/>
                 <arg value="@{destfile}"/>
@@ -371,7 +380,7 @@
         <attribute name="outputproperty" default=""/>
         <attribute name="resultproperty" default=""/>
         <attribute name="failonerror" default="true"/>
-        <element name="args"/>
+        <element name="args" implicit="yes" />
         <sequential>
             <echo taskname="adb" message="Running @{command}: @{description}"/>
             <exec taskname="adb" executable="${adb.exe}" failonerror="@{failonerror}"
@@ -418,24 +427,30 @@
             <dex src="${dir.test.lib}/android/dexmaker-1.1.jar" destfile="${dir.test.android.dexedLibs}/dexmaker-1.1-dexed.jar"/>
             <dex src="${dir.test.lib}/android/dexmaker-mockito-1.1.jar" destfile="${dir.test.android.dexedLibs}/dexmaker-mockito-1.1-dexed.jar"/>
             <dex src="${dir.test.lib}/objenesis-2.1.jar" destfile="${dir.test.android.dexedLibs}/objenesis-2.1-dexed.jar"/>
-            <dex checkupdated="false" src="${dir.test.android.build}" destfile="${dir.test.android.dexedLibs}/sbe-test-dexed.jar"/>
-            <dex checkupdated="false" src="${dir.main.android.build}" destfile="${dir.test.android.dexedLibs}/sbe-main-dexed.jar"/>
+            <dex src="${dir.test.android.build}" destfile="${dir.test.android.dexedLibs}/sbe-test-dexed.jar"/>
+            <dex src="${dir.main.android.build}" destfile="${dir.test.android.dexedLibs}/sbe-main-dexed.jar"/>
+            <dex src="${dir.test.android.dexedLibs}" destfile="${dir.test.android.testpackage}/classes.dex"/>
 
-            <local name="dexedLibsSet"/>
-            <local name="dexedLibsString"/>
-            <fileset id="dexedLibsSet" dir="${dir.test.android.dexedLibs}" />
-            <pathconvert pathsep=" " property="dexedLibsString" refid="dexedLibsSet"/>
-            <dex checkupdated="false" src="${dexedLibsString}" destfile="${dir.test.android.testpackage}/classes.dex"/>
-
-            <copy todir="${dir.test.android.testpackage}" failonerror="true">
+            <copy todir="${dir.test.android.testpackage}" failonerror="true" preservelastmodified="true">
                <fileset dir="${dir.test.resources}"/>
             </copy>
-            <aapt apk="${file.test.android.testapk.unsigned}"
-                  srcdir="${dir.test.android.testpackage}"/>
-            <signjar keystore="${file.test.android.debugkey}" storepass="android" alias="androiddebugkey"
-                jar="${file.test.android.testapk.unsigned}" signedjar="${file.test.android.testapk.signed}"
-                verbose="true" sigalg="SHA1withRSA" digestalg="SHA1"/>
-            <zipalign srcfile="${file.test.android.testapk.signed}" destfile="${file.test.android.testapk.final}"/>
+            <local name="apkuptodate"/>
+            <uptodate property="apkuptodate" targetfile="${file.test.android.testapk.final}">
+                <srcresources>
+                    <fileset file="${file.test.android.manifest}"/>
+                    <fileset dir="${dir.test.android.testpackage}"/>
+                    <dirset dir="${dir.test.android.testpackage}"/>
+                </srcresources>
+            </uptodate>
+            <echo message="${file.test.android.testapk.final} already up to date." if:true="${apkuptodate}"/>
+            <sequential unless:true="${apkuptodate}">
+                <aapt apk="${file.test.android.testapk.unsigned}"
+                      srcdir="${dir.test.android.testpackage}"/>
+                <signjar keystore="${file.test.android.debugkey}" storepass="android" alias="androiddebugkey"
+                    jar="${file.test.android.testapk.unsigned}" signedjar="${file.test.android.testapk.signed}"
+                    verbose="true" sigalg="SHA1withRSA" digestalg="SHA1" preservelastmodified="true"/>
+                <zipalign srcfile="${file.test.android.testapk.signed}" destfile="${file.test.android.testapk.final}"/>
+            </sequential>
         </sequential>
     </target>
 
@@ -444,28 +459,20 @@
             <property name="project.app.package" value="uk.co.real_logic.sbe.android.test"/>
             <property name="test.runner" value="com.uphyca.testing.JUnit4XMLInstrumentationTestRunner"/>
             <adb command="install">
-                <args>
-                   <arg value="-r"/>
-                   <arg path="${file.test.android.testapk.final}"/>
-                </args>
+                <arg value="-r"/>
+                <arg path="${file.test.android.testapk.final}"/>
             </adb>
             <adb command="shell" description="Running tests">
-                <args>
-                   <arg line="am instrument -w -e xml true ${project.app.package}/${test.runner}"/>
-                </args>
+                <arg line="am instrument -w -e xml true ${project.app.package}/${test.runner}"/>
             </adb>
             <!-- trying to get the test-results.xml file from one of the 2 possible locations-->
             <!-- /data/data/${project.app.package}/files/test-results.xml -->
             <!-- $EXTERNAL_STORAGE/Android/data/uk.co.real_logic.sbe.android.test/files/test-results.xml --> 
             <adb command="shell" outputproperty="EXTERNAL_STORAGE" description="Get EXTERNAL_STORAGE property value">
-                <args>
-                    <arg line="echo $EXTERNAL_STORAGE"/>
-                </args>
+                <arg line="echo $EXTERNAL_STORAGE"/>
             </adb>
             <adb command="shell" outputproperty="FILE_ON_EXTERNAL_STORAGE" description="Check if test-results.xml file is present on the external storage">
-                <args>
-                    <arg line="ls ${EXTERNAL_STORAGE}/Android/data/uk.co.real_logic.sbe.android.test/files/test-results.xml >/dev/null 2>&amp;1 &amp;&amp; echo true || echo false"/>
-                </args>
+                <arg line="ls ${EXTERNAL_STORAGE}/Android/data/uk.co.real_logic.sbe.android.test/files/test-results.xml >/dev/null 2>&amp;1 &amp;&amp; echo true || echo false"/>
             </adb>
             <property name="test-results"
                 value="${EXTERNAL_STORAGE}/Android/data/uk.co.real_logic.sbe.android.test/files/test-results.xml"
@@ -474,20 +481,14 @@
                 value="/data/data/uk.co.real_logic.sbe.android.test/files/test-results.xml"
                 unless:true="${FILE_ON_EXTERNAL_STORAGE}"/>
             <adb command="shell">
-                <args>
-                   <arg line="run-as ${project.app.package} chmod 644 ${test-results}"/>
-                </args>
+                <arg line="run-as ${project.app.package} chmod 644 ${test-results}"/>
             </adb>
             <adb command="pull" description="Pulling the test results from: ${test-results}">
-                <args>
-                   <arg value="${test-results}"/>
-                   <arg path="${dir.reports.android.unit}/test-results.xml"/>
-                </args>
+                <arg value="${test-results}"/>
+                <arg path="${dir.reports.android.unit}/test-results.xml"/>
             </adb>
             <adb command="uninstall">
-                <args>
-                   <arg value="${project.app.package}"/>
-                </args>
+                <arg value="${project.app.package}"/>
             </adb>
         </sequential>
     </target>
@@ -567,7 +568,7 @@
         </jar>
 
         <!-- Copying SbeTool to a constant name (without timestamp and version number, which makes life easier for other builds..) -->
-        <copy file="${jar}" tofile="${dir.dist}/sbe.jar"/>
+        <copy file="${jar}" tofile="${dir.dist}/sbe.jar" preservelastmodified="true"/>
     </target>
 
     <target name="android:dist" depends="android:build, android:javadoc" description="Generate the distribution">
@@ -607,38 +608,52 @@
         </fileset>
     </path>
 
+    <macrodef name="sbetool">
+        <attribute name="outputdir"/>
+        <attribute name="targetlanguage" default=""/>
+        <attribute name="targetnamespace" default=""/>
+        <attribute name="generatestubs" default=""/>
+        <attribute name="generateir" default=""/>
+        <attribute name="validationxsd" default=""/>
+        <attribute name="stoponerror" default=""/>
+        <element name="schemafiles" implicit="yes"/>
+        <sequential>
+            <java jar="${jar}" failonerror="true" fork="true">
+                <sysproperty key="sbe.output.dir" value="@{outputdir}"/>
+                <sysproperty key="sbe.target.language" value="@{targetlanguage}" unless:blank="@{targetlanguage}"/>
+                <sysproperty key="sbe.target.namespace" value="@{targetnamespace}" unless:blank="@{targetnamespace}"/>
+                <sysproperty key="sbe.generate.stubs" value="@{generatestubs}" unless:blank="@{generatestubs}"/>
+                <sysproperty key="sbe.generate.ir" value="@{generateir}" unless:blank="@{generateir}"/>
+                <sysproperty key="sbe.validation.xsd" value="@{validationxsd}" unless:blank="@{validationxsd}"/>
+                <sysproperty key="sbe.validation.stop.on.error" value="@{stoponerror}" unless:blank="@{stoponerror}"/>
+                <schemafiles/>
+            </java>
+        </sequential>
+    </macrodef>
+
     <target name="generate:java:sbeir-stubs"
             depends="dist"
             description="Generate serialized IR stubs for Java">
-        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
-            <classpath refid="sbetool.classpath"/>
-            <sysproperty key="sbe.output.dir" value="${dir.main.src}"/>
-            <sysproperty key="sbe.target.language" value="Java"/>
+        <sbetool outputdir="${dir.main.src}" targetlanguage="Java">
             <arg value="${dir.main.resources}/sbe-ir.xml"/>
-        </java>
+        </sbetool>
     </target>
 
     <target name="generate:cpp98:sbeir-stubs"
             depends="dist"
             description="Generate serialized IR stubs for C++98">
-        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
-            <classpath refid="sbetool.classpath"/>
-            <sysproperty key="sbe.output.dir" value="${dir.main.cpp.src}"/>
-            <sysproperty key="sbe.target.language" value="cpp98"/>
+        <sbetool outputdir="${dir.main.cpp.src}" targetlanguage="cpp98">
             <arg value="${dir.main.resources}/sbe-ir.xml"/>
-        </java>
+        </sbetool>
     </target>
 
     <target name="generate:csharp:sbeir-stubs"
             depends="dist"
             description="Generate serialized IR stubs for C#">
-        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
-            <classpath refid="sbetool.classpath"/>
-            <sysproperty key="sbe.output.dir" value="${dir.main.csharp.src}"/>
-            <sysproperty key="sbe.target.language" value="csharp"/>
-            <sysproperty key="sbe.target.namespace" value="Adaptive.SimpleBinaryEncoding.Ir.Generated"/>
+        <sbetool outputdir="${dir.main.csharp.src}" targetlanguage="csharp"
+            targetnamespace="Adaptive.SimpleBinaryEncoding.Ir.Generated">
             <arg value="${dir.main.resources}/sbe-ir.xml"/>
-        </java>
+        </sbetool>
     </target>
 
     <target name="generate:sbeir-stubs"
@@ -669,15 +684,11 @@
             depends="dist">
         <mkdir dir="${dir.gen.java}"/>
         <mkdir dir="${dir.examples.build}"/>
-        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
-            <classpath refid="examples.classpath"/>
-            <sysproperty key="sbe.validation.xsd" value="main/resources/fpl/SimpleBinary1-0.xsd"/>
-            <sysproperty key="sbe.validation.stop.on.error" value="true"/>
-            <sysproperty key="sbe.output.dir" value="${dir.gen.java}"/>
-            <sysproperty key="sbe.target.language" value="Java"/>
+        <sbetool outputdir="${dir.gen.java}" targetlanguage="Java" stoponerror="true"
+            validationxsd="main/resources/fpl/SimpleBinary1-0.xsd">
             <arg value="${dir.examples.resources}/example-schema.xml"/>
             <arg value="${dir.examples.resources}/example-extension-schema.xml"/>
-        </java>
+        </sbetool>
         <javac srcdir="${dir.gen.java}" destdir="${dir.examples.build}" includeAntRuntime="false" debug="true">
             <classpath refid="examples.classpath"/>
         </javac>
@@ -699,12 +710,9 @@
             depends="dist"
             description="Generate and run C++ generated code example">
         <mkdir dir="${dir.gen.cpp98}"/>
-        <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
-            <classpath refid="examples.classpath"/>
-            <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
-            <sysproperty key="sbe.target.language" value="cpp98"/>
+        <sbetool outputdir="${dir.gen.cpp98}" targetlanguage="cpp98">
             <arg value="${dir.examples.resources}/example-schema.xml"/>
-        </java>
+        </sbetool>
         <cc outtype="executable"
             debug="true"
             subsystem="console"
@@ -755,13 +763,9 @@
                 <fileset dir="${dir.main.cpp.build}" includes="*.o*"/>
                 <fileset dir="${dir.examples.cpp98.src}" includes="SbeOtfDecoder.cpp"/>
             </cc>
-            <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
-                <classpath refid="examples.classpath"/>
-                <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
-                <sysproperty key="sbe.generate.stubs" value="false"/>
-                <sysproperty key="sbe.generate.ir" value="true"/>
+            <sbetool outputdir="${dir.gen.cpp98}" generatestubs="false" generateir="true">
                 <arg value="${dir.examples.resources}/example-schema.xml"/>
-            </java>
+            </sbetool>
             <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub" failonerror="true" fork="true">
                 <classpath refid="examples.classpath"/>
                 <sysproperty key="sbe.encoding.filename" value="${dir.gen.cpp98}/Car.data"/>
@@ -851,29 +855,13 @@
     <target name="cpp:test:codegen" depends="dist">
         <sequential>
             <mkdir dir="${dir.gen.cpp98}"/>
-            <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
-                <classpath refid="examples.classpath"/>
-                <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
-                <sysproperty key="sbe.target.language" value="cpp98"/>
-                <sysproperty key="sbe.generate.ir" value="true"/>
+            <sbetool outputdir="${dir.gen.cpp98}" targetlanguage="cpp98" generateir="true">
                 <arg value="${dir.test.resources}/code-generation-schema-cpp.xml"/>
-            </java>
-            <copy file="${dir.gen.cpp98}/code-generation-schema-cpp.sbeir" todir="${dir.exec.test.cpp}"/>
-            <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
-                <classpath refid="examples.classpath"/>
-                <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
-                <sysproperty key="sbe.target.language" value="cpp98"/>
-                <sysproperty key="sbe.generate.ir" value="true"/>
                 <arg value="${dir.test.resources}/composite-offsets-schema.xml"/>
-            </java>
-            <copy file="${dir.gen.cpp98}/composite-offsets-schema.sbeir" todir="${dir.exec.test.cpp}"/>
-            <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
-                <classpath refid="examples.classpath"/>
-                <sysproperty key="sbe.output.dir" value="${dir.gen.cpp98}"/>
-                <sysproperty key="sbe.target.language" value="cpp98"/>
-                <sysproperty key="sbe.generate.ir" value="true"/>
                 <arg value="${dir.test.resources}/message-block-length-test.xml"/>
-            </java>
+            </sbetool>
+            <copy file="${dir.gen.cpp98}/code-generation-schema-cpp.sbeir" todir="${dir.exec.test.cpp}"/>
+            <copy file="${dir.gen.cpp98}/composite-offsets-schema.sbeir" todir="${dir.exec.test.cpp}"/>
             <copy file="${dir.gen.cpp98}/message-block-length-test.sbeir" todir="${dir.exec.test.cpp}"/>
         </sequential>
     </target>
