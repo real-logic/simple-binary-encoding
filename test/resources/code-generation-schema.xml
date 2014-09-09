@@ -19,6 +19,7 @@
             <type name="length" primitiveType="uint8"/>
             <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
         </composite>
+        <type name="string20" primitiveType="char" length="20"/>
     </types>
     <types>
         <type name="CharConstType" presence="constant" primitiveType="char">g</type>
@@ -61,12 +62,13 @@
         </group>
         <group name="performanceFigures" id="11" dimensionType="groupSizeEncoding">
             <field name="octaneRating" id="12" type="uint8"/>
-            <group name="acceleration" id="13" dimensionType="groupSizeEncoding">
-                <field name="mph" id="14" type="uint16"/>
-                <field name="seconds" id="15" type="float"/>
+            <field name="observations" id="13" type="string20"/>
+            <group name="acceleration" id="14" dimensionType="groupSizeEncoding">
+                <field name="mph" id="15" type="uint16"/>
+                <field name="seconds" id="16" type="float"/>
             </group>
         </group>
-        <data name="make" id="16" type="varDataEncoding"/>
-        <data name="model" id="17" type="varDataEncoding"/>
+        <data name="make" id="17" type="varDataEncoding"/>
+        <data name="model" id="18" type="varDataEncoding"/>
     </message>
 </messageSchema>

@@ -170,13 +170,14 @@ public class JavaGenerator implements CodeGenerator
             {
                 final Token groupToken = tokens.get(index);
                 final String groupName = groupToken.name();
+                final String groupClassName = formatClassName(groupName);
                 sb.append(generateGroupProperty(groupName, groupToken, indent));
 
                 generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
 
                 final List<Token> rootFields = new ArrayList<>();
                 index = collectRootFields(tokens, ++index, rootFields);
-                sb.append(generateFields(groupName, rootFields, indent + INDENT));
+                sb.append(generateFields(groupClassName, rootFields, indent + INDENT));
 
                 if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
                 {
