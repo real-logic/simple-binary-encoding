@@ -94,30 +94,6 @@ final class BitUtil
     }
 
     /**
-     * Gets the value of a static field.
-     *
-     * @param clazz from which to get the field value
-     * @param name the name of the field
-     * @return the value of the field.
-     * @throws PrivilegedActionException
-     */
-    static <T> T getStaticFieldValue(final Class<?> clazz, final String name) throws PrivilegedActionException
-    {
-        final PrivilegedExceptionAction<T> action = new PrivilegedExceptionAction<T>()
-        {
-            @SuppressWarnings("unchecked")
-            public T run() throws Exception
-            {
-                Field field = clazz.getDeclaredField(name);
-                field.setAccessible(true);
-                return (T) field.get(null);
-            }
-        };
-
-        return AccessController.doPrivileged(action);
-    }
-
-    /**
      * Extracts a field from a class using reflection.
      *
      * @param clazz from which to get the field object

@@ -457,7 +457,7 @@ public final class DirectBuffer
             else
             {
                 final long address = dst.effectiveDirectAddress + offset;
-                DirectBuffer.MEMORY_ACCESS.pokeByteArray(address, byteArray, this.offset + index, count);
+                MEMORY_ACCESS.pokeByteArray(address, byteArray, this.offset + index, count);
             }
         }
         else
