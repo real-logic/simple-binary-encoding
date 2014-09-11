@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Locale;
 
+import android.os.MemoryFile;
 import libcore.io.Memory;
 
 /**
@@ -34,6 +35,9 @@ public final class DirectBuffer
     private boolean hasArray;
 
     private ByteBuffer byteBuffer;
+    //we keep this reference to avoid being cleaned by GC
+    @SuppressWarnings("unused")
+    private MemoryFile memoryFile;
     private long effectiveDirectAddress;
     private int offset;
     private int capacity;
@@ -60,6 +64,29 @@ public final class DirectBuffer
     }
 
     /**
+     * Attach a view to an off-heap memory region by address.
+     *
+     * <b>This constructor is not available under Android.</b>
+     *
+     * @param address  where the memory begins off-heap
+     * @param capacity of the buffer from the given address
+     */
+    public DirectBuffer(final long address, final int capacity)
+    {
+        wrap(address, capacity);
+    }
+
+    /**
+     * Attach a view to a {@link MemoryFile} for providing direct access.
+     *
+     * @param memoryFile to which the view is attached.
+     */
+    public DirectBuffer(final MemoryFile memoryFile)
+    {
+        wrap(memoryFile);
+    }
+
+    /**
      * Attach a view to a byte[] for providing direct access.
      *
      * @param buffer to which the view is attached.
@@ -72,6 +99,7 @@ public final class DirectBuffer
         byteArray = buffer;
         hasArray = true;
         byteBuffer = null;
+        memoryFile = null;
     }
 
     /**
@@ -101,8 +129,39 @@ public final class DirectBuffer
             offset = 0;
             effectiveDirectAddress = BitUtil.getEffectiveDirectAddress(buffer);
         }
-
+        memoryFile = null;
         capacity = buffer.capacity();
+    }
+
+    /**
+     * Attach a view to an off-heap memory region by address.
+     *
+     * <b>This method is not available under Android.</b>
+     *
+     * @param address  where the memory begins off-heap
+     * @param capacity of the buffer from the given address
+     */
+    public void wrap(final long address, final int capacity)
+    {
+        effectiveDirectAddress = address;
+        this.capacity = capacity;
+        byteArray = null;
+        hasArray = false;
+        memoryFile = null;
+        //Memory.memmove needs either a bytebuffer or a bytearray
+        //it could only work with memory addresses, but it doesn't
+        byteBuffer = BitUtil.newDirectByteBuffer(effectiveDirectAddress, this.capacity);
+    }
+
+    /**
+     * Attach a view to a {@link MemoryFile} for providing direct access.
+     *
+     * @param memoryFile to which the view is attached.
+     */
+    public void wrap(final MemoryFile memoryFile)
+    {
+        wrap(BitUtil.getMemoryFileAddress(memoryFile), memoryFile.length());
+        this.memoryFile = memoryFile;
     }
 
     /**
