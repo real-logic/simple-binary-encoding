@@ -73,8 +73,8 @@ final class BitUtil
             {
                 public Constructor<?> run() throws Exception
                 {
-                    Class<?> clazz = Class.forName("java.nio.DirectByteBuffer");
-                    Constructor<?> constructor;
+                    final Class<?> clazz = Class.forName("java.nio.DirectByteBuffer");
+                    final Constructor<?> constructor;
                     if (Modifier.isAbstract(clazz.getModifiers()))
                     {
                         //use this starting with api level < 18
@@ -115,11 +115,11 @@ final class BitUtil
             return USE_LONG_ADDRESS ? EFFECTIVE_DIRECT_ADDRESS_FIELD.getLong(buffer)
                     : EFFECTIVE_DIRECT_ADDRESS_FIELD.getInt(buffer);
         }
-        catch (final IllegalArgumentException e)
+        catch (final IllegalArgumentException ignore)
         {
             return 0;
         }
-        catch (final IllegalAccessException e)
+        catch (final IllegalAccessException ignore)
         {
             return 0;
         }
@@ -138,11 +138,11 @@ final class BitUtil
             return USE_LONG_MEMORYFILE_ADDRESS ? MEMORYFILE_ADDRESS_FIELD
                     .getLong(memoryFile) : MEMORYFILE_ADDRESS_FIELD.getInt(memoryFile);
         }
-        catch (final IllegalArgumentException e)
+        catch (final IllegalArgumentException ignore)
         {
             return 0;
         }
-        catch (final IllegalAccessException e)
+        catch (final IllegalAccessException ignore)
         {
             return 0;
         }
@@ -172,7 +172,7 @@ final class BitUtil
         {
             public Field run() throws Exception
             {
-                Field field = clazz.getDeclaredField(name);
+                final Field field = clazz.getDeclaredField(name);
                 field.setAccessible(true);
                 return field;
             }
@@ -190,7 +190,7 @@ final class BitUtil
      * @param size     of the buffer from the given address
      * @return the {@link ByteBuffer} associated with the address and size
      */
-    static ByteBuffer newDirectByteBuffer(long address, int size)
+    static ByteBuffer newDirectByteBuffer(final long address, final int size)
     {
         try
         {
@@ -203,19 +203,19 @@ final class BitUtil
                 return (ByteBuffer) DIRECT_BYTE_BUFFER_CONSTRUCTOR.newInstance((int) address, size);
             }
         }
-        catch (final IllegalArgumentException e)
+        catch (final IllegalArgumentException ignore)
         {
             return null;
         }
-        catch (final IllegalAccessException e)
+        catch (final IllegalAccessException ignore)
         {
             return null;
         }
-        catch (InstantiationException e)
+        catch (InstantiationException ignore)
         {
             return null;
         }
-        catch (InvocationTargetException e)
+        catch (InvocationTargetException ignore)
         {
             return null;
         }
