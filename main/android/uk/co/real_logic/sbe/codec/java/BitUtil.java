@@ -102,6 +102,12 @@ final class BitUtil
     {
     }
 
+    /**
+     * Returns the memory address of a direct buffer.
+     *
+     * @param buffer the direct buffer
+     * @return the memory address of the buffer
+     */
     static long getEffectiveDirectAddress(final ByteBuffer buffer)
     {
         try
@@ -119,6 +125,12 @@ final class BitUtil
         }
     }
 
+    /**
+     * Returns the memory address of a {@link MemoryFile}
+     *
+     * @param memoryFile the {@link MemoryFile}
+     * @return the memory address of the {@link MemoryFile}
+     */
     static long getMemoryFileAddress(final MemoryFile memoryFile)
     {
         try
@@ -154,7 +166,7 @@ final class BitUtil
      * @return the field object.
      * @throws PrivilegedActionException
      */
-    static Field getField(final Class<?> clazz, final String name) throws PrivilegedActionException
+    private static Field getField(final Class<?> clazz, final String name) throws PrivilegedActionException
     {
         final PrivilegedExceptionAction<Field> action = new PrivilegedExceptionAction<Field>()
         {
@@ -170,11 +182,13 @@ final class BitUtil
     }
 
     /**
-     * Builds a DirectByteBuffer out of an adddress and a size
+     * Builds a DirectByteBuffer out of an address and a size. Uses the same
+     * constructor as the buffers that are created from JNI, thus it does not
+     * deallocate the memory when the {@link ByteBuffer} object is garbage collected.
      *
-     * @param address
-     * @param size
-     * @return
+     * @param address  where the memory begins off-heap
+     * @param size     of the buffer from the given address
+     * @return the {@link ByteBuffer} associated with the address and size
      */
     static ByteBuffer newDirectByteBuffer(long address, int size)
     {

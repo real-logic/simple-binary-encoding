@@ -32,15 +32,14 @@ public final class DirectBuffer
     private static final MemoryAccess MEMORY_ACCESS = BitUtil.getMemoryAccess();
 
     private byte[] byteArray;
-    private boolean hasArray;
+    private long effectiveDirectAddress;
+    private int offset;
+    private int capacity;
 
     private ByteBuffer byteBuffer;
     //we keep this reference to avoid being cleaned by GC
     @SuppressWarnings("unused")
     private MemoryFile memoryFile;
-    private long effectiveDirectAddress;
-    private int offset;
-    private int capacity;
 
     /**
      * Attach a view to a byte[] for providing direct access.
@@ -97,7 +96,6 @@ public final class DirectBuffer
         effectiveDirectAddress = 0;
         capacity = buffer.length;
         byteArray = buffer;
-        hasArray = true;
         byteBuffer = null;
         memoryFile = null;
     }
@@ -115,7 +113,6 @@ public final class DirectBuffer
         if (buffer.hasArray())
         {
             byteArray = buffer.array();
-            hasArray = true;
             offset = buffer.arrayOffset();
             effectiveDirectAddress = 0;
         }
@@ -125,7 +122,6 @@ public final class DirectBuffer
             // and buffers allocated inside JNI.
             // Performance seems to be lower for this situation
             byteArray = null;
-            hasArray = false;
             offset = 0;
             effectiveDirectAddress = BitUtil.getEffectiveDirectAddress(buffer);
         }
@@ -146,11 +142,10 @@ public final class DirectBuffer
         effectiveDirectAddress = address;
         this.capacity = capacity;
         byteArray = null;
-        hasArray = false;
-        memoryFile = null;
         //Memory.memmove needs either a bytebuffer or a bytearray
         //it could only work with memory addresses, but it doesn't
         byteBuffer = BitUtil.newDirectByteBuffer(effectiveDirectAddress, this.capacity);
+        memoryFile = null;
     }
 
     /**
@@ -250,7 +245,7 @@ public final class DirectBuffer
      */
     public long getLong(final int index, final ByteOrder byteOrder)
     {
-        if (hasArray)
+        if (byteArray != null)
         {
             return Memory.peekLong(byteArray, offset + index, byteOrder);
         }
@@ -271,7 +266,7 @@ public final class DirectBuffer
      */
     public void putLong(final int index, final long value, final ByteOrder byteOrder)
     {
-        if (hasArray)
+        if (byteArray != null)
         {
             Memory.pokeLong(byteArray, offset + index, value, byteOrder);
         }
@@ -292,7 +287,7 @@ public final class DirectBuffer
      */
     public int getInt(final int index, final ByteOrder byteOrder)
     {
-        if (hasArray)
+        if (byteArray != null)
         {
             return Memory.peekInt(byteArray, offset + index, byteOrder);
         }
@@ -313,7 +308,7 @@ public final class DirectBuffer
      */
     public void putInt(final int index, final int value, final ByteOrder byteOrder)
     {
-        if (hasArray)
+        if (byteArray != null)
         {
             Memory.pokeInt(byteArray, offset + index, value, byteOrder);
         }
@@ -382,7 +377,7 @@ public final class DirectBuffer
      */
     public short getShort(final int index, final ByteOrder byteOrder)
     {
-        if (hasArray)
+        if (byteArray != null)
         {
             return Memory.peekShort(byteArray, offset + index, byteOrder);
         }
@@ -403,7 +398,7 @@ public final class DirectBuffer
      */
     public void putShort(final int index, final short value, final ByteOrder byteOrder)
     {
-        if (hasArray)
+        if (byteArray != null)
         {
             Memory.pokeShort(byteArray, offset + index, value, byteOrder);
         }
@@ -423,7 +418,7 @@ public final class DirectBuffer
      */
     public byte getByte(final int index)
     {
-        if (hasArray)
+        if (byteArray != null)
         {
             return byteArray[offset + index];
         }
@@ -442,7 +437,7 @@ public final class DirectBuffer
      */
     public void putByte(final int index, final byte value)
     {
-        if (hasArray)
+        if (byteArray != null)
         {
             byteArray[offset + index] = value;
         }
@@ -480,7 +475,7 @@ public final class DirectBuffer
         int count = Math.min(length, capacity - index);
         count = Math.min(count, dst.length - offset);
 
-        if (hasArray)
+        if (byteArray != null)
         {
             System.arraycopy(byteArray, this.offset + index, dst, offset, count);
         }
@@ -507,9 +502,9 @@ public final class DirectBuffer
         int count = Math.min(length, capacity - index);
         count = Math.min(count, dst.capacity - offset);
 
-        if (hasArray)
+        if (byteArray != null)
         {
-            if (dst.hasArray)
+            if (dst.byteArray != null)
             {
                 System.arraycopy(byteArray, this.offset + index, dst.byteArray, dst.offset + offset, count);
             }
@@ -521,7 +516,7 @@ public final class DirectBuffer
         }
         else
         {
-            if (dst.hasArray)
+            if (dst.byteArray != null)
             {
                 final long address = effectiveDirectAddress + index;
                 MEMORY_ACCESS.peekByteArray(address, dst.byteArray, dst.offset + offset, count);
@@ -548,7 +543,7 @@ public final class DirectBuffer
         int count = Math.min(length, capacity - index);
         count = Math.min(count, dstBuffer.remaining());
 
-        if (hasArray)
+        if (byteArray != null)
         {
             getBytesFromByteArray(index, dstBuffer, count);
         }
@@ -588,7 +583,7 @@ public final class DirectBuffer
         int count = Math.min(length, capacity - index);
         count = Math.min(count, src.length - offset);
 
-        if (hasArray)
+        if (byteArray != null)
         {
             System.arraycopy(src, offset, byteArray, this.offset + index, count);
         }
@@ -629,7 +624,7 @@ public final class DirectBuffer
         int count = Math.min(length, capacity - index);
         count = Math.min(count, srcBuffer.remaining());
 
-        if (hasArray)
+        if (byteArray != null)
         {
             putBytesToByteArray(index, srcBuffer, count);
         }
