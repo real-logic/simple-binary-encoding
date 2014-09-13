@@ -78,25 +78,20 @@
         </javac>
 
         <jar destfile="${dir.target.perf.dist}/microbenchmarks.jar">
-            <manifest>
-                <attribute name="Main-Class" value="org.openjdk.jmh.Main"/>
-            </manifest>
             <fileset dir="${dir.target.perf.classes}" includes="**/*"/>
-            <zipgroupfileset dir="target/dist" includes="**/sbe.jar"/>
-            <zipgroupfileset dir="perf/lib" includes="**/*.jar"/>
         </jar>
     </target>
 
     <target name="java:perf:test" depends="java:compile">
-        <exec executable="java" failonerror="true">
-            <arg value="-jar"/>
-            <arg value="target/perf/dist/microbenchmarks.jar"/>
+        <java classname="org.openjdk.jmh.Main" failonerror="true" fork="true">
+            <classpath refid="perf.tools.classpath"/>
+            <classpath path="${dir.target.perf.dist}/microbenchmarks.jar"/>
             <arg value="-wi"/>
             <arg value="3"/>
             <arg value="-i"/>
             <arg value="3"/>
             <arg value=".*Benchmark.*"/>
-        </exec>
+        </java>
     </target>
 
     <target name="cpp:codegen" depends="init">

@@ -15,9 +15,10 @@
  */
 package uk.co.real_logic.protobuf;
 
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
+
 import uk.co.real_logic.protobuf.fix.Fix;
 
 public class MarketDataBenchmark
@@ -39,13 +40,13 @@ public class MarketDataBenchmark
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public byte[] testEncode(final MyState state) throws Exception
     {
         return encode();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public Fix.MarketDataIncrementalRefreshTrades testDecode(final MyState state) throws Exception
     {
         final byte[] buffer = state.decodeBuffer;

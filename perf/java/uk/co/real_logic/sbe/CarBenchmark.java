@@ -16,7 +16,7 @@
 
 package uk.co.real_logic.sbe;
 
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import uk.co.real_logic.sbe.examples.*;
@@ -63,7 +63,7 @@ public class CarBenchmark
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public int testEncode(final MyState state)
     {
         final Car car = state.car;
@@ -76,7 +76,7 @@ public class CarBenchmark
         return car.size();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public int testDecode(final MyState state)
     {
         final Car car = state.car;

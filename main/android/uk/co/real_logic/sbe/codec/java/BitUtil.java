@@ -78,8 +78,8 @@ final class BitUtil
                     if (Modifier.isAbstract(clazz.getModifiers()))
                     {
                         //use this starting with api level < 18
-                        clazz = Class.forName("java.nio.ReadWriteDirectByteBuffer");
-                        constructor = clazz.getDeclaredConstructor(int.class, int.class);
+                        final Class<?> rwClazz = Class.forName("java.nio.ReadWriteDirectByteBuffer");
+                        constructor = rwClazz.getDeclaredConstructor(int.class, int.class);
                     }
                     else
                     {
