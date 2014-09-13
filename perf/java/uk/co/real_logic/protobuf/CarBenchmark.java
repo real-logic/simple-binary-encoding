@@ -16,7 +16,7 @@
 
 package uk.co.real_logic.protobuf;
 
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import uk.co.real_logic.protobuf.examples.Examples;
@@ -47,13 +47,13 @@ public class CarBenchmark
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public byte[] testEncode(final MyState state) throws Exception
     {
         return encode();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public Examples.Car testDecode(final MyState state) throws Exception
     {
         final byte[] buffer = state.decodeBuffer;
