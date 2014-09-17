@@ -303,7 +303,8 @@ public class JavaGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    @Override\n public %s next()\n" +
+            indent + "    @Override\n" +
+            indent + "    public %s next()\n" +
             indent + "    {\n" +
             indent + "        if (index + 1 >= count)\n" +
             indent + "        {\n" +
