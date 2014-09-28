@@ -219,7 +219,7 @@ public class ExampleTokenListener implements TokenListener
         }
         else if (Encoding.Presence.OPTIONAL == encoding.presence())
         {
-            if (token.version() < actingVersion)
+            if (actingVersion < token.version())
             {
                 return encoding.applicableNullValue();
             }
