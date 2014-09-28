@@ -159,7 +159,7 @@ namespace Adaptive.SimpleBinaryEncoding.Examples.Otf
 
             if (Presence.Optional == encoding.Presence)
             {
-                if (token.Version < actingVersion)
+                if (actingVersion < token.Version)
                 {
                     return encoding.ApplicableNullVal;
                 }
