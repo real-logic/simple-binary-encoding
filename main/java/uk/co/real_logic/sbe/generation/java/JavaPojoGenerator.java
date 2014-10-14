@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.OutputManager;
 import uk.co.real_logic.sbe.ir.Encoding;
@@ -361,10 +362,80 @@ public class JavaPojoGenerator implements CodeGenerator
         }
         else if (arrayLength > 1)
         {
-            return generateSingleValueProperty(containingClassName, propertyName, javaTypeName+"[]", indent);
+            return generateArrayProperty(encoding, containingClassName, propertyName, javaTypeName, indent);
         }
 
         return "";
+    }
+
+    private CharSequence generateArrayProperty(
+            final Encoding encoding,
+            final String containingClassName, final String propertyName,
+            final String javaTypeName, final String indent)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
+                "\n" + indent + "    private %s[] %s;\n",
+                javaTypeName,
+                propertyName
+        ));
+
+        sb.append(String.format(
+                indent + "    public %1$s %2$s(final int index)\n" +
+                        indent + "    {\n" +
+                        indent + "        return %2$s[index];\n" +
+                        indent + "    }\n\n",
+                javaTypeName,
+                propertyName
+        ));
+
+        sb.append(String.format(
+                indent + "    public void %1$s(final int index, final %2$s value)\n" +
+                        indent + "    {\n" +
+                        indent + "        %1$s[index] = value;\n" +
+                        indent + "    }\n",
+                propertyName,
+                javaTypeName
+        ));
+
+        if (encoding.primitiveType() == PrimitiveType.CHAR)
+        {
+            sb.append(String.format(
+                    "\n" +
+                            indent + "    public int get%1$s(final byte[] dst, final int dstOffset)\n" +
+                            indent + "    {\n" +
+                            indent + "        System.arraycopy(%2$s, 0, dst, dstOffset, %2$sLength());\n" +
+                            indent + "        return %2$sLength();\n" +
+                            indent + "    }\n\n",
+                    JavaUtil.toUpperFirstChar(propertyName),
+                    propertyName
+            ));
+
+            sb.append(String.format(
+                    indent + "    public %1$s put%2$s(final byte[] src, final int srcOffset)\n" +
+                            indent + "    {\n" +
+                            indent + "        System.arraycopy(src, srcOffset, %3$s, 0, src.length - srcOffset);\n" +
+                            indent + "        return this;\n" +
+                            indent + "    }\n",
+                    containingClassName,
+                    JavaUtil.toUpperFirstChar(propertyName),
+                    propertyName
+            ));
+
+            sb.append(String.format(
+                    indent + "    public %1$s put%2$s(final byte[] src)\n" +
+                            indent + "    {\n" +
+                            indent + "        %3$s = Arrays.copyOf(src, %3$sLength());\n" +
+                            indent + "        return this;\n" +
+                            indent + "    }\n",
+                    containingClassName,
+                    JavaUtil.toUpperFirstChar(propertyName),
+                    propertyName
+            ));
+        }
+
+        return sb;
     }
 
     private CharSequence generateSingleValueProperty(
