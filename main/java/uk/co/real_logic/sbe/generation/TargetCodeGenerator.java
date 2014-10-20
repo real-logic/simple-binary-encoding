@@ -20,6 +20,7 @@ import uk.co.real_logic.sbe.generation.csharp.CSharpGenerator;
 import uk.co.real_logic.sbe.generation.csharp.CSharpNamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.cpp98.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
+import uk.co.real_logic.sbe.generation.java.JavaPojoGenerator;
 import uk.co.real_logic.sbe.generation.java.PackageOutputManager;
 import uk.co.real_logic.sbe.ir.Ir;
 
@@ -30,6 +31,15 @@ import java.io.IOException;
  */
 public enum TargetCodeGenerator
 {
+    JAVAPOJO()
+        {
+            public CodeGenerator newInstance(final Ir ir, final String outputDir)
+                throws IOException
+            {
+                return new JavaPojoGenerator(ir, new PackageOutputManager(outputDir, ir.applicableNamespace()));
+            }
+        },
+
     JAVA()
         {
             public CodeGenerator newInstance(final Ir ir, final String outputDir)
