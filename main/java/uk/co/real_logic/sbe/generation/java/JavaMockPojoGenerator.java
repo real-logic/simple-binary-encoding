@@ -33,16 +33,16 @@ import static uk.co.real_logic.sbe.generation.java.JavaUtil.formatClassName;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.formatPropertyName;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.javaTypeName;
 
-public class JavaPojoGenerator implements CodeGenerator
+public class JavaMockPojoGenerator implements CodeGenerator
 {
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
-    public static final String MOCK = "Mock";
+    private static final String MOCK = "Mock";
 
     private final Ir ir;
     private final OutputManager outputManager;
 
-    public JavaPojoGenerator(final Ir ir, final OutputManager outputManager)
+    public JavaMockPojoGenerator(final Ir ir, final OutputManager outputManager)
         throws IOException
     {
         Verify.notNull(ir, "ir");
@@ -109,20 +109,20 @@ public class JavaPojoGenerator implements CodeGenerator
             {
                 final String choiceName = token.name();
                 sb.append(String.format(
-                        "\n" +
-                                "    private boolean %s;\n" +
-                                "    public boolean %s()\n" +
-                                "    {\n" +
-                                "        return %s;\n" +
-                                "    }\n\n" +
-                                "    public %s %s(final boolean value)\n" +
-                                "    {\n" +
-                                "        %s = value;\n" +
-                                "        return this;\n" +
-                                "    }\n",
-                        choiceName, choiceName, choiceName,
-                        bitSetClassName,
-                        choiceName, choiceName
+                    "\n" +
+                    "    private boolean %s;\n" +
+                    "    public boolean %s()\n" +
+                    "    {\n" +
+                    "        return %s;\n" +
+                    "    }\n\n" +
+                    "    public %s %s(final boolean value)\n" +
+                    "    {\n" +
+                    "        %s = value;\n" +
+                    "        return this;\n" +
+                    "    }\n",
+                    choiceName, choiceName, choiceName,
+                    bitSetClassName,
+                    choiceName, choiceName
                 ));
             }
         }
@@ -197,11 +197,7 @@ public class JavaPojoGenerator implements CodeGenerator
     }
 
     private int generateGroups(
-            final StringBuilder sb,
-            final String parentMessageClassName,
-            final List<Token> tokens,
-            int index,
-            final String indent)
+        final StringBuilder sb, final String parentMessageClassName, final List<Token> tokens, int index, final String indent)
     {
         for (int size = tokens.size(); index < size; index++)
         {
@@ -211,7 +207,7 @@ public class JavaPojoGenerator implements CodeGenerator
                 final String groupName = groupToken.name();
                 final String groupClassName = formatClassName(groupName);
                 sb.append(generateSingleValueProperty(parentMessageClassName,
-                        JavaUtil.toLowerFirstChar(groupName), groupClassName, indent));
+                    JavaUtil.toLowerFirstChar(groupName), groupClassName, indent));
 
                 generateGroupClassHeader(sb, groupName, indent + INDENT);
 
@@ -231,10 +227,7 @@ public class JavaPojoGenerator implements CodeGenerator
         return index;
     }
 
-    private void generateGroupClassHeader(
-        final StringBuilder sb,
-        final String groupName,
-        final String indent)
+    private void generateGroupClassHeader(final StringBuilder sb, final String groupName, final String indent)
     {
         sb.append(String.format(
             "\n" +
@@ -369,69 +362,71 @@ public class JavaPojoGenerator implements CodeGenerator
     }
 
     private CharSequence generateArrayProperty(
-            final Encoding encoding,
-            final String containingClassName, final String propertyName,
-            final String javaTypeName, final String indent)
+        final Encoding encoding,
+        final String containingClassName,
+        final String propertyName,
+        final String javaTypeName,
+        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-                "\n" + indent + "    private %s[] %s;\n",
-                javaTypeName,
-                propertyName
+            "\n" + indent + "    private %s[] %s;\n",
+            javaTypeName,
+            propertyName
         ));
 
         sb.append(String.format(
-                indent + "    public %1$s %2$s(final int index)\n" +
-                        indent + "    {\n" +
-                        indent + "        return %2$s[index];\n" +
-                        indent + "    }\n\n",
-                javaTypeName,
-                propertyName
+            indent + "    public %1$s %2$s(final int index)\n" +
+            indent + "    {\n" +
+            indent + "        return %2$s[index];\n" +
+            indent + "    }\n\n",
+            javaTypeName,
+            propertyName
         ));
 
         sb.append(String.format(
-                indent + "    public void %1$s(final int index, final %2$s value)\n" +
-                        indent + "    {\n" +
-                        indent + "        %1$s[index] = value;\n" +
-                        indent + "    }\n",
-                propertyName,
-                javaTypeName
+            indent + "    public void %1$s(final int index, final %2$s value)\n" +
+            indent + "    {\n" +
+            indent + "        %1$s[index] = value;\n" +
+            indent + "    }\n",
+            propertyName,
+            javaTypeName
         ));
 
         if (encoding.primitiveType() == PrimitiveType.CHAR)
         {
             sb.append(String.format(
-                    "\n" +
-                            indent + "    public int get%1$s(final byte[] dst, final int dstOffset)\n" +
-                            indent + "    {\n" +
-                            indent + "        System.arraycopy(%2$s, 0, dst, dstOffset, %2$sLength());\n" +
-                            indent + "        return %2$sLength();\n" +
-                            indent + "    }\n\n",
-                    JavaUtil.toUpperFirstChar(propertyName),
-                    propertyName
+                "\n" +
+                indent + "    public int get%1$s(final byte[] dst, final int dstOffset)\n" +
+                indent + "    {\n" +
+                indent + "        System.arraycopy(%2$s, 0, dst, dstOffset, %2$sLength());\n" +
+                indent + "        return %2$sLength();\n" +
+                indent + "    }\n\n",
+                JavaUtil.toUpperFirstChar(propertyName),
+                propertyName
             ));
 
             sb.append(String.format(
-                    indent + "    public %1$s put%2$s(final byte[] src, final int srcOffset)\n" +
-                            indent + "    {\n" +
-                            indent + "        System.arraycopy(src, srcOffset, %3$s, 0, src.length - srcOffset);\n" +
-                            indent + "        return this;\n" +
-                            indent + "    }\n",
-                    containingClassName,
-                    JavaUtil.toUpperFirstChar(propertyName),
-                    propertyName
+                indent + "    public %1$s put%2$s(final byte[] src, final int srcOffset)\n" +
+                indent + "    {\n" +
+                indent + "        System.arraycopy(src, srcOffset, %3$s, 0, src.length - srcOffset);\n" +
+                indent + "        return this;\n" +
+                indent + "    }\n",
+                containingClassName,
+                JavaUtil.toUpperFirstChar(propertyName),
+                propertyName
             ));
 
             sb.append(String.format(
-                    indent + "    public %1$s put%2$s(final byte[] src)\n" +
-                            indent + "    {\n" +
-                            indent + "        %3$s = Arrays.copyOf(src, %3$sLength());\n" +
-                            indent + "        return this;\n" +
-                            indent + "    }\n",
-                    containingClassName,
-                    JavaUtil.toUpperFirstChar(propertyName),
-                    propertyName
+                indent + "    public %1$s put%2$s(final byte[] src)\n" +
+                indent + "    {\n" +
+                indent + "        %3$s = Arrays.copyOf(src, %3$sLength());\n" +
+                indent + "        return this;\n" +
+                indent + "    }\n",
+                containingClassName,
+                JavaUtil.toUpperFirstChar(propertyName),
+                propertyName
             ));
         }
 
@@ -444,9 +439,9 @@ public class JavaPojoGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-                "\n" + indent + "    private %s %s;\n",
-                javaTypeName,
-                propertyName
+            "\n" + indent + "    private %s %s;\n",
+            javaTypeName,
+            propertyName
         ));
 
         sb.append(String.format(
@@ -506,10 +501,10 @@ public class JavaPojoGenerator implements CodeGenerator
     }
 
     private CharSequence generateEnumProperty(
-            final String containingClassName, final String propertyName, final Token token, final String indent)
+        final String containingClassName, final String propertyName, final Token token, final String indent)
     {
-
         final String enumName = token.name();
+
         return generateSingleValueProperty(containingClassName, propertyName, enumName, indent);
     }
 }
