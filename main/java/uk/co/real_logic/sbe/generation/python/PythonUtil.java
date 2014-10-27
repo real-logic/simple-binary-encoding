@@ -47,11 +47,12 @@ public class PythonUtil
      * Map the name of a {@link uk.co.real_logic.sbe.PrimitiveType} to a C++98 primitive type name.
      *
      * @param primitiveType to map.
+     * @param byteOrder of the primitiveType
      * @return the name of the Java primitive that most closely maps.
      */
     public static String pythonTypeName(final PrimitiveType primitiveType, final ByteOrder byteOrder)
     {
-        return (byteOrder==ByteOrder.BIG_ENDIAN?">":"<") + typeNameByPrimitiveTypeMap.get(primitiveType);
+        return (byteOrder == ByteOrder.BIG_ENDIAN ? ">" : "<") + typeNameByPrimitiveTypeMap.get(primitiveType);
     }
 
     /**
@@ -101,7 +102,7 @@ public class PythonUtil
     /**
      * Return the Cpp98 formatted byte order encoding string to use for a given byte order and primitiveType
      *
-     * @param byteOrder of the {@link uk.co.real_logic.sbe.ir.Token}
+     * @param byteOrder     of the {@link uk.co.real_logic.sbe.ir.Token}
      * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}
      * @return the string formatted as the byte ordering encoding
      */

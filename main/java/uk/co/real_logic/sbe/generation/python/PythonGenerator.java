@@ -54,10 +54,11 @@ public class PythonGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
         {
             final List<Token> tokens = ir.headerStructure().tokens();
-            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), MESSAGE_HEADER_TYPE, null));
+            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
             out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
-            out.append(generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            out.append(
+                generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
         }
     }
 
@@ -100,9 +101,9 @@ public class PythonGenerator implements CodeGenerator
 
             try (final Writer out = outputManager.createOutput(className))
             {
-                out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), className, typesToInclude));
+                out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), typesToInclude));
                 out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(className, msgToken));
+                out.append(generateMessageFlyweightCode(msgToken));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -222,8 +223,10 @@ public class PythonGenerator implements CodeGenerator
         ));
 
         final Integer blockLength = Integer.valueOf(tokens.get(index).size());
-        final String typeForBlockLength = pythonTypeName(tokens.get(index + 2).encoding().primitiveType(), tokens.get(index + 2).encoding().byteOrder());
-        final String typeForNumInGroup = pythonTypeName(tokens.get(index + 3).encoding().primitiveType(), tokens.get(index + 3).encoding().byteOrder());
+        final String typeForBlockLength = pythonTypeName(
+            tokens.get(index + 2).encoding().primitiveType(), tokens.get(index + 2).encoding().byteOrder());
+        final String typeForNumInGroup = pythonTypeName(
+            tokens.get(index + 3).encoding().primitiveType(), tokens.get(index + 3).encoding().byteOrder());
 
         sb.append(String.format(
             indent + "    def wrapForEncode(self, buffer, count, pos, actingVersion, bufferLength):\n" +
@@ -307,7 +310,8 @@ public class PythonGenerator implements CodeGenerator
             "\n" +
             indent + "    def %2$sCount(self, count):\n" +
             indent + "        group = self.%1$s()\n" +
-            indent + "        group.wrapForEncode(self.buffer_, count, self.position_, self.actingVersion_, self.bufferLength_)\n" +
+            indent + "        group.wrapForEncode(" +
+                "self.buffer_, count, self.position_, self.actingVersion_, self.bufferLength_)\n" +
             indent + "        return group\n\n",
             className,
             propertyName
@@ -329,7 +333,8 @@ public class PythonGenerator implements CodeGenerator
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
                 final Token lengthToken = tokens.get(i + 2);
                 final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
-                final String lengthCpp98Type = pythonTypeName(lengthToken.encoding().primitiveType(), lengthToken.encoding().byteOrder());
+                final String lengthCpp98Type = pythonTypeName(
+                    lengthToken.encoding().primitiveType(), lengthToken.encoding().byteOrder());
 
                 generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
 
@@ -394,7 +399,7 @@ public class PythonGenerator implements CodeGenerator
         final String lengthCpp98Type)
     {
         sb.append(String.format(
-            "\n"  +
+            "\n" +
             "    @staticmethod\n" +
             "    def %1$sCharacterEncoding():\n" +
             "        return '%2$s'\n\n",
@@ -442,7 +447,7 @@ public class PythonGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), bitSetName, null));
+            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
             out.append(generateClassDeclaration(bitSetName));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
             out.append(String.format(
@@ -465,7 +470,7 @@ public class PythonGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), enumName, null));
+            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
             out.append(generateEnumDeclaration(enumName));
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumToken));
             out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
@@ -478,7 +483,7 @@ public class PythonGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(compositeName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), compositeName, null));
+            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
             out.append(generateClassDeclaration(compositeName));
             out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
@@ -516,7 +521,8 @@ public class PythonGenerator implements CodeGenerator
                 sb.append(String.format(
                     "\n" +
                     "    def get%1$s(self):\n" +
-                    "        return True if struct.unpack_from('%4$s', self.buffer_, self.offset_)[0] & (0x1L << %5$s) > 0 else False\n\n",
+                    "        return True if struct.unpack_from(" +
+                        "'%4$s', self.buffer_, self.offset_)[0] & (0x1L << %5$s) > 0 else False\n\n",
                     toUpperFirstChar(choiceName),
                     generateChoiceNotPresentCondition(token.version(), BASE_INDENT),
                     byteOrderStr,
@@ -547,7 +553,7 @@ public class PythonGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
         final Encoding encoding = encodingToken.encoding();
 
-        sb.append( "    class Value:\n" );
+        sb.append("    class Value:\n");
 
         for (final Token token : tokens)
         {
@@ -574,7 +580,7 @@ public class PythonGenerator implements CodeGenerator
         sb.append(
             "    @staticmethod\n" +
             "    def get(value):\n" +
-            "        values = {\n" );
+            "        values = {\n");
 
         for (final Token token : tokens)
         {
@@ -629,21 +635,7 @@ public class PythonGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateTypeFieldNotPresentCondition(final int sinceVersion, final String indent)
-    {
-        if (0 == sinceVersion)
-        {
-            return "";
-        }
-
-        return String.format(
-            indent + "        if self.actingVersion_ < %1$d:\n" +
-            indent + "            return False\n\n",
-            Integer.valueOf(sinceVersion)
-        );
-    }
-
-    private CharSequence generateFileHeader(final String namespaceName, final String className, final List<String> typesToInclude)
+    private CharSequence generateFileHeader(final String namespaceName, final List<String> typesToInclude)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -689,7 +681,7 @@ public class PythonGenerator implements CodeGenerator
             }
         }
 
-       return sb;
+        return sb;
     }
 
     private CharSequence generatePrimitiveProperty(
@@ -722,7 +714,7 @@ public class PythonGenerator implements CodeGenerator
         }
         else if (arrayLength > 1)
         {
-            return generateArrayProperty(containingClassName, propertyName, token, indent);
+            return generateArrayProperty(propertyName, token, indent);
         }
 
         return "";
@@ -800,7 +792,7 @@ public class PythonGenerator implements CodeGenerator
     }
 
     private CharSequence generateArrayProperty(
-        final String containingClassName, final String propertyName, final Token token, final String indent)
+        final String propertyName, final Token token, final String indent)
     {
         final String pythonTypeName = pythonTypeName(token.encoding().primitiveType(), token.encoding().byteOrder());
         final Integer offset = Integer.valueOf(token.offset());
@@ -918,12 +910,8 @@ public class PythonGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateMessageFlyweightCode(final String className, final Token token)
+    private CharSequence generateMessageFlyweightCode(final Token token)
     {
-        final String blockLengthType = pythonTypeName(ir.headerStructure().blockLengthType(), token.encoding().byteOrder());
-        final String templateIdType = pythonTypeName(ir.headerStructure().templateIdType(), token.encoding().byteOrder());
-        final String schemaIdType = pythonTypeName(ir.headerStructure().schemaIdType(), token.encoding().byteOrder());
-        final String schemaVersionType = pythonTypeName(ir.headerStructure().schemaVersionType(), token.encoding().byteOrder());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
@@ -936,23 +924,23 @@ public class PythonGenerator implements CodeGenerator
 
             "    @staticmethod\n" +
             "    def sbeBlockLength():\n" +
-            "        return %2$s\n\n" +
+            "        return %1$s\n\n" +
 
             "    @staticmethod\n" +
             "    def sbeTemplateId():\n" +
-            "        return %4$s\n\n" +
+            "        return %2$s\n\n" +
 
             "    @staticmethod\n" +
             "    def sbeSchemaId():\n" +
-            "        return %6$s\n\n" +
+            "        return %3$s\n\n" +
 
             "    @staticmethod\n" +
             "    def sbeSchemaVersion():\n" +
-            "        return %8$s\n\n" +
+            "        return %4$s\n\n" +
 
             "    @staticmethod\n" +
             "    def sbeSemanticType():\n" +
-            "        return \"%9$s\"\n\n" +
+            "        return \"%5$s\"\n\n" +
 
             "    def offset(self):\n" +
             "        return offset_\n\n" +
@@ -992,16 +980,11 @@ public class PythonGenerator implements CodeGenerator
             "    def actingVersion(self):\n" +
             "        return self.actingVersion_;\n",
 
-            blockLengthType,
             generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
-            templateIdType,
             generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
-            schemaIdType,
             generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
-            schemaVersionType,
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
-            semanticType,
-            className
+            semanticType
         );
     }
 
