@@ -22,6 +22,8 @@ import uk.co.real_logic.sbe.generation.cpp98.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.generation.java.JavaMockPojoGenerator;
 import uk.co.real_logic.sbe.generation.java.PackageOutputManager;
+import uk.co.real_logic.sbe.generation.python.PythonGenerator;
+import uk.co.real_logic.sbe.generation.python.ModuleOutputManager;
 import uk.co.real_logic.sbe.ir.Ir;
 
 import java.io.IOException;
@@ -46,6 +48,15 @@ public enum TargetCodeGenerator
                 throws IOException
             {
                 return new JavaGenerator(ir, new PackageOutputManager(outputDir, ir.applicableNamespace()));
+            }
+        },
+
+    PYTHON()
+        {
+            public CodeGenerator newInstance(final Ir ir, final String outputDir)
+                throws IOException
+            {
+                return new PythonGenerator(ir, new ModuleOutputManager(outputDir, ir.applicableNamespace()));
             }
         },
 
