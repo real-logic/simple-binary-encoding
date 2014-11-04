@@ -24,16 +24,20 @@
  * builtins for GCC. MSVC has similar ones.
  */
 
+// Some GCC versions do not include __builtin_bswap16
+// The compiler optimizes the code below into a single ROL instruction so the intrinsic is not really needed
+#define BYTESWAP16(v) (((v) >> 8) | ((v) << 8))
+
 #if defined(WIN32) || defined(_WIN32)
     #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ushort((::uint16_t)v))
     #define BSWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ulong((::uint32_t)v))
     #define BSWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_uint64((::uint64_t)v))
 #elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap16((::uint16_t)v))
+    #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : BYTESWAP16((::uint16_t)v))
     #define BSWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap32((::uint32_t)v))
     #define BSWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap64((::uint64_t)v))
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-    #define BSWAP16(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap16((::uint16_t)v))
+    #define BSWAP16(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : BYTESWAP16((::uint16_t)v))
     #define BSWAP32(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap32((::uint32_t)v))
     #define BSWAP64(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap64((::uint64_t)v))
 #else
