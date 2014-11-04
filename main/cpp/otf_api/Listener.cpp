@@ -112,14 +112,14 @@ int Listener::subscribe(OnNext *onNext,
                 {
                     char message[1024];
 
-                    ::snprintf(message, sizeof(message)-1, "no IR found for message with templateId=%ld and version=%ld", templateId_, templateVersion_);
+                    ::snprintf(message, sizeof(message)-1, "no IR found for message with templateId=%ld and version=%ld [E117]", templateId_, templateVersion_);
                     onError_->onError(Error(message));
                     result = -1;
                 }
             }
             else if (onError_ != NULL)
             {
-                onError_->onError(Error("template ID and/or version not found in header"));
+                onError_->onError(Error("template ID and/or version not found in header [E118]"));
                 result = -1;
             }
         }

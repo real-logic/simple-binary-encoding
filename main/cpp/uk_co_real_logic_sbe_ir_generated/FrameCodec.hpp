@@ -107,7 +107,7 @@ public:
     {
         if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), 0))
         {
-            throw "buffer too short";
+            throw std::runtime_error("buffer too short [E101]");
         }
         position_ = position;
     }

@@ -180,7 +180,7 @@ Ir::TokenPresence Ir::presence() const
             break;
 
         default:
-            throw "do not know validValue primitiveType";
+            throw std::runtime_error("do not know validValue primitiveType [E109]");
             break;
     }
 }
@@ -207,7 +207,7 @@ Ir::TokenPresence Ir::presence() const
             break;
 
         default:
-            throw "do not know choice primitiveType";
+            throw std::runtime_error("do not know choice primitiveType [E110]");
             break;
     }
 }

@@ -32,7 +32,7 @@ public:
     {
         if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - -1)), 0))
         {
-            throw "buffer too short for flyweight";
+            throw std::runtime_error("buffer too short for flyweight [E116]");
         }
         buffer_ = buffer;
         offset_ = offset;

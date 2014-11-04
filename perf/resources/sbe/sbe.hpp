@@ -18,6 +18,7 @@
 
 #include <string.h>
 #include <stdint.h>
+#include <stdexcept>
 
 /*
  * Types used by C++ codec. Might have to be platform specific at some stage.

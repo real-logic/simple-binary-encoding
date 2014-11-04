@@ -287,7 +287,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "        offset_ = *positionPtr_;\n" +
             indent + "        if (SBE_BOUNDS_CHECK_EXPECT(( (offset_ + blockLength_) > bufferLength_ ),0))\n" +
             indent + "        {\n" +
-            indent + "            throw \"buffer too short to support next group index\";\n" +
+            indent + "            throw std::runtime_error(\"buffer too short to support next group index [E108]\");\n" +
             indent + "        }\n" +
             indent + "        *positionPtr_ = offset_ + blockLength_;\n" +
             indent + "        ++index_;\n\n" +
@@ -665,7 +665,7 @@ public class Cpp98Generator implements CodeGenerator
         sb.append(String.format(
             "            case %1$s: return NULL_VALUE;\n" +
             "        }\n\n" +
-            "        throw \"unknown value for enum %2$s\";\n" +
+            "        throw std::runtime_error(\"unknown value for enum %2$s [E103]\");\n" +
             "    }\n",
             encodingToken.encoding().applicableNullValue().toString(),
             enumName
@@ -952,7 +952,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        if (index < 0 || index >= %3$d)\n" +
             indent + "        {\n" +
-            indent + "            throw \"index out of range for %2$s\";\n" +
+            indent + "            throw std::runtime_error(\"index out of range for %2$s [E104]\");\n" +
             indent + "        }\n\n" +
                              "%4$s" +
             indent + "        return %5$s(*((%1$s *)(buffer_ + offset_ + %6$d + (index * %7$d))));\n" +
@@ -971,7 +971,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        if (index < 0 || index >= %3$d)\n" +
             indent + "        {\n" +
-            indent + "            throw \"index out of range for %1$s\";\n" +
+            indent + "            throw std::runtime_error(\"index out of range for %1$s [E105]\");\n" +
             indent + "        }\n\n" +
             indent + "        *((%2$s *)(buffer_ + offset_ + %4$d + (index * %5$d))) = %6$s(value);\n" +
             indent + "    }\n\n",
@@ -988,7 +988,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        if (length > %2$d)\n" +
             indent + "        {\n" +
-            indent + "             throw \"length too large for get%1$s\";\n" +
+            indent + "             throw std::runtime_error(\"length too large for get%1$s [E106]\");\n" +
             indent + "        }\n\n" +
                              "%3$s" +
             indent + "        ::memcpy(dst, buffer_ + offset_ + %4$d, length);\n" +
@@ -1105,7 +1105,7 @@ public class Cpp98Generator implements CodeGenerator
             "    {\n" +
             "        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - %2$s)), 0))\n" +
             "        {\n" +
-            "            throw \"buffer too short for flyweight\";\n" +
+            "            throw std::runtime_error(\"buffer too short for flyweight [E107]\");\n" +
             "        }\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
@@ -1196,7 +1196,7 @@ public class Cpp98Generator implements CodeGenerator
             "    {\n" +
             "        if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), 0))\n" +
             "        {\n" +
-            "            throw \"buffer too short\";\n" +
+            "            throw std::runtime_error(\"buffer too short [E100]\");\n" +
             "        }\n" +
             "        position_ = position;\n" +
             "    }\n\n" +
