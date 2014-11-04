@@ -18,6 +18,7 @@
 
 #include <string.h>
 #include <stdint.h>
+#include <limits.h>
 #include <stdexcept>
 
 /*

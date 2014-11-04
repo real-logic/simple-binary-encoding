@@ -157,17 +157,17 @@ public:
 
     static const sbe_int32_t tokenOffsetNullValue()
     {
-        return -2147483648;
+        return  INT_MIN; // -2147483648;
     }
 
     static const sbe_int32_t tokenOffsetMinValue()
     {
-        return -2147483647;
+        return  INT_MIN + 1; // -2147483647;
     }
 
     static const sbe_int32_t tokenOffsetMaxValue()
     {
-        return 2147483647;
+        return INT_MAX; // 2147483647;
     }
 
     sbe_int32_t tokenOffset(void) const
@@ -211,17 +211,17 @@ public:
 
     static const sbe_int32_t tokenSizeNullValue()
     {
-        return -2147483648;
+        return  INT_MIN;// -2147483648;
     }
 
     static const sbe_int32_t tokenSizeMinValue()
     {
-        return -2147483647;
+        return  INT_MIN + 1; // -2147483647;
     }
 
     static const sbe_int32_t tokenSizeMaxValue()
     {
-        return 2147483647;
+        return INT_MAX; // 2147483647;
     }
 
     sbe_int32_t tokenSize(void) const
@@ -265,17 +265,17 @@ public:
 
     static const sbe_int32_t fieldIdNullValue()
     {
-        return -2147483648;
+        return  INT_MIN; // -2147483648;
     }
 
     static const sbe_int32_t fieldIdMinValue()
     {
-        return -2147483647;
+        return  INT_MIN + 1; // -2147483647;
     }
 
     static const sbe_int32_t fieldIdMaxValue()
     {
-        return 2147483647;
+        return INT_MAX; // 2147483647;
     }
 
     sbe_int32_t fieldId(void) const
@@ -319,17 +319,17 @@ public:
 
     static const sbe_int32_t tokenVersionNullValue()
     {
-        return -2147483648;
+        return  INT_MIN; // -2147483648;
     }
 
     static const sbe_int32_t tokenVersionMinValue()
     {
-        return -2147483647;
+        return  INT_MIN + 1; // -2147483647;
     }
 
     static const sbe_int32_t tokenVersionMaxValue()
     {
-        return 2147483647;
+        return INT_MAX; // 2147483647;
     }
 
     sbe_int32_t tokenVersion(void) const

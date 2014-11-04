@@ -157,17 +157,17 @@ public:
 
     static const sbe_int32_t irIdNullValue()
     {
-        return -2147483648;
+        return  INT_MIN; // -2147483648;
     }
 
     static const sbe_int32_t irIdMinValue()
     {
-        return -2147483647;
+        return  INT_MIN + 1; // -2147483647;
     }
 
     static const sbe_int32_t irIdMaxValue()
     {
-        return 2147483647;
+        return INT_MAX; // 2147483647;
     }
 
     sbe_int32_t irId(void) const
@@ -211,17 +211,17 @@ public:
 
     static const sbe_int32_t irVersionNullValue()
     {
-        return -2147483648;
+        return  INT_MIN; // -2147483648;
     }
 
     static const sbe_int32_t irVersionMinValue()
     {
-        return -2147483647;
+        return  INT_MIN + 1; // -2147483647;
     }
 
     static const sbe_int32_t irVersionMaxValue()
     {
-        return 2147483647;
+        return INT_MAX; // 2147483647;
     }
 
     sbe_int32_t irVersion(void) const
@@ -265,17 +265,17 @@ public:
 
     static const sbe_int32_t schemaVersionNullValue()
     {
-        return -2147483648;
+        return  INT_MIN; // -2147483648;
     }
 
     static const sbe_int32_t schemaVersionMinValue()
     {
-        return -2147483647;
+        return  INT_MIN + 1; // -2147483647;
     }
 
     static const sbe_int32_t schemaVersionMaxValue()
     {
-        return 2147483647;
+        return INT_MAX; // 2147483647;
     }
 
     sbe_int32_t schemaVersion(void) const
