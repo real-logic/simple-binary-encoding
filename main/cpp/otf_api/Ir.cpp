@@ -51,7 +51,7 @@ struct Ir::Impl
     ::uint32_t serializedTokenSize;
 };
 
-#if !defined(WIN32)
+#if !defined(WIN32) && !defined(_WIN32)
 const int Ir::INVALID_ID;
 const ::uint32_t Ir::VARIABLE_SIZE;
 #endif /* WIN32 */

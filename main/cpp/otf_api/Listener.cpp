@@ -24,7 +24,7 @@
  * builtins for GCC. MSVC has similar ones.
  */
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32)
     #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ushort((::uint16_t)v))
     #define BSWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ulong((::uint32_t)v))
     #define BSWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_uint64((::uint64_t)v))
@@ -44,11 +44,11 @@ using namespace sbe::on_the_fly;
 using ::std::cout;
 using ::std::endl;
 
-#if !defined(WIN32)
+#if defined(WIN32) || defined(_WIN32)
+#define snprintf _snprintf
+#else
 const ::int32_t Field::INVALID_ID;
 const int Field::FIELD_INDEX;
-#else
-#define snprintf _snprintf
 #endif /* WIN32 */
 
 Listener::Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL),

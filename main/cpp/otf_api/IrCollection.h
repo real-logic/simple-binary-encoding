@@ -16,7 +16,7 @@
 #ifndef _IR_COLLECTION_H_
 #define _IR_COLLECTION_H_
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32)
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <io.h>
