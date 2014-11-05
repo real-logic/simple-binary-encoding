@@ -25,18 +25,111 @@
 using namespace std;
 using namespace code_generation_test;
 
-#define SERIAL_NUMBER 1234
-#define MODEL_YEAR 2013
-#define AVAILABLE (BooleanType::TRUE)
-#define CODE (Model::A)
-#define CRUISE_CONTROL (true)
-#define SPORTS_PACK (true)
-#define SUNROOF (false)
+static const sbe_uint32_t SERIAL_NUMBER = 1234;
+static const sbe_uint16_t MODEL_YEAR = 2013;
+static const BooleanType::Value AVAILABLE = BooleanType::TRUE;
+static const Model::Value CODE = Model::A;
+static const bool CRUISE_CONTROL = true;
+static const bool SPORTS_PACK = true;
+static const bool SUNROOF = false;
 
 static char VEHICLE_CODE[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
 static char MANUFACTURER_CODE[] = { '1', '2', '3' };
 static const char *MAKE = "Honda";
 static const char *MODEL = "Civic VTi";
+
+static const size_t VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
+static const size_t MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
+static const size_t MAKE_LENGTH = 5;
+static const size_t MODEL_LENGTH = 9;
+static const size_t PERFORMANCE_FIGURES_COUNT = 2;
+static const size_t FUEL_FIGURES_COUNT = 3;
+static const size_t ACCELERATION_COUNT = 3;
+
+static const sbe_uint16_t fuel1Speed = 30;
+static const sbe_float_t fuel1Mpg = 35.9f;
+static const sbe_uint16_t fuel2Speed = 55;
+static const sbe_float_t fuel2Mpg = 49.0f;
+static const sbe_uint16_t fuel3Speed = 75;
+static const sbe_float_t fuel3Mpg = 40.0f;
+
+static const sbe_uint8_t perf1Octane = 95;
+static const sbe_uint16_t perf1aMph = 30;
+static const sbe_float_t perf1aSeconds = 4.0f;
+static const sbe_uint16_t perf1bMph = 60;
+static const sbe_float_t perf1bSeconds = 7.5f;
+static const sbe_uint16_t perf1cMph = 100;
+static const sbe_float_t perf1cSeconds = 12.2f;
+
+static const sbe_uint8_t perf2Octane = 99;
+static const sbe_uint16_t perf2aMph = 30;
+static const sbe_float_t perf2aSeconds = 3.8f;
+static const sbe_uint16_t perf2bMph = 60;
+static const sbe_float_t perf2bSeconds = 7.1f;
+static const sbe_uint16_t perf2cMph = 100;
+static const sbe_float_t perf2cSeconds = 11.8f;
+
+static const sbe_uint16_t engineCapacity = 2000;
+static const sbe_uint8_t engineNumCylinders = 4;
+
+/// This enum represents the expected events that
+/// will be received during the decoding process.
+enum EventNumber {
+    EN_header = 0,
+    EN_charConst,
+    EN_serialNumber,
+    EN_modelYear,
+    EN_available,
+    EN_code,
+    EN_vehicleCode,
+    EN_extras,
+    EN_engine,
+    EN_fuelFigures1,
+    EN_fuelFigures1_speed,
+    EN_fuelFigures1_mpg,
+    EN_fuelFigures1_end,
+    EN_fuelFigures2,
+    EN_fuelFigures2_speed,
+    EN_fuelFigures2_mpg,
+    EN_fuelFigures2_end,
+    EN_fuelFigures3,
+    EN_fuelFigures3_speed,
+    EN_fuelFigures3_mpg,
+    EN_fuelFigures3_end,
+    EN_performanceFigures1,
+    EN_performanceFigures1_octaneRating,
+    EN_performanceFigures1_acceleration1,
+    EN_performanceFigures1_acceleration1_mph,
+    EN_performanceFigures1_acceleration1_seconds,
+    EN_performanceFigures1_acceleration1_end,
+    EN_performanceFigures1_acceleration2,
+    EN_performanceFigures1_acceleration2_mph,
+    EN_performanceFigures1_acceleration2_seconds,
+    EN_performanceFigures1_acceleration2_end,
+    EN_performanceFigures1_acceleration3,
+    EN_performanceFigures1_acceleration3_mph,
+    EN_performanceFigures1_acceleration3_seconds,
+    EN_performanceFigures1_acceleration3_end,
+    EN_performanceFigures1_end,
+    EN_performanceFigures2,
+    EN_performanceFigures2_octaneRating,
+    EN_performanceFigures2_acceleration1,
+    EN_performanceFigures2_acceleration1_mph,
+    EN_performanceFigures2_acceleration1_seconds,
+    EN_performanceFigures2_acceleration1_end,
+    EN_performanceFigures2_acceleration2,
+    EN_performanceFigures2_acceleration2_mph,
+    EN_performanceFigures2_acceleration2_seconds,
+    EN_performanceFigures2_acceleration2_end,
+    EN_performanceFigures2_acceleration3,
+    EN_performanceFigures2_acceleration3_mph,
+    EN_performanceFigures2_acceleration3_seconds,
+    EN_performanceFigures2_acceleration3_end,
+    EN_performanceFigures2_end,
+    EN_make,
+    EN_model,
+    EN_complete
+};
 
 class OtfFullIrTest : public testing::Test, public IrCollection, public Ir::Callback,
                       public OnNext, public OnError, public OnCompleted
@@ -75,30 +168,30 @@ public:
             .sunRoof(SUNROOF);
 
         car_.engine()
-            .capacity(2000)
-            .numCylinders((short)4)
+            .capacity(engineCapacity)
+            .numCylinders(engineNumCylinders)
             .putManufacturerCode(MANUFACTURER_CODE);
 
-        car_.fuelFiguresCount(3)
-            .next().speed(30).mpg(35.9f)
-            .next().speed(55).mpg(49.0f)
-            .next().speed(75).mpg(40.0f);
+        car_.fuelFiguresCount(FUEL_FIGURES_COUNT)
+            .next().speed(fuel1Speed).mpg(fuel1Mpg)
+            .next().speed(fuel2Speed).mpg(fuel2Mpg)
+            .next().speed(fuel3Speed).mpg(fuel3Mpg);
 
-        Car::PerformanceFigures &perfFigs = car_.performanceFiguresCount(2);
-
-        perfFigs.next()
-            .octaneRating((short)95)
-            .accelerationCount(3)
-                .next().mph(30).seconds(4.0f)
-                .next().mph(60).seconds(7.5f)
-                .next().mph(100).seconds(12.2f);
+        Car::PerformanceFigures &perfFigs = car_.performanceFiguresCount(PERFORMANCE_FIGURES_COUNT);
 
         perfFigs.next()
-            .octaneRating((short)99)
-            .accelerationCount(3)
-                .next().mph(30).seconds(3.8f)
-                .next().mph(60).seconds(7.1f)
-                .next().mph(100).seconds(11.8f);
+            .octaneRating(perf1Octane)
+            .accelerationCount(ACCELERATION_COUNT)
+                .next().mph(perf1aMph).seconds(perf1aSeconds)
+                .next().mph(perf1bMph).seconds(perf1bSeconds)
+                .next().mph(perf1cMph).seconds(perf1cSeconds);
+
+        perfFigs.next()
+            .octaneRating(perf2Octane)
+            .accelerationCount(ACCELERATION_COUNT)
+                .next().mph(perf2aMph).seconds(perf2aSeconds)
+                .next().mph(perf2bMph).seconds(perf2bSeconds)
+                .next().mph(perf2cMph).seconds(perf2cSeconds);
 
         car_.putMake(MAKE, strlen(MAKE));
         car_.putModel(MODEL, strlen(MODEL));
@@ -119,332 +212,389 @@ public:
     {
         char tmp[256];
 
-        if (eventNumber_ == 0)
+        switch(EventNumber(eventNumber_))
         {
-            EXPECT_EQ(f.isComposite(), true);
-            EXPECT_EQ(f.numEncodings(), 4);
-            EXPECT_EQ(f.primitiveType(0), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(0), Car::sbeBlockLength());
-            EXPECT_EQ(f.primitiveType(1), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(1), Car::sbeTemplateId());
-            EXPECT_EQ(f.primitiveType(2), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(2), Car::sbeSchemaId());
-            EXPECT_EQ(f.primitiveType(3), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(3), Car::sbeSchemaVersion());
-        }
-        else if (eventNumber_ == 1)
-        {
-            EXPECT_EQ(f.schemaId(), 100);
-            EXPECT_EQ(f.primitiveType(), Ir::CHAR);
-            EXPECT_EQ(f.length(), 1);
-            EXPECT_EQ(f.getUInt(), 'g');
-        }
-        else if (eventNumber_ == 2)
-        {
-            EXPECT_EQ(f.schemaId(), 1);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT32);
-            EXPECT_EQ(f.getUInt(), SERIAL_NUMBER);
-        }
-        else if (eventNumber_ == 3)
-        {
-            EXPECT_EQ(f.schemaId(), 2);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(), MODEL_YEAR);
-        }
-        else if (eventNumber_ == 4)
-        {
-            EXPECT_EQ(f.schemaId(), 3);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-            EXPECT_EQ(f.getUInt(), 1);
-        }
-        else if (eventNumber_ == 5)
-        {
-            EXPECT_EQ(f.schemaId(), 4);
-            EXPECT_EQ(f.primitiveType(), Ir::CHAR);
-            EXPECT_EQ(f.getUInt(), 'A');
-        }
-        else if (eventNumber_ == 6)
-        {
-            EXPECT_EQ(f.schemaId(), 6);
-            EXPECT_EQ(f.primitiveType(), Ir::CHAR);
-            EXPECT_EQ(f.length(), 6);
-            f.getArray(0, tmp, 0, f.length());
-            EXPECT_EQ(std::string(tmp, 6), std::string(VEHICLE_CODE, 6));
-        }
-        else if (eventNumber_ == 7)
-        {
-            EXPECT_EQ(f.isSet(), true);
-            EXPECT_EQ(f.schemaId(), 5);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-            EXPECT_EQ(f.getUInt(), 0x6);
-        }
-        else if (eventNumber_ == 8)
-        {
-            EXPECT_EQ(f.isComposite(), true);
-            EXPECT_EQ(f.schemaId(), 7);
-            EXPECT_EQ(f.numEncodings(), 5);
-            EXPECT_EQ(f.primitiveType(0), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(0), 2000);
-            EXPECT_EQ(f.primitiveType(1), Ir::UINT8);
-            EXPECT_EQ(f.getUInt(1), 4);
-            EXPECT_EQ(f.primitiveType(2), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(2), 9000);
-            EXPECT_EQ(f.primitiveType(3), Ir::CHAR);
-            EXPECT_EQ(f.length(3), 3);
-            f.getArray(3, tmp, 0, f.length(3));
-            EXPECT_EQ(std::string(tmp, 3), std::string(MANUFACTURER_CODE, 3));
-            EXPECT_EQ(f.primitiveType(4), Ir::CHAR);
-            EXPECT_EQ(f.length(4), 6);
-            f.getArray(4, tmp, 0, f.length(4));
-            EXPECT_EQ(std::string(tmp, 6), std::string("Petrol"));
-        }
-        else if (eventNumber_ == 9)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 8);
-        }
-        else if (eventNumber_ == 10)
-        {
-            EXPECT_EQ(f.schemaId(), 9);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(), 30);
-        }
-        else if (eventNumber_ == 11)
-        {
-            EXPECT_EQ(f.schemaId(), 10);
-            EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
-            EXPECT_EQ(f.getDouble(), 35.9f);
-        }
-        else if (eventNumber_ == 12)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 8);
-        }
-        else if (eventNumber_ == 13)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 8);
-        }
-        else if (eventNumber_ == 14)
-        {
-            EXPECT_EQ(f.schemaId(), 9);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(), 55);
-        }
-        else if (eventNumber_ == 15)
-        {
-            EXPECT_EQ(f.schemaId(), 10);
-            EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
-            EXPECT_EQ(f.getDouble(), 49.0f);
-        }
-        else if (eventNumber_ == 16)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 8);
-        }
-        else if (eventNumber_ == 17)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 8);
-        }
-        else if (eventNumber_ == 18)
-        {
-            EXPECT_EQ(f.schemaId(), 9);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(), 75);
-        }
-        else if (eventNumber_ == 19)
-        {
-            EXPECT_EQ(f.schemaId(), 10);
-            EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
-            EXPECT_EQ(f.getDouble(), 40.0f);
-        }
-        else if (eventNumber_ == 20)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 8);
-        }
-        else if (eventNumber_ == 21)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 11);
-        }
-        else if (eventNumber_ == 22)
-        {
-            EXPECT_EQ(f.schemaId(), 12);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-            EXPECT_EQ(f.getUInt(), 95);
-        }
-        else if (eventNumber_ == 23)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 24)
-        {
-            EXPECT_EQ(f.schemaId(), 14);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(), 30);
-        }
-        else if (eventNumber_ == 25)
-        {
-            EXPECT_EQ(f.schemaId(), 15);
-            EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
-            EXPECT_EQ(f.getDouble(), 4.0f);
-        }
-        else if (eventNumber_ == 26)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 27)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 28)
-        {
-            EXPECT_EQ(f.schemaId(), 14);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(), 60);
-        }
-        else if (eventNumber_ == 29)
-        {
-            EXPECT_EQ(f.schemaId(), 15);
-            EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
-            EXPECT_EQ(f.getDouble(), 7.5f);
-        }
-        else if (eventNumber_ == 30)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 31)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 32)
-        {
-            EXPECT_EQ(f.schemaId(), 14);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(), 100);
-        }
-        else if (eventNumber_ == 33)
-        {
-            EXPECT_EQ(f.schemaId(), 15);
-            EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
-            EXPECT_EQ(f.getDouble(), 12.2f);
-        }
-        else if (eventNumber_ == 34)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 35)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 11);
-        }
-        else if (eventNumber_ == 36)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 11);
-        }
-        else if (eventNumber_ == 37)
-        {
-            EXPECT_EQ(f.schemaId(), 12);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-            EXPECT_EQ(f.getUInt(), 99);
-        }
-        else if (eventNumber_ == 38)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 39)
-        {
-            EXPECT_EQ(f.schemaId(), 14);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(), 30);
-        }
-        else if (eventNumber_ == 40)
-        {
-            EXPECT_EQ(f.schemaId(), 15);
-            EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
-            EXPECT_EQ(f.getDouble(), 3.8f);
-        }
-        else if (eventNumber_ == 41)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 42)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 43)
-        {
-            EXPECT_EQ(f.schemaId(), 14);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(), 60);
-        }
-        else if (eventNumber_ == 44)
-        {
-            EXPECT_EQ(f.schemaId(), 15);
-            EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
-            EXPECT_EQ(f.getDouble(), 7.1f);
-        }
-        else if (eventNumber_ == 45)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 46)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 47)
-        {
-            EXPECT_EQ(f.schemaId(), 14);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(), 100);
-        }
-        else if (eventNumber_ == 48)
-        {
-            EXPECT_EQ(f.schemaId(), 15);
-            EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
-            EXPECT_EQ(f.getDouble(), 11.8f);
-        }
-        else if (eventNumber_ == 49)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 13);
-        }
-        else if (eventNumber_ == 50)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 11);
-        }
-        else if (eventNumber_ == 51)
-        {
-            EXPECT_EQ(f.schemaId(), 16);
-            EXPECT_EQ(f.length(1), 5);
-            f.getArray(1, tmp, 0, f.length(1));
-            EXPECT_EQ(std::string(tmp, 5), std::string(MAKE, 5));
-        }
-        else if (eventNumber_ == 52)
-        {
-            EXPECT_EQ(f.schemaId(), 17);
-            EXPECT_EQ(f.length(1), 9);
-            f.getArray(1, tmp, 0, f.length(1));
-            EXPECT_EQ(std::string(tmp, 9), std::string(MODEL, 9));
-        }
-        else
-        {
-            exit(1);
+            case EN_header:
+            {
+                EXPECT_EQ(f.isComposite(), true);
+                EXPECT_EQ(f.numEncodings(), 4);
+                EXPECT_EQ(f.primitiveType(0), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(0), Car::sbeBlockLength());
+                EXPECT_EQ(f.primitiveType(1), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(1), Car::sbeTemplateId());
+                EXPECT_EQ(f.primitiveType(2), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(2), Car::sbeSchemaId());
+                EXPECT_EQ(f.primitiveType(3), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(3), Car::sbeSchemaVersion());
+                break;
+            }
+            case EN_charConst:
+            {
+                EXPECT_EQ(f.schemaId(), 100);
+                EXPECT_EQ(f.primitiveType(), Ir::CHAR);
+                EXPECT_EQ(f.length(), 1);
+                EXPECT_EQ(f.getUInt(), 'g');
+                break;
+            }
+            case EN_serialNumber:
+            {
+                EXPECT_EQ(f.schemaId(), 1);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT32);
+                EXPECT_EQ(f.getUInt(), SERIAL_NUMBER);
+                break;
+            }
+            case EN_modelYear:
+            {
+                EXPECT_EQ(f.schemaId(), 2);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(), MODEL_YEAR);
+                break;
+            }
+            case EN_available:
+            {
+                EXPECT_EQ(f.schemaId(), 3);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT8);
+                EXPECT_EQ(f.getUInt(), 1);
+                break;
+            }
+            case EN_code:
+            {
+                EXPECT_EQ(f.schemaId(), 4);
+                EXPECT_EQ(f.primitiveType(), Ir::CHAR);
+                EXPECT_EQ(f.getUInt(), 'A');
+                break;
+            }
+            case EN_vehicleCode:
+            {
+                EXPECT_EQ(f.schemaId(), VEHICLE_CODE_LENGTH);
+                EXPECT_EQ(f.primitiveType(), Ir::CHAR);
+                EXPECT_EQ(f.length(), VEHICLE_CODE_LENGTH);
+                f.getArray(0, tmp, 0, f.length());
+                EXPECT_EQ(std::string(tmp, VEHICLE_CODE_LENGTH), std::string(VEHICLE_CODE, VEHICLE_CODE_LENGTH));
+                break;
+            }
+            case EN_extras:
+            {
+                EXPECT_EQ(f.isSet(), true);
+                EXPECT_EQ(f.schemaId(), 5);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT8);
+                EXPECT_EQ(f.getUInt(), 0x6);
+                break;
+            }
+            case EN_engine:
+            {
+                EXPECT_EQ(f.isComposite(), true);
+                EXPECT_EQ(f.schemaId(), 7);
+                EXPECT_EQ(f.numEncodings(), 5);
+                EXPECT_EQ(f.primitiveType(0), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(0), engineCapacity);
+                EXPECT_EQ(f.primitiveType(1), Ir::UINT8);
+                EXPECT_EQ(f.getUInt(1), 4);
+                EXPECT_EQ(f.primitiveType(2), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(2), 9000);
+                EXPECT_EQ(f.primitiveType(3), Ir::CHAR);
+                EXPECT_EQ(f.length(3), MANUFACTURER_CODE_LENGTH);
+                f.getArray(3, tmp, 0, f.length(3));
+                EXPECT_EQ(std::string(tmp, MANUFACTURER_CODE_LENGTH), MANUFACTURER_CODE);
+                EXPECT_EQ(f.primitiveType(4), Ir::CHAR);
+                EXPECT_EQ(f.length(4), 6);
+                f.getArray(4, tmp, 0, f.length(4));
+                EXPECT_EQ(std::string(tmp, 6), std::string("Petrol"));
+                break;
+            }
+            case EN_fuelFigures1:
+            {
+                EXPECT_EQ(g.event(), Group::START);
+                EXPECT_EQ(g.schemaId(), 8);
+                break;
+            }
+            case EN_fuelFigures1_speed:
+            {
+                EXPECT_EQ(f.schemaId(), 9);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(), fuel1Speed);
+                break;
+            }
+            case EN_fuelFigures1_mpg:
+            {
+                EXPECT_EQ(f.schemaId(), 10);
+                EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
+                EXPECT_EQ(f.getDouble(), fuel1Mpg);
+                break;
+            }
+            case EN_fuelFigures1_end:
+            {
+                EXPECT_EQ(g.event(), Group::END);
+                EXPECT_EQ(g.schemaId(), 8);
+                break;
+            }
+            case EN_fuelFigures2:
+            {
+                EXPECT_EQ(g.event(), Group::START);
+                EXPECT_EQ(g.schemaId(), 8);
+                break;
+            }
+            case EN_fuelFigures2_speed:
+            {
+                EXPECT_EQ(f.schemaId(), 9);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(), fuel2Speed);
+                break;
+            }
+            case EN_fuelFigures2_mpg:
+            {
+                EXPECT_EQ(f.schemaId(), 10);
+                EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
+                EXPECT_EQ(f.getDouble(), fuel2Mpg);
+                break;
+            }
+            case EN_fuelFigures2_end:
+            {
+                EXPECT_EQ(g.event(), Group::END);
+                EXPECT_EQ(g.schemaId(), 8);
+                break;
+            }
+            case EN_fuelFigures3:
+            {
+                EXPECT_EQ(g.event(), Group::START);
+                EXPECT_EQ(g.schemaId(), 8);
+                break;
+            }
+            case EN_fuelFigures3_speed:
+            {
+                EXPECT_EQ(f.schemaId(), 9);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(), fuel3Speed);
+                break;
+            }
+            case EN_fuelFigures3_mpg:
+            {
+                EXPECT_EQ(f.schemaId(), 10);
+                EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
+                EXPECT_EQ(f.getDouble(), fuel3Mpg);
+                break;
+            }
+            case EN_fuelFigures3_end:
+            {
+                EXPECT_EQ(g.event(), Group::END);
+                EXPECT_EQ(g.schemaId(), 8);
+                break;
+            }
+            case EN_performanceFigures1:
+            {
+                EXPECT_EQ(g.event(), Group::START);
+                EXPECT_EQ(g.schemaId(), 11);
+                break;
+            }
+            case EN_performanceFigures1_octaneRating:
+            {
+                EXPECT_EQ(f.schemaId(), 12);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT8);
+                EXPECT_EQ(f.getUInt(), perf1Octane);
+                break;
+            }
+            case EN_performanceFigures1_acceleration1:
+            {
+                EXPECT_EQ(g.event(), Group::START);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures1_acceleration1_mph:
+            {
+                EXPECT_EQ(f.schemaId(), 14);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(), perf1aMph);
+                break;
+            }
+            case EN_performanceFigures1_acceleration1_seconds:
+            {
+                EXPECT_EQ(f.schemaId(), 15);
+                EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
+                EXPECT_EQ(f.getDouble(), perf1aSeconds);
+                break;
+            }
+            case EN_performanceFigures1_acceleration1_end:
+            {
+                EXPECT_EQ(g.event(), Group::END);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures1_acceleration2:
+            {
+                EXPECT_EQ(g.event(), Group::START);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures1_acceleration2_mph:
+            {
+                EXPECT_EQ(f.schemaId(), 14);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(), perf1bMph);
+                break;
+            }
+            case EN_performanceFigures1_acceleration2_seconds:
+            {
+                EXPECT_EQ(f.schemaId(), 15);
+                EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
+                EXPECT_EQ(f.getDouble(), perf1bSeconds);
+                break;
+            }
+            case EN_performanceFigures1_acceleration2_end:
+            {
+                EXPECT_EQ(g.event(), Group::END);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures1_acceleration3:
+            {
+                EXPECT_EQ(g.event(), Group::START);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures1_acceleration3_mph:
+            {
+                EXPECT_EQ(f.schemaId(), 14);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(), perf1cMph);
+                break;
+            }
+            case EN_performanceFigures1_acceleration3_seconds:
+            {
+                EXPECT_EQ(f.schemaId(), 15);
+                EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
+                EXPECT_EQ(f.getDouble(), perf1cSeconds);
+                break;
+            }
+            case EN_performanceFigures1_acceleration3_end:
+            {
+                EXPECT_EQ(g.event(), Group::END);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures1_end:
+            {
+                EXPECT_EQ(g.event(), Group::END);
+                EXPECT_EQ(g.schemaId(), 11);
+                break;
+            }
+            case EN_performanceFigures2:
+            {
+                EXPECT_EQ(g.event(), Group::START);
+                EXPECT_EQ(g.schemaId(), 11);
+                break;
+            }
+            case EN_performanceFigures2_octaneRating:
+            {
+                EXPECT_EQ(f.schemaId(), 12);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT8);
+                EXPECT_EQ(f.getUInt(), perf2Octane);
+                break;
+            }
+            case EN_performanceFigures2_acceleration1:
+            {
+                EXPECT_EQ(g.event(), Group::START);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures2_acceleration1_mph:
+            {
+                EXPECT_EQ(f.schemaId(), 14);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(), perf2aMph);
+                break;
+            }
+            case EN_performanceFigures2_acceleration1_seconds:
+            {
+                EXPECT_EQ(f.schemaId(), 15);
+                EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
+                EXPECT_EQ(f.getDouble(), perf2aSeconds);
+                break;
+            }
+            case EN_performanceFigures2_acceleration1_end:
+            {
+                EXPECT_EQ(g.event(), Group::END);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures2_acceleration2:
+            {
+                EXPECT_EQ(g.event(), Group::START);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures2_acceleration2_mph:
+            {
+                EXPECT_EQ(f.schemaId(), 14);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(), perf2bMph);
+                break;
+            }
+            case EN_performanceFigures2_acceleration2_seconds:
+            {
+                EXPECT_EQ(f.schemaId(), 15);
+                EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
+                EXPECT_EQ(f.getDouble(), perf2bSeconds);
+                break;
+            }
+            case EN_performanceFigures2_acceleration2_end:
+            {
+                EXPECT_EQ(g.event(), Group::END);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures2_acceleration3:
+            {
+                EXPECT_EQ(g.event(), Group::START);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures2_acceleration3_mph:
+            {
+                EXPECT_EQ(f.schemaId(), 14);
+                EXPECT_EQ(f.primitiveType(), Ir::UINT16);
+                EXPECT_EQ(f.getUInt(), perf2cMph);
+                break;
+            }
+            case EN_performanceFigures2_acceleration3_seconds:
+            {
+                EXPECT_EQ(f.schemaId(), 15);
+                EXPECT_EQ(f.primitiveType(), Ir::FLOAT);
+                EXPECT_EQ(f.getDouble(), perf2cSeconds);
+                break;
+            }
+            case EN_performanceFigures2_acceleration3_end:
+            {
+                EXPECT_EQ(g.event(), Group::END);
+                EXPECT_EQ(g.schemaId(), 13);
+                break;
+            }
+            case EN_performanceFigures2_end:
+            {
+                EXPECT_EQ(g.event(), Group::END);
+                EXPECT_EQ(g.schemaId(), 11);
+                break;
+            }
+            case EN_make:
+            {
+                EXPECT_EQ(f.schemaId(), 16);
+                EXPECT_EQ(f.length(1), MAKE_LENGTH);
+                f.getArray(1, tmp, 0, f.length(1));
+                EXPECT_EQ(std::string(tmp, MAKE_LENGTH), MAKE);
+                break;
+            }
+            case EN_model:
+            {
+                EXPECT_EQ(f.schemaId(), 17);
+                EXPECT_EQ(f.length(1), MODEL_LENGTH);
+                f.getArray(1, tmp, 0, f.length(1));
+                EXPECT_EQ(std::string(tmp, MODEL_LENGTH), MODEL);
+                break;
+            }
+            case EN_complete:
+            {
+                std::cerr << "More events than expected!" << std::endl;
+                exit(1);
+            }
         }
     }
 
@@ -468,14 +618,14 @@ public:
 
     virtual int onError(const Error &e)
     {
-        std::cout << "Error " << e.message() << "\n";
+        std::cerr << "Error " << e.message() << "\n";
         exit(1);
         return 0;
     }
 
     virtual int onCompleted()
     {
-        EXPECT_EQ(eventNumber_, 53);
+        EXPECT_EQ(eventNumber_, EN_complete);
         return 0;
     }
 
