@@ -99,18 +99,20 @@ public class JavaGenerator implements CodeGenerator
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.applicableNamespace()));
-                out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(className, msgToken));
-
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
 
                 final List<Token> rootFields = new ArrayList<>();
                 offset = collectRootFields(messageBody, offset, rootFields);
-                out.append(generateFields(className, rootFields, BASE_INDENT));
-
                 final List<Token> groups = new ArrayList<>();
                 offset = collectGroups(messageBody, offset, groups);
+
+                generateAnnotations(className, groups, out);
+                out.append(generateClassDeclaration(className));
+                out.append(generateMessageFlyweightCode(className, msgToken));
+
+                out.append(generateFields(className, rootFields, BASE_INDENT));
+
                 final StringBuilder sb = new StringBuilder();
                 generateGroups(sb, className, groups, 0, BASE_INDENT);
                 out.append(sb);
@@ -660,6 +662,37 @@ public class JavaGenerator implements CodeGenerator
             "package %s;\n\n",
             packageName
         );
+    }
+
+    private void generateAnnotations(String className, final List<Token> tokens, Writer out) throws IOException
+    {
+        int index = 0;
+        final List<String> groupClassNames = new ArrayList<>();
+        for (int size = tokens.size(); index < size; index++)
+        {
+            if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
+            {
+                final Token groupToken = tokens.get(index);
+                final String groupName = groupToken.name();
+                groupClassNames.add(formatClassName(groupName));
+            }
+        }
+        if (groupClassNames.isEmpty())
+        {
+            return;
+        }
+        out.append("@GroupOrder({");
+        index = 0;
+        for (String name : groupClassNames)
+        {
+            out.append(className).append('.').append(name).append(".class");
+            if (++index < groupClassNames.size())
+            {
+                out.append(", ");
+            }
+        }
+
+        out.append("})\n");
     }
 
     private CharSequence generateClassDeclaration(final String className)
