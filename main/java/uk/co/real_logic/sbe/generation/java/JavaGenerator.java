@@ -107,7 +107,7 @@ public class JavaGenerator implements CodeGenerator
                 final List<Token> groups = new ArrayList<>();
                 offset = collectGroups(messageBody, offset, groups);
 
-                generateAnnotations(className, groups, out);
+                generateAnnotations(className, groups, out, 0);
                 out.append(generateClassDeclaration(className));
                 out.append(generateMessageFlyweightCode(className, msgToken));
 
@@ -165,6 +165,7 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> tokens,
         int index,
         final String indent)
+            throws IOException
     {
         for (int size = tokens.size(); index < size; index++)
         {
@@ -175,6 +176,7 @@ public class JavaGenerator implements CodeGenerator
                 final String groupClassName = formatClassName(groupName);
                 sb.append(generateGroupProperty(groupName, groupToken, indent));
 
+                generateAnnotations(formatClassName(groupName), tokens, sb, index + 1);
                 generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
 
                 final List<Token> rootFields = new ArrayList<>();
@@ -664,17 +666,28 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private void generateAnnotations(String className, final List<Token> tokens, Writer out) throws IOException
+    private void generateAnnotations(String className, final List<Token> tokens, Appendable out,
+                                     int index) throws IOException
     {
-        int index = 0;
         final List<String> groupClassNames = new ArrayList<>();
+        int level = 0;
         for (int size = tokens.size(); index < size; index++)
         {
             if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
             {
-                final Token groupToken = tokens.get(index);
-                final String groupName = groupToken.name();
-                groupClassNames.add(formatClassName(groupName));
+                if (++level == 1)
+                {
+                    final Token groupToken = tokens.get(index);
+                    final String groupName = groupToken.name();
+                    groupClassNames.add(formatClassName(groupName));
+                }
+            }
+            else if (tokens.get(index).signal() == Signal.END_GROUP)
+            {
+                if (--level < 0)
+                {
+                    break;
+                }
             }
         }
         if (groupClassNames.isEmpty())
