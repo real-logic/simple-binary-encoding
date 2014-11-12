@@ -103,7 +103,7 @@ public class MethodValuesSerializerTest
     public void test() throws InvocationTargetException, IllegalAccessException
     {
         MethodValuesSerializer serializer = new MethodValuesSerializer(
-                new MethodSelector(MethodSelector.objectMethods()));
+                new MethodSelector(MethodSelector.objectAndIteratorMethods()));
         JsonObject expected = new JsonObject();
         expected.add("publicInt", new JsonPrimitive(1));
         expected.add("publicString", new JsonPrimitive("hello"));

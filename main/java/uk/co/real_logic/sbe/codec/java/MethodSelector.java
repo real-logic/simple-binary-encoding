@@ -20,9 +20,10 @@ public class MethodSelector
     private final Set<String> ignoredMethods;
     private final Map<Class, Set<String>> sortedMethods = new HashMap<>();
 
-    public static Set<String> objectMethods()
+    public static Set<String> objectAndIteratorMethods()
     {
-        return new HashSet<>(Arrays.asList("hashCode", "clone", "toString", "getClass"));
+        return new HashSet<>(Arrays.asList("hashCode", "clone", "toString", "getClass",
+                "next", "hasNext", "remove", "iterator"));
     }
 
     public MethodSelector(Set<String> ignoredMethods)
