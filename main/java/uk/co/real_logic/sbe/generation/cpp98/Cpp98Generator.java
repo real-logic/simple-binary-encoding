@@ -841,9 +841,11 @@ public class Cpp98Generator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        final PrimitiveType primitiveType = token.encoding().primitiveType();
+        final Encoding encoding = token.encoding();
+        final PrimitiveType primitiveType = encoding.primitiveType();
         final String cpp98TypeName = cpp98TypeName(primitiveType);
-
+        final CharSequence nullValueString = generateNullValueLiteral(primitiveType, encoding);
+        
         sb.append(String.format(
             "\n" +
             indent + "    static const %1$s %2$sNullValue()\n" +
@@ -852,7 +854,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    }\n",
             cpp98TypeName,
             propertyName,
-            generateLiteral(primitiveType, token.encoding().applicableNullValue().toString())
+            nullValueString
         ));
 
         sb.append(String.format(
@@ -1430,6 +1432,40 @@ public class Cpp98Generator implements CodeGenerator
         ));
 
         return sb;
+    }
+
+    private CharSequence generateNullValueLiteral(final PrimitiveType primitiveType, final Encoding encoding)
+    {
+        // Visual C++ does not handle minimum integer values properly
+        // See: http://msdn.microsoft.com/en-us/library/4kh09110.aspx
+        // So some of the null values get special handling
+        if(null == encoding.nullValue())
+        {
+            switch (primitiveType)
+            {
+                case CHAR:
+                case FLOAT:
+                case DOUBLE:
+                    break; // no special handling
+                case INT8:
+                    return "SCHAR_MIN";
+                case INT16:
+                    return "SHRT_MIN";
+                case INT32:
+                    return "LONG_MIN";
+                case INT64:
+                    return "LLONG_MIN";
+                case UINT8:
+                    return "UCHAR_MAX";
+                case UINT16:
+                    return "USHRT_MAX";
+                case UINT32:
+                    return "ULONG_MAX";
+                case UINT64:
+                    return "ULLONG_MAX";
+            }
+        }
+        return generateLiteral(primitiveType, encoding.applicableNullValue().toString());
     }
 
     private CharSequence generateLiteral(final PrimitiveType type, final String value)
