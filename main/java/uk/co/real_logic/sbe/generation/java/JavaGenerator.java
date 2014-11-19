@@ -982,7 +982,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        CodecUtil.charsPut(buffer, this.offset + %d, src, srcOffset, length);\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
-                containingClassName,
+                formatClassName(containingClassName),
                 toUpperFirstChar(propertyName),
                 fieldLength,
                 offset
