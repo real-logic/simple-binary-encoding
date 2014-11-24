@@ -18,6 +18,8 @@
 
 #include <string.h>
 #include <stdint.h>
+#include <limits.h>
+#include <stdexcept>
 
 /*
  * Types used by C++ codec. Might have to be platform specific at some stage.
@@ -40,7 +42,7 @@ namespace sbe {
  * Define some byte ordering macros
  * These use gcc builtins. MSVC should be similar.
  */
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32)
     #define SBE_BIG_ENDIAN_ENCODE_16(v) _byteswap_ushort(v)
     #define SBE_BIG_ENDIAN_ENCODE_32(v) _byteswap_ulong(v)
     #define SBE_BIG_ENDIAN_ENCODE_64(v) _byteswap_uint64(v)

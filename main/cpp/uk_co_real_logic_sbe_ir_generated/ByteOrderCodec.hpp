@@ -40,7 +40,7 @@ public:
             case 255: return NULL_VALUE;
         }
 
-        throw "unknown value for enum ByteOrderCodec";
+        throw std::runtime_error("unknown value for enum ByteOrderCodec [E111]");
     }
 };
 }

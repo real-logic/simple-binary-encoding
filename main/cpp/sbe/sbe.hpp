@@ -18,6 +18,8 @@
 
 #include <string.h>
 #include <stdint.h>
+#include <limits.h>
+#include <stdexcept>
 
 /*
  * Types used by C++ codec. Might have to be platform specific at some stage.
@@ -39,7 +41,7 @@ namespace sbe {
 /*
  * Define some byte ordering macros
  */
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32)
     #define SBE_BIG_ENDIAN_ENCODE_16(v) _byteswap_ushort(v)
     #define SBE_BIG_ENDIAN_ENCODE_32(v) _byteswap_ulong(v)
     #define SBE_BIG_ENDIAN_ENCODE_64(v) _byteswap_uint64(v)
@@ -66,7 +68,7 @@ namespace sbe {
 
 #if defined(SBE_NO_BOUNDS_CHECK)
     #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (false)
-#elif defined(WIN32)
+#elif defined(WIN32) || defined(_WIN32)
     #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (exp)
 #else
     #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))

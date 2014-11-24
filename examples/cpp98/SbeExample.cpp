@@ -24,7 +24,7 @@
 using namespace std;
 using namespace baseline;
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32)
 #    define snprintf _snprintf
 #endif /* WIN32 */
 

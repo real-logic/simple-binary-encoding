@@ -24,16 +24,20 @@
  * builtins for GCC. MSVC has similar ones.
  */
 
-#if defined(WIN32)
+// Some GCC versions do not include __builtin_bswap16
+// The compiler optimizes the code below into a single ROL instruction so the intrinsic is not really needed
+#define BYTESWAP16(v) (((v) >> 8) | ((v) << 8))
+
+#if defined(WIN32) || defined(_WIN32)
     #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ushort((::uint16_t)v))
     #define BSWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_ulong((::uint32_t)v))
     #define BSWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : _byteswap_uint64((::uint64_t)v))
 #elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap16((::uint16_t)v))
+    #define BSWAP16(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : BYTESWAP16((::uint16_t)v))
     #define BSWAP32(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap32((::uint32_t)v))
     #define BSWAP64(b,v) ((b == Ir::SBE_LITTLE_ENDIAN) ? (v) : __builtin_bswap64((::uint64_t)v))
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-    #define BSWAP16(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap16((::uint16_t)v))
+    #define BSWAP16(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : BYTESWAP16((::uint16_t)v))
     #define BSWAP32(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap32((::uint32_t)v))
     #define BSWAP64(b,v) ((b == Ir::SBE_BIG_ENDIAN) ? (v) : __builtin_bswap64((::uint64_t)v))
 #else
@@ -44,11 +48,11 @@ using namespace sbe::on_the_fly;
 using ::std::cout;
 using ::std::endl;
 
-#if !defined(WIN32)
+#if defined(WIN32) || defined(_WIN32)
+#define snprintf _snprintf
+#else
 const ::int32_t Field::INVALID_ID;
 const int Field::FIELD_INDEX;
-#else
-#define snprintf _snprintf
 #endif /* WIN32 */
 
 Listener::Listener() : onNext_(NULL), onError_(NULL), onCompleted_(NULL),
@@ -112,14 +116,14 @@ int Listener::subscribe(OnNext *onNext,
                 {
                     char message[1024];
 
-                    ::snprintf(message, sizeof(message)-1, "no IR found for message with templateId=%ld and version=%ld", templateId_, templateVersion_);
+                    ::snprintf(message, sizeof(message)-1, "no IR found for message with templateId=%ld and version=%ld [E117]", templateId_, templateVersion_);
                     onError_->onError(Error(message));
                     result = -1;
                 }
             }
             else if (onError_ != NULL)
             {
-                onError_->onError(Error("template ID and/or version not found in header"));
+                onError_->onError(Error("template ID and/or version not found in header [E118]"));
                 result = -1;
             }
         }

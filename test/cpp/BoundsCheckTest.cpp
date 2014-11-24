@@ -248,7 +248,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForHeaderWrap)
     EXPECT_THROW(
     {
         hdrDecoder_.wrap(buffer, 0, 0, hdr_.size() - 1);
-    }, const char *);
+    }, std::runtime_error);
 
     EXPECT_NO_THROW(
     {
@@ -259,7 +259,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForHeaderWrap)
     EXPECT_THROW(
     {
         hdrDecoder_.wrap(buffer, 5, 0, hdr_.size() + 4);
-    }, const char *);
+    }, std::runtime_error);
 
     EXPECT_NO_THROW(
     {
@@ -273,7 +273,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForCarWrapForEncodes)
     EXPECT_THROW(
     {
         car_.wrapForEncode(buffer, 0, Car::sbeBlockLength() - 1);
-    }, const char *);
+    }, std::runtime_error);
 
     EXPECT_NO_THROW(
     {
@@ -284,7 +284,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForCarWrapForEncodes)
     EXPECT_THROW(
     {
         car_.wrapForEncode(buffer, 5, Car::sbeBlockLength() + 4);
-    }, const char *);
+    }, std::runtime_error);
 
     EXPECT_NO_THROW(
     {
@@ -303,7 +303,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForCarWrapForDecodes)
     EXPECT_THROW(
     {
         carDecoder_.wrapForDecode(buffer, 0, actingBlockLength, actingVersion, Car::sbeBlockLength() - 1);
-    }, const char *);
+    }, std::runtime_error);
 
     EXPECT_NO_THROW(
     {
@@ -314,7 +314,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForCarWrapForDecodes)
     EXPECT_THROW(
     {
         carDecoder_.wrapForDecode(buffer, 5, actingBlockLength, actingVersion, Car::sbeBlockLength() + 4);
-    }, const char *);
+    }, std::runtime_error);
 
     EXPECT_NO_THROW(
     {
@@ -333,7 +333,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFiguresEncode)
     EXPECT_THROW(
     {
         car_.fuelFiguresCount(2);
-    }, const char *);
+    }, std::runtime_error);
 }
 
 TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFiguresDecode)
@@ -350,7 +350,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFiguresDecode)
     EXPECT_THROW(
     {
         carDecoder_.fuelFigures();
-    }, const char *);
+    }, std::runtime_error);
 }
 
 TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFigures1stNextEncode)
@@ -363,7 +363,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFigures1stNextEn
     EXPECT_THROW(
     {
         fuelFigures.next();
-    }, const char *);
+    }, std::runtime_error);
 }
 
 TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFigures1stNextDecode)
@@ -379,7 +379,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFigures1stNextDe
     EXPECT_THROW(
     {
         fuelFigures.next();
-    }, const char *);
+    }, std::runtime_error);
 }
 
 TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFigures2ndNextEncode)
@@ -393,7 +393,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFigures2ndNextEn
     EXPECT_THROW(
     {
         fuelFigures.next();
-    }, const char *);
+    }, std::runtime_error);
 }
 
 TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFigures2ndNextDecode)
@@ -410,7 +410,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForFuelFigures2ndNextDe
     EXPECT_THROW(
     {
         fuelFigures.next();
-    }, const char *);
+    }, std::runtime_error);
 }
 
 TEST_F(BoundsCheckTest, shouldEncodeCorrectSizesAtEachStage)
@@ -430,7 +430,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingPerformanceF
     EXPECT_THROW(
     {
         encodeCarPerformanceFigures();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail in 1st inner dimensions
     encodeCarRoot(buffer, 0, 47);
@@ -438,7 +438,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingPerformanceF
     EXPECT_THROW(
     {
         encodeCarPerformanceFigures();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail in accel
     encodeCarRoot(buffer, 0, 51);
@@ -446,7 +446,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingPerformanceF
     EXPECT_THROW(
     {
         encodeCarPerformanceFigures();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail in random spot before end
     encodeCarRoot(buffer, 0, 63);
@@ -454,7 +454,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingPerformanceF
     EXPECT_THROW(
     {
         encodeCarPerformanceFigures();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail just short of end
     encodeCarRoot(buffer, 0, 88);
@@ -462,7 +462,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingPerformanceF
     EXPECT_THROW(
     {
         encodeCarPerformanceFigures();
-    }, const char *);
+    }, std::runtime_error);
 }
 
 TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingMakeAndModel)
@@ -474,7 +474,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingMakeAndModel
     EXPECT_THROW(
     {
         encodeCarMakeAndModel();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail in string
     encodeCarRoot(buffer, 0, 92);
@@ -483,7 +483,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingMakeAndModel
     EXPECT_THROW(
     {
         encodeCarMakeAndModel();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail short of string
     encodeCarRoot(buffer, 0, 95);
@@ -492,7 +492,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingMakeAndModel
     EXPECT_THROW(
     {
         encodeCarMakeAndModel();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail in string
     encodeCarRoot(buffer, 0, 104);
@@ -501,7 +501,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodingMakeAndModel
     EXPECT_THROW(
     {
         encodeCarMakeAndModel();
-    }, const char *);
+    }, std::runtime_error);
 }
 
 TEST_F(BoundsCheckTest, shouldNotExceptionWhenBufferJustRightForEntireEncode)
@@ -533,7 +533,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingPerformanceF
     EXPECT_THROW(
     {
         decodeCarPerformanceFigures();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail in 1st inner dimensions 47
     decodeCarRoot(buffer, 0, 47);
@@ -542,7 +542,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingPerformanceF
     EXPECT_THROW(
     {
         decodeCarPerformanceFigures();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail in accel 51
     decodeCarRoot(buffer, 0, 51);
@@ -551,7 +551,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingPerformanceF
     EXPECT_THROW(
     {
         decodeCarPerformanceFigures();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail in random spot before end 63
     decodeCarRoot(buffer, 0, 63);
@@ -560,7 +560,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingPerformanceF
     EXPECT_THROW(
     {
         decodeCarPerformanceFigures();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail just short of end 88
     decodeCarRoot(buffer, 0, 88);
@@ -569,7 +569,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingPerformanceF
     EXPECT_THROW(
     {
         decodeCarPerformanceFigures();
-    }, const char *);
+    }, std::runtime_error);
 }
 
 TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingMakeAndModel)
@@ -589,7 +589,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingMakeAndModel
     EXPECT_THROW(
     {
         decodeCarMakeAndModel();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail in string
     decodeCarRoot(buffer, 0, 92);
@@ -598,7 +598,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingMakeAndModel
     EXPECT_THROW(
     {
         decodeCarMakeAndModel();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail short of string
     decodeCarRoot(buffer, 0, 95);
@@ -607,7 +607,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingMakeAndModel
     EXPECT_THROW(
     {
         decodeCarMakeAndModel();
-    }, const char *);
+    }, std::runtime_error);
 
     // fail in string
     decodeCarRoot(buffer, 0, 104);
@@ -616,7 +616,7 @@ TEST_F(BoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodingMakeAndModel
     EXPECT_THROW(
     {
         decodeCarMakeAndModel();
-    }, const char *);
+    }, std::runtime_error);
 }
 
 TEST_F(BoundsCheckTest, shouldDecodeCorrectSizesAtEachStage)

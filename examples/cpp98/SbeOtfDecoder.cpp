@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#if defined(WIN32)
+#if defined(WIN32) || defined(_WIN32)
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
@@ -319,7 +319,7 @@ int main(int argc, char * const argv[])
     CarCallbacks carCbs(listener);
     char *buffer = NULL;
     int length = 0, ch, justHeader = 0;
-#if defined(WIN32)
+#if defined(WIN32)  || defined(_WIN32)
     int optind = 1;
 
     if (strcmp(argv[optind], "-?") == 0)

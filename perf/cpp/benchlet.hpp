@@ -26,7 +26,7 @@
 #   include <mach/mach_time.h>
 #elif defined(__linux__)
 #   include <time.h>
-#elif defined(WIN32)
+#elif defined(WIN32) || defined(_WIN32)
 #   include <windows.h>
 #else
 #   error "Must define Darwin or __linux__ or WIN32"
@@ -211,7 +211,7 @@ public:
     {
         return end_timestamp - start_timestamp;
     };
-#elif defined(WIN32)
+#elif defined(WIN32) || defined(_WIN32)
     static uint64_t currentTimestamp(void)
     {
         static LARGE_INTEGER freq;
