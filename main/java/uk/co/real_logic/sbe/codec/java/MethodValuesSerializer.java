@@ -109,7 +109,7 @@ public class MethodValuesSerializer
         throws InvocationTargetException, IllegalAccessException
     {
         final JsonObject jsonObject = new JsonObject();
-        for (Method method : methodSelector.select(clazz))
+        for (final Method method : methodSelector.select(clazz))
         {
             final Object result = method.invoke(object);
             if (result == object)
