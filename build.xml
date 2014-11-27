@@ -16,6 +16,7 @@
 
     <property name="dir.main.src" location="main/java"/>
     <property name="dir.main.build" location="target/main/java/classes"/>
+    <property name="dir.main.lib" location="main/lib"/>
 
     <property name="dir.test.src" location="test/java"/>
     <property name="dir.test.build" location="target/test/java/classes"/>
@@ -81,6 +82,12 @@
     <property name="ossrh.snapshots.repository.url" value="https://oss.sonatype.org/content/repositories/snapshots"/>
     <property name="ossrh.staging.repository.url" value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
     <property name="ossrh.server.id" value="ossrh"/>
+
+    <path id="build.classpath">
+        <fileset dir="${dir.main.lib}">
+            <include name="gson.jar"/>
+        </fileset>
+    </path>
 
     <path id="test.classpath">
         <pathelement path="${dir.main.build}"/>
@@ -238,6 +245,7 @@
 
     <target name="build" depends="init" description="Build the main source">
         <javac srcdir="${dir.main.src}" destdir="${dir.main.build}" includeAntRuntime="false" debug="true">
+            <classpath refid="build.classpath" />
             <compilerarg value="-Xlint:unchecked"/>
             <compilerarg value="-XDignore.symbol.file"/>
         </javac>

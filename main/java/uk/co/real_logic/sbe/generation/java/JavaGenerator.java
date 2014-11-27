@@ -99,18 +99,20 @@ public class JavaGenerator implements CodeGenerator
             try (final Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.applicableNamespace()));
-                out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(className, msgToken));
-
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
 
                 final List<Token> rootFields = new ArrayList<>();
                 offset = collectRootFields(messageBody, offset, rootFields);
-                out.append(generateFields(className, rootFields, BASE_INDENT));
-
                 final List<Token> groups = new ArrayList<>();
                 offset = collectGroups(messageBody, offset, groups);
+
+                generateAnnotations(className, groups, out, 0);
+                out.append(generateClassDeclaration(className));
+                out.append(generateMessageFlyweightCode(className, msgToken));
+
+                out.append(generateFields(className, rootFields, BASE_INDENT));
+
                 final StringBuilder sb = new StringBuilder();
                 generateGroups(sb, className, groups, 0, BASE_INDENT);
                 out.append(sb);
@@ -163,6 +165,7 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> tokens,
         int index,
         final String indent)
+            throws IOException
     {
         for (int size = tokens.size(); index < size; index++)
         {
@@ -173,6 +176,7 @@ public class JavaGenerator implements CodeGenerator
                 final String groupClassName = formatClassName(groupName);
                 sb.append(generateGroupProperty(groupName, groupToken, indent));
 
+                generateAnnotations(formatClassName(groupName), tokens, sb, index + 1);
                 generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
 
                 final List<Token> rootFields = new ArrayList<>();
@@ -660,6 +664,48 @@ public class JavaGenerator implements CodeGenerator
             "package %s;\n\n",
             packageName
         );
+    }
+
+    private void generateAnnotations(String className, final List<Token> tokens, Appendable out,
+                                     int index) throws IOException
+    {
+        final List<String> groupClassNames = new ArrayList<>();
+        int level = 0;
+        for (int size = tokens.size(); index < size; index++)
+        {
+            if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
+            {
+                if (++level == 1)
+                {
+                    final Token groupToken = tokens.get(index);
+                    final String groupName = groupToken.name();
+                    groupClassNames.add(formatClassName(groupName));
+                }
+            }
+            else if (tokens.get(index).signal() == Signal.END_GROUP)
+            {
+                if (--level < 0)
+                {
+                    break;
+                }
+            }
+        }
+        if (groupClassNames.isEmpty())
+        {
+            return;
+        }
+        out.append("@GroupOrder({");
+        index = 0;
+        for (String name : groupClassNames)
+        {
+            out.append(className).append('.').append(name).append(".class");
+            if (++index < groupClassNames.size())
+            {
+                out.append(", ");
+            }
+        }
+
+        out.append("})\n");
     }
 
     private CharSequence generateClassDeclaration(final String className)
