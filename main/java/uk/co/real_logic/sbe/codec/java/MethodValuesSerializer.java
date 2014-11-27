@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013 Real Logic Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package uk.co.real_logic.sbe.codec.java;
 
 import com.google.gson.JsonArray;
@@ -12,75 +27,76 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * Daneel Yaitskov
- */
 public class MethodValuesSerializer
 {
     private final MethodSelector methodSelector;
 
-    public MethodValuesSerializer(MethodSelector methodSelector)
+    public MethodValuesSerializer(final MethodSelector methodSelector)
     {
         this.methodSelector = methodSelector;
     }
 
-    public JsonElement serialize(Object object)
-            throws InvocationTargetException, IllegalAccessException
+    public JsonElement serialize(final Object object)
+        throws InvocationTargetException, IllegalAccessException
     {
         return serialize(object, true);
     }
 
-    JsonElement serialize(Object object, boolean visitIterable)
-            throws InvocationTargetException, IllegalAccessException
+    JsonElement serialize(final Object object, final boolean visitIterable)
+        throws InvocationTargetException, IllegalAccessException
     {
         if (object == null)
         {
             return JsonNull.INSTANCE;
         }
-        Class clazz = object.getClass();
+
+        final Class clazz = object.getClass();
         if (Number.class.isAssignableFrom(clazz))
         {
-            return new JsonPrimitive((Number) object);
+            return new JsonPrimitive((Number)object);
         }
         else if (clazz == String.class)
         {
-            return new JsonPrimitive((String) object);
+            return new JsonPrimitive((String)object);
         }
         else if (clazz == Boolean.class)
         {
-            return new JsonPrimitive((Boolean) object);
+            return new JsonPrimitive((Boolean)object);
         }
         else if (object instanceof Enum)
         {
-            return new JsonPrimitive(((Enum) object).name());
+            return new JsonPrimitive(((Enum)object).name());
         }
         else if (clazz.isArray())
         {
-            JsonArray result = new JsonArray();
-            int len = Array.getLength(object);
+            final JsonArray result = new JsonArray();
+            final int len = Array.getLength(object);
             for (int i = 0; i < len; ++i)
             {
                 result.add(serialize(Array.get(object, i)));
             }
+
             return result;
         }
         else if (visitIterable && Iterable.class.isAssignableFrom(clazz))
         {
-            Iterator iter = ((Iterable) object).iterator();
-            JsonArray result = new JsonArray();
+            final Iterator iter = ((Iterable)object).iterator();
+            final JsonArray result = new JsonArray();
             while (iter.hasNext())
             {
                 result.add(serialize(iter.next(), false));
             }
+
             return result;
         }
         else if (Map.class.isAssignableFrom(clazz))
         {
-            JsonObject result = new JsonObject();
-            for (Map.Entry<Object, Object> entry : ((Map<Object, Object>) object).entrySet())
+            final JsonObject result = new JsonObject();
+            for (final Map.Entry<?, ?> entry : ((Map<?, ?>)object).entrySet())
             {
                 result.add(entry.getKey().toString(), serialize(entry.getValue()));
             }
+
             return result;
         }
         else
@@ -89,19 +105,21 @@ public class MethodValuesSerializer
         }
     }
 
-    private JsonElement serializeObject(Object object, Class clazz)
-            throws InvocationTargetException, IllegalAccessException
+    private JsonElement serializeObject(final Object object, final Class clazz)
+        throws InvocationTargetException, IllegalAccessException
     {
-        JsonObject result = new JsonObject();
+        final JsonObject jsonObject = new JsonObject();
         for (Method method : methodSelector.select(clazz))
         {
-            Object re = method.invoke(object);
-            if (re == object)
+            final Object result = method.invoke(object);
+            if (result == object)
             {
                 continue;
             }
-            result.add(method.getName(), serialize(re));
+
+            jsonObject.add(method.getName(), serialize(result));
         }
-        return result;
+
+        return jsonObject;
     }
 }

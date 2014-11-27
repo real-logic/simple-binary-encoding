@@ -845,7 +845,7 @@ public class Cpp98Generator implements CodeGenerator
         final PrimitiveType primitiveType = encoding.primitiveType();
         final String cpp98TypeName = cpp98TypeName(primitiveType);
         final CharSequence nullValueString = generateNullValueLiteral(primitiveType, encoding);
-        
+
         sb.append(String.format(
             "\n" +
             indent + "    static const %1$s %2$sNullValue()\n" +
