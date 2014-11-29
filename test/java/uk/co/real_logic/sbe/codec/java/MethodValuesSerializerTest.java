@@ -34,7 +34,7 @@ public class MethodValuesSerializerTest
         A, B
     }
 
-    static List<Class> order = new ArrayList<>();
+    static List<Class<?>> order = new ArrayList<>();
 
     @GroupOrder({X.Y.class, X.Z.class})
     static class X

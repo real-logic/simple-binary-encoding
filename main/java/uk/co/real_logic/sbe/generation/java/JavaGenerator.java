@@ -165,7 +165,7 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> tokens,
         int index,
         final String indent)
-            throws IOException
+        throws IOException
     {
         for (int size = tokens.size(); index < size; index++)
         {
@@ -326,7 +326,6 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
-
         final String className = formatClassName(groupName);
         final String propertyName = formatPropertyName(groupName);
 
@@ -666,8 +665,8 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private void generateAnnotations(String className, final List<Token> tokens, Appendable out,
-                                     int index) throws IOException
+    private void generateAnnotations(final String className, final List<Token> tokens, final Appendable out, int index)
+        throws IOException
     {
         final List<String> groupClassNames = new ArrayList<>();
         int level = 0;
@@ -690,13 +689,15 @@ public class JavaGenerator implements CodeGenerator
                 }
             }
         }
+
         if (groupClassNames.isEmpty())
         {
             return;
         }
+
         out.append("@GroupOrder({");
         index = 0;
-        for (String name : groupClassNames)
+        for (final String name : groupClassNames)
         {
             out.append(className).append('.').append(name).append(".class");
             if (++index < groupClassNames.size())
@@ -792,8 +793,7 @@ public class JavaGenerator implements CodeGenerator
         return "";
     }
 
-    private CharSequence generatePrimitiveFieldMetaData(
-        final String propertyName, final Token token, final String indent)
+    private CharSequence generatePrimitiveFieldMetaData(final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -880,8 +880,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFieldNotPresentCondition(
-        final int sinceVersion, final Encoding encoding, final String indent)
+    private CharSequence generateFieldNotPresentCondition(final int sinceVersion, final Encoding encoding, final String indent)
     {
         if (0 == sinceVersion)
         {

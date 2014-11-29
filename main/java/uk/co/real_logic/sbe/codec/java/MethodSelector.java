@@ -63,6 +63,7 @@ public class MethodSelector
         return unsortedMethods;
     }
 
+    @SuppressWarnings("unchecked")
     private Set<String> getSortedMethods(final Class clazz, final Method[] methods)
     {
         final Set<String> sortedMethodNames = sortedMethods.get(clazz);
