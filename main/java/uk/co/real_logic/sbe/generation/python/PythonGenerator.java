@@ -26,6 +26,7 @@ import uk.co.real_logic.sbe.util.Verify;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -333,56 +334,49 @@ public class PythonGenerator implements CodeGenerator
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
                 final Token lengthToken = tokens.get(i + 2);
                 final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
-                final String lengthCpp98Type = pythonTypeName(
-                    lengthToken.encoding().primitiveType(), lengthToken.encoding().byteOrder());
+                final String lengthPythonType = pythonTypeName(lengthToken.encoding().primitiveType(), lengthToken.encoding().byteOrder());
+
+                String byteOrder = ( lengthToken.encoding().byteOrder() == ByteOrder.BIG_ENDIAN ) ? ">" : "<";
 
                 generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
 
                 generateVarDataDescriptors(
-                    sb, token, propertyName, characterEncoding, lengthToken, sizeOfLengthField, lengthCpp98Type);
-
-                /*
-                 * hmmm....
+                    sb, token, propertyName, characterEncoding, lengthToken, sizeOfLengthField, lengthPythonType);
 
                 sb.append(String.format(
                     "    def get%1$s(self):\n" +
                     "        sizeOfLengthField = %3$d\n" +
-                    "        lengthPosition = position()\n" +
-                    "        position(lengthPosition + sizeOfLengthField);\n" +
-
-                    "        dataLength = struct.unpack_from('%5$s', self.buffer_, lengthPosition())[0]\n" +
-                    "        int bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
-                    "        sbe_uint64_t pos = position();\n" +
-                    "        position(position() + (sbe_uint64_t)dataLength);\n" +
-                    "        ::memcpy(dst, buffer_ + pos, bytesToCopy);\n" +
-                    "        return bytesToCopy;\n" +
-                    "    }\n\n",
+                    "        lengthPosition = self.getPosition()\n" +
+                    "        dataLength = struct.unpack_from('%5$s', self.buffer_, lengthPosition[0])[0]\n" +
+                    "        self.setPosition(lengthPosition[0] + sizeOfLengthField)\n" +
+                    "        pos = self.getPosition()\n" +
+                    "        fmt = '" + byteOrder + "'+str(dataLength)+'c'\n" +
+                    "        data = struct.unpack_from(fmt, self.buffer_, lengthPosition[0])\n" +
+                    "        self.setPosition(pos[0] + dataLength)\n" +
+                    "        return data\n\n",
                     propertyName,
                     generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
                     sizeOfLengthField,
                     formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
-                    lengthCpp98Type
+                    lengthPythonType
                 ));
 
-                /*
                 sb.append(String.format(
-                    "    int set%1$s(const char *src, const int length)\n" +
-                    "    {\n" +
-                    "        sbe_uint64_t sizeOfLengthField = %2$d;\n" +
-                    "        sbe_uint64_t lengthPosition = position();\n" +
-                    "        *((%3$s *)(buffer_ + lengthPosition)) = %4$s((%3$s)length);\n" +
-                    "        position(lengthPosition + sizeOfLengthField);\n" +
-                    "        sbe_uint64_t pos = position();\n" +
-                    "        position(position() + (sbe_uint64_t)length);\n" +
-                    "        ::memcpy(buffer_ + pos, src, length);\n" +
-                    "        return length;\n" +
-                    "    }\n",
+                    "    def set%1$s(self, buffer):\n" +
+                    "        sizeOfLengthField = %2$d\n" +
+                    "        lengthPosition = self.getPosition()\n" +
+                    "        struct.pack_into('%3$s', self.buffer_, lengthPosition[0], len(buffer))\n" +
+                    "        self.setPosition(lengthPosition[0] + sizeOfLengthField)\n" +
+                    "        pos = self.getPosition()\n" +
+                    "        fmt = '" + byteOrder + "c'\n" +
+                    "        for i in range(0,len(buffer)):\n" +
+                    "           struct.pack_into(fmt, self.buffer_, lengthPosition[0]+i, buffer[i])\n" +
+                    "        self.setPosition(pos[0] + len(buffer))\n\n",
                     propertyName,
                     sizeOfLengthField,
-                    lengthCpp98Type,
+                    lengthPythonType,
                     formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType())
                 ));
-                */
             }
         }
 
@@ -949,8 +943,8 @@ public class PythonGenerator implements CodeGenerator
             "        self.buffer_ = buffer\n" +
             "        self.offset_ = offset\n" +
             "        self.bufferLength_ = bufferLength\n" +
-            "        self.actingBlockLength_ = sbeBlockLength()\n" +
-            "        self.actingVersion_ = sbeSchemaVersion()\n" +
+            "        self.actingBlockLength_ = self.sbeBlockLength()\n" +
+            "        self.actingVersion_ = self.sbeSchemaVersion()\n" +
             "        self.setPosition(offset + self.actingBlockLength_)\n" +
             "        return self\n\n" +
 
