@@ -334,9 +334,10 @@ public class PythonGenerator implements CodeGenerator
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
                 final Token lengthToken = tokens.get(i + 2);
                 final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
-                final String lengthPythonType = pythonTypeName(lengthToken.encoding().primitiveType(), lengthToken.encoding().byteOrder());
+                final String lengthPythonType = pythonTypeName(
+                    lengthToken.encoding().primitiveType(), lengthToken.encoding().byteOrder());
 
-                String byteOrder = ( lengthToken.encoding().byteOrder() == ByteOrder.BIG_ENDIAN ) ? ">" : "<";
+                final String byteOrder = lengthToken.encoding().byteOrder() == ByteOrder.BIG_ENDIAN ? ">" : "<";
 
                 generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
 
@@ -516,7 +517,7 @@ public class PythonGenerator implements CodeGenerator
                     "\n" +
                     "    def get%1$s(self):\n" +
                     "        return True if struct.unpack_from(" +
-                        "'%4$s', self.buffer_, self.offset_)[0] & (0x1L << %5$s) > 0 else False\n\n",
+                    "'%4$s', self.buffer_, self.offset_)[0] & (0x1L << %5$s) > 0 else False\n\n",
                     toUpperFirstChar(choiceName),
                     generateChoiceNotPresentCondition(token.version(), BASE_INDENT),
                     byteOrderStr,
@@ -855,6 +856,7 @@ public class PythonGenerator implements CodeGenerator
         {
             values.append(b).append(", ");
         }
+
         if (values.length() > 0)
         {
             values.setLength(values.length() - 2);
@@ -1007,10 +1009,8 @@ public class PythonGenerator implements CodeGenerator
                     indent + "    @staticmethod\n" +
                     indent + "    def %1$sSinceVersion():\n" +
                     indent + "         return %2$d\n\n" +
-
                     indent + "    def %1$sInActingVersion(self):\n" +
                     indent + "        return self.actingVersion_ >= %2$d\n",
-
                     propertyName,
                     Long.valueOf(signalToken.version())
                 ));
