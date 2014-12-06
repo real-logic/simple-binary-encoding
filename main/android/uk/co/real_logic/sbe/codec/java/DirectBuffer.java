@@ -19,7 +19,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Locale;
 
-import android.os.MemoryFile;
 import libcore.io.Memory;
 
 /**
@@ -37,9 +36,6 @@ public final class DirectBuffer
     private int capacity;
 
     private ByteBuffer byteBuffer;
-    //we keep this reference to avoid being cleaned by GC
-    @SuppressWarnings("unused")
-    private MemoryFile memoryFile;
 
     /**
      * Attach a view to a byte[] for providing direct access.
@@ -76,16 +72,6 @@ public final class DirectBuffer
     }
 
     /**
-     * Attach a view to a {@link MemoryFile} for providing direct access.
-     *
-     * @param memoryFile to which the view is attached.
-     */
-    public DirectBuffer(final MemoryFile memoryFile)
-    {
-        wrap(memoryFile);
-    }
-
-    /**
      * Attach a view to a byte[] for providing direct access.
      *
      * @param buffer to which the view is attached.
@@ -97,7 +83,6 @@ public final class DirectBuffer
         capacity = buffer.length;
         byteArray = buffer;
         byteBuffer = null;
-        memoryFile = null;
     }
 
     /**
@@ -125,7 +110,6 @@ public final class DirectBuffer
             offset = 0;
             effectiveDirectAddress = BitUtil.getEffectiveDirectAddress(buffer);
         }
-        memoryFile = null;
         capacity = buffer.capacity();
     }
 
@@ -145,18 +129,6 @@ public final class DirectBuffer
         //Memory.memmove needs either a bytebuffer or a bytearray
         //it could only work with memory addresses, but it doesn't
         byteBuffer = BitUtil.newDirectByteBuffer(effectiveDirectAddress, this.capacity);
-        memoryFile = null;
-    }
-
-    /**
-     * Attach a view to a {@link MemoryFile} for providing direct access.
-     *
-     * @param memoryFile to which the view is attached.
-     */
-    public void wrap(final MemoryFile memoryFile)
-    {
-        wrap(BitUtil.getMemoryFileAddress(memoryFile), memoryFile.length());
-        this.memoryFile = memoryFile;
     }
 
     /**

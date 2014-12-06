@@ -25,8 +25,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
-import android.os.MemoryFile;
-
 /**
  * Miscellaneous useful functions for dealing with low level bits and bytes.
  */
@@ -53,8 +51,6 @@ final class BitUtil
     private static final MemoryAccess MEMORY_ACCESS;
     private static final boolean USE_LONG_ADDRESS;
 
-    private static final Field MEMORYFILE_ADDRESS_FIELD;
-    private static final boolean USE_LONG_MEMORYFILE_ADDRESS;
     private static final Constructor<?> DIRECT_BYTE_BUFFER_CONSTRUCTOR;
 
     static
@@ -65,9 +61,6 @@ final class BitUtil
 
             USE_LONG_ADDRESS = EFFECTIVE_DIRECT_ADDRESS_FIELD.getType() == long.class;
             MEMORY_ACCESS = USE_LONG_ADDRESS ? new MemoryAccessLongAddress() : new MemoryAccessIntAddress();
-
-            MEMORYFILE_ADDRESS_FIELD = getField(MemoryFile.class, "mAddress");
-            USE_LONG_MEMORYFILE_ADDRESS = MEMORYFILE_ADDRESS_FIELD.getType() == long.class;
 
             final PrivilegedExceptionAction<Constructor<?>> action = new PrivilegedExceptionAction<Constructor<?>>()
             {
@@ -114,29 +107,6 @@ final class BitUtil
         {
             return USE_LONG_ADDRESS ? EFFECTIVE_DIRECT_ADDRESS_FIELD.getLong(buffer)
                     : EFFECTIVE_DIRECT_ADDRESS_FIELD.getInt(buffer);
-        }
-        catch (final IllegalArgumentException ignore)
-        {
-            return 0;
-        }
-        catch (final IllegalAccessException ignore)
-        {
-            return 0;
-        }
-    }
-
-    /**
-     * Returns the memory address of a {@link MemoryFile}
-     *
-     * @param memoryFile the {@link MemoryFile}
-     * @return the memory address of the {@link MemoryFile}
-     */
-    static long getMemoryFileAddress(final MemoryFile memoryFile)
-    {
-        try
-        {
-            return USE_LONG_MEMORYFILE_ADDRESS ? MEMORYFILE_ADDRESS_FIELD
-                    .getLong(memoryFile) : MEMORYFILE_ADDRESS_FIELD.getInt(memoryFile);
         }
         catch (final IllegalArgumentException ignore)
         {

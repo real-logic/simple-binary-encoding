@@ -16,7 +16,6 @@
 
     <property name="dir.main.src" location="main/java"/>
     <property name="dir.main.build" location="target/main/java/classes"/>
-    <property name="dir.main.lib" location="main/lib"/>
 
     <property name="dir.test.src" location="test/java"/>
     <property name="dir.test.build" location="target/test/java/classes"/>
@@ -82,12 +81,6 @@
     <property name="ossrh.snapshots.repository.url" value="https://oss.sonatype.org/content/repositories/snapshots"/>
     <property name="ossrh.staging.repository.url" value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
     <property name="ossrh.server.id" value="ossrh"/>
-
-    <path id="build.classpath">
-        <fileset dir="${dir.main.lib}">
-            <include name="gson.jar"/>
-        </fileset>
-    </path>
 
     <path id="test.classpath">
         <pathelement path="${dir.main.build}"/>
@@ -245,7 +238,6 @@
 
     <target name="build" depends="init" description="Build the main source">
         <javac srcdir="${dir.main.src}" destdir="${dir.main.build}" includeAntRuntime="false" debug="true">
-            <classpath refid="build.classpath" />
             <compilerarg value="-Xlint:unchecked"/>
             <compilerarg value="-XDignore.symbol.file"/>
         </javac>
@@ -388,12 +380,17 @@
         <attribute name="outputproperty" default=""/>
         <attribute name="resultproperty" default=""/>
         <attribute name="failonerror" default="true"/>
+        <attribute name="silent" default="false"/>
         <element name="args" implicit="yes" />
         <sequential>
+            <local name="shouldLog"/>
+            <condition property="shouldLog" value="true">
+                <isfalse value="@{silent}"/>
+            </condition>
             <echo taskname="adb" message="Running @{command}: @{description}"/>
             <exec taskname="adb" executable="${adb.exe}" failonerror="@{failonerror}"
                 resultproperty="@{resultproperty}">
-                <redirector outputproperty="@{outputproperty}" alwayslog="true"/>
+                <redirector outputproperty="@{outputproperty}" alwayslog="${shouldLog}"/>
                 <arg value="@{command}"/>
                 <args/>
             </exec>
@@ -435,6 +432,7 @@
             <dex src="${dir.test.lib}/android/dexmaker-1.1.jar" destfile="${dir.test.android.dexedLibs}/dexmaker-1.1-dexed.jar"/>
             <dex src="${dir.test.lib}/android/dexmaker-mockito-1.1.jar" destfile="${dir.test.android.dexedLibs}/dexmaker-mockito-1.1-dexed.jar"/>
             <dex src="${dir.test.lib}/objenesis-2.1.jar" destfile="${dir.test.android.dexedLibs}/objenesis-2.1-dexed.jar"/>
+            <dex src="${dir.test.lib}/gson-2.3.1.jar" destfile="${dir.test.android.dexedLibs}/gson-2.3.1-dexed.jar"/>
             <dex src="${dir.test.android.build}" destfile="${dir.test.android.dexedLibs}/sbe-test-dexed.jar"/>
             <dex src="${dir.main.android.build}" destfile="${dir.test.android.dexedLibs}/sbe-main-dexed.jar"/>
             <dex src="${dir.test.android.dexedLibs}" destfile="${dir.test.android.testpackage}/classes.dex"/>
@@ -488,8 +486,10 @@
             <property name="test-results"
                 value="/data/data/uk.co.real_logic.sbe.android.test/files/test-results.xml"
                 unless:true="${FILE_ON_EXTERNAL_STORAGE}"/>
-            <adb command="shell">
-                <arg line="run-as ${project.app.package} chmod 644 ${test-results}"/>
+            <!-- ignoring the output, this migth fail on non-rooted devices -->
+            <!-- but if removed, we won't be able to get the file for rooted devices :) -->
+            <adb command="shell" description="chmod 644 ${test-results}">
+                <arg line="run-as ${project.app.package} chmod 644 ${test-results} >/dev/null 2>&amp;1 &amp;&amp; echo true (device might be rooted) || echo failed (device is not rooted)"/>
             </adb>
             <adb command="pull" description="Pulling the test results from: ${test-results}">
                 <arg value="${test-results}"/>
