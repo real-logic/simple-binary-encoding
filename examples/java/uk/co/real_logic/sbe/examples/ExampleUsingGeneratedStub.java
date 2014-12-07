@@ -15,7 +15,13 @@
  */
 package uk.co.real_logic.sbe.examples;
 
-import baseline.*;
+import baseline.Car;
+import baseline.Engine;
+import baseline.BooleanType;
+import baseline.Model;
+import baseline.OptionalExtras;
+import baseline.MetaAttribute;
+import baseline.MessageHeader;
 import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 
 import java.io.FileOutputStream;

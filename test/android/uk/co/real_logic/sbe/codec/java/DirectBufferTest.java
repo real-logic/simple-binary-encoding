@@ -23,7 +23,6 @@ import org.junit.experimental.theories.Theory;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import android.os.MemoryFile;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Log;
 
@@ -83,14 +82,10 @@ public class DirectBufferTest
     private static ByteBuffer offHeapDummyBuffer = ByteBuffer.allocateDirect(BUFFER_CAPACITY);
     private static long memoryBlockAddress = BitUtil.getEffectiveDirectAddress(offHeapDummyBuffer);
 
-     @DataPoint
-     public static final DirectBuffer OFF_HEAP_BUFFER = new DirectBuffer(memoryBlockAddress, BUFFER_CAPACITY);
+    @DataPoint
+    public static final DirectBuffer OFF_HEAP_BUFFER = new DirectBuffer(memoryBlockAddress, BUFFER_CAPACITY);
 
-     @DataPoint //not valid for jdk
-     public static final DirectBuffer MEMORY_FILE_BUFFER =
-         new DirectBuffer(createMemoryFile());
-
-     @Theory
+    @Theory
     public void shouldThrowExceptionForLimitAboveCapacity(final DirectBuffer buffer)
     {
         exceptionRule.expect(IndexOutOfBoundsException.class);
@@ -526,33 +521,8 @@ public class DirectBufferTest
         assertThat(Integer.valueOf(result), is(Integer.valueOf(15)));
     }
 
-    @Theory
-    public void shouldTestHelloMemoryFile() throws IOException
-    {
-        final byte[] testBytes = "Hello World!".getBytes();
-        MEMORY_FILE_BUFFER.putBytes(10, testBytes, 6, 6);
-        byte[] result = new byte[6];
-        memoryFile.readBytes(result, 10, 0, 6);
-        String s = new String(result);
-        assertThat(s, is("World!"));
-    }
-
     private static RandomAccessFile memoryMappedFile;
     private static MappedByteBuffer buffer;
-    private static MemoryFile memoryFile;
-
-    private static MemoryFile createMemoryFile()
-    {
-        try
-        {
-            memoryFile = new MemoryFile("gigica", BUFFER_CAPACITY);
-        }
-        catch (IOException e)
-        {
-            memoryFile = null;
-        }
-        return memoryFile;
-    }
 
     private static ByteBuffer createMemoryMappedBuffer()
     {
@@ -583,7 +553,6 @@ public class DirectBufferTest
             cleanMethod.invoke(buffer);
 
             memoryMappedFile.close();
-            memoryFile.close();
         }
         catch (Exception e)
         {
