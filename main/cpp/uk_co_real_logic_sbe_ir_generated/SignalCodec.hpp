@@ -70,7 +70,7 @@ public:
             case 255: return NULL_VALUE;
         }
 
-        throw std::runtime_error("unknown value for enum SignalCodec [E115]");
+        throw std::runtime_error("unknown value for enum SignalCodec [E103]");
     }
 };
 }

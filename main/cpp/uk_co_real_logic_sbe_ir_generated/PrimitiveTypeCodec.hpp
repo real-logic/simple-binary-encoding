@@ -60,7 +60,7 @@ public:
             case 255: return NULL_VALUE;
         }
 
-        throw std::runtime_error("unknown value for enum PrimitiveTypeCodec [E114]");
+        throw std::runtime_error("unknown value for enum PrimitiveTypeCodec [E103]");
     }
 };
 }

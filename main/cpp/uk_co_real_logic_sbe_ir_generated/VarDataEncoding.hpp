@@ -32,7 +32,7 @@ public:
     {
         if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - -1)), 0))
         {
-            throw std::runtime_error("buffer too short for flyweight [E116]");
+            throw std::runtime_error("buffer too short for flyweight [E107]");
         }
         buffer_ = buffer;
         offset_ = offset;
@@ -48,7 +48,7 @@ public:
 
     static const sbe_uint8_t lengthNullValue()
     {
-        return (sbe_uint8_t)255;
+        return UCHAR_MAX;
     }
 
     static const sbe_uint8_t lengthMinValue()
@@ -74,7 +74,7 @@ public:
 
     static const sbe_uint8_t varDataNullValue()
     {
-        return (sbe_uint8_t)255;
+        return UCHAR_MAX;
     }
 
     static const sbe_uint8_t varDataMinValue()
