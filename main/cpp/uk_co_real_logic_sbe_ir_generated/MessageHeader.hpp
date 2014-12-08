@@ -32,7 +32,7 @@ public:
     {
         if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - 8)), 0))
         {
-            throw std::runtime_error("buffer too short for flyweight [E112]");
+            throw std::runtime_error("buffer too short for flyweight [E107]");
         }
         buffer_ = buffer;
         offset_ = offset;
@@ -48,7 +48,7 @@ public:
 
     static const sbe_uint16_t blockLengthNullValue()
     {
-        return (sbe_uint16_t)65535;
+        return USHRT_MAX;
     }
 
     static const sbe_uint16_t blockLengthMinValue()
@@ -74,7 +74,7 @@ public:
 
     static const sbe_uint16_t templateIdNullValue()
     {
-        return (sbe_uint16_t)65535;
+        return USHRT_MAX;
     }
 
     static const sbe_uint16_t templateIdMinValue()
@@ -100,7 +100,7 @@ public:
 
     static const sbe_uint16_t schemaIdNullValue()
     {
-        return (sbe_uint16_t)65535;
+        return USHRT_MAX;
     }
 
     static const sbe_uint16_t schemaIdMinValue()
@@ -126,7 +126,7 @@ public:
 
     static const sbe_uint16_t versionNullValue()
     {
-        return (sbe_uint16_t)65535;
+        return USHRT_MAX;
     }
 
     static const sbe_uint16_t versionMinValue()

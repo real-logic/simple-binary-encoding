@@ -16,11 +16,11 @@
 
 #include <sbe/sbe.hpp>
 
-#include <uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp>
 #include <uk_co_real_logic_sbe_ir_generated/ByteOrderCodec.hpp>
+#include <uk_co_real_logic_sbe_ir_generated/SignalCodec.hpp>
 #include <uk_co_real_logic_sbe_ir_generated/PresenceCodec.hpp>
 #include <uk_co_real_logic_sbe_ir_generated/PrimitiveTypeCodec.hpp>
-#include <uk_co_real_logic_sbe_ir_generated/SignalCodec.hpp>
+#include <uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp>
 
 using namespace sbe;
 
@@ -107,7 +107,7 @@ public:
     {
         if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), 0))
         {
-            throw std::runtime_error("buffer too short [E102]");
+            throw std::runtime_error("buffer too short [E100]");
         }
         position_ = position;
     }
@@ -157,17 +157,17 @@ public:
 
     static const sbe_int32_t tokenOffsetNullValue()
     {
-        return  INT_MIN; // -2147483648;
+        return LONG_MIN;
     }
 
     static const sbe_int32_t tokenOffsetMinValue()
     {
-        return  INT_MIN + 1; // -2147483647;
+        return -2147483647;
     }
 
     static const sbe_int32_t tokenOffsetMaxValue()
     {
-        return INT_MAX; // 2147483647;
+        return 2147483647;
     }
 
     sbe_int32_t tokenOffset(void) const
@@ -211,17 +211,17 @@ public:
 
     static const sbe_int32_t tokenSizeNullValue()
     {
-        return  INT_MIN;// -2147483648;
+        return LONG_MIN;
     }
 
     static const sbe_int32_t tokenSizeMinValue()
     {
-        return  INT_MIN + 1; // -2147483647;
+        return -2147483647;
     }
 
     static const sbe_int32_t tokenSizeMaxValue()
     {
-        return INT_MAX; // 2147483647;
+        return 2147483647;
     }
 
     sbe_int32_t tokenSize(void) const
@@ -265,17 +265,17 @@ public:
 
     static const sbe_int32_t fieldIdNullValue()
     {
-        return  INT_MIN; // -2147483648;
+        return LONG_MIN;
     }
 
     static const sbe_int32_t fieldIdMinValue()
     {
-        return  INT_MIN + 1; // -2147483647;
+        return -2147483647;
     }
 
     static const sbe_int32_t fieldIdMaxValue()
     {
-        return INT_MAX; // 2147483647;
+        return 2147483647;
     }
 
     sbe_int32_t fieldId(void) const
@@ -319,17 +319,17 @@ public:
 
     static const sbe_int32_t tokenVersionNullValue()
     {
-        return  INT_MIN; // -2147483648;
+        return LONG_MIN;
     }
 
     static const sbe_int32_t tokenVersionMinValue()
     {
-        return  INT_MIN + 1; // -2147483647;
+        return -2147483647;
     }
 
     static const sbe_int32_t tokenVersionMaxValue()
     {
-        return INT_MAX; // 2147483647;
+        return 2147483647;
     }
 
     sbe_int32_t tokenVersion(void) const
