@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
-                   package="baseline"
+                   package="composite.offsets.test"
                    id="15"
                    version="0"
                    semanticVersion="5.2"
