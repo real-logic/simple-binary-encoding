@@ -617,7 +617,7 @@
     </path>
 
     <macrodef name="sbetool">
-        <attribute name="outputdir"/>
+        <attribute name="outputdir" default=""/>
         <attribute name="targetlanguage" default=""/>
         <attribute name="targetnamespace" default=""/>
         <attribute name="generatestubs" default=""/>
@@ -642,7 +642,8 @@
     <target name="generate:java:sbeir-stubs"
             depends="dist"
             description="Generate serialized IR stubs for Java">
-        <sbetool outputdir="${dir.main.src}" targetlanguage="Java">
+        <sbetool outputdir="${dir.main.src}" targetlanguage="Java"
+            validationxsd="main/resources/fpl/SimpleBinary1-0.xsd">
             <arg value="${dir.main.resources}/sbe-ir.xml"/>
         </sbetool>
     </target>
@@ -650,7 +651,8 @@
     <target name="generate:cpp98:sbeir-stubs"
             depends="dist"
             description="Generate serialized IR stubs for C++98">
-        <sbetool outputdir="${dir.main.cpp.src}" targetlanguage="cpp98">
+        <sbetool outputdir="${dir.main.cpp.src}" targetlanguage="cpp98"
+            validationxsd="main/resources/fpl/SimpleBinary1-0.xsd">
             <arg value="${dir.main.resources}/sbe-ir.xml"/>
         </sbetool>
     </target>
@@ -659,7 +661,8 @@
             depends="dist"
             description="Generate serialized IR stubs for C#">
         <sbetool outputdir="${dir.main.csharp.src}" targetlanguage="csharp"
-            targetnamespace="Adaptive.SimpleBinaryEncoding.Ir.Generated">
+            targetnamespace="Adaptive.SimpleBinaryEncoding.Ir.Generated"
+            validationxsd="main/resources/fpl/SimpleBinary1-0.xsd">
             <arg value="${dir.main.resources}/sbe-ir.xml"/>
         </sbetool>
     </target>
@@ -718,7 +721,8 @@
             depends="dist"
             description="Generate and run C++ generated code example">
         <mkdir dir="${dir.gen.cpp98}"/>
-        <sbetool outputdir="${dir.gen.cpp98}" targetlanguage="cpp98">
+        <sbetool outputdir="${dir.gen.cpp98}" targetlanguage="cpp98"
+            validationxsd="main/resources/fpl/SimpleBinary1-0.xsd">
             <arg value="${dir.examples.resources}/example-schema.xml"/>
         </sbetool>
         <cc outtype="executable"
@@ -771,7 +775,8 @@
                 <fileset dir="${dir.main.cpp.build}" includes="*.o*"/>
                 <fileset dir="${dir.examples.cpp98.src}" includes="SbeOtfDecoder.cpp"/>
             </cc>
-            <sbetool outputdir="${dir.gen.cpp98}" generatestubs="false" generateir="true">
+            <sbetool outputdir="${dir.gen.cpp98}" generatestubs="false" generateir="true"
+                validationxsd="main/resources/fpl/SimpleBinary1-0.xsd">
                 <arg value="${dir.examples.resources}/example-schema.xml"/>
             </sbetool>
             <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub" failonerror="true" fork="true">
