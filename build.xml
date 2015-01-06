@@ -863,7 +863,8 @@
     <target name="cpp:test:codegen" depends="dist">
         <sequential>
             <mkdir dir="${dir.gen.cpp98}"/>
-            <sbetool outputdir="${dir.gen.cpp98}" targetlanguage="cpp98" generateir="true">
+            <sbetool outputdir="${dir.gen.cpp98}" targetlanguage="cpp98" generateir="true"
+                validationxsd="main/resources/fpl/SimpleBinary1-0.xsd">
                 <arg value="${dir.test.resources}/code-generation-schema-cpp.xml"/>
                 <arg value="${dir.test.resources}/composite-offsets-schema.xml"/>
                 <arg value="${dir.test.resources}/message-block-length-test.xml"/>

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<messageSchema package="message.block.length.test"
-               id="187"
-               semanticVersion="5.2"
-               description="Unit Test"
-               byteOrder="littleEndian">
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+                   package="baseline"
+                   id="187"
+                   version="0"
+                   semanticVersion="5.2"
+                   description="Unit Test"
+                   byteOrder="littleEndian">
     <types>
         <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
@@ -26,12 +28,12 @@
             <choice name="choice7">7</choice>
         </set>
     </types>
-    <message name="msgName" id="10" blockLength="11" semanticType="M">
+    <sbe:message name="msgName" id="10" blockLength="11" semanticType="M">
         <field name="field1" id="11" type="uint64" offset="0" semanticType="UTCTimestamp"/>
         <field name="field2" id="12" type="event" offset="8" semanticType="MultipleCharValue"/>
         <group name="grName" id="20" dimensionType="groupSizeEncoding">
             <field name="grField1" id="21" type="uint64" semanticType="int"/>
             <field name="grField2" id="22" type="int64" semanticType="int"/>
         </group>
-    </message>
-</messageSchema>
+    </sbe:message>
+</sbe:messageSchema>
