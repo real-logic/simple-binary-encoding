@@ -18,4 +18,6 @@ out
 build-local.properties
 deps
 /bin
+build
+.gradle
 

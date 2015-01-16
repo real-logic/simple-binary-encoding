@@ -1003,7 +1003,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        if (dstOffset < 0 || dstOffset > (dst.length - length))\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
-                indent + "                \"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
+                indent +               "\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
                 "%s" +
                 indent + "        CodecUtil.charsGet(buffer, this.offset + %d, dst, dstOffset, length);\n" +
@@ -1022,7 +1022,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        if (srcOffset < 0 || srcOffset > (src.length - length))\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
-                indent + "                \"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
+                indent +               "\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
                 indent + "        }\n\n" +
                 indent + "        CodecUtil.charsPut(buffer, this.offset + %d, src, srcOffset, length);\n" +
                 indent + "        return this;\n" +
@@ -1076,8 +1076,8 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    private static final byte[] %sValue = {%s};\n",
-            propertyName,
+            indent + "    private static final byte[] %s_VALUE = {%s};\n",
+            propertyName.toUpperCase(),
             values
         ));
 
@@ -1094,23 +1094,23 @@ public class JavaGenerator implements CodeGenerator
         sb.append(String.format(
             indent + "    public %s %s(final int index)\n" +
             indent + "    {\n" +
-            indent + "        return %sValue[index];\n" +
+            indent + "        return %s_VALUE[index];\n" +
             indent + "    }\n\n",
             javaTypeName,
             propertyName,
-            propertyName
+            propertyName.toUpperCase()
         ));
 
         sb.append(String.format(
             indent + "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
             indent + "    {\n" +
             indent + "        final int bytesCopied = Math.min(length, %d);\n" +
-            indent + "        System.arraycopy(%sValue, 0, dst, offset, bytesCopied);\n" +
+            indent + "        System.arraycopy(%s_VALUE, 0, dst, offset, bytesCopied);\n" +
             indent + "        return bytesCopied;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
             Integer.valueOf(constantValue.length),
-            propertyName
+            propertyName.toUpperCase()
         ));
 
         return sb;

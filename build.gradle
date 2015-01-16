@@ -1,0 +1,215 @@
+/*
+ * Copyright 2015 Real Logic Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'checkstyle'
+apply plugin: 'eclipse'
+
+defaultTasks 'clean', 'build', 'install'
+
+group = 'uk.co.real-logic'
+version = '1.0.4-RC2-SNAPSHOT'
+
+ext {
+    if (!project.hasProperty('ossrhUsername'))
+        ossrhUsername = ''
+
+    if (!project.hasProperty('ossrhPassword'))
+        ossrhPassword = ''
+}
+
+repositories {
+    mavenCentral()
+}
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+def generatedDir = "${project.buildDir}/generated"
+
+sourceSets {
+    main {
+        java {
+            srcDir 'main/java'
+        }
+        resources {
+            srcDir 'main/resources'
+        }
+    }
+
+    test {
+        java {
+            srcDir 'test/java'
+        }
+        resources {
+            srcDir 'test/resources'
+        }
+    }
+
+    generated.java.srcDir generatedDir
+
+    examples.java.srcDir 'examples/java'
+}
+
+dependencies {
+    testCompile 'org.hamcrest:hamcrest-all:1.3',
+            'junit:junit:4.11',
+            'org.mockito:mockito-all:1.9.5',
+            'com.google.code.gson:gson:2.3.1'
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+tasks.withType(JavaCompile) {
+    // Suppress warnings about using Unsafe and sun.misc
+    options.compilerArgs << '-XDignore.symbol.file' << '-Xlint:unchecked'
+    options.debug = true
+    options.fork = true
+    options.forkOptions.executable = 'javac'
+    options.warnings = false
+}
+
+compileGeneratedJava.dependsOn 'generateExampleCodecs'
+compileExamplesJava.dependsOn 'compileGeneratedJava'
+compileGeneratedJava.classpath += sourceSets.main.runtimeClasspath
+compileExamplesJava.classpath += sourceSets.generated.runtimeClasspath + sourceSets.main.runtimeClasspath
+
+task (generateExampleCodecs, dependsOn: 'test', type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperties('sbe.output.dir': generatedDir,
+        'sbe.target.language': 'Java',
+        'sbe.validation.stop.on.error': 'true',
+        'sbe.validation.xsd': 'main/resources/fpl/SimpleBinary1-0.xsd')
+    args 'examples/resources/example-schema.xml', 'examples/resources/example-extension-schema.xml'
+}
+
+task (runExampleUsingGeneratedStub, dependsOn: 'compileExamplesJava', type: JavaExec) {
+    classpath = sourceSets.examples.runtimeClasspath + compileExamplesJava.classpath
+    main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
+}
+
+task (runExampleUsingGeneratedStubExtension, dependsOn: 'compileExamplesJava', type: JavaExec) {
+    classpath = sourceSets.examples.runtimeClasspath + compileExamplesJava.classpath
+    main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
+}
+
+task (runOtfExample, dependsOn: 'compileExamplesJava', type: JavaExec) {
+    classpath = sourceSets.examples.runtimeClasspath + compileExamplesJava.classpath
+    main = 'uk.co.real_logic.sbe.examples.OtfExample'
+}
+
+task runJavaExamples {
+    description 'Run Java Examples'
+    dependsOn 'runExampleUsingGeneratedStub', 'runExampleUsingGeneratedStubExtension', 'runOtfExample'
+}
+
+checkstyle {
+    configFile = new File(rootDir, 'config/checkstyle.xml')
+    toolVersion = 5.9
+}
+
+javadoc {
+    title = '<h1>Simple Binary Encoding</h1>'
+
+    options.bottom = '<i>Copyright &#169; 2014-2015 Real Logic Ltd. All Rights Reserved.</i>'
+    options.addStringOption('XDignore.symbol.file', '-quiet')
+}
+
+jar {
+    manifest.attributes('Main-Class': 'uk.co.real_logic.sbe.SbeTool')
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+signing {
+    sign configurations.archives
+}
+
+artifacts {
+    archives sourcesJar, javadocJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name = 'sbe'
+                packaging = 'jar'
+                // optionally artifactId can be defined here
+                description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency applications'
+                url = 'https://github.com/real-logic/simple-binary-encoding'
+
+                scm {
+                    connection = 'scm:git:github.com/real-logic/simple-binary-encoding.git'
+                    developerConnection = 'scm:git:github.com/real-logic/simple-binary-encoding.git'
+                    url = 'github.com/real-logic/simple-binary-encoding.git'
+                }
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'tmontgomery'
+                        name = 'Todd L. Montgomery'
+                        email = 'tmont@nard.net'
+                        url = 'https://github.com/tmontgomery'
+                    }
+                    developer {
+                        id = 'mjpt777'
+                        name = 'Martin Thompson'
+                        email = 'mjpt777@gmail.com'
+                        url = 'https://github.com/mjpt777'
+                    }
+                    developer {
+                        id = 'odeheurles'
+                        name = 'Olivier Deheurles'
+                        email = 'olivier@weareadaptive.com'
+                        url = 'https://github.com/odeheurles'
+                    }
+                }
+            }
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2'
+}

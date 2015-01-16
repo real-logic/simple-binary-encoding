@@ -46,7 +46,7 @@
 
     <property name="dir.reports.checkstyle" location="target/reports/checkstyle"/>
     <property name="checkstyle.lib" location="test/lib/checkstyle-5.6-all.jar"/>
-    <property name="checkstyle.config.file" location="test/conf/checkstyle.xml"/>
+    <property name="checkstyle.config.file" location="config/checkstyle.xml"/>
     <property name="checkstyle.output.file" location="${dir.reports.checkstyle}/results.xml"/>
 
     <property name="dir.docs.java" value="target/docs/java"/>
