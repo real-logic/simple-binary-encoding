@@ -901,7 +901,7 @@
             <fileset dir="${dir.test.cpp.src}" includes="**/*Test.cpp"/>
             <syslibset libs="pthread, stdc++"/>
         </cc>
-        <exec executable="${exec.test.cpp}" failonerror="true">
+        <exec executable="${exec.test.cpp}" failonerror="true" dir="${dir.exec.test.cpp}">
             <arg value="--gtest_color=no"/>
         </exec>
     </target>

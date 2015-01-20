@@ -668,7 +668,7 @@ TEST_F(OtfFullIrTest, shouldHandleAllEventsCorrectltInOrder)
 {
     ASSERT_EQ(encodeHdrAndCar(), 113);
 
-    ASSERT_GE(IrCollection::loadFromFile("target/test/cpp/code-generation-schema-cpp.sbeir"), 0);
+    ASSERT_GE(IrCollection::loadFromFile("code-generation-schema-cpp.sbeir"), 0);
 
     listener.dispatchMessageByHeader(IrCollection::header(), this)
             .resetForDecode(buffer, 113)

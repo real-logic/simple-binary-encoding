@@ -23,6 +23,7 @@ defaultTasks 'clean', 'build', 'install'
 
 group = 'uk.co.real-logic'
 version = '1.0.4-RC2-SNAPSHOT'
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 ext {
     if (!project.hasProperty('ossrhUsername'))
@@ -145,6 +146,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 signing {
+    required { isReleaseVersion && gradle.taskGrah.hasTask("uploadArchives") }
     sign configurations.archives
 }
 

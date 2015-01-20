@@ -175,7 +175,7 @@ TEST_F(CompositeOffsetsIrTest, shouldHandleAllEventsCorrectltInOrder)
 {
     ASSERT_EQ(encodeHdrAndMsg(), 52);
 
-    ASSERT_GE(IrCollection::loadFromFile("target/test/cpp/composite-offsets-schema.sbeir"), 0);
+    ASSERT_GE(IrCollection::loadFromFile("composite-offsets-schema.sbeir"), 0);
 
     listener.dispatchMessageByHeader(IrCollection::header(), this)
             .resetForDecode(buffer, 52)
