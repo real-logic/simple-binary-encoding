@@ -39,6 +39,8 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class JavaGeneratorTest
 {
+    private static final String DEFAULT_BUFFER_IMPLEMENTATION = DirectBuffer.class.getName();
+
     private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
     private final StringWriterOutputManager outputManager = new StringWriterOutputManager();
     private final DirectBuffer mockBuffer = mock(DirectBuffer.class);
@@ -69,7 +71,7 @@ public class JavaGeneratorTest
 
         when(Short.valueOf(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER))).thenReturn(templateId);
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, DEFAULT_BUFFER_IMPLEMENTATION, outputManager);
         javaGenerator.generateMessageHeaderStub();
 
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
@@ -93,7 +95,7 @@ public class JavaGeneratorTest
         final String className = "BooleanType";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, DEFAULT_BUFFER_IMPLEMENTATION, outputManager);
         javaGenerator.generateTypeStubs();
 
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
@@ -110,7 +112,7 @@ public class JavaGeneratorTest
         final String className = "Model";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, DEFAULT_BUFFER_IMPLEMENTATION, outputManager);
         javaGenerator.generateTypeStubs();
 
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
@@ -132,7 +134,7 @@ public class JavaGeneratorTest
 
         when(Byte.valueOf(mockBuffer.getByte(bufferOffset))).thenReturn(bitset);
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, DEFAULT_BUFFER_IMPLEMENTATION, outputManager);
         javaGenerator.generateTypeStubs();
 
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
@@ -164,7 +166,7 @@ public class JavaGeneratorTest
         when(Short.valueOf(mockBuffer.getShort(capacityFieldOffset, BYTE_ORDER)))
             .thenReturn(Short.valueOf((short)expectedEngineCapacity));
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, DEFAULT_BUFFER_IMPLEMENTATION, outputManager);
         javaGenerator.generateTypeStubs();
 
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
@@ -197,7 +199,7 @@ public class JavaGeneratorTest
         final String className = "Car";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, outputManager);
+        final JavaGenerator javaGenerator = new JavaGenerator(ir, DEFAULT_BUFFER_IMPLEMENTATION, outputManager);
         javaGenerator.generate();
 
         final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());

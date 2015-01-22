@@ -38,7 +38,7 @@ public class JavaGenerator implements CodeGenerator
     private final Ir ir;
     private final OutputManager outputManager;
 
-    public JavaGenerator(final Ir ir, final OutputManager outputManager)
+    public JavaGenerator(final Ir ir, final String bufferImplementation, final OutputManager outputManager)
         throws IOException
     {
         Verify.notNull(ir, "ir");
