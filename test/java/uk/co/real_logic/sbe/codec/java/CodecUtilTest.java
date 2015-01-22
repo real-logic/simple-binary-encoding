@@ -16,6 +16,8 @@
 package uk.co.real_logic.sbe.codec.java;
 
 import org.junit.Test;
+import uk.co.real_logic.agrona.MutableDirectBuffer;
+import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteOrder;
 
@@ -29,7 +31,7 @@ public class CodecUtilTest
     private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
     private static final int BUFFER_CAPACITY = 64;
 
-    private final DirectBuffer buffer = new DirectBuffer(new byte[BUFFER_CAPACITY]);
+    private final MutableDirectBuffer buffer = new UnsafeBuffer(new byte[BUFFER_CAPACITY]);
 
     @Test
     public void shouldTestBitInByte()

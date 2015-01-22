@@ -15,7 +15,6 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
@@ -63,10 +62,10 @@ public class JavaGenerator implements CodeGenerator
         try
         {
             final Class<?> cls = Class.forName(fullyQualifiedBufferImplementation);
-            if (!cls.isAssignableFrom(MutableDirectBuffer.class))
+            if (!MutableDirectBuffer.class.isAssignableFrom(cls))
             {
                 throw new IllegalArgumentException(
-                        fullyQualifiedBufferImplementation + " doesn't implement " + DirectBuffer.class.getName());
+                        fullyQualifiedBufferImplementation + " doesn't implement " + MutableDirectBuffer.class.getName());
             }
             return cls.getSimpleName();
         }

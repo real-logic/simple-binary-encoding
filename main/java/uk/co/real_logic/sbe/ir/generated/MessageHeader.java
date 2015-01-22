@@ -1,15 +1,16 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.codec.java.*;
+import uk.co.real_logic.agrona.MutableDirectBuffer;
+import uk.co.real_logic.sbe.codec.java.CodecUtil;
 
 public class MessageHeader
 {
-    private DirectBuffer buffer;
+    private MutableDirectBuffer buffer;
     private int offset;
     private int actingVersion;
 
-    public MessageHeader wrap(final DirectBuffer buffer, final int offset, final int actingVersion)
+    public MessageHeader wrap(final MutableDirectBuffer buffer, final int offset, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;
