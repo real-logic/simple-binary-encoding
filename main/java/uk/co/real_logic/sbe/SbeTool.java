@@ -128,7 +128,7 @@ public class SbeTool
                 {
                     validateAgainstSchema(fileName, xsdFilename);
                 }
-                
+
                 ir = new IrGenerator().generate(parseSchema(fileName), System.getProperty(TARGET_NAMESPACE));
             }
             else if (fileName.endsWith(".sbeir"))
