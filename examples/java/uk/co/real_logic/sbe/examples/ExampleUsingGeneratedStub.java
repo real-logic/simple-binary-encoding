@@ -23,9 +23,7 @@ import baseline.OptionalExtras;
 import baseline.MetaAttribute;
 import baseline.MessageHeader;
 
-import uk.co.real_logic.agrona.MutableDirectBuffer;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 
 import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -63,7 +61,7 @@ public class ExampleUsingGeneratedStub
         System.out.println("\n*** Basic Stub Example ***");
 
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
-        final MutableDirectBuffer directBuffer = new UnsafeBuffer(byteBuffer);
+        final UnsafeBuffer directBuffer = new UnsafeBuffer(byteBuffer);
         final short messageTemplateVersion = 0;
         int bufferOffset = 0;
         int encodingLength = 0;
@@ -112,7 +110,7 @@ public class ExampleUsingGeneratedStub
         decode(CAR, directBuffer, bufferOffset, actingBlockLength, schemaId, actingVersion);
     }
 
-    public static int encode(final Car car, final MutableDirectBuffer directBuffer, final int bufferOffset)
+    public static int encode(final Car car, final UnsafeBuffer directBuffer, final int bufferOffset)
     {
         final int srcOffset = 0;
 
@@ -166,7 +164,7 @@ public class ExampleUsingGeneratedStub
 
     public static void decode(
         final Car car,
-        final MutableDirectBuffer directBuffer,
+        final UnsafeBuffer directBuffer,
         final int bufferOffset,
         final int actingBlockLength,
         final int schemaId,

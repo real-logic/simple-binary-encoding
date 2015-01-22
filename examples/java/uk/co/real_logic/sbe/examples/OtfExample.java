@@ -17,17 +17,22 @@ package uk.co.real_logic.sbe.examples;
 
 import baseline.Car;
 import baseline.MessageHeader;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
-import uk.co.real_logic.sbe.ir.*;
-import uk.co.real_logic.sbe.otf.OtfMessageDecoder;
+import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
+import uk.co.real_logic.sbe.ir.Ir;
+import uk.co.real_logic.sbe.ir.IrDecoder;
+import uk.co.real_logic.sbe.ir.IrEncoder;
+import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.otf.OtfHeaderDecoder;
+import uk.co.real_logic.sbe.otf.OtfMessageDecoder;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
-import java.io.*;
-
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -59,7 +64,7 @@ public class OtfExample
 
         // Now we have IR we can read the message header
         int bufferOffset = 0;
-        final DirectBuffer buffer = new DirectBuffer(encodedMsgBuffer);
+        final UnsafeBuffer buffer = new UnsafeBuffer(encodedMsgBuffer);
 
         final int templateId = headerDecoder.getTemplateId(buffer, bufferOffset);
         final int schemaId = headerDecoder.getSchemaId(buffer, bufferOffset);
@@ -103,7 +108,7 @@ public class OtfExample
 
     private static void encodeTestMessage(final ByteBuffer buffer)
     {
-        final DirectBuffer directBuffer = new DirectBuffer(buffer);
+        final UnsafeBuffer directBuffer = new UnsafeBuffer(buffer);
 
         int bufferOffset = 0;
         MESSAGE_HEADER.wrap(directBuffer, bufferOffset, ACTING_VERSION)

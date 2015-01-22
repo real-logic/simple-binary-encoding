@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.examples;
 
 import extension.Car;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
+import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 
 import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -55,7 +55,7 @@ public class ExampleUsingGeneratedStubExtension
         System.out.println("\n*** Extension Stub Example ***");
 
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
-        final DirectBuffer directBuffer = new DirectBuffer(byteBuffer);
+        final UnsafeBuffer directBuffer = new UnsafeBuffer(byteBuffer);
         final short messageTemplateVersion = 0;
         int bufferOffset = 0;
         int encodingLength = 0;
@@ -104,7 +104,7 @@ public class ExampleUsingGeneratedStubExtension
         decode(CAR_1, directBuffer, bufferOffset, schemaId, actingBlockLength, actingVersion);
     }
 
-    public static int encode(final baseline.Car car, final DirectBuffer directBuffer, final int bufferOffset)
+    public static int encode(final baseline.Car car, final UnsafeBuffer directBuffer, final int bufferOffset)
     {
         final int srcOffset = 0;
 
@@ -158,7 +158,7 @@ public class ExampleUsingGeneratedStubExtension
 
     public static void decode(
         final extension.Car car,
-        final DirectBuffer directBuffer,
+        final UnsafeBuffer directBuffer,
         final int bufferOffset,
         final int schemaId,
         final int actingBlockLength,

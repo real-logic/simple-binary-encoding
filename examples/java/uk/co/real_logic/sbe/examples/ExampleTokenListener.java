@@ -15,9 +15,9 @@
  */
 package uk.co.real_logic.sbe.examples;
 
+import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.codec.java.CodecUtil;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.otf.TokenListener;
@@ -158,8 +158,8 @@ public class ExampleTokenListener implements TokenListener
         final String value;
         try
         {
-            value = new String(
-                tempBuffer, 0, buffer.getBytes(bufferIndex, tempBuffer, 0, length), typeToken.encoding().characterEncoding());
+            buffer.getBytes(bufferIndex, tempBuffer, 0, length);
+            value = new String(tempBuffer, 0, length, typeToken.encoding().characterEncoding());
         }
         catch (final UnsupportedEncodingException ex)
         {
