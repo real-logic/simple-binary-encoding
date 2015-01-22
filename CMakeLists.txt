@@ -34,7 +34,7 @@ ExternalProject_Get_Property(gtest binary_dir)
 set(GTEST_BINARY_DIR ${binary_dir})
 
 if(UNIX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -Wall -Ofast -DNDEBUG -pthread")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -Wall -Ofast -DNDEBUG")
 endif()
 
 if(APPLE)
@@ -56,6 +56,8 @@ message("latest SBE jar found: ${SBE_JAR}")
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/codecs")
 set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test/resources")
+
+find_package(Threads)
 
 include_directories(
 	${GTEST_SOURCE_DIR}/include
