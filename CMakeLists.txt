@@ -34,7 +34,7 @@ ExternalProject_Get_Property(gtest binary_dir)
 set(GTEST_BINARY_DIR ${binary_dir})
 
 if(UNIX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -Wall -Ofast -DNDEBUG")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -Wall -Ofast -DNDEBUG -pthread")
 endif()
 
 if(APPLE)
@@ -51,8 +51,8 @@ set(LIBSUFFIX "${CMAKE_STATIC_LIBRARY_SUFFIX}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/binaries")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 
-file(GLOB SBE_JAR ${CMAKE_CURRENT_BINARY_DIR}/libs/sbe-*-SNAPSHOT.jar ${CMAKE_CURRENT_BINARY_DIR}/libs/sbe-*-RC2.jar)
-message("latest SBE jar found ${SBE_JAR}")
+file(GLOB SBE_JAR ${CMAKE_CURRENT_BINARY_DIR}/build/libs/sbe-all-*-SNAPSHOT.jar ${CMAKE_CURRENT_BINARY_DIR}/build/libs/sbe-all-*-RC2.jar)
+message("latest SBE jar found: ${SBE_JAR}")
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/codecs")
 set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test/resources")
@@ -65,3 +65,4 @@ include_directories(
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/main/cpp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test/cpp)
+
