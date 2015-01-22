@@ -26,6 +26,7 @@ import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.ByteOrder;
 
@@ -218,4 +219,15 @@ public class JavaGeneratorTest
         final Integer count = (Integer)groupFlyweight.getClass().getDeclaredMethod("count").invoke(groupFlyweight);
         assertThat(count, is(Integer.valueOf(0)));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldValidateMissingBufferClass() throws IOException {
+        new JavaGenerator(ir, "dasdsads", outputManager);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldValidateNotImplementedBufferClass() throws IOException {
+        new JavaGenerator(ir, "java.nio.ByteBuffer", outputManager);
+    }
+
 }
