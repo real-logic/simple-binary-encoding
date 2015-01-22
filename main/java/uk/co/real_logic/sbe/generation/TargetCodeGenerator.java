@@ -15,8 +15,8 @@
  */
 package uk.co.real_logic.sbe.generation;
 
+import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.SbeTool;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.generation.cpp98.Cpp98Generator;
 import uk.co.real_logic.sbe.generation.cpp98.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.csharp.CSharpGenerator;
@@ -50,7 +50,7 @@ public enum TargetCodeGenerator
                 throws IOException
             {
                 return new JavaGenerator(ir,
-                        System.getProperty(SbeTool.JAVA_BUFFER, DirectBuffer.class.getName()),
+                        System.getProperty(SbeTool.JAVA_BUFFER, UnsafeBuffer.class.getName()),
                         new PackageOutputManager(outputDir, ir.applicableNamespace()));
             }
         },

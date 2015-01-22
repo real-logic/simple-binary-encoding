@@ -15,24 +15,27 @@
  */
 package uk.co.real_logic.sbe.codec.java;
 
+import uk.co.real_logic.agrona.DirectBuffer;
+import uk.co.real_logic.agrona.MutableDirectBuffer;
+
 import java.nio.ByteOrder;
 
 public class CodecUtil
 {
     /**
-     * Put a character to a {@link DirectBuffer} at the given index.
+     * Put a character to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
      */
-    public static void charPut(final DirectBuffer buffer, final int index, final byte value)
+    public static void charPut(final MutableDirectBuffer buffer, final int index, final byte value)
     {
         buffer.putByte(index, value);
     }
 
     /**
-     * Put an array into a {@link DirectBuffer} at the given index.
+     * Put an array into a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
@@ -41,25 +44,25 @@ public class CodecUtil
      * @param length of the src buffer to copy.
      */
     public static void charsPut(
-        final DirectBuffer buffer, final int index, final byte[] src, final int offset, final int length)
+        final MutableDirectBuffer buffer, final int index, final byte[] src, final int offset, final int length)
     {
         buffer.putBytes(index, src, offset, length);
     }
 
     /**
-     * Put a 8-bit integer to a {@link DirectBuffer} at the given index.
+     * Put a 8-bit integer to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
      */
-    public static void int8Put(final DirectBuffer buffer, final int index, final byte value)
+    public static void int8Put(final MutableDirectBuffer buffer, final int index, final byte value)
     {
         buffer.putByte(index, value);
     }
 
     /**
-     * Put an array into a {@link DirectBuffer} at the given index.
+     * Put an array into a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
@@ -68,98 +71,98 @@ public class CodecUtil
      * @param length of the src buffer to copy.
      */
     public static void int8sPut(
-        final DirectBuffer buffer, final int index, final byte[] src, final int offset, final int length)
+        final MutableDirectBuffer buffer, final int index, final byte[] src, final int offset, final int length)
     {
         buffer.putBytes(index, src, offset, length);
     }
 
     /**
-     * Put a 16-bit integer to a {@link DirectBuffer} at the given index.
+     * Put a 16-bit integer to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
      * @param byteOrder for the buffer encoding
      */
-    public static void int16Put(final DirectBuffer buffer, final int index, final short value, final ByteOrder byteOrder)
+    public static void int16Put(final MutableDirectBuffer buffer, final int index, final short value, final ByteOrder byteOrder)
     {
         buffer.putShort(index, value, byteOrder);
     }
 
     /**
-     * Put a 32-bit integer to a {@link DirectBuffer} at the given index.
+     * Put a 32-bit integer to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
      * @param byteOrder for the buffer encoding
      */
-    public static void int32Put(final DirectBuffer buffer, final int index, final int value, final ByteOrder byteOrder)
+    public static void int32Put(final MutableDirectBuffer buffer, final int index, final int value, final ByteOrder byteOrder)
     {
         buffer.putInt(index, value, byteOrder);
     }
 
     /**
-     * Put a 64-bit integer to a {@link DirectBuffer} at the given index.
+     * Put a 64-bit integer to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
      * @param byteOrder for the buffer encoding
      */
-    public static void int64Put(final DirectBuffer buffer, final int index, final long value, final ByteOrder byteOrder)
+    public static void int64Put(final MutableDirectBuffer buffer, final int index, final long value, final ByteOrder byteOrder)
     {
         buffer.putLong(index, value, byteOrder);
     }
 
     /**
-     * Put a 8-bit signed integer to a {@link DirectBuffer} at the given index.
+     * Put a 8-bit signed integer to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
      * @throws IllegalArgumentException if the number is negative
      */
-    public static void uint8Put(final DirectBuffer buffer, final int index, final short value)
+    public static void uint8Put(final MutableDirectBuffer buffer, final int index, final short value)
     {
         buffer.putByte(index, (byte)value);
     }
 
     /**
-     * Put a 16-bit signed integer to a {@link DirectBuffer} at the given index.
+     * Put a 16-bit signed integer to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
      * @param byteOrder for the buffer encoding
      */
-    public static void uint16Put(final DirectBuffer buffer, final int index, final int value, final ByteOrder byteOrder)
+    public static void uint16Put(final MutableDirectBuffer buffer, final int index, final int value, final ByteOrder byteOrder)
     {
         buffer.putShort(index, (short)value, byteOrder);
     }
 
     /**
-     * Put a 32-bit signed integer to a {@link DirectBuffer} at the given index.
+     * Put a 32-bit signed integer to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
      * @param byteOrder for the buffer encoding
      */
-    public static void uint32Put(final DirectBuffer buffer, final int index, final long value, final ByteOrder byteOrder)
+    public static void uint32Put(final MutableDirectBuffer buffer, final int index, final long value, final ByteOrder byteOrder)
     {
         buffer.putInt(index, (int)value, byteOrder);
     }
 
     /**
-     * Put a 64-bit signed integer to a {@link DirectBuffer} at the given index.
+     * Put a 64-bit signed integer to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
      * @param index from which to begin writing.
      * @param value to be be written.
      * @param byteOrder for the buffer encoding
      */
-    public static void uint64Put(final DirectBuffer buffer, final int index, final long value, final ByteOrder byteOrder)
+    public static void uint64Put(final MutableDirectBuffer buffer, final int index, final long value, final ByteOrder byteOrder)
     {
         buffer.putLong(index, value, byteOrder);
     }
@@ -172,7 +175,7 @@ public class CodecUtil
      * @param value to be be written.
      * @param byteOrder for the buffer encoding
      */
-    public static void floatPut(final DirectBuffer buffer, final int index, final float value, final ByteOrder byteOrder)
+    public static void floatPut(final MutableDirectBuffer buffer, final int index, final float value, final ByteOrder byteOrder)
     {
         buffer.putFloat(index, value, byteOrder);
     }
@@ -185,7 +188,7 @@ public class CodecUtil
      * @param value to be be written.
      * @param byteOrder for the buffer encoding
      */
-    public static void doublePut(final DirectBuffer buffer, final int index, final double value, final ByteOrder byteOrder)
+    public static void doublePut(final MutableDirectBuffer buffer, final int index, final double value, final ByteOrder byteOrder)
     {
         buffer.putDouble(index, value, byteOrder);
     }
@@ -379,7 +382,7 @@ public class CodecUtil
      * @param bitIndex bit index to set.
      * @param switchOn true sets bit to 1 and false sets it to 0.
      */
-    public static void uint8PutChoice(final DirectBuffer buffer, final int index, final int bitIndex, boolean switchOn)
+    public static void uint8PutChoice(final MutableDirectBuffer buffer, final int index, final int bitIndex, boolean switchOn)
     {
         byte bits = buffer.getByte(index);
         bits = (byte)(switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex));
@@ -411,7 +414,7 @@ public class CodecUtil
      * @param byteOrder for the buffer encoding
      */
     public static void uint16PutChoice(
-        final DirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn, final ByteOrder byteOrder)
+        final MutableDirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn, final ByteOrder byteOrder)
     {
         short bits = buffer.getShort(index, byteOrder);
         bits = (short)(switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex));
@@ -443,7 +446,7 @@ public class CodecUtil
      * @param byteOrder for the buffer encoding
      */
     public static void uint32PutChoice(
-        final DirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn, final ByteOrder byteOrder)
+        final MutableDirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn, final ByteOrder byteOrder)
     {
         int bits = buffer.getInt(index, byteOrder);
         bits = switchOn ? bits | (1 << bitIndex) : bits & ~(1 << bitIndex);
@@ -475,7 +478,7 @@ public class CodecUtil
      * @param byteOrder for the buffer encoding
      */
     public static void uint64PutChoice(
-        final DirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn, final ByteOrder byteOrder)
+        final MutableDirectBuffer buffer, final int index, final int bitIndex, final boolean switchOn, final ByteOrder byteOrder)
     {
         long bits = buffer.getLong(index, byteOrder);
         bits = switchOn ? bits | (1L << bitIndex) : bits & ~(1L << bitIndex);

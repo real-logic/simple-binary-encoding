@@ -15,13 +15,16 @@
  */
 package uk.co.real_logic.sbe.ir;
 
+import uk.co.real_logic.agrona.MutableDirectBuffer;
+import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.generated.FrameCodec;
-
 import uk.co.real_logic.sbe.ir.generated.TokenCodec;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -35,7 +38,7 @@ public class IrDecoder implements Closeable
     private static final int CAPACITY = 4096;
 
     private final FileChannel channel;
-    private final DirectBuffer directBuffer;
+    private final MutableDirectBuffer directBuffer;
     private final FrameCodec frameCodec = new FrameCodec();
     private final TokenCodec tokenCodec = new TokenCodec();
     private int offset;
@@ -47,7 +50,7 @@ public class IrDecoder implements Closeable
     private int irId;
     private int irVersion = 0;
     private final byte[] valArray = new byte[CAPACITY];
-    private final DirectBuffer valBuffer = new DirectBuffer(valArray);
+    private final MutableDirectBuffer valBuffer = new UnsafeBuffer(valArray);
     private final byte[] buffer = new byte[1024];
 
     public IrDecoder(final String fileName)
@@ -55,7 +58,7 @@ public class IrDecoder implements Closeable
     {
         channel = new RandomAccessFile(fileName, "r").getChannel();
         final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-        directBuffer = new DirectBuffer(buffer);
+        directBuffer = new UnsafeBuffer(buffer);
         size = channel.size();
         offset = 0;
     }
@@ -64,7 +67,7 @@ public class IrDecoder implements Closeable
     {
         channel = null;
         size = buffer.limit();
-        directBuffer = new DirectBuffer(buffer);
+        directBuffer = new UnsafeBuffer(buffer);
         offset = 0;
     }
 
