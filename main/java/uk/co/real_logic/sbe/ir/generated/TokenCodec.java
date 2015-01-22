@@ -1,8 +1,8 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
+import uk.co.real_logic.sbe.codec.java.*;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
-import uk.co.real_logic.sbe.codec.java.CodecUtil;
 
 public class TokenCodec
 {
