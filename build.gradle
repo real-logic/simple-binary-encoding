@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id 'java' // or 'groovy' Must be explicitly applied
+    id 'java'
     id 'com.github.johnrengelman.shadow' version '1.2.0'
 }
 
