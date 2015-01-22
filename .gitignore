@@ -31,7 +31,8 @@ lib
 gtest-prefix
 CMakeCache.txt
 Makefile
-
+binaries
+codecs
 
 # Mac
 .DS_Store
