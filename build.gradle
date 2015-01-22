@@ -13,13 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+plugins {
+    id 'java' // or 'groovy' Must be explicitly applied
+    id 'com.github.johnrengelman.shadow' version '1.2.0'
+}
+
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'checkstyle'
 apply plugin: 'eclipse'
+apply plugin: 'com.github.johnrengelman.shadow'
 
-defaultTasks 'clean', 'build', 'install'
+defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
 group = 'uk.co.real-logic'
 version = '1.0.4-RC2-SNAPSHOT'
@@ -66,6 +73,8 @@ sourceSets {
 }
 
 dependencies {
+    compile 'uk.co.real-logic:Agrona:0.1'
+
     testCompile 'org.hamcrest:hamcrest-all:1.3',
             'junit:junit:4.11',
             'org.mockito:mockito-all:1.9.5',
@@ -133,6 +142,11 @@ javadoc {
 
 jar {
     manifest.attributes('Main-Class': 'uk.co.real_logic.sbe.SbeTool')
+}
+
+shadowJar {
+    baseName = 'sbe-all'
+    classifier = ''
 }
 
 task sourcesJar(type: Jar) {
