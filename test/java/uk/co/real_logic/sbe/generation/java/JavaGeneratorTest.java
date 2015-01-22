@@ -221,12 +221,14 @@ public class JavaGeneratorTest
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldValidateMissingBufferClass() throws IOException {
+    public void shouldValidateMissingBufferClass() throws IOException
+    {
         new JavaGenerator(ir, "dasdsads", outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldValidateNotImplementedBufferClass() throws IOException {
+    public void shouldValidateNotImplementedBufferClass() throws IOException
+    {
         new JavaGenerator(ir, "java.nio.ByteBuffer", outputManager);
     }
 
