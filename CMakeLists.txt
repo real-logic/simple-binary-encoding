@@ -34,7 +34,7 @@ ExternalProject_Get_Property(gtest binary_dir)
 set(GTEST_BINARY_DIR ${binary_dir})
 
 if(UNIX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -Wall -Ofast -DNDEBUG")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -Wall -DNDEBUG")
 endif()
 
 if(APPLE)
