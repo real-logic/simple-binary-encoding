@@ -103,7 +103,9 @@ protected:
         uint32_t *array = (uint32_t *)dst;
         for (int i = 0; i < length; i++)
         {
-            array[i] = seed ^ i;
+            uint32_t value = seed ^ i;
+            ::memcpy(array, &value, sizeof(uint32_t));
+            array++;
         }
     }
 
