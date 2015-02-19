@@ -16,7 +16,7 @@
  */
 package uk.co.real_logic.sbe.ir;
 
-import uk.co.real_logic.sbe.util.Verify;
+import uk.co.real_logic.agrona.Verify;
 
 /**
  * Class to encapsulate a token of information for the message schema stream. This Intermediate Representation (IR)

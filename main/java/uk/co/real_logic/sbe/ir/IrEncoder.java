@@ -20,7 +20,7 @@ import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.ir.generated.FrameCodec;
 import uk.co.real_logic.sbe.ir.generated.TokenCodec;
-import uk.co.real_logic.sbe.util.Verify;
+import uk.co.real_logic.agrona.Verify;
 
 import java.io.*;
 import java.nio.ByteBuffer;

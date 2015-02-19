@@ -15,13 +15,13 @@
  */
 package uk.co.real_logic.sbe.generation.csharp;
 
-import uk.co.real_logic.sbe.generation.OutputManager;
-import uk.co.real_logic.sbe.util.Verify;
+import uk.co.real_logic.agrona.generation.OutputManager;
+import uk.co.real_logic.agrona.Verify;
 
 import java.io.*;
 
 /**
- * {@link uk.co.real_logic.sbe.generation.OutputManager} for managing the creation of C# source files
+ * {@link uk.co.real_logic.agrona.generation.OutputManager} for managing the creation of C# source files
  * as the target of code generation.
  *
  * The character encoding for the {@link java.io.Writer} is UTF-8.
@@ -31,7 +31,7 @@ public class CSharpNamespaceOutputManager implements OutputManager
     private final File outputDir;
 
     /**
-     * Create a new {@link uk.co.real_logic.sbe.generation.OutputManager} for generating C# source
+     * Create a new {@link uk.co.real_logic.agrona.generation.OutputManager} for generating C# source
      * files into a given package.
      *
      * @param baseDirectoryName for the generated source code.

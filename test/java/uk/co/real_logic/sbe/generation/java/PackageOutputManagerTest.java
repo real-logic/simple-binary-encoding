@@ -16,6 +16,7 @@
 package uk.co.real_logic.sbe.generation.java;
 
 import org.junit.Test;
+import uk.co.real_logic.agrona.generation.PackageOutputManager;
 
 import java.io.File;
 import java.io.Writer;
