@@ -15,14 +15,15 @@
 #
 
 set(GTEST_LIBS
-	${GTEST_BINARY_DIR}/${LIBPREFIX}gtest${LIBSUFFIX}
-	${GTEST_BINARY_DIR}/${LIBPREFIX}gtest_main${LIBSUFFIX}
+	${GTEST_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${LIBPREFIX}gtest${LIBSUFFIX}
+	${GTEST_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${LIBPREFIX}gtest_main${LIBSUFFIX}
 )
 
 function(sbe_test name)
 	add_executable("${name}" "${name}.cpp")
 	target_link_libraries("${name}" sbe ${GTEST_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY ${CODEC_TARGET_DIR})
+	add_dependencies(${name} gtest)
 	if(${ARGC} GREATER 1)
 		add_dependencies(${name} ${ARGV1})
 	endif()
