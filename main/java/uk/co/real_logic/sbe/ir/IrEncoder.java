@@ -15,11 +15,12 @@
  */
 package uk.co.real_logic.sbe.ir;
 
+import uk.co.real_logic.agrona.MutableDirectBuffer;
+import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 import uk.co.real_logic.sbe.ir.generated.FrameCodec;
 import uk.co.real_logic.sbe.ir.generated.TokenCodec;
-import uk.co.real_logic.sbe.util.Verify;
+import uk.co.real_logic.agrona.Verify;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -35,12 +36,12 @@ public class IrEncoder implements Closeable
     private final FileChannel channel;
     private final ByteBuffer resultBuffer;
     private final ByteBuffer buffer;
-    private final DirectBuffer directBuffer;
+    private final MutableDirectBuffer directBuffer;
     private final Ir ir;
     private final FrameCodec frameCodec = new FrameCodec();
     private final TokenCodec tokenCodec = new TokenCodec();
     private final byte[] valArray = new byte[CAPACITY];
-    private final DirectBuffer valBuffer = new DirectBuffer(valArray);
+    private final UnsafeBuffer valBuffer = new UnsafeBuffer(valArray);
     private int totalSize = 0;
 
     public IrEncoder(final String fileName, final Ir ir)
@@ -49,7 +50,7 @@ public class IrEncoder implements Closeable
         channel = new FileOutputStream(fileName).getChannel();
         resultBuffer = null;
         buffer = ByteBuffer.allocateDirect(CAPACITY);
-        directBuffer = new DirectBuffer(buffer);
+        directBuffer = new UnsafeBuffer(buffer);
         this.ir = ir;
     }
 
@@ -58,7 +59,7 @@ public class IrEncoder implements Closeable
         channel = null;
         resultBuffer = buffer;
         this.buffer = ByteBuffer.allocateDirect(CAPACITY);
-        directBuffer = new DirectBuffer(this.buffer);
+        directBuffer = new UnsafeBuffer(this.buffer);
         this.ir = ir;
     }
 

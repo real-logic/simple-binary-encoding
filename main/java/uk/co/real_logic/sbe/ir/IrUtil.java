@@ -15,11 +15,15 @@
  */
 package uk.co.real_logic.sbe.ir;
 
+import uk.co.real_logic.agrona.DirectBuffer;
+import uk.co.real_logic.agrona.MutableDirectBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.codec.java.CodecUtil;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
-import uk.co.real_logic.sbe.ir.generated.*;
+import uk.co.real_logic.sbe.ir.generated.ByteOrderCodec;
+import uk.co.real_logic.sbe.ir.generated.PresenceCodec;
+import uk.co.real_logic.sbe.ir.generated.PrimitiveTypeCodec;
+import uk.co.real_logic.sbe.ir.generated.SignalCodec;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
@@ -258,7 +262,7 @@ public class IrUtil
         }
     }
 
-    public static int put(final DirectBuffer buffer, final PrimitiveValue value, final PrimitiveType type)
+    public static int put(final MutableDirectBuffer buffer, final PrimitiveValue value, final PrimitiveType type)
     {
         if (value == null)
         {

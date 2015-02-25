@@ -15,9 +15,9 @@
  */
 package uk.co.real_logic.sbe.otf;
 
+import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.codec.java.CodecUtil;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 
 import java.nio.ByteOrder;
 

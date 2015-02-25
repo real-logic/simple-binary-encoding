@@ -2,14 +2,15 @@
 package uk.co.real_logic.sbe.ir.generated;
 
 import uk.co.real_logic.sbe.codec.java.*;
+import uk.co.real_logic.agrona.MutableDirectBuffer;
 
 public class VarDataEncoding
 {
-    private DirectBuffer buffer;
+    private MutableDirectBuffer buffer;
     private int offset;
     private int actingVersion;
 
-    public VarDataEncoding wrap(final DirectBuffer buffer, final int offset, final int actingVersion)
+    public VarDataEncoding wrap(final MutableDirectBuffer buffer, final int offset, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;

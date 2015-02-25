@@ -213,7 +213,7 @@ TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
     EXPECT_EQ(*((::uint16_t *)(buffer + 19)), 16); // groupSizeEncoding blockLength
     EXPECT_EQ(*((::uint8_t *)(buffer + 21)), 2);   // groupSizeEncoding numInGroup
 
-    ASSERT_GE(IrCollection::loadFromFile("target/test/cpp/message-block-length-test.sbeir"), 0);
+    ASSERT_GE(IrCollection::loadFromFile("message-block-length-test.sbeir"), 0);
 
     listener.dispatchMessageByHeader(IrCollection::header(), this)
             .resetForDecode(buffer, 54)

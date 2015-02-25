@@ -330,7 +330,7 @@ public:
                 EXPECT_EQ(f.primitiveType(3), Ir::CHAR);
                 EXPECT_EQ(f.length(3), MANUFACTURER_CODE_LENGTH);
                 f.getArray(3, tmp, 0, f.length(3));
-                EXPECT_EQ(std::string(tmp, MANUFACTURER_CODE_LENGTH), MANUFACTURER_CODE);
+                EXPECT_EQ(std::string(tmp, MANUFACTURER_CODE_LENGTH), std::string(MANUFACTURER_CODE, MANUFACTURER_CODE_LENGTH));
                 EXPECT_EQ(f.primitiveType(4), Ir::CHAR);
                 EXPECT_EQ(f.length(4), 6);
                 f.getArray(4, tmp, 0, f.length(4));
@@ -668,7 +668,7 @@ TEST_F(OtfFullIrTest, shouldHandleAllEventsCorrectltInOrder)
 {
     ASSERT_EQ(encodeHdrAndCar(), 113);
 
-    ASSERT_GE(IrCollection::loadFromFile("target/test/cpp/code-generation-schema-cpp.sbeir"), 0);
+    ASSERT_GE(IrCollection::loadFromFile("code-generation-schema-cpp.sbeir"), 0);
 
     listener.dispatchMessageByHeader(IrCollection::header(), this)
             .resetForDecode(buffer, 113)

@@ -1,11 +1,6 @@
+# editors
 *~
-target
-GTAGS
-GRTAGS
-GPATH
-prop
-out
-.DS_Store
+*.swp
 .idea
 *.iml
 .project
@@ -15,7 +10,30 @@ out
 .settings
 *.sublime-project
 *.sublime-workspace
+
+# Build tools
 build-local.properties
 deps
 /bin
+build
+.gradle
+target
+GTAGS
+GRTAGS
+GPATH
+prop
+out
 
+# cmake
+CMakeFiles
+*.cmake
+lib
+gtest-prefix
+CMakeCache.txt
+Makefile
+binaries
+codecs
+Testing
+
+# Mac
+.DS_Store

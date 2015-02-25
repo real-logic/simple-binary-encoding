@@ -15,15 +15,17 @@
  */
 package uk.co.real_logic.sbe.generation;
 
+import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
+import uk.co.real_logic.agrona.generation.PackageOutputManager;
+import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.generation.cpp98.Cpp98Generator;
+import uk.co.real_logic.sbe.generation.cpp98.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.csharp.CSharpGenerator;
 import uk.co.real_logic.sbe.generation.csharp.CSharpNamespaceOutputManager;
-import uk.co.real_logic.sbe.generation.cpp98.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.generation.java.JavaMockPojoGenerator;
-import uk.co.real_logic.sbe.generation.java.PackageOutputManager;
-import uk.co.real_logic.sbe.generation.python.PythonGenerator;
 import uk.co.real_logic.sbe.generation.python.ModuleOutputManager;
+import uk.co.real_logic.sbe.generation.python.PythonGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
 import java.io.IOException;
@@ -47,7 +49,9 @@ public enum TargetCodeGenerator
             public CodeGenerator newInstance(final Ir ir, final String outputDir)
                 throws IOException
             {
-                return new JavaGenerator(ir, new PackageOutputManager(outputDir, ir.applicableNamespace()));
+                return new JavaGenerator(ir,
+                        System.getProperty(SbeTool.JAVA_BUFFER, UnsafeBuffer.class.getName()),
+                        new PackageOutputManager(outputDir, ir.applicableNamespace()));
             }
         },
 

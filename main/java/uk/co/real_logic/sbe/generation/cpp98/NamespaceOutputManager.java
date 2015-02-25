@@ -15,8 +15,8 @@
  */
 package uk.co.real_logic.sbe.generation.cpp98;
 
-import uk.co.real_logic.sbe.generation.OutputManager;
-import uk.co.real_logic.sbe.util.Verify;
+import uk.co.real_logic.agrona.generation.OutputManager;
+import uk.co.real_logic.agrona.Verify;
 
 import java.io.*;
 
@@ -29,7 +29,7 @@ public class NamespaceOutputManager implements OutputManager
     private final File outputDir;
 
     /**
-     * Create a new {@link uk.co.real_logic.sbe.generation.OutputManager} for generating C++98 source files into a given package.
+     * Create a new {@link uk.co.real_logic.agrona.generation.OutputManager} for generating C++98 source files into a given package.
      *
      * @param baseDirectoryName for the generated source code.
      * @param namespaceName for the generated source code relative to the baseDirectoryName.

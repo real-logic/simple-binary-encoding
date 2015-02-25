@@ -46,7 +46,7 @@
 
     <property name="dir.reports.checkstyle" location="target/reports/checkstyle"/>
     <property name="checkstyle.lib" location="test/lib/checkstyle-5.6-all.jar"/>
-    <property name="checkstyle.config.file" location="test/conf/checkstyle.xml"/>
+    <property name="checkstyle.config.file" location="config/checkstyle.xml"/>
     <property name="checkstyle.output.file" location="${dir.reports.checkstyle}/results.xml"/>
 
     <property name="dir.docs.java" value="target/docs/java"/>
@@ -901,7 +901,7 @@
             <fileset dir="${dir.test.cpp.src}" includes="**/*Test.cpp"/>
             <syslibset libs="pthread, stdc++"/>
         </cc>
-        <exec executable="${exec.test.cpp}" failonerror="true">
+        <exec executable="${exec.test.cpp}" failonerror="true" dir="${dir.exec.test.cpp}">
             <arg value="--gtest_color=no"/>
         </exec>
     </target>

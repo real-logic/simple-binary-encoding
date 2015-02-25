@@ -2,6 +2,7 @@
 package uk.co.real_logic.sbe.ir.generated;
 
 import uk.co.real_logic.sbe.codec.java.*;
+import uk.co.real_logic.agrona.MutableDirectBuffer;
 
 public class FrameCodec
 {
@@ -11,7 +12,7 @@ public class FrameCodec
     public static final int SCHEMA_VERSION = 0;
 
     private final FrameCodec parentMessage = this;
-    private DirectBuffer buffer;
+    private MutableDirectBuffer buffer;
     private int offset;
     private int limit;
     private int actingBlockLength;
@@ -47,7 +48,7 @@ public class FrameCodec
         return offset;
     }
 
-    public FrameCodec wrapForEncode(final DirectBuffer buffer, final int offset)
+    public FrameCodec wrapForEncode(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
         this.offset = offset;
@@ -59,7 +60,7 @@ public class FrameCodec
     }
 
     public FrameCodec wrapForDecode(
-        final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
+        final MutableDirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;

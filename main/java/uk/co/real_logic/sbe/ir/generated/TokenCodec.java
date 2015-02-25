@@ -2,6 +2,7 @@
 package uk.co.real_logic.sbe.ir.generated;
 
 import uk.co.real_logic.sbe.codec.java.*;
+import uk.co.real_logic.agrona.MutableDirectBuffer;
 
 public class TokenCodec
 {
@@ -11,7 +12,7 @@ public class TokenCodec
     public static final int SCHEMA_VERSION = 0;
 
     private final TokenCodec parentMessage = this;
-    private DirectBuffer buffer;
+    private MutableDirectBuffer buffer;
     private int offset;
     private int limit;
     private int actingBlockLength;
@@ -47,7 +48,7 @@ public class TokenCodec
         return offset;
     }
 
-    public TokenCodec wrapForEncode(final DirectBuffer buffer, final int offset)
+    public TokenCodec wrapForEncode(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
         this.offset = offset;
@@ -59,7 +60,7 @@ public class TokenCodec
     }
 
     public TokenCodec wrapForDecode(
-        final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
+        final MutableDirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;

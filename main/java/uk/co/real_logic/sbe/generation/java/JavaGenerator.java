@@ -15,11 +15,15 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import uk.co.real_logic.agrona.MutableDirectBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
-import uk.co.real_logic.sbe.generation.OutputManager;
-import uk.co.real_logic.sbe.ir.*;
-import uk.co.real_logic.sbe.util.Verify;
+import uk.co.real_logic.agrona.generation.OutputManager;
+import uk.co.real_logic.sbe.ir.Encoding;
+import uk.co.real_logic.sbe.ir.Ir;
+import uk.co.real_logic.sbe.ir.Signal;
+import uk.co.real_logic.sbe.ir.Token;
+import uk.co.real_logic.agrona.Verify;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -37,8 +41,11 @@ public class JavaGenerator implements CodeGenerator
 
     private final Ir ir;
     private final OutputManager outputManager;
+    private final String fullyQualifiedBufferImplementation;
+    private final String bufferImplementation;
 
-    public JavaGenerator(final Ir ir, final OutputManager outputManager)
+    public JavaGenerator(
+            final Ir ir, final String fullyQualifiedBufferImplementation, final OutputManager outputManager)
         throws IOException
     {
         Verify.notNull(ir, "ir");
@@ -46,6 +53,27 @@ public class JavaGenerator implements CodeGenerator
 
         this.ir = ir;
         this.outputManager = outputManager;
+        this.bufferImplementation = validateBufferImplementation(fullyQualifiedBufferImplementation);
+        this.fullyQualifiedBufferImplementation = fullyQualifiedBufferImplementation;
+    }
+
+    private String validateBufferImplementation(final String fullyQualifiedBufferImplementation)
+    {
+        try
+        {
+            final Class<?> cls = Class.forName(fullyQualifiedBufferImplementation);
+            if (!MutableDirectBuffer.class.isAssignableFrom(cls))
+            {
+                throw new IllegalArgumentException(
+                        fullyQualifiedBufferImplementation + " doesn't implement " + MutableDirectBuffer.class.getName());
+            }
+            return cls.getSimpleName();
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new IllegalArgumentException(
+                    "Unable to validate " + fullyQualifiedBufferImplementation + " because it can't be found", e);
+        }
     }
 
     public void generateMessageHeaderStub() throws IOException
@@ -206,28 +234,11 @@ public class JavaGenerator implements CodeGenerator
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
         final Integer dimensionHeaderSize = Integer.valueOf(tokens.get(index + 1).size());
 
-        sb.append(String.format(
-            "\n" +
-            indent + "public static class %1$s implements Iterable<%1$s>, java.util.Iterator<%1$s>\n" +
-            indent + "{\n" +
-            indent + "    private static final int HEADER_SIZE = %2$d;\n" +
-            indent + "    private final %3$s dimensions = new %3$s();\n" +
-            indent + "    private %4$s parentMessage;\n" +
-            indent + "    private DirectBuffer buffer;\n" +
-            indent + "    private int blockLength;\n" +
-            indent + "    private int actingVersion;\n" +
-            indent + "    private int count;\n" +
-            indent + "    private int index;\n" +
-            indent + "    private int offset;\n\n",
-            formatClassName(groupName),
-            dimensionHeaderSize,
-            dimensionsClassName,
-            parentMessageClassName
-        ));
+        generateClassDeclaration(sb, groupName, parentMessageClassName, indent, dimensionsClassName, dimensionHeaderSize);
 
         sb.append(String.format(
             indent + "    public void wrapForDecode(\n" +
-            indent + "        final %s parentMessage, final DirectBuffer buffer, final int actingVersion)\n" +
+            indent + "        final %s parentMessage, final %s buffer, final int actingVersion)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
@@ -238,7 +249,8 @@ public class JavaGenerator implements CodeGenerator
             indent + "        index = -1;\n" +
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
-            parentMessageClassName
+            parentMessageClassName,
+            bufferImplementation
         ));
 
         final Integer blockLength = Integer.valueOf(tokens.get(index).size());
@@ -246,7 +258,7 @@ public class JavaGenerator implements CodeGenerator
         final String javaTypeForNumInGroup = javaTypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    public void wrapForEncode(final %1$s parentMessage, final DirectBuffer buffer, final int count)\n" +
+            indent + "    public void wrapForEncode(final %1$s parentMessage, final %5$s buffer, final int count)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
@@ -262,7 +274,8 @@ public class JavaGenerator implements CodeGenerator
             parentMessageClassName,
             javaTypeForBlockLength,
             blockLength,
-            javaTypeForNumInGroup
+            javaTypeForNumInGroup,
+            bufferImplementation
         ));
 
         sb.append(String.format(
@@ -320,6 +333,32 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return this;\n" +
             indent + "    }\n",
             formatClassName(groupName)
+        ));
+    }
+
+    private void generateClassDeclaration(
+            final StringBuilder sb, final String groupName, final String parentMessageClassName, final String indent,
+            final String dimensionsClassName, final Integer dimensionHeaderSize)
+    {
+
+        sb.append(String.format(
+            "\n" +
+            indent + "public static class %1$s implements Iterable<%1$s>, java.util.Iterator<%1$s>\n" +
+            indent + "{\n" +
+            indent + "    private static final int HEADER_SIZE = %2$d;\n" +
+            indent + "    private final %3$s dimensions = new %3$s();\n" +
+            indent + "    private %4$s parentMessage;\n" +
+            indent + "    private %5$s buffer;\n" +
+            indent + "    private int blockLength;\n" +
+            indent + "    private int actingVersion;\n" +
+            indent + "    private int count;\n" +
+            indent + "    private int index;\n" +
+            indent + "    private int offset;\n\n",
+            formatClassName(groupName),
+            dimensionHeaderSize,
+            dimensionsClassName,
+            parentMessageClassName,
+            bufferImplementation
         ));
     }
 
@@ -651,8 +690,10 @@ public class JavaGenerator implements CodeGenerator
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
             "package %s;\n\n" +
-            "import uk.co.real_logic.sbe.codec.java.*;\n\n",
-            packageName
+            "import uk.co.real_logic.sbe.codec.java.*;\n" +
+            "import %s;\n\n",
+            packageName,
+            fullyQualifiedBufferImplementation
         );
     }
 
@@ -1003,7 +1044,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        if (dstOffset < 0 || dstOffset > (dst.length - length))\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
-                indent + "                \"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
+                indent +               "\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
                 "%s" +
                 indent + "        CodecUtil.charsGet(buffer, this.offset + %d, dst, dstOffset, length);\n" +
@@ -1022,7 +1063,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        if (srcOffset < 0 || srcOffset > (src.length - length))\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
-                indent + "                \"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
+                indent +               "\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
                 indent + "        }\n\n" +
                 indent + "        CodecUtil.charsPut(buffer, this.offset + %d, src, srcOffset, length);\n" +
                 indent + "        return this;\n" +
@@ -1076,8 +1117,8 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    private static final byte[] %sValue = {%s};\n",
-            propertyName,
+            indent + "    private static final byte[] %s_VALUE = {%s};\n",
+            propertyName.toUpperCase(),
             values
         ));
 
@@ -1094,23 +1135,23 @@ public class JavaGenerator implements CodeGenerator
         sb.append(String.format(
             indent + "    public %s %s(final int index)\n" +
             indent + "    {\n" +
-            indent + "        return %sValue[index];\n" +
+            indent + "        return %s_VALUE[index];\n" +
             indent + "    }\n\n",
             javaTypeName,
             propertyName,
-            propertyName
+            propertyName.toUpperCase()
         ));
 
         sb.append(String.format(
             indent + "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
             indent + "    {\n" +
             indent + "        final int bytesCopied = Math.min(length, %d);\n" +
-            indent + "        System.arraycopy(%sValue, 0, dst, offset, bytesCopied);\n" +
+            indent + "        System.arraycopy(%s_VALUE, 0, dst, offset, bytesCopied);\n" +
             indent + "        return bytesCopied;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
             Integer.valueOf(constantValue.length),
-            propertyName
+            propertyName.toUpperCase()
         ));
 
         return sb;
@@ -1135,10 +1176,10 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateFixedFlyweightCode(final String className, final int size)
     {
         return String.format(
-            "    private DirectBuffer buffer;\n" +
+            "    private %3$s buffer;\n" +
             "    private int offset;\n" +
             "    private int actingVersion;\n\n" +
-            "    public %s wrap(final DirectBuffer buffer, final int offset, final int actingVersion)\n" +
+            "    public %1$s wrap(final %3$s buffer, final int offset, final int actingVersion)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
@@ -1147,10 +1188,11 @@ public class JavaGenerator implements CodeGenerator
             "    }\n\n" +
             "    public int size()\n" +
             "    {\n" +
-            "        return %d;\n" +
+            "        return %2$d;\n" +
             "    }\n",
             className,
-            Integer.valueOf(size)
+            Integer.valueOf(size),
+            bufferImplementation
         );
     }
 
@@ -1168,7 +1210,7 @@ public class JavaGenerator implements CodeGenerator
             "    public static final %5$s SCHEMA_ID = %6$s;\n" +
             "    public static final %7$s SCHEMA_VERSION = %8$s;\n\n" +
             "    private final %9$s parentMessage = this;\n" +
-            "    private DirectBuffer buffer;\n" +
+            "    private %11$s buffer;\n" +
             "    private int offset;\n" +
             "    private int limit;\n" +
             "    private int actingBlockLength;\n" +
@@ -1198,7 +1240,7 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        return offset;\n" +
             "    }\n\n" +
-            "    public %9$s wrapForEncode(final DirectBuffer buffer, final int offset)\n" +
+            "    public %9$s wrapForEncode(final %11$s buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
@@ -1208,7 +1250,7 @@ public class JavaGenerator implements CodeGenerator
             "        return this;\n" +
             "    }\n\n" +
             "    public %9$s wrapForDecode(\n" +
-            "        final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)\n" +
+            "        final %11$s buffer, final int offset, final int actingBlockLength, final int actingVersion)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
@@ -1239,7 +1281,8 @@ public class JavaGenerator implements CodeGenerator
             schemaVersionType,
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
             className,
-            semanticType
+            semanticType,
+            bufferImplementation
         );
     }
 

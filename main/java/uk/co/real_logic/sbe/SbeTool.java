@@ -100,6 +100,11 @@ public class SbeTool
     public static final String TARGET_NAMESPACE = "sbe.target.namespace";
 
     /**
+     * Specifies the name of the Java buffer to wrap
+     */
+    public static final String JAVA_BUFFER = "sbe.java.buffer";
+
+    /**
      * Main entry point for the SBE Tool.
      *
      * @param args command line arguments. A single filename is expected.
