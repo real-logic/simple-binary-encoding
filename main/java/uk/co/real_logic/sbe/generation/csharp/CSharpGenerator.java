@@ -36,7 +36,6 @@ import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.*;
 public class CSharpGenerator implements CodeGenerator
 {
     private static final String META_ATTRIBUTE_ENUM = "MetaAttribute";
-
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
 
@@ -201,7 +200,7 @@ public class CSharpGenerator implements CodeGenerator
         final String indent)
     {
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
-        final Integer dimensionHeaderSize = Integer.valueOf(tokens.get(index + 1).size());
+        final int dimensionHeaderSize = tokens.get(index + 1).size();
 
         sb.append(String.format(
             "\n" +
@@ -235,7 +234,7 @@ public class CSharpGenerator implements CodeGenerator
             parentMessageClassName
         ));
 
-        final Integer blockLength = Integer.valueOf(tokens.get(index).size());
+        final int blockLength = tokens.get(index).size();
         final String typeForBlockLength = cSharpTypeName(tokens.get(index + 2).encoding().primitiveType());
         final String typeForNumInGroup = cSharpTypeName(tokens.get(index + 3).encoding().primitiveType());
 
@@ -305,7 +304,7 @@ public class CSharpGenerator implements CodeGenerator
             "\n" +
             indent + "    public const long %sId = %d;\n\n",
             toUpperFirstChar(groupName),
-            Integer.valueOf(token.id())
+            token.id()
         ));
 
         sb.append(String.format(
@@ -355,9 +354,9 @@ public class CSharpGenerator implements CodeGenerator
 
                 final String propertyName = toUpperFirstChar(token.name());
                 final Token lengthToken = tokens.get(i + 2);
-                final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
+                final int sizeOfLengthField = lengthToken.size();
                 final Encoding lengthEncoding = lengthToken.encoding();
-                final String lengthCsharpType = cSharpTypeName(lengthEncoding.primitiveType());
+                final String lengthCSharpType = cSharpTypeName(lengthEncoding.primitiveType());
                 final String lengthTypePrefix = toUpperFirstChar(lengthEncoding.primitiveType().primitiveName());
                 final ByteOrder byteOrder = lengthEncoding.byteOrder();
                 final String byteOrderStr = generateByteOrder(byteOrder, lengthEncoding.primitiveType().size());
@@ -403,7 +402,7 @@ public class CSharpGenerator implements CodeGenerator
                     propertyName,
                     sizeOfLengthField,
                     lengthTypePrefix,
-                    lengthCsharpType,
+                    lengthCSharpType,
                     byteOrderStr
                 ));
             }
@@ -478,7 +477,7 @@ public class CSharpGenerator implements CodeGenerator
                 final String choiceName = toUpperFirstChar(token.name());
                 final String choiceBitPosition = token.encoding().constValue().toString();
                 final int choiceValue = (int)Math.pow(2, Integer.parseInt(choiceBitPosition));
-                sb.append(String.format("        %s = %s,\n", choiceName, Integer.valueOf(choiceValue)));
+                sb.append(String.format("        %s = %s,\n", choiceName, choiceValue));
             }
         }
 
@@ -657,7 +656,7 @@ public class CSharpGenerator implements CodeGenerator
     {
         final String typeName = cSharpTypeName(token.encoding().primitiveType());
         final String typePrefix = toUpperFirstChar(token.encoding().primitiveType().primitiveName());
-        final Integer offset = Integer.valueOf(token.offset());
+        final int offset = token.offset();
         final ByteOrder byteOrder = token.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, token.encoding().primitiveType().size());
 
@@ -697,7 +696,7 @@ public class CSharpGenerator implements CodeGenerator
 
         return String.format(
             indent + "        if (_actingVersion < %1$d) return %2$s;\n\n",
-            Integer.valueOf(sinceVersion),
+            sinceVersion,
             sinceVersion > 0 ? generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString()) : "(byte)0"
         );
     }
@@ -711,7 +710,7 @@ public class CSharpGenerator implements CodeGenerator
 
         return String.format(
             indent + "        if (actingVersion < %d) return 0;\n\n",
-            Integer.valueOf(sinceVersion)
+            sinceVersion
         );
     }
 
@@ -724,7 +723,7 @@ public class CSharpGenerator implements CodeGenerator
 
         return String.format(
             indent + "        if (actingVersion < %d) return null;\n\n",
-            Integer.valueOf(sinceVersion)
+            sinceVersion
         );
     }
 
@@ -732,11 +731,11 @@ public class CSharpGenerator implements CodeGenerator
     {
         final String typeName = cSharpTypeName(token.encoding().primitiveType());
         final String typePrefix = toUpperFirstChar(token.encoding().primitiveType().primitiveName());
-        final Integer offset = Integer.valueOf(token.offset());
+        final int offset = token.offset();
         final ByteOrder byteOrder = token.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, token.encoding().primitiveType().size());
-        final Integer fieldLength = Integer.valueOf(token.arrayLength());
-        final Integer typeSize = Integer.valueOf(token.encoding().primitiveType().size());
+        final int fieldLength = token.arrayLength();
+        final int typeSize = token.encoding().primitiveType().size();
         final String propName = toUpperFirstChar(propertyName);
 
         final StringBuilder sb = new StringBuilder();
@@ -871,7 +870,7 @@ public class CSharpGenerator implements CodeGenerator
             "\n" +
             indent + "    public const int %1$sLength = %2$d;\n",
             toUpperFirstChar(propertyName),
-            Integer.valueOf(constantValue.length)
+            constantValue.length
         ));
 
         sb.append(String.format(
@@ -892,7 +891,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "        return bytesCopied;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
-            Integer.valueOf(constantValue.length),
+            constantValue.length,
             propertyName
         ));
 
@@ -928,7 +927,7 @@ public class CSharpGenerator implements CodeGenerator
             "            _buffer = buffer;\n" +
             "        }\n\n" +
             "        public const int Size = %d;\n",
-            Integer.valueOf(size)
+            size
         );
     }
 
@@ -1051,7 +1050,7 @@ public class CSharpGenerator implements CodeGenerator
             "\n" +
             indent + "    public const int %sId = %d;\n",
             CSharpUtil.formatPropertyName(token.name()),
-            Integer.valueOf(token.id())
+            token.id()
         ));
     }
 
@@ -1090,7 +1089,7 @@ public class CSharpGenerator implements CodeGenerator
 
         return String.format(
             indent + "        if (_actingVersion < %d) return %s.NULL_VALUE;\n\n",
-            Integer.valueOf(sinceVersion),
+            sinceVersion,
             enumName
         );
     }
@@ -1100,7 +1099,7 @@ public class CSharpGenerator implements CodeGenerator
         final String enumName = formatClassName(token.name());
         final String typePrefix = toUpperFirstChar(token.encoding().primitiveType().primitiveName());
         final String enumUnderlyingType = cSharpTypeName(token.encoding().primitiveType());
-        final Integer offset = Integer.valueOf(token.offset());
+        final int offset = token.offset();
         final ByteOrder byteOrder = token.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, token.encoding().primitiveType().size());
 
@@ -1138,7 +1137,7 @@ public class CSharpGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         final String bitSetName = formatClassName(token.name());
-        final Integer offset = Integer.valueOf(token.offset());
+        final int offset = token.offset();
         final String typePrefix = toUpperFirstChar(token.encoding().primitiveType().primitiveName());
         final ByteOrder byteOrder = token.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, token.encoding().primitiveType().size());
@@ -1174,8 +1173,7 @@ public class CSharpGenerator implements CodeGenerator
     private Object generateCompositeProperty(final String propertyName, final Token token, final String indent)
     {
         final String compositeName = CSharpUtil.formatClassName(token.name());
-        final Integer offset = Integer.valueOf(token.offset());
-
+        final int offset = token.offset();
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(

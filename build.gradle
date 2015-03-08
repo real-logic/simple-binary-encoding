@@ -82,8 +82,10 @@ dependencies {
             'com.google.code.gson:gson:2.3.1'
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+compileJava {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+}
 
 tasks.withType(JavaCompile) {
     // Suppress warnings about using Unsafe and sun.misc

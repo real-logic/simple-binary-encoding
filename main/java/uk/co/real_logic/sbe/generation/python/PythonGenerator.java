@@ -190,7 +190,7 @@ public class PythonGenerator implements CodeGenerator
         final StringBuilder sb, final String groupName, final List<Token> tokens, final int index, final String indent)
     {
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
-        final Integer dimensionHeaderSize = Integer.valueOf(tokens.get(index + 1).size());
+        final int dimensionHeaderSize = tokens.get(index + 1).size();
 
         sb.append(String.format(
             "\n" +
@@ -223,7 +223,7 @@ public class PythonGenerator implements CodeGenerator
             dimensionHeaderSize
         ));
 
-        final Integer blockLength = Integer.valueOf(tokens.get(index).size());
+        final int blockLength = tokens.get(index).size();
         final String typeForBlockLength = pythonTypeName(
             tokens.get(index + 2).encoding().primitiveType(), tokens.get(index + 2).encoding().byteOrder());
         final String typeForNumInGroup = pythonTypeName(
@@ -294,7 +294,7 @@ public class PythonGenerator implements CodeGenerator
             indent + "    def %1$sId():\n" +
             indent + "        return %2$d;\n\n",
             groupName,
-            Long.valueOf(token.id())
+            (long)token.id()
         ));
 
         sb.append(String.format(
@@ -333,7 +333,7 @@ public class PythonGenerator implements CodeGenerator
                 final String propertyName = toUpperFirstChar(token.name());
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
                 final Token lengthToken = tokens.get(i + 2);
-                final Integer sizeOfLengthField = Integer.valueOf(lengthToken.size());
+                final int sizeOfLengthField = lengthToken.size();
                 final String lengthPythonType = pythonTypeName(
                     lengthToken.encoding().primitiveType(), lengthToken.encoding().byteOrder());
 
@@ -414,8 +414,8 @@ public class PythonGenerator implements CodeGenerator
             "    def %1$sId():\n" +
             "        return %3$d\n\n",
             formatPropertyName(propertyName),
-            Long.valueOf(token.version()),
-            Integer.valueOf(token.id())
+            (long)token.version(),
+            token.id()
         ));
 
         sb.append(String.format(
@@ -495,7 +495,7 @@ public class PythonGenerator implements CodeGenerator
         return String.format(
             indent + "        if self.actingVersion_ < %1$d:\n" +
             indent + "            return False\n\n",
-            Integer.valueOf(sinceVersion)
+            sinceVersion
         );
     }
 
@@ -611,7 +611,7 @@ public class PythonGenerator implements CodeGenerator
         return String.format(
             indent + "        if self.actingVersion_ < %1$d:\n" +
             indent + "            return %2$s\n\n",
-            Integer.valueOf(sinceVersion),
+            sinceVersion,
             generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString())
         );
     }
@@ -626,7 +626,7 @@ public class PythonGenerator implements CodeGenerator
         return String.format(
             indent + "        if self.actingVersion_ < %1$d:\n" +
             indent + "            return False\n\n",
-            Integer.valueOf(sinceVersion)
+            sinceVersion
         );
     }
 
@@ -758,7 +758,7 @@ public class PythonGenerator implements CodeGenerator
         final String containingClassName, final String propertyName, final Token token, final String indent)
     {
         final String pythonTypeName = pythonTypeName(token.encoding().primitiveType(), token.encoding().byteOrder());
-        final Integer offset = Integer.valueOf(token.offset());
+        final int offset = token.offset();
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
@@ -790,7 +790,7 @@ public class PythonGenerator implements CodeGenerator
         final String propertyName, final Token token, final String indent)
     {
         final String pythonTypeName = pythonTypeName(token.encoding().primitiveType(), token.encoding().byteOrder());
-        final Integer offset = Integer.valueOf(token.offset());
+        final int offset = token.offset();
 
         final StringBuilder sb = new StringBuilder();
 
@@ -800,7 +800,7 @@ public class PythonGenerator implements CodeGenerator
             indent + "    def %1$sLength():\n" +
             indent + "        return %2$d\n\n",
             propertyName,
-            Integer.valueOf(token.arrayLength())
+            token.arrayLength()
         ));
 
         sb.append(String.format(
@@ -810,11 +810,11 @@ public class PythonGenerator implements CodeGenerator
             indent + "        return struct.unpack_from('%1$s', self.buffer_, self.offset_ + %6$d + (index * %7$d))[0]\n\n",
             pythonTypeName,
             toUpperFirstChar(propertyName),
-            Integer.valueOf(token.arrayLength()),
+            token.arrayLength(),
             generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
             formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
             offset,
-            Integer.valueOf(token.encoding().primitiveType().size())
+            token.encoding().primitiveType().size()
         ));
 
         sb.append(String.format(
@@ -824,9 +824,9 @@ public class PythonGenerator implements CodeGenerator
             indent + "        struct.pack_into('%2$s', self.buffer_, self.offset_ + %4$d + (index * %5$d), value)\n",
             propertyName,
             toUpperFirstChar(pythonTypeName),
-            Integer.valueOf(token.arrayLength()),
+            token.arrayLength(),
             offset,
-            Integer.valueOf(token.encoding().primitiveType().size()),
+            token.encoding().primitiveType().size(),
             formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())
         ));
 
@@ -868,7 +868,7 @@ public class PythonGenerator implements CodeGenerator
             indent + "    def %1$sLength():\n" +
             indent + "        return %2$d\n\n",
             propertyName,
-            Integer.valueOf(constantValue.length)
+            constantValue.length
         ));
 
         sb.append(String.format(
@@ -902,7 +902,7 @@ public class PythonGenerator implements CodeGenerator
             "    def size():\n" +
             "        return %2$s\n",
             className,
-            Integer.valueOf(size)
+            size
         );
     }
 
@@ -1002,7 +1002,7 @@ public class PythonGenerator implements CodeGenerator
                     indent + "    def %1$sId():\n" +
                     indent + "        return %2$d\n\n",
                     propertyName,
-                    Integer.valueOf(signalToken.id())
+                    signalToken.id()
                 ));
 
                 sb.append(String.format(
@@ -1012,7 +1012,7 @@ public class PythonGenerator implements CodeGenerator
                     indent + "    def %1$sInActingVersion(self):\n" +
                     indent + "        return self.actingVersion_ >= %2$d\n",
                     propertyName,
-                    Long.valueOf(signalToken.version())
+                    (long)signalToken.version()
                 ));
 
                 generateFieldMetaAttributeMethod(sb, signalToken, indent);
@@ -1069,8 +1069,8 @@ public class PythonGenerator implements CodeGenerator
 
         return String.format(
             indent + "        if self.actingVersion_ < %1$d:\n" +
-            indent + "            return %2$s.Value.NULL_VALUE\n" +
-            Integer.valueOf(sinceVersion),
+            indent + "            return %2$s.Value.NULL_VALUE\n",
+            sinceVersion,
             enumName
         );
     }
@@ -1080,7 +1080,7 @@ public class PythonGenerator implements CodeGenerator
     {
         final String enumName = token.name();
         final String typeName = pythonTypeName(token.encoding().primitiveType(), token.encoding().byteOrder());
-        final Integer offset = Integer.valueOf(token.offset());
+        final int offset = token.offset();
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
@@ -1114,7 +1114,7 @@ public class PythonGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
         final String bitsetName = formatClassName(token.name());
-        final Integer offset = Integer.valueOf(token.offset());
+        final int offset = token.offset();
 
         sb.append(String.format(
             "\n" +
@@ -1133,7 +1133,7 @@ public class PythonGenerator implements CodeGenerator
     private Object generateCompositeProperty(final String propertyName, final Token token, final String indent)
     {
         final String compositeName = formatClassName(token.name());
-        final Integer offset = Integer.valueOf(token.offset());
+        final int offset = token.offset();
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
@@ -1197,6 +1197,7 @@ public class PythonGenerator implements CodeGenerator
                 {
                     literal = value;
                 }
+                break;
         }
 
         return literal;
