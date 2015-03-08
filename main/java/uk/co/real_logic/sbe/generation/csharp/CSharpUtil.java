@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class CSharpUtil
 {
-    static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
+    private static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
 
     /**
      * http://msdn.microsoft.com/en-us/library/ms228360(v=vs.90).aspx

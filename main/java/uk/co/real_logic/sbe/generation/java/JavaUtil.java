@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class JavaUtil
 {
-    static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
+    private static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
 
     static
     {

@@ -441,7 +441,8 @@ public class JavaGenerator implements CodeGenerator
             final ByteOrder byteOrder = lengthEncoding.byteOrder();
             final String byteOrderStr = lengthEncoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
-            generateVarDataMethods(sb, token, propertyName, sizeOfLengthField, lengthJavaType, lengthTypePrefix, byteOrderStr);
+            generateVarDataMethods(
+                sb, token, propertyName, sizeOfLengthField, lengthJavaType, lengthTypePrefix, byteOrderStr, characterEncoding);
         }
 
         return sb;
@@ -454,7 +455,8 @@ public class JavaGenerator implements CodeGenerator
         final int sizeOfLengthField,
         final String lengthJavaType,
         final String lengthTypePrefix,
-        final String byteOrderStr)
+        final String byteOrderStr,
+        final String characterEncoding)
     {
         sb.append(String.format(
             "\n" +
@@ -499,6 +501,65 @@ public class JavaGenerator implements CodeGenerator
             "        return length;\n" +
             "    }\n",
             propertyName,
+            sizeOfLengthField,
+            lengthTypePrefix,
+            lengthJavaType,
+            byteOrderStr
+        ));
+
+        sb.append(String.format(
+            "\n" +
+            "    public String %1$s()\n" +
+            "    {\n" +
+            "%2$s" +
+            "        final int sizeOfLengthField = %3$d;\n" +
+            "        final int limit = limit();\n" +
+            "        buffer.checkLimit(limit + sizeOfLengthField);\n" +
+            "        final int dataLength = CodecUtil.%4$sGet(buffer, limit%5$s);\n" +
+            "        limit(limit + sizeOfLengthField + dataLength);\n" +
+            "        final byte[] tmp = new byte[dataLength];\n" +
+            "        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, tmp, 0, dataLength);\n\n" +
+            "        final String value;\n" +
+            "        try\n" +
+            "        {\n" +
+            "            value = new String(tmp, \"%6$s\");\n" +
+            "        }\n" +
+            "        catch (final java.io.UnsupportedEncodingException ex)\n" +
+            "        {\n" +
+            "            throw new RuntimeException(ex);\n" +
+            "        }\n\n" +
+            "        return value;\n" +
+            "    }\n",
+            toLowerFirstChar(propertyName),
+            generateStringNotPresentCondition(token.version(), BASE_INDENT),
+            sizeOfLengthField,
+            lengthTypePrefix,
+            byteOrderStr,
+            characterEncoding
+        ));
+
+        sb.append(String.format(
+            "\n" +
+            "    public void %1$s(final String value)\n" +
+            "    {\n" +
+            "        final byte[] bytes;\n" +
+            "        try\n" +
+            "        {\n" +
+            "            bytes = value.getBytes(\"%2$s\");\n" +
+            "        }\n" +
+            "        catch (final java.io.UnsupportedEncodingException ex)\n" +
+            "        {\n" +
+            "            throw new RuntimeException(ex);\n" +
+            "        }\n\n" +
+            "        final int length = bytes.length;\n" +
+            "        final int sizeOfLengthField = %3$d;\n" +
+            "        final int limit = limit();\n" +
+            "        limit(limit + sizeOfLengthField + length);\n" +
+            "        CodecUtil.%4$sPut(buffer, limit, (%5$s)length%6$s);\n" +
+            "        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, bytes, 0, length);\n" +
+            "    }\n",
+            toLowerFirstChar(propertyName),
+            characterEncoding,
             sizeOfLengthField,
             lengthTypePrefix,
             lengthJavaType,
@@ -966,6 +1027,22 @@ public class JavaGenerator implements CodeGenerator
             indent + "        if (actingVersion < %d)\n" +
             indent + "        {\n" +
             indent + "            return 0;\n" +
+            indent + "        }\n\n",
+            sinceVersion
+        );
+    }
+
+    private CharSequence generateStringNotPresentCondition(final int sinceVersion, final String indent)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            indent + "        if (actingVersion < %d)\n" +
+            indent + "        {\n" +
+            indent + "            return \"\";\n" +
             indent + "        }\n\n",
             sinceVersion
         );

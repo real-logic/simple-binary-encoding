@@ -68,7 +68,7 @@ public class MethodSelector
         final Set<String> sortedMethodNames = sortedMethods.get(clazz);
         if (sortedMethodNames == null)
         {
-            final GroupOrder order = (GroupOrder)clazz.getAnnotation(GroupOrder.class);
+            final GroupOrder order = clazz.getAnnotation(GroupOrder.class);
             if (order == null)
             {
                 sortedMethods.put(clazz, Collections.<String>emptySet());

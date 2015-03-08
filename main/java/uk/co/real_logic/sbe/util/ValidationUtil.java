@@ -35,26 +35,28 @@ public class ValidationUtil
     }
 
     private static final Set<String> CPP_KEYWORDS = new HashSet<>(Arrays.asList(new String[]
-        {"alignas", "and", "and_eq", "asm", "auto",
-         "bitand", "bitor", "bool", "break", "case",
-         "catch", "char", "class", "compl", "const",
-         "const_cast", "continue", "char16_t", "char32_t", "default",
-         "delete", "do", "double", "dynamic_cast", "else",
-         "enum", "explicit", "export", "extern", "false",
-         "float", "for", "friend", "goto", "if",
-         "inline", "int", "long", "mutable", "namespace",
-         "new", "not", "not_eq", "noexcept", "operator",
-         "or", "or_eq", "private", "protected", "public",
-         "register", "reinterpret_cast", "return", "short", "signed",
-         "sizeof", "static", "static_cast", "struct", "switch",
-         "template", "this", "throw", "true", "try",
-         "typedef", "typeid", "typename", "union", "unsigned",
-         "using", "virtual", "void", "volatile", "wchar_t",
-         "while", "xor", "xor_eq", "override",
-         // since C++11
-         "alignof", "constexpr", "decltype", "nullptr", "static_assert", "thread_local",
-         // since C++11 have special meaning, so avoid
-         "final"}));
+        {
+            "alignas", "and", "and_eq", "asm", "auto",
+            "bitand", "bitor", "bool", "break", "case",
+            "catch", "char", "class", "compl", "const",
+            "const_cast", "continue", "char16_t", "char32_t", "default",
+            "delete", "do", "double", "dynamic_cast", "else",
+            "enum", "explicit", "export", "extern", "false",
+            "float", "for", "friend", "goto", "if",
+            "inline", "int", "long", "mutable", "namespace",
+            "new", "not", "not_eq", "noexcept", "operator",
+            "or", "or_eq", "private", "protected", "public",
+            "register", "reinterpret_cast", "return", "short", "signed",
+            "sizeof", "static", "static_cast", "struct", "switch",
+            "template", "this", "throw", "true", "try",
+            "typedef", "typeid", "typename", "union", "unsigned",
+            "using", "virtual", "void", "volatile", "wchar_t",
+            "while", "xor", "xor_eq", "override",
+            // since C++11
+            "alignof", "constexpr", "decltype", "nullptr", "static_assert", "thread_local",
+            // since C++11 have special meaning, so avoid
+            "final"
+        }));
 
     /**
      * Check value for validity of usage as a C++ identifier. A programmatic variable
@@ -106,18 +108,20 @@ public class ValidationUtil
     }
 
     private static final Set<String> JAVA_KEYWORDS = new HashSet<>(Arrays.asList(new String[]
-        {"abstract", "assert", "boolean", "break", "byte",
-         "case", "catch", "char", "class", "const",
-         "continue", "default", "do", "double", "else",
-         "enum", "extends", "final", "finally", "float",
-         "for", "goto", "if", "implements", "import",
-         "instanceof", "int", "interface", "long", "native",
-         "new", "package", "private", "protected", "public",
-         "return", "short", "static", "strictfp", "super",
-         "switch", "synchronized", "this", "throw", "throws",
-         "transient", "try", "void", "volatile", "while",
-         // literals
-         "null", "true", "false"}));
+        {
+            "abstract", "assert", "boolean", "break", "byte",
+            "case", "catch", "char", "class", "const",
+            "continue", "default", "do", "double", "else",
+            "enum", "extends", "final", "finally", "float",
+            "for", "goto", "if", "implements", "import",
+            "instanceof", "int", "interface", "long", "native",
+            "new", "package", "private", "protected", "public",
+            "return", "short", "static", "strictfp", "super",
+            "switch", "synchronized", "this", "throw", "throws",
+            "transient", "try", "void", "volatile", "while",
+            // literals
+            "null", "true", "false"
+        }));
 
     /**
      * Check string for validity of usage as a Java identifier. Avoiding keywords.

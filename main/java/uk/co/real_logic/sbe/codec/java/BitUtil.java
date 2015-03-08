@@ -120,11 +120,11 @@ class BitUtil
         {
             final Field addressField = Buffer.class.getDeclaredField("address");
             addressField.setAccessible(true);
-            addressField.set(byteBuffer, Long.valueOf(address));
+            addressField.set(byteBuffer, address);
 
             final Field capacityField = Buffer.class.getDeclaredField("capacity");
             capacityField.setAccessible(true);
-            capacityField.set(byteBuffer, Integer.valueOf(capacity));
+            capacityField.set(byteBuffer, capacity);
 
             final Field cleanerField = byteBuffer.getClass().getDeclaredField("cleaner");
             cleanerField.setAccessible(true);

@@ -49,9 +49,10 @@ public enum TargetCodeGenerator
             public CodeGenerator newInstance(final Ir ir, final String outputDir)
                 throws IOException
             {
-                return new JavaGenerator(ir,
-                        System.getProperty(SbeTool.JAVA_BUFFER, UnsafeBuffer.class.getName()),
-                        new PackageOutputManager(outputDir, ir.applicableNamespace()));
+                return new JavaGenerator(
+                    ir,
+                    System.getProperty(SbeTool.JAVA_BUFFER, UnsafeBuffer.class.getName()),
+                    new PackageOutputManager(outputDir, ir.applicableNamespace()));
             }
         },
 

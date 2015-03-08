@@ -110,19 +110,18 @@ public class JavaMockPojoGenerator implements CodeGenerator
                 final String choiceName = token.name();
                 sb.append(String.format(
                     "\n" +
-                    "    private boolean %s;\n" +
-                    "    public boolean %s()\n" +
+                    "    private boolean %1$s;\n" +
+                    "    public boolean %1$s()\n" +
                     "    {\n" +
-                    "        return %s;\n" +
+                    "        return %1$s;\n" +
                     "    }\n\n" +
-                    "    public %s %s(final boolean value)\n" +
+                    "    public %2$s %1$s(final boolean value)\n" +
                     "    {\n" +
-                    "        %s = value;\n" +
+                    "        %1$s = value;\n" +
                     "        return this;\n" +
                     "    }\n",
-                    choiceName, choiceName, choiceName,
-                    bitSetClassName,
-                    choiceName, choiceName
+                    choiceName,
+                    bitSetClassName
                 ));
             }
         }

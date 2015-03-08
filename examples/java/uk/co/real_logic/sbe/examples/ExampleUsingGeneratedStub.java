@@ -156,7 +156,7 @@ public class ExampleUsingGeneratedStub
                    .next().mph(60).seconds(7.1f)
                    .next().mph(100).seconds(11.8f);
 
-        car.putMake(MAKE, srcOffset, MAKE.length);
+        car.make(new String(MAKE));
         car.putModel(MODEL, srcOffset, MODEL.length);
 
         return car.size();
@@ -231,8 +231,7 @@ public class ExampleUsingGeneratedStub
         }
 
         sb.append("\ncar.make.semanticType=").append(Car.makeMetaAttribute(MetaAttribute.SEMANTIC_TYPE));
-        sb.append("\ncar.make=").append(
-            new String(buffer, 0, car.getMake(buffer, 0, buffer.length), Car.makeCharacterEncoding()));
+        sb.append("\ncar.make=").append(car.make());
 
         sb.append("\ncar.model=").append(
             new String(buffer, 0, car.getModel(buffer, 0, buffer.length), Car.modelCharacterEncoding()));
