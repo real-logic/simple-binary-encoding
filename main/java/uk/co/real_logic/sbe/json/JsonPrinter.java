@@ -25,23 +25,21 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
- * .
+ * Pretty Print Json based upon the given Ir.
  */
 public class JsonPrinter {
 
+    private final OtfHeaderDecoder headerDecoder;
     private final Ir ir;
 
     public JsonPrinter(final Ir ir)
     {
         this.ir = ir;
+        headerDecoder = new OtfHeaderDecoder(ir.headerStructure());
     }
 
     public void print(final ByteBuffer encodedMessage, final StringBuilder output)
     {
-        // From the IR we can create OTF decoder for message headers.
-        final OtfHeaderDecoder headerDecoder = new OtfHeaderDecoder(ir.headerStructure());
-
-        // Now we have IR we can read the message header
         int bufferOffset = 0;
         final UnsafeBuffer buffer = new UnsafeBuffer(encodedMessage);
 

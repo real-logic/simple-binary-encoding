@@ -46,14 +46,12 @@ public class JsonPrinterTest
     @Test
     public void exampleMessagePrintedAsJson() throws Exception
     {
-        // Encode up message and schema as if we just got them off the wire.
         final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocateDirect(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);
 
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
-        // Now lets decode the schema IR so we have IR objects.
         encodedSchemaBuffer.flip();
         final Ir ir = decodeIr(encodedSchemaBuffer);
 
