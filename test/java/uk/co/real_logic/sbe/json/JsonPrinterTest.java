@@ -15,11 +15,10 @@
  */
 package uk.co.real_logic.sbe.json;
 
-import baseline.Car;
-import baseline.MessageHeader;
+import baseline.*;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
-import uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.IrDecoder;
 import uk.co.real_logic.sbe.ir.IrEncoder;
@@ -31,6 +30,7 @@ import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
 import static junit.framework.TestCase.assertEquals;
@@ -42,6 +42,28 @@ public class JsonPrinterTest
     private static final int ACTING_VERSION = 0;
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
+    private static final String ENCODING_FILENAME = "sbe.encoding.filename";
+
+    private static byte[] vehicleCode;
+    private static byte[] manufacturerCode;
+    private static byte[] make;
+    private static byte[] model;
+
+    @BeforeClass
+    public static void setupExampleData()
+    {
+        try
+        {
+            vehicleCode = "abcdef".getBytes(Car.vehicleCodeCharacterEncoding());
+            manufacturerCode = "123".getBytes(Engine.manufacturerCodeCharacterEncoding());
+            make = "Honda".getBytes(Car.makeCharacterEncoding());
+            model = "Civic VTi".getBytes(Car.modelCharacterEncoding());
+        }
+        catch (final UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+    }
 
     @Test
     public void exampleMessagePrintedAsJson() throws Exception
@@ -147,7 +169,54 @@ public class JsonPrinterTest
 
         bufferOffset += MESSAGE_HEADER.size();
 
-        bufferOffset += ExampleUsingGeneratedStub.encode(CAR, directBuffer, bufferOffset);
+        final int srcOffset = 0;
+
+        CAR.wrapForEncode(directBuffer, bufferOffset)
+           .serialNumber(1234)
+           .modelYear(2013)
+           .available(BooleanType.TRUE)
+           .code(Model.A)
+           .putVehicleCode(vehicleCode, srcOffset);
+
+        for (int i = 0, size = Car.someNumbersLength(); i < size; i++)
+        {
+            CAR.someNumbers(i, i);
+        }
+
+        CAR.extras()
+           .clear()
+           .cruiseControl(true)
+           .sportsPack(true)
+           .sunRoof(false);
+
+        CAR.engine()
+           .capacity(2000)
+           .numCylinders((short)4)
+           .putManufacturerCode(manufacturerCode, srcOffset);
+
+        CAR.fuelFiguresCount(3)
+           .next().speed(30).mpg(35.9f)
+           .next().speed(55).mpg(49.0f)
+           .next().speed(75).mpg(40.0f);
+
+        final Car.PerformanceFigures perfFigures = CAR.performanceFiguresCount(2);
+        perfFigures.next()
+                   .octaneRating((short)95)
+                   .accelerationCount(3)
+                   .next().mph(30).seconds(4.0f)
+                   .next().mph(60).seconds(7.5f)
+                   .next().mph(100).seconds(12.2f);
+        perfFigures.next()
+                   .octaneRating((short)99)
+                   .accelerationCount(3)
+                   .next().mph(30).seconds(3.8f)
+                   .next().mph(60).seconds(7.1f)
+                   .next().mph(100).seconds(11.8f);
+
+        CAR.make(new String(make));
+        CAR.putModel(model, srcOffset, model.length);
+
+        bufferOffset += CAR.size();
 
         buffer.position(bufferOffset);
     }

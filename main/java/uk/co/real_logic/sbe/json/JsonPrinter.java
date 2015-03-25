@@ -27,7 +27,8 @@ import java.util.List;
 /**
  * Pretty Print Json based upon the given Ir.
  */
-public class JsonPrinter {
+public class JsonPrinter
+{
 
     private final OtfHeaderDecoder headerDecoder;
     private final Ir ir;
@@ -74,7 +75,7 @@ public class JsonPrinter {
         if (schemaId != ir.id())
         {
             throw new IllegalArgumentException(
-                String.format("Required schema id %d but was actually %d", ir.id(), schemaId));
+                    String.format("Required schema id %d but was actually %d", ir.id(), schemaId));
         }
     }
 

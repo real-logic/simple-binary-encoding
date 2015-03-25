@@ -80,6 +80,8 @@ dependencies {
             'junit:junit:4.11',
             'org.mockito:mockito-all:1.9.5',
             'com.google.code.gson:gson:2.3.1'
+
+    testCompile files('build/classes/generated')
 }
 
 compileJava {
@@ -101,7 +103,11 @@ compileExamplesJava.dependsOn 'compileGeneratedJava'
 compileGeneratedJava.classpath += sourceSets.main.runtimeClasspath
 compileExamplesJava.classpath += sourceSets.generated.runtimeClasspath + sourceSets.main.runtimeClasspath
 
-task (generateExampleCodecs, dependsOn: 'test', type: JavaExec) {
+test {
+    classpath += files('build/classes/generated')
+}
+
+task (generateExampleCodecs, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = sourceSets.main.runtimeClasspath
     systemProperties('sbe.output.dir': generatedDir,
