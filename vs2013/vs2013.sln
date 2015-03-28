@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adaptive.SimpleBinaryEncoding", "..\main\csharp\Adaptive.SimpleBinaryEncoding.csproj", "{CE883FD9-14A5-409C-AEBC-86BEA4E3C502}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adaptive.SimpleBinaryEncoding.Examples", "..\examples\csharp\Adaptive.SimpleBinaryEncoding.Examples.csproj", "{2B325F15-0C54-49F5-A4B9-16088222CC0E}"
@@ -27,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adaptive.SimpleBinaryEncoding.PerfTests", "..\perf\csharp\Adaptive.SimpleBinaryEncoding.PerfTests\Adaptive.SimpleBinaryEncoding.PerfTests.csproj", "{B4A22C65-AC09-43A7-B7D6-141A0B9EC0E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adaptive.SimpleBinaryEncoding.CodeGen", "Adaptive.SimpleBinaryEncoding.CodeGen\Adaptive.SimpleBinaryEncoding.CodeGen.csproj", "{3BFD9331-B490-4C0D-BDD9-405D01EB6C08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +49,10 @@ Global
 		{B4A22C65-AC09-43A7-B7D6-141A0B9EC0E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4A22C65-AC09-43A7-B7D6-141A0B9EC0E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4A22C65-AC09-43A7-B7D6-141A0B9EC0E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BFD9331-B490-4C0D-BDD9-405D01EB6C08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BFD9331-B490-4C0D-BDD9-405D01EB6C08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BFD9331-B490-4C0D-BDD9-405D01EB6C08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BFD9331-B490-4C0D-BDD9-405D01EB6C08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

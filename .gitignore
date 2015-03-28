@@ -37,3 +37,6 @@ Testing
 
 # Mac
 .DS_Store
+Debug
+/vs2013/Adaptive.SimpleBinaryEncoding.CodeGen/bin/Release
+/vs2013/Adaptive.SimpleBinaryEncoding.CodeGen/obj/Release
