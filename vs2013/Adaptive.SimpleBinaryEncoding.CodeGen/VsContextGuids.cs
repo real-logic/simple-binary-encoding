@@ -1,4 +1,4 @@
-namespace CapnProtonet.CapnProto_VSPackage
+namespace Adaptive.SimpleBinaryEncoding.CodeGen
 {
     public static class VsContextGuids
     {

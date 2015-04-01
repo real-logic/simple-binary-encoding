@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace ChristopherShain.Adaptive_SimpleBinaryEncoding_CodeGen
+namespace Adaptive.SimpleBinaryEncoding.CodeGen
 {
     /// <summary>Helper class with boilerplate common to all single-file generators.</summary>
     [ComVisible(true)]

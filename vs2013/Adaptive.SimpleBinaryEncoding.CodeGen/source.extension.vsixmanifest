@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="bb335958-18aa-4acf-ac35-a576ee56dced" Version="1.0.1" Language="en-US" Publisher="Christopher Shain" />
+    <Identity Id="bb335958-18aa-4acf-ac35-a576ee56dced" Version="1.0.2" Language="en-US" Publisher="Christopher Shain" />
     <DisplayName>Adaptive.SimpleBinaryEncoding.CodeGen</DisplayName>
     <Description xml:space="preserve">Simple proxy generator for SBE (https://github.com/real-logic/simple-binary-encoding)</Description>
     <License>LICENSE.txt</License>
     <Tags>SBE, Simple Binary Encoding</Tags>
   </Metadata>
   <Installation InstalledByMsi="false">
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[11.0,12.0)" />
-    <InstallationTarget Version="[11.0,12.0)" Id="Microsoft.VisualStudio.Premium" />
-    <InstallationTarget Version="[11.0,12.0)" Id="Microsoft.VisualStudio.Ultimate" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[11.0,]" />
+    <InstallationTarget Version="[11.0,]" Id="Microsoft.VisualStudio.Premium" />
+    <InstallationTarget Version="[11.0,]" Id="Microsoft.VisualStudio.Ultimate" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />

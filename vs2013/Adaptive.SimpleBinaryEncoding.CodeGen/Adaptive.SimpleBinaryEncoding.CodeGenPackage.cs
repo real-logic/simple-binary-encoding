@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
 
-namespace ChristopherShain.Adaptive_SimpleBinaryEncoding_CodeGen
+namespace Adaptive.SimpleBinaryEncoding.CodeGen
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.

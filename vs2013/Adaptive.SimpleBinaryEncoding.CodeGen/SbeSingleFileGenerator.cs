@@ -3,12 +3,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using CapnProtonet.CapnProto_VSPackage;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextTemplating.VSHost;
 
-namespace ChristopherShain.Adaptive_SimpleBinaryEncoding_CodeGen
+namespace Adaptive.SimpleBinaryEncoding.CodeGen
 {
     // Note: the class name is used as the name of the Custom Tool from the end-user's perspective.
     [ComVisible(true)]

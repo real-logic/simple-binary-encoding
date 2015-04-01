@@ -1,8 +1,9 @@
 ﻿// Guids.cs
 // MUST match guids.h
+
 using System;
 
-namespace ChristopherShain.Adaptive_SimpleBinaryEncoding_CodeGen
+namespace Adaptive.SimpleBinaryEncoding.CodeGen
 {
     static class GuidList
     {
