@@ -1438,7 +1438,7 @@ public class Cpp98Generator implements CodeGenerator
         // Visual C++ does not handle minimum integer values properly
         // See: http://msdn.microsoft.com/en-us/library/4kh09110.aspx
         // So some of the null values get special handling
-        if(null == encoding.nullValue())
+        if (null == encoding.nullValue())
         {
             switch (primitiveType)
             {

@@ -59,6 +59,8 @@
             <property name="tokens" value="COMMA, SEMI"/>
         </module>
 
+        <module name="WhitespaceAround"/>
+
         <module name="OperatorWrap">
             <property name="tokens" value="PLUS, ASSIGN"/>
             <property name="option" value="eol"/>
