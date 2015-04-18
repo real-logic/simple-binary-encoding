@@ -18,7 +18,6 @@ package uk.co.real_logic.sbe.ir;
 
 import org.junit.Test;
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
@@ -29,6 +28,7 @@ import java.util.List;
 import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static uk.co.real_logic.sbe.TestUtil.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class BasicXmlIrGenerationTest
@@ -37,7 +37,7 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageHeader()
         throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
 
         final Ir ir = irg.generate(schema);
@@ -100,11 +100,11 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForBasicMessage()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
-        IrGenerator irg = new IrGenerator();
-        Ir ir = irg.generate(schema);
+        final MessageSchema schema = parse(getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
+        final IrGenerator irg = new IrGenerator();
+        final Ir ir = irg.generate(schema);
 
-        List<Token> tokens = ir.getMessage(50001);
+        final List<Token> tokens = ir.getMessage(50001);
 
         assertThat(valueOf(tokens.size()), is(valueOf(5)));
 
@@ -150,11 +150,11 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageWithVariableLengthField()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("basic-variable-length-schema.xml"), ParserOptions.DEFAULT);
-        IrGenerator irg = new IrGenerator();
-        Ir ir = irg.generate(schema);
+        final MessageSchema schema = parse(getLocalResource("basic-variable-length-schema.xml"), ParserOptions.DEFAULT);
+        final IrGenerator irg = new IrGenerator();
+        final Ir ir = irg.generate(schema);
 
-        List<Token> tokens = ir.getMessage(1);
+        final List<Token> tokens = ir.getMessage(1);
 
         assertThat(valueOf(tokens.size()), is(valueOf(8)));
 
@@ -213,16 +213,17 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensions()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("basic-group-schema.xml"), ParserOptions.DEFAULT);
-        IrGenerator irg = new IrGenerator();
-        Ir ir = irg.generate(schema);
-        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, ... */
-        int groupIdx = 4;
-        int dimensionsCompIdx = 5;
-        int dimensionsBlEncIdx = 6;
-        int dimensionsNigEncIdx = 7;
+        final MessageSchema schema = parse(getLocalResource("basic-group-schema.xml"), ParserOptions.DEFAULT);
+        final IrGenerator irg = new IrGenerator();
+        final Ir ir = irg.generate(schema);
 
-        List<Token> tokens = ir.getMessage(1);
+        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, ... */
+        final int groupIdx = 4;
+        final int dimensionsCompIdx = 5;
+        final int dimensionsBlEncIdx = 6;
+        final int dimensionsNigEncIdx = 7;
+
+        final List<Token> tokens = ir.getMessage(1);
 
         /* assert on the group token */
         assertThat(tokens.get(groupIdx).signal(), is(Signal.BEGIN_GROUP));
@@ -246,15 +247,16 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensionsDefaultDimensionType()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
-        IrGenerator irg = new IrGenerator();
-        Ir ir = irg.generate(schema);
-        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, 9=field, ... */
-        int groupIdx = 4;
-        int dimensionsCompIdx = 5;
-        int fieldInGroupIdx = 9;
+        final MessageSchema schema = parse(getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
+        final IrGenerator irg = new IrGenerator();
+        final Ir ir = irg.generate(schema);
 
-        List<Token> tokens = ir.getMessage(1);
+        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, 9=field, ... */
+        final int groupIdx = 4;
+        final int dimensionsCompIdx = 5;
+        final int fieldInGroupIdx = 9;
+
+        final List<Token> tokens = ir.getMessage(1);
 
         assertThat(tokens.get(groupIdx).signal(), is(Signal.BEGIN_GROUP));
         assertThat(tokens.get(groupIdx).name(), is("ListOrdGrp"));
@@ -271,15 +273,16 @@ public class BasicXmlIrGenerationTest
     public void shouldGenerateCorrectIrForMessageWithVariableLengthFieldWithEmbeddedLength()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
-        IrGenerator irg = new IrGenerator();
-        Ir ir = irg.generate(schema);
-        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=field, 5=comp, 6=enc, 7=enc, 8=compend, 9=fieldend */
-        int lengthFieldIdx = 4;
-        int lengthEncIdx = 6;
-        int dataEncIdx = 7;
+        final MessageSchema schema = parse(getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
+        final IrGenerator irg = new IrGenerator();
+        final Ir ir = irg.generate(schema);
 
-        List<Token> tokens = ir.getMessage(2);
+        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=field, 5=comp, 6=enc, 7=enc, 8=compend, 9=fieldend */
+        final int lengthFieldIdx = 4;
+        final int lengthEncIdx = 6;
+        final int dataEncIdx = 7;
+
+        final List<Token> tokens = ir.getMessage(2);
 
         /* assert the varDataEncoding field node is formed correctly */
         assertThat(tokens.get(lengthFieldIdx).signal(), is(Signal.BEGIN_VAR_DATA));

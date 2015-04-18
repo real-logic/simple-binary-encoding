@@ -115,7 +115,7 @@ public class PythonGenerator implements CodeGenerator
 
                 final List<Token> groups = new ArrayList<>();
                 offset = collectGroups(messageBody, offset, groups);
-                StringBuilder sb = new StringBuilder();
+                final StringBuilder sb = new StringBuilder();
                 generateGroups(sb, groups, 0, BASE_INDENT);
                 out.append(sb);
 

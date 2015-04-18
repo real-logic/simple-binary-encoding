@@ -29,7 +29,6 @@ import java.util.List;
  */
 public class JsonPrinter
 {
-
     private final OtfHeaderDecoder headerDecoder;
     private final Ir ir;
 
@@ -57,12 +56,12 @@ public class JsonPrinter
         final List<Token> msgTokens = ir.getMessage(templateId);
 
         bufferOffset = OtfMessageDecoder.decode(
-                buffer,
-                bufferOffset,
-                actingVersion,
-                blockLength,
-                msgTokens,
-                new JsonTokenListener(output));
+            buffer,
+            bufferOffset,
+            actingVersion,
+            blockLength,
+            msgTokens,
+            new JsonTokenListener(output));
 
         if (bufferOffset != encodedMessage.position())
         {
@@ -70,28 +69,30 @@ public class JsonPrinter
         }
     }
 
-    private void validateId(int schemaId)
+    private void validateId(final int schemaId)
     {
         if (schemaId != ir.id())
         {
             throw new IllegalArgumentException(
-                    String.format("Required schema id %d but was actually %d", ir.id(), schemaId));
+                String.format("Required schema id %d but was actually %d", ir.id(), schemaId));
         }
     }
 
-    private void validateVersion(int schemaId, int actingVersion)
+    private void validateVersion(final int schemaId, final int actingVersion)
     {
         if (actingVersion > ir.version())
         {
             throw new IllegalArgumentException(
-                    String.format("Required schema id %d but was actually %d", ir.id(), schemaId));
+                String.format("Required schema id %d but was actually %d", ir.id(), schemaId));
         }
     }
 
     public String print(final ByteBuffer encodedMessage)
     {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         print(encodedMessage, sb);
+
+
         return sb.toString();
     }
 

@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -58,7 +57,7 @@ public class CompositeTypeTest
         assertThat(decimal.name(), is("decimal"));
         assertThat(decimal.getType("mantissa").primitiveType(), is(PrimitiveType.INT64));
         assertThat(decimal.getType("exponent").primitiveType(), is(PrimitiveType.INT8));
-        assertThat(valueOf(decimal.size()), is(valueOf(9)));
+        assertThat(decimal.size(), is(9));
     }
 
     @Test
@@ -81,7 +80,7 @@ public class CompositeTypeTest
         assertThat(decimal32.getType("exponent").primitiveType(), is(PrimitiveType.INT8));
         assertThat(decimal32.getType("exponent").presence(), is(Presence.CONSTANT));
         assertThat((decimal32.getType("exponent")).constVal(), is(PrimitiveValue.parse("-2", PrimitiveType.INT8)));
-        assertThat(valueOf(decimal32.size()), is(valueOf(4)));
+        assertThat(decimal32.size(), is(4));
     }
 
     @Test
@@ -104,7 +103,7 @@ public class CompositeTypeTest
         assertThat(decimal64.getType("exponent").primitiveType(), is(PrimitiveType.INT8));
         assertThat(decimal64.getType("exponent").presence(), is(Presence.CONSTANT));
         assertThat((decimal64.getType("exponent")).constVal(), is(PrimitiveValue.parse("-2", PrimitiveType.INT8)));
-        assertThat(valueOf(decimal64.size()), is(valueOf(8)));
+        assertThat(decimal64.size(), is(8));
     }
 
     @Test
@@ -122,7 +121,7 @@ public class CompositeTypeTest
         final Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         final CompositeType c = (CompositeType)map.get("decimal");
 
-        assertThat(valueOf(c.getTypeList().size()), is(valueOf(2)));
+        assertThat(c.getTypeList().size(), is(2));
         assertThat(c.getTypeList().get(0).name(), is("mantissa"));
         assertThat(c.getTypeList().get(1).name(), is("exponent"));
     }
@@ -177,7 +176,7 @@ public class CompositeTypeTest
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            Type t = new CompositeType(list.item(i));
+            final Type t = new CompositeType(list.item(i));
             map.put(t.name(), t);
         }
 

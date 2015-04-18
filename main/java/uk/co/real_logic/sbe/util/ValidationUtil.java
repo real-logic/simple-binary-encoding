@@ -89,7 +89,7 @@ public class ValidationUtil
     {
         for (int i = 0, size = stringVal.length(); i < size; i++)
         {
-            char c = stringVal.charAt(i);
+            final char c = stringVal.charAt(i);
 
             if (i == 0 && isSbeCppIdentifierStart(c))
             {
@@ -161,7 +161,7 @@ public class ValidationUtil
 
         for (int i = 0, size = value.length(); i < size; i++)
         {
-            char c = value.charAt(i);
+            final char c = value.charAt(i);
 
             if (i == 0 && Character.isJavaIdentifierStart(c))
             {

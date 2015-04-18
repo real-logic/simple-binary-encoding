@@ -35,8 +35,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.Boolean.valueOf;
-import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.PrimitiveValue.parse;
@@ -62,8 +60,8 @@ public class EncodedDataTypeTest
         final EncodedDataType d = (EncodedDataType)t;
 
         assertThat(d.primitiveType(), is(PrimitiveType.CHAR));
-        assertThat(valueOf(d.length()), is(valueOf(1)));
-        assertThat(valueOf(d.isVariableLength()), is(Boolean.FALSE));
+        assertThat(d.length(), is(1));
+        assertThat(d.isVariableLength(), is(false));
     }
 
     @Test
@@ -79,7 +77,7 @@ public class EncodedDataTypeTest
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
         // assert that testType is in map and name of Type is correct
-        assertThat(valueOf(map.size()), is(valueOf(2)));
+        assertThat(map.size(), is(2));
         assertThat(map.get("testType1").name(), is("testType1"));
         assertThat(map.get("testType2").name(), is("testType2"));
     }
@@ -93,15 +91,16 @@ public class EncodedDataTypeTest
             "    <type name=\"testType\" primitiveType=\"char\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         // assert that testType is in map and name of Type is correct
         assertThat(map.get("testType").name(), is("testType"));
         // assert defaults for length, variableLength and presence
-        Type t = map.get("testType");
+        final Type t = map.get("testType");
         assertThat(t.presence(), is(Presence.REQUIRED));
-        EncodedDataType d = (EncodedDataType)t;
-        assertThat(valueOf(d.length()), is(valueOf(1)));
-        assertThat(valueOf(d.isVariableLength()), is(Boolean.FALSE));
+
+        final EncodedDataType d = (EncodedDataType)t;
+        assertThat(d.length(), is(1));
+        assertThat(d.isVariableLength(), is(false));
     }
 
     @Test
@@ -227,17 +226,16 @@ public class EncodedDataTypeTest
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
-        assertThat(valueOf(map.get("testTypeChar").size()), is(valueOf(1)));
-        assertThat(valueOf(map.get("testTypeInt8").size()), is(valueOf(1)));
-        assertThat(valueOf(map.get("testTypeInt16").size()), is(valueOf(2)));
-        assertThat(valueOf(map.get("testTypeInt32").size()), is(valueOf(4)));
-        assertThat(valueOf(map.get("testTypeInt64").size()), is(valueOf(8)));
-        assertThat(valueOf(map.get("testTypeUInt8").size()), is(valueOf(1)));
-        assertThat(valueOf(map.get("testTypeUInt16").size()), is(valueOf(2)));
-        assertThat(valueOf(map.get("testTypeUInt32").size()), is(valueOf(4)));
-        assertThat(valueOf(map.get("testTypeUInt64").size()), is(valueOf(8)));
-        assertThat(valueOf(map.get("testTypeFloat").size()), is(valueOf(4)));
-        assertThat(valueOf(map.get("testTypeDouble").size()), is(valueOf(8)));
+        assertThat(map.get("testTypeChar").size(), is(1));
+        assertThat(map.get("testTypeInt8").size(), is(1));
+        assertThat(map.get("testTypeInt32").size(), is(4));
+        assertThat(map.get("testTypeInt64").size(), is(8));
+        assertThat(map.get("testTypeUInt8").size(), is(1));
+        assertThat(map.get("testTypeUInt16").size(), is(2));
+        assertThat(map.get("testTypeUInt32").size(), is(4));
+        assertThat(map.get("testTypeUInt64").size(), is(8));
+        assertThat(map.get("testTypeFloat").size(), is(4));
+        assertThat(map.get("testTypeDouble").size(), is(8));
     }
 
     @Test
@@ -397,7 +395,7 @@ public class EncodedDataTypeTest
             "    <type name=\"testTypeInt8MinValue\" primitiveType=\"int8\" minValue=\"" + minVal + "\"/>" +
             "</types>";
 
-        Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         assertThat((((EncodedDataType)map.get("testTypeInt8MinValue")).minValue()), is(parse(minVal, PrimitiveType.INT8)));
     }
 
@@ -446,7 +444,7 @@ public class EncodedDataTypeTest
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            Type t = new EncodedDataType(list.item(i));
+            final Type t = new EncodedDataType(list.item(i));
             map.put(t.name(), t);
         }
 

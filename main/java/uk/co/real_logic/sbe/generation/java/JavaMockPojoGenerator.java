@@ -145,7 +145,7 @@ public class JavaMockPojoGenerator implements CodeGenerator
                 out.append(generateClassDeclaration(className));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
-                int offset = 0;
+                final int offset = 0;
 
                 final List<Token> rootFields = new ArrayList<>();
                 collectRootFields(messageBody, offset, rootFields);

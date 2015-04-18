@@ -52,8 +52,8 @@ public class BasicSchemaFileTest
     public void shouldHandleBasicAllTypes()
         throws Exception
     {
-        MessageSchema schema = parse(TestUtil.getLocalResource("basic-types-schema.xml"), ParserOptions.DEFAULT);
-        List<Field> fields = schema.getMessage(1).fields();
+        final MessageSchema schema = parse(TestUtil.getLocalResource("basic-types-schema.xml"), ParserOptions.DEFAULT);
+        final List<Field> fields = schema.getMessage(1).fields();
         assertThat(fields.get(0).name(), is("header"));
         assertThat(fields.get(1).name(), is("EDTField"));
         assertThat(fields.get(2).name(), is("ENUMField"));

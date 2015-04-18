@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -61,7 +60,7 @@ public class SetTypeTest
 
         assertThat(e.name(), is("biOp"));
         assertThat(e.encodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.choices().size()), is(valueOf(2)));
+        assertThat(e.choices().size(), is(2));
         assertThat(e.getChoice("Bit1").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
         assertThat(e.getChoice("Bit0").primitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
     }
@@ -107,11 +106,11 @@ public class SetTypeTest
             count++;
         }
 
-        assertThat(valueOf(count), is(valueOf(4)));
-        assertThat(valueOf(foundBit0), is(valueOf(1)));
-        assertThat(valueOf(foundBit1), is(valueOf(1)));
-        assertThat(valueOf(foundBit2), is(valueOf(1)));
-        assertThat(valueOf(foundBit3), is(valueOf(1)));
+        assertThat(count, is(4));
+        assertThat(foundBit0, is(1));
+        assertThat(foundBit1, is(1));
+        assertThat(foundBit2, is(1));
+        assertThat(foundBit3, is(1));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -214,7 +213,7 @@ public class SetTypeTest
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            Type t = new SetType(list.item(i));
+            final Type t = new SetType(list.item(i));
             map.put(t.name(), t);
         }
 

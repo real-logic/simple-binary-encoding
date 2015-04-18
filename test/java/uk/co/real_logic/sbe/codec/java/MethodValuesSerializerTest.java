@@ -114,27 +114,33 @@ public class MethodValuesSerializerTest
     @Test
     public void test() throws InvocationTargetException, IllegalAccessException
     {
-        MethodValuesSerializer serializer = new MethodValuesSerializer(
+        final MethodValuesSerializer serializer = new MethodValuesSerializer(
             new MethodSelector(MethodSelector.objectAndIteratorMethods()));
-        JsonObject expected = new JsonObject();
+
+        final JsonObject expected = new JsonObject();
         expected.add("publicInt", new JsonPrimitive(1));
         expected.add("publicString", new JsonPrimitive("hello"));
         expected.add("publicEnum", new JsonPrimitive("A"));
-        JsonArray arr = new JsonArray();
+
+        final JsonArray arr = new JsonArray();
         arr.add(new JsonPrimitive(1));
         expected.add("publicIntArr", arr);
-        JsonArray ss = new JsonArray();
-        JsonObject s = new JsonObject();
+
+        final JsonArray ss = new JsonArray();
+        final JsonObject s = new JsonObject();
         s.add("publicBoolean", new JsonPrimitive(true));
         ss.add(s);
         expected.add("publicListS", ss);
-        JsonObject z = new JsonObject();
+
+        final JsonObject z = new JsonObject();
         z.add("publicBoolean", new JsonPrimitive(true));
         expected.add("publicZ", z);
-        JsonObject y = new JsonObject();
+
+        final JsonObject y = new JsonObject();
         y.add("publicBoolean", new JsonPrimitive(true));
         expected.add("publicY", y);
-        JsonElement got = serializer.serialize(new X());
+        final JsonElement got = serializer.serialize(new X());
+
         Assert.assertEquals(expected, got);
         Assert.assertEquals(Arrays.asList(X.Y.class, X.Z.class), order);
     }

@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Integer.valueOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -61,7 +60,7 @@ public class EnumTypeTest
 
         assertThat(e.name(), is("biOp"));
         assertThat(e.encodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.validValues().size()), is(valueOf(2)));
+        assertThat(e.validValues().size(), is(2));
         assertThat(e.getValidValue("on").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
         assertThat(e.getValidValue("off").primitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
     }
@@ -83,7 +82,7 @@ public class EnumTypeTest
 
         assertThat(e.name(), is("Boolean"));
         assertThat(e.encodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.validValues().size()), is(valueOf(2)));
+        assertThat(e.validValues().size(), is(2));
         assertThat(e.getValidValue("True").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
         assertThat(e.getValidValue("False").primitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
     }
@@ -107,7 +106,7 @@ public class EnumTypeTest
 
         assertThat(e.name(), is("optionalBoolean"));
         assertThat(e.encodingType(), is(PrimitiveType.UINT8));
-        assertThat(valueOf(e.validValues().size()), is(valueOf(2)));
+        assertThat(e.validValues().size(), is(2));
         assertThat(e.getValidValue("True").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
         assertThat(e.getValidValue("False").primitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
         assertThat(e.nullValue(), is(PrimitiveValue.parse(nullValueStr, PrimitiveType.UINT8)));
@@ -150,10 +149,10 @@ public class EnumTypeTest
             count++;
         }
 
-        assertThat(valueOf(count), is(valueOf(3)));
-        assertThat(valueOf(foundOn), is(valueOf(1)));
-        assertThat(valueOf(foundOff), is(valueOf(1)));
-        assertThat(valueOf(foundNotKnown), is(valueOf(1)));
+        assertThat(count, is(3));
+        assertThat(foundOn, is(1));
+        assertThat(foundOff, is(1));
+        assertThat(foundNotKnown, is(1));
     }
 
     @Test
@@ -259,7 +258,7 @@ public class EnumTypeTest
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            Type t = new EnumType(list.item(i));
+            final Type t = new EnumType(list.item(i));
             map.put(t.name(), t);
         }
 

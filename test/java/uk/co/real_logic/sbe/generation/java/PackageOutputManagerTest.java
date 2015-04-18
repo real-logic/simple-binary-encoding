@@ -37,7 +37,7 @@ public class PackageOutputManagerTest
         final String exampleClassName = "ExampleClassName";
 
         final PackageOutputManager pom = new PackageOutputManager(tempDirName, packageName);
-        Writer out = pom.createOutput(exampleClassName);
+        final Writer out = pom.createOutput(exampleClassName);
         out.close();
 
         final String fullyQualifiedFilename =

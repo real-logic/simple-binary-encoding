@@ -91,7 +91,7 @@ public class IrDecoder implements Closeable
             tokens.add(decodeToken());
         }
 
-        int i = 0, size = tokens.size();
+        int i = 0;
 
         if (tokens.get(0).signal() == Signal.BEGIN_COMPOSITE)
         {
@@ -100,7 +100,7 @@ public class IrDecoder implements Closeable
 
         final Ir ir = new Ir(irPackageName, irNamespaceName, irId, irVersion, semanticVersion, irHeader);
 
-        for (; i < size; i++)
+        for (int size = tokens.size(); i < size; i++)
         {
             if (tokens.get(i).signal() == Signal.BEGIN_MESSAGE)
             {

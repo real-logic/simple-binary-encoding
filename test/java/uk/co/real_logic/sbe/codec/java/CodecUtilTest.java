@@ -43,7 +43,7 @@ public class CodecUtilTest
 
         for (int i = 0; i < 8; i++)
         {
-            boolean result = CodecUtil.uint8GetChoice(buffer, bufferIndex, i);
+            final boolean result = CodecUtil.uint8GetChoice(buffer, bufferIndex, i);
             if (bitIndex == i)
             {
                 assertTrue(result);
@@ -65,7 +65,7 @@ public class CodecUtilTest
         {
             CodecUtil.uint8PutChoice(buffer, bufferIndex, i, true);
             total += (1 << i);
-            assertThat(Byte.valueOf(buffer.getByte(bufferIndex)), is(Byte.valueOf((byte)total)));
+            assertThat(buffer.getByte(bufferIndex), is((byte)total));
         }
     }
 
@@ -79,7 +79,7 @@ public class CodecUtilTest
 
         for (int i = 0; i < 16; i++)
         {
-            boolean result = CodecUtil.uint16GetChoice(buffer, bufferIndex, i, BYTE_ORDER);
+            final boolean result = CodecUtil.uint16GetChoice(buffer, bufferIndex, i, BYTE_ORDER);
             if (bitIndex == i)
             {
                 assertTrue(result);
@@ -101,7 +101,7 @@ public class CodecUtilTest
         {
             CodecUtil.uint16PutChoice(buffer, bufferIndex, i, true, BYTE_ORDER);
             total += (1 << i);
-            assertThat(Short.valueOf(buffer.getShort(bufferIndex, BYTE_ORDER)), is(Short.valueOf((short)total)));
+            assertThat(buffer.getShort(bufferIndex, BYTE_ORDER), is((short)total));
         }
     }
 
@@ -115,7 +115,7 @@ public class CodecUtilTest
 
         for (int i = 0; i < 32; i++)
         {
-            boolean result = CodecUtil.uint32GetChoice(buffer, bufferIndex, i, BYTE_ORDER);
+            final boolean result = CodecUtil.uint32GetChoice(buffer, bufferIndex, i, BYTE_ORDER);
             if (bitIndex == i)
             {
                 assertTrue(result);
@@ -137,7 +137,7 @@ public class CodecUtilTest
         {
             CodecUtil.uint32PutChoice(buffer, bufferIndex, i, true, BYTE_ORDER);
             total += (1 << i);
-            assertThat(Integer.valueOf(buffer.getInt(bufferIndex, BYTE_ORDER)), is(Integer.valueOf((int)total)));
+            assertThat(buffer.getInt(bufferIndex, BYTE_ORDER), is((int)total));
         }
     }
 }

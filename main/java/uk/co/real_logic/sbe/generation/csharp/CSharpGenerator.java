@@ -413,13 +413,13 @@ public class CSharpGenerator implements CodeGenerator
 
     private void generateBitSet(final List<Token> tokens) throws IOException
     {
-        Token enumToken = tokens.get(0);
+        final Token enumToken = tokens.get(0);
         final String enumName = CSharpUtil.formatClassName(enumToken.name());
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
             out.append(generateFileHeader(ir.applicableNamespace()));
-            String enumPrimitiveType = cSharpTypeName(enumToken.encoding().primitiveType());
+            final String enumPrimitiveType = cSharpTypeName(enumToken.encoding().primitiveType());
             out.append(generateEnumDeclaration(enumName, enumPrimitiveType, true));
 
             out.append(generateChoices(tokens.subList(1, tokens.size() - 1)));
@@ -432,13 +432,13 @@ public class CSharpGenerator implements CodeGenerator
 
     private void generateEnum(final List<Token> tokens) throws IOException
     {
-        Token enumToken = tokens.get(0);
+        final Token enumToken = tokens.get(0);
         final String enumName = CSharpUtil.formatClassName(enumToken.name());
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
             out.append(generateFileHeader(ir.applicableNamespace()));
-            String enumPrimitiveType = cSharpTypeName(enumToken.encoding().primitiveType());
+            final String enumPrimitiveType = cSharpTypeName(enumToken.encoding().primitiveType());
             out.append(generateEnumDeclaration(enumName, enumPrimitiveType, false));
 
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumToken));
@@ -504,7 +504,7 @@ public class CSharpGenerator implements CodeGenerator
 
     private CharSequence generateFileHeader(final String packageName)
     {
-        String[] tokens = packageName.split("\\.");
+        final String[] tokens = packageName.split("\\.");
         final StringBuilder sb = new StringBuilder();
         for (final String t : tokens)
         {
