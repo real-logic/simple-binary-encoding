@@ -292,6 +292,11 @@ public class XmlSchemaParser
      */
     public static String getAttributeValueOrNull(final Node elementNode, final String attrName)
     {
+        if (elementNode == null || elementNode.getAttributes() == null)
+        {
+            return null;
+        }
+
         final Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
 
         if (attrNode == null)
