@@ -376,7 +376,7 @@ public class CSharpGenerator implements CodeGenerator
                     "        const int sizeOfLengthField = %3$d;\n" +
                     "        int limit = Limit;\n" +
                     "        _buffer.CheckLimit(limit + sizeOfLengthField);\n" +
-                    "        int dataLength = _buffer.%4$sGet%5$s(limit);\n" +
+                    "        int dataLength = (int)_buffer.%4$sGet%5$s(limit);\n" +
                     "        int bytesCopied = Math.Min(length, dataLength);\n" +
                     "        Limit = limit + sizeOfLengthField + dataLength;\n" +
                     "        _buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
