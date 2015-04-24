@@ -440,14 +440,41 @@ public class JavaGenerator implements CodeGenerator
             final ByteOrder byteOrder = lengthEncoding.byteOrder();
             final String byteOrderStr = lengthEncoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
-            generateVarDataMethods(
+            sb.append(String.format(
+                "\n" +
+                "    public static int %sHeaderSize()\n" +
+                "    {\n" +
+                "        return %d;\n" +
+                "    }\n",
+                toLowerFirstChar(propertyName),
+                sizeOfLengthField
+            ));
+
+            sb.append(String.format(
+                "\n" +
+                "    public int %sLength()\n" +
+                "    {\n" +
+                "%s" +
+                "        final int sizeOfLengthField = %d;\n" +
+                "        final int limit = limit();\n" +
+                "        buffer.checkLimit(limit + sizeOfLengthField);\n\n" +
+                "        return CodecUtil.%sGet(buffer, limit%s);\n" +
+                "    }\n",
+                toLowerFirstChar(propertyName),
+                generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
+                sizeOfLengthField,
+                lengthTypePrefix,
+                byteOrderStr
+            ));
+
+            generateVarDataAccessMethods(
                 sb, token, propertyName, sizeOfLengthField, lengthJavaType, lengthTypePrefix, byteOrderStr, characterEncoding);
         }
 
         return sb;
     }
 
-    private void generateVarDataMethods(
+    private void generateVarDataAccessMethods(
         final StringBuilder sb,
         final Token token,
         final String propertyName,
@@ -457,16 +484,6 @@ public class JavaGenerator implements CodeGenerator
         final String byteOrderStr,
         final String characterEncoding)
     {
-        sb.append(String.format(
-            "\n" +
-                "    public static int %sHeaderSize()\n" +
-                "    {\n" +
-                "        return %d;\n" +
-                "    }\n",
-            toLowerFirstChar(propertyName),
-            sizeOfLengthField
-        ));
-
         sb.append(String.format(
             "\n" +
             "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
