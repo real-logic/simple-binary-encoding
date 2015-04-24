@@ -1460,7 +1460,7 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateEnumProperty(
         final String containingClassName, final String propertyName, final Token token, final String indent)
     {
-        final String enumName = token.name();
+        final String enumName = formatClassName(token.name());
         final Encoding encoding = token.encoding();
         final String typePrefix = encoding.primitiveType().primitiveName();
         final int offset = token.offset();
