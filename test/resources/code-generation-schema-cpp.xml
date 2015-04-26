@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<messageSchema package="code.generation.test"
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+               package="code.generation.test"
                id="6"
+               version="0"
                semanticVersion="5.2"
                description="Code generation unit test support for C++"
                byteOrder="littleEndian">
@@ -24,7 +26,7 @@
         <type name="CharConstType" presence="constant" primitiveType="char">g</type>
         <type name="ModelYear" primitiveType="uint16"/>
         <type name="VehicleCode" primitiveType="char" length="6"/>
-        <composite name="Engine" semanticType="Engine">
+        <composite name="Engine">
             <type name="capacity" primitiveType="uint16"/>
             <type name="numCylinders" primitiveType="uint8"/>
             <type name="maxRpm" primitiveType="uint16" presence="constant">9000</type>
@@ -46,7 +48,7 @@
             <choice name="cruiseControl">2</choice>
         </set>
     </types>
-    <message name="Car" id="1" description="Description of a basic Car">
+    <sbe:message name="Car" id="1" description="Description of a basic Car">
         <field name="charConst" id="100" type="CharConstType"/>
         <field name="serialNumber" id="1" type="uint32"/>
         <field name="modelYear" id="2" type="ModelYear"/>
@@ -68,5 +70,5 @@
         </group>
         <data name="make" id="16" type="varDataEncoding"/>
         <data name="model" id="17" type="varDataEncoding"/>
-    </message>
-</messageSchema>
+    </sbe:message>
+</sbe:messageSchema>

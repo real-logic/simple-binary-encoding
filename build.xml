@@ -69,14 +69,14 @@
 
     <property name="dir.main.csharp.src" location="main/csharp/ir/generated"/>
 
-    <property name="jar" value="${dir.dist}/${module.name}-${build.version}.jar"/>
-    <property name="javadoc.jar" value="${dir.dist}/${module.name}-${build.version}-javadoc.jar"/>
-    <property name="sources.jar" value="${dir.dist}/${module.name}-${build.version}-sources.jar"/>
+    <property name="jar" value="${dir.dist}/${module.name}.jar"/>
+    <property name="javadoc.jar" value="${dir.dist}/${module.name}-javadoc.jar"/>
+    <property name="sources.jar" value="${dir.dist}/${module.name}-sources.jar"/>
 
     <property name="android.libcore.io.memory.jar" value="main/lib/android/libcore.io.memory.jar"/>
-    <property name="sbe.android.jar" value="${dir.dist}/${module.name.android}-${build.version}.jar"/>
-    <property name="sbe.android.javadoc.jar" value="${dir.dist}/${module.name.android}-${build.version}-javadoc.jar"/>
-    <property name="sbe.android.sources.jar" value="${dir.dist}/${module.name.android}-${build.version}-sources.jar"/>
+    <property name="sbe.android.jar" value="${dir.dist}/${module.name.android}.jar"/>
+    <property name="sbe.android.javadoc.jar" value="${dir.dist}/${module.name.android}-javadoc.jar"/>
+    <property name="sbe.android.sources.jar" value="${dir.dist}/${module.name.android}-sources.jar"/>
 
     <property name="ossrh.snapshots.repository.url" value="https://oss.sonatype.org/content/repositories/snapshots"/>
     <property name="ossrh.staging.repository.url" value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
@@ -550,14 +550,14 @@
             <property name="RECURSIVE" value="YES"/>
             <property name="GENERATE_LATEX" value="false"/>
             <property name="PROJECT_NAME" value="Simple Binary Encoding"/>
-            <property name="PROJECT_NUMBER" value="${build.version}"/>
+            <property name="PROJECT_NUMBER" value=""/>
             <property name="EXAMPLE_PATH" value="${dir.examples.cpp98.src}/SbeOtfDecoder.cpp"/>
             <property name="WARNINGS" value="YES"/>
             <property name="FILE_PATTERNS" value="*.h"/>
             <property name="OPTIMIZE_OUTPUT_FOR_C" value="YES"/>
             <property name="OPTIMIZE_OUTPUT_FOR_JAVA" value="NO"/>
             <property name="FULL_PATH_NAMES" value="NO"/>
-            <property name="HTML_OUTPUT" value="${module.name}-otfcpp-doc-${build.version}"/>
+            <property name="HTML_OUTPUT" value="${module.name}-otfcpp-doc"/>
         </doxygen>
     </target>
 
@@ -600,7 +600,7 @@
     </target>
 
     <target name="cpp:dist" depends="cpp:compile, cpp:doc">
-        <zip destfile="${dir.dist}/${module.name}-otfcpp-doc-${build.version}.zip">
+        <zip destfile="${dir.dist}/${module.name}-otfcpp-doc.zip">
             <fileset dir="${dir.docs.cpp}"/>
         </zip>
     </target>
@@ -618,22 +618,22 @@
 
     <macrodef name="sbetool">
         <attribute name="outputdir"/>
-        <attribute name="targetlanguage" default=""/>
-        <attribute name="targetnamespace" default=""/>
-        <attribute name="generatestubs" default=""/>
-        <attribute name="generateir" default=""/>
-        <attribute name="validationxsd" default=""/>
-        <attribute name="stoponerror" default=""/>
-        <element name="schemafiles" implicit="yes"/>
+        <attribute name="targetlanguage" default="Java"/>
+        <attribute name="generatestubs" default="true"/>
+        <attribute name="generateir" default="false"/>
+        <attribute name="stoponerror" default="false"/>
+        <attribute name="validationxsd" default="main/resources/fpl/SimpleBinary1-0.xsd"/>
+        <element name="sysproperties"/>
+        <element name="schemafiles"/>
         <sequential>
             <java jar="${jar}" failonerror="true" fork="true">
                 <sysproperty key="sbe.output.dir" value="@{outputdir}"/>
-                <sysproperty key="sbe.target.language" value="@{targetlanguage}" unless:blank="@{targetlanguage}"/>
-                <sysproperty key="sbe.target.namespace" value="@{targetnamespace}" unless:blank="@{targetnamespace}"/>
-                <sysproperty key="sbe.generate.stubs" value="@{generatestubs}" unless:blank="@{generatestubs}"/>
-                <sysproperty key="sbe.generate.ir" value="@{generateir}" unless:blank="@{generateir}"/>
-                <sysproperty key="sbe.validation.xsd" value="@{validationxsd}" unless:blank="@{validationxsd}"/>
-                <sysproperty key="sbe.validation.stop.on.error" value="@{stoponerror}" unless:blank="@{stoponerror}"/>
+                <sysproperty key="sbe.target.language" value="@{targetlanguage}"/>
+                <sysproperty key="sbe.generate.stubs" value="@{generatestubs}"/>
+                <sysproperty key="sbe.generate.ir" value="@{generateir}"/>
+                <sysproperty key="sbe.validation.xsd" value="@{validationxsd}"/>
+                <sysproperty key="sbe.validation.stop.on.error" value="@{stoponerror}"/>
+                <sysproperties/>
                 <schemafiles/>
             </java>
         </sequential>
@@ -642,8 +642,11 @@
     <target name="generate:java:sbeir-stubs"
             depends="dist"
             description="Generate serialized IR stubs for Java">
-        <sbetool outputdir="${dir.main.src}" targetlanguage="Java">
-            <arg value="${dir.main.resources}/sbe-ir.xml"/>
+        <sbetool outputdir="${dir.main.src}">
+            <sysproperties/>
+            <schemafiles>
+                <arg value="${dir.main.resources}/sbe-ir.xml"/>
+            </schemafiles>
         </sbetool>
     </target>
 
@@ -651,16 +654,23 @@
             depends="dist"
             description="Generate serialized IR stubs for C++98">
         <sbetool outputdir="${dir.main.cpp.src}" targetlanguage="cpp98">
-            <arg value="${dir.main.resources}/sbe-ir.xml"/>
+            <sysproperties/>
+            <schemafiles>
+                <arg value="${dir.main.resources}/sbe-ir.xml"/>
+            </schemafiles>
         </sbetool>
     </target>
 
     <target name="generate:csharp:sbeir-stubs"
             depends="dist"
             description="Generate serialized IR stubs for C#">
-        <sbetool outputdir="${dir.main.csharp.src}" targetlanguage="csharp"
-            targetnamespace="Adaptive.SimpleBinaryEncoding.Ir.Generated">
-            <arg value="${dir.main.resources}/sbe-ir.xml"/>
+        <sbetool outputdir="${dir.main.csharp.src}" targetlanguage="csharp">
+            <sysproperties>
+                <sysproperty key="sbe.target.namespace" value="Adaptive.SimpleBinaryEncoding.Ir.Generated"/>
+            </sysproperties>
+            <schemafiles>
+                <arg value="${dir.main.resources}/sbe-ir.xml"/>
+            </schemafiles>
         </sbetool>
     </target>
 
@@ -692,11 +702,13 @@
             depends="dist">
         <mkdir dir="${dir.gen.java}"/>
         <mkdir dir="${dir.examples.build}"/>
-        <sbetool outputdir="${dir.gen.java}" targetlanguage="Java" stoponerror="true"
-            validationxsd="main/resources/fpl/SimpleBinary1-0.xsd">
+    <sbetool outputdir="${dir.gen.java}" stoponerror="true">
+        <sysproperties/>
+        <schemafiles>
             <arg value="${dir.examples.resources}/example-schema.xml"/>
             <arg value="${dir.examples.resources}/example-extension-schema.xml"/>
-        </sbetool>
+        </schemafiles>
+    </sbetool>
         <javac srcdir="${dir.gen.java}" destdir="${dir.examples.build}" includeAntRuntime="false" debug="true">
             <classpath refid="examples.classpath"/>
         </javac>
@@ -719,7 +731,10 @@
             description="Generate and run C++ generated code example">
         <mkdir dir="${dir.gen.cpp98}"/>
         <sbetool outputdir="${dir.gen.cpp98}" targetlanguage="cpp98">
-            <arg value="${dir.examples.resources}/example-schema.xml"/>
+            <sysproperties/>
+            <schemafiles>
+                <arg value="${dir.examples.resources}/example-schema.xml"/>
+            </schemafiles>
         </sbetool>
         <cc outtype="executable"
             debug="true"
@@ -772,7 +787,10 @@
                 <fileset dir="${dir.examples.cpp98.src}" includes="SbeOtfDecoder.cpp"/>
             </cc>
             <sbetool outputdir="${dir.gen.cpp98}" generatestubs="false" generateir="true">
-                <arg value="${dir.examples.resources}/example-schema.xml"/>
+                <sysproperties/>
+                <schemafiles>
+                    <arg value="${dir.examples.resources}/example-schema.xml"/>
+                </schemafiles>
             </sbetool>
             <java classname="uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub" failonerror="true" fork="true">
                 <classpath refid="examples.classpath"/>
@@ -864,9 +882,12 @@
         <sequential>
             <mkdir dir="${dir.gen.cpp98}"/>
             <sbetool outputdir="${dir.gen.cpp98}" targetlanguage="cpp98" generateir="true">
-                <arg value="${dir.test.resources}/code-generation-schema-cpp.xml"/>
-                <arg value="${dir.test.resources}/composite-offsets-schema.xml"/>
-                <arg value="${dir.test.resources}/message-block-length-test.xml"/>
+                <sysproperties/>
+                <schemafiles>
+                    <arg value="${dir.test.resources}/code-generation-schema-cpp.xml"/>
+                    <arg value="${dir.test.resources}/composite-offsets-schema.xml"/>
+                    <arg value="${dir.test.resources}/message-block-length-test.xml"/>
+                </schemafiles>
             </sbetool>
             <copy file="${dir.gen.cpp98}/code-generation-schema-cpp.sbeir" todir="${dir.exec.test.cpp}"/>
             <copy file="${dir.gen.cpp98}/composite-offsets-schema.sbeir" todir="${dir.exec.test.cpp}"/>
