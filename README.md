@@ -68,22 +68,18 @@ Build
 
 Full clean build:
 
-    $ ant
+    $ ./gradlew
 
 Run the Java examples
 
-    $ ant examples:java
-
-Installing into a local maven (.m2) repository
-
-    $ ant maven.install
+    $ ./gradlew runJavaExamples
 
 Distribution
 ------------
 
 Jars for the executable, source, and javadoc can be found in
 
-    target/dist
+    build/libs
 
 Android Build
 -------------
@@ -109,17 +105,15 @@ C++ Build
 NOTE: Linux, Mac OS, and Windows only for the moment. See [FAQ](https://github.com/real-logic/simple-binary-encoding/wiki/Frequently-Asked-Questions).
 Windows builds have been tested with Visual Studio Express 12.
 
-Dependent build:
+First build using gradle to generate the SBE jar.
 
-    $ ant cpp:test
+    $ ./gradlew
 
-If you have doxygen installed:
+Then build and test with CMake.
 
-    $ ant cpp
-
-Run the C++98 examples
-
-    $ ant examples:cpp
+    $ cmake .
+    $ cmake --build
+    $ ctest
 
 C# Build
 --------
