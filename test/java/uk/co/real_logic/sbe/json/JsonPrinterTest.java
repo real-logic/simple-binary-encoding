@@ -42,7 +42,6 @@ public class JsonPrinterTest
     private static final int ACTING_VERSION = 0;
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
-    private static final String ENCODING_FILENAME = "sbe.encoding.filename";
 
     private static byte[] vehicleCode;
     private static byte[] manufacturerCode;
@@ -137,7 +136,8 @@ public class JsonPrinterTest
         "        }]\n" +
         "    }],\n" +
         "    \"make\": \"Honda\",\n" +
-        "    \"model\": \"Civic VTi\"\n" +
+        "    \"model\": \"Civic VTi\",\n" +
+        "    \"activationCode\": \"\"\n" +
         "}"
         , result);
     }
