@@ -24,7 +24,7 @@
     </types>
     <types>
         <type name="ModelYear" primitiveType="uint16"/>
-        <type name="VehicleCode" primitiveType="char" length="6"/>
+        <type name="VehicleCode" primitiveType="char" length="6" characterEncoding="ASCII"/>
         <type name="someNumbers" primitiveType="int32" length="5"/>
         <type name="Ron" primitiveType="uint8" minValue="90" maxValue="110"/>
         <composite name="Engine">
@@ -71,5 +71,6 @@
         </group>
         <data name="make" id="17" type="varDataEncoding"/>
         <data name="model" id="18" type="varDataEncoding"/>
+        <data name="activationCode" id="19" type="varDataEncoding"/>
     </sbe:message>
 </sbe:messageSchema>

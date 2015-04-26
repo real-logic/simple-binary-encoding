@@ -30,6 +30,7 @@ public class ExampleUsingGeneratedStubExtension
     private static final byte[] MANUFACTURER_CODE;
     private static final byte[] MAKE;
     private static final byte[] MODEL;
+    private static final UnsafeBuffer ACTIVATION_CODE;
 
     private static final baseline.MessageHeader MESSAGE_HEADER = new baseline.MessageHeader();
     private static final baseline.Car CAR_0 = new baseline.Car();
@@ -43,6 +44,7 @@ public class ExampleUsingGeneratedStubExtension
             MANUFACTURER_CODE = "123".getBytes(baseline.Engine.manufacturerCodeCharacterEncoding());
             MAKE = "Honda".getBytes(baseline.Car.makeCharacterEncoding());
             MODEL = "Civic VTi".getBytes(baseline.Car.modelCharacterEncoding());
+            ACTIVATION_CODE = new UnsafeBuffer(ByteBuffer.wrap(new byte[]{'d', 'e', 'a', 'd', 'b', 'e', 'e', 'f'}));
         }
         catch (final UnsupportedEncodingException ex)
         {
@@ -152,6 +154,7 @@ public class ExampleUsingGeneratedStubExtension
 
         car.putMake(MAKE, srcOffset, MAKE.length);
         car.putModel(MODEL, srcOffset, MODEL.length);
+        car.putActivationCode(ACTIVATION_CODE, 0, ACTIVATION_CODE.capacity());
 
         return car.size();
     }
@@ -233,6 +236,10 @@ public class ExampleUsingGeneratedStubExtension
 
         sb.append("\ncar.model=").append(
             new String(buffer, 0, car.getModel(buffer, 0, buffer.length), extension.Car.modelCharacterEncoding()));
+
+        final UnsafeBuffer tempBuffer = new UnsafeBuffer(buffer);
+        final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());
+        sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength));
 
         sb.append("\ncar.size=").append(car.size());
 
