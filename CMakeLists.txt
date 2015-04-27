@@ -56,11 +56,11 @@ set(LIBSUFFIX "${CMAKE_STATIC_LIBRARY_SUFFIX}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/binaries")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 
-file(GLOB SBE_JAR ${CMAKE_CURRENT_BINARY_DIR}/build/libs/sbe-all-*-SNAPSHOT.jar ${CMAKE_CURRENT_BINARY_DIR}/libs/sbe-all-*-RC2.jar)
+file(GLOB SBE_JAR ${CMAKE_CURRENT_BINARY_DIR}/libs/sbe-all-*-SNAPSHOT.jar ${CMAKE_CURRENT_BINARY_DIR}/libs/sbe-all-*-RC2.jar)
 if(SBE_JAR)
 	message("latest SBE jar found: ${SBE_JAR}")
 else()
-	message(FATAL_ERROR "could not find latest SBE jar in ${CMAKE_CURRENT_BINARY_DIR}/build/libs")
+	message(FATAL_ERROR "could not find latest SBE jar in ${CMAKE_CURRENT_BINARY_DIR}/libs")
 endif()
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/codecs")
