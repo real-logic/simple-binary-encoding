@@ -440,14 +440,41 @@ public class JavaGenerator implements CodeGenerator
             final ByteOrder byteOrder = lengthEncoding.byteOrder();
             final String byteOrderStr = lengthEncoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
 
-            generateVarDataMethods(
+            sb.append(String.format(
+                "\n" +
+                "    public static int %sHeaderSize()\n" +
+                "    {\n" +
+                "        return %d;\n" +
+                "    }\n",
+                toLowerFirstChar(propertyName),
+                sizeOfLengthField
+            ));
+
+            sb.append(String.format(
+                "\n" +
+                "    public int %sLength()\n" +
+                "    {\n" +
+                "%s" +
+                "        final int sizeOfLengthField = %d;\n" +
+                "        final int limit = limit();\n" +
+                "        buffer.checkLimit(limit + sizeOfLengthField);\n\n" +
+                "        return CodecUtil.%sGet(buffer, limit%s);\n" +
+                "    }\n",
+                toLowerFirstChar(propertyName),
+                generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
+                sizeOfLengthField,
+                lengthTypePrefix,
+                byteOrderStr
+            ));
+
+            generateVarDataAccessMethods(
                 sb, token, propertyName, sizeOfLengthField, lengthJavaType, lengthTypePrefix, byteOrderStr, characterEncoding);
         }
 
         return sb;
     }
 
-    private void generateVarDataMethods(
+    private void generateVarDataAccessMethods(
         final StringBuilder sb,
         final Token token,
         final String propertyName,
@@ -457,54 +484,25 @@ public class JavaGenerator implements CodeGenerator
         final String byteOrderStr,
         final String characterEncoding)
     {
-        sb.append(String.format(
-            "\n" +
-                "    public static int %sHeaderSize()\n" +
-                "    {\n" +
-                "        return %d;\n" +
-                "    }\n",
-            toLowerFirstChar(propertyName),
-            sizeOfLengthField
-        ));
-
-        sb.append(String.format(
-            "\n" +
-            "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
-            "    {\n" +
-            "%s" +
-            "        final int sizeOfLengthField = %d;\n" +
-            "        final int limit = limit();\n" +
-            "        buffer.checkLimit(limit + sizeOfLengthField);\n" +
-            "        final int dataLength = CodecUtil.%sGet(buffer, limit%s);\n" +
-            "        final int bytesCopied = Math.min(length, dataLength);\n" +
-            "        limit(limit + sizeOfLengthField + dataLength);\n" +
-            "        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
-            "        return bytesCopied;\n" +
-            "    }\n",
-            propertyName,
-            generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
-            sizeOfLengthField,
-            lengthTypePrefix,
-            byteOrderStr
-        ));
-
-        sb.append(String.format(
-            "\n" +
-            "    public int put%s(final byte[] src, final int srcOffset, final int length)\n" +
-            "    {\n" +
-            "        final int sizeOfLengthField = %d;\n" +
-            "        final int limit = limit();\n" +
-            "        limit(limit + sizeOfLengthField + length);\n" +
-            "        CodecUtil.%sPut(buffer, limit, (%s)length%s);\n" +
-            "        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);\n\n" +
-            "        return length;\n" +
-            "    }\n",
+        generateVarDataTypedAccessors(
+            sb,
+            token,
             propertyName,
             sizeOfLengthField,
-            lengthTypePrefix,
+            fullyQualifiedBufferImplementation,
             lengthJavaType,
-            byteOrderStr
-        ));
+            lengthTypePrefix,
+            byteOrderStr);
+
+        generateVarDataTypedAccessors(
+            sb,
+            token,
+            propertyName,
+            sizeOfLengthField,
+            "byte[]",
+            lengthJavaType,
+            lengthTypePrefix,
+            byteOrderStr);
 
         sb.append(String.format(
             "\n" +
@@ -517,7 +515,7 @@ public class JavaGenerator implements CodeGenerator
             "        final int dataLength = CodecUtil.%4$sGet(buffer, limit%5$s);\n" +
             "        limit(limit + sizeOfLengthField + dataLength);\n" +
             "        final byte[] tmp = new byte[dataLength];\n" +
-            "        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, tmp, 0, dataLength);\n\n" +
+            "        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);\n\n" +
             "        final String value;\n" +
             "        try\n" +
             "        {\n" +
@@ -555,10 +553,62 @@ public class JavaGenerator implements CodeGenerator
             "        final int limit = limit();\n" +
             "        limit(limit + sizeOfLengthField + length);\n" +
             "        CodecUtil.%4$sPut(buffer, limit, (%5$s)length%6$s);\n" +
-            "        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, bytes, 0, length);\n" +
+            "        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);\n" +
             "    }\n",
             toLowerFirstChar(propertyName),
             characterEncoding,
+            sizeOfLengthField,
+            lengthTypePrefix,
+            lengthJavaType,
+            byteOrderStr
+        ));
+    }
+
+    private void generateVarDataTypedAccessors(
+        final StringBuilder sb,
+        final Token token,
+        final String propertyName,
+        final int sizeOfLengthField,
+        final String exchangeType,
+        final String lengthJavaType,
+        final String lengthTypePrefix,
+        final String byteOrderStr)
+    {
+        sb.append(String.format(
+            "\n" +
+            "    public int get%s(final %s dst, final int dstOffset, final int length)\n" +
+            "    {\n" +
+            "%s" +
+            "        final int sizeOfLengthField = %d;\n" +
+            "        final int limit = limit();\n" +
+            "        buffer.checkLimit(limit + sizeOfLengthField);\n" +
+            "        final int dataLength = CodecUtil.%sGet(buffer, limit%s);\n" +
+            "        final int bytesCopied = Math.min(length, dataLength);\n" +
+            "        limit(limit + sizeOfLengthField + dataLength);\n" +
+            "        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
+            "        return bytesCopied;\n" +
+            "    }\n",
+            propertyName,
+            exchangeType,
+            generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
+            sizeOfLengthField,
+            lengthTypePrefix,
+            byteOrderStr
+        ));
+
+        sb.append(String.format(
+            "\n" +
+            "    public int put%s(final %s src, final int srcOffset, final int length)\n" +
+            "    {\n" +
+            "        final int sizeOfLengthField = %d;\n" +
+            "        final int limit = limit();\n" +
+            "        limit(limit + sizeOfLengthField + length);\n" +
+            "        CodecUtil.%sPut(buffer, limit, (%s)length%s);\n" +
+            "        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);\n\n" +
+            "        return length;\n" +
+            "    }\n",
+            propertyName,
+            exchangeType,
             sizeOfLengthField,
             lengthTypePrefix,
             lengthJavaType,
@@ -1460,7 +1510,7 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateEnumProperty(
         final String containingClassName, final String propertyName, final Token token, final String indent)
     {
-        final String enumName = token.name();
+        final String enumName = formatClassName(token.name());
         final Encoding encoding = token.encoding();
         final String typePrefix = encoding.primitiveType().primitiveName();
         final int offset = token.offset();

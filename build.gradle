@@ -15,7 +15,7 @@
  */
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '1.2.0'
+    id 'com.github.johnrengelman.shadow' version '1.2.1'
 }
 
 apply plugin: 'java'
@@ -84,8 +84,8 @@ dependencies {
 }
 
 compileJava {
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 }
 
 tasks.withType(JavaCompile) {
@@ -106,27 +106,27 @@ test {
     classpath += files('build/classes/generated')
 }
 
-task (generateExampleCodecs, type: JavaExec) {
+task(generateExampleCodecs, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = sourceSets.main.runtimeClasspath
     systemProperties('sbe.output.dir': generatedDir,
-        'sbe.target.language': 'Java',
-        'sbe.validation.stop.on.error': 'true',
-        'sbe.validation.xsd': 'main/resources/fpl/SimpleBinary1-0.xsd')
+            'sbe.target.language': 'Java',
+            'sbe.validation.stop.on.error': 'true',
+            'sbe.validation.xsd': 'main/resources/fpl/SimpleBinary1-0.xsd')
     args 'examples/resources/example-schema.xml', 'examples/resources/example-extension-schema.xml'
 }
 
-task (runExampleUsingGeneratedStub, dependsOn: 'compileExamplesJava', type: JavaExec) {
+task(runExampleUsingGeneratedStub, dependsOn: 'compileExamplesJava', type: JavaExec) {
     classpath = sourceSets.examples.runtimeClasspath + compileExamplesJava.classpath
     main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
 }
 
-task (runExampleUsingGeneratedStubExtension, dependsOn: 'compileExamplesJava', type: JavaExec) {
+task(runExampleUsingGeneratedStubExtension, dependsOn: 'compileExamplesJava', type: JavaExec) {
     classpath = sourceSets.examples.runtimeClasspath + compileExamplesJava.classpath
     main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
 }
 
-task (runOtfExample, dependsOn: 'compileExamplesJava', type: JavaExec) {
+task(runOtfExample, dependsOn: 'compileExamplesJava', type: JavaExec) {
     classpath = sourceSets.examples.runtimeClasspath + compileExamplesJava.classpath
     main = 'uk.co.real_logic.sbe.examples.OtfExample'
 }

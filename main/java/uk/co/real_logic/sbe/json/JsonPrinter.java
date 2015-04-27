@@ -55,18 +55,13 @@ public class JsonPrinter
 
         final List<Token> msgTokens = ir.getMessage(templateId);
 
-        bufferOffset = OtfMessageDecoder.decode(
+        OtfMessageDecoder.decode(
             buffer,
             bufferOffset,
             actingVersion,
             blockLength,
             msgTokens,
             new JsonTokenListener(output));
-
-        if (bufferOffset != encodedMessage.position())
-        {
-            throw new IllegalStateException("Message not fully decoded");
-        }
     }
 
     private void validateId(final int schemaId)
@@ -91,8 +86,6 @@ public class JsonPrinter
     {
         final StringBuilder sb = new StringBuilder();
         print(encodedMessage, sb);
-
-
         return sb.toString();
     }
 
