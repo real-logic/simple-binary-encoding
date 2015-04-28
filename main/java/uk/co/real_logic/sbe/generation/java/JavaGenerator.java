@@ -170,9 +170,9 @@ public class JavaGenerator implements CodeGenerator
 
             final StringBuilder sb = new StringBuilder();
             generateGroups(sb, className, groups, 0, BASE_INDENT);
-
-            out.append(generateVarData(varData));
             out.append(sb);
+
+            out.append(generateVarDataEncoders(varData));
             out.append("}\n");
         }
     }
@@ -198,6 +198,7 @@ public class JavaGenerator implements CodeGenerator
 
             out.append(sb);*/
 
+            out.append(generateVarDataDecoders(varData));
             out.append("}\n");
         }
     }
@@ -463,7 +464,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateVarData(final List<Token> tokens)
+    private CharSequence generateVarDataDecoders(final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -515,40 +516,65 @@ public class JavaGenerator implements CodeGenerator
                 byteOrderStr
             ));
 
-            generateVarDataAccessMethods(
-                sb, token, propertyName, sizeOfLengthField, lengthJavaType, lengthTypePrefix, byteOrderStr, characterEncoding);
+            generateVarDataDecodeMethods(
+                sb, token, propertyName, sizeOfLengthField, lengthTypePrefix, byteOrderStr, characterEncoding);
         }
 
         return sb;
     }
 
-    private void generateVarDataAccessMethods(
+    private CharSequence generateVarDataEncoders(final List<Token> tokens)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        for (int i = 0, size = tokens.size(); i < size; i++)
+        {
+            final Token token = tokens.get(i);
+            if (token.signal() != Signal.BEGIN_VAR_DATA)
+            {
+                continue;
+            }
+
+            final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
+            final String propertyName = toUpperFirstChar(token.name());
+            final Token lengthToken = tokens.get(i + 2);
+            final int sizeOfLengthField = lengthToken.size();
+            final Encoding lengthEncoding = lengthToken.encoding();
+            final String lengthJavaType = javaTypeName(lengthEncoding.primitiveType());
+            final String lengthTypePrefix = lengthEncoding.primitiveType().primitiveName();
+            final String byteOrderStr = byteOrderString(lengthEncoding);
+
+            generateVarDataEncodeMethods(
+                sb, propertyName, sizeOfLengthField, lengthJavaType, lengthTypePrefix, byteOrderStr, characterEncoding);
+        }
+
+        return sb;
+    }
+
+    private void generateVarDataDecodeMethods(
         final StringBuilder sb,
         final Token token,
         final String propertyName,
         final int sizeOfLengthField,
-        final String lengthJavaType,
         final String lengthTypePrefix,
         final String byteOrderStr,
         final String characterEncoding)
     {
-        generateVarDataTypedAccessors(
+        generateVarDataTypedDecoder(
             sb,
             token,
             propertyName,
             sizeOfLengthField,
             fullMutableBufferImplementation,
-            lengthJavaType,
             lengthTypePrefix,
             byteOrderStr);
 
-        generateVarDataTypedAccessors(
+        generateVarDataTypedDecoder(
             sb,
             token,
             propertyName,
             sizeOfLengthField,
             "byte[]",
-            lengthJavaType,
             lengthTypePrefix,
             byteOrderStr);
 
@@ -582,6 +608,34 @@ public class JavaGenerator implements CodeGenerator
             byteOrderStr,
             characterEncoding
         ));
+    }
+
+    private void generateVarDataEncodeMethods(
+        final StringBuilder sb,
+        final String propertyName,
+        final int sizeOfLengthField,
+        final String lengthJavaType,
+        final String lengthTypePrefix,
+        final String byteOrderStr,
+        final String characterEncoding)
+    {
+        generateVarDataTypedEncoder(
+            sb,
+            propertyName,
+            sizeOfLengthField,
+            fullMutableBufferImplementation,
+            lengthJavaType,
+            lengthTypePrefix,
+            byteOrderStr);
+
+        generateVarDataTypedEncoder(
+            sb,
+            propertyName,
+            sizeOfLengthField,
+            "byte[]",
+            lengthJavaType,
+            lengthTypePrefix,
+            byteOrderStr);
 
         sb.append(String.format(
             "\n" +
@@ -612,13 +666,12 @@ public class JavaGenerator implements CodeGenerator
         ));
     }
 
-    private void generateVarDataTypedAccessors(
+    private void generateVarDataTypedDecoder(
         final StringBuilder sb,
         final Token token,
         final String propertyName,
         final int sizeOfLengthField,
         final String exchangeType,
-        final String lengthJavaType,
         final String lengthTypePrefix,
         final String byteOrderStr)
     {
@@ -643,7 +696,17 @@ public class JavaGenerator implements CodeGenerator
             lengthTypePrefix,
             byteOrderStr
         ));
+    }
 
+    private void generateVarDataTypedEncoder(
+        final StringBuilder sb,
+        final String propertyName,
+        final int sizeOfLengthField,
+        final String exchangeType,
+        final String lengthJavaType,
+        final String lengthTypePrefix,
+        final String byteOrderStr)
+    {
         sb.append(String.format(
             "\n" +
             "    public int put%s(final %s src, final int srcOffset, final int length)\n" +

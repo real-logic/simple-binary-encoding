@@ -306,7 +306,8 @@ public class JavaGeneratorTest
     private void wrapForEncode(final UnsafeBuffer buffer,
                                final Object msgFlyweight) throws Exception
     {
-        msgFlyweight.getClass()
+        msgFlyweight
+            .getClass()
             .getDeclaredMethod("wrapForEncode", BUFFER_CLASS, int.class)
             .invoke(msgFlyweight, buffer, 0);
     }
