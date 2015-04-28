@@ -18,10 +18,7 @@ package uk.co.real_logic.sbe.generation.cpp98;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.agrona.generation.OutputManager;
-import uk.co.real_logic.sbe.ir.Encoding;
-import uk.co.real_logic.sbe.ir.Ir;
-import uk.co.real_logic.sbe.ir.Signal;
-import uk.co.real_logic.sbe.ir.Token;
+import uk.co.real_logic.sbe.ir.*;
 import uk.co.real_logic.agrona.Verify;
 
 import java.io.IOException;
@@ -30,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.co.real_logic.sbe.generation.cpp98.Cpp98Util.*;
+import static uk.co.real_logic.sbe.ir.TraversalUtil.collectGroups;
+import static uk.co.real_logic.sbe.ir.TraversalUtil.collectRootFields;
 
 public class Cpp98Generator implements CodeGenerator
 {
@@ -126,40 +125,6 @@ public class Cpp98Generator implements CodeGenerator
                 out.append("};\n}\n#endif\n");
             }
         }
-    }
-
-    private int collectRootFields(final List<Token> tokens, int index, final List<Token> rootFields)
-    {
-        for (int size = tokens.size(); index < size; index++)
-        {
-            final Token token = tokens.get(index);
-            if (Signal.BEGIN_GROUP == token.signal() ||
-                Signal.END_GROUP == token.signal() ||
-                Signal.BEGIN_VAR_DATA == token.signal())
-            {
-                return index;
-            }
-
-            rootFields.add(token);
-        }
-
-        return index;
-    }
-
-    private int collectGroups(final List<Token> tokens, int index, final List<Token> groups)
-    {
-        for (int size = tokens.size(); index < size; index++)
-        {
-            final Token token = tokens.get(index);
-            if (Signal.BEGIN_VAR_DATA == token.signal())
-            {
-                return index;
-            }
-
-            groups.add(token);
-        }
-
-        return index;
     }
 
     private int generateGroups(final StringBuilder sb, final List<Token> tokens, int index, final String indent)
