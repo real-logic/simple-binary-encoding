@@ -201,11 +201,11 @@ public class JsonTokenListener implements TokenListener
     private static PrimitiveValue constOrNotPresentValue(final Token token, final int actingVersion)
     {
         final Encoding encoding = token.encoding();
-        if (Encoding.Presence.CONSTANT == encoding.presence())
+        if (token.isConstantEncoding())
         {
             return encoding.constValue();
         }
-        else if (Encoding.Presence.OPTIONAL == encoding.presence())
+        else if (token.isOptionalEncoding())
         {
             if (actingVersion < token.version())
             {

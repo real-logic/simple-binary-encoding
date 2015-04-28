@@ -332,7 +332,7 @@ public class JavaMockPojoGenerator implements CodeGenerator
         final String containingClassName, final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
-        if (Encoding.Presence.CONSTANT != token.encoding().presence())
+        if (!token.isConstantEncoding())
         {
             sb.append(generatePrimitivePropertyMethods(containingClassName, propertyName, token, indent));
         }

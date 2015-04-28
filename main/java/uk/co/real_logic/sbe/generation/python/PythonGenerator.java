@@ -686,7 +686,7 @@ public class PythonGenerator implements CodeGenerator
 
         sb.append(generatePrimitiveFieldMetaData(propertyName, token, indent));
 
-        if (Encoding.Presence.CONSTANT == token.encoding().presence())
+        if (token.isConstantEncoding())
         {
             sb.append(generateConstPropertyMethods(propertyName, token, indent));
         }

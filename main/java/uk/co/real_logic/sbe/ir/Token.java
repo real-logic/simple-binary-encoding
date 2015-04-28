@@ -18,6 +18,8 @@ package uk.co.real_logic.sbe.ir;
 
 import uk.co.real_logic.agrona.Verify;
 
+import java.util.function.Supplier;
+
 /**
  * Class to encapsulate a token of information for the message schema stream. This Intermediate Representation (IR)
  * is intended to be language, schema, platform independent.
@@ -217,6 +219,22 @@ public class Token
         return size / encoding.primitiveType().size();
     }
 
+    public CharSequence switchArray(Supplier<CharSequence> single, Supplier<CharSequence> array)
+    {
+        final int arrayLength = arrayLength();
+
+        if (arrayLength == 1)
+        {
+            return single.get();
+        }
+        else if (arrayLength > 1)
+        {
+            return array.get();
+        }
+
+        return "";
+    }
+
     /**
      * The offset for this token in the message.
      *
@@ -237,6 +255,16 @@ public class Token
     public Encoding encoding()
     {
         return encoding;
+    }
+
+    public boolean isConstantEncoding()
+    {
+        return encoding.presence() == Encoding.Presence.CONSTANT;
+    }
+
+    public boolean isOptionalEncoding()
+    {
+        return encoding.presence() == Encoding.Presence.OPTIONAL;
     }
 
     public String toString()

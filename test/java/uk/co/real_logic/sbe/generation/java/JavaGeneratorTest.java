@@ -17,6 +17,7 @@ package uk.co.real_logic.sbe.generation.java;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.agrona.generation.CompilerUtil;
@@ -28,11 +29,14 @@ import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteOrder;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
@@ -42,7 +46,9 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 public class JavaGeneratorTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
-    private static final String BUFFER_NAME = BUFFER_CLASS.getName();
+    private static final String MUTABLE_BUFFER_NAME = BUFFER_CLASS.getName();
+    private static final Class<DirectBuffer> READ_ONLY_BUFFER_CLASS = DirectBuffer.class;
+    private static final String READ_ONLY_BUFFER_NAME = READ_ONLY_BUFFER_CLASS.getName();
     private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
 
     private final StringWriterOutputManager outputManager = new StringWriterOutputManager();
@@ -74,8 +80,7 @@ public class JavaGeneratorTest
 
         when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
-        javaGenerator.generateMessageHeaderStub();
+        generator().generateMessageHeaderStub();
 
         final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
@@ -98,8 +103,7 @@ public class JavaGeneratorTest
         final String className = "BooleanType";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
-        javaGenerator.generateTypeStubs();
+        generateTypeStubs();
 
         final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
@@ -115,8 +119,7 @@ public class JavaGeneratorTest
         final String className = "Model";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
-        javaGenerator.generateTypeStubs();
+        generateTypeStubs();
 
         final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
@@ -137,8 +140,7 @@ public class JavaGeneratorTest
 
         when(mockBuffer.getByte(bufferOffset)).thenReturn(bitset);
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
-        javaGenerator.generateTypeStubs();
+        generateTypeStubs();
 
         final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
@@ -169,8 +171,7 @@ public class JavaGeneratorTest
         when(mockBuffer.getShort(capacityFieldOffset, BYTE_ORDER))
             .thenReturn((short) expectedEngineCapacity);
 
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
-        javaGenerator.generateTypeStubs();
+        generateTypeStubs();
 
         final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
@@ -199,62 +200,129 @@ public class JavaGeneratorTest
     public void shouldGenerateBasicMessage() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
-        final String className = "Car";
-        final String fqClassName = ir.applicableNamespace() + "." + className;
-
-        final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
-        javaGenerator.generate();
-
-        final Class<?> clazz = compile(fqClassName);
-        assertNotNull(clazz);
+        generator().generate();
+        final Class<?> clazz = compileCar();
 
         final Object msgFlyweight = clazz.newInstance();
-        msgFlyweight.getClass()
-            .getDeclaredMethod("wrapForEncode", BUFFER_CLASS, int.class)
-            .invoke(msgFlyweight, buffer, 0);
+        wrapForEncode(buffer, msgFlyweight);
 
-        final Integer initialPosition = (Integer) msgFlyweight.getClass().getDeclaredMethod("limit").invoke(msgFlyweight);
+        final Integer initialPosition = limit(msgFlyweight);
 
         final Object groupFlyweight = clazz.getDeclaredMethod("fuelFigures").invoke(msgFlyweight);
-        assertThat(
-            (Integer) msgFlyweight.getClass().getDeclaredMethod("limit").invoke(msgFlyweight), greaterThan(initialPosition));
+        assertThat(limit(msgFlyweight), greaterThan(initialPosition));
 
         final Integer count = (Integer) groupFlyweight.getClass().getDeclaredMethod("count").invoke(groupFlyweight);
         assertThat(count, is(0));
     }
 
+    @Test
+    public void shouldGenerateReadOnlyMessage() throws Exception
+    {
+        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
+        generator().generate();
+
+        final Class<?> readerClass = compileReadOnlyCar();
+        final Class<?> writerClass = compileCar();
+
+        final Object writer = writerClass.newInstance();
+        wrapForEncode(buffer, writer);
+
+        final Object reader = readerClass.newInstance();
+        readerClass.getMethod("wrapForDecode", READ_ONLY_BUFFER_CLASS, int.class, int.class, int.class)
+                   .invoke(reader, buffer, 0, 0, 0);
+
+        final long expectedSerialNumber = 5L;
+        serialNumber(writerClass, writer, expectedSerialNumber);
+        long serialNumber = serialNumber(readerClass, reader);
+        assertEquals(expectedSerialNumber, serialNumber);
+    }
+
+    private Class<?> compileReadOnlyCar() throws Exception
+    {
+        final String className = "ReadOnlyCar";
+        final String fqClassName = ir.applicableNamespace() + "." + className;
+
+        final Class<?> readerClass = compile(fqClassName);
+        assertNotNull(readerClass);
+        return readerClass;
+    }
+
+    private void serialNumber(final Class<?> writerClass,
+                              final Object writer,
+                              final long serial) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+    {
+        writerClass.getMethod("serialNumber", long.class).invoke(writer, serial);
+    }
+
+    private long serialNumber(final Class<?> readerClass,
+                              final Object reader) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+    {
+        return (long) readerClass.getMethod("serialNumber").invoke(reader);
+    }
+
+    private Integer limit(final Object msgFlyweight) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+    {
+        return (Integer) msgFlyweight.getClass().getMethod("limit").invoke(msgFlyweight);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateMissingMutableBufferClass() throws IOException
     {
-        new JavaGenerator(ir, "dasdsads", BUFFER_NAME, outputManager);
+        new JavaGenerator(ir, "dasdsads", MUTABLE_BUFFER_NAME, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateNotImplementedMutableBufferClass() throws IOException
     {
-        new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, outputManager);
+        new JavaGenerator(ir, "java.nio.ByteBuffer", MUTABLE_BUFFER_NAME, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateMissingReadOnlyBufferClass() throws IOException
     {
-        new JavaGenerator(ir, BUFFER_NAME, "dasdsads", outputManager);
+        new JavaGenerator(ir, MUTABLE_BUFFER_NAME, "dasdsads", outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateNotImplementedReadOnlyBufferClass() throws IOException
     {
-        new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", outputManager);
+        new JavaGenerator(ir, MUTABLE_BUFFER_NAME, "java.nio.ByteBuffer", outputManager);
     }
 
-    @Test
-    public void shouldGenerateTemplatedCodecUtil()
+    private Class<?> compileCar() throws Exception
     {
+        final String className = "Car";
+        final String fqClassName = ir.applicableNamespace() + "." + className;
+
+        final Class<?> clazz = compile(fqClassName);
+        assertNotNull(clazz);
+        return clazz;
+    }
+
+    private void wrapForEncode(final UnsafeBuffer buffer,
+                               final Object msgFlyweight) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+    {
+        msgFlyweight.getClass()
+            .getDeclaredMethod("wrapForEncode", BUFFER_CLASS, int.class)
+            .invoke(msgFlyweight, buffer, 0);
+    }
+
+    private JavaGenerator generator() throws IOException
+    {
+        return new JavaGenerator(ir, MUTABLE_BUFFER_NAME, READ_ONLY_BUFFER_NAME, outputManager);
+    }
+
+    private void generateTypeStubs() throws IOException
+    {
+        final JavaGenerator javaGenerator = generator();
+        javaGenerator.generateTypeStubs();
     }
 
     private Class<?> compile(final String fqClassName) throws Exception
     {
-        return CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
+        final Map<String, CharSequence> sources = outputManager.getSources();
+        System.out.println(sources);
+        return CompilerUtil.compileInMemory(fqClassName, sources);
     }
 
 }
