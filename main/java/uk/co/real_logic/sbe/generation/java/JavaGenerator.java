@@ -171,6 +171,7 @@ public class JavaGenerator implements CodeGenerator
             final StringBuilder sb = new StringBuilder();
             generateGroups(sb, className, groups, 0, BASE_INDENT);
 
+            out.append(generateVarData(varData));
             out.append(sb);
             out.append("}\n");
         }
@@ -196,7 +197,7 @@ public class JavaGenerator implements CodeGenerator
             generateGroups(sb, className, groups, 0, BASE_INDENT);
 
             out.append(sb);*/
-            //out.append(generateVarData(varData));
+
             out.append("}\n");
         }
     }

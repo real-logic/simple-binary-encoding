@@ -29,16 +29,13 @@ import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteOrder;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_TYPE;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
@@ -228,13 +225,20 @@ public class JavaGeneratorTest
         wrapForEncode(buffer, writer);
 
         final Object reader = readerClass.newInstance();
-        readerClass.getMethod("wrapForDecode", READ_ONLY_BUFFER_CLASS, int.class, int.class, int.class)
-                   .invoke(reader, buffer, 0, 0, 0);
+        wrapForDecode(buffer, readerClass, reader);
 
         final long expectedSerialNumber = 5L;
         serialNumber(writerClass, writer, expectedSerialNumber);
-        long serialNumber = serialNumber(readerClass, reader);
+        final long serialNumber = serialNumber(readerClass, reader);
         assertEquals(expectedSerialNumber, serialNumber);
+    }
+
+    private void wrapForDecode(final UnsafeBuffer buffer,
+                               final Class<?> readerClass,
+                               final Object reader) throws Exception
+    {
+        readerClass.getMethod("wrapForDecode", READ_ONLY_BUFFER_CLASS, int.class, int.class, int.class)
+                   .invoke(reader, buffer, 0, 0, 0);
     }
 
     private Class<?> compileReadOnlyCar() throws Exception
@@ -249,18 +253,18 @@ public class JavaGeneratorTest
 
     private void serialNumber(final Class<?> writerClass,
                               final Object writer,
-                              final long serial) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+                              final long serial) throws Exception
     {
         writerClass.getMethod("serialNumber", long.class).invoke(writer, serial);
     }
 
     private long serialNumber(final Class<?> readerClass,
-                              final Object reader) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+                              final Object reader) throws Exception
     {
         return (long) readerClass.getMethod("serialNumber").invoke(reader);
     }
 
-    private Integer limit(final Object msgFlyweight) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+    private Integer limit(final Object msgFlyweight) throws Exception
     {
         return (Integer) msgFlyweight.getClass().getMethod("limit").invoke(msgFlyweight);
     }
@@ -300,7 +304,7 @@ public class JavaGeneratorTest
     }
 
     private void wrapForEncode(final UnsafeBuffer buffer,
-                               final Object msgFlyweight) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+                               final Object msgFlyweight) throws Exception
     {
         msgFlyweight.getClass()
             .getDeclaredMethod("wrapForEncode", BUFFER_CLASS, int.class)
