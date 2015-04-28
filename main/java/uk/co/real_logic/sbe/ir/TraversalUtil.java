@@ -56,4 +56,9 @@ public final class TraversalUtil
 
         return index;
     }
+
+    public static List<Token> getMessageBody(final List<Token> tokens)
+    {
+        return tokens.subList(1, tokens.size() - 1);
+    }
 }

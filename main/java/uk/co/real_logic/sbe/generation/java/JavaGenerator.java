@@ -33,6 +33,7 @@ import java.util.function.BiConsumer;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 import static uk.co.real_logic.sbe.ir.TraversalUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.TraversalUtil.collectRootFields;
+import static uk.co.real_logic.sbe.ir.TraversalUtil.getMessageBody;
 
 public class JavaGenerator implements CodeGenerator
 {
@@ -100,7 +101,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
             out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(
-                MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+                MESSAGE_HEADER_TYPE, getMessageBody(tokens), BASE_INDENT));
 
             out.append("}\n");
         }
@@ -137,7 +138,7 @@ public class JavaGenerator implements CodeGenerator
         for (final List<Token> tokens : ir.messages())
         {
             final Token msgToken = tokens.get(0);
-            final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
+            final List<Token> messageBody = getMessageBody(tokens);
 
             int offset = 0;
             final List<Token> rootFields = new ArrayList<>();
@@ -270,8 +271,8 @@ public class JavaGenerator implements CodeGenerator
         ));
 
         final int blockLength = tokens.get(index).size();
-        final String javaTypeForBlockLength = javaTypeName(tokens.get(index + 2).encoding().primitiveType());
-        final String javaTypeForNumInGroup = javaTypeName(tokens.get(index + 3).encoding().primitiveType());
+        final String javaTypeForBlockLength = primitiveTypeName(tokens.get(index + 2));
+        final String javaTypeForNumInGroup = primitiveTypeName(tokens.get(index + 3));
 
         sb.append(String.format(
             indent + "    public void wrapForEncode(final %1$s parentMessage, final %5$s buffer, final int count)\n" +
@@ -349,6 +350,11 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             formatClassName(groupName)
         ));
+    }
+
+    private String primitiveTypeName(final Token token)
+    {
+        return javaTypeName(token.encoding().primitiveType());
     }
 
     private void generateClassDeclaration(
@@ -702,7 +708,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateClassDeclaration(bitSetName));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
             out.append(generateChoiceClear(bitSetName, tokens.get(0)));
-            out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
+            out.append(generateChoices(bitSetName, getMessageBody(tokens)));
 
             out.append("}\n");
         }
@@ -717,10 +723,10 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateEnumFileHeader(ir.applicableNamespace()));
             out.append(generateEnumDeclaration(enumName));
 
-            out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1)));
+            out.append(generateEnumValues(getMessageBody(tokens)));
             out.append(generateEnumBody(tokens.get(0), enumName));
 
-            out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumName));
+            out.append(generateEnumLookupMethod(getMessageBody(tokens), enumName));
 
             out.append("}\n");
         }
@@ -736,7 +742,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateClassDeclaration(compositeName));
             out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size()));
 
-            out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            out.append(generatePrimitivePropertyEncodings(compositeName, getMessageBody(tokens), BASE_INDENT));
 
             out.append("}\n");
         }
@@ -831,7 +837,7 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateEnumBody(final Token token, final String enumName)
     {
-        final String javaEncodingType = javaTypeName(token.encoding().primitiveType());
+        final String javaEncodingType = primitiveTypeName(token);
 
         return String.format(
             "    private final %1$s value;\n\n" +
@@ -993,7 +999,7 @@ public class JavaGenerator implements CodeGenerator
             if (token.signal() == Signal.ENCODING)
             {
                 // TODO:
-                sb.append(generatePrimitiveDecoder(containingClassName, token.name(), token, indent));
+                sb.append(generatePrimitiveDecoder(token.name(), token, indent));
                 sb.append(generatePrimitiveEncoder(containingClassName, token.name(), token, indent));
             }
         }
@@ -1002,7 +1008,7 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitiveDecoder(
-        final String containingClassName, final String propertyName, final Token token, final String indent)
+        final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1208,7 +1214,7 @@ public class JavaGenerator implements CodeGenerator
         final int offset = token.offset();
         final String byteOrderStr = byteOrderString(encoding);
         final int fieldLength = token.arrayLength();
-        final int typeSize = encoding.primitiveType().size();
+        final int typeSize = sizeOfPrimitive(encoding);
 
         final StringBuilder sb = new StringBuilder();
 
@@ -1273,7 +1279,7 @@ public class JavaGenerator implements CodeGenerator
     private String byteOrderString(final Encoding encoding)
     {
         final ByteOrder byteOrder = encoding.byteOrder();
-        return encoding.primitiveType().size() == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
+        return sizeOfPrimitive(encoding) == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
     }
 
     private CharSequence generateArrayPropertyEncode(
@@ -1285,7 +1291,7 @@ public class JavaGenerator implements CodeGenerator
         final int offset = token.offset();
         final String byteOrderStr = byteOrderString(encoding);
         final int fieldLength = token.arrayLength();
-        final int typeSize = encoding.primitiveType().size();
+        final int typeSize = sizeOfPrimitive(encoding);
 
         final StringBuilder sb = new StringBuilder();
 
@@ -1329,6 +1335,11 @@ public class JavaGenerator implements CodeGenerator
         }
 
         return sb;
+    }
+
+    private int sizeOfPrimitive(final Encoding encoding)
+    {
+        return encoding.primitiveType().size();
     }
 
     private void generateCharacterEncodingMethod(
@@ -1592,7 +1603,7 @@ public class JavaGenerator implements CodeGenerator
             switch (encodingToken.signal())
             {
                 case ENCODING:
-                    sb.append(generatePrimitiveDecoder(containingClassName, propertyName, encodingToken, indent));
+                    sb.append(generatePrimitiveDecoder(propertyName, encodingToken, indent));
                     break;
 
                 case BEGIN_ENUM:
