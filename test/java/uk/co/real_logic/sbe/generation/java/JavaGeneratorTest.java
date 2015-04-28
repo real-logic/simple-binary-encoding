@@ -77,7 +77,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
         javaGenerator.generateMessageHeaderStub();
 
-        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
+        final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
 
         final Object flyweight = clazz.newInstance();
@@ -101,7 +101,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
+        final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
 
         final Object result = clazz.getDeclaredMethod("get", short.class).invoke(null, (short) 1);
@@ -118,7 +118,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
+        final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
 
         final Object result = clazz.getDeclaredMethod("get", byte.class).invoke(null, (byte) 'B');
@@ -140,7 +140,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
+        final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
 
         final Object flyweight = clazz.newInstance();
@@ -172,7 +172,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
         javaGenerator.generateTypeStubs();
 
-        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
+        final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
 
         final Object flyweight = clazz.newInstance();
@@ -205,7 +205,7 @@ public class JavaGeneratorTest
         final JavaGenerator javaGenerator = new JavaGenerator(ir, BUFFER_NAME, BUFFER_NAME, outputManager);
         javaGenerator.generate();
 
-        final Class<?> clazz = CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
+        final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
 
         final Object msgFlyweight = clazz.newInstance();
@@ -246,4 +246,15 @@ public class JavaGeneratorTest
     {
         new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", outputManager);
     }
+
+    @Test
+    public void shouldGenerateTemplatedCodecUtil()
+    {
+    }
+
+    private Class<?> compile(final String fqClassName) throws Exception
+    {
+        return CompilerUtil.compileInMemory(fqClassName, outputManager.getSources());
+    }
+
 }
