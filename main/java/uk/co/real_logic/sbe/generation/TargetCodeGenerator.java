@@ -15,9 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation;
 
-import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.agrona.generation.PackageOutputManager;
-import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.generation.cpp98.Cpp98Generator;
 import uk.co.real_logic.sbe.generation.cpp98.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.csharp.CSharpGenerator;
@@ -29,6 +27,8 @@ import uk.co.real_logic.sbe.generation.python.PythonGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
 import java.io.IOException;
+
+import static uk.co.real_logic.sbe.SbeTool.*;
 
 /**
  * Target a code generator for a given language.
@@ -51,7 +51,8 @@ public enum TargetCodeGenerator
             {
                 return new JavaGenerator(
                     ir,
-                    System.getProperty(SbeTool.JAVA_BUFFER, UnsafeBuffer.class.getName()),
+                    System.getProperty(JAVA_MUTABLE_BUFFER, JAVA_DEFAULT_BUFFER),
+                    System.getProperty(JAVA_READONLY_BUFFER, JAVA_DEFAULT_BUFFER),
                     new PackageOutputManager(outputDir, ir.applicableNamespace()));
             }
         },

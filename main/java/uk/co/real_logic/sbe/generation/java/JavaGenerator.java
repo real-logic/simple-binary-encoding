@@ -41,10 +41,15 @@ public class JavaGenerator implements CodeGenerator
 
     private final Ir ir;
     private final OutputManager outputManager;
-    private final String fullyQualifiedBufferImplementation;
-    private final String bufferImplementation;
+    private final String fullMutableBufferImplementation;
+    private final String mutableBufferImplementation;
+    private final String fullReadOnlyBufferImplementation;
+    private final String readOnlyBufferImplementation;
 
-    public JavaGenerator(final Ir ir, final String fullyQualifiedBufferImplementation, final OutputManager outputManager)
+    public JavaGenerator(final Ir ir,
+                         final String mutableBufferImplementation,
+                         final String readOnlyBufferImplementation,
+                         final OutputManager outputManager)
         throws IOException
     {
         Verify.notNull(ir, "ir");
@@ -52,12 +57,18 @@ public class JavaGenerator implements CodeGenerator
 
         this.ir = ir;
         this.outputManager = outputManager;
-        this.bufferImplementation = validateBufferImplementation(fullyQualifiedBufferImplementation);
-        this.fullyQualifiedBufferImplementation = fullyQualifiedBufferImplementation;
+
+        this.mutableBufferImplementation = validateBufferImplementation(mutableBufferImplementation);
+        this.fullMutableBufferImplementation = mutableBufferImplementation;
+
+        this.readOnlyBufferImplementation = validateBufferImplementation(readOnlyBufferImplementation);
+        this.fullReadOnlyBufferImplementation = readOnlyBufferImplementation;
     }
 
     private String validateBufferImplementation(final String fullyQualifiedBufferImplementation)
     {
+        Verify.notNull(fullyQualifiedBufferImplementation, "fullyQualifiedBufferImplementation");
+
         try
         {
             final Class<?> cls = Class.forName(fullyQualifiedBufferImplementation);
@@ -250,7 +261,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
-            bufferImplementation
+            mutableBufferImplementation
         ));
 
         final int blockLength = tokens.get(index).size();
@@ -275,7 +286,7 @@ public class JavaGenerator implements CodeGenerator
             javaTypeForBlockLength,
             blockLength,
             javaTypeForNumInGroup,
-            bufferImplementation
+            mutableBufferImplementation
         ));
 
         sb.append(indent).append("    public static int sbeHeaderSize()\n")
@@ -343,7 +354,6 @@ public class JavaGenerator implements CodeGenerator
         final String dimensionsClassName,
         final int dimensionHeaderSize)
     {
-
         sb.append(String.format(
             "\n" +
             indent + "public static class %1$s implements Iterable<%1$s>, java.util.Iterator<%1$s>\n" +
@@ -361,7 +371,7 @@ public class JavaGenerator implements CodeGenerator
             dimensionHeaderSize,
             dimensionsClassName,
             parentMessageClassName,
-            bufferImplementation
+            mutableBufferImplementation
         ));
     }
 
@@ -489,7 +499,7 @@ public class JavaGenerator implements CodeGenerator
             token,
             propertyName,
             sizeOfLengthField,
-            fullyQualifiedBufferImplementation,
+            fullMutableBufferImplementation,
             lengthJavaType,
             lengthTypePrefix,
             byteOrderStr);
@@ -819,7 +829,7 @@ public class JavaGenerator implements CodeGenerator
             "import uk.co.real_logic.sbe.codec.java.*;\n" +
             "import %s;\n\n",
             packageName,
-            fullyQualifiedBufferImplementation
+            fullMutableBufferImplementation
         );
     }
 
@@ -1335,7 +1345,7 @@ public class JavaGenerator implements CodeGenerator
             "    }\n",
             className,
             size,
-            bufferImplementation
+            mutableBufferImplementation
         );
     }
 
@@ -1425,7 +1435,7 @@ public class JavaGenerator implements CodeGenerator
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
             className,
             semanticType,
-            bufferImplementation
+            mutableBufferImplementation
         );
     }
 

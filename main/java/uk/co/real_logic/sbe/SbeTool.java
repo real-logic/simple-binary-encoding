@@ -16,6 +16,7 @@
  */
 package uk.co.real_logic.sbe;
 
+import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
@@ -100,9 +101,19 @@ public class SbeTool
     public static final String TARGET_NAMESPACE = "sbe.target.namespace";
 
     /**
-     * Specifies the name of the Java buffer to wrap
+     * Specifies the name of the Java mutable buffer to wrap
      */
-    public static final String JAVA_BUFFER = "sbe.java.buffer";
+    public static final String JAVA_MUTABLE_BUFFER = "sbe.java.mutable.buffer";
+
+    /**
+     * Specifies the name of the Java read only buffer to wrap
+     */
+    public static final String JAVA_READONLY_BUFFER = "sbe.java.readonly.buffer";
+
+    /**
+     * Default class to use as the buffer implementation in generated code.
+     */
+    public static final String JAVA_DEFAULT_BUFFER = UnsafeBuffer.class.getName();
 
     /**
      * Main entry point for the SBE Tool.
