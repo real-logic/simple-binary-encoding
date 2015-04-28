@@ -247,9 +247,9 @@ public class JavaGenerator implements CodeGenerator
     {
         for (int size = tokens.size(); index < size; index++)
         {
-            if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
+            final Token groupToken = tokens.get(index);
+            if (groupToken.signal() == Signal.BEGIN_GROUP)
             {
-                final Token groupToken = tokens.get(index);
                 final String groupName = groupToken.name();
                 final String groupClassName = formatClassName(groupName);
                 sb.append(generateGroupProperty(groupName, groupToken, indent));
