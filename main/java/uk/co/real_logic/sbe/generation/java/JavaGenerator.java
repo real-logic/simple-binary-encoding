@@ -1482,7 +1482,7 @@ public class JavaGenerator implements CodeGenerator
         final boolean callsSuper,
         final String bufferImplementation)
     {
-        final String body = callsSuper ? "        super.wrap(buffer, offset, actingVersion);" : "";
+        final String body = callsSuper ? "        super.wrap(buffer, offset, actingVersion);\n" : "";
 
         return String.format(
             "    private %3$s buffer;\n" +
@@ -1593,11 +1593,16 @@ public class JavaGenerator implements CodeGenerator
         return String.format(
             "    private final %1$s parentMessage = this;\n" +
             "    private %2$s buffer;\n" +
-            "    public %1$s wrapForEncode(final %2$s buffer, final int offset)\n" +
+            "    public %1$s wrapForDecode(\n" +
+            "        final %2$s buffer, final int offset, final int actingBlockLength, final int actingVersion)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
-            "        wrapForDecode(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);\n" +
+            "        super.wrapForDecode(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);\n" +
             "        return this;\n" +
+            "    }\n\n" +
+            "    public %1$s wrapForEncode(final %2$s buffer, final int offset)\n" +
+            "    {\n" +
+            "        return wrapForDecode(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);\n" +
             "    }\n\n",
             className,
             mutableBufferImplementation

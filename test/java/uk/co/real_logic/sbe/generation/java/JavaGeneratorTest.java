@@ -44,7 +44,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 public class JavaGeneratorTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
-    private static final String MUTABLE_BUFFER_NAME = BUFFER_CLASS.getName();
+    private static final String BUFFER_NAME = BUFFER_CLASS.getName();
     private static final Class<DirectBuffer> READ_ONLY_BUFFER_CLASS = DirectBuffer.class;
     private static final String READ_ONLY_BUFFER_NAME = READ_ONLY_BUFFER_CLASS.getName();
     private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
@@ -271,6 +271,27 @@ public class JavaGeneratorTest
     }
 
     @Test
+    public void shouldBeAbleToWrapForDecodeAFullFlyweight() throws Exception
+    {
+        final int expectedEngineCapacity = 2000;
+        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
+
+        generator().generate();
+
+        final Class<?> car = compileCar();
+        final Object encoder = wrapForEncode(buffer, car.newInstance());
+        final Object engine = get(encoder, "engine");
+
+        setCapacity(engine, expectedEngineCapacity);
+
+        final Object flyweight = wrapForDecode(
+            buffer, car.newInstance(), getSbeBlockLength(encoder), getSbeSchemaVersion(encoder), BUFFER_CLASS);
+        final Object otherEngine = get(flyweight, "engine");
+
+        assertEquals(expectedEngineCapacity, getCapacity(otherEngine));
+    }
+
+    @Test
     public void shouldGenerateCompositeDecodings() throws Exception
     {
         final int expectedEngineCapacity = 2000;
@@ -337,8 +358,17 @@ public class JavaGeneratorTest
         final int blockLength,
         final int version) throws Exception
     {
+        return wrapForDecode(buffer, decoder, blockLength, version, READ_ONLY_BUFFER_CLASS);
+    }
+
+    private static Object wrapForDecode(final UnsafeBuffer buffer,
+                                        final Object decoder,
+                                        final int blockLength,
+                                        final int version,
+                                        final Class<?> bufferClass) throws Exception
+    {
         decoder.getClass()
-               .getMethod("wrapForDecode", READ_ONLY_BUFFER_CLASS, int.class, int.class, int.class)
+               .getMethod("wrapForDecode", bufferClass, int.class, int.class, int.class)
                .invoke(decoder, buffer, 0, blockLength, version);
         return decoder;
     }
@@ -346,25 +376,25 @@ public class JavaGeneratorTest
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateMissingMutableBufferClass() throws IOException
     {
-        new JavaGenerator(ir, "dasdsads", MUTABLE_BUFFER_NAME, outputManager);
+        new JavaGenerator(ir, "dasdsads", BUFFER_NAME, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateNotImplementedMutableBufferClass() throws IOException
     {
-        new JavaGenerator(ir, "java.nio.ByteBuffer", MUTABLE_BUFFER_NAME, outputManager);
+        new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateMissingReadOnlyBufferClass() throws IOException
     {
-        new JavaGenerator(ir, MUTABLE_BUFFER_NAME, "dasdsads", outputManager);
+        new JavaGenerator(ir, BUFFER_NAME, "dasdsads", outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateNotImplementedReadOnlyBufferClass() throws IOException
     {
-        new JavaGenerator(ir, MUTABLE_BUFFER_NAME, "java.nio.ByteBuffer", outputManager);
+        new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", outputManager);
     }
 
     private Class<?> compileCar() throws Exception
@@ -401,7 +431,7 @@ public class JavaGeneratorTest
 
     private JavaGenerator generator() throws IOException
     {
-        return new JavaGenerator(ir, MUTABLE_BUFFER_NAME, READ_ONLY_BUFFER_NAME, outputManager);
+        return new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, outputManager);
     }
 
     private void generateTypeStubs() throws IOException
