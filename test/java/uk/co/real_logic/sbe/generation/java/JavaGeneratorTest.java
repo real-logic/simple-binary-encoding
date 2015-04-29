@@ -16,6 +16,7 @@
 package uk.co.real_logic.sbe.generation.java;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
@@ -35,6 +36,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_TYPE;
@@ -114,17 +116,13 @@ public class JavaGeneratorTest
     @Test
     public void shouldGenerateCharEnumStub() throws Exception
     {
-        final String className = "Model";
-        final String fqClassName = ir.applicableNamespace() + "." + className;
-
         generateTypeStubs();
 
-        final Class<?> clazz = compile(fqClassName);
-        assertNotNull(clazz);
+        final Class<?> clazz = compileModel();
 
-        final Object result = clazz.getDeclaredMethod("get", byte.class).invoke(null, (byte) 'B');
+        final Object result = getByte(clazz, (byte) 'B');
 
-        assertThat(result.toString(), is("B"));
+        assertThat(result, hasToString("B"));
     }
 
     @Test
@@ -343,6 +341,46 @@ public class JavaGeneratorTest
         assertTrue(getCruiseControl(readOnlyExtras));
     }
 
+    @Test
+    public void shouldGenerateEnumEncodings() throws Exception
+    {
+        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
+        generator().generate();
+
+        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
+
+        final Class<?> modelClass = getModelClass(encoder);
+        final Object modelB = modelClass.getEnumConstants()[1];
+
+        set(encoder, "code", modelClass, modelB);
+
+        assertThat(get(encoder, "code"), hasToString("B"));
+    }
+
+    @Ignore
+    @Test
+    public void shouldGenerateEnumDecodings() throws Exception
+    {
+        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
+        generator().generate();
+
+        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
+
+        final Class<?> modelClass = getModelClass(encoder);
+        final Object modelB = modelClass.getEnumConstants()[1];
+
+        set(encoder, "code", modelClass, modelB);
+
+        assertThat(get(encoder, "code"), hasToString("B"));
+    }
+
+    private Class<?> getModelClass(final Object encoder) throws ClassNotFoundException
+    {
+        final String className = "Model";
+        final String fqClassName = ir.applicableNamespace() + "." + className;
+        return encoder.getClass().getClassLoader().loadClass(fqClassName);
+    }
+
     private Object getCarDecoder(final UnsafeBuffer buffer, final Object encoder) throws Exception
     {
         final int sbeBlockLength = getSbeBlockLength(encoder);
@@ -415,6 +453,16 @@ public class JavaGeneratorTest
         final Class<?> readerClass = compile(fqClassName);
         assertNotNull(readerClass);
         return readerClass;
+    }
+
+    private Class<?> compileModel() throws Exception
+    {
+        final String className = "Model";
+        final String fqClassName = ir.applicableNamespace() + "." + className;
+
+        final Class<?> clazz = compile(fqClassName);
+        assertNotNull(clazz);
+        return clazz;
     }
 
     private static Object wrapForEncode(

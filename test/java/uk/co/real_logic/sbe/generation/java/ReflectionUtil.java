@@ -78,4 +78,17 @@ public final class ReflectionUtil
             .getMethod("capacity", int.class)
             .invoke(flyweight, value);
     }
+
+    static void set(final Object object,
+                    final String name,
+                    final Class<?> type,
+                    final Object value) throws Exception
+    {
+        object.getClass().getMethod(name, type).invoke(object, value);
+    }
+
+    static Object getByte(final Class<?> clazz, final byte value) throws Exception
+    {
+        return clazz.getDeclaredMethod("get", byte.class).invoke(null, value);
+    }
 }
