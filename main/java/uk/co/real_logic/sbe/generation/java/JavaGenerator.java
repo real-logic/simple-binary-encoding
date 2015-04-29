@@ -98,7 +98,7 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> tokens = ir.headerStructure().tokens();
             out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
-            out.append(legacyGenerateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
+            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size(), false, mutableBufferImplementation));
             out.append(generatePrimitivePropertyEncodings(
                 MESSAGE_HEADER_TYPE, getMessageBody(tokens), BASE_INDENT));
 
@@ -708,7 +708,7 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
             out.append(generateClassDeclaration(readOnlyName));
-            out.append(generateFixedFlyweightCode(readOnlyName, token.size(), false));
+            out.append(generateFixedFlyweightCode(readOnlyName, token.size(), false, readOnlyBufferImplementation));
             out.append(generateChoiceDecoders(readOnlyName, messageBody));
 
             out.append("}\n");
@@ -718,7 +718,7 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
             out.append(generateClassDeclaration(bitSetName + " extends " + readOnlyName));
-            out.append(generateFixedFlyweightCode(bitSetName, token.size(), true));
+            out.append(generateFixedFlyweightCode(bitSetName, token.size(), true, mutableBufferImplementation));
             out.append(generateChoiceClear(bitSetName, token));
             out.append(generateChoiceEncoders(bitSetName, messageBody));
 
@@ -756,7 +756,7 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
             out.append(generateClassDeclaration(readOnlyName));
-            out.append(generateFixedFlyweightCode(readOnlyName, token.size(), false));
+            out.append(generateFixedFlyweightCode(readOnlyName, token.size(), false, readOnlyBufferImplementation));
 
             out.append(GenerationUtil.concatEncodingTokens(messageBody,
                 tok -> generatePrimitiveDecoder(tok.name(), tok, BASE_INDENT)));
@@ -768,7 +768,7 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
             out.append(generateClassDeclaration(compositeName + " extends " + readOnlyName));
-            out.append(generateFixedFlyweightCode(compositeName, token.size(), true));
+            out.append(generateFixedFlyweightCode(compositeName, token.size(), true, mutableBufferImplementation));
 
             out.append(GenerationUtil.concatEncodingTokens(messageBody,
                 tok -> generatePrimitiveEncoder(compositeName, tok.name(), tok, BASE_INDENT)));
@@ -1479,10 +1479,10 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateFixedFlyweightCode(
         final String className,
         final int size,
-        final boolean isMutable)
+        final boolean callsSuper,
+        final String bufferImplementation)
     {
-        final String bufferImplementation = isMutable ? mutableBufferImplementation : readOnlyBufferImplementation;
-        final String body = isMutable ? "        super.wrap(buffer, offset, actingVersion);" : "";
+        final String body = callsSuper ? "        super.wrap(buffer, offset, actingVersion);" : "";
 
         return String.format(
             "    private %3$s buffer;\n" +
@@ -1504,32 +1504,6 @@ public class JavaGenerator implements CodeGenerator
             size,
             bufferImplementation,
             body
-        );
-    }
-
-    // TODO: remove this
-    private CharSequence legacyGenerateFixedFlyweightCode(
-        final String className,
-        final int size)
-    {
-        return String.format(
-            "    private %3$s buffer;\n" +
-                "    private int offset;\n" +
-                "    private int actingVersion;\n\n" +
-                "    public %1$s wrap(final %3$s buffer, final int offset, final int actingVersion)\n" +
-                "    {\n" +
-                "        this.buffer = buffer;\n" +
-                "        this.offset = offset;\n" +
-                "        this.actingVersion = actingVersion;\n" +
-                "        return this;\n" +
-                "    }\n\n" +
-                "    public int size()\n" +
-                "    {\n" +
-                "        return %2$d;\n" +
-                "    }\n",
-            className,
-            size,
-            mutableBufferImplementation
         );
     }
 
