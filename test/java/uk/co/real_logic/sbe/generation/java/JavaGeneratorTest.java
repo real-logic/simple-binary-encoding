@@ -16,7 +16,6 @@
 package uk.co.real_logic.sbe.generation.java;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
@@ -357,7 +356,6 @@ public class JavaGeneratorTest
         assertThat(get(encoder, "code"), hasToString("B"));
     }
 
-    @Ignore
     @Test
     public void shouldGenerateEnumDecodings() throws Exception
     {
@@ -365,13 +363,14 @@ public class JavaGeneratorTest
         generator().generate();
 
         final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
+        final Object decoder = getCarDecoder(buffer, encoder);
 
-        final Class<?> modelClass = getModelClass(encoder);
-        final Object modelB = modelClass.getEnumConstants()[1];
+        final Class<?> encoderModel = getModelClass(encoder);
+        final Object modelB = encoderModel.getEnumConstants()[1];
 
-        set(encoder, "code", modelClass, modelB);
+        set(encoder, "code", encoderModel, modelB);
 
-        assertThat(get(encoder, "code"), hasToString("B"));
+        assertThat(get(decoder, "code"), hasToString("B"));
     }
 
     private Class<?> getModelClass(final Object encoder) throws ClassNotFoundException
