@@ -17,11 +17,11 @@ package uk.co.real_logic.sbe.generation.java;
 
 import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
+import uk.co.real_logic.agrona.Verify;
+import uk.co.real_logic.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
-import uk.co.real_logic.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.ir.*;
-import uk.co.real_logic.agrona.Verify;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -29,13 +29,9 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
-import static java.util.stream.Collectors.joining;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
-import static uk.co.real_logic.sbe.ir.TraversalUtil.collectGroups;
-import static uk.co.real_logic.sbe.ir.TraversalUtil.collectRootFields;
-import static uk.co.real_logic.sbe.ir.TraversalUtil.getMessageBody;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
 public class JavaGenerator implements CodeGenerator
 {
@@ -703,15 +699,28 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateBitSet(final List<Token> tokens) throws IOException
     {
-        final String bitSetName = formatClassName(tokens.get(0).name());
+        final Token token = tokens.get(0);
+        final String bitSetName = formatClassName(token.name());
+        final String readOnlyName = READ_ONLY + bitSetName;
+        final List<Token> messageBody = getMessageBody(tokens);
+
+        try (final Writer out = outputManager.createOutput(readOnlyName))
+        {
+            out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
+            out.append(generateClassDeclaration(readOnlyName));
+            out.append(generateFixedFlyweightCode(readOnlyName, token.size(), false));
+            out.append(generateChoiceDecoders(readOnlyName, messageBody));
+
+            out.append("}\n");
+        }
 
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
-            out.append(generateClassDeclaration(bitSetName));
-            out.append(legacyGenerateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
-            out.append(generateChoiceClear(bitSetName, tokens.get(0)));
-            out.append(generateChoices(bitSetName, getMessageBody(tokens)));
+            out.append(generateClassDeclaration(bitSetName + " extends " + readOnlyName));
+            out.append(generateFixedFlyweightCode(bitSetName, token.size(), true));
+            out.append(generateChoiceClear(bitSetName, token));
+            out.append(generateChoiceEncoders(bitSetName, messageBody));
 
             out.append("}\n");
         }
@@ -737,7 +746,8 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateComposite(final List<Token> tokens) throws IOException
     {
-        final String compositeName = formatClassName(tokens.get(0).name());
+        final Token token = tokens.get(0);
+        final String compositeName = formatClassName(token.name());
         final String readOnlyName = READ_ONLY + compositeName;
 
         final List<Token> messageBody = getMessageBody(tokens);
@@ -746,10 +756,10 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
             out.append(generateClassDeclaration(readOnlyName));
-            out.append(generateFixedFlyweightCode(readOnlyName, tokens.get(0).size(), false));
+            out.append(generateFixedFlyweightCode(readOnlyName, token.size(), false));
 
-            out.append(concatEncodingTokens(messageBody,
-                token -> generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
+            out.append(GenerationUtil.concatEncodingTokens(messageBody,
+                tok -> generatePrimitiveDecoder(tok.name(), tok, BASE_INDENT)));
 
             out.append("}\n");
         }
@@ -758,10 +768,10 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
             out.append(generateClassDeclaration(compositeName + " extends " + readOnlyName));
-            out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size(), true));
+            out.append(generateFixedFlyweightCode(compositeName, token.size(), true));
 
-            out.append(concatEncodingTokens(messageBody,
-                token -> generatePrimitiveEncoder(compositeName, token.name(), token, BASE_INDENT)));
+            out.append(GenerationUtil.concatEncodingTokens(messageBody,
+                tok -> generatePrimitiveEncoder(compositeName, tok.name(), tok, BASE_INDENT)));
 
             out.append("}\n");
         }
@@ -792,45 +802,54 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateChoices(final String bitSetClassName, final List<Token> tokens)
+    private CharSequence generateChoiceDecoders(final String bitSetClassName, final List<Token> tokens)
     {
-        final StringBuilder sb = new StringBuilder();
-
-        for (final Token token : tokens)
+        return GenerationUtil.concatTokens(tokens, Signal.CHOICE, token ->
         {
-            if (token.signal() == Signal.CHOICE)
-            {
-                final String choiceName = token.name();
-                final Encoding encoding = token.encoding();
-                final String typePrefix = encoding.primitiveType().primitiveName();
-                final String choiceBitPosition = encoding.constValue().toString();
-                final String byteOrderStr = byteOrderString(encoding);
+            final String choiceName = token.name();
+            final Encoding encoding = token.encoding();
+            final String typePrefix = encoding.primitiveType().primitiveName();
+            final String choiceBitPosition = encoding.constValue().toString();
+            final String byteOrderStr = byteOrderString(encoding);
 
-                sb.append(String.format(
-                    "\n" +
-                    "    public boolean %s()\n" +
-                    "    {\n" +
-                    "        return CodecUtil.%sGetChoice(buffer, offset, %s%s);\n" +
-                    "    }\n\n" +
-                    "    public %s %s(final boolean value)\n" +
-                    "    {\n" +
-                    "        CodecUtil.%sPutChoice(buffer, offset, %s, value%s);\n" +
-                    "        return this;\n" +
-                    "    }\n",
-                    choiceName,
-                    typePrefix,
-                    choiceBitPosition,
-                    byteOrderStr,
-                    bitSetClassName,
-                    choiceName,
-                    typePrefix,
-                    choiceBitPosition,
-                    byteOrderStr
-                ));
-            }
-        }
+            return String.format(
+                "\n" +
+                "    public boolean %s()\n" +
+                "    {\n" +
+                "        return CodecUtil.%sGetChoice(buffer, offset, %s%s);\n" +
+                "    }\n\n",
+                choiceName,
+                typePrefix,
+                choiceBitPosition,
+                byteOrderStr
+            );
+        });
+    }
 
-        return sb;
+    private CharSequence generateChoiceEncoders(final String bitSetClassName, final List<Token> tokens)
+    {
+        return GenerationUtil.concatTokens(tokens, Signal.CHOICE, token ->
+        {
+            final String choiceName = token.name();
+            final Encoding encoding = token.encoding();
+            final String typePrefix = encoding.primitiveType().primitiveName();
+            final String choiceBitPosition = encoding.constValue().toString();
+            final String byteOrderStr = byteOrderString(encoding);
+
+            return String.format(
+                "\n" +
+                "    public %s %s(final boolean value)\n" +
+                "    {\n" +
+                "        CodecUtil.%sPutChoice(buffer, offset, %s, value%s);\n" +
+                "        return this;\n" +
+                "    }\n",
+                bitSetClassName,
+                choiceName,
+                typePrefix,
+                choiceBitPosition,
+                byteOrderStr
+            );
+        });
     }
 
     private CharSequence generateEnumValues(final List<Token> tokens)
@@ -1025,14 +1044,6 @@ public class JavaGenerator implements CodeGenerator
         }
 
         return sb;
-    }
-
-    private CharSequence concatEncodingTokens(final List<Token> tokens, final Function<Token, CharSequence> mapper)
-    {
-        return tokens.stream()
-                     .filter(token -> token.signal() == Signal.ENCODING)
-                     .map(mapper)
-                     .collect(joining());
     }
 
     private CharSequence generatePrimitiveDecoder(
@@ -1626,6 +1637,7 @@ public class JavaGenerator implements CodeGenerator
         eachField(tokens, (signalToken, encodingToken) ->
         {
             final String propertyName = formatPropertyName(signalToken.name());
+            final String typeName = formatClassName(encodingToken.name());
 
             switch (encodingToken.signal())
             {
@@ -1637,14 +1649,12 @@ public class JavaGenerator implements CodeGenerator
                     sb.append(generateEnumEncoder(containingClassName, propertyName, encodingToken, indent));
                     break;
 
-
                 case BEGIN_SET:
-                    sb.append(generateBitSetProperty(propertyName, encodingToken, indent));
+                    sb.append(generateBitSetProperty(propertyName, encodingToken, indent, typeName));
                     break;
 
                 case BEGIN_COMPOSITE:
-                    final String compositeName = formatClassName(encodingToken.name());
-                    sb.append(generateCompositeProperty(propertyName, encodingToken, indent, compositeName));
+                    sb.append(generateCompositeProperty(propertyName, encodingToken, indent, typeName));
                     break;
             }
         });
@@ -1661,6 +1671,7 @@ public class JavaGenerator implements CodeGenerator
         eachField(tokens, (signalToken, encodingToken) ->
         {
             final String propertyName = formatPropertyName(signalToken.name());
+            final String typeName = READ_ONLY + formatClassName(encodingToken.name());
 
             generateFieldIdMethod(sb, signalToken, indent);
             generateFieldMetaAttributeMethod(sb, signalToken, indent);
@@ -1675,14 +1686,12 @@ public class JavaGenerator implements CodeGenerator
                     sb.append(generateEnumDecoder(propertyName, encodingToken, indent));
                     break;
 
-                // TODO: split up bitsets
-                /*case BEGIN_SET:
-                    sb.append(generateBitSetProperty(propertyName, encodingToken, indent));
-                    break;*/
+                case BEGIN_SET:
+                    sb.append(generateBitSetProperty(propertyName, encodingToken, indent, typeName));
+                    break;
 
                 case BEGIN_COMPOSITE:
-                    final String compositeName = READ_ONLY + formatClassName(encodingToken.name());
-                    sb.append(generateCompositeProperty(propertyName, encodingToken, indent, compositeName));
+                    sb.append(generateCompositeProperty(propertyName, encodingToken, indent, typeName));
                     break;
             }
         });
@@ -1793,11 +1802,13 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private Object generateBitSetProperty(final String propertyName, final Token token, final String indent)
+    private Object generateBitSetProperty(
+        final String propertyName,
+        final Token token,
+        final String indent,
+        final String bitSetName)
     {
         final StringBuilder sb = new StringBuilder();
-
-        final String bitSetName = formatClassName(token.name());
         final int offset = token.offset();
 
         sb.append(String.format(

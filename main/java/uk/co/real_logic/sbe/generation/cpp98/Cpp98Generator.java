@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.co.real_logic.sbe.generation.cpp98.Cpp98Util.*;
-import static uk.co.real_logic.sbe.ir.TraversalUtil.collectGroups;
-import static uk.co.real_logic.sbe.ir.TraversalUtil.collectRootFields;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.collectRootFields;
 
 public class Cpp98Generator implements CodeGenerator
 {

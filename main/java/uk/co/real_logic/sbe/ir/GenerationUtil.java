@@ -16,10 +16,16 @@
 package uk.co.real_logic.sbe.ir;
 
 import java.util.List;
+import java.util.function.Function;
 
-public final class TraversalUtil
+import static java.util.stream.Collectors.joining;
+
+/**
+ * Common code generation utility functions to be used by the different language specific backends.
+ */
+public final class GenerationUtil
 {
-    private TraversalUtil()
+    private GenerationUtil()
     {
     }
 
@@ -60,5 +66,22 @@ public final class TraversalUtil
     public static List<Token> getMessageBody(final List<Token> tokens)
     {
         return tokens.subList(1, tokens.size() - 1);
+    }
+
+    public static CharSequence concatEncodingTokens(
+        final List<Token> tokens, final Function<Token, CharSequence> mapper)
+    {
+        return concatTokens(tokens, Signal.ENCODING, mapper);
+    }
+
+    public static CharSequence concatTokens(
+        final List<Token> tokens,
+        final Signal signal,
+        final Function<Token, CharSequence> mapper)
+    {
+        return tokens.stream()
+                     .filter(token -> token.signal() == signal)
+                     .map(mapper)
+                     .collect(joining());
     }
 }

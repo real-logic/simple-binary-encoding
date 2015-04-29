@@ -16,7 +16,6 @@
 package uk.co.real_logic.sbe.generation.java;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
@@ -148,7 +147,7 @@ public class JavaGeneratorTest
         final Method method = flyweight.getClass().getDeclaredMethod("wrap", BUFFER_CLASS, int.class, int.class);
         method.invoke(flyweight, mockBuffer, bufferOffset, actingVersion);
 
-        final Object result = clazz.getDeclaredMethod("cruiseControl").invoke(flyweight);
+        final Object result = clazz.getMethod("cruiseControl").invoke(flyweight);
 
         assertThat((Boolean) result, is(Boolean.TRUE));
     }
@@ -305,7 +304,6 @@ public class JavaGeneratorTest
         assertTrue(getCruiseControl(extras));
     }
 
-    @Ignore
     @Test
     public void shouldGenerateBitSetDecodings() throws Exception
     {
@@ -415,12 +413,11 @@ public class JavaGeneratorTest
     private Class<?> compile(final String fqClassName) throws Exception
     {
         final Map<String, CharSequence> sources = outputManager.getSources();
-        System.out.println(sources);
         final Class<?> aClass = CompilerUtil.compileInMemory(fqClassName, sources);
-        /*if (aClass == null)
+        if (aClass == null)
         {
             System.out.println(sources);
-        }*/
+        }
         return aClass;
     }
 

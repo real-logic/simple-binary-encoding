@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.*;
-import static uk.co.real_logic.sbe.ir.TraversalUtil.collectGroups;
-import static uk.co.real_logic.sbe.ir.TraversalUtil.collectRootFields;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.collectRootFields;
 
 public class CSharpGenerator implements CodeGenerator
 {
