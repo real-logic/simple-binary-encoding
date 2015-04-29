@@ -758,7 +758,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateClassDeclaration(readOnlyName));
             out.append(generateFixedFlyweightCode(readOnlyName, token.size(), false, readOnlyBufferImplementation));
 
-            out.append(GenerationUtil.concatEncodingTokens(messageBody,
+            out.append(concatEncodingTokens(messageBody,
                 tok -> generatePrimitiveDecoder(tok.name(), tok, BASE_INDENT)));
 
             out.append("}\n");
@@ -770,7 +770,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateClassDeclaration(compositeName + " extends " + readOnlyName));
             out.append(generateFixedFlyweightCode(compositeName, token.size(), true, mutableBufferImplementation));
 
-            out.append(GenerationUtil.concatEncodingTokens(messageBody,
+            out.append(concatEncodingTokens(messageBody,
                 tok -> generatePrimitiveEncoder(compositeName, tok.name(), tok, BASE_INDENT)));
 
             out.append("}\n");
@@ -804,7 +804,7 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateChoiceDecoders(final String bitSetClassName, final List<Token> tokens)
     {
-        return GenerationUtil.concatTokens(tokens, Signal.CHOICE, token ->
+        return concatTokens(tokens, Signal.CHOICE, token ->
         {
             final String choiceName = token.name();
             final Encoding encoding = token.encoding();
@@ -828,7 +828,7 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateChoiceEncoders(final String bitSetClassName, final List<Token> tokens)
     {
-        return GenerationUtil.concatTokens(tokens, Signal.CHOICE, token ->
+        return concatTokens(tokens, Signal.CHOICE, token ->
         {
             final String choiceName = token.name();
             final Encoding encoding = token.encoding();
@@ -1027,7 +1027,6 @@ public class JavaGenerator implements CodeGenerator
         return "public enum " + name + "\n{\n";
     }
 
-    // TODO: remove this
     private CharSequence generatePrimitivePropertyEncodings(
         final String containingClassName, final List<Token> tokens, final String indent)
     {
@@ -1037,7 +1036,6 @@ public class JavaGenerator implements CodeGenerator
         {
             if (token.signal() == Signal.ENCODING)
             {
-                // TODO:
                 sb.append(generatePrimitiveDecoder(token.name(), token, indent));
                 sb.append(generatePrimitiveEncoder(containingClassName, token.name(), token, indent));
             }
