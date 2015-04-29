@@ -29,7 +29,9 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
+import static java.util.stream.Collectors.joining;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 import static uk.co.real_logic.sbe.ir.TraversalUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.TraversalUtil.collectRootFields;
@@ -37,6 +39,7 @@ import static uk.co.real_logic.sbe.ir.TraversalUtil.getMessageBody;
 
 public class JavaGenerator implements CodeGenerator
 {
+    private static final String READ_ONLY = "ReadOnly";
     private static final String META_ATTRIBUTE_ENUM = "MetaAttribute";
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
@@ -99,7 +102,7 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> tokens = ir.headerStructure().tokens();
             out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
             out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
-            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
+            out.append(legacyGenerateFixedFlyweightCode(MESSAGE_HEADER_TYPE, tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(
                 MESSAGE_HEADER_TYPE, getMessageBody(tokens), BASE_INDENT));
 
@@ -182,7 +185,7 @@ public class JavaGenerator implements CodeGenerator
                                  final List<Token> varData,
                                  final Token msgToken) throws IOException
     {
-        final String className = formatClassName("ReadOnly" + msgToken.name());
+        final String className = formatClassName(READ_ONLY + msgToken.name());
 
         try (final Writer out = outputManager.createOutput(className))
         {
@@ -191,7 +194,7 @@ public class JavaGenerator implements CodeGenerator
             generateAnnotations(formatClassName(msgToken.name()), groups, out, 0);
             out.append(generateClassDeclaration(className));
             out.append(generateDecoderFlyweightCode(className, msgToken));
-            out.append(generateDecoderFields(className, rootFields, BASE_INDENT));
+            out.append(generateDecoderFields(rootFields, BASE_INDENT));
 
             /*final StringBuilder sb = new StringBuilder();
             generateGroups(sb, className, groups, 0, BASE_INDENT);
@@ -225,7 +228,7 @@ public class JavaGenerator implements CodeGenerator
 
                 final List<Token> rootFields = new ArrayList<>();
                 index = collectRootFields(tokens, ++index, rootFields);
-                sb.append(generateDecoderFields(groupClassName, rootFields, indent + INDENT));
+                sb.append(generateDecoderFields(rootFields, indent + INDENT));
                 sb.append(generateEncoderFields(groupClassName, rootFields, indent + INDENT));
 
                 if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
@@ -706,7 +709,7 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
             out.append(generateClassDeclaration(bitSetName));
-            out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
+            out.append(legacyGenerateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
             out.append(generateChoiceClear(bitSetName, tokens.get(0)));
             out.append(generateChoices(bitSetName, getMessageBody(tokens)));
 
@@ -735,14 +738,30 @@ public class JavaGenerator implements CodeGenerator
     private void generateComposite(final List<Token> tokens) throws IOException
     {
         final String compositeName = formatClassName(tokens.get(0).name());
+        final String readOnlyName = READ_ONLY + compositeName;
+
+        final List<Token> messageBody = getMessageBody(tokens);
+
+        try (final Writer out = outputManager.createOutput(readOnlyName))
+        {
+            out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
+            out.append(generateClassDeclaration(readOnlyName));
+            out.append(generateFixedFlyweightCode(readOnlyName, tokens.get(0).size(), false));
+
+            out.append(concatEncodingTokens(messageBody,
+                token -> generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
+
+            out.append("}\n");
+        }
 
         try (final Writer out = outputManager.createOutput(compositeName))
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
-            out.append(generateClassDeclaration(compositeName));
-            out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size()));
+            out.append(generateClassDeclaration(compositeName + " extends " + readOnlyName));
+            out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size(), true));
 
-            out.append(generatePrimitivePropertyEncodings(compositeName, getMessageBody(tokens), BASE_INDENT));
+            out.append(concatEncodingTokens(messageBody,
+                token -> generatePrimitiveEncoder(compositeName, token.name(), token, BASE_INDENT)));
 
             out.append("}\n");
         }
@@ -989,6 +1008,7 @@ public class JavaGenerator implements CodeGenerator
         return "public enum " + name + "\n{\n";
     }
 
+    // TODO: remove this
     private CharSequence generatePrimitivePropertyEncodings(
         final String containingClassName, final List<Token> tokens, final String indent)
     {
@@ -1005,6 +1025,14 @@ public class JavaGenerator implements CodeGenerator
         }
 
         return sb;
+    }
+
+    private CharSequence concatEncodingTokens(final List<Token> tokens, final Function<Token, CharSequence> mapper)
+    {
+        return tokens.stream()
+                     .filter(token -> token.signal() == Signal.ENCODING)
+                     .map(mapper)
+                     .collect(joining());
     }
 
     private CharSequence generatePrimitiveDecoder(
@@ -1437,8 +1465,14 @@ public class JavaGenerator implements CodeGenerator
         return values;
     }
 
-    private CharSequence generateFixedFlyweightCode(final String className, final int size)
+    private CharSequence generateFixedFlyweightCode(
+        final String className,
+        final int size,
+        final boolean isMutable)
     {
+        final String bufferImplementation = isMutable ? mutableBufferImplementation : readOnlyBufferImplementation;
+        final String body = isMutable ? "        super.wrap(buffer, offset, actingVersion);" : "";
+
         return String.format(
             "    private %3$s buffer;\n" +
             "    private int offset;\n" +
@@ -1446,6 +1480,7 @@ public class JavaGenerator implements CodeGenerator
             "    public %1$s wrap(final %3$s buffer, final int offset, final int actingVersion)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
+            "%4$s" +
             "        this.offset = offset;\n" +
             "        this.actingVersion = actingVersion;\n" +
             "        return this;\n" +
@@ -1454,6 +1489,33 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        return %2$d;\n" +
             "    }\n",
+            className,
+            size,
+            bufferImplementation,
+            body
+        );
+    }
+
+    // TODO: remove this
+    private CharSequence legacyGenerateFixedFlyweightCode(
+        final String className,
+        final int size)
+    {
+        return String.format(
+            "    private %3$s buffer;\n" +
+                "    private int offset;\n" +
+                "    private int actingVersion;\n\n" +
+                "    public %1$s wrap(final %3$s buffer, final int offset, final int actingVersion)\n" +
+                "    {\n" +
+                "        this.buffer = buffer;\n" +
+                "        this.offset = offset;\n" +
+                "        this.actingVersion = actingVersion;\n" +
+                "        return this;\n" +
+                "    }\n\n" +
+                "    public int size()\n" +
+                "    {\n" +
+                "        return %2$d;\n" +
+                "    }\n",
             className,
             size,
             mutableBufferImplementation
@@ -1581,7 +1643,8 @@ public class JavaGenerator implements CodeGenerator
                     break;
 
                 case BEGIN_COMPOSITE:
-                    sb.append(generateCompositeProperty(propertyName, encodingToken, indent));
+                    final String compositeName = formatClassName(encodingToken.name());
+                    sb.append(generateCompositeProperty(propertyName, encodingToken, indent, compositeName));
                     break;
             }
         });
@@ -1589,7 +1652,9 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateDecoderFields(final String containingClassName, final List<Token> tokens, final String indent)
+    private CharSequence generateDecoderFields(
+        final List<Token> tokens,
+        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1615,10 +1680,10 @@ public class JavaGenerator implements CodeGenerator
                     sb.append(generateBitSetProperty(propertyName, encodingToken, indent));
                     break;*/
 
-                // TODO: split up composites
-                /*case BEGIN_COMPOSITE:
-                    sb.append(generateCompositeProperty(propertyName, encodingToken, indent));
-                    break;*/
+                case BEGIN_COMPOSITE:
+                    final String compositeName = READ_ONLY + formatClassName(encodingToken.name());
+                    sb.append(generateCompositeProperty(propertyName, encodingToken, indent, compositeName));
+                    break;
             }
         });
 
@@ -1762,9 +1827,12 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private Object generateCompositeProperty(final String propertyName, final Token token, final String indent)
+    private CharSequence generateCompositeProperty(
+        final String propertyName,
+        final Token token,
+        final String indent,
+        final String compositeName)
     {
-        final String compositeName = formatClassName(token.name());
         final int offset = token.offset();
 
         final StringBuilder sb = new StringBuilder();
