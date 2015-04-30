@@ -50,10 +50,11 @@ public class JavaGenerator implements CodeGenerator
     private final String fullReadOnlyBufferImplementation;
     private final String readOnlyBufferImplementation;
 
-    public JavaGenerator(final Ir ir,
-                         final String mutableBufferImplementation,
-                         final String readOnlyBufferImplementation,
-                         final OutputManager outputManager)
+    public JavaGenerator(
+        final Ir ir,
+        final String mutableBufferImplementation,
+        final String readOnlyBufferImplementation,
+        final OutputManager outputManager)
         throws IOException
     {
         Verify.notNull(ir, "ir");
@@ -71,8 +72,8 @@ public class JavaGenerator implements CodeGenerator
         this.fullReadOnlyBufferImplementation = readOnlyBufferImplementation;
     }
 
-    private String validateBufferImplementation(final String fullyQualifiedBufferImplementation,
-                                                final Class<?> bufferClass)
+    private String validateBufferImplementation(
+        final String fullyQualifiedBufferImplementation, final Class<?> bufferClass)
     {
         Verify.notNull(fullyQualifiedBufferImplementation, "fullyQualifiedBufferImplementation");
 
@@ -156,7 +157,6 @@ public class JavaGenerator implements CodeGenerator
 
     public void generate() throws IOException
     {
-        // TODO: split message header
         generateMessageHeaderStub();
         generateTypeStubs();
 
@@ -337,9 +337,9 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             indent + "    public static int sbeBlockLength()\n" +
-                indent + "    {\n" +
-                indent + "        return %d;\n" +
-                indent + "    }\n\n",
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n\n",
             blockLength
         ));
 
@@ -873,7 +873,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
             out.append(generateClassDeclaration(decoderName));
             out.append(generateFixedFlyweightCode(decoderName, token.size(), false, readOnlyBufferImplementation));
-            out.append(generateChoiceDecoders(decoderName, messageBody));
+            out.append(generateChoiceDecoders(messageBody));
 
             out.append("}\n");
         }
@@ -967,9 +967,9 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateChoiceDecoders(final String bitSetClassName, final List<Token> tokens)
+    private CharSequence generateChoiceDecoders(final List<Token> tokens)
     {
-        return concatTokens(tokens, Signal.CHOICE, token ->
+        return concatTokens(tokens, Signal.CHOICE, (token) ->
         {
             final String choiceName = token.name();
             final Encoding encoding = token.encoding();
@@ -993,7 +993,7 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateChoiceEncoders(final String bitSetClassName, final List<Token> tokens)
     {
-        return concatTokens(tokens, Signal.CHOICE, token ->
+        return concatTokens(tokens, Signal.CHOICE, (token) ->
         {
             final String choiceName = token.name();
             final Encoding encoding = token.encoding();
@@ -2080,5 +2080,4 @@ public class JavaGenerator implements CodeGenerator
 
         return literal;
     }
-
 }
