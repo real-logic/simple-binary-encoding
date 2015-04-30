@@ -21,7 +21,10 @@ import uk.co.real_logic.agrona.Verify;
 import uk.co.real_logic.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
-import uk.co.real_logic.sbe.ir.*;
+import uk.co.real_logic.sbe.ir.Encoding;
+import uk.co.real_logic.sbe.ir.Ir;
+import uk.co.real_logic.sbe.ir.Signal;
+import uk.co.real_logic.sbe.ir.Token;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -162,13 +165,13 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
 
-            generateAnnotations(className, groups, out, 0);
+            generateAnnotations(className, groups, out, 0, "");
             out.append(generateClassDeclaration(className + " extends ReadOnly" + className));
             out.append(generateEncoderFlyweightCode(className));
             out.append(generateEncoderFields(className, rootFields, BASE_INDENT));
 
             final StringBuilder sb = new StringBuilder();
-            generateGroups(sb, className, groups, 0, BASE_INDENT);
+            generateEncoderGroups(sb, className, groups, 0, BASE_INDENT);
             out.append(sb);
 
             out.append(generateVarDataEncoders(varData));
@@ -187,22 +190,56 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
 
-            generateAnnotations(formatClassName(msgToken.name()), groups, out, 0);
+            generateAnnotations(formatClassName(msgToken.name()), groups, out, 0, "");
             out.append(generateClassDeclaration(className));
             out.append(generateDecoderFlyweightCode(className, msgToken));
             out.append(generateDecoderFields(rootFields, BASE_INDENT));
 
-            /*final StringBuilder sb = new StringBuilder();
-            generateGroups(sb, className, groups, 0, BASE_INDENT);
-
-            out.append(sb);*/
+            final StringBuilder sb = new StringBuilder();
+            generateDecoderGroups(sb, className, groups, 0, BASE_INDENT);
+            out.append(sb);
 
             out.append(generateVarDataDecoders(varData));
             out.append("}\n");
         }
     }
 
-    private int generateGroups(
+    private int generateDecoderGroups(
+        final StringBuilder sb,
+        final String parentMessageClassName,
+        final List<Token> tokens,
+        int index,
+        final String indent)
+        throws IOException
+    {
+        for (int size = tokens.size(); index < size; index++)
+        {
+            final Token groupToken = tokens.get(index);
+            if (groupToken.signal() == Signal.BEGIN_GROUP)
+            {
+                final String groupName = READ_ONLY + formatClassName(groupToken.name());
+                sb.append(generateGroupDecoderProperty(groupName, groupToken, indent));
+
+                generateAnnotations(groupName, tokens, sb, index + 1, READ_ONLY);
+                generateGroupDecoderClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
+
+                final List<Token> rootFields = new ArrayList<>();
+                index = collectRootFields(tokens, ++index, rootFields);
+                sb.append(generateDecoderFields(rootFields, indent + INDENT));
+
+                if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
+                {
+                    index = generateDecoderGroups(sb, parentMessageClassName, tokens, index, indent + INDENT);
+                }
+
+                sb.append(indent).append("    }\n");
+            }
+        }
+
+        return index;
+    }
+
+    private int generateEncoderGroups(
         final StringBuilder sb,
         final String parentMessageClassName,
         final List<Token> tokens,
@@ -217,19 +254,18 @@ public class JavaGenerator implements CodeGenerator
             {
                 final String groupName = groupToken.name();
                 final String groupClassName = formatClassName(groupName);
-                sb.append(generateGroupProperty(groupName, groupToken, indent));
+                sb.append(generateGroupEncoderProperty(groupName, groupToken, indent));
 
-                generateAnnotations(formatClassName(groupName), tokens, sb, index + 1);
-                generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
+                generateAnnotations(formatClassName(groupName), tokens, sb, index + 1, "");
+                generateGroupEncoderClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
 
                 final List<Token> rootFields = new ArrayList<>();
                 index = collectRootFields(tokens, ++index, rootFields);
-                sb.append(generateDecoderFields(rootFields, indent + INDENT));
                 sb.append(generateEncoderFields(groupClassName, rootFields, indent + INDENT));
 
                 if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
                 {
-                    index = generateGroups(sb, parentMessageClassName, tokens, index, indent + INDENT);
+                    index = generateEncoderGroups(sb, parentMessageClassName, tokens, index, indent + INDENT);
                 }
 
                 sb.append(indent).append("    }\n");
@@ -239,7 +275,7 @@ public class JavaGenerator implements CodeGenerator
         return index;
     }
 
-    private void generateGroupClassHeader(
+    private void generateGroupDecoderClassHeader(
         final StringBuilder sb,
         final String groupName,
         final String parentMessageClassName,
@@ -250,7 +286,7 @@ public class JavaGenerator implements CodeGenerator
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
         final int dimensionHeaderSize = tokens.get(index + 1).size();
 
-        generateClassDeclaration(sb, groupName, parentMessageClassName, indent, dimensionsClassName, dimensionHeaderSize);
+        generateDecoderClassDeclaration(sb, groupName, parentMessageClassName, indent, dimensionsClassName, dimensionHeaderSize);
 
         sb.append(String.format(
             indent + "    public void wrapForDecode(\n" +
@@ -266,33 +302,12 @@ public class JavaGenerator implements CodeGenerator
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
-            mutableBufferImplementation
+            readOnlyBufferImplementation
         ));
 
         final int blockLength = tokens.get(index).size();
         final String javaTypeForBlockLength = primitiveTypeName(tokens.get(index + 2));
         final String javaTypeForNumInGroup = primitiveTypeName(tokens.get(index + 3));
-
-        sb.append(String.format(
-            indent + "    public void wrapForEncode(final %1$s parentMessage, final %5$s buffer, final int count)\n" +
-            indent + "    {\n" +
-            indent + "        this.parentMessage = parentMessage;\n" +
-            indent + "        this.buffer = buffer;\n" +
-            indent + "        actingVersion = SCHEMA_VERSION;\n" +
-            indent + "        dimensions.wrap(buffer, parentMessage.limit(), actingVersion);\n" +
-            indent + "        dimensions.blockLength((%2$s)%3$d);\n" +
-            indent + "        dimensions.numInGroup((%4$s)count);\n" +
-            indent + "        index = -1;\n" +
-            indent + "        this.count = count;\n" +
-            indent + "        blockLength = %3$d;\n" +
-            indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
-            indent + "    }\n\n",
-            parentMessageClassName,
-            javaTypeForBlockLength,
-            blockLength,
-            javaTypeForNumInGroup,
-            mutableBufferImplementation
-        ));
 
         sb.append(indent).append("    public static int sbeHeaderSize()\n")
           .append(indent).append("    {\n")
@@ -351,12 +366,79 @@ public class JavaGenerator implements CodeGenerator
         ));
     }
 
+    private void generateGroupEncoderClassHeader(
+        final StringBuilder sb,
+        final String groupName,
+        final String parentMessageClassName,
+        final List<Token> tokens,
+        final int index,
+        final String indent)
+    {
+        final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
+        final int dimensionHeaderSize = tokens.get(index + 1).size();
+
+        generateEncoderClassDeclaration(sb, groupName, parentMessageClassName, indent, dimensionsClassName, dimensionHeaderSize);
+
+        final int blockLength = tokens.get(index).size();
+        final String javaTypeForBlockLength = primitiveTypeName(tokens.get(index + 2));
+        final String javaTypeForNumInGroup = primitiveTypeName(tokens.get(index + 3));
+
+        sb.append(String.format(
+            indent + "    public void wrapForEncode(final %1$s parentMessage, final %5$s buffer, final int count)\n" +
+            indent + "    {\n" +
+            indent + "        this.parentMessage = parentMessage;\n" +
+            indent + "        this.buffer = buffer;\n" +
+            indent + "        actingVersion = SCHEMA_VERSION;\n" +
+            indent + "        dimensions.wrap(buffer, parentMessage.limit(), actingVersion);\n" +
+            indent + "        dimensions.blockLength((%2$s)%3$d);\n" +
+            indent + "        dimensions.numInGroup((%4$s)count);\n" +
+            indent + "        index = -1;\n" +
+            indent + "        this.count = count;\n" +
+            indent + "        blockLength = %3$d;\n" +
+            indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
+            indent + "    }\n\n",
+            parentMessageClassName,
+            javaTypeForBlockLength,
+            blockLength,
+            javaTypeForNumInGroup,
+            mutableBufferImplementation
+        ));
+
+        sb.append(indent).append("    public static int sbeHeaderSize()\n")
+          .append(indent).append("    {\n")
+          .append(indent).append("        return HEADER_SIZE;\n")
+          .append(indent).append("    }\n\n");
+
+        sb.append(String.format(
+            indent + "    public static int sbeBlockLength()\n" +
+                indent + "    {\n" +
+                indent + "        return %d;\n" +
+                indent + "    }\n\n",
+            blockLength
+        ));
+
+        sb.append(String.format(
+            indent + "    public %s next()\n" +
+            indent + "    {\n" +
+            indent + "        if (index + 1 >= count)\n" +
+            indent + "        {\n" +
+            indent + "            throw new java.util.NoSuchElementException();\n" +
+            indent + "        }\n\n" +
+            indent + "        offset = parentMessage.limit();\n" +
+            indent + "        parentMessage.limit(offset + blockLength);\n" +
+            indent + "        ++index;\n\n" +
+            indent + "        return this;\n" +
+            indent + "    }\n",
+            formatClassName(groupName)
+        ));
+    }
+
     private String primitiveTypeName(final Token token)
     {
         return javaTypeName(token.encoding().primitiveType());
     }
 
-    private void generateClassDeclaration(
+    private void generateDecoderClassDeclaration(
         final StringBuilder sb,
         final String groupName,
         final String parentMessageClassName,
@@ -366,7 +448,37 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-            indent + "public static class %1$s implements Iterable<%1$s>, java.util.Iterator<%1$s>\n" +
+            indent + "public static class %1$s\n" +
+            indent + "implements Iterable<%1$s>, java.util.Iterator<%1$s>\n" +
+            indent + "{\n" +
+            indent + "    private static final int HEADER_SIZE = %2$d;\n" +
+            indent + "    private final %3$s dimensions = new %3$s();\n" +
+            indent + "    private %4$s parentMessage;\n" +
+            indent + "    private %5$s buffer;\n" +
+            indent + "    private int blockLength;\n" +
+            indent + "    private int actingVersion;\n" +
+            indent + "    private int count;\n" +
+            indent + "    private int index;\n" +
+            indent + "    private int offset;\n\n",
+            formatClassName(groupName),
+            dimensionHeaderSize,
+            dimensionsClassName,
+            parentMessageClassName,
+            readOnlyBufferImplementation
+        ));
+    }
+
+    private void generateEncoderClassDeclaration(
+        final StringBuilder sb,
+        final String groupName,
+        final String parentMessageClassName,
+        final String indent,
+        final String dimensionsClassName,
+        final int dimensionHeaderSize)
+    {
+        sb.append(String.format(
+            "\n" +
+            indent + "public static class %1$s\n" +
             indent + "{\n" +
             indent + "    private static final int HEADER_SIZE = %2$d;\n" +
             indent + "    private final %3$s dimensions = new %3$s();\n" +
@@ -385,11 +497,11 @@ public class JavaGenerator implements CodeGenerator
         ));
     }
 
-    private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)
+    private CharSequence generateGroupDecoderProperty(final String groupName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
         final String className = formatClassName(groupName);
-        final String propertyName = formatPropertyName(groupName);
+        final String propertyName = formatPropertyName(token.name());
 
         sb.append(String.format(
             "\n" +
@@ -405,7 +517,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n",
-            groupName,
+            formatPropertyName(groupName),
             token.id()
         ));
 
@@ -420,13 +532,40 @@ public class JavaGenerator implements CodeGenerator
             propertyName
         ));
 
+        return sb;
+    }
+
+    private CharSequence generateGroupEncoderProperty(final String groupName, final Token token, final String indent)
+    {
+        final StringBuilder sb = new StringBuilder();
+        final String className = formatClassName(groupName);
+        final String propertyName = formatPropertyName(groupName);
+
         sb.append(String.format(
             "\n" +
-            indent + "    public %1$s %2$sCount(final int count)\n" +
-            indent + "    {\n" +
-            indent + "        %2$s.wrapForEncode(parentMessage, buffer, count);\n" +
-            indent + "        return %2$s;\n" +
-            indent + "    }\n",
+                indent + "    private final %s %s = new %s();\n",
+            className,
+            propertyName,
+            className
+        ));
+
+        sb.append(String.format(
+            "\n" +
+                indent + "    public static long %sId()\n" +
+                indent + "    {\n" +
+                indent + "        return %d;\n" +
+                indent + "    }\n",
+            formatPropertyName(groupName),
+            token.id()
+        ));
+
+        sb.append(String.format(
+            "\n" +
+                indent + "    public %1$s %2$sCount(final int count)\n" +
+                indent + "    {\n" +
+                indent + "        %2$s.wrapForEncode(parentMessage, buffer, count);\n" +
+                indent + "        return %2$s;\n" +
+                indent + "    }\n",
             className,
             propertyName
         ));
@@ -950,7 +1089,8 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private void generateAnnotations(final String className, final List<Token> tokens, final Appendable out, int index)
+    private void generateAnnotations(
+        final String className, final List<Token> tokens, final Appendable out, int index, String prefix)
         throws IOException
     {
         final List<String> groupClassNames = new ArrayList<>();
@@ -964,7 +1104,7 @@ public class JavaGenerator implements CodeGenerator
                 {
                     final Token groupToken = tokens.get(index);
                     final String groupName = groupToken.name();
-                    groupClassNames.add(formatClassName(groupName));
+                    groupClassNames.add(prefix + formatClassName(groupName));
                 }
             }
             else if (tokens.get(index).signal() == Signal.END_GROUP)

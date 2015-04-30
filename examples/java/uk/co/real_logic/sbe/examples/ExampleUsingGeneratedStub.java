@@ -23,6 +23,7 @@ import baseline.OptionalExtras;
 import baseline.MetaAttribute;
 import baseline.MessageHeader;
 
+import baseline.ReadOnlyCar.ReadOnlyPerformanceFigures.ReadOnlyAcceleration;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 
 import java.io.FileOutputStream;
@@ -216,17 +217,17 @@ public class ExampleUsingGeneratedStub
 
         sb.append("\ncar.engine.fuel=").append(new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
 
-        for (final Car.FuelFigures fuelFigures : car.fuelFigures())
+        for (final Car.ReadOnlyFuelFigures fuelFigures : car.fuelFigures())
         {
             sb.append("\ncar.fuelFigures.speed=").append(fuelFigures.speed());
             sb.append("\ncar.fuelFigures.mpg=").append(fuelFigures.mpg());
         }
 
-        for (final Car.PerformanceFigures performanceFigures : car.performanceFigures())
+        for (final Car.ReadOnlyPerformanceFigures performanceFigures : car.performanceFigures())
         {
             sb.append("\ncar.performanceFigures.octaneRating=").append(performanceFigures.octaneRating());
 
-            for (final Car.PerformanceFigures.Acceleration acceleration : performanceFigures.acceleration())
+            for (final ReadOnlyAcceleration acceleration : performanceFigures.acceleration())
             {
                 sb.append("\ncar.performanceFigures.acceleration.mph=").append(acceleration.mph());
                 sb.append("\ncar.performanceFigures.acceleration.seconds=").append(acceleration.seconds());

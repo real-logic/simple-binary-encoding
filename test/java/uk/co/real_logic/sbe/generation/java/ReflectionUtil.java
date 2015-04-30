@@ -12,12 +12,12 @@ public final class ReflectionUtil
         return getInt(encoder, "sbeBlockLength");
     }
 
-    private static int getInt(final Object object, final String fieldName) throws Exception
+    static int getInt(final Object object, final String fieldName) throws Exception
     {
         return (int) get(object, fieldName);
     }
 
-    public static Object get(final Object object, final String fieldName) throws Exception
+    static Object get(final Object object, final String fieldName) throws Exception
     {
         return object.getClass().getMethod(fieldName).invoke(object);
     }
@@ -90,5 +90,15 @@ public final class ReflectionUtil
     static Object getByte(final Class<?> clazz, final byte value) throws Exception
     {
         return clazz.getDeclaredMethod("get", byte.class).invoke(null, value);
+    }
+
+    static Object getFuelFigures(Object msgFlyweight) throws Exception
+    {
+        return get(msgFlyweight, "fuelFigures");
+    }
+
+    static int getCount(Object groupFlyweight) throws Exception
+    {
+        return getInt(groupFlyweight, "count");
     }
 }

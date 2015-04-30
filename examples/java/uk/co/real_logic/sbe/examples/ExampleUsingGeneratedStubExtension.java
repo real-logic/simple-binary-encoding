@@ -16,6 +16,7 @@
 package uk.co.real_logic.sbe.examples;
 
 import extension.Car;
+import extension.ReadOnlyCar.ReadOnlyPerformanceFigures.ReadOnlyAcceleration;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 
 import java.io.FileOutputStream;
@@ -213,17 +214,17 @@ public class ExampleUsingGeneratedStubExtension
         final String cupHolderCount = car.cupHolderCount() == Car.cupHolderCountNullValue() ? "null" : car.cupHolderCount() + "";
         sb.append("\ncar.cutHolderCount=").append(cupHolderCount);
 
-        for (final extension.Car.FuelFigures fuelFigures : car.fuelFigures())
+        for (final extension.Car.ReadOnlyFuelFigures fuelFigures : car.fuelFigures())
         {
             sb.append("\ncar.fuelFigures.speed=").append(fuelFigures.speed());
             sb.append("\ncar.fuelFigures.mpg=").append(fuelFigures.mpg());
         }
 
-        for (final extension.Car.PerformanceFigures performanceFigures : car.performanceFigures())
+        for (final extension.Car.ReadOnlyPerformanceFigures performanceFigures : car.performanceFigures())
         {
             sb.append("\ncar.performanceFigures.octaneRating=").append(performanceFigures.octaneRating());
 
-            for (final extension.Car.PerformanceFigures.Acceleration acceleration : performanceFigures.acceleration())
+            for (final ReadOnlyAcceleration acceleration : performanceFigures.acceleration())
             {
                 sb.append("\ncar.performanceFigures.acceleration.mph=").append(acceleration.mph());
                 sb.append("\ncar.performanceFigures.acceleration.seconds=").append(acceleration.seconds());

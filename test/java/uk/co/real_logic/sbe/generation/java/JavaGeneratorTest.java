@@ -206,18 +206,33 @@ public class JavaGeneratorTest
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
-        final Class<?> clazz = compileCar();
 
-        final Object msgFlyweight = clazz.newInstance();
-        wrapForEncode(buffer, msgFlyweight);
+        final Object msgFlyweight = wrapForEncode(buffer, compileCar().newInstance());
 
         final Integer initialPosition = getLimit(msgFlyweight);
 
-        final Object groupFlyweight = clazz.getDeclaredMethod("fuelFigures").invoke(msgFlyweight);
+        final Object groupFlyweight = getFuelFigures(msgFlyweight);
         assertThat(getLimit(msgFlyweight), greaterThan(initialPosition));
 
-        final Integer count = (Integer) groupFlyweight.getClass().getDeclaredMethod("count").invoke(groupFlyweight);
-        assertThat(count, is(0));
+        assertThat(getCount(groupFlyweight), is(0));
+    }
+
+    @Test
+    public void shouldGenerateRepeatingGroupDecoder() throws Exception
+    {
+        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
+        generator().generate();
+
+        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
+        final Object decoder = wrapForDecode(
+            buffer, compileReadOnlyCar().newInstance(), getSbeBlockLength(encoder), getSbeSchemaVersion(encoder));
+
+        final Integer initialPosition = getLimit(decoder);
+
+        final Object groupFlyweight = getFuelFigures(decoder);
+        assertThat(getLimit(decoder), greaterThan(initialPosition));
+
+        assertThat(getCount(groupFlyweight), is(0));
     }
 
     @Test
