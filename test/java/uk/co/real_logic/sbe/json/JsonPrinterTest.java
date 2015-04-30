@@ -38,7 +38,7 @@ import static junit.framework.TestCase.assertEquals;
 public class JsonPrinterTest
 {
     private static final MessageHeader MESSAGE_HEADER = new MessageHeader();
-    private static final Car CAR = new Car();
+    private static final CarEncoder CAR = new CarEncoder();
     private static final int ACTING_VERSION = 0;
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
@@ -53,10 +53,10 @@ public class JsonPrinterTest
     {
         try
         {
-            vehicleCode = "abcdef".getBytes(Car.vehicleCodeCharacterEncoding());
-            manufacturerCode = "123".getBytes(Engine.manufacturerCodeCharacterEncoding());
-            make = "Honda".getBytes(Car.makeCharacterEncoding());
-            model = "Civic VTi".getBytes(Car.modelCharacterEncoding());
+            vehicleCode = "abcdef".getBytes(CarEncoder.vehicleCodeCharacterEncoding());
+            manufacturerCode = "123".getBytes(EngineEncoder.manufacturerCodeCharacterEncoding());
+            make = "Honda".getBytes(CarEncoder.makeCharacterEncoding());
+            model = "Civic VTi".getBytes(CarEncoder.modelCharacterEncoding());
         }
         catch (final UnsupportedEncodingException ex)
         {
@@ -178,7 +178,7 @@ public class JsonPrinterTest
            .code(Model.A)
            .putVehicleCode(vehicleCode, srcOffset);
 
-        for (int i = 0, size = Car.someNumbersLength(); i < size; i++)
+        for (int i = 0, size = CarEncoder.someNumbersLength(); i < size; i++)
         {
             CAR.someNumbers(i, i);
         }
@@ -199,7 +199,7 @@ public class JsonPrinterTest
            .next().speed(55).mpg(49.0f)
            .next().speed(75).mpg(40.0f);
 
-        final Car.PerformanceFigures perfFigures = CAR.performanceFiguresCount(2);
+        final CarEncoder.PerformanceFiguresEncoder perfFigures = CAR.performanceFiguresCount(2);
         perfFigures.next()
                    .octaneRating((short)95)
                    .accelerationCount(3)

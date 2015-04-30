@@ -15,7 +15,7 @@
  */
 package uk.co.real_logic.sbe.examples;
 
-import baseline.Car;
+import baseline.CarEncoder;
 import baseline.MessageHeader;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.ir.Ir;
@@ -39,7 +39,7 @@ import java.util.List;
 public class OtfExample
 {
     private static final MessageHeader MESSAGE_HEADER = new MessageHeader();
-    private static final Car CAR = new Car();
+    private static final CarEncoder CAR_ENCODER = new CarEncoder();
     private static final int ACTING_VERSION = 0;
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
@@ -112,14 +112,14 @@ public class OtfExample
 
         int bufferOffset = 0;
         MESSAGE_HEADER.wrap(directBuffer, bufferOffset, ACTING_VERSION)
-                      .blockLength(CAR.sbeBlockLength())
-                      .templateId(CAR.sbeTemplateId())
-                      .schemaId(CAR.sbeSchemaId())
-                      .version(CAR.sbeSchemaVersion());
+                      .blockLength(CAR_ENCODER.sbeBlockLength())
+                      .templateId(CAR_ENCODER.sbeTemplateId())
+                      .schemaId(CAR_ENCODER.sbeSchemaId())
+                      .version(CAR_ENCODER.sbeSchemaVersion());
 
         bufferOffset += MESSAGE_HEADER.size();
 
-        bufferOffset += ExampleUsingGeneratedStub.encode(CAR, directBuffer, bufferOffset);
+        bufferOffset += ExampleUsingGeneratedStub.encode(CAR_ENCODER, directBuffer, bufferOffset);
 
         buffer.position(bufferOffset);
     }

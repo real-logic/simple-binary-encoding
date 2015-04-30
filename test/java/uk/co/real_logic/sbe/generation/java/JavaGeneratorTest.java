@@ -95,7 +95,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateReadOnlyMessageHeaderStub() throws Exception
+    public void shouldGenerateMessageHeaderDecoderStub() throws Exception
     {
         final int bufferOffset = 64;
         final int templateIdOffset = 2;
@@ -154,7 +154,7 @@ public class JavaGeneratorTest
         final int bufferOffset = 8;
         final int actingVersion = 0;
         final byte bitset = (byte) 0b0000_0100;
-        final String className = "ReadOnlyOptionalExtras";
+        final String className = "OptionalExtrasDecoder";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
         when(mockBuffer.getByte(bufferOffset)).thenReturn(bitset);
@@ -183,7 +183,7 @@ public class JavaGeneratorTest
         final int expectedEngineCapacity = 2000;
         final int manufacturerCodeOffset = bufferOffset + 3;
         final byte[] manufacturerCode = {'A', 'B', 'C'};
-        final String className = "Engine";
+        final String className = "EngineEncoder";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
         when(mockBuffer.getShort(capacityFieldOffset, BYTE_ORDER))
@@ -215,7 +215,7 @@ public class JavaGeneratorTest
         final int capacityFieldOffset = bufferOffset;
         final int expectedEngineCapacity = 2000;
         final int expectedMaxRpm = 9000;
-        final String className = "ReadOnlyEngine";
+        final String className = "EngineDecoder";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
         when(mockBuffer.getShort(capacityFieldOffset, BYTE_ORDER))
@@ -242,7 +242,7 @@ public class JavaGeneratorTest
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
 
-        final Object msgFlyweight = wrapForEncode(buffer, compileCar().newInstance());
+        final Object msgFlyweight = wrapForEncode(buffer, compileCarEncoder().newInstance());
 
         final Object groupFlyweight = fuelFiguresCount(msgFlyweight, 0);
 
@@ -255,9 +255,9 @@ public class JavaGeneratorTest
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
+        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
         final Object decoder = wrapForDecode(
-            buffer, compileReadOnlyCar().newInstance(), getSbeBlockLength(encoder), getSbeSchemaVersion(encoder));
+            buffer, compileCarDecoder().newInstance(), getSbeBlockLength(encoder), getSbeSchemaVersion(encoder));
 
         final Integer initialPosition = getLimit(decoder);
 
@@ -273,7 +273,7 @@ public class JavaGeneratorTest
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
+        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
         final long expectedSerialNumber = 5L;
@@ -290,7 +290,7 @@ public class JavaGeneratorTest
 
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
+        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
         setMake(encoder, expectedMake);
@@ -308,7 +308,7 @@ public class JavaGeneratorTest
 
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
+        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
         final Object engineEncoder = get(encoder, "engine");
@@ -325,15 +325,15 @@ public class JavaGeneratorTest
 
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
+        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
-        final Object extras = getExtras(encoder);
-        final Object readOnlyExtras = getExtras(decoder);
+        final Object extrasEncoder = getExtras(encoder);
+        final Object extrasDecoder = getExtras(decoder);
 
-        assertFalse(getCruiseControl(readOnlyExtras));
-        setCruiseControl(extras, true);
-        assertTrue(getCruiseControl(readOnlyExtras));
+        assertFalse(getCruiseControl(extrasDecoder));
+        setCruiseControl(extrasEncoder, true);
+        assertTrue(getCruiseControl(extrasDecoder));
     }
 
     @Test
@@ -342,7 +342,7 @@ public class JavaGeneratorTest
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
+        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
         final Class<?> encoderModel = getModelClass(encoder);
@@ -362,7 +362,7 @@ public class JavaGeneratorTest
 
     private Object getCarDecoder(final UnsafeBuffer buffer, final Object encoder) throws Exception
     {
-        final Object decoder = compileReadOnlyCar().newInstance();
+        final Object decoder = compileCarDecoder().newInstance();
         return wrapForDecode(buffer, decoder, getSbeBlockLength(encoder), getSbeSchemaVersion(encoder));
     }
 
@@ -411,9 +411,9 @@ public class JavaGeneratorTest
         new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", outputManager);
     }
 
-    private Class<?> compileCar() throws Exception
+    private Class<?> compileCarEncoder() throws Exception
     {
-        final String className = "Car";
+        final String className = "CarEncoder";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
         System.out.println(fqClassName);
@@ -422,9 +422,9 @@ public class JavaGeneratorTest
         return clazz;
     }
 
-    private Class<?> compileReadOnlyCar() throws Exception
+    private Class<?> compileCarDecoder() throws Exception
     {
-        final String className = "ReadOnlyCar";
+        final String className = "CarDecoder";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
         final Class<?> readerClass = compile(fqClassName);
