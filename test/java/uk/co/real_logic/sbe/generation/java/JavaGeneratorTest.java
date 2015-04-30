@@ -190,17 +190,6 @@ public class JavaGeneratorTest
         verify(mockBuffer).putBytes(manufacturerCodeOffset, manufacturerCode, 0, manufacturerCode.length);
     }
 
-    private void wrap(final int actingVersion,
-                      final int bufferOffset,
-                      final Object flyweight,
-                      final MutableDirectBuffer buffer) throws Exception
-    {
-        flyweight
-            .getClass()
-            .getDeclaredMethod("wrap", BUFFER_CLASS, int.class, int.class)
-            .invoke(flyweight, buffer, bufferOffset, actingVersion);
-    }
-
     @Test
     public void shouldGenerateBasicMessage() throws Exception
     {
@@ -268,21 +257,6 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateCompositeEncodings() throws Exception
-    {
-        final int expectedEngineCapacity = 2000;
-        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
-
-        generator().generate();
-
-        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
-        final Object engine = get(encoder, "engine");
-
-        setCapacity(engine, expectedEngineCapacity);
-        assertEquals(expectedEngineCapacity, getCapacity(engine));
-    }
-
-    @Test
     public void shouldBeAbleToWrapForDecodeAFullFlyweight() throws Exception
     {
         final int expectedEngineCapacity = 2000;
@@ -322,23 +296,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateBitSetEncodings() throws Exception
-    {
-        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
-
-        generator().generate();
-
-        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
-
-        final Object extras = getExtras(encoder);
-
-        assertFalse(getCruiseControl(extras));
-        setCruiseControl(extras, true);
-        assertTrue(getCruiseControl(extras));
-    }
-
-    @Test
-    public void shouldGenerateBitSetDecodings() throws Exception
+    public void shouldGenerateBitSetCodecs() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
 
@@ -356,23 +314,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateEnumEncodings() throws Exception
-    {
-        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
-        generator().generate();
-
-        final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
-
-        final Class<?> modelClass = getModelClass(encoder);
-        final Object modelB = modelClass.getEnumConstants()[1];
-
-        set(encoder, "code", modelClass, modelB);
-
-        assertThat(get(encoder, "code"), hasToString("B"));
-    }
-
-    @Test
-    public void shouldGenerateEnumDecodings() throws Exception
+    public void shouldGenerateEnumCodecs() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -511,6 +453,17 @@ public class JavaGeneratorTest
             System.out.println(sources);
         }
         return aClass;
+    }
+
+    private void wrap(final int actingVersion,
+                      final int bufferOffset,
+                      final Object flyweight,
+                      final MutableDirectBuffer buffer) throws Exception
+    {
+        flyweight
+            .getClass()
+            .getDeclaredMethod("wrap", BUFFER_CLASS, int.class, int.class)
+            .invoke(flyweight, buffer, bufferOffset, actingVersion);
     }
 
 }
