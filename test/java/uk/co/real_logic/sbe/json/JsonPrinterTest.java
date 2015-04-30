@@ -171,7 +171,7 @@ public class JsonPrinterTest
 
         final int srcOffset = 0;
 
-        CAR.wrapForEncode(directBuffer, bufferOffset)
+        CAR.wrap(directBuffer, bufferOffset)
            .serialNumber(1234)
            .modelYear(2013)
            .available(BooleanType.TRUE)

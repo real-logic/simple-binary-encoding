@@ -242,7 +242,7 @@ public class JavaGeneratorTest
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
 
-        final Object msgFlyweight = wrapForEncode(buffer, compileCarEncoder().newInstance());
+        final Object msgFlyweight = wrap(buffer, compileCarEncoder().newInstance());
 
         final Object groupFlyweight = fuelFiguresCount(msgFlyweight, 0);
 
@@ -255,8 +255,8 @@ public class JavaGeneratorTest
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
-        final Object decoder = wrapForDecode(
+        final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
+        final Object decoder = wrap(
             buffer, compileCarDecoder().newInstance(), getSbeBlockLength(encoder), getSbeSchemaVersion(encoder));
 
         final Integer initialPosition = getLimit(decoder);
@@ -273,7 +273,7 @@ public class JavaGeneratorTest
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
+        final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
         final long expectedSerialNumber = 5L;
@@ -290,7 +290,7 @@ public class JavaGeneratorTest
 
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
+        final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
         setMake(encoder, expectedMake);
@@ -308,7 +308,7 @@ public class JavaGeneratorTest
 
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
+        final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
         final Object engineEncoder = get(encoder, "engine");
@@ -325,7 +325,7 @@ public class JavaGeneratorTest
 
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
+        final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
         final Object extrasEncoder = getExtras(encoder);
@@ -342,7 +342,7 @@ public class JavaGeneratorTest
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
 
-        final Object encoder = wrapForEncode(buffer, compileCarEncoder().newInstance());
+        final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
         final Class<?> encoderModel = getModelClass(encoder);
@@ -363,26 +363,26 @@ public class JavaGeneratorTest
     private Object getCarDecoder(final UnsafeBuffer buffer, final Object encoder) throws Exception
     {
         final Object decoder = compileCarDecoder().newInstance();
-        return wrapForDecode(buffer, decoder, getSbeBlockLength(encoder), getSbeSchemaVersion(encoder));
+        return wrap(buffer, decoder, getSbeBlockLength(encoder), getSbeSchemaVersion(encoder));
     }
 
-    private static Object wrapForDecode(
+    private static Object wrap(
         final UnsafeBuffer buffer,
         final Object decoder,
         final int blockLength,
         final int version) throws Exception
     {
-        return wrapForDecode(buffer, decoder, blockLength, version, READ_ONLY_BUFFER_CLASS);
+        return wrap(buffer, decoder, blockLength, version, READ_ONLY_BUFFER_CLASS);
     }
 
-    private static Object wrapForDecode(final UnsafeBuffer buffer,
-                                        final Object decoder,
-                                        final int blockLength,
-                                        final int version,
-                                        final Class<?> bufferClass) throws Exception
+    private static Object wrap(final UnsafeBuffer buffer,
+                               final Object decoder,
+                               final int blockLength,
+                               final int version,
+                               final Class<?> bufferClass) throws Exception
     {
         decoder.getClass()
-               .getMethod("wrapForDecode", bufferClass, int.class, int.class, int.class)
+               .getMethod("wrap", bufferClass, int.class, int.class, int.class)
                .invoke(decoder, buffer, 0, blockLength, version);
         return decoder;
     }
@@ -442,13 +442,13 @@ public class JavaGeneratorTest
         return clazz;
     }
 
-    private static Object wrapForEncode(
+    private static Object wrap(
         final UnsafeBuffer buffer,
         final Object encoder) throws Exception
     {
         encoder
             .getClass()
-            .getDeclaredMethod("wrapForEncode", BUFFER_CLASS, int.class)
+            .getDeclaredMethod("wrap", BUFFER_CLASS, int.class)
             .invoke(encoder, buffer, 0);
 
         return encoder;

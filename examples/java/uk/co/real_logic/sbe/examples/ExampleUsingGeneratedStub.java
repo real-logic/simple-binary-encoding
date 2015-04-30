@@ -112,7 +112,7 @@ public class ExampleUsingGeneratedStub
     {
         final int srcOffset = 0;
 
-        car.wrapForEncode(directBuffer, bufferOffset)
+        car.wrap(directBuffer, bufferOffset)
            .serialNumber(1234)
            .modelYear(2013)
            .available(BooleanType.TRUE)
@@ -173,7 +173,7 @@ public class ExampleUsingGeneratedStub
         final byte[] buffer = new byte[128];
         final StringBuilder sb = new StringBuilder();
 
-        car.wrapForDecode(directBuffer, bufferOffset, actingBlockLength, actingVersion);
+        car.wrap(directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
         sb.append("\ncar.templateId=").append(car.sbeTemplateId());
         sb.append("\ncar.schemaId=").append(schemaId);

@@ -107,7 +107,6 @@ public class JavaGenerator implements CodeGenerator
     public void generateMessageHeaderStub() throws IOException
     {
         final List<Token> tokens = ir.headerStructure().tokens();
-        final List<Token> messageBody = getMessageBody(tokens);
 
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
         {
@@ -313,25 +312,23 @@ public class JavaGenerator implements CodeGenerator
         generateDecoderClassDeclaration(sb, groupName, parentMessageClassName, indent, dimensionsClassName, dimensionHeaderSize);
 
         sb.append(String.format(
-            indent + "    public void wrapForDecode(\n" +
-                indent + "        final %s parentMessage, final %s buffer, final int actingVersion)\n" +
-                indent + "    {\n" +
-                indent + "        this.parentMessage = parentMessage;\n" +
-                indent + "        this.buffer = buffer;\n" +
-                indent + "        dimensions.wrap(buffer, parentMessage.limit(), actingVersion);\n" +
-                indent + "        blockLength = dimensions.blockLength();\n" +
-                indent + "        count = dimensions.numInGroup();\n" +
-                indent + "        this.actingVersion = actingVersion;\n" +
-                indent + "        index = -1;\n" +
-                indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
-                indent + "    }\n\n",
+            indent + "    public void wrap(\n" +
+            indent + "        final %s parentMessage, final %s buffer, final int actingVersion)\n" +
+            indent + "    {\n" +
+            indent + "        this.parentMessage = parentMessage;\n" +
+            indent + "        this.buffer = buffer;\n" +
+            indent + "        dimensions.wrap(buffer, parentMessage.limit(), actingVersion);\n" +
+            indent + "        blockLength = dimensions.blockLength();\n" +
+            indent + "        count = dimensions.numInGroup();\n" +
+            indent + "        this.actingVersion = actingVersion;\n" +
+            indent + "        index = -1;\n" +
+            indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
+            indent + "    }\n\n",
             parentMessageClassName,
             readOnlyBufferImplementation
         ));
 
         final int blockLength = tokens.get(index).size();
-        final String javaTypeForBlockLength = primitiveTypeName(tokens.get(index + 2));
-        final String javaTypeForNumInGroup = primitiveTypeName(tokens.get(index + 3));
 
         sb.append(indent).append("    public static int sbeHeaderSize()\n")
           .append(indent).append("    {\n")
@@ -408,7 +405,7 @@ public class JavaGenerator implements CodeGenerator
         final String javaTypeForNumInGroup = primitiveTypeName(tokens.get(index + 3));
 
         sb.append(String.format(
-            indent + "    public void wrapForEncode(final %1$s parentMessage, final %5$s buffer, final int count)\n" +
+            indent + "    public void wrap(final %1$s parentMessage, final %5$s buffer, final int count)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
@@ -549,7 +546,7 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %1$s %2$s()\n" +
             indent + "    {\n" +
-            indent + "        %2$s.wrapForDecode(parentMessage, buffer, actingVersion);\n" +
+            indent + "        %2$s.wrap(parentMessage, buffer, actingVersion);\n" +
             indent + "        return %2$s;\n" +
             indent + "    }\n",
             className,
@@ -587,7 +584,7 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
                 indent + "    public %1$s %2$sCount(final int count)\n" +
                 indent + "    {\n" +
-                indent + "        %2$s.wrapForEncode(parentMessage, buffer, count);\n" +
+                indent + "        %2$s.wrap(parentMessage, buffer, count);\n" +
                 indent + "        return %2$s;\n" +
                 indent + "    }\n",
             className,
@@ -618,7 +615,6 @@ public class JavaGenerator implements CodeGenerator
             final Token lengthToken = tokens.get(i + 2);
             final int sizeOfLengthField = lengthToken.size();
             final Encoding lengthEncoding = lengthToken.encoding();
-            final String lengthJavaType = javaTypeName(lengthEncoding.primitiveType());
             final String lengthTypePrefix = lengthEncoding.primitiveType().primitiveName();
             final String byteOrderStr = byteOrderString(lengthEncoding);
 
@@ -1678,7 +1674,7 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateDecoderFlyweightCode(final String className, final Token token)
     {
         final String wrapMethod = String.format(
-            "    public %1$s wrapForDecode(\n" +
+            "    public %1$s wrap(\n" +
             "        final %2$s buffer, final int offset, final int actingBlockLength, final int actingVersion)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
@@ -1771,7 +1767,7 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateEncoderFlyweightCode(final String className, final Token token)
     {
         final String wrapMethod = String.format(
-            "    public %1$s wrapForEncode(final %2$s buffer, final int offset)\n" +
+            "    public %1$s wrap(final %2$s buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
