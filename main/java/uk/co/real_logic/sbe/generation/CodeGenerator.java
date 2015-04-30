@@ -25,6 +25,8 @@ public interface CodeGenerator
     /** Class name to be used for visitor pattern that accesses the message headerStructure. */
     String MESSAGE_HEADER_TYPE = "MessageHeader";
 
+    String READ_ONLY_MESSAGE_HEADER_TYPE = "ReadOnlyMessageHeader";
+
     /**
      * Generate the complete set of types and messages for a schema.
      *

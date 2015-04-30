@@ -24,10 +24,10 @@ public final class ReflectionUtil
 
     static String getMake(final Object decoder) throws Exception
     {
-        return (String) decoder.getClass().getMethod("make").invoke(decoder);
+        return (String) get(decoder, "make");
     }
 
-    static void putMake(final Object encoder,
+    static void setMake(final Object encoder,
                         final String value) throws Exception
     {
         encoder.getClass().getMethod("make", String.class).invoke(encoder, value);
@@ -95,6 +95,11 @@ public final class ReflectionUtil
     static Object getFuelFigures(Object msgFlyweight) throws Exception
     {
         return get(msgFlyweight, "fuelFigures");
+    }
+
+    static Object fuelFiguresCount(Object msgFlyweight, int count) throws Exception
+    {
+        return msgFlyweight.getClass().getMethod("fuelFiguresCount", int.class).invoke(msgFlyweight, count);
     }
 
     static int getCount(Object groupFlyweight) throws Exception

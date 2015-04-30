@@ -15,13 +15,7 @@
  */
 package uk.co.real_logic.sbe.examples;
 
-import baseline.Car;
-import baseline.Engine;
-import baseline.BooleanType;
-import baseline.Model;
-import baseline.OptionalExtras;
-import baseline.MetaAttribute;
-import baseline.MessageHeader;
+import baseline.*;
 
 import baseline.ReadOnlyCar.ReadOnlyPerformanceFigures.ReadOnlyAcceleration;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
@@ -40,7 +34,9 @@ public class ExampleUsingGeneratedStub
     private static final byte[] MODEL;
     private static final UnsafeBuffer ACTIVATION_CODE;
 
+    private static final ReadOnlyMessageHeader READ_ONLY_MESSAGE_HEADER = new ReadOnlyMessageHeader();
     private static final MessageHeader MESSAGE_HEADER = new MessageHeader();
+    private static final ReadOnlyCar READ_ONLY_CAR = new ReadOnlyCar();
     private static final Car CAR = new Car();
 
     static
@@ -96,21 +92,21 @@ public class ExampleUsingGeneratedStub
         // Decode the encoded message
 
         bufferOffset = 0;
-        MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion);
+        READ_ONLY_MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion);
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
-        final int templateId = MESSAGE_HEADER.templateId();
+        final int templateId = READ_ONLY_MESSAGE_HEADER.templateId();
         if (templateId != baseline.Car.TEMPLATE_ID)
         {
             throw new IllegalStateException("Template ids do not match");
         }
 
-        final int actingBlockLength = MESSAGE_HEADER.blockLength();
-        final int schemaId = MESSAGE_HEADER.schemaId();
-        final int actingVersion = MESSAGE_HEADER.version();
+        final int actingBlockLength = READ_ONLY_MESSAGE_HEADER.blockLength();
+        final int schemaId = READ_ONLY_MESSAGE_HEADER.schemaId();
+        final int actingVersion = READ_ONLY_MESSAGE_HEADER.version();
 
-        bufferOffset += MESSAGE_HEADER.size();
-        decode(CAR, directBuffer, bufferOffset, actingBlockLength, schemaId, actingVersion);
+        bufferOffset += READ_ONLY_MESSAGE_HEADER.size();
+        decode(READ_ONLY_CAR, directBuffer, bufferOffset, actingBlockLength, schemaId, actingVersion);
     }
 
     public static int encode(final Car car, final UnsafeBuffer directBuffer, final int bufferOffset)
@@ -167,7 +163,7 @@ public class ExampleUsingGeneratedStub
     }
 
     public static void decode(
-        final Car car,
+        final ReadOnlyCar car,
         final UnsafeBuffer directBuffer,
         final int bufferOffset,
         final int actingBlockLength,
@@ -200,12 +196,12 @@ public class ExampleUsingGeneratedStub
             sb.append((char)car.vehicleCode(i));
         }
 
-        final OptionalExtras extras = car.extras();
+        final ReadOnlyOptionalExtras extras = car.extras();
         sb.append("\ncar.extras.cruiseControl=").append(extras.cruiseControl());
         sb.append("\ncar.extras.sportsPack=").append(extras.sportsPack());
         sb.append("\ncar.extras.sunRoof=").append(extras.sunRoof());
 
-        final Engine engine = car.engine();
+        final ReadOnlyEngine engine = car.engine();
         sb.append("\ncar.engine.capacity=").append(engine.capacity());
         sb.append("\ncar.engine.numCylinders=").append(engine.numCylinders());
         sb.append("\ncar.engine.maxRpm=").append(engine.maxRpm());
@@ -217,13 +213,13 @@ public class ExampleUsingGeneratedStub
 
         sb.append("\ncar.engine.fuel=").append(new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
 
-        for (final Car.ReadOnlyFuelFigures fuelFigures : car.fuelFigures())
+        for (final ReadOnlyCar.ReadOnlyFuelFigures fuelFigures : car.fuelFigures())
         {
             sb.append("\ncar.fuelFigures.speed=").append(fuelFigures.speed());
             sb.append("\ncar.fuelFigures.mpg=").append(fuelFigures.mpg());
         }
 
-        for (final Car.ReadOnlyPerformanceFigures performanceFigures : car.performanceFigures())
+        for (final ReadOnlyCar.ReadOnlyPerformanceFigures performanceFigures : car.performanceFigures())
         {
             sb.append("\ncar.performanceFigures.octaneRating=").append(performanceFigures.octaneRating());
 

@@ -38,6 +38,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.co.real_logic.sbe.generation.CodeGenerator.READ_ONLY_MESSAGE_HEADER_TYPE;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_TYPE;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
@@ -88,12 +89,35 @@ public class JavaGeneratorTest
         final Method method = flyweight.getClass().getDeclaredMethod("wrap", BUFFER_CLASS, int.class, int.class);
         method.invoke(flyweight, mockBuffer, bufferOffset, actingVersion);
 
-        final Integer result = (Integer) clazz.getDeclaredMethod("templateId").invoke(flyweight);
-        assertThat(result, is((int) templateId));
-
         clazz.getDeclaredMethod("blockLength", int.class).invoke(flyweight, blockLength);
 
         verify(mockBuffer).putShort(bufferOffset, (short) blockLength, BYTE_ORDER);
+    }
+
+    @Test
+    public void shouldGenerateReadOnlyMessageHeaderStub() throws Exception
+    {
+        final int bufferOffset = 64;
+        final int templateIdOffset = 2;
+        final short templateId = (short) 7;
+        final int actingVersion = 0;
+        final int blockLength = 32;
+        final String fqClassName = ir.applicableNamespace() + "." + READ_ONLY_MESSAGE_HEADER_TYPE;
+
+        when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
+
+        generator().generateMessageHeaderStub();
+
+        final Class<?> clazz = compile(fqClassName);
+        assertNotNull(clazz);
+
+        final Object flyweight = clazz.newInstance();
+        final Method method = flyweight.getClass().getDeclaredMethod("wrap", READ_ONLY_BUFFER_CLASS, int.class, int.class);
+        method.invoke(flyweight, mockBuffer, bufferOffset, actingVersion);
+
+        final Integer result = (Integer) clazz.getDeclaredMethod("templateId").invoke(flyweight);
+        assertThat(result, is((int) templateId));
+
     }
 
     @Test
@@ -130,7 +154,7 @@ public class JavaGeneratorTest
         final int bufferOffset = 8;
         final int actingVersion = 0;
         final byte bitset = (byte) 0b0000_0100;
-        final String className = "OptionalExtras";
+        final String className = "ReadOnlyOptionalExtras";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
         when(mockBuffer.getByte(bufferOffset)).thenReturn(bitset);
@@ -141,23 +165,22 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final Object flyweight = clazz.newInstance();
-        final Method method = flyweight.getClass().getDeclaredMethod("wrap", BUFFER_CLASS, int.class, int.class);
+        final Method method = flyweight.getClass().getDeclaredMethod("wrap", READ_ONLY_BUFFER_CLASS, int.class, int.class);
         method.invoke(flyweight, mockBuffer, bufferOffset, actingVersion);
 
-        final Object result = clazz.getMethod("cruiseControl").invoke(flyweight);
+        final Object result = get(flyweight, "cruiseControl");
 
         assertThat((Boolean) result, is(Boolean.TRUE));
     }
 
     @Test
-    public void shouldGenerateCompositeStub() throws Exception
+    public void shouldGenerateCompositeEncoder() throws Exception
     {
         final int actingVersion = 0;
         final int bufferOffset = 64;
         final int capacityFieldOffset = bufferOffset;
         final int numCylindersOffset = bufferOffset + 2;
         final int expectedEngineCapacity = 2000;
-        final int expectedMaxRpm = 9000;
         final int manufacturerCodeOffset = bufferOffset + 3;
         final byte[] manufacturerCode = {'A', 'B', 'C'};
         final String className = "Engine";
@@ -172,22 +195,45 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final Object flyweight = clazz.newInstance();
-        wrap(actingVersion, bufferOffset, flyweight, mockBuffer);
-
-        final int capacityResult = getCapacity(flyweight);
-        assertThat(capacityResult, is(expectedEngineCapacity));
-
-        final int maxRpmResult = (Integer) clazz.getMethod("maxRpm").invoke(flyweight);
-        assertThat(maxRpmResult, is(expectedMaxRpm));
+        wrap(actingVersion, bufferOffset, flyweight, mockBuffer, BUFFER_CLASS);
 
         final short numCylinders = (short) 4;
         clazz.getDeclaredMethod("numCylinders", short.class).invoke(flyweight, numCylinders);
 
         clazz.getDeclaredMethod("putManufacturerCode", byte[].class, int.class)
-            .invoke(flyweight, manufacturerCode, 0);
+             .invoke(flyweight, manufacturerCode, 0);
 
         verify(mockBuffer).putByte(numCylindersOffset, (byte) numCylinders);
         verify(mockBuffer).putBytes(manufacturerCodeOffset, manufacturerCode, 0, manufacturerCode.length);
+    }
+
+    @Test
+    public void shouldGenerateCompositeDecoder() throws Exception
+    {
+        final int actingVersion = 0;
+        final int bufferOffset = 64;
+        final int capacityFieldOffset = bufferOffset;
+        final int expectedEngineCapacity = 2000;
+        final int expectedMaxRpm = 9000;
+        final String className = "ReadOnlyEngine";
+        final String fqClassName = ir.applicableNamespace() + "." + className;
+
+        when(mockBuffer.getShort(capacityFieldOffset, BYTE_ORDER))
+            .thenReturn((short) expectedEngineCapacity);
+
+        generateTypeStubs();
+
+        final Class<?> clazz = compile(fqClassName);
+        assertNotNull(clazz);
+
+        final Object flyweight = clazz.newInstance();
+        wrap(actingVersion, bufferOffset, flyweight, mockBuffer, READ_ONLY_BUFFER_CLASS);
+
+        final int capacityResult = getCapacity(flyweight);
+        assertThat(capacityResult, is(expectedEngineCapacity));
+
+        final int maxRpmResult = getInt(flyweight, "maxRpm");
+        assertThat(maxRpmResult, is(expectedMaxRpm));
     }
 
     @Test
@@ -198,12 +244,9 @@ public class JavaGeneratorTest
 
         final Object msgFlyweight = wrapForEncode(buffer, compileCar().newInstance());
 
-        final Integer initialPosition = getLimit(msgFlyweight);
+        final Object groupFlyweight = fuelFiguresCount(msgFlyweight, 0);
 
-        final Object groupFlyweight = getFuelFigures(msgFlyweight);
-        assertThat(getLimit(msgFlyweight), greaterThan(initialPosition));
-
-        assertThat(getCount(groupFlyweight), is(0));
+        assertNotNull(groupFlyweight);
     }
 
     @Test
@@ -240,7 +283,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateReadOnlyVarDataEncoding() throws Exception
+    public void shouldGenerateVarDataCodecs() throws Exception
     {
         final String expectedMake = "Ford";
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
@@ -250,31 +293,11 @@ public class JavaGeneratorTest
         final Object encoder = wrapForEncode(buffer, compileCar().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
-        putMake(encoder, expectedMake);
+        setMake(encoder, expectedMake);
+
         final String make = getMake(decoder);
 
         assertEquals(expectedMake, make);
-    }
-
-    @Test
-    public void shouldBeAbleToWrapForDecodeAFullFlyweight() throws Exception
-    {
-        final int expectedEngineCapacity = 2000;
-        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
-
-        generator().generate();
-
-        final Class<?> car = compileCar();
-        final Object encoder = wrapForEncode(buffer, car.newInstance());
-        final Object engine = get(encoder, "engine");
-
-        setCapacity(engine, expectedEngineCapacity);
-
-        final Object flyweight = wrapForDecode(
-            buffer, car.newInstance(), getSbeBlockLength(encoder), getSbeSchemaVersion(encoder), BUFFER_CLASS);
-        final Object otherEngine = get(flyweight, "engine");
-
-        assertEquals(expectedEngineCapacity, getCapacity(otherEngine));
     }
 
     @Test
@@ -339,11 +362,8 @@ public class JavaGeneratorTest
 
     private Object getCarDecoder(final UnsafeBuffer buffer, final Object encoder) throws Exception
     {
-        final int sbeBlockLength = getSbeBlockLength(encoder);
-        final int sbeSchemaVersion = getSbeSchemaVersion(encoder);
         final Object decoder = compileReadOnlyCar().newInstance();
-        wrapForDecode(buffer, decoder, sbeBlockLength, sbeSchemaVersion);
-        return decoder;
+        return wrapForDecode(buffer, decoder, getSbeBlockLength(encoder), getSbeSchemaVersion(encoder));
     }
 
     private static Object wrapForDecode(
@@ -396,6 +416,7 @@ public class JavaGeneratorTest
         final String className = "Car";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
+        System.out.println(fqClassName);
         final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
         return clazz;
@@ -447,6 +468,7 @@ public class JavaGeneratorTest
     private Class<?> compile(final String fqClassName) throws Exception
     {
         final Map<String, CharSequence> sources = outputManager.getSources();
+        //System.out.println(sources);
         final Class<?> aClass = CompilerUtil.compileInMemory(fqClassName, sources);
         if (aClass == null)
         {
@@ -458,11 +480,12 @@ public class JavaGeneratorTest
     private void wrap(final int actingVersion,
                       final int bufferOffset,
                       final Object flyweight,
-                      final MutableDirectBuffer buffer) throws Exception
+                      final MutableDirectBuffer buffer,
+                      final Class<?> bufferClass) throws Exception
     {
         flyweight
             .getClass()
-            .getDeclaredMethod("wrap", BUFFER_CLASS, int.class, int.class)
+            .getDeclaredMethod("wrap", bufferClass, int.class, int.class)
             .invoke(flyweight, buffer, bufferOffset, actingVersion);
     }
 

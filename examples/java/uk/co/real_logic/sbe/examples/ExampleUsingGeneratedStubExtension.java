@@ -33,9 +33,13 @@ public class ExampleUsingGeneratedStubExtension
     private static final byte[] MODEL;
     private static final UnsafeBuffer ACTIVATION_CODE;
 
+    private static final baseline.ReadOnlyMessageHeader READ_ONLY_MESSAGE_HEADER = new baseline.ReadOnlyMessageHeader();
     private static final baseline.MessageHeader MESSAGE_HEADER = new baseline.MessageHeader();
     private static final baseline.Car CAR_0 = new baseline.Car();
     private static final extension.Car CAR_1 = new extension.Car();
+
+    private static final baseline.ReadOnlyCar READ_ONLY_CAR_0 = new baseline.ReadOnlyCar();
+    private static final extension.ReadOnlyCar READ_ONLY_CAR_1 = new extension.ReadOnlyCar();
 
     static
     {
@@ -90,21 +94,21 @@ public class ExampleUsingGeneratedStubExtension
         // Decode the encoded message
 
         bufferOffset = 0;
-        MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion);
+        READ_ONLY_MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion);
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
-        final int templateId = MESSAGE_HEADER.templateId();
+        final int templateId = READ_ONLY_MESSAGE_HEADER.templateId();
         if (templateId != extension.Car.TEMPLATE_ID)
         {
             throw new IllegalStateException("Template ids do not match");
         }
 
-        final int actingBlockLength = MESSAGE_HEADER.blockLength();
-        final int schemaId = MESSAGE_HEADER.schemaId();
-        final int actingVersion = MESSAGE_HEADER.version();
+        final int actingBlockLength = READ_ONLY_MESSAGE_HEADER.blockLength();
+        final int schemaId = READ_ONLY_MESSAGE_HEADER.schemaId();
+        final int actingVersion = READ_ONLY_MESSAGE_HEADER.version();
 
-        bufferOffset += MESSAGE_HEADER.size();
-        decode(CAR_1, directBuffer, bufferOffset, schemaId, actingBlockLength, actingVersion);
+        bufferOffset += READ_ONLY_MESSAGE_HEADER.size();
+        decode(READ_ONLY_CAR_1, directBuffer, bufferOffset, schemaId, actingBlockLength, actingVersion);
     }
 
     public static int encode(final baseline.Car car, final UnsafeBuffer directBuffer, final int bufferOffset)
@@ -161,7 +165,7 @@ public class ExampleUsingGeneratedStubExtension
     }
 
     public static void decode(
-        final extension.Car car,
+        final extension.ReadOnlyCar car,
         final UnsafeBuffer directBuffer,
         final int bufferOffset,
         final int schemaId,
@@ -194,12 +198,12 @@ public class ExampleUsingGeneratedStubExtension
             sb.append((char)car.vehicleCode(i));
         }
 
-        final extension.OptionalExtras extras = car.extras();
+        final extension.ReadOnlyOptionalExtras extras = car.extras();
         sb.append("\ncar.extras.cruiseControl=").append(extras.cruiseControl());
         sb.append("\ncar.extras.sportsPack=").append(extras.sportsPack());
         sb.append("\ncar.extras.sunRoof=").append(extras.sunRoof());
 
-        final extension.Engine engine = car.engine();
+        final extension.ReadOnlyEngine engine = car.engine();
         sb.append("\ncar.engine.capacity=").append(engine.capacity());
         sb.append("\ncar.engine.numCylinders=").append(engine.numCylinders());
         sb.append("\ncar.engine.maxRpm=").append(engine.maxRpm());
@@ -214,13 +218,13 @@ public class ExampleUsingGeneratedStubExtension
         final String cupHolderCount = car.cupHolderCount() == Car.cupHolderCountNullValue() ? "null" : car.cupHolderCount() + "";
         sb.append("\ncar.cutHolderCount=").append(cupHolderCount);
 
-        for (final extension.Car.ReadOnlyFuelFigures fuelFigures : car.fuelFigures())
+        for (final extension.ReadOnlyCar.ReadOnlyFuelFigures fuelFigures : car.fuelFigures())
         {
             sb.append("\ncar.fuelFigures.speed=").append(fuelFigures.speed());
             sb.append("\ncar.fuelFigures.mpg=").append(fuelFigures.mpg());
         }
 
-        for (final extension.Car.ReadOnlyPerformanceFigures performanceFigures : car.performanceFigures())
+        for (final extension.ReadOnlyCar.ReadOnlyPerformanceFigures performanceFigures : car.performanceFigures())
         {
             sb.append("\ncar.performanceFigures.octaneRating=").append(performanceFigures.octaneRating());
 
