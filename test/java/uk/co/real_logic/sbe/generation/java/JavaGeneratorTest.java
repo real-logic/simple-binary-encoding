@@ -382,9 +382,11 @@ public class JavaGeneratorTest
         final int version,
         final Class<?> bufferClass) throws Exception
     {
-        decoder.getClass()
+        decoder
+            .getClass()
             .getMethod("wrap", bufferClass, int.class, int.class, int.class)
             .invoke(decoder, buffer, 0, blockLength, version);
+
         return decoder;
     }
 
@@ -443,7 +445,7 @@ public class JavaGeneratorTest
         return clazz;
     }
 
-    private static Object wrap(final UnsafeBuffer buffer,final Object encoder) throws Exception
+    private static Object wrap(final UnsafeBuffer buffer, final Object encoder) throws Exception
     {
         encoder
             .getClass()
@@ -481,7 +483,8 @@ public class JavaGeneratorTest
         final int bufferOffset,
         final Object flyweight,
         final MutableDirectBuffer buffer,
-        final Class<?> bufferClass) throws Exception
+        final Class<?> bufferClass)
+        throws Exception
     {
         flyweight
             .getClass()
