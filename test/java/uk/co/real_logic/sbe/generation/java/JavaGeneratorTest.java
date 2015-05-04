@@ -101,7 +101,6 @@ public class JavaGeneratorTest
         final int templateIdOffset = 2;
         final short templateId = (short)7;
         final int actingVersion = 0;
-        final int blockLength = 32;
         final String fqClassName = ir.applicableNamespace() + "." + READ_ONLY_MESSAGE_HEADER_TYPE;
 
         when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
