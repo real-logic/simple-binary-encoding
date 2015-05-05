@@ -109,23 +109,23 @@ public class JavaGenerator implements CodeGenerator
     {
         final List<Token> tokens = ir.headerStructure().tokens();
 
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
+        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_ENCODER_TYPE))
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
+            out.append(generateClassDeclaration(MESSAGE_HEADER_ENCODER_TYPE));
             out.append(generateFixedFlyweightCode(
-                MESSAGE_HEADER_TYPE, tokens.get(0).size(), false, mutableBufferImplementation));
+                MESSAGE_HEADER_ENCODER_TYPE, tokens.get(0).size(), false, mutableBufferImplementation));
             out.append(concatEncodingTokens(tokens, token ->
-                generatePrimitiveEncoder(MESSAGE_HEADER_TYPE, token.name(), token, BASE_INDENT)));
+                generatePrimitiveEncoder(MESSAGE_HEADER_ENCODER_TYPE, token.name(), token, BASE_INDENT)));
             out.append("}\n");
         }
 
-        try (final Writer out = outputManager.createOutput(READ_ONLY_MESSAGE_HEADER_TYPE))
+        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_DECODER_TYPE))
         {
             out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
-            out.append(generateClassDeclaration(READ_ONLY_MESSAGE_HEADER_TYPE));
+            out.append(generateClassDeclaration(MESSAGE_HEADER_DECODER_TYPE));
             out.append(generateFixedFlyweightCode(
-                READ_ONLY_MESSAGE_HEADER_TYPE, tokens.get(0).size(), false, readOnlyBufferImplementation));
+                MESSAGE_HEADER_DECODER_TYPE, tokens.get(0).size(), false, readOnlyBufferImplementation));
             out.append(concatEncodingTokens(tokens, token ->
                 generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
             out.append("}\n");

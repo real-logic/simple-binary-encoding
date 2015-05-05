@@ -53,11 +53,11 @@ public class CSharpGenerator implements CodeGenerator
 
     public void generateMessageHeaderStub() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
+        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_ENCODER_TYPE))
         {
             final List<Token> tokens = ir.headerStructure().tokens();
             out.append(generateFileHeader(ir.applicableNamespace()));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
+            out.append(generateClassDeclaration(MESSAGE_HEADER_ENCODER_TYPE));
             out.append(generateFixedFlyweightCode(tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 

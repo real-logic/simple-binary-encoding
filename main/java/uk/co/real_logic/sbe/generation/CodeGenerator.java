@@ -23,9 +23,9 @@ import java.io.IOException;
 public interface CodeGenerator
 {
     /** Class name to be used for visitor pattern that accesses the message headerStructure. */
-    String MESSAGE_HEADER_TYPE = "MessageHeader";
+    String MESSAGE_HEADER_ENCODER_TYPE = "MessageHeaderEncoder";
 
-    String READ_ONLY_MESSAGE_HEADER_TYPE = "ReadOnlyMessageHeader";
+    String MESSAGE_HEADER_DECODER_TYPE = "MessageHeaderDecoder";
 
     /**
      * Generate the complete set of types and messages for a schema.

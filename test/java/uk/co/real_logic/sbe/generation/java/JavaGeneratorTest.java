@@ -38,8 +38,8 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.co.real_logic.sbe.generation.CodeGenerator.READ_ONLY_MESSAGE_HEADER_TYPE;
-import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_TYPE;
+import static uk.co.real_logic.sbe.generation.CodeGenerator.MESSAGE_HEADER_DECODER_TYPE;
+import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_ENCODER_TYPE;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
@@ -76,7 +76,7 @@ public class JavaGeneratorTest
         final short templateId = (short)7;
         final int actingVersion = 0;
         final int blockLength = 32;
-        final String fqClassName = ir.applicableNamespace() + "." + MESSAGE_HEADER_TYPE;
+        final String fqClassName = ir.applicableNamespace() + "." + MESSAGE_HEADER_ENCODER_TYPE;
 
         when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
 
@@ -101,7 +101,7 @@ public class JavaGeneratorTest
         final int templateIdOffset = 2;
         final short templateId = (short)7;
         final int actingVersion = 0;
-        final String fqClassName = ir.applicableNamespace() + "." + READ_ONLY_MESSAGE_HEADER_TYPE;
+        final String fqClassName = ir.applicableNamespace() + "." + MESSAGE_HEADER_DECODER_TYPE;
 
         when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
 

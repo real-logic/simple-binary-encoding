@@ -33,8 +33,8 @@ public class ExampleUsingGeneratedStub
     private static final byte[] MODEL;
     private static final UnsafeBuffer ACTIVATION_CODE;
 
-    private static final ReadOnlyMessageHeader READ_ONLY_MESSAGE_HEADER = new ReadOnlyMessageHeader();
-    private static final MessageHeader MESSAGE_HEADER = new MessageHeader();
+    private static final MessageHeaderDecoder READ_ONLY_MESSAGE_HEADER = new MessageHeaderDecoder();
+    private static final MessageHeaderEncoder MESSAGE_HEADER = new MessageHeaderEncoder();
     private static final CarDecoder CAR_DECODER = new CarDecoder();
     private static final CarEncoder CAR_ENCODER = new CarEncoder();
 

@@ -54,14 +54,14 @@ public class JavaMockPojoGenerator implements CodeGenerator
 
     public void generateMessageHeaderStub() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE + MOCK))
+        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_ENCODER_TYPE + MOCK))
         {
             final List<Token> tokens = ir.headerStructure().tokens();
             out.append(generateFileHeader(ir.applicableNamespace()));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
+            out.append(generateClassDeclaration(MESSAGE_HEADER_ENCODER_TYPE));
 
             out.append(generatePrimitivePropertyEncodings(
-                MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+                MESSAGE_HEADER_ENCODER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");
         }

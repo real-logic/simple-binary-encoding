@@ -37,7 +37,7 @@ import static junit.framework.TestCase.assertEquals;
 
 public class JsonPrinterTest
 {
-    private static final MessageHeader MESSAGE_HEADER = new MessageHeader();
+    private static final MessageHeaderEncoder MESSAGE_HEADER = new MessageHeaderEncoder();
     private static final CarEncoder CAR = new CarEncoder();
     private static final int ACTING_VERSION = 0;
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;

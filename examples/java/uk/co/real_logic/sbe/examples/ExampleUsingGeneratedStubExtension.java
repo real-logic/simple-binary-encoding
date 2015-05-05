@@ -35,8 +35,8 @@ public class ExampleUsingGeneratedStubExtension
     private static final byte[] MODEL;
     private static final UnsafeBuffer ACTIVATION_CODE;
 
-    private static final baseline.ReadOnlyMessageHeader READ_ONLY_MESSAGE_HEADER = new baseline.ReadOnlyMessageHeader();
-    private static final baseline.MessageHeader MESSAGE_HEADER = new baseline.MessageHeader();
+    private static final baseline.MessageHeaderDecoder READ_ONLY_MESSAGE_HEADER = new baseline.MessageHeaderDecoder();
+    private static final baseline.MessageHeaderEncoder MESSAGE_HEADER = new baseline.MessageHeaderEncoder();
     private static final baseline.CarEncoder CAR_ENCODER_0 = new baseline.CarEncoder();
     private static final extension.CarEncoder CAR_ENCODER_1 = new extension.CarEncoder();
 
