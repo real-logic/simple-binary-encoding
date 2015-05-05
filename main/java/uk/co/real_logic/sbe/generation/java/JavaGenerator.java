@@ -756,7 +756,7 @@ public class JavaGenerator implements CodeGenerator
             sb,
             propertyName,
             sizeOfLengthField,
-            fullMutableBufferImplementation,
+            fullReadOnlyBufferImplementation,
             lengthJavaType,
             lengthTypePrefix,
             byteOrderStr);
