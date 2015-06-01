@@ -86,8 +86,8 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final Object flyweight = clazz.newInstance();
-        final Method method = flyweight.getClass().getDeclaredMethod("wrap", BUFFER_CLASS, int.class, int.class);
-        method.invoke(flyweight, mockBuffer, bufferOffset, actingVersion);
+        final Method method = flyweight.getClass().getDeclaredMethod("wrap", BUFFER_CLASS, int.class);
+        method.invoke(flyweight, mockBuffer, bufferOffset);
 
         clazz.getDeclaredMethod("blockLength", int.class).invoke(flyweight, blockLength);
 
@@ -111,8 +111,8 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final Object flyweight = clazz.newInstance();
-        final Method method = flyweight.getClass().getDeclaredMethod("wrap", READ_ONLY_BUFFER_CLASS, int.class, int.class);
-        method.invoke(flyweight, mockBuffer, bufferOffset, actingVersion);
+        final Method method = flyweight.getClass().getDeclaredMethod("wrap", READ_ONLY_BUFFER_CLASS, int.class);
+        method.invoke(flyweight, mockBuffer, bufferOffset);
 
         final Integer result = (Integer)clazz.getDeclaredMethod("templateId").invoke(flyweight);
         assertThat(result, is((int)templateId));
@@ -164,8 +164,8 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final Object flyweight = clazz.newInstance();
-        final Method method = flyweight.getClass().getDeclaredMethod("wrap", READ_ONLY_BUFFER_CLASS, int.class, int.class);
-        method.invoke(flyweight, mockBuffer, bufferOffset, actingVersion);
+        final Method method = flyweight.getClass().getDeclaredMethod("wrap", READ_ONLY_BUFFER_CLASS, int.class);
+        method.invoke(flyweight, mockBuffer, bufferOffset);
 
         final Object result = get(flyweight, "cruiseControl");
 
@@ -175,7 +175,6 @@ public class JavaGeneratorTest
     @Test
     public void shouldGenerateCompositeEncoder() throws Exception
     {
-        final int actingVersion = 0;
         final int bufferOffset = 64;
         final int capacityFieldOffset = bufferOffset;
         final int numCylindersOffset = bufferOffset + 2;
@@ -194,7 +193,7 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final Object flyweight = clazz.newInstance();
-        wrap(actingVersion, bufferOffset, flyweight, mockBuffer, BUFFER_CLASS);
+        wrap(bufferOffset, flyweight, mockBuffer, BUFFER_CLASS);
 
         final short numCylinders = (short)4;
         clazz.getDeclaredMethod("numCylinders", short.class).invoke(flyweight, numCylinders);
@@ -226,7 +225,7 @@ public class JavaGeneratorTest
         assertNotNull(clazz);
 
         final Object flyweight = clazz.newInstance();
-        wrap(actingVersion, bufferOffset, flyweight, mockBuffer, READ_ONLY_BUFFER_CLASS);
+        wrap(bufferOffset, flyweight, mockBuffer, READ_ONLY_BUFFER_CLASS);
 
         final int capacityResult = getCapacity(flyweight);
         assertThat(capacityResult, is(expectedEngineCapacity));
@@ -444,16 +443,6 @@ public class JavaGeneratorTest
         return clazz;
     }
 
-    private static Object wrap(final UnsafeBuffer buffer, final Object encoder) throws Exception
-    {
-        encoder
-            .getClass()
-            .getDeclaredMethod("wrap", BUFFER_CLASS, int.class)
-            .invoke(encoder, buffer, 0);
-
-        return encoder;
-    }
-
     private JavaGenerator generator() throws IOException
     {
         return new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, outputManager);
@@ -477,7 +466,27 @@ public class JavaGeneratorTest
         return aClass;
     }
 
-    private void wrap(
+    private static void wrap(
+        final int bufferOffset,
+        final Object flyweight,
+        final MutableDirectBuffer buffer,
+        final Class<?> bufferClass)
+        throws Exception
+    {
+        flyweight
+            .getClass()
+            .getDeclaredMethod("wrap", bufferClass, int.class)
+            .invoke(flyweight, buffer, bufferOffset);
+    }
+
+    private static Object wrap(final UnsafeBuffer buffer, final Object encoder) throws Exception
+    {
+        wrap(0, encoder, buffer, BUFFER_CLASS);
+
+        return encoder;
+    }
+
+    private void wrap2(
         final int actingVersion,
         final int bufferOffset,
         final Object flyweight,

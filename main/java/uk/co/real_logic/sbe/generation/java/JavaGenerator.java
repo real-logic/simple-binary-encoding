@@ -313,14 +313,13 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             indent + "    public void wrap(\n" +
-            indent + "        final %s parentMessage, final %s buffer, final int actingVersion)\n" +
+            indent + "        final %s parentMessage, final %s buffer)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
-            indent + "        dimensions.wrap(buffer, parentMessage.limit(), actingVersion);\n" +
+            indent + "        dimensions.wrap(buffer, parentMessage.limit());\n" +
             indent + "        blockLength = dimensions.blockLength();\n" +
             indent + "        count = dimensions.numInGroup();\n" +
-            indent + "        this.actingVersion = actingVersion;\n" +
             indent + "        index = -1;\n" +
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
@@ -410,7 +409,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
             indent + "        actingVersion = SCHEMA_VERSION;\n" +
-            indent + "        dimensions.wrap(buffer, parentMessage.limit(), actingVersion);\n" +
+            indent + "        dimensions.wrap(buffer, parentMessage.limit());\n" +
             indent + "        dimensions.blockLength((%2$s)%3$d);\n" +
             indent + "        dimensions.numInGroup((%4$s)count);\n" +
             indent + "        index = -1;\n" +
@@ -546,7 +545,7 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %1$s %2$s()\n" +
             indent + "    {\n" +
-            indent + "        %2$s.wrap(parentMessage, buffer, actingVersion);\n" +
+            indent + "        %2$s.wrap(parentMessage, buffer);\n" +
             indent + "        return %2$s;\n" +
             indent + "    }\n",
             className,
@@ -1646,18 +1645,16 @@ public class JavaGenerator implements CodeGenerator
         final boolean callsSuper,
         final String bufferImplementation)
     {
-        final String body = callsSuper ? "        super.wrap(buffer, offset, actingVersion);\n" : "";
+        final String body = callsSuper ? "        super.wrap(buffer, offset);\n" : "";
 
         return String.format(
             "    private %3$s buffer;\n" +
             "    private int offset;\n" +
-            "    private int actingVersion;\n\n" +
-            "    public %1$s wrap(final %3$s buffer, final int offset, final int actingVersion)\n" +
+            "    public %1$s wrap(final %3$s buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "%4$s" +
             "        this.offset = offset;\n" +
-            "        this.actingVersion = actingVersion;\n" +
             "        return this;\n" +
             "    }\n\n" +
             "    public int size()\n" +
@@ -1974,7 +1971,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
             "%s" +
-            indent + "        %s.wrap(buffer, offset + %d, actingVersion);\n" +
+            indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
             bitSetName,
@@ -2011,7 +2008,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
             "%s" +
-            indent + "        %s.wrap(buffer, offset + %d, actingVersion);\n" +
+            indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
             compositeName,

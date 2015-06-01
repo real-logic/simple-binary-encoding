@@ -161,7 +161,7 @@ public class JsonPrinterTest
         final UnsafeBuffer directBuffer = new UnsafeBuffer(buffer);
 
         int bufferOffset = 0;
-        MESSAGE_HEADER.wrap(directBuffer, bufferOffset, ACTING_VERSION)
+        MESSAGE_HEADER.wrap(directBuffer, bufferOffset)
                       .blockLength(CAR.sbeBlockLength())
                       .templateId(CAR.sbeTemplateId())
                       .schemaId(CAR.sbeSchemaId())

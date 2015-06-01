@@ -40,7 +40,6 @@ public class OtfExample
 {
     private static final MessageHeaderEncoder MESSAGE_HEADER = new MessageHeaderEncoder();
     private static final CarEncoder CAR_ENCODER = new CarEncoder();
-    private static final int ACTING_VERSION = 0;
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
 
@@ -111,7 +110,7 @@ public class OtfExample
         final UnsafeBuffer directBuffer = new UnsafeBuffer(buffer);
 
         int bufferOffset = 0;
-        MESSAGE_HEADER.wrap(directBuffer, bufferOffset, ACTING_VERSION)
+        MESSAGE_HEADER.wrap(directBuffer, bufferOffset)
                       .blockLength(CAR_ENCODER.sbeBlockLength())
                       .templateId(CAR_ENCODER.sbeTemplateId())
                       .schemaId(CAR_ENCODER.sbeSchemaId())

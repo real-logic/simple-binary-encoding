@@ -60,13 +60,12 @@ public class ExampleUsingGeneratedStub
 
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
         final UnsafeBuffer directBuffer = new UnsafeBuffer(byteBuffer);
-        final short messageTemplateVersion = 0;
         int bufferOffset = 0;
         int encodingLength = 0;
 
         // Setup for encoding a message
 
-        MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion)
+        MESSAGE_HEADER.wrap(directBuffer, bufferOffset)
                       .blockLength(CAR_ENCODER.sbeBlockLength())
                       .templateId(CAR_ENCODER.sbeTemplateId())
                       .schemaId(CAR_ENCODER.sbeSchemaId())
@@ -91,7 +90,7 @@ public class ExampleUsingGeneratedStub
         // Decode the encoded message
 
         bufferOffset = 0;
-        READ_ONLY_MESSAGE_HEADER.wrap(directBuffer, bufferOffset, messageTemplateVersion);
+        READ_ONLY_MESSAGE_HEADER.wrap(directBuffer, bufferOffset);
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
         final int templateId = READ_ONLY_MESSAGE_HEADER.templateId();
