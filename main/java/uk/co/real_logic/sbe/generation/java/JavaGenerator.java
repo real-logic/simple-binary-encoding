@@ -21,10 +21,7 @@ import uk.co.real_logic.agrona.Verify;
 import uk.co.real_logic.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
-import uk.co.real_logic.sbe.ir.Encoding;
-import uk.co.real_logic.sbe.ir.Ir;
-import uk.co.real_logic.sbe.ir.Signal;
-import uk.co.real_logic.sbe.ir.Token;
+import uk.co.real_logic.sbe.ir.*;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -1150,7 +1147,7 @@ public class JavaGenerator implements CodeGenerator
             return;
         }
 
-        out.append("@GroupOrder({");
+        out.append("    @GroupOrder({");
         index = 0;
         for (final String name : groupClassNames)
         {
@@ -1469,7 +1466,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private void generateArrayLengthMethod(String propertyName, String indent, int fieldLength, StringBuilder sb)
+    private void generateArrayLengthMethod(final String propertyName, String indent, int fieldLength, StringBuilder sb)
     {
         sb.append(String.format(
             "\n" +
@@ -1648,6 +1645,7 @@ public class JavaGenerator implements CodeGenerator
         final String body = callsSuper ? "        super.wrap(buffer, offset);\n" : "";
 
         return String.format(
+            "    public static final int SIZE = %2$d;\n" +
             "    private %3$s buffer;\n" +
             "    private int offset;\n" +
             "    public %1$s wrap(final %3$s buffer, final int offset)\n" +
@@ -1659,7 +1657,7 @@ public class JavaGenerator implements CodeGenerator
             "    }\n\n" +
             "    public int size()\n" +
             "    {\n" +
-            "        return %2$d;\n" +
+            "        return SIZE;\n" +
             "    }\n",
             className,
             size,
@@ -1690,10 +1688,11 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateFlyweightCode(
         final String className, final Token token, final String wrapMethod, final String bufferImplementation)
     {
-        final String blockLengthType = javaTypeName(ir.headerStructure().blockLengthType());
-        final String templateIdType = javaTypeName(ir.headerStructure().templateIdType());
-        final String schemaIdType = javaTypeName(ir.headerStructure().schemaIdType());
-        final String schemaVersionType = javaTypeName(ir.headerStructure().schemaVersionType());
+        final HeaderStructure headerStructure = ir.headerStructure();
+        final String blockLengthType = javaTypeName(headerStructure.blockLengthType());
+        final String templateIdType = javaTypeName(headerStructure.templateIdType());
+        final String schemaIdType = javaTypeName(headerStructure.schemaIdType());
+        final String schemaVersionType = javaTypeName(headerStructure.schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
@@ -1747,13 +1746,13 @@ public class JavaGenerator implements CodeGenerator
             "        this.limit = limit;\n" +
             "    }\n",
             blockLengthType,
-            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
+            generateLiteral(headerStructure.blockLengthType(), Integer.toString(token.size())),
             templateIdType,
-            generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
+            generateLiteral(headerStructure.templateIdType(), Integer.toString(token.id())),
             schemaIdType,
-            generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
+            generateLiteral(headerStructure.schemaIdType(), Integer.toString(ir.id())),
             schemaVersionType,
-            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
+            generateLiteral(headerStructure.schemaVersionType(), Integer.toString(token.version())),
             className,
             semanticType,
             bufferImplementation,
