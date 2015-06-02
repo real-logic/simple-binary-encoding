@@ -42,15 +42,15 @@ public class JavaGenerator implements CodeGenerator
 
     private final Ir ir;
     private final OutputManager outputManager;
-    private final String fullMutableBufferImplementation;
-    private final String mutableBufferImplementation;
-    private final String fullReadOnlyBufferImplementation;
-    private final String readOnlyBufferImplementation;
+    private final String fullMutableBuffer;
+    private final String mutableBuffer;
+    private final String fullReadOnlyBuffer;
+    private final String readOnlyBuffer;
 
     public JavaGenerator(
         final Ir ir,
-        final String mutableBufferImplementation,
-        final String readOnlyBufferImplementation,
+        final String mutableBuffer,
+        final String readOnlyBuffer,
         final OutputManager outputManager)
         throws IOException
     {
@@ -60,13 +60,13 @@ public class JavaGenerator implements CodeGenerator
         this.ir = ir;
         this.outputManager = outputManager;
 
-        this.mutableBufferImplementation = validateBufferImplementation(
-            mutableBufferImplementation, MutableDirectBuffer.class);
-        this.fullMutableBufferImplementation = mutableBufferImplementation;
+        this.mutableBuffer = validateBufferImplementation(
+            mutableBuffer, MutableDirectBuffer.class);
+        this.fullMutableBuffer = mutableBuffer;
 
-        this.readOnlyBufferImplementation = validateBufferImplementation(
-            readOnlyBufferImplementation, DirectBuffer.class);
-        this.fullReadOnlyBufferImplementation = readOnlyBufferImplementation;
+        this.readOnlyBuffer = validateBufferImplementation(
+            readOnlyBuffer, DirectBuffer.class);
+        this.fullReadOnlyBuffer = readOnlyBuffer;
     }
 
     private String validateBufferImplementation(
@@ -105,13 +105,10 @@ public class JavaGenerator implements CodeGenerator
     public void generateMessageHeaderStub() throws IOException
     {
         final List<Token> tokens = ir.headerStructure().tokens();
-
+        final Token firstToken = tokens.get(0);
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_ENCODER_TYPE))
         {
-            out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_ENCODER_TYPE));
-            out.append(generateFixedFlyweightCode(
-                MESSAGE_HEADER_ENCODER_TYPE, tokens.get(0).size(), false, mutableBufferImplementation));
+            generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_ENCODER_TYPE, out, mutableBuffer, fullMutableBuffer);
             out.append(concatEncodingTokens(tokens, token ->
                 generatePrimitiveEncoder(MESSAGE_HEADER_ENCODER_TYPE, token.name(), token, BASE_INDENT)));
             out.append("}\n");
@@ -119,10 +116,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_DECODER_TYPE))
         {
-            out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_DECODER_TYPE));
-            out.append(generateFixedFlyweightCode(
-                MESSAGE_HEADER_DECODER_TYPE, tokens.get(0).size(), false, readOnlyBufferImplementation));
+            generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_DECODER_TYPE, out, readOnlyBuffer, fullReadOnlyBuffer);
             out.append(concatEncodingTokens(tokens, token ->
                 generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
             out.append("}\n");
@@ -183,7 +177,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(className))
         {
-            out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
+            out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBuffer));
 
             generateAnnotations(className, groups, out, 0, this::encoderName);
             out.append(generateClassDeclaration(className));
@@ -208,7 +202,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(className))
         {
-            out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
+            out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBuffer));
 
             generateAnnotations(className, groups, out, 0, this::decoderName);
             out.append(generateClassDeclaration(className));
@@ -321,7 +315,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
-            readOnlyBufferImplementation
+            readOnlyBuffer
         ));
 
         final int blockLength = tokens.get(index).size();
@@ -418,7 +412,7 @@ public class JavaGenerator implements CodeGenerator
             javaTypeForBlockLength,
             blockLength,
             javaTypeForNumInGroup,
-            mutableBufferImplementation
+            mutableBuffer
         ));
 
         sb.append(indent).append("    public static int sbeHeaderSize()\n")
@@ -428,9 +422,9 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             indent + "    public static int sbeBlockLength()\n" +
-                indent + "    {\n" +
-                indent + "        return %d;\n" +
-                indent + "    }\n\n",
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n\n",
             blockLength
         ));
 
@@ -481,7 +475,7 @@ public class JavaGenerator implements CodeGenerator
             dimensionHeaderSize,
             decoderName(dimensionsClassName),
             parentMessageClassName,
-            readOnlyBufferImplementation
+            readOnlyBuffer
         ));
     }
 
@@ -510,7 +504,7 @@ public class JavaGenerator implements CodeGenerator
             dimensionHeaderSize,
             dimensionsClassName,
             parentMessageClassName,
-            mutableBufferImplementation
+            mutableBuffer
         ));
     }
 
@@ -694,7 +688,7 @@ public class JavaGenerator implements CodeGenerator
             token,
             propertyName,
             sizeOfLengthField,
-            fullMutableBufferImplementation,
+            fullMutableBuffer,
             lengthTypePrefix,
             byteOrderStr);
 
@@ -752,7 +746,7 @@ public class JavaGenerator implements CodeGenerator
             sb,
             propertyName,
             sizeOfLengthField,
-            fullReadOnlyBufferImplementation,
+            fullReadOnlyBuffer,
             lengthJavaType,
             lengthTypePrefix,
             byteOrderStr);
@@ -866,9 +860,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(decoderName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
-            out.append(generateClassDeclaration(decoderName));
-            out.append(generateFixedFlyweightCode(decoderName, token.size(), false, readOnlyBufferImplementation));
+            generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fullReadOnlyBuffer);
             out.append(generateChoiceDecoders(messageBody));
 
             out.append("}\n");
@@ -876,14 +868,20 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(encoderName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
-            out.append(generateClassDeclaration(encoderName));
-            out.append(generateFixedFlyweightCode(encoderName, token.size(), false, mutableBufferImplementation));
+            generateFixedFlyweightHeader(token, encoderName, out, mutableBuffer, fullMutableBuffer);
             out.append(generateChoiceClear(encoderName, token));
             out.append(generateChoiceEncoders(encoderName, messageBody));
-
             out.append("}\n");
         }
+    }
+
+    private void generateFixedFlyweightHeader(
+        final Token token, final String encoderName, final Writer out, final String buffer, final String fullBuffer)
+        throws IOException
+    {
+        out.append(generateFileHeader(ir.applicableNamespace(), fullBuffer));
+        out.append(generateClassDeclaration(encoderName));
+        out.append(generateFixedFlyweightCode(encoderName, token.size(), false, buffer));
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
@@ -915,9 +913,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(decoderName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBufferImplementation));
-            out.append(generateClassDeclaration(decoderName));
-            out.append(generateFixedFlyweightCode(decoderName, token.size(), false, readOnlyBufferImplementation));
+            generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fullReadOnlyBuffer);
 
             out.append(concatEncodingTokens(messageBody,
                 tok -> generatePrimitiveDecoder(tok.name(), tok, BASE_INDENT)));
@@ -927,9 +923,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(encoderName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBufferImplementation));
-            out.append(generateClassDeclaration(encoderName));
-            out.append(generateFixedFlyweightCode(encoderName, token.size(), false, mutableBufferImplementation));
+            generateFixedFlyweightHeader(token, encoderName, out, mutableBuffer, fullMutableBuffer);
 
             out.append(concatEncodingTokens(messageBody,
                 tok -> generatePrimitiveEncoder(encoderName, tok.name(), tok, BASE_INDENT)));
@@ -1466,7 +1460,8 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private void generateArrayLengthMethod(final String propertyName, String indent, int fieldLength, StringBuilder sb)
+    private void generateArrayLengthMethod(
+        final String propertyName, final String indent, final int fieldLength, final StringBuilder sb)
     {
         sb.append(String.format(
             "\n" +
@@ -1680,9 +1675,9 @@ public class JavaGenerator implements CodeGenerator
             "        return this;\n" +
             "    }\n\n",
             className,
-            readOnlyBufferImplementation);
+            readOnlyBuffer);
 
-        return generateFlyweightCode(className, token, wrapMethod, readOnlyBufferImplementation);
+        return generateFlyweightCode(className, token, wrapMethod, readOnlyBuffer);
     }
 
     private CharSequence generateFlyweightCode(
@@ -1771,9 +1766,9 @@ public class JavaGenerator implements CodeGenerator
             "        return this;\n" +
             "    }\n\n",
             className,
-            mutableBufferImplementation);
+            mutableBuffer);
 
-        return generateFlyweightCode(className, token, wrapMethod, mutableBufferImplementation);
+        return generateFlyweightCode(className, token, wrapMethod, mutableBuffer);
     }
 
     private CharSequence generateEncoderFields(final String containingClassName, final List<Token> tokens, final String indent)
