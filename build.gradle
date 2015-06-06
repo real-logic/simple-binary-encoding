@@ -138,7 +138,7 @@ task runJavaExamples {
 
 checkstyle {
     configFile = new File(rootDir, 'config/checkstyle.xml')
-    toolVersion = 6.5
+    toolVersion = 6.7
 }
 
 javadoc {
