@@ -52,8 +52,7 @@ public class IrDecoder implements Closeable
     private final byte[] valArray = new byte[CAPACITY];
     private final MutableDirectBuffer valBuffer = new UnsafeBuffer(valArray);
 
-    public IrDecoder(final String fileName)
-        throws IOException
+    public IrDecoder(final String fileName) throws IOException
     {
         channel = new RandomAccessFile(fileName, "r").getChannel();
         final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());

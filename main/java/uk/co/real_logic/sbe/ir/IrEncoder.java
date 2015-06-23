@@ -48,8 +48,7 @@ public class IrEncoder implements Closeable
     private final UnsafeBuffer valBuffer = new UnsafeBuffer(valArray);
     private int totalSize = 0;
 
-    public IrEncoder(final String fileName, final Ir ir)
-        throws FileNotFoundException
+    public IrEncoder(final String fileName, final Ir ir) throws FileNotFoundException
     {
         channel = new FileOutputStream(fileName).getChannel();
         resultBuffer = null;
@@ -116,8 +115,7 @@ public class IrEncoder implements Closeable
         totalSize += size;
     }
 
-    private int encodeFrame()
-        throws UnsupportedEncodingException
+    private int encodeFrame() throws UnsupportedEncodingException
     {
         frameEncoder
             .wrap(directBuffer, 0)
@@ -137,8 +135,7 @@ public class IrEncoder implements Closeable
         return frameEncoder.encodedLength();
     }
 
-    private int encodeToken(final Token token)
-        throws UnsupportedEncodingException
+    private int encodeToken(final Token token) throws UnsupportedEncodingException
     {
         final Encoding encoding = token.encoding();
         final PrimitiveType type = encoding.primitiveType();
