@@ -2,21 +2,21 @@
 package uk.co.real_logic.sbe.ir.generated;
 
 import uk.co.real_logic.sbe.codec.java.*;
-import uk.co.real_logic.agrona.MutableDirectBuffer;
+import uk.co.real_logic.agrona.DirectBuffer;
 
-public class TokenCodec
+public class TokenCodecDecoder
 {
     public static final int BLOCK_LENGTH = 20;
     public static final int TEMPLATE_ID = 2;
-    public static final int SCHEMA_ID = 0;
+    public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
 
-    private final TokenCodec parentMessage = this;
-    private MutableDirectBuffer buffer;
-    private int offset;
-    private int limit;
-    private int actingBlockLength;
-    private int actingVersion;
+    private final TokenCodecDecoder parentMessage = this;
+    private DirectBuffer buffer;
+    protected int offset;
+    protected int limit;
+    protected int actingBlockLength;
+    protected int actingVersion;
 
     public int sbeBlockLength()
     {
@@ -48,19 +48,8 @@ public class TokenCodec
         return offset;
     }
 
-    public TokenCodec wrapForEncode(final MutableDirectBuffer buffer, final int offset)
-    {
-        this.buffer = buffer;
-        this.offset = offset;
-        this.actingBlockLength = BLOCK_LENGTH;
-        this.actingVersion = SCHEMA_VERSION;
-        limit(offset + actingBlockLength);
-
-        return this;
-    }
-
-    public TokenCodec wrapForDecode(
-        final MutableDirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
+    public TokenCodecDecoder wrap(
+        final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
     {
         this.buffer = buffer;
         this.offset = offset;
@@ -71,7 +60,7 @@ public class TokenCodec
         return this;
     }
 
-    public int size()
+    public int encodedLength()
     {
         return limit - offset;
     }
@@ -124,11 +113,6 @@ public class TokenCodec
         return CodecUtil.int32Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public TokenCodec tokenOffset(final int value)
-    {
-        CodecUtil.int32Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-        return this;
-    }
 
     public static int tokenSizeId()
     {
@@ -167,11 +151,6 @@ public class TokenCodec
         return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public TokenCodec tokenSize(final int value)
-    {
-        CodecUtil.int32Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-        return this;
-    }
 
     public static int fieldIdId()
     {
@@ -210,11 +189,6 @@ public class TokenCodec
         return CodecUtil.int32Get(buffer, offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public TokenCodec fieldId(final int value)
-    {
-        CodecUtil.int32Put(buffer, offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-        return this;
-    }
 
     public static int tokenVersionId()
     {
@@ -253,11 +227,6 @@ public class TokenCodec
         return CodecUtil.int32Get(buffer, offset + 12, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
-    public TokenCodec tokenVersion(final int value)
-    {
-        CodecUtil.int32Put(buffer, offset + 12, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-        return this;
-    }
 
     public static int signalId()
     {
@@ -281,11 +250,6 @@ public class TokenCodec
         return SignalCodec.get(CodecUtil.uint8Get(buffer, offset + 16));
     }
 
-    public TokenCodec signal(final SignalCodec value)
-    {
-        CodecUtil.uint8Put(buffer, offset + 16, value.value());
-        return this;
-    }
 
     public static int primitiveTypeId()
     {
@@ -309,11 +273,6 @@ public class TokenCodec
         return PrimitiveTypeCodec.get(CodecUtil.uint8Get(buffer, offset + 17));
     }
 
-    public TokenCodec primitiveType(final PrimitiveTypeCodec value)
-    {
-        CodecUtil.uint8Put(buffer, offset + 17, value.value());
-        return this;
-    }
 
     public static int byteOrderId()
     {
@@ -337,11 +296,6 @@ public class TokenCodec
         return ByteOrderCodec.get(CodecUtil.uint8Get(buffer, offset + 18));
     }
 
-    public TokenCodec byteOrder(final ByteOrderCodec value)
-    {
-        CodecUtil.uint8Put(buffer, offset + 18, value.value());
-        return this;
-    }
 
     public static int presenceId()
     {
@@ -365,11 +319,6 @@ public class TokenCodec
         return PresenceCodec.get(CodecUtil.uint8Get(buffer, offset + 19));
     }
 
-    public TokenCodec presence(final PresenceCodec value)
-    {
-        CodecUtil.uint8Put(buffer, offset + 19, value.value());
-        return this;
-    }
 
     public static int nameId()
     {
@@ -393,9 +342,31 @@ public class TokenCodec
         return "";
     }
 
-    public static int nameHeaderSize()
+    public static int nameHeaderLength()
     {
         return 1;
+    }
+
+    public int nameLength()
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+
+        return CodecUtil.uint8Get(buffer, limit);
+    }
+
+    public int getName(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
     }
 
     public int getName(final byte[] dst, final int dstOffset, final int length)
@@ -406,20 +377,32 @@ public class TokenCodec
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
         limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putName(final byte[] src, final int srcOffset, final int length)
+    public String name()
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        limit(limit + sizeOfLengthField + dataLength);
+        final byte[] tmp = new byte[dataLength];
+        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
-        return length;
+        final String value;
+        try
+        {
+            value = new String(tmp, "UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        return value;
     }
 
     public static int constValueId()
@@ -444,9 +427,31 @@ public class TokenCodec
         return "";
     }
 
-    public static int constValueHeaderSize()
+    public static int constValueHeaderLength()
     {
         return 1;
+    }
+
+    public int constValueLength()
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+
+        return CodecUtil.uint8Get(buffer, limit);
+    }
+
+    public int getConstValue(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
     }
 
     public int getConstValue(final byte[] dst, final int dstOffset, final int length)
@@ -457,20 +462,32 @@ public class TokenCodec
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
         limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putConstValue(final byte[] src, final int srcOffset, final int length)
+    public String constValue()
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        limit(limit + sizeOfLengthField + dataLength);
+        final byte[] tmp = new byte[dataLength];
+        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
-        return length;
+        final String value;
+        try
+        {
+            value = new String(tmp, "UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        return value;
     }
 
     public static int minValueId()
@@ -495,9 +512,31 @@ public class TokenCodec
         return "";
     }
 
-    public static int minValueHeaderSize()
+    public static int minValueHeaderLength()
     {
         return 1;
+    }
+
+    public int minValueLength()
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+
+        return CodecUtil.uint8Get(buffer, limit);
+    }
+
+    public int getMinValue(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
     }
 
     public int getMinValue(final byte[] dst, final int dstOffset, final int length)
@@ -508,20 +547,32 @@ public class TokenCodec
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
         limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putMinValue(final byte[] src, final int srcOffset, final int length)
+    public String minValue()
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        limit(limit + sizeOfLengthField + dataLength);
+        final byte[] tmp = new byte[dataLength];
+        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
-        return length;
+        final String value;
+        try
+        {
+            value = new String(tmp, "UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        return value;
     }
 
     public static int maxValueId()
@@ -546,9 +597,31 @@ public class TokenCodec
         return "";
     }
 
-    public static int maxValueHeaderSize()
+    public static int maxValueHeaderLength()
     {
         return 1;
+    }
+
+    public int maxValueLength()
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+
+        return CodecUtil.uint8Get(buffer, limit);
+    }
+
+    public int getMaxValue(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
     }
 
     public int getMaxValue(final byte[] dst, final int dstOffset, final int length)
@@ -559,20 +632,32 @@ public class TokenCodec
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
         limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putMaxValue(final byte[] src, final int srcOffset, final int length)
+    public String maxValue()
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        limit(limit + sizeOfLengthField + dataLength);
+        final byte[] tmp = new byte[dataLength];
+        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
-        return length;
+        final String value;
+        try
+        {
+            value = new String(tmp, "UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        return value;
     }
 
     public static int nullValueId()
@@ -597,9 +682,31 @@ public class TokenCodec
         return "";
     }
 
-    public static int nullValueHeaderSize()
+    public static int nullValueHeaderLength()
     {
         return 1;
+    }
+
+    public int nullValueLength()
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+
+        return CodecUtil.uint8Get(buffer, limit);
+    }
+
+    public int getNullValue(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
     }
 
     public int getNullValue(final byte[] dst, final int dstOffset, final int length)
@@ -610,20 +717,32 @@ public class TokenCodec
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
         limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putNullValue(final byte[] src, final int srcOffset, final int length)
+    public String nullValue()
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        limit(limit + sizeOfLengthField + dataLength);
+        final byte[] tmp = new byte[dataLength];
+        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
-        return length;
+        final String value;
+        try
+        {
+            value = new String(tmp, "UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        return value;
     }
 
     public static int characterEncodingId()
@@ -648,9 +767,31 @@ public class TokenCodec
         return "";
     }
 
-    public static int characterEncodingHeaderSize()
+    public static int characterEncodingHeaderLength()
     {
         return 1;
+    }
+
+    public int characterEncodingLength()
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+
+        return CodecUtil.uint8Get(buffer, limit);
+    }
+
+    public int getCharacterEncoding(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
     }
 
     public int getCharacterEncoding(final byte[] dst, final int dstOffset, final int length)
@@ -661,20 +802,32 @@ public class TokenCodec
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
         limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putCharacterEncoding(final byte[] src, final int srcOffset, final int length)
+    public String characterEncoding()
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        limit(limit + sizeOfLengthField + dataLength);
+        final byte[] tmp = new byte[dataLength];
+        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
-        return length;
+        final String value;
+        try
+        {
+            value = new String(tmp, "UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        return value;
     }
 
     public static int epochId()
@@ -699,9 +852,31 @@ public class TokenCodec
         return "";
     }
 
-    public static int epochHeaderSize()
+    public static int epochHeaderLength()
     {
         return 1;
+    }
+
+    public int epochLength()
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+
+        return CodecUtil.uint8Get(buffer, limit);
+    }
+
+    public int getEpoch(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
     }
 
     public int getEpoch(final byte[] dst, final int dstOffset, final int length)
@@ -712,20 +887,32 @@ public class TokenCodec
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
         limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putEpoch(final byte[] src, final int srcOffset, final int length)
+    public String epoch()
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        limit(limit + sizeOfLengthField + dataLength);
+        final byte[] tmp = new byte[dataLength];
+        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
-        return length;
+        final String value;
+        try
+        {
+            value = new String(tmp, "UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        return value;
     }
 
     public static int timeUnitId()
@@ -750,9 +937,31 @@ public class TokenCodec
         return "";
     }
 
-    public static int timeUnitHeaderSize()
+    public static int timeUnitHeaderLength()
     {
         return 1;
+    }
+
+    public int timeUnitLength()
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+
+        return CodecUtil.uint8Get(buffer, limit);
+    }
+
+    public int getTimeUnit(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
     }
 
     public int getTimeUnit(final byte[] dst, final int dstOffset, final int length)
@@ -763,20 +972,32 @@ public class TokenCodec
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
         limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putTimeUnit(final byte[] src, final int srcOffset, final int length)
+    public String timeUnit()
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        limit(limit + sizeOfLengthField + dataLength);
+        final byte[] tmp = new byte[dataLength];
+        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
-        return length;
+        final String value;
+        try
+        {
+            value = new String(tmp, "UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        return value;
     }
 
     public static int semanticTypeId()
@@ -801,9 +1022,31 @@ public class TokenCodec
         return "";
     }
 
-    public static int semanticTypeHeaderSize()
+    public static int semanticTypeHeaderLength()
     {
         return 1;
+    }
+
+    public int semanticTypeLength()
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+
+        return CodecUtil.uint8Get(buffer, limit);
+    }
+
+    public int getSemanticType(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int bytesCopied = Math.min(length, dataLength);
+        limit(limit + sizeOfLengthField + dataLength);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
     }
 
     public int getSemanticType(final byte[] dst, final int dstOffset, final int length)
@@ -814,19 +1057,31 @@ public class TokenCodec
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
         limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int putSemanticType(final byte[] src, final int srcOffset, final int length)
+    public String semanticType()
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.checkLimit(limit + sizeOfLengthField);
+        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        limit(limit + sizeOfLengthField + dataLength);
+        final byte[] tmp = new byte[dataLength];
+        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
-        return length;
+        final String value;
+        try
+        {
+            value = new String(tmp, "UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        return value;
     }
 }

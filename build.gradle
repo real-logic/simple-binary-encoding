@@ -136,6 +136,31 @@ task runJavaExamples {
     dependsOn 'runExampleUsingGeneratedStub', 'runExampleUsingGeneratedStubExtension', 'runOtfExample'
 }
 
+task (generateJavaIrCodecs, type:JavaExec) {
+    description = "Generate Java IR Codecs"
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperties('sbe.output.dir': 'main/java',
+        'sbe.target.language': 'Java',
+        'sbe.validation.xsd': 'main/resources/fpl/SimpleBinary1-0.xsd')
+    args 'main/resources/sbe-ir.xml'
+}
+
+task (generateCpp98IrCodecs, type:JavaExec) {
+    description = "Generate C++ IR Codecs"
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperties('sbe.output.dir': 'main/cpp',
+            'sbe.target.language': 'Cpp98',
+            'sbe.validation.xsd': 'main/resources/fpl/SimpleBinary1-0.xsd')
+    args 'main/resources/sbe-ir.xml'
+}
+
+task generateIrCodecs {
+    description "Generate Java and C++ IR Codecs"
+    dependsOn 'generateJavaIrCodecs', 'generateCpp98IrCodecs'
+}
+
 checkstyle {
     configFile = new File(rootDir, 'config/checkstyle.xml')
     toolVersion = 6.7
@@ -168,7 +193,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 signing {
-    required { isReleaseVersion && gradle.taskGrah.hasTask("uploadArchives") }
+    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
 }
 

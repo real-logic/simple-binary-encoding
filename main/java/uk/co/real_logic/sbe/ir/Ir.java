@@ -86,7 +86,7 @@ public class Ir
 
         captureTypes(messageTokens);
 
-        messagesByIdMap.put(Long.valueOf(messageId), Collections.unmodifiableList(new ArrayList<>(messageTokens)));
+        messagesByIdMap.put(messageId, Collections.unmodifiableList(new ArrayList<>(messageTokens)));
     }
 
     /**
@@ -97,7 +97,7 @@ public class Ir
      */
     public List<Token> getMessage(final long messageId)
     {
-        return messagesByIdMap.get(Long.valueOf(messageId));
+        return messagesByIdMap.get(messageId);
     }
 
     /**

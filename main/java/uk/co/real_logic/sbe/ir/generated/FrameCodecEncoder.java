@@ -4,19 +4,19 @@ package uk.co.real_logic.sbe.ir.generated;
 import uk.co.real_logic.sbe.codec.java.*;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 
-public class FrameCodec
+public class FrameCodecEncoder
 {
     public static final int BLOCK_LENGTH = 12;
     public static final int TEMPLATE_ID = 1;
-    public static final int SCHEMA_ID = 0;
+    public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
 
-    private final FrameCodec parentMessage = this;
+    private final FrameCodecEncoder parentMessage = this;
     private MutableDirectBuffer buffer;
-    private int offset;
-    private int limit;
-    private int actingBlockLength;
-    private int actingVersion;
+    protected int offset;
+    protected int limit;
+    protected int actingBlockLength;
+    protected int actingVersion;
 
     public int sbeBlockLength()
     {
@@ -48,30 +48,15 @@ public class FrameCodec
         return offset;
     }
 
-    public FrameCodec wrapForEncode(final MutableDirectBuffer buffer, final int offset)
+    public FrameCodecEncoder wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
         this.offset = offset;
-        this.actingBlockLength = BLOCK_LENGTH;
-        this.actingVersion = SCHEMA_VERSION;
-        limit(offset + actingBlockLength);
-
+        limit(offset + BLOCK_LENGTH);
         return this;
     }
 
-    public FrameCodec wrapForDecode(
-        final MutableDirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
-    {
-        this.buffer = buffer;
-        this.offset = offset;
-        this.actingBlockLength = actingBlockLength;
-        this.actingVersion = actingVersion;
-        limit(offset + actingBlockLength);
-
-        return this;
-    }
-
-    public int size()
+    public int encodedLength()
     {
         return limit - offset;
     }
@@ -85,23 +70,6 @@ public class FrameCodec
     {
         buffer.checkLimit(limit);
         this.limit = limit;
-    }
-
-    public static int irIdId()
-    {
-        return 1;
-    }
-
-    public static String irIdMetaAttribute(final MetaAttribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
-        }
-
-        return "";
     }
 
     public static int irIdNullValue()
@@ -118,33 +86,10 @@ public class FrameCodec
     {
         return 2147483647;
     }
-
-    public int irId()
-    {
-        return CodecUtil.int32Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
-    }
-
-    public FrameCodec irId(final int value)
+    public FrameCodecEncoder irId(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
-    }
-
-    public static int irVersionId()
-    {
-        return 2;
-    }
-
-    public static String irVersionMetaAttribute(final MetaAttribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
-        }
-
-        return "";
     }
 
     public static int irVersionNullValue()
@@ -161,33 +106,10 @@ public class FrameCodec
     {
         return 2147483647;
     }
-
-    public int irVersion()
-    {
-        return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
-    }
-
-    public FrameCodec irVersion(final int value)
+    public FrameCodecEncoder irVersion(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
-    }
-
-    public static int schemaVersionId()
-    {
-        return 3;
-    }
-
-    public static String schemaVersionMetaAttribute(final MetaAttribute metaAttribute)
-    {
-        switch (metaAttribute)
-        {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
-        }
-
-        return "";
     }
 
     public static int schemaVersionNullValue()
@@ -204,13 +126,7 @@ public class FrameCodec
     {
         return 2147483647;
     }
-
-    public int schemaVersion()
-    {
-        return CodecUtil.int32Get(buffer, offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
-    }
-
-    public FrameCodec schemaVersion(final int value)
+    public FrameCodecEncoder schemaVersion(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
@@ -238,22 +154,15 @@ public class FrameCodec
         return "";
     }
 
-    public static int packageNameHeaderSize()
-    {
-        return 1;
-    }
-
-    public int getPackageName(final byte[] dst, final int dstOffset, final int length)
+    public int putPackageName(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
-        return bytesCopied;
+        return length;
     }
 
     public int putPackageName(final byte[] src, final int srcOffset, final int length)
@@ -262,9 +171,29 @@ public class FrameCodec
         final int limit = limit();
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
+    }
+
+    public void packageName(final String value)
+    {
+        final byte[] bytes;
+        try
+        {
+            bytes = value.getBytes("UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        final int length = bytes.length;
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
     }
 
     public static int namespaceNameId()
@@ -289,22 +218,15 @@ public class FrameCodec
         return "";
     }
 
-    public static int namespaceNameHeaderSize()
-    {
-        return 1;
-    }
-
-    public int getNamespaceName(final byte[] dst, final int dstOffset, final int length)
+    public int putNamespaceName(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
-        return bytesCopied;
+        return length;
     }
 
     public int putNamespaceName(final byte[] src, final int srcOffset, final int length)
@@ -313,9 +235,29 @@ public class FrameCodec
         final int limit = limit();
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
+    }
+
+    public void namespaceName(final String value)
+    {
+        final byte[] bytes;
+        try
+        {
+            bytes = value.getBytes("UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        final int length = bytes.length;
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
     }
 
     public static int semanticVersionId()
@@ -340,22 +282,15 @@ public class FrameCodec
         return "";
     }
 
-    public static int semanticVersionHeaderSize()
-    {
-        return 1;
-    }
-
-    public int getSemanticVersion(final byte[] dst, final int dstOffset, final int length)
+    public int putSemanticVersion(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
         final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
-        CodecUtil.int8sGet(buffer, limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
-        return bytesCopied;
+        return length;
     }
 
     public int putSemanticVersion(final byte[] src, final int srcOffset, final int length)
@@ -364,8 +299,28 @@ public class FrameCodec
         final int limit = limit();
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
-        CodecUtil.int8sPut(buffer, limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
+    }
+
+    public void semanticVersion(final String value)
+    {
+        final byte[] bytes;
+        try
+        {
+            bytes = value.getBytes("UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        final int length = bytes.length;
+        final int sizeOfLengthField = 1;
+        final int limit = limit();
+        limit(limit + sizeOfLengthField + length);
+        CodecUtil.uint8Put(buffer, limit, (short)length);
+        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
     }
 }

@@ -2,25 +2,23 @@
 package uk.co.real_logic.sbe.ir.generated;
 
 import uk.co.real_logic.sbe.codec.java.*;
-import uk.co.real_logic.agrona.MutableDirectBuffer;
+import uk.co.real_logic.agrona.DirectBuffer;
 
-public class VarDataEncoding
+public class VarDataEncodingDecoder
 {
-    private MutableDirectBuffer buffer;
+    public static final int ENCODED_LENGTH = -1;
+    private DirectBuffer buffer;
     private int offset;
-    private int actingVersion;
-
-    public VarDataEncoding wrap(final MutableDirectBuffer buffer, final int offset, final int actingVersion)
+    public VarDataEncodingDecoder wrap(final DirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
         this.offset = offset;
-        this.actingVersion = actingVersion;
         return this;
     }
 
-    public int size()
+    public int encodedLength()
     {
-        return -1;
+        return ENCODED_LENGTH;
     }
 
     public static short lengthNullValue()
@@ -43,11 +41,6 @@ public class VarDataEncoding
         return CodecUtil.uint8Get(buffer, offset + 0);
     }
 
-    public VarDataEncoding length(final short value)
-    {
-        CodecUtil.uint8Put(buffer, offset + 0, value);
-        return this;
-    }
 
     public static short varDataNullValue()
     {

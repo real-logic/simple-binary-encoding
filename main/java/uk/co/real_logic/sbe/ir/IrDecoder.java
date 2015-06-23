@@ -18,8 +18,8 @@ package uk.co.real_logic.sbe.ir;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.ir.generated.FrameCodec;
-import uk.co.real_logic.sbe.ir.generated.TokenCodec;
+import uk.co.real_logic.sbe.ir.generated.FrameCodecDecoder;
+import uk.co.real_logic.sbe.ir.generated.TokenCodecDecoder;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -39,8 +39,8 @@ public class IrDecoder implements Closeable
 
     private final FileChannel channel;
     private final MutableDirectBuffer directBuffer;
-    private final FrameCodec frameCodec = new FrameCodec();
-    private final TokenCodec tokenCodec = new TokenCodec();
+    private final FrameCodecDecoder frameDecoder = new FrameCodecDecoder();
+    private final TokenCodecDecoder tokenDecoder = new TokenCodecDecoder();
     private int offset;
     private final long size;
     private String irPackageName = null;
@@ -51,7 +51,6 @@ public class IrDecoder implements Closeable
     private int irVersion = 0;
     private final byte[] valArray = new byte[CAPACITY];
     private final MutableDirectBuffer valBuffer = new UnsafeBuffer(valArray);
-    private final byte[] buffer = new byte[1024];
 
     public IrDecoder(final String fileName)
         throws IOException
@@ -71,8 +70,7 @@ public class IrDecoder implements Closeable
         offset = 0;
     }
 
-    public void close()
-        throws IOException
+    public void close() throws IOException
     {
         if (channel != null)
         {
@@ -80,8 +78,7 @@ public class IrDecoder implements Closeable
         }
     }
 
-    public Ir decode()
-        throws IOException
+    public Ir decode() throws IOException
     {
         decodeFrame();
 
@@ -147,86 +144,76 @@ public class IrDecoder implements Closeable
         return index;
     }
 
-    private void decodeFrame()
-        throws UnsupportedEncodingException
+    private void decodeFrame() throws UnsupportedEncodingException
     {
-        frameCodec.wrapForDecode(directBuffer, offset, frameCodec.sbeBlockLength(), 0);
+        frameDecoder.wrap(directBuffer, offset, frameDecoder.sbeBlockLength(), 0);
 
-        irId = frameCodec.irId();
+        irId = frameDecoder.irId();
 
-        if (frameCodec.irVersion() != 0)
+        if (frameDecoder.irVersion() != 0)
         {
-            throw new IllegalStateException("Unknown SBE version: " + frameCodec.irVersion());
+            throw new IllegalStateException("Unknown SBE version: " + frameDecoder.irVersion());
         }
 
-        irVersion = frameCodec.schemaVersion();
+        irVersion = frameDecoder.schemaVersion();
+        irPackageName = frameDecoder.packageName();
 
-        irPackageName = new String(
-            buffer, 0, frameCodec.getPackageName(buffer, 0, buffer.length), FrameCodec.packageNameCharacterEncoding());
-
-        irNamespaceName = new String(
-            buffer, 0, frameCodec.getNamespaceName(buffer, 0, buffer.length), FrameCodec.namespaceNameCharacterEncoding());
+        irNamespaceName = frameDecoder.namespaceName();
         if (irNamespaceName.isEmpty())
         {
             irNamespaceName = null;
         }
 
-        semanticVersion = new String(
-            buffer, 0, frameCodec.getSemanticVersion(buffer, 0, buffer.length), FrameCodec.semanticVersionCharacterEncoding());
+        semanticVersion = frameDecoder.semanticVersion();
         if (semanticVersion.isEmpty())
         {
             semanticVersion = null;
         }
 
-        offset += frameCodec.size();
+        offset += frameDecoder.encodedLength();
     }
 
-    private Token decodeToken()
-        throws UnsupportedEncodingException
+    private Token decodeToken() throws UnsupportedEncodingException
     {
         final Token.Builder tokenBuilder = new Token.Builder();
         final Encoding.Builder encBuilder = new Encoding.Builder();
 
-        tokenCodec.wrapForDecode(directBuffer, offset, tokenCodec.sbeBlockLength(), 0);
+        tokenDecoder.wrap(directBuffer, offset, tokenDecoder.sbeBlockLength(), 0);
 
-        tokenBuilder.offset(tokenCodec.tokenOffset())
-                    .size(tokenCodec.tokenSize())
-                    .id(tokenCodec.fieldId())
-                    .version(tokenCodec.tokenVersion())
-                    .signal(mapSignal(tokenCodec.signal()));
+        tokenBuilder
+            .offset(tokenDecoder.tokenOffset())
+            .size(tokenDecoder.tokenSize())
+            .id(tokenDecoder.fieldId())
+            .version(tokenDecoder.tokenVersion())
+            .signal(mapSignal(tokenDecoder.signal()));
 
-        final PrimitiveType type = mapPrimitiveType(tokenCodec.primitiveType());
+        final PrimitiveType type = mapPrimitiveType(tokenDecoder.primitiveType());
 
-        encBuilder.primitiveType(mapPrimitiveType(tokenCodec.primitiveType()))
-                  .byteOrder(mapByteOrder(tokenCodec.byteOrder()))
-                  .presence(mapPresence(tokenCodec.presence()));
+        encBuilder
+            .primitiveType(mapPrimitiveType(tokenDecoder.primitiveType()))
+            .byteOrder(mapByteOrder(tokenDecoder.byteOrder()))
+            .presence(mapPresence(tokenDecoder.presence()));
 
-        tokenBuilder.name(new String(
-            buffer, 0, tokenCodec.getName(buffer, 0, buffer.length), TokenCodec.nameCharacterEncoding()));
+        tokenBuilder.name(tokenDecoder.name());
 
-        encBuilder.constValue(get(valBuffer, type, tokenCodec.getConstValue(valArray, 0, valArray.length)));
-        encBuilder.minValue(get(valBuffer, type, tokenCodec.getMinValue(valArray, 0, valArray.length)));
-        encBuilder.maxValue(get(valBuffer, type, tokenCodec.getMaxValue(valArray, 0, valArray.length)));
-        encBuilder.nullValue(get(valBuffer, type, tokenCodec.getNullValue(valArray, 0, valArray.length)));
+        encBuilder.constValue(get(valBuffer, type, tokenDecoder.getConstValue(valArray, 0, valArray.length)));
+        encBuilder.minValue(get(valBuffer, type, tokenDecoder.getMinValue(valArray, 0, valArray.length)));
+        encBuilder.maxValue(get(valBuffer, type, tokenDecoder.getMaxValue(valArray, 0, valArray.length)));
+        encBuilder.nullValue(get(valBuffer, type, tokenDecoder.getNullValue(valArray, 0, valArray.length)));
 
-        final String characterEncoding = new String(
-            buffer, 0, tokenCodec.getCharacterEncoding(buffer, 0, buffer.length),
-            TokenCodec.characterEncodingCharacterEncoding());
+        final String characterEncoding = tokenDecoder.characterEncoding();
         encBuilder.characterEncoding(characterEncoding.isEmpty() ? null : characterEncoding);
 
-        final String epoch = new String(
-            buffer, 0, tokenCodec.getEpoch(buffer, 0, buffer.length), TokenCodec.epochCharacterEncoding());
+        final String epoch = tokenDecoder.epoch();
         encBuilder.epoch(epoch.isEmpty() ? null : epoch);
 
-        final String timeUnit = new String(
-            buffer, 0, tokenCodec.getTimeUnit(buffer, 0, buffer.length), TokenCodec.timeUnitCharacterEncoding());
+        final String timeUnit = tokenDecoder.timeUnit();
         encBuilder.timeUnit(timeUnit.isEmpty() ? null : timeUnit);
 
-        final String semanticType = new String(
-            buffer, 0, tokenCodec.getSemanticType(buffer, 0, buffer.length), TokenCodec.semanticTypeCharacterEncoding());
+        final String semanticType = tokenDecoder.semanticType();
         encBuilder.semanticType(semanticType.isEmpty() ? null : semanticType);
 
-        offset += tokenCodec.size();
+        offset += tokenDecoder.encodedLength();
 
         return tokenBuilder.encoding(encBuilder.build()).build();
     }

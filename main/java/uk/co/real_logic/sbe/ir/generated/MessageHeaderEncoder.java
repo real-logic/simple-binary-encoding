@@ -4,23 +4,21 @@ package uk.co.real_logic.sbe.ir.generated;
 import uk.co.real_logic.sbe.codec.java.*;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 
-public class MessageHeader
+public class MessageHeaderEncoder
 {
+    public static final int ENCODED_LENGTH = 8;
     private MutableDirectBuffer buffer;
     private int offset;
-    private int actingVersion;
-
-    public MessageHeader wrap(final MutableDirectBuffer buffer, final int offset, final int actingVersion)
+    public MessageHeaderEncoder wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
         this.offset = offset;
-        this.actingVersion = actingVersion;
         return this;
     }
 
-    public int size()
+    public int encodedLength()
     {
-        return 8;
+        return ENCODED_LENGTH;
     }
 
     public static int blockLengthNullValue()
@@ -37,13 +35,7 @@ public class MessageHeader
     {
         return 65534;
     }
-
-    public int blockLength()
-    {
-        return CodecUtil.uint16Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
-    }
-
-    public MessageHeader blockLength(final int value)
+    public MessageHeaderEncoder blockLength(final int value)
     {
         CodecUtil.uint16Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
@@ -63,13 +55,7 @@ public class MessageHeader
     {
         return 65534;
     }
-
-    public int templateId()
-    {
-        return CodecUtil.uint16Get(buffer, offset + 2, java.nio.ByteOrder.LITTLE_ENDIAN);
-    }
-
-    public MessageHeader templateId(final int value)
+    public MessageHeaderEncoder templateId(final int value)
     {
         CodecUtil.uint16Put(buffer, offset + 2, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
@@ -89,13 +75,7 @@ public class MessageHeader
     {
         return 65534;
     }
-
-    public int schemaId()
-    {
-        return CodecUtil.uint16Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
-    }
-
-    public MessageHeader schemaId(final int value)
+    public MessageHeaderEncoder schemaId(final int value)
     {
         CodecUtil.uint16Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
@@ -115,13 +95,7 @@ public class MessageHeader
     {
         return 65534;
     }
-
-    public int version()
-    {
-        return CodecUtil.uint16Get(buffer, offset + 6, java.nio.ByteOrder.LITTLE_ENDIAN);
-    }
-
-    public MessageHeader version(final int value)
+    public MessageHeaderEncoder version(final int value)
     {
         CodecUtil.uint16Put(buffer, offset + 6, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;

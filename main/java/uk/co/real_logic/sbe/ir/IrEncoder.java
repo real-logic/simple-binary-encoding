@@ -18,8 +18,8 @@ package uk.co.real_logic.sbe.ir;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.ir.generated.FrameCodec;
-import uk.co.real_logic.sbe.ir.generated.TokenCodec;
+import uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder;
+import uk.co.real_logic.sbe.ir.generated.TokenCodecEncoder;
 import uk.co.real_logic.agrona.Verify;
 
 import java.io.*;
@@ -28,6 +28,10 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 
 import static uk.co.real_logic.sbe.ir.IrUtil.*;
+import static uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder.namespaceNameCharacterEncoding;
+import static uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder.packageNameCharacterEncoding;
+import static uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder.semanticVersionCharacterEncoding;
+import static uk.co.real_logic.sbe.ir.generated.TokenCodecEncoder.*;
 
 public class IrEncoder implements Closeable
 {
@@ -38,8 +42,8 @@ public class IrEncoder implements Closeable
     private final ByteBuffer buffer;
     private final MutableDirectBuffer directBuffer;
     private final Ir ir;
-    private final FrameCodec frameCodec = new FrameCodec();
-    private final TokenCodec tokenCodec = new TokenCodec();
+    private final FrameCodecEncoder frameEncoder = new FrameCodecEncoder();
+    private final TokenCodecEncoder tokenEncoder = new TokenCodecEncoder();
     private final byte[] valArray = new byte[CAPACITY];
     private final UnsafeBuffer valBuffer = new UnsafeBuffer(valArray);
     private int totalSize = 0;
@@ -63,8 +67,7 @@ public class IrEncoder implements Closeable
         this.ir = ir;
     }
 
-    public void close()
-        throws IOException
+    public void close() throws IOException
     {
         if (channel != null)
         {
@@ -72,8 +75,7 @@ public class IrEncoder implements Closeable
         }
     }
 
-    public int encode()
-        throws IOException
+    public int encode() throws IOException
     {
         Verify.notNull(ir, "ir");
 
@@ -89,8 +91,7 @@ public class IrEncoder implements Closeable
         return totalSize;
     }
 
-    private void encodeTokenList(final List<Token> tokenList)
-        throws IOException
+    private void encodeTokenList(final List<Token> tokenList) throws IOException
     {
         for (final Token token : tokenList)
         {
@@ -98,8 +99,7 @@ public class IrEncoder implements Closeable
         }
     }
 
-    private void write(final ByteBuffer buffer, final int size)
-        throws IOException
+    private void write(final ByteBuffer buffer, final int size) throws IOException
     {
         buffer.position(0);
         buffer.limit(size);
@@ -119,21 +119,22 @@ public class IrEncoder implements Closeable
     private int encodeFrame()
         throws UnsupportedEncodingException
     {
-        frameCodec.wrapForEncode(directBuffer, 0)
-                  .irId(ir.id())
-                  .irVersion(0)
-                  .schemaVersion(ir.version());
+        frameEncoder
+            .wrap(directBuffer, 0)
+            .irId(ir.id())
+            .irVersion(0)
+            .schemaVersion(ir.version());
 
-        final byte[] packageBytes = ir.packageName().getBytes(FrameCodec.packageNameCharacterEncoding());
-        frameCodec.putPackageName(packageBytes, 0, packageBytes.length);
+        final byte[] packageBytes = ir.packageName().getBytes(packageNameCharacterEncoding());
+        frameEncoder.putPackageName(packageBytes, 0, packageBytes.length);
 
-        final byte[] namespaceBytes = getBytes(ir.namespaceName(), FrameCodec.namespaceNameCharacterEncoding());
-        frameCodec.putNamespaceName(namespaceBytes, 0, namespaceBytes.length);
+        final byte[] namespaceBytes = getBytes(ir.namespaceName(), namespaceNameCharacterEncoding());
+        frameEncoder.putNamespaceName(namespaceBytes, 0, namespaceBytes.length);
 
-        final byte[] semanticVersionBytes = getBytes(ir.semanticVersion(), FrameCodec.semanticVersionCharacterEncoding());
-        frameCodec.putSemanticVersion(semanticVersionBytes, 0, semanticVersionBytes.length);
+        final byte[] semanticVersionBytes = getBytes(ir.semanticVersion(), semanticVersionCharacterEncoding());
+        frameEncoder.putSemanticVersion(semanticVersionBytes, 0, semanticVersionBytes.length);
 
-        return frameCodec.size();
+        return frameEncoder.encodedLength();
     }
 
     private int encodeToken(final Token token)
@@ -142,36 +143,37 @@ public class IrEncoder implements Closeable
         final Encoding encoding = token.encoding();
         final PrimitiveType type = encoding.primitiveType();
 
-        tokenCodec.wrapForEncode(directBuffer, 0)
-                  .tokenOffset(token.offset())
-                  .tokenSize(token.encodedLength())
-                  .fieldId(token.id())
-                  .tokenVersion(token.version())
-                  .signal(mapSignal(token.signal()))
-                  .primitiveType(mapPrimitiveType(type))
-                  .byteOrder(mapByteOrder(encoding.byteOrder()))
-                  .presence(mapPresence(encoding.presence()));
+        tokenEncoder
+            .wrap(directBuffer, 0)
+            .tokenOffset(token.offset())
+            .tokenSize(token.encodedLength())
+            .fieldId(token.id())
+            .tokenVersion(token.version())
+            .signal(mapSignal(token.signal()))
+            .primitiveType(mapPrimitiveType(type))
+            .byteOrder(mapByteOrder(encoding.byteOrder()))
+            .presence(mapPresence(encoding.presence()));
 
-        final byte[] nameBytes = token.name().getBytes(TokenCodec.nameCharacterEncoding());
-        tokenCodec.putName(nameBytes, 0, nameBytes.length);
+        final byte[] nameBytes = token.name().getBytes(TokenCodecEncoder.nameCharacterEncoding());
+        tokenEncoder.putName(nameBytes, 0, nameBytes.length);
 
-        tokenCodec.putConstValue(valArray, 0, put(valBuffer, encoding.constValue(), type));
-        tokenCodec.putMinValue(valArray, 0, put(valBuffer, encoding.minValue(), type));
-        tokenCodec.putMaxValue(valArray, 0, put(valBuffer, encoding.maxValue(), type));
-        tokenCodec.putNullValue(valArray, 0, put(valBuffer, encoding.nullValue(), type));
+        tokenEncoder.putConstValue(valArray, 0, put(valBuffer, encoding.constValue(), type));
+        tokenEncoder.putMinValue(valArray, 0, put(valBuffer, encoding.minValue(), type));
+        tokenEncoder.putMaxValue(valArray, 0, put(valBuffer, encoding.maxValue(), type));
+        tokenEncoder.putNullValue(valArray, 0, put(valBuffer, encoding.nullValue(), type));
 
-        final byte[] charEncodingBytes = getBytes(encoding.characterEncoding(), TokenCodec.characterEncodingCharacterEncoding());
-        tokenCodec.putCharacterEncoding(charEncodingBytes, 0, charEncodingBytes.length);
+        final byte[] charEncodingBytes = getBytes(encoding.characterEncoding(), characterEncodingCharacterEncoding());
+        tokenEncoder.putCharacterEncoding(charEncodingBytes, 0, charEncodingBytes.length);
 
-        final byte[] epochBytes = getBytes(encoding.epoch(), TokenCodec.epochCharacterEncoding());
-        tokenCodec.putEpoch(epochBytes, 0, epochBytes.length);
+        final byte[] epochBytes = getBytes(encoding.epoch(), epochCharacterEncoding());
+        tokenEncoder.putEpoch(epochBytes, 0, epochBytes.length);
 
-        final byte[] timeUnitBytes = getBytes(encoding.timeUnit(), TokenCodec.timeUnitCharacterEncoding());
-        tokenCodec.putTimeUnit(timeUnitBytes, 0, timeUnitBytes.length);
+        final byte[] timeUnitBytes = getBytes(encoding.timeUnit(), timeUnitCharacterEncoding());
+        tokenEncoder.putTimeUnit(timeUnitBytes, 0, timeUnitBytes.length);
 
-        final byte[] semanticTypeBytes = getBytes(encoding.semanticType(), TokenCodec.semanticTypeCharacterEncoding());
-        tokenCodec.putSemanticType(semanticTypeBytes, 0, semanticTypeBytes.length);
+        final byte[] semanticTypeBytes = getBytes(encoding.semanticType(), semanticTypeCharacterEncoding());
+        tokenEncoder.putSemanticType(semanticTypeBytes, 0, semanticTypeBytes.length);
 
-        return tokenCodec.size();
+        return tokenEncoder.encodedLength();
     }
 }

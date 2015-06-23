@@ -55,7 +55,7 @@ public:
 
     static const sbe_uint16_t sbeSchemaId(void)
     {
-        return (sbe_uint16_t)0;
+        return (sbe_uint16_t)1;
     }
 
     static const sbe_uint16_t sbeSchemaVersion(void)
@@ -341,9 +341,9 @@ public:
 
     int getPackageName(char *dst, const int length)
     {
-        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        position(lengthPosition + sizeOfLengthField);
+        position(lengthPosition + lengthOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
         sbe_uint64_t pos = position();
@@ -354,10 +354,10 @@ public:
 
     int putPackageName(const char *src, const int length)
     {
-        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        position(lengthPosition + sizeOfLengthField);
+        position(lengthPosition + lengthOfLengthField);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
@@ -416,9 +416,9 @@ public:
 
     int getNamespaceName(char *dst, const int length)
     {
-        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        position(lengthPosition + sizeOfLengthField);
+        position(lengthPosition + lengthOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
         sbe_uint64_t pos = position();
@@ -429,10 +429,10 @@ public:
 
     int putNamespaceName(const char *src, const int length)
     {
-        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        position(lengthPosition + sizeOfLengthField);
+        position(lengthPosition + lengthOfLengthField);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
@@ -491,9 +491,9 @@ public:
 
     int getSemanticVersion(char *dst, const int length)
     {
-        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        position(lengthPosition + sizeOfLengthField);
+        position(lengthPosition + lengthOfLengthField);
         sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
         int bytesToCopy = (length < dataLength) ? length : dataLength;
         sbe_uint64_t pos = position();
@@ -504,10 +504,10 @@ public:
 
     int putSemanticVersion(const char *src, const int length)
     {
-        sbe_uint64_t sizeOfLengthField = 1;
+        sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
         *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        position(lengthPosition + sizeOfLengthField);
+        position(lengthPosition + lengthOfLengthField);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);

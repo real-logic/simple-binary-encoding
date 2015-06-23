@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<messageSchema package="uk.co.real_logic.sbe.ir.generated"
-               id="0"
-               version="0"
-               byteOrder="littleEndian"
-               description="SBE IR Serialization">
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+                   package="uk.co.real_logic.sbe.ir.generated"
+                   id="1"
+                   version="0"
+                   byteOrder="littleEndian"
+                   description="SBE IR Serialization">
     <types>
         <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
@@ -63,16 +64,16 @@
         </enum>
     </types>
 
-    <message name="FrameCodec" id="1" description="Frame Header for start of encoding IR">
+    <sbe:message name="FrameCodec" id="1" description="Frame Header for start of encoding IR">
         <field name="irId" id="1" type="int32"/>
         <field name="irVersion" id="2" type="int32"/>
         <field name="schemaVersion" id="3" type="int32"/>
         <data name="packageName" id="4" type="varDataEncoding"/>
         <data name="namespaceName" id="5" type="varDataEncoding"/>
         <data name="semanticVersion" id="6" type="varDataEncoding"/>
-    </message>
+    </sbe:message>
 
-    <message name="TokenCodec" id="2" description="Codec for an IR Token">
+    <sbe:message name="TokenCodec" id="2" description="Codec for an IR Token">
         <field name="tokenOffset" id="11" type="int32"/>
         <field name="tokenSize" id="12" type="int32"/>
         <field name="fieldId" id="13" type="int32"/>
@@ -90,5 +91,5 @@
         <data name="epoch" id="25" type="varDataEncoding"/>
         <data name="timeUnit" id="26" type="varDataEncoding"/>
         <data name="semanticType" id="27" type="varDataEncoding"/>
-    </message>
-</messageSchema>
+    </sbe:message>
+</sbe:messageSchema>

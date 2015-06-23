@@ -75,13 +75,12 @@ public final class GenerationUtil
     }
 
     public static CharSequence concatTokens(
-        final List<Token> tokens,
-        final Signal signal,
-        final Function<Token, CharSequence> mapper)
+        final List<Token> tokens, final Signal signal, final Function<Token, CharSequence> mapper)
     {
-        return tokens.stream()
-                     .filter(token -> token.signal() == signal)
-                     .map(mapper)
-                     .collect(joining());
+        return tokens
+            .stream()
+            .filter((token) -> token.signal() == signal)
+            .map(mapper)
+            .collect(joining());
     }
 }
