@@ -116,7 +116,7 @@ public class OtfExample
                       .schemaId(CAR_ENCODER.sbeSchemaId())
                       .version(CAR_ENCODER.sbeSchemaVersion());
 
-        bufferOffset += MESSAGE_HEADER.size();
+        bufferOffset += MESSAGE_HEADER.encodedLength();
 
         bufferOffset += ExampleUsingGeneratedStub.encode(CAR_ENCODER, directBuffer, bufferOffset);
 

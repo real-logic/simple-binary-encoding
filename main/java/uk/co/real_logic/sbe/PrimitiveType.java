@@ -68,9 +68,9 @@ public enum PrimitiveType
     }
 
     /**
-     * The size of the primitive type in octets.
+     * The encodedLength of the primitive type in octets.
      *
-     * @return size (in octets) of the primitive type
+     * @return encodedLength (in octets) of the primitive type
      */
     public int size()
     {

@@ -182,7 +182,7 @@ public class IrGenerator
             .signal(Signal.BEGIN_COMPOSITE)
             .name(type.name())
             .offset(currOffset)
-            .size(type.size())
+            .size(type.encodedLength())
             .encoding(new Encoding.Builder()
                 .semanticType(semanticTypeOf(type, field))
                 .build());
@@ -203,7 +203,7 @@ public class IrGenerator
             }
 
             add(edt, offset, field);
-            offset += edt.size();
+            offset += edt.encodedLength();
         }
 
         tokenList.add(builder.signal(Signal.END_COMPOSITE).build());
@@ -332,7 +332,7 @@ public class IrGenerator
         final Token.Builder tokenBuilder = new Token.Builder()
             .signal(Signal.ENCODING)
             .name(type.name())
-            .size(type.size())
+            .size(type.encodedLength())
             .offset(offset);
 
         if (field != null)

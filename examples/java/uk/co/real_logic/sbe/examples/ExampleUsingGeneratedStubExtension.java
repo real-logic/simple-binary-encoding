@@ -76,8 +76,8 @@ public class ExampleUsingGeneratedStubExtension
                       .schemaId(CAR_ENCODER_0.sbeSchemaId())
                       .version(CAR_ENCODER_0.sbeSchemaVersion());
 
-        bufferOffset += MESSAGE_HEADER.size();
-        encodingLength += MESSAGE_HEADER.size();
+        bufferOffset += MESSAGE_HEADER.encodedLength();
+        encodingLength += MESSAGE_HEADER.encodedLength();
         encodingLength += encode(CAR_ENCODER_0, directBuffer, bufferOffset);
 
         // Optionally write the encoded buffer to a file for decoding by the On-The-Fly decoder
@@ -108,7 +108,7 @@ public class ExampleUsingGeneratedStubExtension
         final int schemaId = READ_ONLY_MESSAGE_HEADER.schemaId();
         final int actingVersion = READ_ONLY_MESSAGE_HEADER.version();
 
-        bufferOffset += READ_ONLY_MESSAGE_HEADER.size();
+        bufferOffset += READ_ONLY_MESSAGE_HEADER.encodedLength();
         decode(CAR_DECODER_1, directBuffer, bufferOffset, schemaId, actingBlockLength, actingVersion);
     }
 
@@ -162,7 +162,7 @@ public class ExampleUsingGeneratedStubExtension
         car.putModel(MODEL, srcOffset, MODEL.length);
         car.putActivationCode(ACTIVATION_CODE, 0, ACTIVATION_CODE.capacity());
 
-        return car.size();
+        return car.encodedLength();
     }
 
     public static void decode(
@@ -247,7 +247,7 @@ public class ExampleUsingGeneratedStubExtension
         final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());
         sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength));
 
-        sb.append("\ncar.size=").append(car.size());
+        sb.append("\ncar.encodedLength=").append(car.encodedLength());
 
         System.out.println(sb);
     }

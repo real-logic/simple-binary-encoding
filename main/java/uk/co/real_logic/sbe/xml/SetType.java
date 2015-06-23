@@ -122,11 +122,11 @@ public class SetType extends Type
     }
 
     /**
-     * The size (in octets) of the encodingType
+     * The encodedLength (in octets) of the encodingType
      *
-     * @return size of the encodingType
+     * @return encodedLength of the encodingType
      */
-    public int size()
+    public int encodedLength()
     {
         return encodingType.size();
     }

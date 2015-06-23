@@ -1,5 +1,5 @@
 ﻿Questions:
- - which .NET Framework to target? is .NET 2 enough? 
+ - which .NET Framework to target? is .NET 2 enough?
  - little endian: http://stackoverflow.com/questions/217980/c-sharp-little-endian-or-big-endian
  - CME spec: http://www.cmegroup.com/confluence/display/EPICSANDBOX/MDP3#MDP3-FPLSimpleBinaryEncoding
 
@@ -7,12 +7,12 @@
 
  - codegen
    - unsafe
-   - managed? 
+   - managed?
  - acceptance tests
  - benchmarks
    - vs GPB
    - vs Thrift?
-   - message size vs protobuff?
+   - message encodedLength vs protobuff?
  - wiki documentation
  - nuget
  - pcl
@@ -21,7 +21,7 @@
 
 Questions:
  - should we codegen headers?
- - optional fields as nullable?	
+ - optional fields as nullable?
 
 
  DirectBuffer does not implement IDirectBuffer!

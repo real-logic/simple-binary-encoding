@@ -131,9 +131,9 @@ public class Message
     }
 
     /**
-     * Return the size of the {@link Message} in bytes including any padding.
+     * Return the encodedLength of the {@link Message} in bytes including any padding.
      *
-     * @return the size of the {@link Message} in bytes including any padding.
+     * @return the encodedLength of the {@link Message} in bytes including any padding.
      */
     public int blockLength()
     {
@@ -305,7 +305,7 @@ public class Message
      */
     private int computeAndValidateOffsets(final Node node, final List<Field> fields, final int blockLength)
     {
-        boolean variableSizedBlock = false;
+        boolean variableLengthBlock = false;
         int offset = 0;
 
         for (final Field field : fields)
@@ -315,7 +315,7 @@ public class Message
                 handleError(node, "Offset provides insufficient space at field: " + field.name());
             }
 
-            if (Token.VARIABLE_SIZE != offset)
+            if (Token.VARIABLE_LENGTH != offset)
             {
                 if (0 != field.offset())
                 {
@@ -331,7 +331,7 @@ public class Message
                 }
             }
 
-            field.computedOffset(variableSizedBlock ? Token.VARIABLE_SIZE : offset);
+            field.computedOffset(variableLengthBlock ? Token.VARIABLE_LENGTH : offset);
 
             if (null != field.groupFields())
             {
@@ -340,18 +340,18 @@ public class Message
                 validateBlockLength(node, field.blockLength(), groupBlockLength);
                 field.computedBlockLength(Math.max(field.blockLength(), groupBlockLength));
 
-                variableSizedBlock = true;
+                variableLengthBlock = true;
             }
             else if (null != field.type())
             {
-                final int size = field.type().size();
+                final int size = field.type().encodedLength();
 
-                if (Token.VARIABLE_SIZE == size)
+                if (Token.VARIABLE_LENGTH == size)
                 {
-                    variableSizedBlock = true;
+                    variableLengthBlock = true;
                 }
 
-                if (!variableSizedBlock)
+                if (!variableLengthBlock)
                 {
                     offset += size;
                 }
@@ -373,14 +373,14 @@ public class Message
             }
             else if (field.type() != null)
             {
-                final int fieldSize = field.type().size();
+                final int fieldLength = field.type().encodedLength();
 
-                if (Token.VARIABLE_SIZE == fieldSize)
+                if (Token.VARIABLE_LENGTH == fieldLength)
                 {
                     return blockLength;
                 }
 
-                blockLength = field.computedOffset() + fieldSize;
+                blockLength = field.computedOffset() + fieldLength;
             }
         }
 

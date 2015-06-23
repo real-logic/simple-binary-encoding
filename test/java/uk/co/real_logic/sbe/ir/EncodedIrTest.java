@@ -114,7 +114,7 @@ public class EncodedIrTest
         assertThat(lhs.offset(), is(rhs.offset()));
         assertThat((long)lhs.id(), is((long)rhs.id()));
         assertThat(lhs.signal(), is(rhs.signal()));
-        assertThat(lhs.size(), is(rhs.size()));
+        assertThat(lhs.encodedLength(), is(rhs.encodedLength()));
 
         assertThat(lhs.encoding().byteOrder(), is(rhs.encoding().byteOrder()));
         assertThat(lhs.encoding().primitiveType(), is(rhs.encoding().primitiveType()));

@@ -83,13 +83,13 @@ public abstract class Type
     }
 
     /**
-     * The size (in octets) of the Type.
+     * The encodedLength (in octets) of the Type.
      *
      * Overridden by subtypes. This returns 0 by default.
      *
-     * @return size of the type in octets
+     * @return encodedLength of the type in octets
      */
-    public abstract int size();
+    public abstract int encodedLength();
 
     /**
      * The description of the Type (if set) or null

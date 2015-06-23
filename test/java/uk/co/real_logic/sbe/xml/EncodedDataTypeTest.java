@@ -226,16 +226,16 @@ public class EncodedDataTypeTest
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
-        assertThat(map.get("testTypeChar").size(), is(1));
-        assertThat(map.get("testTypeInt8").size(), is(1));
-        assertThat(map.get("testTypeInt32").size(), is(4));
-        assertThat(map.get("testTypeInt64").size(), is(8));
-        assertThat(map.get("testTypeUInt8").size(), is(1));
-        assertThat(map.get("testTypeUInt16").size(), is(2));
-        assertThat(map.get("testTypeUInt32").size(), is(4));
-        assertThat(map.get("testTypeUInt64").size(), is(8));
-        assertThat(map.get("testTypeFloat").size(), is(4));
-        assertThat(map.get("testTypeDouble").size(), is(8));
+        assertThat(map.get("testTypeChar").encodedLength(), is(1));
+        assertThat(map.get("testTypeInt8").encodedLength(), is(1));
+        assertThat(map.get("testTypeInt32").encodedLength(), is(4));
+        assertThat(map.get("testTypeInt64").encodedLength(), is(8));
+        assertThat(map.get("testTypeUInt8").encodedLength(), is(1));
+        assertThat(map.get("testTypeUInt16").encodedLength(), is(2));
+        assertThat(map.get("testTypeUInt32").encodedLength(), is(4));
+        assertThat(map.get("testTypeUInt64").encodedLength(), is(8));
+        assertThat(map.get("testTypeFloat").encodedLength(), is(4));
+        assertThat(map.get("testTypeDouble").encodedLength(), is(8));
     }
 
     @Test

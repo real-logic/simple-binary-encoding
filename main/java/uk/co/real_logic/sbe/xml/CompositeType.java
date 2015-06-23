@@ -84,11 +84,11 @@ public class CompositeType extends Type
     }
 
     /**
-     * The size (in octets) of the list of EncodedDataTypes
+     * The encodedLength (in octets) of the list of EncodedDataTypes
      *
-     * @return size of the compositeType
+     * @return encodedLength of the compositeType
      */
-    public int size()
+    public int encodedLength()
     {
         int offset = 0;
 
@@ -97,7 +97,7 @@ public class CompositeType extends Type
         {
             if (t.isVariableLength())
             {
-                return Token.VARIABLE_SIZE;
+                return Token.VARIABLE_LENGTH;
             }
 
             if (t.offsetAttribute() != -1)
@@ -105,7 +105,7 @@ public class CompositeType extends Type
                 offset = t.offsetAttribute();
             }
 
-            offset += t.size();
+            offset += t.encodedLength();
         }
 
         return offset;
@@ -145,7 +145,7 @@ public class CompositeType extends Type
     }
 
     /**
-     * Check the composite for being a well formed group size encoding. This means
+     * Check the composite for being a well formed group encodedLength encoding. This means
      * that there are the fields "blockLength" and "numInGroup" present.
      *
      * @param node of the XML for this composite
@@ -236,7 +236,7 @@ public class CompositeType extends Type
                 offset = offsetAttribute;
             }
 
-            offset += edt.size();
+            offset += edt.encodedLength();
         }
     }
 }

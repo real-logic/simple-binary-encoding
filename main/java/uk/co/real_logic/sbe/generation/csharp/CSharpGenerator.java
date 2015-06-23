@@ -58,7 +58,7 @@ public class CSharpGenerator implements CodeGenerator
             final List<Token> tokens = ir.headerStructure().tokens();
             out.append(generateFileHeader(ir.applicableNamespace()));
             out.append(generateClassDeclaration(MESSAGE_HEADER_ENCODER_TYPE));
-            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
+            out.append(generateFixedFlyweightCode(tokens.get(0).encodedLength()));
             out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("    }\n");
@@ -165,7 +165,7 @@ public class CSharpGenerator implements CodeGenerator
         final String indent)
     {
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
-        final int dimensionHeaderSize = tokens.get(index + 1).size();
+        final int dimensionHeaderLength = tokens.get(index + 1).encodedLength();
 
         sb.append(String.format(
             "\n" +
@@ -199,7 +199,7 @@ public class CSharpGenerator implements CodeGenerator
             parentMessageClassName
         ));
 
-        final int blockLength = tokens.get(index).size();
+        final int blockLength = tokens.get(index).encodedLength();
         final String typeForBlockLength = cSharpTypeName(tokens.get(index + 2).encoding().primitiveType());
         final String typeForNumInGroup = cSharpTypeName(tokens.get(index + 3).encoding().primitiveType());
 
@@ -226,7 +226,7 @@ public class CSharpGenerator implements CodeGenerator
                 indent + "    public const int SbeBlockLength = %d;\n" +
                 indent + "    public const int SbeHeaderSize = %d;\n",
                 blockLength,
-                dimensionHeaderSize
+                dimensionHeaderLength
         ));
 
         sb.append(String.format(
@@ -319,7 +319,7 @@ public class CSharpGenerator implements CodeGenerator
 
                 final String propertyName = toUpperFirstChar(token.name());
                 final Token lengthToken = tokens.get(i + 2);
-                final int sizeOfLengthField = lengthToken.size();
+                final int sizeOfLengthField = lengthToken.encodedLength();
                 final Encoding lengthEncoding = lengthToken.encoding();
                 final String lengthCSharpType = cSharpTypeName(lengthEncoding.primitiveType());
                 final String lengthTypePrefix = toUpperFirstChar(lengthEncoding.primitiveType().primitiveName());
@@ -422,7 +422,7 @@ public class CSharpGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace()));
             out.append(generateClassDeclaration(compositeName));
-            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
+            out.append(generateFixedFlyweightCode(tokens.get(0).encodedLength()));
 
             out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
@@ -507,7 +507,7 @@ public class CSharpGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace()));
 
-            out.append(String.format(
+            out.append(
                 "    public enum MetaAttribute\n" +
                 "    {\n" +
                 "        Epoch,\n" +
@@ -515,7 +515,7 @@ public class CSharpGenerator implements CodeGenerator
                 "        SemanticType\n" +
                 "    }\n" +
                 "}\n"
-            ));
+            );
         }
     }
 
@@ -958,7 +958,7 @@ public class CSharpGenerator implements CodeGenerator
             "        }\n" +
             "    }\n\n",
             blockLengthType,
-            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
+            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.encodedLength())),
             templateIdType,
             generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
             schemaIdType,

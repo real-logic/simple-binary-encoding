@@ -144,7 +144,7 @@ public class IrEncoder implements Closeable
 
         tokenCodec.wrapForEncode(directBuffer, 0)
                   .tokenOffset(token.offset())
-                  .tokenSize(token.size())
+                  .tokenSize(token.encodedLength())
                   .fieldId(token.id())
                   .tokenVersion(token.version())
                   .signal(mapSignal(token.signal()))

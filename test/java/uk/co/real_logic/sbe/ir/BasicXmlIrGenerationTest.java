@@ -49,7 +49,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(0).signal(), is(Signal.BEGIN_COMPOSITE));
         assertThat(tokens.get(0).name(), is("messageHeader"));
         assertThat(valueOf(tokens.get(0).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(0).size()), is(valueOf(8)));
+        assertThat(valueOf(tokens.get(0).encodedLength()), is(valueOf(8)));
         assertThat(valueOf(tokens.get(0).offset()), is(valueOf(0)));
 
         /* assert all elements of node 1 */
@@ -57,7 +57,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(1).name(), is("blockLength"));
         assertThat(tokens.get(1).encoding().primitiveType(), is(PrimitiveType.UINT16));
         assertThat(valueOf(tokens.get(1).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(1).size()), is(valueOf(2)));
+        assertThat(valueOf(tokens.get(1).encodedLength()), is(valueOf(2)));
         assertThat(valueOf(tokens.get(1).offset()), is(valueOf(0)));
         assertThat(tokens.get(1).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
@@ -66,7 +66,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(2).name(), is("templateId"));
         assertThat(tokens.get(2).encoding().primitiveType(), is(PrimitiveType.UINT16));
         assertThat(valueOf(tokens.get(2).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(2).size()), is(valueOf(2)));
+        assertThat(valueOf(tokens.get(2).encodedLength()), is(valueOf(2)));
         assertThat(valueOf(tokens.get(2).offset()), is(valueOf(2)));
         assertThat(tokens.get(2).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
@@ -75,7 +75,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(3).name(), is("schemaId"));
         assertThat(tokens.get(3).encoding().primitiveType(), is(PrimitiveType.UINT16));
         assertThat(valueOf(tokens.get(3).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(3).size()), is(valueOf(2)));
+        assertThat(valueOf(tokens.get(3).encodedLength()), is(valueOf(2)));
         assertThat(valueOf(tokens.get(3).offset()), is(valueOf(4)));
         assertThat(tokens.get(3).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
@@ -84,7 +84,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(4).name(), is("version"));
         assertThat(tokens.get(4).encoding().primitiveType(), is(PrimitiveType.UINT16));
         assertThat(valueOf(tokens.get(4).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(4).size()), is(valueOf(2)));
+        assertThat(valueOf(tokens.get(4).encodedLength()), is(valueOf(2)));
         assertThat(valueOf(tokens.get(4).offset()), is(valueOf(6)));
         assertThat(tokens.get(4).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
@@ -92,7 +92,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(5).signal(), is(Signal.END_COMPOSITE));
         assertThat(tokens.get(5).name(), is("messageHeader"));
         assertThat(valueOf(tokens.get(5).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(5).size()), is(valueOf(8)));
+        assertThat(valueOf(tokens.get(5).encodedLength()), is(valueOf(8)));
         assertThat(valueOf(tokens.get(5).offset()), is(valueOf(0)));
     }
 
@@ -112,14 +112,14 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(0).signal(), is(Signal.BEGIN_MESSAGE));
         assertThat(tokens.get(0).name(), is("TestMessage50001"));
         assertThat(valueOf(tokens.get(0).id()), is(valueOf(50001)));
-        assertThat(valueOf(tokens.get(0).size()), is(valueOf(16)));
+        assertThat(valueOf(tokens.get(0).encodedLength()), is(valueOf(16)));
         assertThat(valueOf(tokens.get(0).offset()), is(valueOf(0)));
 
         /* assert all elements of node 1 */
         assertThat(tokens.get(1).signal(), is(Signal.BEGIN_FIELD));
         assertThat(tokens.get(1).name(), is("Tag40001"));
         assertThat(valueOf(tokens.get(1).id()), is(valueOf(40001)));
-        assertThat(valueOf(tokens.get(1).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(1).encodedLength()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(1).offset()), is(valueOf(0)));
 
         /* assert all elements of node 2 */
@@ -127,7 +127,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(2).name(), is("uint32"));
         assertThat(tokens.get(2).encoding().primitiveType(), is(PrimitiveType.UINT32));
         assertThat(valueOf(tokens.get(2).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(2).size()), is(valueOf(4)));
+        assertThat(valueOf(tokens.get(2).encodedLength()), is(valueOf(4)));
         assertThat(valueOf(tokens.get(2).offset()), is(valueOf(0)));
         assertThat(tokens.get(2).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
@@ -135,14 +135,14 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(3).signal(), is(Signal.END_FIELD));
         assertThat(tokens.get(3).name(), is("Tag40001"));
         assertThat(valueOf(tokens.get(3).id()), is(valueOf(40001)));
-        assertThat(valueOf(tokens.get(3).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(3).encodedLength()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(3).offset()), is(valueOf(0)));
 
         /* assert all elements of node 4 */
         assertThat(tokens.get(4).signal(), is(Signal.END_MESSAGE));
         assertThat(tokens.get(4).name(), is("TestMessage50001"));
         assertThat(valueOf(tokens.get(4).id()), is(valueOf(50001)));
-        assertThat(valueOf(tokens.get(4).size()), is(valueOf(16)));
+        assertThat(valueOf(tokens.get(4).encodedLength()), is(valueOf(16)));
         assertThat(valueOf(tokens.get(4).offset()), is(valueOf(0)));
     }
 
@@ -161,25 +161,25 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(0).signal(), is(Signal.BEGIN_MESSAGE));
         assertThat(tokens.get(0).name(), is("TestMessage1"));
         assertThat(valueOf(tokens.get(0).id()), is(valueOf(1)));
-        assertThat(valueOf(tokens.get(0).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(0).encodedLength()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(0).offset()), is(valueOf(0)));
 
         assertThat(tokens.get(1).signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(tokens.get(1).name(), is("encryptedNewPassword"));
         assertThat(valueOf(tokens.get(1).id()), is(valueOf(1404)));
-        assertThat(valueOf(tokens.get(1).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(1).encodedLength()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(1).offset()), is(valueOf(0)));
 
         assertThat(tokens.get(2).signal(), is(Signal.BEGIN_COMPOSITE));
         assertThat(tokens.get(2).name(), is("varDataEncoding"));
-        assertThat(valueOf(tokens.get(2).size()), is(valueOf(-1)));
+        assertThat(valueOf(tokens.get(2).encodedLength()), is(valueOf(-1)));
         assertThat(valueOf(tokens.get(2).offset()), is(valueOf(0)));
 
         assertThat(tokens.get(3).signal(), is(Signal.ENCODING));
         assertThat(tokens.get(3).name(), is("length"));
         assertThat(tokens.get(3).encoding().primitiveType(), is(PrimitiveType.UINT8));
         assertThat(valueOf(tokens.get(3).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(3).size()), is(valueOf(1)));
+        assertThat(valueOf(tokens.get(3).encodedLength()), is(valueOf(1)));
         assertThat(valueOf(tokens.get(3).offset()), is(valueOf(0)));
         assertThat(tokens.get(3).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
@@ -187,25 +187,25 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(4).name(), is("varData"));
         assertThat(tokens.get(4).encoding().primitiveType(), is(PrimitiveType.CHAR));
         assertThat(valueOf(tokens.get(4).id()), is(valueOf(Token.INVALID_ID)));
-        assertThat(valueOf(tokens.get(4).size()), is(valueOf(-1)));
+        assertThat(valueOf(tokens.get(4).encodedLength()), is(valueOf(-1)));
         assertThat(valueOf(tokens.get(4).offset()), is(valueOf(1)));
         assertThat(tokens.get(4).encoding().byteOrder(), is(ByteOrder.LITTLE_ENDIAN));
 
         assertThat(tokens.get(5).signal(), is(Signal.END_COMPOSITE));
         assertThat(tokens.get(5).name(), is("varDataEncoding"));
-        assertThat(valueOf(tokens.get(5).size()), is(valueOf(-1)));
+        assertThat(valueOf(tokens.get(5).encodedLength()), is(valueOf(-1)));
         assertThat(valueOf(tokens.get(5).offset()), is(valueOf(0)));
 
         assertThat(tokens.get(6).signal(), is(Signal.END_VAR_DATA));
         assertThat(tokens.get(6).name(), is("encryptedNewPassword"));
         assertThat(valueOf(tokens.get(6).id()), is(valueOf(1404)));
-        assertThat(valueOf(tokens.get(6).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(6).encodedLength()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(6).offset()), is(valueOf(0)));
 
         assertThat(tokens.get(7).signal(), is(Signal.END_MESSAGE));
         assertThat(tokens.get(7).name(), is("TestMessage1"));
         assertThat(valueOf(tokens.get(7).id()), is(valueOf(1)));
-        assertThat(valueOf(tokens.get(7).size()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(7).encodedLength()), is(valueOf(0)));
         assertThat(valueOf(tokens.get(7).offset()), is(valueOf(0)));
     }
 

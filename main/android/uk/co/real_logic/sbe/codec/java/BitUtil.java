@@ -30,7 +30,6 @@ import java.security.PrivilegedExceptionAction;
  */
 final class BitUtil
 {
-
     //
     //"effectiveDirectAddress" type changed from int to long in changeset:
     // 0121106d9dc1ba713b53822886355e4d9339e852 (Android 4.3 - api 18)
@@ -83,6 +82,7 @@ final class BitUtil
                     return constructor;
                 }
             };
+
             DIRECT_BYTE_BUFFER_CONSTRUCTOR = AccessController.doPrivileged(action);
         }
         catch (final Exception ex)
@@ -105,8 +105,8 @@ final class BitUtil
     {
         try
         {
-            return USE_LONG_ADDRESS ? EFFECTIVE_DIRECT_ADDRESS_FIELD.getLong(buffer)
-                    : EFFECTIVE_DIRECT_ADDRESS_FIELD.getInt(buffer);
+            return USE_LONG_ADDRESS ?
+                EFFECTIVE_DIRECT_ADDRESS_FIELD.getLong(buffer) : EFFECTIVE_DIRECT_ADDRESS_FIELD.getInt(buffer);
         }
         catch (final IllegalArgumentException ignore)
         {
@@ -166,26 +166,18 @@ final class BitUtil
         {
             if (USE_LONG_ADDRESS)
             {
-                return (ByteBuffer) DIRECT_BYTE_BUFFER_CONSTRUCTOR.newInstance(address, size);
+                return (ByteBuffer)DIRECT_BYTE_BUFFER_CONSTRUCTOR.newInstance(address, size);
             }
             else
             {
-                return (ByteBuffer) DIRECT_BYTE_BUFFER_CONSTRUCTOR.newInstance((int) address, size);
+                return (ByteBuffer)DIRECT_BYTE_BUFFER_CONSTRUCTOR.newInstance((int) address, size);
             }
         }
-        catch (final IllegalArgumentException ignore)
-        {
-            return null;
-        }
-        catch (final IllegalAccessException ignore)
-        {
-            return null;
-        }
-        catch (InstantiationException ignore)
-        {
-            return null;
-        }
-        catch (InvocationTargetException ignore)
+        catch (
+            final IllegalArgumentException |
+            final IllegalAccessException |
+            final InstantiationException  |
+            final InvocationTargetException ignore)
         {
             return null;
         }

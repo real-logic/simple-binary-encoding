@@ -285,9 +285,9 @@ public class PrimitiveValue
     }
 
     /**
-     * Return size for this PrimitiveValue for serialization purposes.
+     * Return encodedLength for this PrimitiveValue for serialization purposes.
      *
-     * @return size for serialization
+     * @return encodedLength for serialization
      */
     public int size()
     {

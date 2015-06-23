@@ -183,7 +183,7 @@ public class CarBenchmark
         final long totalDuration = System.nanoTime() - start;
 
         System.out.printf(
-            "%d - %d(ns) average duration for %s.testEncode() - message size %d\n",
+            "%d - %d(ns) average duration for %s.testEncode() - message encodedLength %d\n",
             Integer.valueOf(runNumber),
             Long.valueOf(totalDuration / reps),
             benchmark.getClass().getName(),
@@ -206,7 +206,7 @@ public class CarBenchmark
         final long totalDuration = System.nanoTime() - start;
 
         System.out.printf(
-            "%d - %d(ns) average duration for %s.testDecode() - message size %d\n",
+            "%d - %d(ns) average duration for %s.testDecode() - message encodedLength %d\n",
             Integer.valueOf(runNumber),
             Long.valueOf(totalDuration / reps),
             benchmark.getClass().getName(),

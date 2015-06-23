@@ -54,7 +54,7 @@ public class OtfHeaderDecoder
      */
     public OtfHeaderDecoder(final HeaderStructure headerStructure)
     {
-        size = headerStructure.tokens().get(0).size();
+        size = headerStructure.tokens().get(0).encodedLength();
 
         for (final Token token : headerStructure.tokens())
         {
@@ -88,9 +88,9 @@ public class OtfHeaderDecoder
     }
 
     /**
-     * The size of the message header in bytes.
+     * The encodedLength of the message header in bytes.
      *
-     * @return the size of the message header in bytes.
+     * @return the encodedLength of the message header in bytes.
      */
     public int size()
     {

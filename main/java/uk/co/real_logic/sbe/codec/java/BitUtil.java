@@ -70,15 +70,12 @@ class BitUtil
     {
         try
         {
-            final PrivilegedExceptionAction<Unsafe> action = new PrivilegedExceptionAction<Unsafe>()
-            {
-                public Unsafe run() throws Exception
-                {
+            final PrivilegedExceptionAction<Unsafe> action =
+                () -> {
                     final Field field = Unsafe.class.getDeclaredField("theUnsafe");
                     field.setAccessible(true);
                     return (Unsafe)field.get(null);
-                }
-            };
+                };
 
             UNSAFE = AccessController.doPrivileged(action);
         }

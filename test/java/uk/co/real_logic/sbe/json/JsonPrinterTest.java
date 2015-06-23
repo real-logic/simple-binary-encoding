@@ -39,7 +39,6 @@ public class JsonPrinterTest
 {
     private static final MessageHeaderEncoder MESSAGE_HEADER = new MessageHeaderEncoder();
     private static final CarEncoder CAR = new CarEncoder();
-    private static final int ACTING_VERSION = 0;
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
 
@@ -167,7 +166,7 @@ public class JsonPrinterTest
                       .schemaId(CAR.sbeSchemaId())
                       .version(CAR.sbeSchemaVersion());
 
-        bufferOffset += MESSAGE_HEADER.size();
+        bufferOffset += MESSAGE_HEADER.encodedLength();
 
         final int srcOffset = 0;
 
@@ -216,7 +215,7 @@ public class JsonPrinterTest
         CAR.make(new String(make));
         CAR.putModel(model, srcOffset, model.length);
 
-        bufferOffset += CAR.size();
+        bufferOffset += CAR.encodedLength();
 
         buffer.position(bufferOffset);
     }

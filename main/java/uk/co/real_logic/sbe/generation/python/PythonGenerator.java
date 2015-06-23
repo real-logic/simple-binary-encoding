@@ -56,7 +56,7 @@ public class PythonGenerator implements CodeGenerator
             final List<Token> tokens = ir.headerStructure().tokens();
             out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
             out.append(generateClassDeclaration(MESSAGE_HEADER_ENCODER_TYPE));
-            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_ENCODER_TYPE, tokens.get(0).size()));
+            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_ENCODER_TYPE, tokens.get(0).encodedLength()));
             out.append(generatePrimitivePropertyEncodings(
                 MESSAGE_HEADER_ENCODER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
         }
@@ -155,7 +155,7 @@ public class PythonGenerator implements CodeGenerator
         final StringBuilder sb, final String groupName, final List<Token> tokens, final int index, final String indent)
     {
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
-        final int dimensionHeaderSize = tokens.get(index + 1).size();
+        final int dimensionHeaderSize = tokens.get(index + 1).encodedLength();
 
         sb.append(String.format(
             "\n" +
@@ -188,7 +188,7 @@ public class PythonGenerator implements CodeGenerator
             dimensionHeaderSize
         ));
 
-        final int blockLength = tokens.get(index).size();
+        final int blockLength = tokens.get(index).encodedLength();
         final String typeForBlockLength = pythonTypeName(
             tokens.get(index + 2).encoding().primitiveType(), tokens.get(index + 2).encoding().byteOrder());
         final String typeForNumInGroup = pythonTypeName(
@@ -298,7 +298,7 @@ public class PythonGenerator implements CodeGenerator
                 final String propertyName = toUpperFirstChar(token.name());
                 final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
                 final Token lengthToken = tokens.get(i + 2);
-                final int sizeOfLengthField = lengthToken.size();
+                final int sizeOfLengthField = lengthToken.encodedLength();
                 final String lengthPythonType = pythonTypeName(
                     lengthToken.encoding().primitiveType(), lengthToken.encoding().byteOrder());
 
@@ -409,7 +409,7 @@ public class PythonGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
             out.append(generateClassDeclaration(bitSetName));
-            out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).size()));
+            out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).encodedLength()));
             out.append(String.format(
                 "\n" +
                 "    def clear(self):\n" +
@@ -445,7 +445,7 @@ public class PythonGenerator implements CodeGenerator
         {
             out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
             out.append(generateClassDeclaration(compositeName));
-            out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size()));
+            out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).encodedLength()));
             out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
         }
     }
@@ -864,7 +864,7 @@ public class PythonGenerator implements CodeGenerator
             "        return self\n\n" +
 
             "    @staticmethod\n" +
-            "    def size():\n" +
+            "    def encodedLength():\n" +
             "        return %2$s\n",
             className,
             size
@@ -932,7 +932,7 @@ public class PythonGenerator implements CodeGenerator
             "            raise Exception('buffer too short')\n" +
             "        self.position_[0] = position\n\n" +
 
-            "    def size(self):\n" +
+            "    def encodedLength(self):\n" +
             "        return self.position() - self.offset_\n\n" +
 
             "    def buffer(self):\n" +
@@ -941,7 +941,7 @@ public class PythonGenerator implements CodeGenerator
             "    def actingVersion(self):\n" +
             "        return self.actingVersion_;\n",
 
-            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.size())),
+            generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.encodedLength())),
             generateLiteral(ir.headerStructure().templateIdType(), Integer.toString(token.id())),
             generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),

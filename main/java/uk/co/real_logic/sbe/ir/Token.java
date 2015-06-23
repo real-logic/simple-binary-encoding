@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  *
  * Processing and optimization could be run over a list of Tokens to perform various functions
  * <ul>
- * <li>re-ordering of fields based on size</li>
+ * <li>re-ordering of fields based on encodedLength</li>
  * <li>padding of fields in order to provide expansion room</li>
  * <li>computing offsets of individual fields</li>
  * <li>etc.</li>
@@ -46,7 +46,7 @@ import java.util.function.Supplier;
  *
  * The entire IR of an entity is a {@link java.util.List} of {@link Token} objects. The order of this list is
  * very important. Encoding of fields is done by nodes pointing to specific encoding {@link uk.co.real_logic.sbe.PrimitiveType}
- * objects. Each encoding node contains size, offset, byte order, and {@link Encoding}. Entities relevant
+ * objects. Each encoding node contains encodedLength, offset, byte order, and {@link Encoding}. Entities relevant
  * to the encoding such as fields, messages, repeating groups, etc. are encapsulated in the list as nodes
  * themselves. Although, they will in most cases never be serialized. The boundaries of these entities
  * are delimited by BEGIN and END {@link Signal} values in the node {@link Encoding}.
@@ -56,7 +56,7 @@ import java.util.function.Supplier;
  * <ul>
  * <li>Token 0 - Signal = BEGIN_MESSAGE, schemaId = 100</li>
  * <li>Token 1 - Signal = BEGIN_FIELD, schemaId = 25</li>
- * <li>Token 2 - Signal = ENCODING, PrimitiveType = uint32, size = 4, offset = 0</li>
+ * <li>Token 2 - Signal = ENCODING, PrimitiveType = uint32, encodedLength = 4, offset = 0</li>
  * <li>Token 3 - Signal = END_FIELD</li>
  * <li>Token 4 - Signal = END_MESSAGE</li>
  * </ul>
@@ -85,9 +85,9 @@ public class Token
     public static final int INVALID_ID = -1;
 
     /**
-     * Size not determined
+     * Length not determined
      */
-    public static final int VARIABLE_SIZE = -1;
+    public static final int VARIABLE_LENGTH = -1;
 
     /**
      * Offset not computed or set
@@ -98,7 +98,7 @@ public class Token
     private final String name;
     private final int id;
     private final int version;
-    private final int size;
+    private final int encodedLength;
     private final int offset;
     private final Encoding encoding;
 
@@ -109,7 +109,7 @@ public class Token
      * @param name     of the token in the message
      * @param id       as the identifier in the message declaration
      * @param version  application within the template
-     * @param size     of the component part
+     * @param encodedLength     of the component part
      * @param offset   in the underlying message as octets
      * @param encoding of the primitive field
      */
@@ -118,7 +118,7 @@ public class Token
         final String name,
         final int id,
         final int version,
-        final int size,
+        final int encodedLength,
         final int offset,
         final Encoding encoding)
     {
@@ -130,7 +130,7 @@ public class Token
         this.name = name;
         this.id = id;
         this.version = version;
-        this.size = size;
+        this.encodedLength = encodedLength;
         this.offset = offset;
         this.encoding = encoding;
     }
@@ -194,14 +194,14 @@ public class Token
     }
 
     /**
-     * The size of this token in bytes.
+     * The encodedLength of this token in bytes.
      *
-     * @return the size of this node. A value of 0 means the node has no size when encoded. A value of
-     * {@link Token#VARIABLE_SIZE} means this node represents a variable length field.
+     * @return the encodedLength of this node. A value of 0 means the node has no encodedLength when encoded. A value of
+     * {@link Token#VARIABLE_LENGTH} means this node represents a variable length field.
      */
-    public int size()
+    public int encodedLength()
     {
-        return size;
+        return encodedLength;
     }
 
     /**
@@ -211,12 +211,12 @@ public class Token
      */
     public int arrayLength()
     {
-        if (null == encoding.primitiveType() || 0 == size)
+        if (null == encoding.primitiveType() || 0 == encodedLength)
         {
             return 0;
         }
 
-        return size / encoding.primitiveType().size();
+        return encodedLength / encoding.primitiveType().size();
     }
 
     public CharSequence switchArray(Supplier<CharSequence> single, Supplier<CharSequence> array)
@@ -274,7 +274,7 @@ public class Token
             ", name='" + name + '\'' +
             ", id=" + id +
             ", version=" + version +
-            ", size=" + size +
+            ", encodedLength=" + encodedLength +
             ", offset=" + offset +
             ", encoding=" + encoding +
             '}';

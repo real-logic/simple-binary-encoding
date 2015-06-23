@@ -183,11 +183,11 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The size (in octets) of the encoding as length of the primitiveType times its count.
+     * The encodedLength (in octets) of the encoding as length of the primitiveType times its count.
      *
-     * @return size of the encoding
+     * @return encodedLength of the encoding
      */
-    public int size()
+    public int encodedLength()
     {
         if (presence() == Presence.CONSTANT)
         {
@@ -196,7 +196,7 @@ public class EncodedDataType extends Type
 
         if (varLen)
         {
-            return Token.VARIABLE_SIZE;
+            return Token.VARIABLE_LENGTH;
         }
 
         return primitiveType.size() * length;

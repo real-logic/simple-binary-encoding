@@ -121,7 +121,7 @@ public class OtfMessageDecoder
                     numInGroupToken.encoding().byteOrder());
 
                 final Token dimensionTypeComposite = tokens.get(i + 1);
-                bufferIndex += dimensionTypeComposite.size();
+                bufferIndex += dimensionTypeComposite.encodedLength();
 
                 final int beginFieldsIndex = i + GROUP_DIM_TYPE_TOKENS;
                 final int endGroupIndex = findNextOrLimit(tokens, beginFieldsIndex, toIndex, Signal.END_GROUP);

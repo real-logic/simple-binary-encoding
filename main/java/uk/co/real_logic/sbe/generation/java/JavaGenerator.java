@@ -109,7 +109,7 @@ public class JavaGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_ENCODER_TYPE))
         {
             generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_ENCODER_TYPE, out, mutableBuffer, fullMutableBuffer);
-            out.append(concatEncodingTokens(tokens, token ->
+            out.append(concatEncodingTokens(tokens, (token) ->
                 generatePrimitiveEncoder(MESSAGE_HEADER_ENCODER_TYPE, token.name(), token, BASE_INDENT)));
             out.append("}\n");
         }
@@ -117,8 +117,8 @@ public class JavaGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_DECODER_TYPE))
         {
             generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_DECODER_TYPE, out, readOnlyBuffer, fullReadOnlyBuffer);
-            out.append(concatEncodingTokens(tokens, token ->
-                generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
+            out.append(concatEncodingTokens(tokens,
+                (token) -> generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
             out.append("}\n");
         }
     }
@@ -168,10 +168,11 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private void generateEncoder(final List<Token> groups,
-                                 final List<Token> rootFields,
-                                 final List<Token> varData,
-                                 final Token msgToken) throws IOException
+    private void generateEncoder(
+        final List<Token> groups,
+        final List<Token> rootFields,
+        final List<Token> varData,
+        final Token msgToken) throws IOException
     {
         final String className = formatClassName(encoderName(msgToken.name()));
 
@@ -193,10 +194,11 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private void generateDecoder(final List<Token> groups,
-                                 final List<Token> rootFields,
-                                 final List<Token> varData,
-                                 final Token msgToken) throws IOException
+    private void generateDecoder(
+        final List<Token> groups,
+        final List<Token> rootFields,
+        final List<Token> varData,
+        final Token msgToken) throws IOException
     {
         final String className = formatClassName(decoderName(msgToken.name()));
 
@@ -298,9 +300,9 @@ public class JavaGenerator implements CodeGenerator
         final String indent)
     {
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
-        final int dimensionHeaderSize = tokens.get(index + 1).size();
+        final int dimensionHeaderLen = tokens.get(index + 1).encodedLength();
 
-        generateDecoderClassDeclaration(sb, groupName, parentMessageClassName, indent, dimensionsClassName, dimensionHeaderSize);
+        generateDecoderClassDeclaration(sb, groupName, parentMessageClassName, indent, dimensionsClassName, dimensionHeaderLen);
 
         sb.append(String.format(
             indent + "    public void wrap(\n" +
@@ -318,7 +320,7 @@ public class JavaGenerator implements CodeGenerator
             readOnlyBuffer
         ));
 
-        final int blockLength = tokens.get(index).size();
+        final int blockLength = tokens.get(index).encodedLength();
 
         sb.append(indent).append("    public static int sbeHeaderSize()\n")
           .append(indent).append("    {\n")
@@ -386,11 +388,11 @@ public class JavaGenerator implements CodeGenerator
         final String indent)
     {
         final String dimensionsClassName = formatClassName(encoderName(tokens.get(index + 1).name()));
-        final int dimensionHeaderSize = tokens.get(index + 1).size();
+        final int dimensionHeaderSize = tokens.get(index + 1).encodedLength();
 
         generateEncoderClassDeclaration(sb, groupName, parentMessageClassName, indent, dimensionsClassName, dimensionHeaderSize);
 
-        final int blockLength = tokens.get(index).size();
+        final int blockLength = tokens.get(index).encodedLength();
         final String javaTypeForBlockLength = primitiveTypeName(tokens.get(index + 2));
         final String javaTypeForNumInGroup = primitiveTypeName(tokens.get(index + 3));
 
@@ -603,14 +605,14 @@ public class JavaGenerator implements CodeGenerator
 
             final String propertyName = toUpperFirstChar(token.name());
             final Token lengthToken = tokens.get(i + 2);
-            final int sizeOfLengthField = lengthToken.size();
+            final int sizeOfLengthField = lengthToken.encodedLength();
             final Encoding lengthEncoding = lengthToken.encoding();
             final String lengthTypePrefix = lengthEncoding.primitiveType().primitiveName();
             final String byteOrderStr = byteOrderString(lengthEncoding);
 
             sb.append(String.format(
                 "\n" +
-                "    public static int %sHeaderSize()\n" +
+                "    public static int %sHeaderLength()\n" +
                 "    {\n" +
                 "        return %d;\n" +
                 "    }\n",
@@ -661,7 +663,7 @@ public class JavaGenerator implements CodeGenerator
 
             final String propertyName = toUpperFirstChar(token.name());
             final Token lengthToken = tokens.get(i + 2);
-            final int sizeOfLengthField = lengthToken.size();
+            final int sizeOfLengthField = lengthToken.encodedLength();
             final Encoding lengthEncoding = lengthToken.encoding();
             final String lengthJavaType = javaTypeName(lengthEncoding.primitiveType());
             final String lengthTypePrefix = lengthEncoding.primitiveType().primitiveName();
@@ -881,7 +883,7 @@ public class JavaGenerator implements CodeGenerator
     {
         out.append(generateFileHeader(ir.applicableNamespace(), fullBuffer));
         out.append(generateClassDeclaration(encoderName));
-        out.append(generateFixedFlyweightCode(encoderName, token.size(), false, buffer));
+        out.append(generateFixedFlyweightCode(encoderName, token.encodedLength(), false, buffer));
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
@@ -1640,7 +1642,7 @@ public class JavaGenerator implements CodeGenerator
         final String body = callsSuper ? "        super.wrap(buffer, offset);\n" : "";
 
         return String.format(
-            "    public static final int SIZE = %2$d;\n" +
+            "    public static final int ENCODED_LENGTH = %2$d;\n" +
             "    private %3$s buffer;\n" +
             "    private int offset;\n" +
             "    public %1$s wrap(final %3$s buffer, final int offset)\n" +
@@ -1650,9 +1652,9 @@ public class JavaGenerator implements CodeGenerator
             "        this.offset = offset;\n" +
             "        return this;\n" +
             "    }\n\n" +
-            "    public int size()\n" +
+            "    public int encodedLength()\n" +
             "    {\n" +
-            "        return SIZE;\n" +
+            "        return ENCODED_LENGTH;\n" +
             "    }\n",
             className,
             size,
@@ -1727,7 +1729,7 @@ public class JavaGenerator implements CodeGenerator
             "        return offset;\n" +
             "    }\n\n" +
             "%12$s" +
-            "    public int size()\n" +
+            "    public int encodedLength()\n" +
             "    {\n" +
             "        return limit - offset;\n" +
             "    }\n\n" +
@@ -1741,7 +1743,7 @@ public class JavaGenerator implements CodeGenerator
             "        this.limit = limit;\n" +
             "    }\n",
             blockLengthType,
-            generateLiteral(headerStructure.blockLengthType(), Integer.toString(token.size())),
+            generateLiteral(headerStructure.blockLengthType(), Integer.toString(token.encodedLength())),
             templateIdType,
             generateLiteral(headerStructure.templateIdType(), Integer.toString(token.id())),
             schemaIdType,
@@ -1809,38 +1811,39 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        eachField(tokens, (signalToken, encodingToken) ->
-        {
-            final String propertyName = formatPropertyName(signalToken.name());
-            final String typeName = decoderName(formatClassName(encodingToken.name()));
-
-            generateFieldIdMethod(sb, signalToken, indent);
-            generateFieldMetaAttributeMethod(sb, signalToken, indent);
-
-            switch (encodingToken.signal())
+        eachField(tokens,
+            (signalToken, encodingToken) ->
             {
-                case ENCODING:
-                    sb.append(generatePrimitiveDecoder(propertyName, encodingToken, indent));
-                    break;
+                final String propertyName = formatPropertyName(signalToken.name());
+                final String typeName = decoderName(formatClassName(encodingToken.name()));
 
-                case BEGIN_ENUM:
-                    sb.append(generateEnumDecoder(propertyName, encodingToken, indent));
-                    break;
+                generateFieldIdMethod(sb, signalToken, indent);
+                generateFieldMetaAttributeMethod(sb, signalToken, indent);
 
-                case BEGIN_SET:
-                    sb.append(generateBitSetProperty(propertyName, encodingToken, indent, typeName));
-                    break;
+                switch (encodingToken.signal())
+                {
+                    case ENCODING:
+                        sb.append(generatePrimitiveDecoder(propertyName, encodingToken, indent));
+                        break;
 
-                case BEGIN_COMPOSITE:
-                    sb.append(generateCompositeProperty(propertyName, encodingToken, indent, typeName));
-                    break;
-            }
-        });
+                    case BEGIN_ENUM:
+                        sb.append(generateEnumDecoder(propertyName, encodingToken, indent));
+                        break;
+
+                    case BEGIN_SET:
+                        sb.append(generateBitSetProperty(propertyName, encodingToken, indent, typeName));
+                        break;
+
+                    case BEGIN_COMPOSITE:
+                        sb.append(generateCompositeProperty(propertyName, encodingToken, indent, typeName));
+                        break;
+                }
+            });
 
         return sb;
     }
 
-    private void eachField(final List<Token> tokens, BiConsumer<Token, Token> consumer)
+    private void eachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
     {
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
@@ -1893,8 +1896,7 @@ public class JavaGenerator implements CodeGenerator
         ));
     }
 
-    private CharSequence generateEnumDecoder(
-        final String propertyName, final Token token, final String indent)
+    private CharSequence generateEnumDecoder(final String propertyName, final Token token, final String indent)
     {
         final String enumName = formatClassName(token.name());
         final Encoding encoding = token.encoding();
@@ -1944,10 +1946,7 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private Object generateBitSetProperty(
-        final String propertyName,
-        final Token token,
-        final String indent,
-        final String bitSetName)
+        final String propertyName, final Token token, final String indent, final String bitSetName)
     {
         final StringBuilder sb = new StringBuilder();
         final int offset = token.offset();
@@ -1980,10 +1979,7 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generateCompositeProperty(
-        final String propertyName,
-        final Token token,
-        final String indent,
-        final String compositeName)
+        final String propertyName, final Token token, final String indent, final String compositeName)
     {
         final int offset = token.offset();
 
