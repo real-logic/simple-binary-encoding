@@ -176,7 +176,7 @@ public class FrameCodecEncoder
         return length;
     }
 
-    public void packageName(final String value)
+    public FrameCodecEncoder packageName(final String value)
     {
         final byte[] bytes;
         try
@@ -194,6 +194,8 @@ public class FrameCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 
     public static int namespaceNameId()
@@ -240,7 +242,7 @@ public class FrameCodecEncoder
         return length;
     }
 
-    public void namespaceName(final String value)
+    public FrameCodecEncoder namespaceName(final String value)
     {
         final byte[] bytes;
         try
@@ -258,6 +260,8 @@ public class FrameCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 
     public static int semanticVersionId()
@@ -304,7 +308,7 @@ public class FrameCodecEncoder
         return length;
     }
 
-    public void semanticVersion(final String value)
+    public FrameCodecEncoder semanticVersion(final String value)
     {
         final byte[] bytes;
         try
@@ -322,5 +326,7 @@ public class FrameCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 }

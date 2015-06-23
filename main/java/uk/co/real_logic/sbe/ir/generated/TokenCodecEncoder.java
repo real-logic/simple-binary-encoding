@@ -216,7 +216,7 @@ public class TokenCodecEncoder
         return length;
     }
 
-    public void name(final String value)
+    public TokenCodecEncoder name(final String value)
     {
         final byte[] bytes;
         try
@@ -234,6 +234,8 @@ public class TokenCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 
     public static int constValueId()
@@ -280,7 +282,7 @@ public class TokenCodecEncoder
         return length;
     }
 
-    public void constValue(final String value)
+    public TokenCodecEncoder constValue(final String value)
     {
         final byte[] bytes;
         try
@@ -298,6 +300,8 @@ public class TokenCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 
     public static int minValueId()
@@ -344,7 +348,7 @@ public class TokenCodecEncoder
         return length;
     }
 
-    public void minValue(final String value)
+    public TokenCodecEncoder minValue(final String value)
     {
         final byte[] bytes;
         try
@@ -362,6 +366,8 @@ public class TokenCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 
     public static int maxValueId()
@@ -408,7 +414,7 @@ public class TokenCodecEncoder
         return length;
     }
 
-    public void maxValue(final String value)
+    public TokenCodecEncoder maxValue(final String value)
     {
         final byte[] bytes;
         try
@@ -426,6 +432,8 @@ public class TokenCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 
     public static int nullValueId()
@@ -472,7 +480,7 @@ public class TokenCodecEncoder
         return length;
     }
 
-    public void nullValue(final String value)
+    public TokenCodecEncoder nullValue(final String value)
     {
         final byte[] bytes;
         try
@@ -490,6 +498,8 @@ public class TokenCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 
     public static int characterEncodingId()
@@ -536,7 +546,7 @@ public class TokenCodecEncoder
         return length;
     }
 
-    public void characterEncoding(final String value)
+    public TokenCodecEncoder characterEncoding(final String value)
     {
         final byte[] bytes;
         try
@@ -554,6 +564,8 @@ public class TokenCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 
     public static int epochId()
@@ -600,7 +612,7 @@ public class TokenCodecEncoder
         return length;
     }
 
-    public void epoch(final String value)
+    public TokenCodecEncoder epoch(final String value)
     {
         final byte[] bytes;
         try
@@ -618,6 +630,8 @@ public class TokenCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 
     public static int timeUnitId()
@@ -664,7 +678,7 @@ public class TokenCodecEncoder
         return length;
     }
 
-    public void timeUnit(final String value)
+    public TokenCodecEncoder timeUnit(final String value)
     {
         final byte[] bytes;
         try
@@ -682,6 +696,8 @@ public class TokenCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 
     public static int semanticTypeId()
@@ -728,7 +744,7 @@ public class TokenCodecEncoder
         return length;
     }
 
-    public void semanticType(final String value)
+    public TokenCodecEncoder semanticType(final String value)
     {
         final byte[] bytes;
         try
@@ -746,5 +762,7 @@ public class TokenCodecEncoder
         limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
     }
 }

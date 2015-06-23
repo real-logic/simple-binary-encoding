@@ -189,7 +189,7 @@ public class JavaGenerator implements CodeGenerator
             generateEncoderGroups(sb, className, groups, 0, BASE_INDENT);
             out.append(sb);
 
-            out.append(generateVarDataEncoders(varData));
+            out.append(generateVarDataEncoders(className, varData));
             out.append("}\n");
         }
     }
@@ -556,7 +556,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-                indent + "    private final %s %s = new %s();\n",
+            indent + "    private final %s %s = new %s();\n",
             className,
             propertyName,
             className
@@ -564,21 +564,21 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-                indent + "    public static long %sId()\n" +
-                indent + "    {\n" +
-                indent + "        return %d;\n" +
-                indent + "    }\n",
+            indent + "    public static long %sId()\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n",
             formatPropertyName(groupName),
             token.id()
         ));
 
         sb.append(String.format(
             "\n" +
-                indent + "    public %1$s %2$sCount(final int count)\n" +
-                indent + "    {\n" +
-                indent + "        %2$s.wrap(parentMessage, buffer, count);\n" +
-                indent + "        return %2$s;\n" +
-                indent + "    }\n",
+            indent + "    public %1$s %2$sCount(final int count)\n" +
+            indent + "    {\n" +
+            indent + "        %2$s.wrap(parentMessage, buffer, count);\n" +
+            indent + "        return %2$s;\n" +
+            indent + "    }\n",
             className,
             propertyName
         ));
@@ -644,7 +644,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateVarDataEncoders(final List<Token> tokens)
+    private CharSequence generateVarDataEncoders(final String className, final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -670,7 +670,14 @@ public class JavaGenerator implements CodeGenerator
             final String byteOrderStr = byteOrderString(lengthEncoding);
 
             generateVarDataEncodeMethods(
-                sb, propertyName, sizeOfLengthField, lengthJavaType, lengthTypePrefix, byteOrderStr, characterEncoding);
+                sb,
+                propertyName,
+                sizeOfLengthField,
+                lengthJavaType,
+                lengthTypePrefix,
+                byteOrderStr,
+                characterEncoding,
+                className);
         }
 
         return sb;
@@ -742,7 +749,8 @@ public class JavaGenerator implements CodeGenerator
         final String lengthJavaType,
         final String lengthTypePrefix,
         final String byteOrderStr,
-        final String characterEncoding)
+        final String characterEncoding,
+        final String className)
     {
         generateVarDataTypedEncoder(
             sb,
@@ -764,7 +772,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            "    public void %1$s(final String value)\n" +
+            "    public %7$s %1$s(final String value)\n" +
             "    {\n" +
             "        final byte[] bytes;\n" +
             "        try\n" +
@@ -780,14 +788,16 @@ public class JavaGenerator implements CodeGenerator
             "        final int limit = limit();\n" +
             "        limit(limit + sizeOfLengthField + length);\n" +
             "        CodecUtil.%4$sPut(buffer, limit, (%5$s)length%6$s);\n" +
-            "        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);\n" +
+            "        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);\n\n" +
+            "        return this;\n" +
             "    }\n",
             toLowerFirstChar(propertyName),
             characterEncoding,
             sizeOfLengthField,
             lengthTypePrefix,
             lengthJavaType,
-            byteOrderStr
+            byteOrderStr,
+            className
         ));
     }
 
@@ -918,7 +928,7 @@ public class JavaGenerator implements CodeGenerator
             generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fullReadOnlyBuffer);
 
             out.append(concatEncodingTokens(messageBody,
-                tok -> generatePrimitiveDecoder(tok.name(), tok, BASE_INDENT)));
+                (tok) -> generatePrimitiveDecoder(tok.name(), tok, BASE_INDENT)));
 
             out.append("}\n");
         }
@@ -928,7 +938,7 @@ public class JavaGenerator implements CodeGenerator
             generateFixedFlyweightHeader(token, encoderName, out, mutableBuffer, fullMutableBuffer);
 
             out.append(concatEncodingTokens(messageBody,
-                tok -> generatePrimitiveEncoder(encoderName, tok.name(), tok, BASE_INDENT)));
+                (tok) -> generatePrimitiveEncoder(encoderName, tok.name(), tok, BASE_INDENT)));
 
             out.append("}\n");
         }
@@ -961,26 +971,27 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateChoiceDecoders(final List<Token> tokens)
     {
-        return concatTokens(tokens, Signal.CHOICE, (token) ->
-        {
-            final String choiceName = token.name();
-            final Encoding encoding = token.encoding();
-            final String typePrefix = encoding.primitiveType().primitiveName();
-            final String choiceBitPosition = encoding.constValue().toString();
-            final String byteOrderStr = byteOrderString(encoding);
+        return concatTokens(tokens, Signal.CHOICE,
+            (token) ->
+            {
+                final String choiceName = token.name();
+                final Encoding encoding = token.encoding();
+                final String typePrefix = encoding.primitiveType().primitiveName();
+                final String choiceBitPosition = encoding.constValue().toString();
+                final String byteOrderStr = byteOrderString(encoding);
 
-            return String.format(
-                "\n" +
-                "    public boolean %s()\n" +
-                "    {\n" +
-                "        return CodecUtil.%sGetChoice(buffer, offset, %s%s);\n" +
-                "    }\n\n",
-                choiceName,
-                typePrefix,
-                choiceBitPosition,
-                byteOrderStr
-            );
-        });
+                return String.format(
+                    "\n" +
+                    "    public boolean %s()\n" +
+                    "    {\n" +
+                    "        return CodecUtil.%sGetChoice(buffer, offset, %s%s);\n" +
+                    "    }\n\n",
+                    choiceName,
+                    typePrefix,
+                    choiceBitPosition,
+                    byteOrderStr
+                );
+            });
     }
 
     private CharSequence generateChoiceEncoders(final String bitSetClassName, final List<Token> tokens)
