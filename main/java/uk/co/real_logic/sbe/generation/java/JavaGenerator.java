@@ -60,12 +60,10 @@ public class JavaGenerator implements CodeGenerator
         this.ir = ir;
         this.outputManager = outputManager;
 
-        this.mutableBuffer = validateBufferImplementation(
-            mutableBuffer, MutableDirectBuffer.class);
+        this.mutableBuffer = validateBufferImplementation(mutableBuffer, MutableDirectBuffer.class);
         this.fullMutableBuffer = mutableBuffer;
 
-        this.readOnlyBuffer = validateBufferImplementation(
-            readOnlyBuffer, DirectBuffer.class);
+        this.readOnlyBuffer = validateBufferImplementation(readOnlyBuffer, DirectBuffer.class);
         this.fullReadOnlyBuffer = readOnlyBuffer;
     }
 
