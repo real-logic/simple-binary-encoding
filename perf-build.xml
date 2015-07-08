@@ -2,8 +2,8 @@
 <project name="sbe-benchmarks" default="java:perf:test">
     <description>Benchmarks for different codecs</description>
 
-    <property name="ant.build.javac.source" value="1.7" />
-    <property name="ant.build.javac.target" value="1.7" />
+    <property name="ant.build.javac.source" value="1.8" />
+    <property name="ant.build.javac.target" value="1.8" />
 
     <property name="dir.perf.java" location="perf/java"/>
 
@@ -23,7 +23,7 @@
 
     <path id="perf.tools.classpath">
         <fileset dir="perf/lib" includes="**/*.jar"/>
-        <file file="target/dist/sbe.jar"/>
+        <file file="build/libs/sbe-all-1.1-RC2-SNAPSHOT.jar"/>
     </path>
 
     <path id="perf.build.classpath">

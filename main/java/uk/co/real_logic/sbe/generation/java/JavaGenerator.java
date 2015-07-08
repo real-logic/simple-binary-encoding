@@ -1154,7 +1154,7 @@ public class JavaGenerator implements CodeGenerator
             return;
         }
 
-        out.append("    @GroupOrder({");
+        out.append("@GroupOrder({");
         index = 0;
         for (final String name : groupClassNames)
         {

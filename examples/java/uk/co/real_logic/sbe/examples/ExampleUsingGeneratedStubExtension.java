@@ -35,8 +35,8 @@ public class ExampleUsingGeneratedStubExtension
     private static final byte[] MODEL;
     private static final UnsafeBuffer ACTIVATION_CODE;
 
-    private static final baseline.MessageHeaderDecoder READ_ONLY_MESSAGE_HEADER = new baseline.MessageHeaderDecoder();
-    private static final baseline.MessageHeaderEncoder MESSAGE_HEADER = new baseline.MessageHeaderEncoder();
+    private static final baseline.MessageHeaderDecoder MESSAGE_HEADER_DECODER = new baseline.MessageHeaderDecoder();
+    private static final baseline.MessageHeaderEncoder MESSAGE_HEADER_ENCODER = new baseline.MessageHeaderEncoder();
     private static final baseline.CarEncoder CAR_ENCODER_0 = new baseline.CarEncoder();
     private static final extension.CarEncoder CAR_ENCODER_1 = new extension.CarEncoder();
 
@@ -70,14 +70,14 @@ public class ExampleUsingGeneratedStubExtension
 
         // Setup for encoding a message
 
-        MESSAGE_HEADER.wrap(directBuffer, bufferOffset)
+        MESSAGE_HEADER_ENCODER.wrap(directBuffer, bufferOffset)
                       .blockLength(CAR_ENCODER_0.sbeBlockLength())
                       .templateId(CAR_ENCODER_0.sbeTemplateId())
                       .schemaId(CAR_ENCODER_0.sbeSchemaId())
                       .version(CAR_ENCODER_0.sbeSchemaVersion());
 
-        bufferOffset += MESSAGE_HEADER.encodedLength();
-        encodingLength += MESSAGE_HEADER.encodedLength();
+        bufferOffset += MESSAGE_HEADER_ENCODER.encodedLength();
+        encodingLength += MESSAGE_HEADER_ENCODER.encodedLength();
         encodingLength += encode(CAR_ENCODER_0, directBuffer, bufferOffset);
 
         // Optionally write the encoded buffer to a file for decoding by the On-The-Fly decoder
@@ -95,20 +95,20 @@ public class ExampleUsingGeneratedStubExtension
         // Decode the encoded message
 
         bufferOffset = 0;
-        READ_ONLY_MESSAGE_HEADER.wrap(directBuffer, bufferOffset);
+        MESSAGE_HEADER_DECODER.wrap(directBuffer, bufferOffset);
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
-        final int templateId = READ_ONLY_MESSAGE_HEADER.templateId();
+        final int templateId = MESSAGE_HEADER_DECODER.templateId();
         if (templateId != extension.CarEncoder.TEMPLATE_ID)
         {
             throw new IllegalStateException("Template ids do not match");
         }
 
-        final int actingBlockLength = READ_ONLY_MESSAGE_HEADER.blockLength();
-        final int schemaId = READ_ONLY_MESSAGE_HEADER.schemaId();
-        final int actingVersion = READ_ONLY_MESSAGE_HEADER.version();
+        final int actingBlockLength = MESSAGE_HEADER_DECODER.blockLength();
+        final int schemaId = MESSAGE_HEADER_DECODER.schemaId();
+        final int actingVersion = MESSAGE_HEADER_DECODER.version();
 
-        bufferOffset += READ_ONLY_MESSAGE_HEADER.encodedLength();
+        bufferOffset += MESSAGE_HEADER_DECODER.encodedLength();
         decode(CAR_DECODER_1, directBuffer, bufferOffset, schemaId, actingBlockLength, actingVersion);
     }
 
