@@ -46,12 +46,16 @@
             <classpath refid="perf.tools.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.target.perf.java}"/>
             <sysproperty key="sbe.target.language" value="Java"/>
+            <sysproperty key="sbe.java.mutable.buffer" value="uk.co.real_logic.agrona.concurrent.UnsafeBuffer"/>
+            <sysproperty key="sbe.java.readonly.buffer" value="uk.co.real_logic.agrona.concurrent.UnsafeBuffer"/>
             <arg value="${dir.resources.sbe}/car.xml"/>
         </java>
         <java classname="uk.co.real_logic.sbe.SbeTool" failonerror="true" fork="true">
             <classpath refid="perf.tools.classpath"/>
             <sysproperty key="sbe.output.dir" value="${dir.target.perf.java}"/>
             <sysproperty key="sbe.target.language" value="Java"/>
+            <sysproperty key="sbe.java.mutable.buffer" value="uk.co.real_logic.agrona.concurrent.UnsafeBuffer"/>
+            <sysproperty key="sbe.java.readonly.buffer" value="uk.co.real_logic.agrona.concurrent.UnsafeBuffer"/>
             <arg value="${dir.resources.sbe}/fix-message-samples.xml"/>
         </java>
 
