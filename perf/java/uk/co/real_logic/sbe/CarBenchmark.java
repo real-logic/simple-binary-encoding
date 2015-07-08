@@ -19,8 +19,8 @@ package uk.co.real_logic.sbe;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
+import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.examples.*;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -36,10 +36,10 @@ public class CarBenchmark
     {
         try
         {
-            MAKE = "MAKE".getBytes(Car.makeCharacterEncoding());
-            MODEL = "MODEL".getBytes(Car.modelCharacterEncoding());
-            ENG_MAN_CODE = "abc".getBytes(Engine.manufacturerCodeCharacterEncoding());
-            VEHICLE_CODE = "abcdef".getBytes(Car.vehicleCodeCharacterEncoding());
+            MAKE = "MAKE".getBytes(CarEncoder.makeCharacterEncoding());
+            MODEL = "MODEL".getBytes(CarEncoder.modelCharacterEncoding());
+            ENG_MAN_CODE = "abc".getBytes(EngineEncoder.manufacturerCodeCharacterEncoding());
+            VEHICLE_CODE = "abcdef".getBytes(CarEncoder.vehicleCodeCharacterEncoding());
         }
         catch (final UnsupportedEncodingException ex)
         {
@@ -51,61 +51,69 @@ public class CarBenchmark
     public static class MyState
     {
         final int bufferIndex = 0;
-        final Car car = new Car();
-        final MessageHeader messageHeader = new MessageHeader();
-        final DirectBuffer encodeBuffer = new DirectBuffer(ByteBuffer.allocateDirect(1024));
+
+        final MessageHeaderEncoder messageHeaderEncoder = new MessageHeaderEncoder();
+        final MessageHeaderDecoder messageHeaderDecoder = new MessageHeaderDecoder();
+
+        final CarEncoder carEncoder = new CarEncoder();
+        final CarDecoder carDecoder = new CarDecoder();
+
+        final UnsafeBuffer encodeBuffer = new UnsafeBuffer(ByteBuffer.allocateDirect(1024));
 
         final byte[] tempBuffer = new byte[128];
-        final DirectBuffer decodeBuffer = new DirectBuffer(ByteBuffer.allocateDirect(1024));
+        final UnsafeBuffer decodeBuffer = new UnsafeBuffer(ByteBuffer.allocateDirect(1024));
 
         {
-            CarBenchmark.encode(messageHeader, car, decodeBuffer, bufferIndex);
+            CarBenchmark.encode(messageHeaderEncoder, carEncoder, decodeBuffer, bufferIndex);
         }
     }
 
     @Benchmark
     public int testEncode(final MyState state)
     {
-        final Car car = state.car;
-        final MessageHeader messageHeader = state.messageHeader;
-        final DirectBuffer buffer = state.encodeBuffer;
+        final MessageHeaderEncoder messageHeaderEncoder = state.messageHeaderEncoder;
+        final CarEncoder carEncoder = state.carEncoder;
+        final UnsafeBuffer buffer = state.encodeBuffer;
         final int bufferIndex = state.bufferIndex;
 
-        encode(messageHeader, car, buffer, bufferIndex);
+        encode(messageHeaderEncoder, carEncoder, buffer, bufferIndex);
 
-        return car.size();
+        return carEncoder.encodedLength();
     }
 
     @Benchmark
     public int testDecode(final MyState state)
     {
-        final Car car = state.car;
-        final MessageHeader messageHeader = state.messageHeader;
-        final DirectBuffer buffer = state.decodeBuffer;
+        final MessageHeaderDecoder messageHeaderDecoder = state.messageHeaderDecoder;
+        final CarDecoder carDecoder = state.carDecoder;
+        final UnsafeBuffer buffer = state.decodeBuffer;
         final int bufferIndex = state.bufferIndex;
         final byte[] tempBuffer = state.tempBuffer;
 
-        decode(messageHeader, car, buffer, bufferIndex, tempBuffer);
+        decode(messageHeaderDecoder, carDecoder, buffer, bufferIndex, tempBuffer);
 
-        return car.size();
+        return carDecoder.encodedLength();
     }
 
-    public static void encode(final MessageHeader messageHeader, final Car car, final DirectBuffer buffer, final int bufferIndex)
+    public static void encode(
+        final MessageHeaderEncoder messageHeader, final CarEncoder car, final UnsafeBuffer buffer, final int bufferIndex)
     {
-        messageHeader.wrap(buffer, bufferIndex, 0)
-                     .blockLength(car.sbeBlockLength())
-                     .templateId(car.sbeTemplateId())
-                     .schemaId(car.sbeSchemaId())
-                     .version(car.sbeSchemaVersion());
+        messageHeader
+            .wrap(buffer, bufferIndex)
+            .blockLength(car.sbeBlockLength())
+            .templateId(car.sbeTemplateId())
+            .schemaId(car.sbeSchemaId())
+            .version(car.sbeSchemaVersion());
 
-        car.wrapForEncode(buffer, bufferIndex + messageHeader.size())
-           .code(Model.A)
-           .modelYear(2005)
-           .serialNumber(12345)
-           .available(BooleanType.TRUE)
-           .putVehicleCode(VEHICLE_CODE, 0);
+        car
+            .wrap(buffer, bufferIndex + messageHeader.encodedLength())
+            .code(Model.A)
+            .modelYear(2005)
+            .serialNumber(12345)
+            .available(BooleanType.TRUE)
+            .putVehicleCode(VEHICLE_CODE, 0);
 
-        for (int i = 0, size = Car.someNumbersLength(); i < size; i++)
+        for (int i = 0, size = CarEncoder.someNumbersLength(); i < size; i++)
         {
             car.someNumbers(i, i);
         }
@@ -122,7 +130,7 @@ public class CarBenchmark
            .next().speed(55).mpg(49.0f)
            .next().speed(75).mpg(40.0f);
 
-        final Car.PerformanceFigures perfFigures = car.performanceFiguresCount(2);
+        final CarEncoder.PerformanceFiguresEncoder perfFigures = car.performanceFiguresCount(2);
         perfFigures.next().octaneRating((short)95)
                    .accelerationCount(3).next().mph(30).seconds(4.0f)
                    .next().mph(60).seconds(7.5f)
@@ -138,61 +146,61 @@ public class CarBenchmark
 
 
     private static void decode(
-        final MessageHeader messageHeader,
-        final Car car,
-        final DirectBuffer buffer,
+        final MessageHeaderDecoder messageHeader,
+        final CarDecoder car,
+        final UnsafeBuffer buffer,
         final int bufferIndex,
         final byte[] tempBuffer)
     {
-        messageHeader.wrap(buffer, bufferIndex, 0);
+        messageHeader.wrap(buffer, bufferIndex);
 
         final int actingVersion = messageHeader.version();
         final int actingBlockLength = messageHeader.blockLength();
 
-        car.wrapForDecode(buffer, bufferIndex + messageHeader.size(), actingBlockLength, actingVersion);
+        car.wrap(buffer, bufferIndex + messageHeader.encodedLength(), actingBlockLength, actingVersion);
 
         car.serialNumber();
         car.modelYear();
         car.available();
         car.code();
 
-        for (int i = 0, size = Car.someNumbersLength(); i < size; i++)
+        for (int i = 0, size = CarDecoder.someNumbersLength(); i < size; i++)
         {
             car.someNumbers(i);
         }
 
-        for (int i = 0, size = Car.vehicleCodeLength(); i < size; i++)
+        for (int i = 0, size = CarDecoder.vehicleCodeLength(); i < size; i++)
         {
             car.vehicleCode(i);
         }
 
-        final OptionalExtras extras = car.extras();
+        final OptionalExtrasDecoder extras = car.extras();
         extras.cruiseControl();
         extras.sportsPack();
         extras.sunRoof();
 
-        final Engine engine = car.engine();
+        final EngineDecoder engine = car.engine();
         engine.capacity();
         engine.numCylinders();
         engine.maxRpm();
-        for (int i = 0, size = Engine.manufacturerCodeLength(); i < size; i++)
+        for (int i = 0, size = EngineDecoder.manufacturerCodeLength(); i < size; i++)
         {
             engine.manufacturerCode(i);
         }
 
         engine.getFuel(tempBuffer, 0, tempBuffer.length);
 
-        for (final Car.FuelFigures fuelFigures : car.fuelFigures())
+        for (final CarDecoder.FuelFiguresDecoder fuelFigures : car.fuelFigures())
         {
             fuelFigures.speed();
             fuelFigures.mpg();
         }
 
-        for (final Car.PerformanceFigures performanceFigures : car.performanceFigures())
+        for (final CarDecoder.PerformanceFiguresDecoder performanceFigures : car.performanceFigures())
         {
             performanceFigures.octaneRating();
 
-            for (final Car.PerformanceFigures.Acceleration acceleration : performanceFigures.acceleration())
+            for (final CarDecoder.PerformanceFiguresDecoder.AccelerationDecoder acceleration : performanceFigures.acceleration())
             {
                 acceleration.mph();
                 acceleration.seconds();
@@ -232,10 +240,10 @@ public class CarBenchmark
 
         System.out.printf(
             "%d - %d(ns) average duration for %s.testEncode() - message encodedLength %d\n",
-            Integer.valueOf(runNumber),
-            Long.valueOf(totalDuration / reps),
+            runNumber,
+            (totalDuration / reps),
             benchmark.getClass().getName(),
-            Integer.valueOf(state.car.size() + state.messageHeader.size()));
+            (state.carEncoder.encodedLength() + state.messageHeaderEncoder.encodedLength()));
     }
 
     private static void perfTestDecode(final int runNumber)
@@ -254,9 +262,9 @@ public class CarBenchmark
 
         System.out.printf(
             "%d - %d(ns) average duration for %s.testDecode() - message encodedLength %d\n",
-            Integer.valueOf(runNumber),
-            Long.valueOf(totalDuration / reps),
+            runNumber,
+            (totalDuration / reps),
             benchmark.getClass().getName(),
-            Integer.valueOf(state.car.size() + state.messageHeader.size()));
+            (state.carDecoder.encodedLength() + state.messageHeaderDecoder.encodedLength()));
     }
 }

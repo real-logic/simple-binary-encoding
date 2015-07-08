@@ -18,7 +18,7 @@ package uk.co.real_logic.sbe;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
-import uk.co.real_logic.sbe.codec.java.DirectBuffer;
+import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.samples.fix.*;
 
 import java.nio.ByteBuffer;
@@ -29,61 +29,67 @@ public class MarketDataBenchmark
     public static class MyState
     {
         final int bufferIndex = 0;
-        final MarketDataIncrementalRefreshTrades marketData = new MarketDataIncrementalRefreshTrades();
-        final MessageHeader messageHeader = new MessageHeader();
-        final DirectBuffer encodeBuffer = new DirectBuffer(ByteBuffer.allocateDirect(1024));
 
-        final DirectBuffer decodeBuffer = new DirectBuffer(ByteBuffer.allocateDirect(1024));
+        final MessageHeaderEncoder messageHeaderEncoder = new MessageHeaderEncoder();
+        final MessageHeaderDecoder messageHeaderDecoder = new MessageHeaderDecoder();
+
+        final MarketDataIncrementalRefreshTradesEncoder marketDataEncoder = new MarketDataIncrementalRefreshTradesEncoder();
+        final MarketDataIncrementalRefreshTradesDecoder marketDataDecoder = new MarketDataIncrementalRefreshTradesDecoder();
+
+        final UnsafeBuffer encodeBuffer = new UnsafeBuffer(ByteBuffer.allocateDirect(1024));
+        final UnsafeBuffer decodeBuffer = new UnsafeBuffer(ByteBuffer.allocateDirect(1024));
 
         {
-            MarketDataBenchmark.encode(messageHeader, marketData, decodeBuffer, bufferIndex);
+            MarketDataBenchmark.encode(messageHeaderEncoder, marketDataEncoder, decodeBuffer, bufferIndex);
         }
     }
 
     @Benchmark
     public int testEncode(final MyState state)
     {
-        final MarketDataIncrementalRefreshTrades marketData = state.marketData;
-        final MessageHeader messageHeader = state.messageHeader;
-        final DirectBuffer buffer = state.encodeBuffer;
+        final MarketDataIncrementalRefreshTradesEncoder marketData = state.marketDataEncoder;
+        final MessageHeaderEncoder messageHeader = state.messageHeaderEncoder;
+        final UnsafeBuffer buffer = state.encodeBuffer;
         final int bufferIndex = state.bufferIndex;
 
         encode(messageHeader, marketData, buffer, bufferIndex);
 
-        return marketData.size();
+        return marketData.encodedLength();
     }
 
     @Benchmark
     public int testDecode(final MyState state)
     {
-        final MarketDataIncrementalRefreshTrades marketData = state.marketData;
-        final MessageHeader messageHeader = state.messageHeader;
-        final DirectBuffer buffer = state.decodeBuffer;
+        final MarketDataIncrementalRefreshTradesDecoder marketData = state.marketDataDecoder;
+        final MessageHeaderDecoder messageHeader = state.messageHeaderDecoder;
+        final UnsafeBuffer buffer = state.decodeBuffer;
         final int bufferIndex = state.bufferIndex;
 
         decode(messageHeader, marketData, buffer, bufferIndex);
 
-        return marketData.size();
+        return marketData.encodedLength();
     }
 
     public static void encode(
-        final MessageHeader messageHeader,
-        final MarketDataIncrementalRefreshTrades marketData,
-        final DirectBuffer buffer,
+        final MessageHeaderEncoder messageHeader,
+        final MarketDataIncrementalRefreshTradesEncoder marketData,
+        final UnsafeBuffer buffer,
         final int bufferIndex)
     {
-        messageHeader.wrap(buffer, bufferIndex, 0)
-                     .blockLength(marketData.sbeBlockLength())
-                     .templateId(marketData.sbeTemplateId())
-                     .schemaId(marketData.sbeSchemaId())
-                     .version(marketData.sbeSchemaVersion());
+        messageHeader
+            .wrap(buffer, bufferIndex)
+            .blockLength(marketData.sbeBlockLength())
+            .templateId(marketData.sbeTemplateId())
+            .schemaId(marketData.sbeSchemaId())
+            .version(marketData.sbeSchemaVersion());
 
-        marketData.wrapForEncode(buffer, bufferIndex + messageHeader.size())
-                  .transactTime(1234L)
-                  .eventTimeDelta(987)
-                  .matchEventIndicator(MatchEventIndicator.END_EVENT);
+        marketData
+            .wrap(buffer, bufferIndex + messageHeader.encodedLength())
+            .transactTime(1234L)
+            .eventTimeDelta(987)
+            .matchEventIndicator(MatchEventIndicator.END_EVENT);
 
-        final MarketDataIncrementalRefreshTrades.MdIncGrp mdIncGrp = marketData.mdIncGrpCount(2);
+        final MarketDataIncrementalRefreshTradesEncoder.MdIncGrpEncoder mdIncGrp = marketData.mdIncGrpCount(2);
 
         mdIncGrp.next();
         mdIncGrp.tradeId(1234L);
@@ -110,23 +116,23 @@ public class MarketDataBenchmark
 
 
     private static void decode(
-        final MessageHeader messageHeader,
-        final MarketDataIncrementalRefreshTrades marketData,
-        final DirectBuffer buffer,
+        final MessageHeaderDecoder messageHeader,
+        final MarketDataIncrementalRefreshTradesDecoder marketData,
+        final UnsafeBuffer buffer,
         final int bufferIndex)
     {
-        messageHeader.wrap(buffer, bufferIndex, 0);
+        messageHeader.wrap(buffer, bufferIndex);
 
         final int actingVersion = messageHeader.version();
         final int actingBlockLength = messageHeader.blockLength();
 
-        marketData.wrapForDecode(buffer, bufferIndex + messageHeader.size(), actingBlockLength, actingVersion);
+        marketData.wrap(buffer, bufferIndex + messageHeader.encodedLength(), actingBlockLength, actingVersion);
 
         marketData.transactTime();
         marketData.eventTimeDelta();
         marketData.matchEventIndicator();
 
-        for (final MarketDataIncrementalRefreshTrades.MdIncGrp mdIncGrp : marketData.mdIncGrp())
+        for (final MarketDataIncrementalRefreshTradesDecoder.MdIncGrpDecoder mdIncGrp : marketData.mdIncGrp())
         {
             mdIncGrp.tradeId();
             mdIncGrp.securityId();
@@ -169,10 +175,10 @@ public class MarketDataBenchmark
 
         System.out.printf(
             "%d - %d(ns) average duration for %s.testEncode() - message encodedLength %d\n",
-            Integer.valueOf(runNumber),
-            Long.valueOf(totalDuration / reps),
+            runNumber,
+            (totalDuration / reps),
             benchmark.getClass().getName(),
-            Integer.valueOf(state.marketData.size() + state.messageHeader.size()));
+            (state.marketDataEncoder.encodedLength() + state.messageHeaderEncoder.encodedLength()));
     }
 
     private static void perfTestDecode(final int runNumber)
@@ -191,9 +197,9 @@ public class MarketDataBenchmark
 
         System.out.printf(
             "%d - %d(ns) average duration for %s.testDecode() - message encodedLength %d\n",
-            Integer.valueOf(runNumber),
-            Long.valueOf(totalDuration / reps),
+            runNumber,
+            (totalDuration / reps),
             benchmark.getClass().getName(),
-            Integer.valueOf(state.marketData.size() + state.messageHeader.size()));
+            (state.marketDataDecoder.encodedLength() + state.messageHeaderDecoder.encodedLength()));
     }
 }
