@@ -1,6 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
-#ifndef _BYTEORDERCODEC_HPP_
-#define _BYTEORDERCODEC_HPP_
+#ifndef _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_BYTEORDERCODEC_HPP_
+#define _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_BYTEORDERCODEC_HPP_
 
 #if defined(SBE_HAVE_CMATH)
 /* cmath needed for std::numeric_limits<double>::quiet_NaN() */
