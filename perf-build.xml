@@ -84,6 +84,7 @@
 
     <target name="java:perf:test" depends="java:compile">
         <java classname="org.openjdk.jmh.Main" failonerror="true" fork="true">
+            <sysproperty key="agrona.disable.bounds.checks" value="true"/>
             <classpath refid="perf.tools.classpath"/>
             <classpath path="${dir.target.perf.dist}/microbenchmarks.jar"/>
             <arg value="-wi"/>
