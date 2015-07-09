@@ -481,18 +481,4 @@ public class JavaGeneratorTest
 
         return encoder;
     }
-
-    private void wrap2(
-        final int actingVersion,
-        final int bufferOffset,
-        final Object flyweight,
-        final MutableDirectBuffer buffer,
-        final Class<?> bufferClass)
-        throws Exception
-    {
-        flyweight
-            .getClass()
-            .getDeclaredMethod("wrap", bufferClass, int.class, int.class)
-            .invoke(flyweight, buffer, bufferOffset, actingVersion);
-    }
 }
