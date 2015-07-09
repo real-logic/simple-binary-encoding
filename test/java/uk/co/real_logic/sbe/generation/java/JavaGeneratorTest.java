@@ -74,7 +74,6 @@ public class JavaGeneratorTest
         final int bufferOffset = 64;
         final int templateIdOffset = 2;
         final short templateId = (short)7;
-        final int actingVersion = 0;
         final int blockLength = 32;
         final String fqClassName = ir.applicableNamespace() + "." + MESSAGE_HEADER_ENCODER_TYPE;
 
@@ -100,7 +99,6 @@ public class JavaGeneratorTest
         final int bufferOffset = 64;
         final int templateIdOffset = 2;
         final short templateId = (short)7;
-        final int actingVersion = 0;
         final String fqClassName = ir.applicableNamespace() + "." + MESSAGE_HEADER_DECODER_TYPE;
 
         when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
@@ -151,7 +149,6 @@ public class JavaGeneratorTest
     public void shouldGenerateChoiceSetStub() throws Exception
     {
         final int bufferOffset = 8;
-        final int actingVersion = 0;
         final byte bitset = (byte)0b0000_0100;
         final String className = "OptionalExtrasDecoder";
         final String fqClassName = ir.applicableNamespace() + "." + className;
@@ -169,7 +166,7 @@ public class JavaGeneratorTest
 
         final Object result = get(flyweight, "cruiseControl");
 
-        assertThat((Boolean)result, is(Boolean.TRUE));
+        assertThat(result, is(Boolean.TRUE));
     }
 
     @Test
@@ -208,7 +205,6 @@ public class JavaGeneratorTest
     @Test
     public void shouldGenerateCompositeDecoder() throws Exception
     {
-        final int actingVersion = 0;
         final int bufferOffset = 64;
         final int capacityFieldOffset = bufferOffset;
         final int expectedEngineCapacity = 2000;
