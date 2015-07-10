@@ -50,14 +50,16 @@ public class Cpp98Generator implements CodeGenerator
 
     public void generateMessageHeaderStub() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_ENCODER_TYPE))
+        final String messageHeader = "MessageHeader";
+
+        try (final Writer out = outputManager.createOutput(messageHeader))
         {
             final List<Token> tokens = ir.headerStructure().tokens();
-            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), MESSAGE_HEADER_ENCODER_TYPE, null));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_ENCODER_TYPE));
-            out.append(generateFixedFlyweightCode(MESSAGE_HEADER_ENCODER_TYPE, tokens.get(0).encodedLength()));
+            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), messageHeader, null));
+            out.append(generateClassDeclaration(messageHeader));
+            out.append(generateFixedFlyweightCode(messageHeader, tokens.get(0).encodedLength()));
             out.append(generatePrimitivePropertyEncodings(
-                MESSAGE_HEADER_ENCODER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+                messageHeader, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("};\n}\n#endif\n");
         }

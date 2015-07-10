@@ -1,13 +1,17 @@
 Simple Binary Encoding (SBE)
 ============================
 
-[SBE](http://www.fixtradingcommunity.org/pg/file/fplpo/read/1196757/simple-binary-encoding-release-candidate-2) is OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency applications.
+[SBE](http://www.fixtradingcommunity.org/pg/file/fplpo/read/1196757/simple-binary-encoding-release-candidate-2) is 
+OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency applications.
 
-Further details on the background and usage of SBE can be found on the [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
+Further details on the background and usage of SBE can be found on the
+[Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
 
-Benchmark tools and information can be found [here](https://github.com/real-logic/simple-binary-encoding/tree/master/perf) and run from he root perf-build.xml file.
+Benchmark tools and information can be found [here](https://github.com/real-logic/simple-binary-encoding/tree/master/perf)
+and run from he root perf-build.xml file.
 
-An XSD for SBE specs can be found [here](https://github.com/real-logic/simple-binary-encoding/blob/master/main/resources/fpl/SimpleBinary1-0.xsd)
+An XSD for SBE specs can be found
+[here](https://github.com/real-logic/simple-binary-encoding/blob/master/main/resources/fpl/SimpleBinary1-0.xsd)
 
 License (See LICENSE file for full license)
 -------------------------------------------
@@ -28,7 +32,8 @@ limitations under the License.
 Binaries
 --------
 
-Binaries and dependency information for Maven, Ivy, Gradle, and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22uk.co.real-logic%22%20AND%20a%3A%22sbe%22).
+Binaries and dependency information for Maven, Ivy, Gradle, and others can be found at 
+[http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22uk.co.real-logic%22%20AND%20a%3A%22sbe%22).
 
 Example for Maven:
 
@@ -36,7 +41,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe</artifactId>
-    <version>1.0-RC2</version>
+    <version>1.1-RC2</version>
 </dependency>
 ```
 
@@ -102,14 +107,15 @@ Android jars for the codec, source, and javadoc can be found in
 C++ Build using CMake
 ---------------------
 
-NOTE: Linux, Mac OS, and Windows only for the moment. See [FAQ](https://github.com/real-logic/simple-binary-encoding/wiki/Frequently-Asked-Questions).
+NOTE: Linux, Mac OS, and Windows only for the moment. See
+[FAQ](https://github.com/real-logic/simple-binary-encoding/wiki/Frequently-Asked-Questions).
 Windows builds have been tested with Visual Studio Express 12.
 
 First build using gradle to generate the SBE jar.
 
     $ ./gradlew
 
-Then build and test with CMake in the build subdirectory created by the gradle build.
+Then build and test with CMake __in the build subdirectory created by the gradle build__.
 
     $ cd build
     $ cmake ..
