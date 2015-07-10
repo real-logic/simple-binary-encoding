@@ -28,7 +28,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
 group = 'uk.co.real-logic'
-version = '1.1-RC2-SNAPSHOT'
+version = '1.1-RC2'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 ext {
@@ -177,11 +177,6 @@ jar {
     manifest.attributes('Main-Class': 'uk.co.real_logic.sbe.SbeTool')
 }
 
-shadowJar {
-    baseName = 'sbe-all'
-    classifier = ''
-}
-
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allSource
@@ -199,6 +194,58 @@ signing {
 
 artifacts {
     archives sourcesJar, javadocJar
+    shadow sourcesJar, javadocJar
+}
+
+shadowJar {
+    baseName = 'sbe-all'
+    classifier = ''
+}
+
+def projectPom = {
+    name = 'sbe'
+    packaging = 'jar'
+    // optionally artifactId can be defined here
+    description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency applications'
+    url = 'https://github.com/real-logic/simple-binary-encoding'
+
+    scm {
+        connection = 'scm:git:github.com/real-logic/simple-binary-encoding.git'
+        developerConnection = 'scm:git:github.com/real-logic/simple-binary-encoding.git'
+        url = 'github.com/real-logic/simple-binary-encoding.git'
+    }
+
+    licenses {
+        license {
+            name = 'The Apache License, Version 2.0'
+            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        }
+    }
+
+    developers {
+        developer {
+            id = 'tmontgomery'
+            name = 'Todd L. Montgomery'
+            email = 'tmont@nard.net'
+            url = 'https://github.com/tmontgomery'
+        }
+        developer {
+            id = 'mjpt777'
+            name = 'Martin Thompson'
+            email = 'mjpt777@gmail.com'
+            url = 'https://github.com/mjpt777'
+        }
+        developer {
+            id = 'odeheurles'
+            name = 'Olivier Deheurles'
+            email = 'olivier@weareadaptive.com'
+            url = 'https://github.com/odeheurles'
+        }
+    }
+}
+
+install {
+    repositories.mavenInstaller.pom.project(projectPom)
 }
 
 uploadArchives {
@@ -214,47 +261,25 @@ uploadArchives {
                 authentication(userName: ossrhUsername, password: ossrhPassword)
             }
 
-            pom.project {
-                name = 'sbe'
-                packaging = 'jar'
-                // optionally artifactId can be defined here
-                description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency applications'
-                url = 'https://github.com/real-logic/simple-binary-encoding'
+            pom.project(projectPom)
+        }
+    }
+}
 
-                scm {
-                    connection = 'scm:git:github.com/real-logic/simple-binary-encoding.git'
-                    developerConnection = 'scm:git:github.com/real-logic/simple-binary-encoding.git'
-                    url = 'github.com/real-logic/simple-binary-encoding.git'
-                }
+uploadShadow {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id = 'tmontgomery'
-                        name = 'Todd L. Montgomery'
-                        email = 'tmont@nard.net'
-                        url = 'https://github.com/tmontgomery'
-                    }
-                    developer {
-                        id = 'mjpt777'
-                        name = 'Martin Thompson'
-                        email = 'mjpt777@gmail.com'
-                        url = 'https://github.com/mjpt777'
-                    }
-                    developer {
-                        id = 'odeheurles'
-                        name = 'Olivier Deheurles'
-                        email = 'olivier@weareadaptive.com'
-                        url = 'https://github.com/odeheurles'
-                    }
-                }
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
             }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project(projectPom)
         }
     }
 }
