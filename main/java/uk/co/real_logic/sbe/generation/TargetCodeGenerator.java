@@ -51,8 +51,8 @@ public enum TargetCodeGenerator
             {
                 return new JavaGenerator(
                     ir,
-                    System.getProperty(JAVA_MUTABLE_BUFFER, JAVA_DEFAULT_MUTABLE_BUFFER),
-                    System.getProperty(JAVA_READ_ONLY_BUFFER, JAVA_DEFAULT_READ_ONLY_BUFFER),
+                    System.getProperty(JAVA_ENCODING_BUFFER_TYPE, JAVA_DEFAULT_ENCODING_BUFFER_TYPE),
+                    System.getProperty(JAVA_DECODING_BUFFER_TYPE, JAVA_DEFAULT_DECODING_BUFFER_TYPE),
                     new PackageOutputManager(outputDir, ir.applicableNamespace()));
             }
         },

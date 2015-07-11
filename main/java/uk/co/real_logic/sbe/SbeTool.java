@@ -104,22 +104,22 @@ public class SbeTool
     /**
      * Specifies the name of the Java mutable buffer to wrap
      */
-    public static final String JAVA_MUTABLE_BUFFER = "sbe.java.mutable.buffer";
+    public static final String JAVA_ENCODING_BUFFER_TYPE = "sbe.java.encoding.buffer.type";
 
     /**
      * Specifies the name of the Java read only buffer to wrap
      */
-    public static final String JAVA_READ_ONLY_BUFFER = "sbe.java.readonly.buffer";
+    public static final String JAVA_DECODING_BUFFER_TYPE = "sbe.java.decoding.buffer.type";
 
     /**
      * Default class to use as the buffer mutable implementation in generated code.
      */
-    public static final String JAVA_DEFAULT_MUTABLE_BUFFER = MutableDirectBuffer.class.getName();
+    public static final String JAVA_DEFAULT_ENCODING_BUFFER_TYPE = MutableDirectBuffer.class.getName();
 
     /**
      * Default class to use as the buffer read only implementation in generated code.
      */
-    public static final String JAVA_DEFAULT_READ_ONLY_BUFFER = DirectBuffer.class.getName();
+    public static final String JAVA_DEFAULT_DECODING_BUFFER_TYPE = DirectBuffer.class.getName();
 
     /**
      * Main entry point for the SBE Tool.
@@ -213,11 +213,12 @@ public class SbeTool
         throws Exception
     {
         final ParserOptions.Builder optionsBuilder =
-            ParserOptions.builder()
-                         .xsdFilename(System.getProperty(SbeTool.VALIDATION_XSD))
-                         .stopOnError(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_STOP_ON_ERROR)))
-                         .warningsFatal(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_WARNINGS_FATAL)))
-                         .suppressOutput(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT)));
+            ParserOptions
+                .builder()
+                .xsdFilename(System.getProperty(SbeTool.VALIDATION_XSD))
+                .stopOnError(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_STOP_ON_ERROR)))
+                .warningsFatal(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_WARNINGS_FATAL)))
+                .suppressOutput(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT)));
 
         try (final BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename)))
         {
