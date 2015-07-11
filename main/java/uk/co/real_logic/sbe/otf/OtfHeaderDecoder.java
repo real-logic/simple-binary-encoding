@@ -31,7 +31,7 @@ import java.nio.ByteOrder;
  */
 public class OtfHeaderDecoder
 {
-    private final int size;
+    private final int length;
 
     private int blockLengthOffset;
     private int templateIdOffset;
@@ -54,7 +54,7 @@ public class OtfHeaderDecoder
      */
     public OtfHeaderDecoder(final HeaderStructure headerStructure)
     {
-        size = headerStructure.tokens().get(0).encodedLength();
+        length = headerStructure.tokens().get(0).encodedLength();
 
         for (final Token token : headerStructure.tokens())
         {
@@ -92,9 +92,9 @@ public class OtfHeaderDecoder
      *
      * @return the encodedLength of the message header in bytes.
      */
-    public int size()
+    public int encodedLength()
     {
-        return size;
+        return length;
     }
 
     /**

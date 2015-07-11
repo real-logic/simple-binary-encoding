@@ -152,25 +152,25 @@ final class BitUtil
     }
 
     /**
-     * Builds a DirectByteBuffer out of an address and a size. Uses the same
+     * Builds a DirectByteBuffer out of an address and a length. Uses the same
      * constructor as the buffers that are created from JNI, thus it does not
      * deallocate the memory when the {@link ByteBuffer} object is garbage collected.
      *
      * @param address  where the memory begins off-heap
-     * @param size     of the buffer from the given address
-     * @return the {@link ByteBuffer} associated with the address and size
+     * @param length     of the buffer from the given address
+     * @return the {@link ByteBuffer} associated with the address and length
      */
-    static ByteBuffer newDirectByteBuffer(final long address, final int size)
+    static ByteBuffer newDirectByteBuffer(final long address, final int length)
     {
         try
         {
             if (USE_LONG_ADDRESS)
             {
-                return (ByteBuffer)DIRECT_BYTE_BUFFER_CONSTRUCTOR.newInstance(address, size);
+                return (ByteBuffer)DIRECT_BYTE_BUFFER_CONSTRUCTOR.newInstance(address, length);
             }
             else
             {
-                return (ByteBuffer)DIRECT_BYTE_BUFFER_CONSTRUCTOR.newInstance((int) address, size);
+                return (ByteBuffer)DIRECT_BYTE_BUFFER_CONSTRUCTOR.newInstance((int) address, length);
             }
         }
         catch (

@@ -70,7 +70,7 @@ public class OtfExample
         final int actingVersion = headerDecoder.getSchemaVersion(buffer, bufferOffset);
         final int blockLength = headerDecoder.getBlockLength(buffer, bufferOffset);
 
-        bufferOffset += headerDecoder.size();
+        bufferOffset += headerDecoder.encodedLength();
 
         // Given the header information we can select the appropriate message template to do the decode.
         // The OTF Java classes are thread safe so the same instances can be reused across multiple threads.
@@ -91,36 +91,37 @@ public class OtfExample
         }
     }
 
-    private static void encodeSchema(final ByteBuffer buffer)
+    private static void encodeSchema(final ByteBuffer byteBuffer)
         throws Exception
     {
         try (final InputStream in = new FileInputStream("examples/resources/example-schema.xml"))
         {
             final MessageSchema schema = XmlSchemaParser.parse(in, ParserOptions.DEFAULT);
             final Ir ir = new IrGenerator().generate(schema);
-            try (final IrEncoder irEncoder = new IrEncoder(buffer, ir))
+            try (final IrEncoder irEncoder = new IrEncoder(byteBuffer, ir))
             {
                 irEncoder.encode();
             }
         }
     }
 
-    private static void encodeTestMessage(final ByteBuffer buffer)
+    private static void encodeTestMessage(final ByteBuffer byteBuffer)
     {
-        final UnsafeBuffer directBuffer = new UnsafeBuffer(buffer);
+        final UnsafeBuffer buffer = new UnsafeBuffer(byteBuffer);
 
         int bufferOffset = 0;
-        MESSAGE_HEADER.wrap(directBuffer, bufferOffset)
-                      .blockLength(CAR_ENCODER.sbeBlockLength())
-                      .templateId(CAR_ENCODER.sbeTemplateId())
-                      .schemaId(CAR_ENCODER.sbeSchemaId())
-                      .version(CAR_ENCODER.sbeSchemaVersion());
+        MESSAGE_HEADER
+            .wrap(buffer, bufferOffset)
+            .blockLength(CAR_ENCODER.sbeBlockLength())
+            .templateId(CAR_ENCODER.sbeTemplateId())
+            .schemaId(CAR_ENCODER.sbeSchemaId())
+            .version(CAR_ENCODER.sbeSchemaVersion());
 
         bufferOffset += MESSAGE_HEADER.encodedLength();
 
-        bufferOffset += ExampleUsingGeneratedStub.encode(CAR_ENCODER, directBuffer, bufferOffset);
+        bufferOffset += ExampleUsingGeneratedStub.encode(CAR_ENCODER, buffer, bufferOffset);
 
-        buffer.position(bufferOffset);
+        byteBuffer.position(bufferOffset);
     }
 
     private static Ir decodeIr(final ByteBuffer buffer)

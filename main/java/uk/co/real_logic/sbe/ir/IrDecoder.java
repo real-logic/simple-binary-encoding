@@ -15,16 +15,15 @@
  */
 package uk.co.real_logic.sbe.ir;
 
+import uk.co.real_logic.agrona.CloseHelper;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.ir.generated.FrameCodecDecoder;
 import uk.co.real_logic.sbe.ir.generated.TokenCodecDecoder;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -33,7 +32,7 @@ import java.util.List;
 
 import static uk.co.real_logic.sbe.ir.IrUtil.*;
 
-public class IrDecoder implements Closeable
+public class IrDecoder implements AutoCloseable
 {
     private static final int CAPACITY = 4096;
 
@@ -42,7 +41,7 @@ public class IrDecoder implements Closeable
     private final FrameCodecDecoder frameDecoder = new FrameCodecDecoder();
     private final TokenCodecDecoder tokenDecoder = new TokenCodecDecoder();
     private int offset;
-    private final long size;
+    private final long length;
     private String irPackageName = null;
     private String irNamespaceName = null;
     private String semanticVersion = null;
@@ -52,37 +51,41 @@ public class IrDecoder implements Closeable
     private final byte[] valArray = new byte[CAPACITY];
     private final MutableDirectBuffer valBuffer = new UnsafeBuffer(valArray);
 
-    public IrDecoder(final String fileName) throws IOException
+    public IrDecoder(final String fileName)
     {
-        channel = new RandomAccessFile(fileName, "r").getChannel();
-        final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-        directBuffer = new UnsafeBuffer(buffer);
-        size = channel.size();
-        offset = 0;
+        try
+        {
+            channel = new RandomAccessFile(fileName, "r").getChannel();
+            final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            directBuffer = new UnsafeBuffer(buffer);
+            length = channel.size();
+            offset = 0;
+        }
+        catch (final IOException ex)
+        {
+            throw new RuntimeException(ex);
+        }
     }
 
     public IrDecoder(final ByteBuffer buffer)
     {
         channel = null;
-        size = buffer.limit();
+        length = buffer.limit();
         directBuffer = new UnsafeBuffer(buffer);
         offset = 0;
     }
 
-    public void close() throws IOException
+    public void close()
     {
-        if (channel != null)
-        {
-            channel.close();
-        }
+        CloseHelper.quietClose(channel);
     }
 
-    public Ir decode() throws IOException
+    public Ir decode()
     {
         decodeFrame();
 
         final List<Token> tokens = new ArrayList<>();
-        while (offset < size)
+        while (offset < length)
         {
             tokens.add(decodeToken());
         }
@@ -143,7 +146,7 @@ public class IrDecoder implements Closeable
         return index;
     }
 
-    private void decodeFrame() throws UnsupportedEncodingException
+    private void decodeFrame()
     {
         frameDecoder.wrap(directBuffer, offset, frameDecoder.sbeBlockLength(), 0);
 
@@ -172,7 +175,7 @@ public class IrDecoder implements Closeable
         offset += frameDecoder.encodedLength();
     }
 
-    private Token decodeToken() throws UnsupportedEncodingException
+    private Token decodeToken()
     {
         final Token.Builder tokenBuilder = new Token.Builder();
         final Encoding.Builder encBuilder = new Encoding.Builder();

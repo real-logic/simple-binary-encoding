@@ -51,7 +51,7 @@ public class JsonPrinter
         validateId(schemaId);
         validateVersion(schemaId, actingVersion);
 
-        bufferOffset += headerDecoder.size();
+        bufferOffset += headerDecoder.encodedLength();
 
         final List<Token> msgTokens = ir.getMessage(templateId);
 

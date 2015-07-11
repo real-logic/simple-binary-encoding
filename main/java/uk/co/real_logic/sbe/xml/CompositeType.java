@@ -154,12 +154,12 @@ public class CompositeType extends Type
     {
         if (containedTypeByNameMap.get("blockLength") == null)
         {
-            XmlSchemaParser.handleError(node, "composite for group size encoding must have \"blockLength\"");
+            XmlSchemaParser.handleError(node, "composite for group encodedLength encoding must have \"blockLength\"");
         }
 
         if (containedTypeByNameMap.get("numInGroup") == null)
         {
-            XmlSchemaParser.handleError(node, "composite for group size encoding must have \"numInGroup\"");
+            XmlSchemaParser.handleError(node, "composite for group encodedLength encoding must have \"numInGroup\"");
         }
     }
 
