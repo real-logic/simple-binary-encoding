@@ -34,7 +34,7 @@ public class ExampleUsingGeneratedStub
     private static final UnsafeBuffer ACTIVATION_CODE;
 
     private static final MessageHeaderDecoder MESSAGE_HEADER_DECODER = new MessageHeaderDecoder();
-    private static final MessageHeaderEncoder HEADER_ENCODER = new MessageHeaderEncoder();
+    private static final MessageHeaderEncoder MESSAGE_HEADER_ENCODER = new MessageHeaderEncoder();
     private static final CarDecoder CAR_DECODER = new CarDecoder();
     private static final CarEncoder CAR_ENCODER = new CarEncoder();
 
@@ -65,14 +65,15 @@ public class ExampleUsingGeneratedStub
 
         // Setup for encoding a message
 
-        HEADER_ENCODER.wrap(directBuffer, bufferOffset)
-                      .blockLength(CAR_ENCODER.sbeBlockLength())
-                      .templateId(CAR_ENCODER.sbeTemplateId())
-                      .schemaId(CAR_ENCODER.sbeSchemaId())
-                      .version(CAR_ENCODER.sbeSchemaVersion());
+        MESSAGE_HEADER_ENCODER
+            .wrap(directBuffer, bufferOffset)
+            .blockLength(CAR_ENCODER.sbeBlockLength())
+            .templateId(CAR_ENCODER.sbeTemplateId())
+            .schemaId(CAR_ENCODER.sbeSchemaId())
+            .version(CAR_ENCODER.sbeSchemaVersion());
 
-        bufferOffset += HEADER_ENCODER.encodedLength();
-        encodingLength += HEADER_ENCODER.encodedLength();
+        bufferOffset += MESSAGE_HEADER_ENCODER.encodedLength();
+        encodingLength += MESSAGE_HEADER_ENCODER.encodedLength();
         encodingLength += encode(CAR_ENCODER, directBuffer, bufferOffset);
 
         // Optionally write the encoded buffer to a file for decoding by the On-The-Fly decoder
@@ -99,9 +100,9 @@ public class ExampleUsingGeneratedStub
             throw new IllegalStateException("Template ids do not match");
         }
 
-        final int actingBlockLength = MESSAGE_HEADER_DECODER.blockLength();
-        final int schemaId = MESSAGE_HEADER_DECODER.schemaId();
-        final int actingVersion = MESSAGE_HEADER_DECODER.version();
+    final int actingBlockLength = MESSAGE_HEADER_DECODER.blockLength();
+    final int schemaId = MESSAGE_HEADER_DECODER.schemaId();
+    final int actingVersion = MESSAGE_HEADER_DECODER.version();
 
         bufferOffset += MESSAGE_HEADER_DECODER.encodedLength();
         decode(CAR_DECODER, directBuffer, bufferOffset, actingBlockLength, schemaId, actingVersion);
@@ -112,11 +113,11 @@ public class ExampleUsingGeneratedStub
         final int srcOffset = 0;
 
         car.wrap(directBuffer, bufferOffset)
-           .serialNumber(1234)
-           .modelYear(2013)
-           .available(BooleanType.TRUE)
-           .code(Model.A)
-           .putVehicleCode(VEHICLE_CODE, srcOffset);
+            .serialNumber(1234)
+            .modelYear(2013)
+            .available(BooleanType.TRUE)
+            .code(Model.A)
+            .putVehicleCode(VEHICLE_CODE, srcOffset);
 
         for (int i = 0, size = CarEncoder.someNumbersLength(); i < size; i++)
         {
@@ -124,34 +125,34 @@ public class ExampleUsingGeneratedStub
         }
 
         car.extras()
-           .clear()
-           .cruiseControl(true)
-           .sportsPack(true)
-           .sunRoof(false);
+            .clear()
+            .cruiseControl(true)
+            .sportsPack(true)
+            .sunRoof(false);
 
         car.engine()
-           .capacity(2000)
-           .numCylinders((short)4)
-           .putManufacturerCode(MANUFACTURER_CODE, srcOffset);
+            .capacity(2000)
+            .numCylinders((short)4)
+            .putManufacturerCode(MANUFACTURER_CODE, srcOffset);
 
         car.fuelFiguresCount(3)
-           .next().speed(30).mpg(35.9f)
-           .next().speed(55).mpg(49.0f)
-           .next().speed(75).mpg(40.0f);
+            .next().speed(30).mpg(35.9f)
+            .next().speed(55).mpg(49.0f)
+            .next().speed(75).mpg(40.0f);
 
         final CarEncoder.PerformanceFiguresEncoder perfFigures = car.performanceFiguresCount(2);
         perfFigures.next()
-                   .octaneRating((short)95)
-                   .accelerationCount(3)
-                   .next().mph(30).seconds(4.0f)
-                   .next().mph(60).seconds(7.5f)
-                   .next().mph(100).seconds(12.2f);
+            .octaneRating((short)95)
+            .accelerationCount(3)
+            .next().mph(30).seconds(4.0f)
+            .next().mph(60).seconds(7.5f)
+            .next().mph(100).seconds(12.2f);
         perfFigures.next()
-                   .octaneRating((short)99)
-                   .accelerationCount(3)
-                   .next().mph(30).seconds(3.8f)
-                   .next().mph(60).seconds(7.1f)
-                   .next().mph(100).seconds(11.8f);
+            .octaneRating((short)99)
+            .accelerationCount(3)
+            .next().mph(30).seconds(3.8f)
+            .next().mph(60).seconds(7.1f)
+            .next().mph(100).seconds(11.8f);
 
         car.make(new String(MAKE));
         car.putModel(MODEL, srcOffset, MODEL.length);
@@ -228,17 +229,17 @@ public class ExampleUsingGeneratedStub
             }
         }
 
-        sb.append("\ncar.make.semanticType=").append(CarEncoder.makeMetaAttribute(MetaAttribute.SEMANTIC_TYPE));
-        sb.append("\ncar.make=").append(car.make());
+    sb.append("\ncar.make.semanticType=").append(CarEncoder.makeMetaAttribute(MetaAttribute.SEMANTIC_TYPE));
+    sb.append("\ncar.make=").append(car.make());
 
-        sb.append("\ncar.model=").append(
-            new String(buffer, 0, car.getModel(buffer, 0, buffer.length), CarEncoder.modelCharacterEncoding()));
+    sb.append("\ncar.model=").append(
+        new String(buffer, 0, car.getModel(buffer, 0, buffer.length), CarEncoder.modelCharacterEncoding()));
 
-        final UnsafeBuffer tempBuffer = new UnsafeBuffer(buffer);
-        final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());
-        sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength));
+    final UnsafeBuffer tempBuffer = new UnsafeBuffer(buffer);
+    final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());
+    sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength));
 
-        sb.append("\ncar.encodedLength=").append(car.encodedLength());
+    sb.append("\ncar.encodedLength=").append(car.encodedLength());
 
         System.out.println(sb);
     }
