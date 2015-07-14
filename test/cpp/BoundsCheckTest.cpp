@@ -22,7 +22,7 @@
 using namespace std;
 using namespace code_generation_test;
 
-#define SERIAL_NUMBER 1234
+#define SERIAL_NUMBER 1234u
 #define MODEL_YEAR 2013
 #define AVAILABLE (BooleanType::TRUE)
 #define CODE (Model::A)

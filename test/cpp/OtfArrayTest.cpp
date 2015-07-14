@@ -60,7 +60,7 @@ protected:
             EXPECT_EQ(f.numEncodings(), 1);
             EXPECT_EQ(f.fieldName(), "CharArrayField");
             EXPECT_EQ(f.primitiveType(), Ir::CHAR);
-            EXPECT_EQ(f.length(), STR_FIELD_VALUE_SIZE);  // works for char, uint8, and int8, but not for others
+            EXPECT_EQ(f.length(), static_cast<int>(STR_FIELD_VALUE_SIZE));  // works for char, uint8, and int8, but not for others
             f.getArray(0, fieldValue, 0, STR_FIELD_VALUE_SIZE);
             EXPECT_EQ(std::string(fieldValue, STR_FIELD_VALUE_SIZE), STR_FIELD_VALUE);
         }
@@ -183,7 +183,7 @@ protected:
             EXPECT_EQ(f.numEncodings(), 1);
             EXPECT_EQ(f.fieldName(), "CharArrayField");
             EXPECT_EQ(f.primitiveType(), Ir::CHAR);
-            EXPECT_EQ(f.length(), STR_FIELD_VALUE_SIZE);
+            EXPECT_EQ(f.length(), static_cast<int>(STR_FIELD_VALUE_SIZE));
             f.getArray(0, fieldValue, 0, STR_FIELD_VALUE_SIZE);
             EXPECT_EQ(std::string(fieldValue, STR_FIELD_VALUE_SIZE), STR_FIELD_VALUE);
         }

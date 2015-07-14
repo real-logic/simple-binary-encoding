@@ -114,11 +114,11 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageCorrectly)
     EXPECT_EQ(sz, 40);
 
     EXPECT_EQ(*(::uint16_t *)buffer, TestMessage1::Entries::sbeBlockLength());
-    EXPECT_EQ(*(::uint8_t *)(buffer + 7), 2);
-    EXPECT_EQ(*(::uint64_t *)(buffer + 8), 10);
-    EXPECT_EQ(*(::int64_t *)(buffer + 16), 20);
-    EXPECT_EQ(*(::uint64_t *)(buffer + 24), 30);
-    EXPECT_EQ(*(::int64_t *)(buffer + 32), 40);
+    EXPECT_EQ(*(::uint8_t *)(buffer + 7), 2u);
+    EXPECT_EQ(*(::uint64_t *)(buffer + 8), 10u);
+    EXPECT_EQ(*(::int64_t *)(buffer + 16), 20u);
+    EXPECT_EQ(*(::uint64_t *)(buffer + 24), 30u);
+    EXPECT_EQ(*(::int64_t *)(buffer + 32), 40u);
 }
 
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToDecodeHeaderAndMsgCorrectly)
@@ -144,13 +144,13 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToDecodeHeaderAndMsgCorrectly)
 
     ASSERT_TRUE(entries.hasNext());
     entries.next();
-    EXPECT_EQ(entries.tagGroup1(), 10);
-    EXPECT_EQ(entries.tagGroup2(), 20);
+    EXPECT_EQ(entries.tagGroup1(), 10u);
+    EXPECT_EQ(entries.tagGroup2(), 20u);
 
     ASSERT_TRUE(entries.hasNext());
     entries.next();
-    EXPECT_EQ(entries.tagGroup1(), 30);
-    EXPECT_EQ(entries.tagGroup2(), 40);
+    EXPECT_EQ(entries.tagGroup1(), 30u);
+    EXPECT_EQ(entries.tagGroup2(), 40u);
 
     EXPECT_EQ(msgDecoder_.size(), 40);
 }

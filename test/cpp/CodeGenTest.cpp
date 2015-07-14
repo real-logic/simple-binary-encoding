@@ -35,16 +35,16 @@ static char MANUFACTURER_CODE[] = { '1', '2', '3' };
 static const char *MAKE = "Honda";
 static const char *MODEL = "Civic VTi";
 
-static const size_t VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
-static const size_t MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
-static const size_t MAKE_LENGTH = 5;
-static const size_t MODEL_LENGTH = 9;
-static const size_t PERFORMANCE_FIGURES_COUNT = 2;
-static const size_t FUEL_FIGURES_COUNT = 3;
-static const size_t ACCELERATION_COUNT = 3;
+static const int VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
+static const int MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
+static const int MAKE_LENGTH = 5;
+static const int MODEL_LENGTH = 9;
+static const int PERFORMANCE_FIGURES_COUNT = 2;
+static const int FUEL_FIGURES_COUNT = 3;
+static const int ACCELERATION_COUNT = 3;
 
-static const size_t expectedHeaderSize = 8;
-static const size_t expectedCarSize = 105;
+static const int expectedHeaderSize = 8;
+static const int expectedCarSize = 105;
 
 static const sbe_uint16_t fuel1Speed = 30;
 static const sbe_float_t fuel1Mpg = 35.9f;
@@ -186,7 +186,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeAndDecodeMessageHeaderCorrectly)
 TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarFieldIdsAndCharacterEncoding)
 {
     EXPECT_EQ(Car::charConstId(), 100);
-    size_t expectedId = 1;
+    int expectedId = 1;
     EXPECT_EQ(Car::serialNumberId(), expectedId++);
     EXPECT_EQ(Car::modelYearId(), expectedId++);
     EXPECT_EQ(Car::availableId(), expectedId++);
@@ -213,7 +213,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
     char buffer[2048];
     int sz = encodeCar(buffer, 0, sizeof(buffer));
 
-    size_t offset = 0;
+    int offset = 0;
     EXPECT_EQ(*(::uint32_t *)(buffer + offset), SERIAL_NUMBER);
     offset += sizeof(::uint32_t);
     EXPECT_EQ(*(::uint16_t *)(buffer + offset), MODEL_YEAR);
@@ -236,7 +236,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
     // fuel figures
     EXPECT_EQ(*(::uint16_t *)(buffer + offset), 6);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(buffer + offset), FUEL_FIGURES_COUNT);
+    EXPECT_EQ(*(::uint8_t *)(buffer + offset), FUEL_FIGURES_COUNT);
     offset += sizeof(::uint8_t);
     EXPECT_EQ(*(::uint16_t *)(buffer + offset), fuel1Speed);
     offset += sizeof(::uint16_t);
@@ -254,14 +254,14 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
     // performance figures
     EXPECT_EQ(*(::uint16_t *)(buffer + offset), 1);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(buffer + offset), PERFORMANCE_FIGURES_COUNT);
+    EXPECT_EQ(*(::uint8_t *)(buffer + offset), PERFORMANCE_FIGURES_COUNT);
     offset += sizeof(::uint8_t);
     EXPECT_EQ(*(buffer + offset), perf1Octane);
     offset += sizeof(::uint8_t);
     // acceleration
     EXPECT_EQ(*(::uint16_t *)(buffer + offset), 6);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(buffer + offset), ACCELERATION_COUNT);
+    EXPECT_EQ(*(::uint8_t *)(buffer + offset), ACCELERATION_COUNT);
     offset += sizeof(::uint8_t);
     EXPECT_EQ(*(::uint16_t *)(buffer + offset), perf1aMph);
     offset += sizeof(::uint16_t);
@@ -281,7 +281,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
     // acceleration
     EXPECT_EQ(*(::uint16_t *)(buffer + offset), 6);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(buffer + offset), ACCELERATION_COUNT);
+    EXPECT_EQ(*(::uint8_t *)(buffer + offset), ACCELERATION_COUNT);
     offset += sizeof(::uint8_t);
     EXPECT_EQ(*(::uint16_t *)(buffer + offset), perf2aMph);
     offset += sizeof(::uint16_t);
@@ -297,11 +297,11 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
     offset += sizeof(float);
 
     // make & model
-    EXPECT_EQ(*(buffer + offset), MAKE_LENGTH);
+    EXPECT_EQ(*(::uint8_t *)(buffer + offset), MAKE_LENGTH);
     offset += sizeof(::uint8_t);
     EXPECT_EQ(std::string(buffer + offset, MAKE_LENGTH), MAKE);
     offset += MAKE_LENGTH;
-    EXPECT_EQ(*(buffer + offset), MODEL_LENGTH);
+    EXPECT_EQ(*(::uint8_t *)(buffer + offset), MODEL_LENGTH);
     offset += sizeof(::uint8_t);
     EXPECT_EQ(std::string(buffer + offset, MODEL_LENGTH), MODEL);
     offset += MODEL_LENGTH;
@@ -322,7 +322,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeHeaderPlusCarCorrectly)
     EXPECT_EQ(*((::uint16_t *)buffer), Car::sbeBlockLength());
     const size_t modelPosition = hdrSz + carSz - MODEL_LENGTH;
     const size_t modelLengthPosition = modelPosition - 1;
-    EXPECT_EQ(*(buffer + modelLengthPosition /* 103*/), MODEL_LENGTH);
+    EXPECT_EQ(*(::uint8_t *)(buffer + modelLengthPosition /* 103*/), MODEL_LENGTH);
     EXPECT_EQ(std::string(buffer + modelPosition /*104*/, MODEL_LENGTH), MODEL);
 }
 

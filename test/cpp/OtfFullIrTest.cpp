@@ -36,7 +36,7 @@ enum HeaderIds
 };
 
 // Template Id for the Car message
-static const uint8_t carTemplateId = 1;
+//static const uint8_t carTemplateId = 1;
 // Ids of fields within the Car message
 static const uint8_t fieldIdCharConst = 100;
 static const uint8_t fieldIdSerialNumber = 1;
@@ -268,7 +268,7 @@ public:
                 EXPECT_EQ(f.schemaId(), fieldIdCharConst);
                 EXPECT_EQ(f.primitiveType(), Ir::CHAR);
                 EXPECT_EQ(f.length(), 1);
-                EXPECT_EQ(f.getUInt(), charConstValue);
+                EXPECT_EQ(f.getUInt(), static_cast< ::uint64_t>(charConstValue));
                 break;
             }
             case EN_serialNumber:
@@ -289,21 +289,21 @@ public:
             {
                 EXPECT_EQ(f.schemaId(), fieldIdAvailable);
                 EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-                EXPECT_EQ(f.getUInt(), 1);
+                EXPECT_EQ(f.getUInt(), static_cast< ::uint64_t>(1));
                 break;
             }
             case EN_code:
             {
                 EXPECT_EQ(f.schemaId(), fieldIdCode);
                 EXPECT_EQ(f.primitiveType(), Ir::CHAR);
-                EXPECT_EQ(f.getUInt(), 'A');
+                EXPECT_EQ(f.getUInt(), static_cast< ::uint64_t>('A'));
                 break;
             }
             case EN_vehicleCode:
             {
                 EXPECT_EQ(f.schemaId(), fieldIdVehicleCode);
                 EXPECT_EQ(f.primitiveType(), Ir::CHAR);
-                EXPECT_EQ(f.length(), VEHICLE_CODE_LENGTH);
+                EXPECT_EQ(f.length(), static_cast<int>(VEHICLE_CODE_LENGTH));
                 f.getArray(0, tmp, 0, f.length());
                 EXPECT_EQ(std::string(tmp, VEHICLE_CODE_LENGTH), std::string(VEHICLE_CODE, VEHICLE_CODE_LENGTH));
                 break;
@@ -313,7 +313,7 @@ public:
                 EXPECT_EQ(f.isSet(), true);
                 EXPECT_EQ(f.schemaId(), fieldIdExtras);
                 EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-                EXPECT_EQ(f.getUInt(), 0x6);
+                EXPECT_EQ(f.getUInt(), static_cast< ::uint64_t>(0x6));
                 break;
             }
             case EN_engine:
@@ -324,11 +324,11 @@ public:
                 EXPECT_EQ(f.primitiveType(0), Ir::UINT16);
                 EXPECT_EQ(f.getUInt(0), engineCapacity);
                 EXPECT_EQ(f.primitiveType(1), Ir::UINT8);
-                EXPECT_EQ(f.getUInt(1), 4);
+                EXPECT_EQ(f.getUInt(1), static_cast< ::uint64_t>(4));
                 EXPECT_EQ(f.primitiveType(2), Ir::UINT16);
-                EXPECT_EQ(f.getUInt(2), 9000);
+                EXPECT_EQ(f.getUInt(2), static_cast< ::uint64_t>(9000));
                 EXPECT_EQ(f.primitiveType(3), Ir::CHAR);
-                EXPECT_EQ(f.length(3), MANUFACTURER_CODE_LENGTH);
+                EXPECT_EQ(f.length(3), static_cast<int>(MANUFACTURER_CODE_LENGTH));
                 f.getArray(3, tmp, 0, f.length(3));
                 EXPECT_EQ(std::string(tmp, MANUFACTURER_CODE_LENGTH), std::string(MANUFACTURER_CODE, MANUFACTURER_CODE_LENGTH));
                 EXPECT_EQ(f.primitiveType(4), Ir::CHAR);
@@ -612,7 +612,7 @@ public:
             case EN_make:
             {
                 EXPECT_EQ(f.schemaId(), fieldIdMake);
-                EXPECT_EQ(f.length(1), MAKE_LENGTH);
+                EXPECT_EQ(f.length(1), static_cast<int>(MAKE_LENGTH));
                 f.getArray(1, tmp, 0, f.length(1));
                 EXPECT_EQ(std::string(tmp, MAKE_LENGTH), MAKE);
                 break;
@@ -620,7 +620,7 @@ public:
             case EN_model:
             {
                 EXPECT_EQ(f.schemaId(), fieldIdModel);
-                EXPECT_EQ(f.length(1), MODEL_LENGTH);
+                EXPECT_EQ(f.length(1), static_cast<int>(MODEL_LENGTH));
                 f.getArray(1, tmp, 0, f.length(1));
                 EXPECT_EQ(std::string(tmp, MODEL_LENGTH), MODEL);
                 break;

@@ -47,6 +47,8 @@ if(UNIX)
 endif()
 
 if(APPLE)
+	# -Wall doesn't enable everything we want to see
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-compare -Wstrict-aliasing")
 	add_definitions(-DDarwin)
 elseif(MSVC)
 	add_definitions(-DWIN32)

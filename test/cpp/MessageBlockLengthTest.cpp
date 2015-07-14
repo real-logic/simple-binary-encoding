@@ -96,14 +96,14 @@ public:
         {
             EXPECT_EQ(f.schemaId(), 11);
             EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.getUInt(), 187);
+            EXPECT_EQ(f.getUInt(), static_cast< ::uint64_t>(187));
         }
         else if (eventNumber_ == 2)
         {
             EXPECT_EQ(f.isSet(), true);
             EXPECT_EQ(f.schemaId(), 12);
             EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-            EXPECT_EQ(f.getUInt(), 0x2);
+            EXPECT_EQ(f.getUInt(), static_cast< ::uint64_t>(0x2));
         }
         else if (eventNumber_ == 3)
         {
@@ -116,7 +116,7 @@ public:
         {
             EXPECT_EQ(f.schemaId(), 21);
             EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.getUInt(), 10);
+            EXPECT_EQ(f.getUInt(), static_cast< ::uint64_t>(10));
         }
         else if (eventNumber_ == 5)
         {
@@ -142,7 +142,7 @@ public:
         {
             EXPECT_EQ(f.schemaId(), 21);
             EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.getUInt(), 30);
+            EXPECT_EQ(f.getUInt(), static_cast< ::uint64_t>(30));
         }
         else if (eventNumber_ == 9)
         {
@@ -198,7 +198,6 @@ public:
 
 TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
 {
-
     int sz = encodeHdrAndMsg();
 
     ASSERT_EQ(sz, 54);
@@ -207,11 +206,11 @@ TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
     EXPECT_EQ(*((::uint16_t *)(buffer + 4)), MsgName::sbeSchemaId());
     EXPECT_EQ(*((::uint16_t *)(buffer + 6)), MsgName::sbeSchemaVersion());
 
-    EXPECT_EQ(*((::uint64_t *)(buffer + 8)), 187); // field 1
-    EXPECT_EQ(*((::uint8_t *)(buffer + 16)), 0x2); // field 2
+    EXPECT_EQ(*((::uint64_t *)(buffer + 8)), 187u); // field 1
+    EXPECT_EQ(*((::uint8_t *)(buffer + 16)), 0x2u); // field 2
 
-    EXPECT_EQ(*((::uint16_t *)(buffer + 19)), 16); // groupSizeEncoding blockLength
-    EXPECT_EQ(*((::uint8_t *)(buffer + 21)), 2);   // groupSizeEncoding numInGroup
+    EXPECT_EQ(*((::uint16_t *)(buffer + 19)), 16u); // groupSizeEncoding blockLength
+    EXPECT_EQ(*((::uint8_t *)(buffer + 21)), 2u);   // groupSizeEncoding numInGroup
 
     ASSERT_GE(IrCollection::loadFromFile("message-block-length-test.sbeir"), 0);
 

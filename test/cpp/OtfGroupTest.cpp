@@ -71,21 +71,21 @@ protected:
             EXPECT_EQ(numGroupsSeen_, 1);
             EXPECT_EQ(f.fieldName(), "FieldName");
             EXPECT_EQ(f.primitiveType(), Ir::UINT32);
-            EXPECT_EQ(f.getUInt(), 0);
+            EXPECT_EQ(f.getUInt(), 0u);
         }
         else if (numFieldsSeen_ == 3)
         {
             EXPECT_EQ(numGroupsSeen_, 3);
             EXPECT_EQ(f.fieldName(), "FieldName");
             EXPECT_EQ(f.primitiveType(), Ir::UINT32);
-            EXPECT_EQ(f.getUInt(), 1);
+            EXPECT_EQ(f.getUInt(), 1u);
         }
         else if (numFieldsSeen_ == 4)
         {
             EXPECT_EQ(numGroupsSeen_, 5);
             EXPECT_EQ(f.fieldName(), "FieldName");
             EXPECT_EQ(f.primitiveType(), Ir::UINT32);
-            EXPECT_EQ(f.getUInt(), 2);
+            EXPECT_EQ(f.getUInt(), 2u);
         }
         return 0;
     };
@@ -270,42 +270,42 @@ protected:
             EXPECT_EQ(numGroupsSeen_, 2);
             EXPECT_EQ(f.fieldName(), "FieldName");
             EXPECT_EQ(f.primitiveType(), Ir::UINT32);
-            EXPECT_EQ(f.getUInt(), 0);
+            EXPECT_EQ(f.getUInt(), 0u);
         }
         else if (numFieldsSeen_ == 3)
         {
             EXPECT_EQ(numGroupsSeen_, 4);
             EXPECT_EQ(f.fieldName(), "FieldName");
             EXPECT_EQ(f.primitiveType(), Ir::UINT32);
-            EXPECT_EQ(f.getUInt(), 1);
+            EXPECT_EQ(f.getUInt(), 1u);
         }
         else if (numFieldsSeen_ == 4)
         {
             EXPECT_EQ(numGroupsSeen_, 8);
             EXPECT_EQ(f.fieldName(), "FieldName");
             EXPECT_EQ(f.primitiveType(), Ir::UINT32);
-            EXPECT_EQ(f.getUInt(), 1);
+            EXPECT_EQ(f.getUInt(), 1u);
         }
         else if (numFieldsSeen_ == 5)
         {
             EXPECT_EQ(numGroupsSeen_, 10);
             EXPECT_EQ(f.fieldName(), "FieldName");
             EXPECT_EQ(f.primitiveType(), Ir::UINT32);
-            EXPECT_EQ(f.getUInt(), 2);
+            EXPECT_EQ(f.getUInt(), 2u);
         }
         else if (numFieldsSeen_ == 6)
         {
             EXPECT_EQ(numGroupsSeen_, 14);
             EXPECT_EQ(f.fieldName(), "FieldName");
             EXPECT_EQ(f.primitiveType(), Ir::UINT32);
-            EXPECT_EQ(f.getUInt(), 2);
+            EXPECT_EQ(f.getUInt(), 2u);
         }
         else if (numFieldsSeen_ == 7)
         {
             EXPECT_EQ(numGroupsSeen_, 16);
             EXPECT_EQ(f.fieldName(), "FieldName");
             EXPECT_EQ(f.primitiveType(), Ir::UINT32);
-            EXPECT_EQ(f.getUInt(), 3);
+            EXPECT_EQ(f.getUInt(), 3u);
         }
         return 0;
     };

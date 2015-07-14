@@ -103,7 +103,7 @@ public:
         return position_;
     }
 
-    void position(const sbe_uint64_t position)
+    void position(const int position)
     {
         if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), 0))
         {

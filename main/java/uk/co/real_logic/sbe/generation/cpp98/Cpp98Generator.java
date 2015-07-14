@@ -1048,7 +1048,7 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    int get%1$s(char *dst, const int length) const\n" +
             indent + "    {\n" +
             indent + "        static sbe_uint8_t %2$sValues[] = {%3$s};\n" +
-            indent + "        int bytesToCopy = (length < sizeof(%2$sValues)) ? length : sizeof(%2$sValues);\n\n" +
+            indent + "        int bytesToCopy = (length < (int)sizeof(%2$sValues)) ? length : (int)sizeof(%2$sValues);\n\n" +
             indent + "        ::memcpy(dst, %2$sValues, bytesToCopy);\n" +
             indent + "        return bytesToCopy;\n" +
             indent + "    }\n",
@@ -1159,7 +1159,7 @@ public class Cpp98Generator implements CodeGenerator
             "    {\n" +
             "        return position_;\n" +
             "    }\n\n" +
-            "    void position(const sbe_uint64_t position)\n" +
+            "    void position(const int position)\n" +
             "    {\n" +
             "        if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), 0))\n" +
             "        {\n" +
