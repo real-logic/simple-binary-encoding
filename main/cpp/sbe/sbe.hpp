@@ -68,22 +68,53 @@ namespace sbe {
 
 #if defined(SBE_NO_BOUNDS_CHECK)
     #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (false)
-#elif defined(WIN32) || defined(_WIN32)
+#elif defined(_MSC_VER)
     #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (exp)
 #else
     #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))
 #endif
 
-class MetaAttribute
+#if defined(__GNUC__)
+    #define SBE_NULLVALUE_INT8 (INT8_MIN)
+    #define SBE_NULLVALUE_INT16 (INT16_MIN)
+    #define SBE_NULLVALUE_INT32 (INT32_MIN)
+    #define SBE_NULLVALUE_INT64 (INT64_MIN)
+    #define SBE_NULLVALUE_UINT8 (UINT8_MAX)
+    #define SBE_NULLVALUE_UINT16 (UINT16_MAX)
+    #define SBE_NULLVALUE_UINT32 (UINT32_MAX)
+    #define SBE_NULLVALUE_UINT64 (UINT64_MAX)
+#elif defined(_MSC_VER)
+    // Visual C++ does not handle minimum integer values properly
+    // See: http://msdn.microsoft.com/en-us/library/4kh09110.aspx
+    #define SBE_NULLVALUE_INT8 (SCHAR_MIN)
+    #define SBE_NULLVALUE_INT16 (SHRT_MIN)
+    #define SBE_NULLVALUE_INT32 (LONG_MIN)
+    #define SBE_NULLVALUE_INT64 (LLONG_MIN)
+    #define SBE_NULLVALUE_UINT8 (UCHAR_MAX)
+    #define SBE_NULLVALUE_UINT16 (USHRT_MAX)
+    #define SBE_NULLVALUE_UINT32 (ULONG_MAX)
+    #define SBE_NULLVALUE_UINT64 (ULLONG_MAX)
+#else
+    #define SBE_NULLVALUE_INT8 (INT8_MIN)
+    #define SBE_NULLVALUE_INT16 (INT16_MIN)
+    #define SBE_NULLVALUE_INT32 (INT32_MIN)
+    #define SBE_NULLVALUE_INT64 (INT64_MIN)
+    #define SBE_NULLVALUE_UINT8 (UINT8_MAX)
+    #define SBE_NULLVALUE_UINT16 (UINT16_MAX)
+    #define SBE_NULLVALUE_UINT32 (UINT32_MAX)
+    #define SBE_NULLVALUE_UINT64 (UINT64_MAX)
+#endif
+
+namespace MetaAttribute {
+
+enum Attribute
 {
-public:
-    enum Attribute
-    {
-        EPOCH,
-        TIME_UNIT,
-        SEMANTIC_TYPE
-    };
+    EPOCH,
+    TIME_UNIT,
+    SEMANTIC_TYPE
 };
+
+}
 
 }
 

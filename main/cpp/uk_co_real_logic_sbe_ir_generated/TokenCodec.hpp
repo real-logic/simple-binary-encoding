@@ -157,7 +157,7 @@ public:
 
     static const sbe_int32_t tokenOffsetNullValue()
     {
-        return LONG_MIN;
+        return SBE_NULLVALUE_INT32;
     }
 
     static const sbe_int32_t tokenOffsetMinValue()
@@ -211,7 +211,7 @@ public:
 
     static const sbe_int32_t tokenSizeNullValue()
     {
-        return LONG_MIN;
+        return SBE_NULLVALUE_INT32;
     }
 
     static const sbe_int32_t tokenSizeMinValue()
@@ -265,7 +265,7 @@ public:
 
     static const sbe_int32_t fieldIdNullValue()
     {
-        return LONG_MIN;
+        return SBE_NULLVALUE_INT32;
     }
 
     static const sbe_int32_t fieldIdMinValue()
@@ -319,7 +319,7 @@ public:
 
     static const sbe_int32_t tokenVersionNullValue()
     {
-        return LONG_MIN;
+        return SBE_NULLVALUE_INT32;
     }
 
     static const sbe_int32_t tokenVersionMinValue()

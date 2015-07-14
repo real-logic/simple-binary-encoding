@@ -1413,21 +1413,21 @@ public class Cpp98Generator implements CodeGenerator
                 case DOUBLE:
                     break; // no special handling
                 case INT8:
-                    return "SCHAR_MIN";
+                    return "SBE_NULLVALUE_INT8";
                 case INT16:
-                    return "SHRT_MIN";
+                    return "SBE_NULLVALUE_INT16";
                 case INT32:
-                    return "LONG_MIN";
+                    return "SBE_NULLVALUE_INT32";
                 case INT64:
-                    return "LLONG_MIN";
+                    return "SBE_NULLVALUE_INT64";
                 case UINT8:
-                    return "UCHAR_MAX";
+                    return "SBE_NULLVALUE_UINT8";
                 case UINT16:
-                    return "USHRT_MAX";
+                    return "SBE_NULLVALUE_UINT16";
                 case UINT32:
-                    return "ULONG_MAX";
+                    return "SBE_NULLVALUE_UINT32";
                 case UINT64:
-                    return "ULLONG_MAX";
+                    return "SBE_NULLVALUE_UINT64";
             }
         }
         return generateLiteral(primitiveType, encoding.applicableNullValue().toString());

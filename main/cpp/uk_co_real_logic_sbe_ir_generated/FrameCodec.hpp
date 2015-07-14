@@ -157,7 +157,7 @@ public:
 
     static const sbe_int32_t irIdNullValue()
     {
-        return LONG_MIN;
+        return SBE_NULLVALUE_INT32;
     }
 
     static const sbe_int32_t irIdMinValue()
@@ -211,7 +211,7 @@ public:
 
     static const sbe_int32_t irVersionNullValue()
     {
-        return LONG_MIN;
+        return SBE_NULLVALUE_INT32;
     }
 
     static const sbe_int32_t irVersionMinValue()
@@ -265,7 +265,7 @@ public:
 
     static const sbe_int32_t schemaVersionNullValue()
     {
-        return LONG_MIN;
+        return SBE_NULLVALUE_INT32;
     }
 
     static const sbe_int32_t schemaVersionMinValue()

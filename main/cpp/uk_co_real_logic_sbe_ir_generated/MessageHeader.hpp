@@ -1,6 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
-#ifndef _MESSAGEHEADER_HPP_
-#define _MESSAGEHEADER_HPP_
+#ifndef _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_MESSAGEHEADER_HPP_
+#define _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_MESSAGEHEADER_HPP_
 
 #if defined(SBE_HAVE_CMATH)
 /* cmath needed for std::numeric_limits<double>::quiet_NaN() */
@@ -48,7 +48,7 @@ public:
 
     static const sbe_uint16_t blockLengthNullValue()
     {
-        return USHRT_MAX;
+        return SBE_NULLVALUE_UINT16;
     }
 
     static const sbe_uint16_t blockLengthMinValue()
@@ -74,7 +74,7 @@ public:
 
     static const sbe_uint16_t templateIdNullValue()
     {
-        return USHRT_MAX;
+        return SBE_NULLVALUE_UINT16;
     }
 
     static const sbe_uint16_t templateIdMinValue()
@@ -100,7 +100,7 @@ public:
 
     static const sbe_uint16_t schemaIdNullValue()
     {
-        return USHRT_MAX;
+        return SBE_NULLVALUE_UINT16;
     }
 
     static const sbe_uint16_t schemaIdMinValue()
@@ -126,7 +126,7 @@ public:
 
     static const sbe_uint16_t versionNullValue()
     {
-        return USHRT_MAX;
+        return SBE_NULLVALUE_UINT16;
     }
 
     static const sbe_uint16_t versionMinValue()
