@@ -13,11 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
 
 include(ExternalProject)
 
 enable_testing()
+
+# default built type is Release
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build" FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
 
 ExternalProject_Add(
 	gtest
@@ -36,16 +41,18 @@ set(GTEST_BINARY_DIR ${binary_dir})
 find_package(Threads)
 
 if(UNIX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fexceptions -g -Wall -Ofast -DNDEBUG")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fexceptions -g -Wall")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast")
 endif()
 
 if(APPLE)
 	add_definitions(-DDarwin)
-elseif(WIN32)
+elseif(MSVC)
 	add_definitions(-DWIN32)
 
-    set(CMAKE_CXX_FLAGS_DEBUG "/MTd /Od /Zi")
-    set(CMAKE_CXX_FLAGS_RELEASE "/MT")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /Od /Zi")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 else()
 	add_definitions(-D_GNU_SOURCE)
 endif()
@@ -65,8 +72,8 @@ endif()
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/codecs")
 set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test/resources")
-
-find_package(Threads)
+set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/perf/resources")
+set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/examples/resources")
 
 include_directories(
 	${GTEST_SOURCE_DIR}/include
@@ -76,4 +83,5 @@ include_directories(
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/main/cpp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test/cpp)
-
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/cpp98)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/perf/cpp)

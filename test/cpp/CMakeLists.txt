@@ -29,7 +29,7 @@ function(sbe_test name)
 	endif()
 endfunction()
 
-find_package(Java)
+find_package(Java REQUIRED)
 
 set(CODE_GENERATION_SCHEMA_CPP ${CODEC_SCHEMA_DIR}/code-generation-schema-cpp.xml)
 set(COMPOSITE_OFFSETS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-offsets-schema.xml)
