@@ -187,6 +187,8 @@ Ir::TokenPresence Ir::presence() const
 
 ::uint64_t Ir::choiceValue() const
 {
+    const char *vp = impl_->constValue;
+
     // constVal holds the validValue. primitiveType holds the type
     switch (primitiveType())
     {
@@ -195,15 +197,15 @@ Ir::TokenPresence Ir::presence() const
             break;
 
         case Ir::UINT16:
-            return *(::uint16_t *)(impl_->constValue);
+            return *(::uint16_t *)(vp);
             break;
 
         case Ir::UINT32:
-            return *(::uint32_t *)(impl_->constValue);
+            return *(::uint32_t *)(vp);
             break;
 
         case Ir::UINT64:
-            return *(::uint64_t *)(impl_->constValue);
+            return *(::uint64_t *)(vp);
             break;
 
         default:
