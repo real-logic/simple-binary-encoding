@@ -183,7 +183,8 @@ public class Cpp98Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    void wrapForDecode(char *buffer, int *pos, const int actingVersion, const int bufferLength)\n" +
+            indent + "    inline void wrapForDecode(char *buffer, int *pos, const int actingVersion," +
+            indent + " const int bufferLength)\n" +
             indent + "    {\n" +
             indent + "        buffer_ = buffer;\n" +
             indent + "        bufferLength_ = bufferLength;\n" +
@@ -203,8 +204,8 @@ public class Cpp98Generator implements CodeGenerator
         final String cpp98TypeForNumInGroup = cpp98TypeName(tokens.get(index + 3).encoding().primitiveType());
 
         sb.append(String.format(
-            indent + "    void wrapForEncode(char *buffer, const int count,\n" +
-            indent + "                       int *pos, const int actingVersion, const int bufferLength)\n" +
+            indent + "    inline void wrapForEncode(char *buffer, const int count," +
+            indent + " int *pos, const int actingVersion, const int bufferLength)\n" +
             indent + "    {\n" +
             indent + "        buffer_ = buffer;\n" +
             indent + "        bufferLength_ = bufferLength;\n" +
@@ -224,35 +225,24 @@ public class Cpp98Generator implements CodeGenerator
         sb.append(String.format(
             indent + "    static const int sbeHeaderSize()\n" +
             indent + "    {\n" +
-            indent + "        return %d;\n" +
-            indent + "    }\n\n",
-            dimensionHeaderLength
-        ));
-
-        sb.append(String.format(
+            indent + "        return %1$d;\n" +
+            indent + "    }\n\n" +
             indent + "    static const int sbeBlockLength()\n" +
             indent + "    {\n" +
-            indent + "        return %d;\n" +
-            indent + "    }\n\n",
-            blockLength
-        ));
-
-        sb.append(String.format(
-            indent + "    int count(void) const\n" +
+            indent + "        return %2$d;\n" +
+            indent + "    }\n\n" +
+            indent + "    inline int count(void) const\n" +
             indent + "    {\n" +
             indent + "        return count_;\n" +
             indent + "    }\n\n" +
-            indent + "    bool hasNext(void) const\n" +
+            indent + "    inline bool hasNext(void) const\n" +
             indent + "    {\n" +
             indent + "        return index_ + 1 < count_;\n" +
-            indent + "    }\n\n"
-        ));
-
-        sb.append(String.format(
-            indent + "    %1$s &next(void)\n" +
+            indent + "    }\n\n" +
+            indent + "    inline %3$s &next(void)\n" +
             indent + "    {\n" +
             indent + "        offset_ = *positionPtr_;\n" +
-            indent + "        if (SBE_BOUNDS_CHECK_EXPECT(( (offset_ + blockLength_) > bufferLength_ ),0))\n" +
+            indent + "        if (SBE_BOUNDS_CHECK_EXPECT(( (offset_ + blockLength_) > bufferLength_ ), false))\n" +
             indent + "        {\n" +
             indent + "            throw std::runtime_error(\"buffer too short to support next group index [E108]\");\n" +
             indent + "        }\n" +
@@ -260,6 +250,28 @@ public class Cpp98Generator implements CodeGenerator
             indent + "        ++index_;\n\n" +
             indent + "        return *this;\n" +
             indent + "    }\n\n",
+            dimensionHeaderLength, blockLength, formatClassName(groupName)
+        ));
+
+        sb.append(String.format(
+            indent + "#if __cplusplus < 201103L\n" +
+            indent + "    template<class Func>\n" +
+            indent + "    inline void forEach(Func& func)\n" +
+            indent + "    {\n" +
+            indent + "        while(hasNext())\n" +
+            indent + "        {\n" +
+            indent + "            next(); func(*this);\n" +
+            indent + "        }\n" +
+            indent + "    }\n\n" +
+            indent + "#else\n" +
+            indent + "    inline void forEach(std::function<void(%1$s&)> func)\n" +
+            indent + "    {\n" +
+            indent + "        while(hasNext())\n" +
+            indent + "        {\n" +
+            indent + "            next(); func(*this);\n" +
+            indent + "        }\n" +
+            indent + "    }\n\n" +
+            indent + "#endif\n\n",
             formatClassName(groupName)
         ));
     }
@@ -292,7 +304,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    %1$s &%2$s(void)\n" +
+            indent + "    inline %1$s &%2$s(void)\n" +
             indent + "    {\n" +
             indent + "        %2$s_.wrapForDecode(buffer_, positionPtr_, actingVersion_, bufferLength_);\n" +
             indent + "        return %2$s_;\n" +
@@ -1067,16 +1079,38 @@ public class Cpp98Generator implements CodeGenerator
             "    char *buffer_;\n" +
             "    int offset_;\n" +
             "    int actingVersion_;\n\n" +
-            "public:\n" +
-            "    %1$s &wrap(char *buffer, const int offset, const int actingVersion, const int bufferLength)\n" +
+            "    inline void reset(char *buffer, const int offset, const int bufferLength, const int actingVersion)\n" +
             "    {\n" +
-            "        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - %2$s)), 0))\n" +
+            "        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - %2$s)), false))\n" +
             "        {\n" +
             "            throw std::runtime_error(\"buffer too short for flyweight [E107]\");\n" +
             "        }\n" +
             "        buffer_ = buffer;\n" +
             "        offset_ = offset;\n" +
             "        actingVersion_ = actingVersion;\n" +
+            "    }\n\n" +
+            "public:\n" +
+            "    %1$s(void) : buffer_(NULL), offset_(0) {}\n\n" +
+            "    %1$s(char *buffer, const int bufferLength, const int actingVersion)\n" +
+            "    {\n" +
+            "        reset(buffer, 0, bufferLength, actingVersion);\n" +
+            "    }\n\n" +
+            "    %1$s(const %1$s& codec) :\n" +
+            "        buffer_(codec.buffer_), offset_(codec.offset_), actingVersion_(codec.actingVersion_) {}\n\n" +
+            "#if __cplusplus >= 201103L\n" +
+            "    %1$s(%1$s&& codec) = default;\n" +
+            "    %1$s& operator=(const %1$s&& codec) = default;\n" +
+            "#endif\n\n" +
+            "    %1$s& operator=(const %1$s& codec)\n" +
+            "    {\n" +
+            "        buffer_ = codec.buffer_;\n" +
+            "        offset_ = codec.offset_;\n" +
+            "        actingVersion_ = codec.actingVersion_;\n" +
+            "        return *this;\n" +
+            "    }\n\n" +
+            "    %1$s &wrap(char *buffer, const int offset, const int actingVersion, const int bufferLength)\n" +
+            "    {\n" +
+            "        reset(buffer, offset, bufferLength, actingVersion);\n" +
             "        return *this;\n" +
             "    }\n\n" +
             "    static const int size(void)\n" +
@@ -1085,6 +1119,43 @@ public class Cpp98Generator implements CodeGenerator
             "    }\n\n",
             className,
             size
+        );
+    }
+
+    private CharSequence generateConstructorsAndOperators(final String className)
+    {
+        return String.format(
+            "    %1$s(void) : buffer_(NULL), bufferLength_(0), offset_(0) {}\n\n" +
+            "    %1$s(char *buffer, const int bufferLength, const int actingBlockLength, const int actingVersion)\n" +
+            "    {\n" +
+            "        reset(buffer, 0, bufferLength, actingBlockLength, actingVersion);\n" +
+            "    }\n\n" +
+            "    %1$s(const %1$s& codec)\n" +
+            "    {\n" +
+            "        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_," +
+            " codec.actingVersion_);\n" +
+            "    }\n\n" +
+            "#if __cplusplus >= 201103L\n" +
+            "    %1$s(%1$s&& codec)\n" +
+            "    {\n" +
+            "        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_," +
+            " codec.actingVersion_);\n" +
+            "    }\n\n" +
+            "    %1$s& operator=(const %1$s&& codec)\n" +
+            "    {\n" +
+            "        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_," +
+            " codec.actingVersion_);\n" +
+            "        return *this;\n" +
+            "    }\n\n" +
+            "#endif\n\n" +
+            "    %1$s& operator=(const %1$s& codec)\n" +
+            "    {\n" +
+            "        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_," +
+            " codec.actingVersion_);\n" +
+            "        return *this;\n" +
+            "    }\n\n" +
+            "",
+            className
         );
     }
 
@@ -1105,9 +1176,19 @@ public class Cpp98Generator implements CodeGenerator
             "    int position_;\n" +
             "    int actingBlockLength_;\n" +
             "    int actingVersion_;\n\n" +
-            "    %10$s(const %10$s&) {}\n\n" +
+            "    inline void reset(char *buffer, const int offset, const int bufferLength, const int actingBlockLength," +
+            " const int actingVersion)\n" +
+            "    {\n" +
+            "        buffer_ = buffer;\n" +
+            "        offset_ = offset;\n" +
+            "        bufferLength_ = bufferLength;\n" +
+            "        actingBlockLength_ = actingBlockLength;\n" +
+            "        actingVersion_ = actingVersion;\n" +
+            "        positionPtr_ = &position_;\n" +
+            "        position(offset + actingBlockLength_);\n" +
+            "    }\n\n" +
             "public:\n\n" +
-            "    %10$s(void) : buffer_(NULL), bufferLength_(0), offset_(0) {}\n\n" +
+            "%11$s" +
             "    static const %1$s sbeBlockLength(void)\n" +
             "    {\n" +
             "        return %2$s;\n" +
@@ -1134,25 +1215,13 @@ public class Cpp98Generator implements CodeGenerator
             "    }\n\n" +
             "    %10$s &wrapForEncode(char *buffer, const int offset, const int bufferLength)\n" +
             "    {\n" +
-            "        buffer_ = buffer;\n" +
-            "        offset_ = offset;\n" +
-            "        bufferLength_ = bufferLength;\n" +
-            "        actingBlockLength_ = sbeBlockLength();\n" +
-            "        actingVersion_ = sbeSchemaVersion();\n" +
-            "        position(offset + actingBlockLength_);\n" +
-            "        positionPtr_ = &position_;\n" +
+            "        reset(buffer, offset, bufferLength, sbeBlockLength(), sbeSchemaVersion());\n" +
             "        return *this;\n" +
             "    }\n\n" +
-            "    %10$s &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion,\n" +
-            "                         const int bufferLength)\n" +
+            "    %10$s &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion," +
+            " const int bufferLength)\n" +
             "    {\n" +
-            "        buffer_ = buffer;\n" +
-            "        offset_ = offset;\n" +
-            "        bufferLength_ = bufferLength;\n" +
-            "        actingBlockLength_ = actingBlockLength;\n" +
-            "        actingVersion_ = actingVersion;\n" +
-            "        positionPtr_ = &position_;\n" +
-            "        position(offset + actingBlockLength_);\n" +
+            "        reset(buffer, offset, bufferLength, actingBlockLength, actingVersion);\n" +
             "        return *this;\n" +
             "    }\n\n" +
             "    sbe_uint64_t position(void) const\n" +
@@ -1161,7 +1230,7 @@ public class Cpp98Generator implements CodeGenerator
             "    }\n\n" +
             "    void position(const int position)\n" +
             "    {\n" +
-            "        if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), 0))\n" +
+            "        if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), false))\n" +
             "        {\n" +
             "            throw std::runtime_error(\"buffer too short [E100]\");\n" +
             "        }\n" +
@@ -1188,7 +1257,8 @@ public class Cpp98Generator implements CodeGenerator
             schemaVersionType,
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
             semanticType,
-            className
+            className,
+            generateConstructorsAndOperators(className)
         );
     }
 

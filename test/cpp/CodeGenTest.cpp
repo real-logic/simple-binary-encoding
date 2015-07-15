@@ -76,42 +76,40 @@ class CodeGenTest : public testing::Test
 {
 public:
 
-    virtual int encodeHdr(char *buffer, int offset, int bufferLength)
+    static int encodeHdr(MessageHeader& hdr)
     {
-        hdr_.wrap(buffer, offset, 0, bufferLength)
-            .blockLength(Car::sbeBlockLength())
+        hdr.blockLength(Car::sbeBlockLength())
             .templateId(Car::sbeTemplateId())
             .schemaId(Car::sbeSchemaId())
             .version(Car::sbeSchemaVersion());
 
-        return hdr_.size();
+        return hdr.size();
     }
 
-    virtual int encodeCar(char *buffer, int offset, int bufferLength)
+    static int encodeCar(Car& car)
     {
-        car_.wrapForEncode(buffer, offset, bufferLength)
-            .serialNumber(SERIAL_NUMBER)
+        car.serialNumber(SERIAL_NUMBER)
             .modelYear(MODEL_YEAR)
             .available(AVAILABLE)
             .code(CODE)
             .putVehicleCode(VEHICLE_CODE);
 
-        car_.extras().clear()
+        car.extras().clear()
             .cruiseControl(CRUISE_CONTROL)
             .sportsPack(SPORTS_PACK)
             .sunRoof(SUNROOF);
 
-        car_.engine()
+        car.engine()
             .capacity(engineCapacity)
             .numCylinders(engineNumCylinders)
             .putManufacturerCode(MANUFACTURER_CODE);
 
-        car_.fuelFiguresCount(FUEL_FIGURES_COUNT)
+        car.fuelFiguresCount(FUEL_FIGURES_COUNT)
             .next().speed(fuel1Speed).mpg(fuel1Mpg)
             .next().speed(fuel2Speed).mpg(fuel2Mpg)
             .next().speed(fuel3Speed).mpg(fuel3Mpg);
 
-        Car::PerformanceFigures &perfFigs = car_.performanceFiguresCount(PERFORMANCE_FIGURES_COUNT);
+        Car::PerformanceFigures &perfFigs = car.performanceFiguresCount(PERFORMANCE_FIGURES_COUNT);
 
         perfFigs.next()
             .octaneRating(perf1Octane)
@@ -127,10 +125,22 @@ public:
                 .next().mph(perf2bMph).seconds(perf2bSeconds)
                 .next().mph(perf2cMph).seconds(perf2cSeconds);
 
-        car_.putMake(MAKE, strlen(MAKE));
-        car_.putModel(MODEL, strlen(MODEL));
+        car.putMake(MAKE, strlen(MAKE));
+        car.putModel(MODEL, strlen(MODEL));
 
-        return car_.size();
+        return car.size();
+    }
+
+    virtual int encodeHdr(char *buffer, int offset, int bufferLength)
+    {
+        hdr_.wrap(buffer, offset, 0, bufferLength);
+        return encodeHdr(hdr_);
+    }
+
+    virtual int encodeCar(char *buffer, int offset, int bufferLength)
+    {
+        car_.wrapForEncode(buffer, offset, bufferLength);
+        return encodeCar(car_);
     }
 
     MessageHeader hdr_;
@@ -440,3 +450,75 @@ TEST_F(CodeGenTest, shouldbeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
 
     EXPECT_EQ(carDecoder_.size(), expectedCarSize);
 }
+
+struct CallbacksForEach
+{
+    int countOfFuelFigures;
+    int countOfPerformanceFigures;
+    int countOfAccelerations;
+
+    CallbacksForEach() : countOfFuelFigures(0), countOfPerformanceFigures(0), countOfAccelerations(0) {}
+
+    void operator()(Car::FuelFigures&)
+    {
+        countOfFuelFigures++;
+    }
+
+    void operator()(Car::PerformanceFigures& performanceFigures)
+    {
+        Car::PerformanceFigures::Acceleration acceleration = performanceFigures.acceleration();
+
+        countOfPerformanceFigures++;
+        acceleration.forEach(*this);
+    }
+
+    void operator()(Car::PerformanceFigures::Acceleration&)
+    {
+        countOfAccelerations++;
+    }
+};
+
+TEST_F(CodeGenTest, shouldbeAbleUseOnStackCodecsAndGroupForEach)
+{
+    char buffer[2048];
+    MessageHeader hdr(buffer, sizeof(buffer), 0);
+    Car car(buffer + hdr.size(), sizeof(buffer) - hdr.size(), Car::sbeBlockLength(), Car::sbeSchemaVersion());
+
+    int hdrSz = encodeHdr(hdr);
+    int carSz = encodeCar(car);
+
+    EXPECT_EQ(hdrSz, expectedHeaderSize);
+    EXPECT_EQ(carSz, expectedCarSize);
+
+    const MessageHeader hdrDecoder(buffer, sizeof(buffer), 0);
+
+    EXPECT_EQ(hdrDecoder.blockLength(), Car::sbeBlockLength());
+    EXPECT_EQ(hdrDecoder.templateId(), Car::sbeTemplateId());
+    EXPECT_EQ(hdrDecoder.schemaId(), Car::sbeSchemaId());
+    EXPECT_EQ(hdrDecoder.version(), Car::sbeSchemaVersion());
+    EXPECT_EQ(hdrDecoder.size(), expectedHeaderSize);
+
+    Car carDecoder(buffer + hdrDecoder.size(), sizeof(buffer) - hdrDecoder.size(), hdrDecoder.blockLength(), hdrDecoder.version());
+    CallbacksForEach cbs;
+
+    Car::FuelFigures &fuelFigures = carDecoder.fuelFigures();
+    EXPECT_EQ(fuelFigures.count(), FUEL_FIGURES_COUNT);
+    fuelFigures.forEach(cbs);
+
+    Car::PerformanceFigures &performanceFigures = carDecoder.performanceFigures();
+    EXPECT_EQ(performanceFigures.count(), PERFORMANCE_FIGURES_COUNT);
+    performanceFigures.forEach(cbs);
+
+    EXPECT_EQ(cbs.countOfFuelFigures, FUEL_FIGURES_COUNT);
+    EXPECT_EQ(cbs.countOfPerformanceFigures, PERFORMANCE_FIGURES_COUNT);
+    EXPECT_EQ(cbs.countOfAccelerations, ACCELERATION_COUNT * PERFORMANCE_FIGURES_COUNT);
+
+    EXPECT_EQ(carDecoder.makeLength(), MAKE_LENGTH);
+    EXPECT_EQ(std::string(carDecoder.make(), MAKE_LENGTH), MAKE);
+
+    EXPECT_EQ(carDecoder.modelLength(), MODEL_LENGTH);
+    EXPECT_EQ(std::string(carDecoder.model(), MODEL_LENGTH), MODEL);
+
+    EXPECT_EQ(carDecoder.size(), expectedCarSize);
+}
+
