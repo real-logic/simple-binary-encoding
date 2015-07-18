@@ -97,7 +97,7 @@ public:
         {
             EXPECT_EQ(f.schemaId(), 3);
             EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.getUInt(), 10);
+            EXPECT_EQ(f.getUInt(), 10u);
         }
         else if (eventNumber_ == 3)
         {
@@ -119,7 +119,7 @@ public:
         {
             EXPECT_EQ(f.schemaId(), 3);
             EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.getUInt(), 30);
+            EXPECT_EQ(f.getUInt(), 30u);
         }
         else if (eventNumber_ == 7)
         {

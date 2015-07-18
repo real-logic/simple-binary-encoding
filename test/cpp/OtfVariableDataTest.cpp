@@ -89,8 +89,8 @@ protected:
             EXPECT_EQ(f.primitiveType(0), Ir::UINT8);
             EXPECT_EQ(f.primitiveType(1), Ir::CHAR);
             EXPECT_EQ(f.length(0), 1);
-            EXPECT_EQ(f.length(1), VAR_DATA_CHAR_SIZE);
-            EXPECT_EQ(f.getUInt(0), VAR_DATA_CHAR_SIZE);
+            EXPECT_EQ(f.length(1), static_cast<int>(VAR_DATA_CHAR_SIZE));
+            EXPECT_EQ(f.getUInt(0), static_cast< ::uint64_t>(VAR_DATA_CHAR_SIZE));
             f.getArray(1, fieldValue, 0, VAR_DATA_CHAR_SIZE);
             EXPECT_EQ(std::string(fieldValue, VAR_DATA_CHAR_SIZE), VAR_DATA_CHAR_STR);
         }
@@ -106,8 +106,8 @@ protected:
             EXPECT_EQ(f.primitiveType(0), Ir::UINT8);
             EXPECT_EQ(f.primitiveType(1), Ir::UINT8);
             EXPECT_EQ(f.length(0), 1);
-            EXPECT_EQ(f.length(1), VAR_DATA_UINT8_SIZE);
-            EXPECT_EQ(f.getUInt(0), VAR_DATA_UINT8_SIZE);
+            EXPECT_EQ(f.length(1), static_cast<int>(VAR_DATA_UINT8_SIZE));
+            EXPECT_EQ(f.getUInt(0), static_cast< ::uint64_t>(VAR_DATA_UINT8_SIZE));
             f.getArray(1, fieldValue, 0, VAR_DATA_UINT8_SIZE);
             EXPECT_EQ(::memcmp(fieldValue, controlValue, VAR_DATA_UINT8_SIZE), 0);
         }

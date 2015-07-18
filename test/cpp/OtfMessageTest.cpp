@@ -45,10 +45,10 @@ public:
             EXPECT_EQ(f.primitiveType(1), Ir::UINT16);
             EXPECT_EQ(f.primitiveType(2), Ir::UINT8);
             EXPECT_EQ(f.primitiveType(3), Ir::UINT8);
-            EXPECT_EQ(f.getUInt(0), BLOCKLENGTH);
-            EXPECT_EQ(f.getUInt(1), TEMPLATE_ID);
-            EXPECT_EQ(f.getUInt(2), VERSION);
-            EXPECT_EQ(f.getUInt(3), 0);
+            EXPECT_EQ(f.getUInt(0), static_cast< ::uint64_t>(BLOCKLENGTH));
+            EXPECT_EQ(f.getUInt(1), static_cast< ::uint64_t>(TEMPLATE_ID));
+            EXPECT_EQ(f.getUInt(2), static_cast< ::uint64_t>(VERSION));
+            EXPECT_EQ(f.getUInt(3), static_cast< ::uint64_t>(0));
         }
         else if (numFieldsSeen_ == 2)
         {
@@ -58,7 +58,7 @@ public:
             EXPECT_EQ(f.numEncodings(), 1);
             EXPECT_EQ(f.encodingName(0), "uint32");
             EXPECT_EQ(f.primitiveType(0), Ir::UINT32);
-            EXPECT_EQ(f.getUInt(0), FIELD_VALUE);
+            EXPECT_EQ(f.getUInt(0), static_cast< ::uint64_t>(FIELD_VALUE));
         }
         return 0;
     };
@@ -171,15 +171,15 @@ TEST_F(OtfMessageTest, shouldHandleMessageDispatchWithIrCallbackReturningNULL)
 class OtfMessageAllPrimitiveTypesTest : public OtfMessageTest, public OtfMessageTestCBs
 {
 protected:
-#define FIELD_CHAR_VALUE 0xB
+#define FIELD_CHAR_VALUE 0xBu
 #define FIELD_INT8_VALUE -0xB
 #define FIELD_INT16_VALUE -0x0EED
 #define FIELD_INT32_VALUE -0x0EEDBEEF
 #define FIELD_INT64_VALUE -0x0EEDFEEDBEEFL
-#define FIELD_UINT8_VALUE 0xB
-#define FIELD_UINT16_VALUE 0xDEED
-#define FIELD_UINT32_VALUE 0xFEEDBEEF
-#define FIELD_UINT64_VALUE 0xDEEDFEEDBEEFL
+#define FIELD_UINT8_VALUE 0xBU
+#define FIELD_UINT16_VALUE 0xDEEDU
+#define FIELD_UINT32_VALUE 0xFEEDBEEFU
+#define FIELD_UINT64_VALUE 0xDEEDFEEDBEEFU
 #define FIELD_FLOAT_VALUE 7.11f
 #define FIELD_DOUBLE_VALUE 711.711f
 
@@ -310,8 +310,8 @@ TEST_F(OtfMessageAllPrimitiveTypesTest, shouldHandleAllTypesWithListenerReuse)
 class OtfMessageEnumTest : public OtfMessageTest, public OtfMessageTestCBs
 {
 protected:
-#define FIELD_ENUM_CHAR_VALUE 0x31
-#define FIELD_ENUM_UINT8_VALUE 0x10
+#define FIELD_ENUM_CHAR_VALUE 0x31u
+#define FIELD_ENUM_UINT8_VALUE 0x10u
 
     virtual void constructMessageIr(Ir &ir)
     {
@@ -387,7 +387,7 @@ protected:
             EXPECT_EQ(f.numEncodings(), 1);
             EXPECT_EQ(f.fieldName(), "EnumNoValidValueField");
             EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-            EXPECT_EQ(f.getUInt(), 0);
+            EXPECT_EQ(f.getUInt(), 0u);
             EXPECT_EQ(f.validValue(), "");
         }
         return 0;
@@ -407,10 +407,10 @@ TEST_F(OtfMessageEnumTest, shouldHandleEnum)
 class OtfMessageSetTest : public OtfMessageTest, public OtfMessageTestCBs
 {
 protected:
-#define FIELD_SET_UINT8_VALUE 0x01
-#define FIELD_SET_UINT16_VALUE 0x0200
-#define FIELD_SET_UINT32_VALUE 0x00010000
-#define FIELD_SET_UINT64_VALUE 0x0000000100000002L
+#define FIELD_SET_UINT8_VALUE 0x01u
+#define FIELD_SET_UINT16_VALUE 0x0200u
+#define FIELD_SET_UINT32_VALUE 0x00010000u
+#define FIELD_SET_UINT64_VALUE 0x0000000100000002U
 
     virtual void constructMessageIr(Ir &ir)
     {
@@ -493,7 +493,7 @@ protected:
             EXPECT_EQ(f.fieldName(), "SetUINT8Field");
             EXPECT_EQ(f.primitiveType(), Ir::UINT8);
             EXPECT_EQ(f.getUInt(), FIELD_SET_UINT8_VALUE);
-            EXPECT_EQ(f.choices().size(), 1);
+            EXPECT_EQ(f.choices().size(), 1u);
             for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
             {
                 EXPECT_TRUE(*it == "uint8Choice0");
@@ -506,7 +506,7 @@ protected:
             EXPECT_EQ(f.fieldName(), "SetUINT16Field");
             EXPECT_EQ(f.primitiveType(), Ir::UINT16);
             EXPECT_EQ(f.getUInt(), FIELD_SET_UINT16_VALUE);
-            EXPECT_EQ(f.choices().size(), 1);
+            EXPECT_EQ(f.choices().size(), 1u);
             for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
             {
                 EXPECT_TRUE(*it == "uint16Choice9");
@@ -519,7 +519,7 @@ protected:
             EXPECT_EQ(f.fieldName(), "SetUINT32Field");
             EXPECT_EQ(f.primitiveType(), Ir::UINT32);
             EXPECT_EQ(f.getUInt(), FIELD_SET_UINT32_VALUE);
-            EXPECT_EQ(f.choices().size(), 1);
+            EXPECT_EQ(f.choices().size(), 1u);
             for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
             {
                 EXPECT_TRUE(*it == "uint32Choice16");
@@ -532,7 +532,7 @@ protected:
             EXPECT_EQ(f.fieldName(), "SetUINT64Field");
             EXPECT_EQ(f.primitiveType(), Ir::UINT64);
             EXPECT_EQ(f.getUInt(), FIELD_SET_UINT64_VALUE);
-            EXPECT_EQ(f.choices().size(), 2);
+            EXPECT_EQ(f.choices().size(), 2u);
             for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
             {
                 EXPECT_TRUE(*it == "uint64Choice32" || *it == "uint64Choice1");
@@ -544,8 +544,8 @@ protected:
             EXPECT_EQ(f.numEncodings(), 1);
             EXPECT_EQ(f.fieldName(), "SetNoChoicesField");
             EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.getUInt(), 0);
-            EXPECT_EQ(f.choices().size(), 0);
+            EXPECT_EQ(f.getUInt(), 0u);
+            EXPECT_EQ(f.choices().size(), 0u);
         }
         return 0;
     };
@@ -731,7 +731,7 @@ protected:
             EXPECT_EQ(f.fieldName(), setFieldStr);
             EXPECT_EQ(f.primitiveType(), Ir::UINT8);
             EXPECT_EQ(f.getUInt(), FIELD_SET_UINT8_VALUE);
-            EXPECT_EQ(f.choices().size(), 1);
+            EXPECT_EQ(f.choices().size(), 1u);
             for (std::vector<std::string>::iterator it = ((std::vector<std::string>&)f.choices()).begin(); it != f.choices().end(); ++it)
             {
                 EXPECT_TRUE(*it == "uint8Choice0");

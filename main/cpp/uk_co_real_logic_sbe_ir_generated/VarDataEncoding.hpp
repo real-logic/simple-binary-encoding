@@ -48,7 +48,7 @@ public:
 
     static const sbe_uint8_t lengthNullValue()
     {
-        return UCHAR_MAX;
+        return SBE_NULLVALUE_UINT8;
     }
 
     static const sbe_uint8_t lengthMinValue()
@@ -74,7 +74,7 @@ public:
 
     static const sbe_uint8_t varDataNullValue()
     {
-        return UCHAR_MAX;
+        return SBE_NULLVALUE_UINT8;
     }
 
     static const sbe_uint8_t varDataMinValue()

@@ -83,14 +83,15 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldReturnCorrectValuesForTestMessage1Stat
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
 {
     char buffer[2048];
+    const char *bp = buffer;
 
     int sz = encodeHdr(buffer, 0, sizeof(buffer));
 
     EXPECT_EQ(sz, 12);
-    EXPECT_EQ(*((::uint16_t *)buffer), TestMessage1::sbeBlockLength());
-    EXPECT_EQ(*((::uint16_t *)(buffer + 4)), TestMessage1::sbeTemplateId());
-    EXPECT_EQ(*((::uint16_t *)(buffer + 8)), TestMessage1::sbeSchemaId());
-    EXPECT_EQ(*((::uint16_t *)(buffer + 10)), TestMessage1::sbeSchemaVersion());
+    EXPECT_EQ(*((::uint16_t *)bp), TestMessage1::sbeBlockLength());
+    EXPECT_EQ(*((::uint16_t *)(bp + 4)), TestMessage1::sbeTemplateId());
+    EXPECT_EQ(*((::uint16_t *)(bp + 8)), TestMessage1::sbeSchemaId());
+    EXPECT_EQ(*((::uint16_t *)(bp + 10)), TestMessage1::sbeSchemaVersion());
 }
 
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeAndDecodeMessageHeaderCorrectly)
@@ -109,16 +110,17 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeAndDecodeMessageHeaderCo
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageCorrectly)
 {
     char buffer[2048];
+    const char *bp = buffer;
     int sz = encodeMsg(buffer, 0, sizeof(buffer));
 
     EXPECT_EQ(sz, 40);
 
-    EXPECT_EQ(*(::uint16_t *)buffer, TestMessage1::Entries::sbeBlockLength());
-    EXPECT_EQ(*(::uint8_t *)(buffer + 7), 2);
-    EXPECT_EQ(*(::uint64_t *)(buffer + 8), 10);
-    EXPECT_EQ(*(::int64_t *)(buffer + 16), 20);
-    EXPECT_EQ(*(::uint64_t *)(buffer + 24), 30);
-    EXPECT_EQ(*(::int64_t *)(buffer + 32), 40);
+    EXPECT_EQ(*(::uint16_t *)bp, TestMessage1::Entries::sbeBlockLength());
+    EXPECT_EQ(*(::uint8_t *)(bp + 7), 2u);
+    EXPECT_EQ(*(::uint64_t *)(bp + 8), 10u);
+    EXPECT_EQ(*(::int64_t *)(bp + 16), 20u);
+    EXPECT_EQ(*(::uint64_t *)(bp + 24), 30u);
+    EXPECT_EQ(*(::int64_t *)(bp + 32), 40u);
 }
 
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToDecodeHeaderAndMsgCorrectly)
@@ -144,13 +146,13 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToDecodeHeaderAndMsgCorrectly)
 
     ASSERT_TRUE(entries.hasNext());
     entries.next();
-    EXPECT_EQ(entries.tagGroup1(), 10);
-    EXPECT_EQ(entries.tagGroup2(), 20);
+    EXPECT_EQ(entries.tagGroup1(), 10u);
+    EXPECT_EQ(entries.tagGroup2(), 20u);
 
     ASSERT_TRUE(entries.hasNext());
     entries.next();
-    EXPECT_EQ(entries.tagGroup1(), 30);
-    EXPECT_EQ(entries.tagGroup2(), 40);
+    EXPECT_EQ(entries.tagGroup1(), 30u);
+    EXPECT_EQ(entries.tagGroup2(), 40u);
 
     EXPECT_EQ(msgDecoder_.size(), 40);
 }

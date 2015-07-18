@@ -32,10 +32,10 @@ public:
 class OtfMessageHeaderTest : public testing::Test, public OnNext, public OnError, public OnCompleted
 {
 protected:
-    static const int BLOCKLENGTH = 64;
-    static const int TEMPLATE_ID = 100;
-    static const int VERSION = 1;
-    static const int CORRECT_MESSAGEHEADER_SIZE = 6;
+    static const unsigned int BLOCKLENGTH = 64;
+    static const unsigned int TEMPLATE_ID = 100;
+    static const unsigned int VERSION = 1;
+    static const unsigned int CORRECT_MESSAGEHEADER_SIZE = 6;
 
     void addMessageHeaderIr()
     {
@@ -105,7 +105,7 @@ protected:
         EXPECT_EQ(f.getUInt(0), BLOCKLENGTH);
         EXPECT_EQ(f.getUInt(1), TEMPLATE_ID);
         EXPECT_EQ(f.getUInt(2), VERSION);
-        EXPECT_EQ(f.getUInt(3), 0);
+        EXPECT_EQ(f.getUInt(3), 0u);
         numFieldsSeen_++;
         return 0;
     };
@@ -137,10 +137,10 @@ protected:
     int numCompletedsSeen_;
 };
 
-const int OtfMessageHeaderTest::BLOCKLENGTH;
-const int OtfMessageHeaderTest::TEMPLATE_ID;
-const int OtfMessageHeaderTest::VERSION;
-const int OtfMessageHeaderTest::CORRECT_MESSAGEHEADER_SIZE;
+const unsigned int OtfMessageHeaderTest::BLOCKLENGTH;
+const unsigned int OtfMessageHeaderTest::TEMPLATE_ID;
+const unsigned int OtfMessageHeaderTest::VERSION;
+const unsigned int OtfMessageHeaderTest::CORRECT_MESSAGEHEADER_SIZE;
 
 TEST_F(OtfMessageHeaderTest, shouldHandleMessageHeader)
 {

@@ -35,16 +35,16 @@ static char MANUFACTURER_CODE[] = { '1', '2', '3' };
 static const char *MAKE = "Honda";
 static const char *MODEL = "Civic VTi";
 
-static const size_t VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
-static const size_t MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
-static const size_t MAKE_LENGTH = 5;
-static const size_t MODEL_LENGTH = 9;
-static const size_t PERFORMANCE_FIGURES_COUNT = 2;
-static const size_t FUEL_FIGURES_COUNT = 3;
-static const size_t ACCELERATION_COUNT = 3;
+static const int VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
+static const int MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
+static const int MAKE_LENGTH = 5;
+static const int MODEL_LENGTH = 9;
+static const int PERFORMANCE_FIGURES_COUNT = 2;
+static const int FUEL_FIGURES_COUNT = 3;
+static const int ACCELERATION_COUNT = 3;
 
-static const size_t expectedHeaderSize = 8;
-static const size_t expectedCarSize = 105;
+static const int expectedHeaderSize = 8;
+static const int expectedCarSize = 105;
 
 static const sbe_uint16_t fuel1Speed = 30;
 static const sbe_float_t fuel1Mpg = 35.9f;
@@ -76,42 +76,40 @@ class CodeGenTest : public testing::Test
 {
 public:
 
-    virtual int encodeHdr(char *buffer, int offset, int bufferLength)
+    static int encodeHdr(MessageHeader& hdr)
     {
-        hdr_.wrap(buffer, offset, 0, bufferLength)
-            .blockLength(Car::sbeBlockLength())
+        hdr.blockLength(Car::sbeBlockLength())
             .templateId(Car::sbeTemplateId())
             .schemaId(Car::sbeSchemaId())
             .version(Car::sbeSchemaVersion());
 
-        return hdr_.size();
+        return hdr.size();
     }
 
-    virtual int encodeCar(char *buffer, int offset, int bufferLength)
+    static int encodeCar(Car& car)
     {
-        car_.wrapForEncode(buffer, offset, bufferLength)
-            .serialNumber(SERIAL_NUMBER)
+        car.serialNumber(SERIAL_NUMBER)
             .modelYear(MODEL_YEAR)
             .available(AVAILABLE)
             .code(CODE)
             .putVehicleCode(VEHICLE_CODE);
 
-        car_.extras().clear()
+        car.extras().clear()
             .cruiseControl(CRUISE_CONTROL)
             .sportsPack(SPORTS_PACK)
             .sunRoof(SUNROOF);
 
-        car_.engine()
+        car.engine()
             .capacity(engineCapacity)
             .numCylinders(engineNumCylinders)
             .putManufacturerCode(MANUFACTURER_CODE);
 
-        car_.fuelFiguresCount(FUEL_FIGURES_COUNT)
+        car.fuelFiguresCount(FUEL_FIGURES_COUNT)
             .next().speed(fuel1Speed).mpg(fuel1Mpg)
             .next().speed(fuel2Speed).mpg(fuel2Mpg)
             .next().speed(fuel3Speed).mpg(fuel3Mpg);
 
-        Car::PerformanceFigures &perfFigs = car_.performanceFiguresCount(PERFORMANCE_FIGURES_COUNT);
+        Car::PerformanceFigures &perfFigs = car.performanceFiguresCount(PERFORMANCE_FIGURES_COUNT);
 
         perfFigs.next()
             .octaneRating(perf1Octane)
@@ -127,10 +125,22 @@ public:
                 .next().mph(perf2bMph).seconds(perf2bSeconds)
                 .next().mph(perf2cMph).seconds(perf2cSeconds);
 
-        car_.putMake(MAKE, strlen(MAKE));
-        car_.putModel(MODEL, strlen(MODEL));
+        car.putMake(MAKE, strlen(MAKE));
+        car.putModel(MODEL, strlen(MODEL));
 
-        return car_.size();
+        return car.size();
+    }
+
+    virtual int encodeHdr(char *buffer, int offset, int bufferLength)
+    {
+        hdr_.wrap(buffer, offset, 0, bufferLength);
+        return encodeHdr(hdr_);
+    }
+
+    virtual int encodeCar(char *buffer, int offset, int bufferLength)
+    {
+        car_.wrapForEncode(buffer, offset, bufferLength);
+        return encodeCar(car_);
     }
 
     MessageHeader hdr_;
@@ -160,13 +170,14 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarStaticFields)
 TEST_F(CodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
 {
     char buffer[2048];
+    const char *bp = buffer;
 
     int sz = encodeHdr(buffer, 0, sizeof(buffer));
 
-    EXPECT_EQ(*((::uint16_t *)buffer), Car::sbeBlockLength());
-    EXPECT_EQ(*((::uint16_t *)(buffer + 2)), Car::sbeTemplateId());
-    EXPECT_EQ(*((::uint16_t *)(buffer + 4)), Car::sbeSchemaId());
-    EXPECT_EQ(*((::uint16_t *)(buffer + 6)), Car::sbeSchemaVersion());
+    EXPECT_EQ(*((::uint16_t *)bp), Car::sbeBlockLength());
+    EXPECT_EQ(*((::uint16_t *)(bp + 2)), Car::sbeTemplateId());
+    EXPECT_EQ(*((::uint16_t *)(bp + 4)), Car::sbeSchemaId());
+    EXPECT_EQ(*((::uint16_t *)(bp + 6)), Car::sbeSchemaVersion());
     EXPECT_EQ(sz, 8);
 }
 
@@ -186,7 +197,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeAndDecodeMessageHeaderCorrectly)
 TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarFieldIdsAndCharacterEncoding)
 {
     EXPECT_EQ(Car::charConstId(), 100);
-    size_t expectedId = 1;
+    int expectedId = 1;
     EXPECT_EQ(Car::serialNumberId(), expectedId++);
     EXPECT_EQ(Car::modelYearId(), expectedId++);
     EXPECT_EQ(Car::availableId(), expectedId++);
@@ -211,99 +222,100 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarFieldIdsAndCharacterEncoding)
 TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
 {
     char buffer[2048];
+    const char *bp = buffer;
     int sz = encodeCar(buffer, 0, sizeof(buffer));
 
-    size_t offset = 0;
-    EXPECT_EQ(*(::uint32_t *)(buffer + offset), SERIAL_NUMBER);
+    int offset = 0;
+    EXPECT_EQ(*(::uint32_t *)(bp + offset), SERIAL_NUMBER);
     offset += sizeof(::uint32_t);
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), MODEL_YEAR);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), MODEL_YEAR);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(::uint8_t *)(buffer + offset), 1);
+    EXPECT_EQ(*(::uint8_t *)(bp + offset), 1);
     offset += sizeof(::uint8_t);
-    EXPECT_EQ(*(buffer + offset), 'A');
+    EXPECT_EQ(*(bp + offset), 'A');
     offset += sizeof(char);
-    EXPECT_EQ(std::string(buffer + offset, VEHICLE_CODE_LENGTH), std::string(VEHICLE_CODE, VEHICLE_CODE_LENGTH));
+    EXPECT_EQ(std::string(bp + offset, VEHICLE_CODE_LENGTH), std::string(VEHICLE_CODE, VEHICLE_CODE_LENGTH));
     offset += VEHICLE_CODE_LENGTH;
-    EXPECT_EQ(*(buffer + offset), 0x6);
+    EXPECT_EQ(*(bp + offset), 0x6);
     offset += sizeof(::uint8_t);
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), engineCapacity);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), engineCapacity);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(buffer + offset), engineNumCylinders);
+    EXPECT_EQ(*(bp + offset), engineNumCylinders);
     offset += sizeof(::uint8_t);
-    EXPECT_EQ(std::string(buffer + offset, MANUFACTURER_CODE_LENGTH), std::string(MANUFACTURER_CODE, MANUFACTURER_CODE_LENGTH));
+    EXPECT_EQ(std::string(bp + offset, MANUFACTURER_CODE_LENGTH), std::string(MANUFACTURER_CODE, MANUFACTURER_CODE_LENGTH));
     offset += MANUFACTURER_CODE_LENGTH;
 
     // fuel figures
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), 6);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), 6);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(buffer + offset), FUEL_FIGURES_COUNT);
+    EXPECT_EQ(*(::uint8_t *)(bp + offset), FUEL_FIGURES_COUNT);
     offset += sizeof(::uint8_t);
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), fuel1Speed);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), fuel1Speed);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(float *)(buffer + offset), fuel1Mpg);
+    EXPECT_EQ(*(float *)(bp + offset), fuel1Mpg);
     offset += sizeof(float);
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), fuel2Speed);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), fuel2Speed);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(float *)(buffer + offset), fuel2Mpg);
+    EXPECT_EQ(*(float *)(bp + offset), fuel2Mpg);
     offset += sizeof(float);
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), fuel3Speed);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), fuel3Speed);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(float *)(buffer + offset), fuel3Mpg);
+    EXPECT_EQ(*(float *)(bp + offset), fuel3Mpg);
     offset += sizeof(float);
 
     // performance figures
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), 1);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), 1);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(buffer + offset), PERFORMANCE_FIGURES_COUNT);
+    EXPECT_EQ(*(::uint8_t *)(bp + offset), PERFORMANCE_FIGURES_COUNT);
     offset += sizeof(::uint8_t);
-    EXPECT_EQ(*(buffer + offset), perf1Octane);
+    EXPECT_EQ(*(bp + offset), perf1Octane);
     offset += sizeof(::uint8_t);
     // acceleration
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), 6);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), 6);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(buffer + offset), ACCELERATION_COUNT);
+    EXPECT_EQ(*(::uint8_t *)(bp + offset), ACCELERATION_COUNT);
     offset += sizeof(::uint8_t);
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), perf1aMph);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), perf1aMph);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(float *)(buffer + offset), perf1aSeconds);
+    EXPECT_EQ(*(float *)(bp + offset), perf1aSeconds);
     offset += sizeof(float);
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), perf1bMph);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), perf1bMph);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(float *)(buffer + offset), perf1bSeconds);
+    EXPECT_EQ(*(float *)(bp + offset), perf1bSeconds);
     offset += sizeof(float);
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), perf1cMph);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), perf1cMph);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(float *)(buffer + offset), perf1cSeconds);
+    EXPECT_EQ(*(float *)(bp + offset), perf1cSeconds);
     offset += sizeof(float);
 
-    EXPECT_EQ(*(buffer + offset), perf2Octane);
+    EXPECT_EQ(*(bp + offset), perf2Octane);
     offset += sizeof(::uint8_t);
     // acceleration
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), 6);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), 6);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(buffer + offset), ACCELERATION_COUNT);
+    EXPECT_EQ(*(::uint8_t *)(bp + offset), ACCELERATION_COUNT);
     offset += sizeof(::uint8_t);
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), perf2aMph);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), perf2aMph);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(float *)(buffer + offset), perf2aSeconds);
+    EXPECT_EQ(*(float *)(bp + offset), perf2aSeconds);
     offset += sizeof(float);
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), perf2bMph);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), perf2bMph);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(float *)(buffer + offset), perf2bSeconds);
+    EXPECT_EQ(*(float *)(bp + offset), perf2bSeconds);
     offset += sizeof(float);
-    EXPECT_EQ(*(::uint16_t *)(buffer + offset), perf2cMph);
+    EXPECT_EQ(*(::uint16_t *)(bp + offset), perf2cMph);
     offset += sizeof(::uint16_t);
-    EXPECT_EQ(*(float *)(buffer + offset), perf2cSeconds);
+    EXPECT_EQ(*(float *)(bp + offset), perf2cSeconds);
     offset += sizeof(float);
 
     // make & model
-    EXPECT_EQ(*(buffer + offset), MAKE_LENGTH);
+    EXPECT_EQ(*(::uint8_t *)(bp + offset), MAKE_LENGTH);
     offset += sizeof(::uint8_t);
-    EXPECT_EQ(std::string(buffer + offset, MAKE_LENGTH), MAKE);
+    EXPECT_EQ(std::string(bp + offset, MAKE_LENGTH), MAKE);
     offset += MAKE_LENGTH;
-    EXPECT_EQ(*(buffer + offset), MODEL_LENGTH);
+    EXPECT_EQ(*(::uint8_t *)(bp + offset), MODEL_LENGTH);
     offset += sizeof(::uint8_t);
-    EXPECT_EQ(std::string(buffer + offset, MODEL_LENGTH), MODEL);
+    EXPECT_EQ(std::string(bp + offset, MODEL_LENGTH), MODEL);
     offset += MODEL_LENGTH;
 
     EXPECT_EQ(sz, offset);
@@ -312,6 +324,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
 TEST_F(CodeGenTest, shouldBeAbleToEncodeHeaderPlusCarCorrectly)
 {
     char buffer[2048];
+    const char *bp = buffer;
 
     int hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
     int carSz = encodeCar(buffer, hdr_.size(), sizeof(buffer) - hdr_.size());
@@ -319,11 +332,11 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeHeaderPlusCarCorrectly)
     EXPECT_EQ(hdrSz, expectedHeaderSize);
     EXPECT_EQ(carSz, expectedCarSize);
 
-    EXPECT_EQ(*((::uint16_t *)buffer), Car::sbeBlockLength());
+    EXPECT_EQ(*((::uint16_t *)bp), Car::sbeBlockLength());
     const size_t modelPosition = hdrSz + carSz - MODEL_LENGTH;
     const size_t modelLengthPosition = modelPosition - 1;
-    EXPECT_EQ(*(buffer + modelLengthPosition /* 103*/), MODEL_LENGTH);
-    EXPECT_EQ(std::string(buffer + modelPosition /*104*/, MODEL_LENGTH), MODEL);
+    EXPECT_EQ(*(::uint8_t *)(bp + modelLengthPosition /* 103*/), MODEL_LENGTH);
+    EXPECT_EQ(std::string(bp + modelPosition /*104*/, MODEL_LENGTH), MODEL);
 }
 
 TEST_F(CodeGenTest, shouldbeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
@@ -437,3 +450,75 @@ TEST_F(CodeGenTest, shouldbeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
 
     EXPECT_EQ(carDecoder_.size(), expectedCarSize);
 }
+
+struct CallbacksForEach
+{
+    int countOfFuelFigures;
+    int countOfPerformanceFigures;
+    int countOfAccelerations;
+
+    CallbacksForEach() : countOfFuelFigures(0), countOfPerformanceFigures(0), countOfAccelerations(0) {}
+
+    void operator()(Car::FuelFigures&)
+    {
+        countOfFuelFigures++;
+    }
+
+    void operator()(Car::PerformanceFigures& performanceFigures)
+    {
+        Car::PerformanceFigures::Acceleration acceleration = performanceFigures.acceleration();
+
+        countOfPerformanceFigures++;
+        acceleration.forEach(*this);
+    }
+
+    void operator()(Car::PerformanceFigures::Acceleration&)
+    {
+        countOfAccelerations++;
+    }
+};
+
+TEST_F(CodeGenTest, shouldbeAbleUseOnStackCodecsAndGroupForEach)
+{
+    char buffer[2048];
+    MessageHeader hdr(buffer, sizeof(buffer), 0);
+    Car car(buffer + hdr.size(), sizeof(buffer) - hdr.size(), Car::sbeBlockLength(), Car::sbeSchemaVersion());
+
+    int hdrSz = encodeHdr(hdr);
+    int carSz = encodeCar(car);
+
+    EXPECT_EQ(hdrSz, expectedHeaderSize);
+    EXPECT_EQ(carSz, expectedCarSize);
+
+    const MessageHeader hdrDecoder(buffer, sizeof(buffer), 0);
+
+    EXPECT_EQ(hdrDecoder.blockLength(), Car::sbeBlockLength());
+    EXPECT_EQ(hdrDecoder.templateId(), Car::sbeTemplateId());
+    EXPECT_EQ(hdrDecoder.schemaId(), Car::sbeSchemaId());
+    EXPECT_EQ(hdrDecoder.version(), Car::sbeSchemaVersion());
+    EXPECT_EQ(hdrDecoder.size(), expectedHeaderSize);
+
+    Car carDecoder(buffer + hdrDecoder.size(), sizeof(buffer) - hdrDecoder.size(), hdrDecoder.blockLength(), hdrDecoder.version());
+    CallbacksForEach cbs;
+
+    Car::FuelFigures &fuelFigures = carDecoder.fuelFigures();
+    EXPECT_EQ(fuelFigures.count(), FUEL_FIGURES_COUNT);
+    fuelFigures.forEach(cbs);
+
+    Car::PerformanceFigures &performanceFigures = carDecoder.performanceFigures();
+    EXPECT_EQ(performanceFigures.count(), PERFORMANCE_FIGURES_COUNT);
+    performanceFigures.forEach(cbs);
+
+    EXPECT_EQ(cbs.countOfFuelFigures, FUEL_FIGURES_COUNT);
+    EXPECT_EQ(cbs.countOfPerformanceFigures, PERFORMANCE_FIGURES_COUNT);
+    EXPECT_EQ(cbs.countOfAccelerations, ACCELERATION_COUNT * PERFORMANCE_FIGURES_COUNT);
+
+    EXPECT_EQ(carDecoder.makeLength(), MAKE_LENGTH);
+    EXPECT_EQ(std::string(carDecoder.make(), MAKE_LENGTH), MAKE);
+
+    EXPECT_EQ(carDecoder.modelLength(), MODEL_LENGTH);
+    EXPECT_EQ(std::string(carDecoder.model(), MODEL_LENGTH), MODEL);
+
+    EXPECT_EQ(carDecoder.size(), expectedCarSize);
+}
+
