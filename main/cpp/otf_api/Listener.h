@@ -17,6 +17,7 @@
 #ifndef _LISTENER_H_
 #define _LISTENER_H_
 
+#define __STDC_LIMIT_MACROS 1
 #include <stdint.h>
 #include <string.h>
 
@@ -114,6 +115,8 @@ public:
         ir_ = &ir;
         return *this;
     }
+
+    virtual ~Listener() {}
 
     /**
      * \brief Reset state and initialize for decode of the given buffer.

@@ -52,6 +52,8 @@ public:
      * \sa Error
      */
     virtual int onError(const Error &error) = 0;
+
+    virtual ~OnError() {}
 };
 
 } // namepsace on_the_fly

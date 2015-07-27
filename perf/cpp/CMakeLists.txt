@@ -17,6 +17,8 @@
 find_package(Java REQUIRED)
 find_package(Protobuf)
 
+CHECK_LIBRARY_EXISTS(rt clock_gettime "time.h" HAVE_CLOCK_GETTIME_RT)
+
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
 	message("Build type(${CMAKE_BUILD_TYPE}): perf tests turning OFF bounds checks")
 	add_definitions(-DNDEBUG)
@@ -46,6 +48,11 @@ add_executable(benchlet-sbe-car-runner ${SRCS_BENCHLET_MAIN} CarBench.cpp)
 add_executable(benchlet-sbe-md-runner ${SRCS_BENCHLET_MAIN} MarketDataBench.cpp)
 add_dependencies(benchlet-sbe-md-runner perf_codecs)
 add_dependencies(benchlet-sbe-car-runner perf_codecs)
+
+if (HAVE_CLOCK_GETTIME_RT)
+  target_link_libraries(benchlet-sbe-md-runner rt)
+  target_link_libraries(benchlet-sbe-car-runner rt)
+endif (HAVE_CLOCK_GETTIME_RT)
 
 if(USE_PROTOBUF)
 	set(PROTOBUF_CAR_SCHEMA ${CODEC_TARGET_DIR}/protobuf/car.proto)

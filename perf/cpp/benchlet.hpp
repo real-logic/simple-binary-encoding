@@ -16,9 +16,10 @@
 #ifndef _BENCHLET_HPP
 #define _BENCHLET_HPP
 
+#define __STDC_LIMIT_MACROS 1
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 
 #if defined(Darwin)

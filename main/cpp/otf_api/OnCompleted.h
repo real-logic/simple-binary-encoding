@@ -31,6 +31,8 @@ public:
      * \return 0 for success and -1 for failure
      */
     virtual int onCompleted(void) = 0;
+
+    virtual ~OnCompleted() {}
 };
 
 } // namepsace on_the_fly

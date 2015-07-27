@@ -20,13 +20,14 @@
 #include <stdlib.h>
 #include <stdint.h>
 #else
+#define __STDC_LIMIT_MACROS 1
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #endif /* WIN32 */
 
 #include <iostream>
