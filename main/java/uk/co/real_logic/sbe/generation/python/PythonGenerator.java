@@ -494,7 +494,7 @@ public class PythonGenerator implements CodeGenerator
                     "    def set%2$s(self, value):\n" +
                     "        bits = struct.unpack_from('%3$s', self.buffer_, self.offset_)[0]\n" +
                     "        bits = (bits | ( 0x1L << %5$s)) if value > 0 else (bits & ~(0x1L << %5$s))\n" +
-                    "        struct.pack_into('%3$s', self.buffer_, self.offset_, value)\n" +
+                    "        struct.pack_into('%3$s', self.buffer_, self.offset_, bits)\n" +
                     "        return self\n",
                     bitsetClassName,
                     toUpperFirstChar(choiceName),
