@@ -160,15 +160,16 @@ public class PythonGenerator implements CodeGenerator
         sb.append(String.format(
             "\n" +
             indent + "class %1$s:\n" +
-            indent + "    buffer_ = 0\n" +
-            indent + "    bufferLength_ = 0\n" +
-            indent + "    blockLength_ = 0\n" +
-            indent + "    count_ = 0\n" +
-            indent + "    index_ = 0\n" +
-            indent + "    offset_ = 0\n" +
-            indent + "    actingVersion_ = 0\n" +
-            indent + "    position_ = [0]\n" +
-            indent + "    dimensions_ = %2$s.%2$s()\n\n",
+            indent + "    def __init__(self):\n" +
+            indent + "        self.buffer_ = 0\n" +
+            indent + "        self.bufferLength_ = 0\n" +
+            indent + "        self.blockLength_ = 0\n" +
+            indent + "        self.count_ = 0\n" +
+            indent + "        self.index_ = 0\n" +
+            indent + "        self.offset_ = 0\n" +
+            indent + "        self.actingVersion_ = 0\n" +
+            indent + "        self.position_ = [0]\n" +
+            indent + "        self.dimensions_ = %2$s.%2$s()\n\n",
             formatClassName(groupName),
             dimensionsClassName
         ));
@@ -851,9 +852,10 @@ public class PythonGenerator implements CodeGenerator
     private CharSequence generateFixedFlyweightCode(final String className, final int size)
     {
         return String.format(
-            "    buffer_ = 0\n" +
-            "    offset_ = 0\n" +
-            "    actingVersion_ = 0\n\n" +
+            "    def __init__(self):\n" +
+            "        self.buffer_ = 0\n" +
+            "        self.offset_ = 0\n" +
+            "        self.actingVersion_ = 0\n\n" +
 
             "    def wrap(self, buffer, offset, actingVersion, bufferLength):\n" +
             "        if (offset > (bufferLength - %2$s)):\n" +
@@ -876,12 +878,13 @@ public class PythonGenerator implements CodeGenerator
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
-            "    buffer_ = 0\n" +
-            "    bufferLength_ = 0\n" +
-            "    offset_ = 0\n" +
-            "    actingBlockLength_ = 0\n" +
-            "    actingVersion_ = 0\n" +
-            "    position_ = [0]\n\n" +
+            "    def __init__(self):\n" +
+            "        self.buffer_ = 0\n" +
+            "        self.bufferLength_ = 0\n" +
+            "        self.offset_ = 0\n" +
+            "        self.actingBlockLength_ = 0\n" +
+            "        self.actingVersion_ = 0\n" +
+            "        self.position_ = [0]\n\n" +
 
             "    @staticmethod\n" +
             "    def sbeBlockLength():\n" +
@@ -928,7 +931,7 @@ public class PythonGenerator implements CodeGenerator
             "        return self.position_\n\n" +
 
             "    def setPosition(self, position):\n" +
-            "        if self.position_[0] > self.bufferLength_:\n" +
+            "        if position > self.bufferLength_:\n" +
             "            raise Exception('buffer too short')\n" +
             "        self.position_[0] = position\n\n" +
 
