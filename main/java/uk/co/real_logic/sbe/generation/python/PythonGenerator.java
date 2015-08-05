@@ -314,12 +314,12 @@ public class PythonGenerator implements CodeGenerator
                     "    def get%1$s(self):\n" +
                     "        sizeOfLengthField = %3$d\n" +
                     "        lengthPosition = self.getPosition()\n" +
-                    "        dataLength = struct.unpack_from('%5$s', self.buffer_, lengthPosition[0])[0]\n" +
-                    "        self.setPosition(lengthPosition[0] + sizeOfLengthField)\n" +
+                    "        dataLength = struct.unpack_from('%5$s', self.buffer_, lengthPosition)[0]\n" +
+                    "        self.setPosition(lengthPosition + sizeOfLengthField)\n" +
                     "        pos = self.getPosition()\n" +
-                    "        fmt = '" + byteOrder + "'+str(dataLength)+'c'\n" +
-                    "        data = struct.unpack_from(fmt, self.buffer_, lengthPosition[0])\n" +
-                    "        self.setPosition(pos[0] + dataLength)\n" +
+                    "        fmt = '" + byteOrder + "' + str(dataLength) + 's'\n" +
+                    "        data = struct.unpack_from(fmt, self.buffer_, pos)[0]\n" +
+                    "        self.setPosition(pos + dataLength)\n" +
                     "        return data\n\n",
                     propertyName,
                     generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
@@ -332,13 +332,12 @@ public class PythonGenerator implements CodeGenerator
                     "    def set%1$s(self, buffer):\n" +
                     "        sizeOfLengthField = %2$d\n" +
                     "        lengthPosition = self.getPosition()\n" +
-                    "        struct.pack_into('%3$s', self.buffer_, lengthPosition[0], len(buffer))\n" +
-                    "        self.setPosition(lengthPosition[0] + sizeOfLengthField)\n" +
+                    "        struct.pack_into('%3$s', self.buffer_, lengthPosition, len(buffer))\n" +
+                    "        self.setPosition(lengthPosition + sizeOfLengthField)\n" +
                     "        pos = self.getPosition()\n" +
-                    "        fmt = '" + byteOrder + "c'\n" +
-                    "        for i in range(0,len(buffer)):\n" +
-                    "           struct.pack_into(fmt, self.buffer_, lengthPosition[0]+i, buffer[i])\n" +
-                    "        self.setPosition(pos[0] + len(buffer))\n\n",
+                    "        fmt = '" + byteOrder + "' + str(len(buffer)) + 's'\n" +
+                    "        struct.pack_into(fmt, self.buffer_, pos, buffer)\n" +
+                    "        self.setPosition(pos + len(buffer))\n\n",
                     propertyName,
                     sizeOfLengthField,
                     lengthPythonType,
