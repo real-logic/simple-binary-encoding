@@ -783,12 +783,12 @@ public class PythonGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    def set%1$s(self, index, value):\n" +
+            indent + "    def set%2$s(self, index, value):\n" +
             indent + "        if index < 0 or index >= %3$d:\n" +
-            indent + "            raise Exception('index out of range for %1$s')\n" +
-            indent + "        struct.pack_into('%2$s', self.buffer_, self.offset_ + %4$d + (index * %5$d), value)\n",
-            propertyName,
-            toUpperFirstChar(pythonTypeName),
+            indent + "            raise Exception('index out of range for %2$s')\n" +
+            indent + "        struct.pack_into('%1$s', self.buffer_, self.offset_ + %4$d + (index * %5$d), value)\n",
+            pythonTypeName,
+            toUpperFirstChar(propertyName),
             token.arrayLength(),
             offset,
             token.encoding().primitiveType().size(),
