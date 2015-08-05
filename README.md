@@ -125,6 +125,12 @@ Then build and test with CMake __in the build subdirectory created by the gradle
 C# Build
 --------
 
-See [readme.md](https://github.com/real-logic/simple-binary-encoding/tree/master/vs2013) in vs2013 directory
+See [README.md](https://github.com/real-logic/simple-binary-encoding/tree/master/vs2013) in vs2013 directory
+
+
+Python Support
+--------------
+
+See [README.md](https://github.com/real-logic/simple-binary-encoding/tree/master/examples/python) in python directory.
 
 
