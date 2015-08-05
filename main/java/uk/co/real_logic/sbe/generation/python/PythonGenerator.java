@@ -394,7 +394,7 @@ public class PythonGenerator implements CodeGenerator
 
         sb.append(String.format(
             "    def %1$sLength(self):\n" +
-            "        return struct.unpack_from('%4$s', self.buffer_, position())[0]\n\n",
+            "        return struct.unpack_from('%4$s', self.buffer_, getPosition())[0]\n\n",
             formatPropertyName(propertyName),
             generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
             formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
@@ -928,7 +928,7 @@ public class PythonGenerator implements CodeGenerator
             "        return self\n\n" +
 
             "    def getPosition(self):\n" +
-            "        return self.position_\n\n" +
+            "        return self.position_[0]\n\n" +
 
             "    def setPosition(self, position):\n" +
             "        if position > self.bufferLength_:\n" +
@@ -936,7 +936,7 @@ public class PythonGenerator implements CodeGenerator
             "        self.position_[0] = position\n\n" +
 
             "    def encodedLength(self):\n" +
-            "        return self.position() - self.offset_\n\n" +
+            "        return self.getPosition() - self.offset_\n\n" +
 
             "    def buffer(self):\n" +
             "        return self.buffer_\n\n" +
