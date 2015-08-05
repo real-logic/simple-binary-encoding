@@ -431,9 +431,9 @@ public class PythonGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(enumName))
         {
             out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
-            out.append(generateEnumDeclaration(enumName));
+            out.append(generateClassDeclaration(enumName));
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumToken));
-            out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
+            out.append(generateEnumMethods(enumName));
         }
     }
 
@@ -513,55 +513,65 @@ public class PythonGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
         final Encoding encoding = encodingToken.encoding();
 
-        sb.append("    class Value:\n");
+        for (final Token token : tokens)
+        {
+            if (encoding.primitiveType() == PrimitiveType.CHAR)
+            {
+                final char constVal = (char) token.encoding().constValue().longValue();
+                sb.append("    ").append(token.name()).append(" = '").append(constVal).append("'\n");
+            }
+            else
+            {
+                final CharSequence constVal = generateLiteral(
+                        token.encoding().primitiveType(), token.encoding().constValue().toString());
+                sb.append("    ").append(token.name()).append(" = ").append(constVal).append("\n");
+            }
+        }
+
+        // generate the null value
+
+        if (encoding.primitiveType() == PrimitiveType.CHAR)
+        {
+            sb.append("    NULL_VALUE = '\\0'");
+        }
+        else
+        {
+            sb.append(String.format(
+                "    NULL_VALUE = %1$s",
+                generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString())
+            ));
+        }
+            sb.append("\n\n");
+
+        sb.append("    VALID_VALUES = {\n");
+        for (final Token token : tokens)
+        {
+            sb.append("        ").append(token.name()).append(",\n");
+        }
+        sb.append("        NULL_VALUE,\n    }\n\n");
+
+        sb.append("    AS_TEXT = {\n");
 
         for (final Token token : tokens)
         {
-            final CharSequence constVal = generateLiteral(
-                token.encoding().primitiveType(), token.encoding().constValue().toString());
-            sb.append("        ").append(token.name()).append(" = ").append(constVal).append("\n");
+            sb.append("        ").append(token.name()).append(" : '").append(token.name()).append("',\n");
         }
-
-        sb.append(String.format(
-            "        NULL_VALUE = %1$s",
-            generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString())
-        ));
-
-        sb.append("\n\n");
+        sb.append("        NULL_VALUE : 'NULL_VALUE',\n    }\n\n");
 
         return sb;
     }
 
-    private CharSequence generateEnumLookupMethod(final List<Token> tokens, final Token encodingToken)
+    private CharSequence generateEnumMethods(final String name)
     {
-        final String enumName = formatClassName(encodingToken.name());
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(
-            "    @staticmethod\n" +
-            "    def get(value):\n" +
-            "        values = {\n");
-
-        for (final Token token : tokens)
-        {
-            sb.append(String.format(
-                "            %1$s : %3$s.Value.%2$s,\n",
-                token.encoding().constValue().toString(),
-                token.name(),
-                enumName)
-            );
-        }
-
-        sb.append(String.format(
-            "            %1$s : %2$s.Value.NULL_VALUE\n" +
-            "        }\n" +
-            "        if type(value) is int:\n" +
-            "            return values[value]\n" +
-            "        else:\n" +
-            "            return values[ord(value)]\n",
-            encodingToken.encoding().applicableNullValue().toString(),
-            enumName
-        ));
+        sb.append("    def __init__(self, value):\n");
+        sb.append("        self.value = value\n");
+        sb.append("        if self.value not in ").append(name).append(".VALID_VALUES:\n");
+        sb.append("            raise ValueError('Invalid value for ").append(name).append(": {}'.format(value))\n");
+        sb.append("\n");
+        sb.append("    def __str__(self):\n");
+        sb.append("        return ").append(name).append(".AS_TEXT[self.value]\n");
 
         return sb;
     }
@@ -619,11 +629,6 @@ public class PythonGenerator implements CodeGenerator
     }
 
     private CharSequence generateClassDeclaration(final String name)
-    {
-        return "class " + name + ":\n";
-    }
-
-    private CharSequence generateEnumDeclaration(final String name)
     {
         return "class " + name + ":\n";
     }
@@ -1053,7 +1058,7 @@ public class PythonGenerator implements CodeGenerator
         sb.append(String.format(
             "\n" +
             indent + "    def get%2$s(self):\n" +
-            indent + "        return %1$s.%1$s.get(struct.unpack_from( '%5$s', self.buffer_, self.offset_ + %6$d)[0])\n\n",
+            indent + "        return %1$s.%1$s(struct.unpack_from( '%5$s', self.buffer_, self.offset_ + %6$d)[0])\n\n",
             enumName,
             toUpperFirstChar(propertyName),
             generateEnumFieldNotPresentCondition(token.version(), enumName, indent),
