@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define __STDC_LIMIT_MACROS 1
+#include <stdint.h>
 #include <iostream>
 
 #include "gtest/gtest.h"

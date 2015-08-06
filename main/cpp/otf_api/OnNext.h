@@ -45,6 +45,8 @@ public:
      * \sa Group
      */
     virtual int onNext(const Group &group) = 0;
+
+    virtual ~OnNext() {}
 };
 
 } // namepsace on_the_fly

@@ -16,6 +16,7 @@
 #ifndef _IR_H_
 #define _IR_H_
 
+#define __STDC_LIMIT_MACROS 1
 #include <stdint.h>
 #include <string.h>
 
@@ -143,6 +144,8 @@ public:
          * \return Ir for the message
          */
         virtual Ir *irForTemplateId(const int templateId, const int version) = 0;
+
+        virtual ~Callback() {}
     };
 
     // constructors and destructors

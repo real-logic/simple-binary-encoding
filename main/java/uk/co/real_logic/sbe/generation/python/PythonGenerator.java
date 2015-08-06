@@ -160,15 +160,16 @@ public class PythonGenerator implements CodeGenerator
         sb.append(String.format(
             "\n" +
             indent + "class %1$s:\n" +
-            indent + "    buffer_ = 0\n" +
-            indent + "    bufferLength_ = 0\n" +
-            indent + "    blockLength_ = 0\n" +
-            indent + "    count_ = 0\n" +
-            indent + "    index_ = 0\n" +
-            indent + "    offset_ = 0\n" +
-            indent + "    actingVersion_ = 0\n" +
-            indent + "    position_ = [0]\n" +
-            indent + "    dimensions_ = %2$s.%2$s()\n\n",
+            indent + "    def __init__(self):\n" +
+            indent + "        self.buffer_ = 0\n" +
+            indent + "        self.bufferLength_ = 0\n" +
+            indent + "        self.blockLength_ = 0\n" +
+            indent + "        self.count_ = 0\n" +
+            indent + "        self.index_ = 0\n" +
+            indent + "        self.offset_ = 0\n" +
+            indent + "        self.actingVersion_ = 0\n" +
+            indent + "        self.position_ = [0]\n" +
+            indent + "        self.dimensions_ = %2$s.%2$s()\n\n",
             formatClassName(groupName),
             dimensionsClassName
         ));
@@ -313,12 +314,12 @@ public class PythonGenerator implements CodeGenerator
                     "    def get%1$s(self):\n" +
                     "        sizeOfLengthField = %3$d\n" +
                     "        lengthPosition = self.getPosition()\n" +
-                    "        dataLength = struct.unpack_from('%5$s', self.buffer_, lengthPosition[0])[0]\n" +
-                    "        self.setPosition(lengthPosition[0] + sizeOfLengthField)\n" +
+                    "        dataLength = struct.unpack_from('%5$s', self.buffer_, lengthPosition)[0]\n" +
+                    "        self.setPosition(lengthPosition + sizeOfLengthField)\n" +
                     "        pos = self.getPosition()\n" +
-                    "        fmt = '" + byteOrder + "'+str(dataLength)+'c'\n" +
-                    "        data = struct.unpack_from(fmt, self.buffer_, lengthPosition[0])\n" +
-                    "        self.setPosition(pos[0] + dataLength)\n" +
+                    "        fmt = '" + byteOrder + "' + str(dataLength) + 's'\n" +
+                    "        data = struct.unpack_from(fmt, self.buffer_, pos)[0]\n" +
+                    "        self.setPosition(pos + dataLength)\n" +
                     "        return data\n\n",
                     propertyName,
                     generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
@@ -331,13 +332,12 @@ public class PythonGenerator implements CodeGenerator
                     "    def set%1$s(self, buffer):\n" +
                     "        sizeOfLengthField = %2$d\n" +
                     "        lengthPosition = self.getPosition()\n" +
-                    "        struct.pack_into('%3$s', self.buffer_, lengthPosition[0], len(buffer))\n" +
-                    "        self.setPosition(lengthPosition[0] + sizeOfLengthField)\n" +
+                    "        struct.pack_into('%3$s', self.buffer_, lengthPosition, len(buffer))\n" +
+                    "        self.setPosition(lengthPosition + sizeOfLengthField)\n" +
                     "        pos = self.getPosition()\n" +
-                    "        fmt = '" + byteOrder + "c'\n" +
-                    "        for i in range(0,len(buffer)):\n" +
-                    "           struct.pack_into(fmt, self.buffer_, lengthPosition[0]+i, buffer[i])\n" +
-                    "        self.setPosition(pos[0] + len(buffer))\n\n",
+                    "        fmt = '" + byteOrder + "' + str(len(buffer)) + 's'\n" +
+                    "        struct.pack_into(fmt, self.buffer_, pos, buffer)\n" +
+                    "        self.setPosition(pos + len(buffer))\n\n",
                     propertyName,
                     sizeOfLengthField,
                     lengthPythonType,
@@ -393,7 +393,7 @@ public class PythonGenerator implements CodeGenerator
 
         sb.append(String.format(
             "    def %1$sLength(self):\n" +
-            "        return struct.unpack_from('%4$s', self.buffer_, position())[0]\n\n",
+            "        return struct.unpack_from('%4$s', self.buffer_, getPosition())[0]\n\n",
             formatPropertyName(propertyName),
             generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
             formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
@@ -431,9 +431,9 @@ public class PythonGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(enumName))
         {
             out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
-            out.append(generateEnumDeclaration(enumName));
+            out.append(generateClassDeclaration(enumName));
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumToken));
-            out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
+            out.append(generateEnumMethods(enumName));
         }
     }
 
@@ -494,7 +494,7 @@ public class PythonGenerator implements CodeGenerator
                     "    def set%2$s(self, value):\n" +
                     "        bits = struct.unpack_from('%3$s', self.buffer_, self.offset_)[0]\n" +
                     "        bits = (bits | ( 0x1L << %5$s)) if value > 0 else (bits & ~(0x1L << %5$s))\n" +
-                    "        struct.pack_into('%3$s', self.buffer_, self.offset_, value)\n" +
+                    "        struct.pack_into('%3$s', self.buffer_, self.offset_, bits)\n" +
                     "        return self\n",
                     bitsetClassName,
                     toUpperFirstChar(choiceName),
@@ -513,55 +513,65 @@ public class PythonGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
         final Encoding encoding = encodingToken.encoding();
 
-        sb.append("    class Value:\n");
+        for (final Token token : tokens)
+        {
+            if (encoding.primitiveType() == PrimitiveType.CHAR)
+            {
+                final char constVal = (char) token.encoding().constValue().longValue();
+                sb.append("    ").append(token.name()).append(" = '").append(constVal).append("'\n");
+            }
+            else
+            {
+                final CharSequence constVal = generateLiteral(
+                        token.encoding().primitiveType(), token.encoding().constValue().toString());
+                sb.append("    ").append(token.name()).append(" = ").append(constVal).append("\n");
+            }
+        }
+
+        // generate the null value
+
+        if (encoding.primitiveType() == PrimitiveType.CHAR)
+        {
+            sb.append("    NULL_VALUE = '\\0'");
+        }
+        else
+        {
+            sb.append(String.format(
+                "    NULL_VALUE = %1$s",
+                generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString())
+            ));
+        }
+            sb.append("\n\n");
+
+        sb.append("    VALID_VALUES = {\n");
+        for (final Token token : tokens)
+        {
+            sb.append("        ").append(token.name()).append(",\n");
+        }
+        sb.append("        NULL_VALUE,\n    }\n\n");
+
+        sb.append("    AS_TEXT = {\n");
 
         for (final Token token : tokens)
         {
-            final CharSequence constVal = generateLiteral(
-                token.encoding().primitiveType(), token.encoding().constValue().toString());
-            sb.append("        ").append(token.name()).append(" = ").append(constVal).append("\n");
+            sb.append("        ").append(token.name()).append(" : '").append(token.name()).append("',\n");
         }
-
-        sb.append(String.format(
-            "        NULL_VALUE = %1$s",
-            generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString())
-        ));
-
-        sb.append("\n\n");
+        sb.append("        NULL_VALUE : 'NULL_VALUE',\n    }\n\n");
 
         return sb;
     }
 
-    private CharSequence generateEnumLookupMethod(final List<Token> tokens, final Token encodingToken)
+    private CharSequence generateEnumMethods(final String name)
     {
-        final String enumName = formatClassName(encodingToken.name());
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(
-            "    @staticmethod\n" +
-            "    def get(value):\n" +
-            "        values = {\n");
-
-        for (final Token token : tokens)
-        {
-            sb.append(String.format(
-                "            %1$s : %3$s.Value.%2$s,\n",
-                token.encoding().constValue().toString(),
-                token.name(),
-                enumName)
-            );
-        }
-
-        sb.append(String.format(
-            "            %1$s : %2$s.Value.NULL_VALUE\n" +
-            "        }\n" +
-            "        if type(value) is int:\n" +
-            "            return values[value]\n" +
-            "        else:\n" +
-            "            return values[ord(value)]\n",
-            encodingToken.encoding().applicableNullValue().toString(),
-            enumName
-        ));
+        sb.append("    def __init__(self, value):\n");
+        sb.append("        self.value = value\n");
+        sb.append("        if self.value not in ").append(name).append(".VALID_VALUES:\n");
+        sb.append("            raise ValueError('Invalid value for ").append(name).append(": {}'.format(value))\n");
+        sb.append("\n");
+        sb.append("    def __str__(self):\n");
+        sb.append("        return ").append(name).append(".AS_TEXT[self.value]\n");
 
         return sb;
     }
@@ -619,11 +629,6 @@ public class PythonGenerator implements CodeGenerator
     }
 
     private CharSequence generateClassDeclaration(final String name)
-    {
-        return "class " + name + ":\n";
-    }
-
-    private CharSequence generateEnumDeclaration(final String name)
     {
         return "class " + name + ":\n";
     }
@@ -783,12 +788,12 @@ public class PythonGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    def set%1$s(self, index, value):\n" +
+            indent + "    def set%2$s(self, index, value):\n" +
             indent + "        if index < 0 or index >= %3$d:\n" +
-            indent + "            raise Exception('index out of range for %1$s')\n" +
-            indent + "        struct.pack_into('%2$s', self.buffer_, self.offset_ + %4$d + (index * %5$d), value)\n",
-            propertyName,
-            toUpperFirstChar(pythonTypeName),
+            indent + "            raise Exception('index out of range for %2$s')\n" +
+            indent + "        struct.pack_into('%1$s', self.buffer_, self.offset_ + %4$d + (index * %5$d), value)\n",
+            pythonTypeName,
+            toUpperFirstChar(propertyName),
             token.arrayLength(),
             offset,
             token.encoding().primitiveType().size(),
@@ -851,9 +856,10 @@ public class PythonGenerator implements CodeGenerator
     private CharSequence generateFixedFlyweightCode(final String className, final int size)
     {
         return String.format(
-            "    buffer_ = 0\n" +
-            "    offset_ = 0\n" +
-            "    actingVersion_ = 0\n\n" +
+            "    def __init__(self):\n" +
+            "        self.buffer_ = 0\n" +
+            "        self.offset_ = 0\n" +
+            "        self.actingVersion_ = 0\n\n" +
 
             "    def wrap(self, buffer, offset, actingVersion, bufferLength):\n" +
             "        if (offset > (bufferLength - %2$s)):\n" +
@@ -876,12 +882,13 @@ public class PythonGenerator implements CodeGenerator
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
 
         return String.format(
-            "    buffer_ = 0\n" +
-            "    bufferLength_ = 0\n" +
-            "    offset_ = 0\n" +
-            "    actingBlockLength_ = 0\n" +
-            "    actingVersion_ = 0\n" +
-            "    position_ = [0]\n\n" +
+            "    def __init__(self):\n" +
+            "        self.buffer_ = 0\n" +
+            "        self.bufferLength_ = 0\n" +
+            "        self.offset_ = 0\n" +
+            "        self.actingBlockLength_ = 0\n" +
+            "        self.actingVersion_ = 0\n" +
+            "        self.position_ = [0]\n\n" +
 
             "    @staticmethod\n" +
             "    def sbeBlockLength():\n" +
@@ -925,15 +932,15 @@ public class PythonGenerator implements CodeGenerator
             "        return self\n\n" +
 
             "    def getPosition(self):\n" +
-            "        return self.position_\n\n" +
+            "        return self.position_[0]\n\n" +
 
             "    def setPosition(self, position):\n" +
-            "        if self.position_[0] > self.bufferLength_:\n" +
+            "        if position > self.bufferLength_:\n" +
             "            raise Exception('buffer too short')\n" +
             "        self.position_[0] = position\n\n" +
 
             "    def encodedLength(self):\n" +
-            "        return self.position() - self.offset_\n\n" +
+            "        return self.getPosition() - self.offset_\n\n" +
 
             "    def buffer(self):\n" +
             "        return self.buffer_\n\n" +
@@ -1051,7 +1058,7 @@ public class PythonGenerator implements CodeGenerator
         sb.append(String.format(
             "\n" +
             indent + "    def get%2$s(self):\n" +
-            indent + "        return %1$s.%1$s.get(struct.unpack_from( '%5$s', self.buffer_, self.offset_ + %6$d)[0])\n\n",
+            indent + "        return %1$s.%1$s(struct.unpack_from( '%5$s', self.buffer_, self.offset_ + %6$d)[0])\n\n",
             enumName,
             toUpperFirstChar(propertyName),
             generateEnumFieldNotPresentCondition(token.version(), enumName, indent),

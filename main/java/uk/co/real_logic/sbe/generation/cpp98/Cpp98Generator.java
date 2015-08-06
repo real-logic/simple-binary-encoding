@@ -1098,8 +1098,15 @@ public class Cpp98Generator implements CodeGenerator
             "    %1$s(const %1$s& codec) :\n" +
             "        buffer_(codec.buffer_), offset_(codec.offset_), actingVersion_(codec.actingVersion_) {}\n\n" +
             "#if __cplusplus >= 201103L\n" +
-            "    %1$s(%1$s&& codec) = default;\n" +
-            "    %1$s& operator=(const %1$s&& codec) = default;\n" +
+            "    %1$s(%1$s&& codec) :\n" +
+            "        buffer_(codec.buffer_), offset_(codec.offset_), actingVersion_(codec.actingVersion_) {}\n\n" +
+            "    %1$s& operator=(%1$s&& codec)\n" +
+            "    {\n" +
+            "        buffer_ = codec.buffer_;\n" +
+            "        offset_ = codec.offset_;\n" +
+            "        actingVersion_ = codec.actingVersion_;\n" +
+            "        return *this;\n" +
+            "    }\n\n" +
             "#endif\n\n" +
             "    %1$s& operator=(const %1$s& codec)\n" +
             "    {\n" +
@@ -1141,7 +1148,7 @@ public class Cpp98Generator implements CodeGenerator
             "        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_," +
             " codec.actingVersion_);\n" +
             "    }\n\n" +
-            "    %1$s& operator=(const %1$s&& codec)\n" +
+            "    %1$s& operator=(%1$s&& codec)\n" +
             "    {\n" +
             "        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_," +
             " codec.actingVersion_);\n" +
