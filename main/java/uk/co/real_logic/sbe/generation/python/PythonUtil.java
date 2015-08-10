@@ -58,7 +58,8 @@ public class PythonUtil
     /**
      * Map the name of a {@link java.nio.ByteOrder} to a python struct endian code
      *
-     * @return the ByteOrder to map.
+     * @param byteOrder to map
+     * @return the mapped value.
      */
     public static String byteOrderFormat(final ByteOrder byteOrder)
     {

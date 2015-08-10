@@ -789,7 +789,8 @@ public class PythonGenerator implements CodeGenerator
                     indent + "    def get%2$s(self, index):\n" +
                     indent + "        if index < 0 or index >= %3$d:\n" +
                     indent + "            raise Exception('index out of range for %2$s')\n" +
-                    indent + "        return struct.unpack_from('%1$s', self.buffer_, self.offset_ + %6$d + (index * %7$d))[0]\n\n",
+                    indent + "        return struct.unpack_from(\n" +
+                    indent + "            '%1$s', self.buffer_, self.offset_ + %6$d + (index * %7$d))[0]\n\n",
                     pythonTypeName(token.encoding().primitiveType(), token.encoding().byteOrder()),
                     toUpperFirstChar(propertyName),
                     token.arrayLength(),
@@ -813,7 +814,8 @@ public class PythonGenerator implements CodeGenerator
                     offset
             ));
         }
-        else {
+        else
+        {
             sb.append(String.format(
                     indent + "    def set%2$s(self, index, value):\n" +
                     indent + "        if index < 0 or index >= %3$d:\n" +
