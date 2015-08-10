@@ -18,10 +18,10 @@ car.setCode(Model.A)
 for i in range(0, car.someNumbersLength()) :
     car.setSomeNumbers(i, i)
 
-
-code = [x for x in 'abcdef']
-for i in range(0, car.vehicleCodeLength()):
-    car.setVehicleCode(i, code[i])
+# Note: pad to fixed size if necessary for char arrays:
+# car.setVehicleCode('abc'.ljust(6))
+#
+car.setVehicleCode('abcdef')
 
 car.extras().setCruiseControl(True)
 car.extras().setSportsPack(True)
@@ -30,9 +30,7 @@ car.extras().setSunRoof(False)
 # composites
 car.engine().setCapacity(2000)
 car.engine().setNumCylinders(4)
-code = [x for x in '123']
-for i in range(0, car.engine().manufacturerCodeLength()):
-    car.engine().setManufacturerCode(i, code[i])
+car.engine().setManufacturerCode('123')
 
 # groups
 fuelFigures = car.fuelFiguresCount(3)
