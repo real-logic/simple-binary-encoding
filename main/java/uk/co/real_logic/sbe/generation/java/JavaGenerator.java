@@ -1169,6 +1169,7 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateClassDeclaration(final String className)
     {
         return String.format(
+            "@SuppressWarnings(\"all\")\n" +
             "public class %s\n" +
             "{\n",
             className
