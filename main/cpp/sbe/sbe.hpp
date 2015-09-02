@@ -16,7 +16,9 @@
 #ifndef _SBE_HPP_
 #define _SBE_HPP_
 
-#define __STDC_LIMIT_MACROS 1
+#if !defined(__STDC_LIMIT_MACROS)
+    #define __STDC_LIMIT_MACROS 1
+#endif
 #include <string.h>
 #include <stdint.h>
 #include <limits.h>
