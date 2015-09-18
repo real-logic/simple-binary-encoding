@@ -33,7 +33,7 @@
 #include <map>
 #include <iostream>
 
-#include "otf_api/Ir.h"
+#include "Ir.h"
 #include "uk_co_real_logic_sbe_ir_generated/TokenCodec.hpp"
 #include "uk_co_real_logic_sbe_ir_generated/FrameCodec.hpp"
 

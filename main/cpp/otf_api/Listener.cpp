@@ -18,7 +18,7 @@
 #include <iostream>
 #include <sys/types.h>
 
-#include "otf_api/Listener.h"
+#include "Listener.h"
 
 /*
  * builtins for GCC. MSVC has similar ones.

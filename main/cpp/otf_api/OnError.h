@@ -16,7 +16,7 @@
 #ifndef _ONERROR_H_
 #define _ONERROR_H_
 
-#include "otf_api/Field.h"
+#include "Field.h"
 
 namespace sbe {
 namespace on_the_fly {

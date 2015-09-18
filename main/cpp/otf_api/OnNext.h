@@ -16,8 +16,8 @@
 #ifndef _ONNEXT_H_
 #define _ONNEXT_H_
 
-#include "otf_api/Field.h"
-#include "otf_api/Group.h"
+#include "Field.h"
+#include "Group.h"
 
 namespace sbe {
 namespace on_the_fly {
