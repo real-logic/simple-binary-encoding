@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-#define __STDC_LIMIT_MACROS 1
+#if !defined(__STDC_LIMIT_MACROS)
+    #define __STDC_LIMIT_MACROS 1
+#endif
 #include <stdint.h>
 #include <stdio.h>
 #include <iostream>
