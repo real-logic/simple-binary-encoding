@@ -507,6 +507,8 @@ public class Cpp98Generator implements CodeGenerator
 
             out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
 
+            out.append(generateEnumToStringMethod(tokens.subList(1, tokens.size() - 1), enumToken));
+
             out.append("};\n}\n#endif\n");
         }
     }
@@ -647,6 +649,38 @@ public class Cpp98Generator implements CodeGenerator
             "        throw std::runtime_error(\"unknown value for enum %2$s [E103]\");\n" +
             "    }\n",
             encodingToken.encoding().applicableNullValue().toString(),
+            enumName
+        ));
+
+        return sb;
+    }
+
+    private CharSequence generateEnumToStringMethod(final List<Token> tokens, final Token encodingToken)
+    {
+        final String enumName = formatClassName(encodingToken.name());
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
+           "    static const char* const c_str(const %1$s::Value value)\n" +
+           "    {\n" +
+           "        switch (value)\n" +
+           "        {\n",
+           enumName
+        ));
+
+        for (final Token token : tokens)
+        {
+            sb.append(String.format(
+                "            case %1$s: return \"%1$s\";\n",
+                token.name())
+            );
+        }
+
+        sb.append(String.format(
+            "            case NULL_VALUE: return \"NULL_VALUE\";\n" +
+            "        }\n\n" +
+            "        throw std::runtime_error(\"unknown value for enum %1$s [E103]:\");\n" +
+            "    }\n",
             enumName
         ));
 
@@ -1395,6 +1429,18 @@ public class Cpp98Generator implements CodeGenerator
             formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
             typeName,
             offset
+        ));
+
+        sb.append(String.format(
+            "\n" +
+            indent + "    const char* const %2$s_c_str(void) const\n" +
+            indent + "    {\n" +
+                             "%3$s" +
+            indent + "        return %1$s::c_str(%2$s());\n" +
+            indent + "    }\n\n",
+            enumName,
+            propertyName,
+            generateEnumFieldNotPresentCondition(token.version(), enumName, indent)
         ));
 
         sb.append(String.format(
