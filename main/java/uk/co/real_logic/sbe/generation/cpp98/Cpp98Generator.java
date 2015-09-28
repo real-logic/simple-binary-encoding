@@ -124,6 +124,8 @@ public class Cpp98Generator implements CodeGenerator
                 final List<Token> varData = messageBody.subList(offset, messageBody.size());
                 out.append(generateVarData(varData));
 
+                out.append(generateToJson(className, messageBody, BASE_INDENT));
+
                 out.append("};\n}\n#endif\n");
             }
         }
@@ -1608,5 +1610,91 @@ public class Cpp98Generator implements CodeGenerator
         }
 
         return literal;
+    }
+
+    private CharSequence generateToJson(final String className, final List<Token> messageBody, final String indent)
+    {
+        final StringBuilder out = new StringBuilder();
+
+        out.append(String.format("\n" +
+            indent + "    ostream& operator<<(ostream& os, const %1$s& m) const\n" +
+            indent + "    {\n" +
+            indent + "        os << \"{ \" << \n" +
+            indent + "            \"\\\"messageName: \\\"%1$s\\\",\" <<\n" +
+            indent + "            \"\\\"blockLength: \\\"\" << sbeBlockLength() << \",\" << \n" +
+            indent + "            \"\\\"templateId: \\\"\" << sbeTemplateId() << \",\" << \n" +
+            indent + "            \"\\\"schemaId: \\\"\" << sbeSchemaId() << \",\" << \n" +
+            indent + "            \"\\\"version: \\\"\" << sbeSchemaVersion() << ",
+            className
+        ));
+
+        int offset = 0;
+        final List<Token> rootFields = new ArrayList<>();
+        offset = collectRootFields(messageBody, offset, rootFields);
+        out.append(generateFieldsToJson(rootFields, BASE_INDENT));
+/*
+        final List<Token> groups = new ArrayList<>();
+        offset = collectGroups(messageBody, offset, groups);
+        final StringBuilder sb = new StringBuilder();
+        generateGroupsToJson(sb, groups, 0, BASE_INDENT);
+        out.append(sb);
+        final List<Token> varData = messageBody.subList(offset, messageBody.size());
+        for (final Token token : varData)
+        {
+            if (token.signal() == Signal.BEGIN_FIELD)
+            {
+                sb.append(String.format(
+                    indent + "            \"\\\"%1$s: \\\"\" << %1$s() << \",\",\n",
+                        token.name()
+                ));
+            }
+        }
+*/
+        out.append(String.format("\n" +
+            indent + "        \"}\";\n" +
+            "    }\n\n"));
+        return out;
+    }
+
+    private CharSequence generateFieldsToJson(final List<Token> tokens, final String indent)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        for (final Token token : tokens)
+        {
+            if (token.signal() == Signal.BEGIN_FIELD)
+            {
+                sb.append(String.format(
+                    "\",\" <<\n" +
+                    indent + "            \"\\\"%1$s: \\\"\" << %1$s() << ",
+                    token.name()
+                ));
+            }
+        }
+
+        return sb;
+    }
+
+    private int generateGroupsToJson(final StringBuilder sb, final List<Token> tokens, int index, final String indent)
+    {
+        for (int size = tokens.size(); index < size; index++)
+        {
+            if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
+            {
+                final Token groupToken = tokens.get(index);
+                final String groupName = groupToken.name();
+
+                final List<Token> rootFields = new ArrayList<>();
+                index = collectRootFields(tokens, ++index, rootFields);
+                sb.append(generateFieldsToJson(rootFields, indent + INDENT));
+
+                if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
+                {
+                    index = generateGroupsToJson(sb, tokens, index, indent + INDENT);
+                }
+            }
+        }
+
+        return index;
     }
 }
