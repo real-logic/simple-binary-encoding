@@ -124,9 +124,11 @@ public class Cpp98Generator implements CodeGenerator
                 final List<Token> varData = messageBody.subList(offset, messageBody.size());
                 out.append(generateVarData(varData));
 
-                out.append(generateToJson(className, messageBody, BASE_INDENT));
+                out.append("};\n");
 
-                out.append("};\n}\n#endif\n");
+                out.append(generateOStreamMethod(className, messageBody, ""));
+
+                out.append("\n}\n#endif\n");
             }
         }
     }
@@ -511,7 +513,11 @@ public class Cpp98Generator implements CodeGenerator
 
             out.append(generateEnumToStringMethod(tokens.subList(1, tokens.size() - 1), enumToken));
 
-            out.append("};\n}\n#endif\n");
+            out.append("};\n\n");
+
+            out.append(generateEnumOStreamOperator(enumToken));
+
+            out.append("\n}\n#endif\n");
         }
     }
 
@@ -684,6 +690,22 @@ public class Cpp98Generator implements CodeGenerator
             "        throw std::runtime_error(\"unknown value for enum %1$s [E103]:\");\n" +
             "    }\n",
             enumName
+        ));
+
+        return sb;
+    }
+
+    private CharSequence generateEnumOStreamOperator(final Token encodingToken)
+    {
+        final String enumName = formatClassName(encodingToken.name());
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
+            "ostream& operator<<(ostream& os, %1$s::Value m)\n" +
+            "{\n" +
+            "    return os << %1$s::c_str(m);\n" +
+            "}\n",
+           enumName
         ));
 
         return sb;
@@ -1612,19 +1634,19 @@ public class Cpp98Generator implements CodeGenerator
         return literal;
     }
 
-    private CharSequence generateToJson(final String className, final List<Token> messageBody, final String indent)
+    private CharSequence generateOStreamMethod(final String className, final List<Token> messageBody, final String indent)
     {
         final StringBuilder out = new StringBuilder();
 
         out.append(String.format("\n" +
-            indent + "    ostream& operator<<(ostream& os, const %1$s& m) const\n" +
-            indent + "    {\n" +
-            indent + "        os << \"{ \" << \n" +
-            indent + "            \"\\\"messageName: \\\"%1$s\\\",\" <<\n" +
-            indent + "            \"\\\"blockLength: \\\"\" << sbeBlockLength() << \",\" << \n" +
-            indent + "            \"\\\"templateId: \\\"\" << sbeTemplateId() << \",\" << \n" +
-            indent + "            \"\\\"schemaId: \\\"\" << sbeSchemaId() << \",\" << \n" +
-            indent + "            \"\\\"version: \\\"\" << sbeSchemaVersion() << ",
+            indent + "ostream& operator<<(ostream& os, const %1$s& m)\n" +
+            indent + "{\n" +
+            indent + "    return os << \"{ \" << \n" +
+            indent + "        \"\\\"messageName: \\\"%1$s\\\",\" <<\n" +
+            indent + "        \"\\\"blockLength: \\\"\" << m.sbeBlockLength() << \",\" << \n" +
+            indent + "        \"\\\"templateId: \\\"\" << m.sbeTemplateId() << \",\" << \n" +
+            indent + "        \"\\\"schemaId: \\\"\" << m.sbeSchemaId() << \",\" << \n" +
+            indent + "        \"\\\"version: \\\"\" << m.sbeSchemaVersion() << ",
             className
         ));
 
@@ -1652,7 +1674,7 @@ public class Cpp98Generator implements CodeGenerator
 */
         out.append(String.format("\n" +
             indent + "        \"}\";\n" +
-            "    }\n\n"));
+            "}\n\n"));
         return out;
     }
 
@@ -1664,10 +1686,11 @@ public class Cpp98Generator implements CodeGenerator
         {
             if (token.signal() == Signal.BEGIN_FIELD)
             {
+                final String propertyName = formatPropertyName(token.name());
                 sb.append(String.format(
                     "\",\" <<\n" +
-                    indent + "            \"\\\"%1$s: \\\"\" << %1$s() << ",
-                    token.name()
+                    indent + "            \"\\\"%1$s: \\\"\" << m.%1$s() << ",
+                    propertyName
                 ));
             }
         }
