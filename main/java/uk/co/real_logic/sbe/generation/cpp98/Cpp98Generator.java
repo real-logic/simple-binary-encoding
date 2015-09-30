@@ -493,7 +493,11 @@ public class Cpp98Generator implements CodeGenerator
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
-            out.append("};\n}\n#endif\n");
+            out.append("};\n\n");
+
+            out.append(generateChoicesOStreamOperator(bitSetName, tokens.subList(1, tokens.size() - 1)));
+
+            out.append("\n}\n#endif\n");
         }
     }
 
@@ -599,6 +603,40 @@ public class Cpp98Generator implements CodeGenerator
         }
 
         return sb;
+    }
+
+    private CharSequence generateChoicesOStreamOperator(final String bitsetClassName, final List<Token> tokens)
+    {
+        final StringBuilder out = new StringBuilder();
+
+        out.append(String.format(
+            "ostream& operator<<(ostream& os, %1$s& m)\n" +
+            "{\n" +
+            "    return os << \"%1$s: { \" <<\n",
+            bitsetClassName
+        ));
+
+        int i = 0;
+        for (final Token token : tokens)
+        {
+            if (token.signal() == Signal.CHOICE)
+            {
+                if (i > 0)
+                {
+                    out.append(" << \",\" <<\n");
+                }
+                ++i;
+                final String choiceName = token.name();
+                out.append(String.format(
+                    "    \"\\\"%1$s\\\": \" << m.%1$s()",
+                    choiceName
+                ));
+            }
+        }
+
+        out.append(" << \"}\";\n}");
+
+        return out;
     }
 
     private CharSequence generateEnumValues(final List<Token> tokens, final Token encodingToken)
@@ -1639,7 +1677,7 @@ public class Cpp98Generator implements CodeGenerator
         final StringBuilder out = new StringBuilder();
 
         out.append(String.format("\n" +
-            indent + "ostream& operator<<(ostream& os, const %1$s& m)\n" +
+            indent + "ostream& operator<<(ostream& os, %1$s& m)\n" +
             indent + "{\n" +
             indent + "    return os << \"{ \" << \n" +
             indent + "        \"\\\"messageName: \\\"%1$s\\\",\" <<\n" +
