@@ -76,7 +76,7 @@ sourceSets {
 }
 
 dependencies {
-    checkstyle "com.github.sevntu.checkstyle:sevntu-checks:1.13.4"
+    checkstyle "com.github.sevntu.checkstyle:sevntu-checks:1.16.0"
 
     compile 'uk.co.real-logic:Agrona:0.4.5'
 
@@ -86,6 +86,11 @@ dependencies {
             'com.google.code.gson:gson:2.3.1'
 
     testCompile files('build/classes/generated')
+}
+
+checkstyle {
+    configFile = new File(rootDir, 'config/checkstyle.xml')
+    toolVersion = "6.11.2"
 }
 
 compileJava {
@@ -164,11 +169,6 @@ task (generateCpp98IrCodecs, type:JavaExec) {
 task generateIrCodecs {
     description "Generate Java and C++ IR Codecs"
     dependsOn 'generateJavaIrCodecs', 'generateCpp98IrCodecs'
-}
-
-checkstyle {
-    configFile = new File(rootDir, 'config/checkstyle.xml')
-    toolVersion = "6.8.1"
 }
 
 javadoc {

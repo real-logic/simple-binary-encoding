@@ -78,67 +78,67 @@ public class JsonPrinterTest
         final JsonPrinter printer = new JsonPrinter(ir);
         final String result = printer.print(encodedMsgBuffer);
         assertEquals(
-        "{\n" +
-        "    \"serialNumber\": 1234,\n" +
-        "    \"modelYear\": 2013,\n" +
-        "    \"someNumbers\": [0, 1, 2, 3, 4],\n" +
-        "    \"vehicleCode\": \"abcdef\",\n" +
-        "    \"capacity\": 2000,\n" +
-        "    \"numCylinders\": 4,\n" +
-        "    \"maxRpm\": 9000,\n" +
-        "    \"manufacturerCode\": \"123\",\n" +
-        "    \"fuel\": Petrol,\n" +
-        "    \"fuelFigures\": [\n" +
-        "    {\n" +
-        "        \"speed\": 30,\n" +
-        "        \"mpg\": 35.9\n" +
-        "    },\n" +
-        "    {\n" +
-        "        \"speed\": 55,\n" +
-        "        \"mpg\": 49.0\n" +
-        "    },\n" +
-        "    {\n" +
-        "        \"speed\": 75,\n" +
-        "        \"mpg\": 40.0\n" +
-        "    }],\n" +
-        "    \"performanceFigures\": [\n" +
-        "    {\n" +
-        "        \"octaneRating\": 95,\n" +
-        "        \"acceleration\": [\n" +
-        "        {\n" +
-        "            \"mph\": 30,\n" +
-        "            \"seconds\": 4.0\n" +
-        "        },\n" +
-        "        {\n" +
-        "            \"mph\": 60,\n" +
-        "            \"seconds\": 7.5\n" +
-        "        },\n" +
-        "        {\n" +
-        "            \"mph\": 100,\n" +
-        "            \"seconds\": 12.2\n" +
-        "        }]\n" +
-        "    },\n" +
-        "    {\n" +
-        "        \"octaneRating\": 99,\n" +
-        "        \"acceleration\": [\n" +
-        "        {\n" +
-        "            \"mph\": 30,\n" +
-        "            \"seconds\": 3.8\n" +
-        "        },\n" +
-        "        {\n" +
-        "            \"mph\": 60,\n" +
-        "            \"seconds\": 7.1\n" +
-        "        },\n" +
-        "        {\n" +
-        "            \"mph\": 100,\n" +
-        "            \"seconds\": 11.8\n" +
-        "        }]\n" +
-        "    }],\n" +
-        "    \"make\": \"Honda\",\n" +
-        "    \"model\": \"Civic VTi\",\n" +
-        "    \"activationCode\": \"\"\n" +
-        "}"
-        , result);
+            "{\n" +
+            "    \"serialNumber\": 1234,\n" +
+            "    \"modelYear\": 2013,\n" +
+            "    \"someNumbers\": [0, 1, 2, 3, 4],\n" +
+            "    \"vehicleCode\": \"abcdef\",\n" +
+            "    \"capacity\": 2000,\n" +
+            "    \"numCylinders\": 4,\n" +
+            "    \"maxRpm\": 9000,\n" +
+            "    \"manufacturerCode\": \"123\",\n" +
+            "    \"fuel\": Petrol,\n" +
+            "    \"fuelFigures\": [\n" +
+            "    {\n" +
+            "        \"speed\": 30,\n" +
+            "        \"mpg\": 35.9\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"speed\": 55,\n" +
+            "        \"mpg\": 49.0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"speed\": 75,\n" +
+            "        \"mpg\": 40.0\n" +
+            "    }],\n" +
+            "    \"performanceFigures\": [\n" +
+            "    {\n" +
+            "        \"octaneRating\": 95,\n" +
+            "        \"acceleration\": [\n" +
+            "        {\n" +
+            "            \"mph\": 30,\n" +
+            "            \"seconds\": 4.0\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"mph\": 60,\n" +
+            "            \"seconds\": 7.5\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"mph\": 100,\n" +
+            "            \"seconds\": 12.2\n" +
+            "        }]\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"octaneRating\": 99,\n" +
+            "        \"acceleration\": [\n" +
+            "        {\n" +
+            "            \"mph\": 30,\n" +
+            "            \"seconds\": 3.8\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"mph\": 60,\n" +
+            "            \"seconds\": 7.1\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"mph\": 100,\n" +
+            "            \"seconds\": 11.8\n" +
+            "        }]\n" +
+            "    }],\n" +
+            "    \"make\": \"Honda\",\n" +
+            "    \"model\": \"Civic VTi\",\n" +
+            "    \"activationCode\": \"\"\n" +
+            "}",
+            result);
     }
 
     private static void encodeSchema(final ByteBuffer buffer)
