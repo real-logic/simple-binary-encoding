@@ -76,7 +76,7 @@ sourceSets {
 }
 
 dependencies {
-    checkstyle "com.github.sevntu.checkstyle:sevntu-checks:1.16.0"
+    checkstyle "com.github.sevntu.checkstyle:sevntu-checks:1.17.0"
 
     compile 'uk.co.real-logic:Agrona:0.4.8-SNAPSHOT'
 
@@ -90,7 +90,7 @@ dependencies {
 
 checkstyle {
     configFile = new File(rootDir, 'config/checkstyle.xml')
-    toolVersion = "6.11.2"
+    toolVersion = "6.12.1"
 }
 
 compileJava {
