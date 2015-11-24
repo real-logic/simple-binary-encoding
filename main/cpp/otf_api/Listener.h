@@ -17,7 +17,9 @@
 #ifndef _LISTENER_H_
 #define _LISTENER_H_
 
-#define __STDC_LIMIT_MACROS 1
+#if !defined(__STDC_LIMIT_MACROS)
+    #define __STDC_LIMIT_MACROS 1
+#endif
 #include <stdint.h>
 #include <string.h>
 
