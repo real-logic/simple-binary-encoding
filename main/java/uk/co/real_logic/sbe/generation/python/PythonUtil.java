@@ -44,7 +44,7 @@ public class PythonUtil
     }
 
     /**
-     * Map the name of a {@link uk.co.real_logic.sbe.PrimitiveType} to a C++98 primitive type name.
+     * Map the name of a {@link uk.co.real_logic.sbe.PrimitiveType} to a python primitive type name.
      *
      * @param primitiveType to map.
      * @param byteOrder of the primitiveType
@@ -53,6 +53,17 @@ public class PythonUtil
     public static String pythonTypeName(final PrimitiveType primitiveType, final ByteOrder byteOrder)
     {
         return (byteOrder == ByteOrder.BIG_ENDIAN ? ">" : "<") + typeNameByPrimitiveTypeMap.get(primitiveType);
+    }
+
+    /**
+     * Map the name of a {@link java.nio.ByteOrder} to a python struct endian code
+     *
+     * @param byteOrder to map
+     * @return the mapped value.
+     */
+    public static String byteOrderFormat(final ByteOrder byteOrder)
+    {
+        return (byteOrder == ByteOrder.BIG_ENDIAN ? ">" : "<");
     }
 
     /**

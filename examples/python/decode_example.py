@@ -19,8 +19,7 @@ print('code: '+str(car.getCode()))
 for i in range(0,car.someNumbersLength()):
     print('someNumber'+str(i)+': '+str(car.getSomeNumbers(i)))
 
-for i in range(0,car.vehicleCodeLength()):
-    print('vehicleCode'+str(i)+': '+str(car.getVehicleCode(i)))
+print('vehicleCode: "'+str(car.getVehicleCode())) + '"'
 
 # bitsets
 print('cruiseControl: '+str(car.extras().getCruiseControl()))
@@ -32,8 +31,7 @@ print('capacity: '+str(car.engine().getCapacity()))
 print('numCylinders: '+str(car.engine().getNumCylinders()))
 print('maxRpm: '+str(car.engine().maxRpm()))
 
-for i in range(0,car.engine().manufacturerCodeLength()):
-    print('manufacturerCode'+str(i)+': '+str(car.engine().getManufacturerCode(i)))
+print('manufacturerCode: "'+str(car.engine().getManufacturerCode()))+'"'
 
 # groups
 figures = car.fuelFigures()

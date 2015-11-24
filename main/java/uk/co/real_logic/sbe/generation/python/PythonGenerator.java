@@ -759,7 +759,6 @@ public class PythonGenerator implements CodeGenerator
     private CharSequence generateArrayProperty(
         final String propertyName, final Token token, final String indent)
     {
-        final String pythonTypeName = pythonTypeName(token.encoding().primitiveType(), token.encoding().byteOrder());
         final int offset = token.offset();
 
         final StringBuilder sb = new StringBuilder();
@@ -773,32 +772,63 @@ public class PythonGenerator implements CodeGenerator
             token.arrayLength()
         ));
 
-        sb.append(String.format(
-            indent + "    def get%2$s(self, index):\n" +
-            indent + "        if index < 0 or index >= %3$d:\n" +
-            indent + "            raise Exception('index out of range for %2$s')\n" +
-            indent + "        return struct.unpack_from('%1$s', self.buffer_, self.offset_ + %6$d + (index * %7$d))[0]\n\n",
-            pythonTypeName,
-            toUpperFirstChar(propertyName),
-            token.arrayLength(),
-            generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
-            formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
-            offset,
-            token.encoding().primitiveType().size()
-        ));
+        if (token.encoding().primitiveType() == PrimitiveType.CHAR)
+        {
+            sb.append(String.format(
+                    indent + "    def get%2$s(self):\n" +
+                    indent + "        return struct.unpack_from('%1$s%4$ds', self.buffer_, self.offset_ + %3$d)[0]\n\n",
+                    byteOrderFormat(token.encoding().byteOrder()),
+                    toUpperFirstChar(propertyName),
+                    offset,
+                    token.arrayLength()
+            ));
+        }
+        else
+        {
+            sb.append(String.format(
+                    indent + "    def get%2$s(self, index):\n" +
+                    indent + "        if index < 0 or index >= %3$d:\n" +
+                    indent + "            raise Exception('index out of range for %2$s')\n" +
+                    indent + "        return struct.unpack_from(\n" +
+                    indent + "            '%1$s', self.buffer_, self.offset_ + %6$d + (index * %7$d))[0]\n\n",
+                    pythonTypeName(token.encoding().primitiveType(), token.encoding().byteOrder()),
+                    toUpperFirstChar(propertyName),
+                    token.arrayLength(),
+                    generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
+                    formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
+                    offset,
+                    token.encoding().primitiveType().size()
+            ));
+        }
 
-        sb.append(String.format(
-            indent + "    def set%2$s(self, index, value):\n" +
-            indent + "        if index < 0 or index >= %3$d:\n" +
-            indent + "            raise Exception('index out of range for %2$s')\n" +
-            indent + "        struct.pack_into('%1$s', self.buffer_, self.offset_ + %4$d + (index * %5$d), value)\n",
-            pythonTypeName,
-            toUpperFirstChar(propertyName),
-            token.arrayLength(),
-            offset,
-            token.encoding().primitiveType().size(),
-            formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())
-        ));
+        if (token.encoding().primitiveType() == PrimitiveType.CHAR)
+        {
+            sb.append(String.format(
+                    indent + "    def set%2$s(self, value):\n" +
+                            indent + "        if len(value) != %3$d:\n" +
+                            indent + "            raise Exception('%2$s len not %3$d')\n" +
+                            indent + "        struct.pack_into('%1$s%3$ds', self.buffer_, self.offset_ + %4$d, value)\n",
+                    byteOrderFormat(token.encoding().byteOrder()),
+                    toUpperFirstChar(propertyName),
+                    token.arrayLength(),
+                    offset
+            ));
+        }
+        else
+        {
+            sb.append(String.format(
+                    indent + "    def set%2$s(self, index, value):\n" +
+                    indent + "        if index < 0 or index >= %3$d:\n" +
+                    indent + "            raise Exception('index out of range for %2$s')\n" +
+                    indent + "        struct.pack_into('%1$s', self.buffer_, self.offset_ + %4$d + (index * %5$d), value)\n",
+                    pythonTypeName(token.encoding().primitiveType(), token.encoding().byteOrder()),
+                    toUpperFirstChar(propertyName),
+                    token.arrayLength(),
+                    offset,
+                    token.encoding().primitiveType().size(),
+                    formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())
+            ));
+        }
 
         return sb;
     }
