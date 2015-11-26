@@ -59,7 +59,7 @@
             <arg value="${dir.resources.sbe}/fix-message-samples.xml"/>
         </java>
 
-        <fail unless="protobuf.home" message="protobuf.home is not defined (please add a build-local.properties and define it."/>
+        <fail unless="protobuf.home" message="protobuf.home is not defined (please add a build-local.properties and define it.)"/>
 
         <exec executable="${protobuf.home}/bin/protoc" failonerror="true">
             <arg value="-I${dir.resources.protobuf}"/>
