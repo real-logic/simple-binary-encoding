@@ -28,7 +28,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
 group = 'uk.co.real-logic'
-version = '1.1.7-RC2'
+version = '1.1.8-RC2-SNAPSHOT'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 ext {
