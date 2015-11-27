@@ -37,13 +37,21 @@
     <Reference Include="Google.ProtocolBuffers">
       <HintPath>..\..\..\vs2013\packages\Google.ProtocolBuffers.2.4.1.521\lib\net40\Google.ProtocolBuffers.dll</HintPath>
     </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\..\vs2013\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\vs2013\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Bench\Protobufnet\GpbBenchmarkState.cs" />
+    <Compile Include="Bench\Protobufnet\GpbMarketDataBenchmark.cs" />
+    <Compile Include="Bench\Protobufnet\GpbPerfTestRunner.cs" />
+    <Compile Include="Bench\Protobufnet\Samplefix.cs" />
     <Compile Include="Bench\Proto\GpbBenchmarkState.cs" />
     <Compile Include="Bench\Proto\GpbMarketDataBenchmark.cs" />
     <Compile Include="Bench\Proto\GpbPerfTestRunner.cs" />
@@ -94,6 +102,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Bench\Protobufnet\generateCSharp.bat" />
+    <None Include="Bench\Protobufnet\protos\google\protobuf\csharp_options.proto" />
+    <None Include="Bench\Protobufnet\protos\google\protobuf\descriptor.proto" />
+    <None Include="Bench\Protobufnet\protos\sample-fix.proto" />
     <None Include="Bench\Proto\generateCSharp.bat" />
     <None Include="Bench\Proto\protos\google\protobuf\csharp_options.proto" />
     <None Include="Bench\Proto\protos\google\protobuf\descriptor.proto" />
