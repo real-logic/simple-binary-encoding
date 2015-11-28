@@ -240,12 +240,6 @@ def projectPom = {
             email = 'mjpt777@gmail.com'
             url = 'https://github.com/mjpt777'
         }
-        developer {
-            id = 'odeheurles'
-            name = 'Olivier Deheurles'
-            email = 'olivier@weareadaptive.com'
-            url = 'https://github.com/odeheurles'
-        }
     }
 }
 
