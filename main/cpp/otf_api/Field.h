@@ -18,7 +18,7 @@
 
 #include <vector>
 
-#include "otf_api/Ir.h"
+#include "Ir.h"
 
 namespace sbe {
 namespace on_the_fly {

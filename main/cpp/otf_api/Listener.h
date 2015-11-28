@@ -23,12 +23,12 @@
 
 #include <stack>
 
-#include "otf_api/OnNext.h"
-#include "otf_api/OnError.h"
-#include "otf_api/OnCompleted.h"
-#include "otf_api/Field.h"
-#include "otf_api/Group.h"
-#include "otf_api/Ir.h"
+#include "OnNext.h"
+#include "OnError.h"
+#include "OnCompleted.h"
+#include "Field.h"
+#include "Group.h"
+#include "Ir.h"
 
 /**
  * \mainpage Simple Binary Encoding
