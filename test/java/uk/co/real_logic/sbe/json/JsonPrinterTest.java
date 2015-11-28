@@ -79,70 +79,69 @@ public class JsonPrinterTest
         final String result = printer.print(encodedMsgBuffer);
         assertEquals(
             "{\n" +
-            "    \"serialNumber\": 1234,\n" +
-            "    \"modelYear\": 2013,\n" +
-            "    \"someNumbers\": [0, 1, 2, 3, 4],\n" +
-            "    \"vehicleCode\": \"abcdef\",\n" +
-            "    \"capacity\": 2000,\n" +
-            "    \"numCylinders\": 4,\n" +
-            "    \"maxRpm\": 9000,\n" +
-            "    \"manufacturerCode\": \"123\",\n" +
-            "    \"fuel\": Petrol,\n" +
-            "    \"fuelFigures\": [\n" +
-            "    {\n" +
-            "        \"speed\": 30,\n" +
-            "        \"mpg\": 35.9\n" +
-            "    },\n" +
-            "    {\n" +
-            "        \"speed\": 55,\n" +
-            "        \"mpg\": 49.0\n" +
-            "    },\n" +
-            "    {\n" +
-            "        \"speed\": 75,\n" +
-            "        \"mpg\": 40.0\n" +
-            "    }],\n" +
-            "    \"performanceFigures\": [\n" +
-            "    {\n" +
-            "        \"octaneRating\": 95,\n" +
-            "        \"acceleration\": [\n" +
-            "        {\n" +
-            "            \"mph\": 30,\n" +
-            "            \"seconds\": 4.0\n" +
-            "        },\n" +
-            "        {\n" +
-            "            \"mph\": 60,\n" +
-            "            \"seconds\": 7.5\n" +
-            "        },\n" +
-            "        {\n" +
-            "            \"mph\": 100,\n" +
-            "            \"seconds\": 12.2\n" +
-            "        }]\n" +
-            "    },\n" +
-            "    {\n" +
-            "        \"octaneRating\": 99,\n" +
-            "        \"acceleration\": [\n" +
-            "        {\n" +
-            "            \"mph\": 30,\n" +
-            "            \"seconds\": 3.8\n" +
-            "        },\n" +
-            "        {\n" +
-            "            \"mph\": 60,\n" +
-            "            \"seconds\": 7.1\n" +
-            "        },\n" +
-            "        {\n" +
-            "            \"mph\": 100,\n" +
-            "            \"seconds\": 11.8\n" +
-            "        }]\n" +
-            "    }],\n" +
-            "    \"make\": \"Honda\",\n" +
-            "    \"model\": \"Civic VTi\",\n" +
-            "    \"activationCode\": \"\"\n" +
-            "}",
+                "    \"serialNumber\": 1234,\n" +
+                "    \"modelYear\": 2013,\n" +
+                "    \"someNumbers\": [0, 1, 2, 3, 4],\n" +
+                "    \"vehicleCode\": \"abcdef\",\n" +
+                "    \"capacity\": 2000,\n" +
+                "    \"numCylinders\": 4,\n" +
+                "    \"maxRpm\": 9000,\n" +
+                "    \"manufacturerCode\": \"123\",\n" +
+                "    \"fuel\": Petrol,\n" +
+                "    \"fuelFigures\": [\n" +
+                "    {\n" +
+                "        \"speed\": 30,\n" +
+                "        \"mpg\": 35.9\n" +
+                "    },\n" +
+                "    {\n" +
+                "        \"speed\": 55,\n" +
+                "        \"mpg\": 49.0\n" +
+                "    },\n" +
+                "    {\n" +
+                "        \"speed\": 75,\n" +
+                "        \"mpg\": 40.0\n" +
+                "    }],\n" +
+                "    \"performanceFigures\": [\n" +
+                "    {\n" +
+                "        \"octaneRating\": 95,\n" +
+                "        \"acceleration\": [\n" +
+                "        {\n" +
+                "            \"mph\": 30,\n" +
+                "            \"seconds\": 4.0\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"mph\": 60,\n" +
+                "            \"seconds\": 7.5\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"mph\": 100,\n" +
+                "            \"seconds\": 12.2\n" +
+                "        }]\n" +
+                "    },\n" +
+                "    {\n" +
+                "        \"octaneRating\": 99,\n" +
+                "        \"acceleration\": [\n" +
+                "        {\n" +
+                "            \"mph\": 30,\n" +
+                "            \"seconds\": 3.8\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"mph\": 60,\n" +
+                "            \"seconds\": 7.1\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"mph\": 100,\n" +
+                "            \"seconds\": 11.8\n" +
+                "        }]\n" +
+                "    }],\n" +
+                "    \"make\": \"Honda\",\n" +
+                "    \"model\": \"Civic VTi\",\n" +
+                "    \"activationCode\": \"\"\n" +
+                "}",
             result);
     }
 
-    private static void encodeSchema(final ByteBuffer buffer)
-        throws Exception
+    private static void encodeSchema(final ByteBuffer buffer) throws Exception
     {
         try (final InputStream in = new FileInputStream("examples/resources/example-schema.xml"))
         {
@@ -160,22 +159,23 @@ public class JsonPrinterTest
         final UnsafeBuffer directBuffer = new UnsafeBuffer(buffer);
 
         int bufferOffset = 0;
-        MESSAGE_HEADER.wrap(directBuffer, bufferOffset)
-                      .blockLength(CAR.sbeBlockLength())
-                      .templateId(CAR.sbeTemplateId())
-                      .schemaId(CAR.sbeSchemaId())
-                      .version(CAR.sbeSchemaVersion());
+        MESSAGE_HEADER
+            .wrap(directBuffer, bufferOffset)
+            .blockLength(CAR.sbeBlockLength())
+            .templateId(CAR.sbeTemplateId())
+            .schemaId(CAR.sbeSchemaId())
+            .version(CAR.sbeSchemaVersion());
 
         bufferOffset += MESSAGE_HEADER.encodedLength();
 
         final int srcOffset = 0;
 
         CAR.wrap(directBuffer, bufferOffset)
-           .serialNumber(1234)
-           .modelYear(2013)
-           .available(BooleanType.TRUE)
-           .code(Model.A)
-           .putVehicleCode(vehicleCode, srcOffset);
+            .serialNumber(1234)
+            .modelYear(2013)
+            .available(BooleanType.TRUE)
+            .code(Model.A)
+            .putVehicleCode(vehicleCode, srcOffset);
 
         for (int i = 0, size = CarEncoder.someNumbersLength(); i < size; i++)
         {
@@ -183,34 +183,36 @@ public class JsonPrinterTest
         }
 
         CAR.extras()
-           .clear()
-           .cruiseControl(true)
-           .sportsPack(true)
-           .sunRoof(false);
+            .clear()
+            .cruiseControl(true)
+            .sportsPack(true)
+            .sunRoof(false);
 
         CAR.engine()
-           .capacity(2000)
-           .numCylinders((short)4)
-           .putManufacturerCode(manufacturerCode, srcOffset);
+            .capacity(2000)
+            .numCylinders((short)4)
+            .putManufacturerCode(manufacturerCode, srcOffset);
 
         CAR.fuelFiguresCount(3)
-           .next().speed(30).mpg(35.9f)
-           .next().speed(55).mpg(49.0f)
-           .next().speed(75).mpg(40.0f);
+            .next().speed(30).mpg(35.9f)
+            .next().speed(55).mpg(49.0f)
+            .next().speed(75).mpg(40.0f);
 
         final CarEncoder.PerformanceFiguresEncoder perfFigures = CAR.performanceFiguresCount(2);
-        perfFigures.next()
-                   .octaneRating((short)95)
-                   .accelerationCount(3)
-                   .next().mph(30).seconds(4.0f)
-                   .next().mph(60).seconds(7.5f)
-                   .next().mph(100).seconds(12.2f);
-        perfFigures.next()
-                   .octaneRating((short)99)
-                   .accelerationCount(3)
-                   .next().mph(30).seconds(3.8f)
-                   .next().mph(60).seconds(7.1f)
-                   .next().mph(100).seconds(11.8f);
+        perfFigures
+            .next()
+            .octaneRating((short)95)
+            .accelerationCount(3)
+            .next().mph(30).seconds(4.0f)
+            .next().mph(60).seconds(7.5f)
+            .next().mph(100).seconds(12.2f);
+        perfFigures
+            .next()
+            .octaneRating((short)99)
+            .accelerationCount(3)
+            .next().mph(30).seconds(3.8f)
+            .next().mph(60).seconds(7.1f)
+            .next().mph(100).seconds(11.8f);
 
         CAR.make(new String(make));
         CAR.putModel(model, srcOffset, model.length);
@@ -220,8 +222,7 @@ public class JsonPrinterTest
         buffer.position(bufferOffset);
     }
 
-    private static Ir decodeIr(final ByteBuffer buffer)
-        throws IOException
+    private static Ir decodeIr(final ByteBuffer buffer) throws IOException
     {
         try (final IrDecoder irDecoder = new IrDecoder(buffer))
         {

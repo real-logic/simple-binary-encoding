@@ -19,7 +19,6 @@ import uk.co.real_logic.agrona.generation.PackageOutputManager;
 import uk.co.real_logic.sbe.generation.cpp98.Cpp98Generator;
 import uk.co.real_logic.sbe.generation.cpp98.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
-import uk.co.real_logic.sbe.generation.java.JavaMockPojoGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
 import java.io.IOException;
@@ -31,14 +30,6 @@ import static uk.co.real_logic.sbe.SbeTool.*;
  */
 public enum TargetCodeGenerator
 {
-    JAVA_MOCK_POJO()
-        {
-            public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
-            {
-                return new JavaMockPojoGenerator(ir, new PackageOutputManager(outputDir, ir.applicableNamespace()));
-            }
-        },
-
     JAVA()
         {
             public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
