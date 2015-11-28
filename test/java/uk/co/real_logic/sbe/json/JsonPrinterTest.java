@@ -199,15 +199,13 @@ public class JsonPrinterTest
             .next().speed(75).mpg(40.0f);
 
         final CarEncoder.PerformanceFiguresEncoder perfFigures = CAR.performanceFiguresCount(2);
-        perfFigures
-            .next()
+        perfFigures.next()
             .octaneRating((short)95)
             .accelerationCount(3)
             .next().mph(30).seconds(4.0f)
             .next().mph(60).seconds(7.5f)
             .next().mph(100).seconds(12.2f);
-        perfFigures
-            .next()
+        perfFigures.next()
             .octaneRating((short)99)
             .accelerationCount(3)
             .next().mph(30).seconds(3.8f)
