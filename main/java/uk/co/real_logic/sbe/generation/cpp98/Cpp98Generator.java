@@ -124,7 +124,11 @@ public class Cpp98Generator implements CodeGenerator
                 final List<Token> varData = messageBody.subList(offset, messageBody.size());
                 out.append(generateVarData(varData));
 
-                out.append("};\n}\n#endif\n");
+                out.append("};\n");
+
+                out.append(generateOStreamMethod(className, messageBody, ""));
+
+                out.append("\n}\n#endif\n");
             }
         }
     }
@@ -489,7 +493,11 @@ public class Cpp98Generator implements CodeGenerator
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
-            out.append("};\n}\n#endif\n");
+            out.append("};\n\n");
+
+            out.append(generateChoicesOStreamOperator(bitSetName, tokens.subList(1, tokens.size() - 1)));
+
+            out.append("\n}\n#endif\n");
         }
     }
 
@@ -507,7 +515,13 @@ public class Cpp98Generator implements CodeGenerator
 
             out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
 
-            out.append("};\n}\n#endif\n");
+            out.append(generateEnumToStringMethod(tokens.subList(1, tokens.size() - 1), enumToken));
+
+            out.append("};\n\n");
+
+            out.append(generateEnumOStreamOperator(enumToken));
+
+            out.append("\n}\n#endif\n");
         }
     }
 
@@ -591,6 +605,40 @@ public class Cpp98Generator implements CodeGenerator
         return sb;
     }
 
+    private CharSequence generateChoicesOStreamOperator(final String bitsetClassName, final List<Token> tokens)
+    {
+        final StringBuilder out = new StringBuilder();
+
+        out.append(String.format(
+            "ostream& operator<<(ostream& os, %1$s& m)\n" +
+            "{\n" +
+            "    return os << \"%1$s: { \" <<\n",
+            bitsetClassName
+        ));
+
+        int i = 0;
+        for (final Token token : tokens)
+        {
+            if (token.signal() == Signal.CHOICE)
+            {
+                if (i > 0)
+                {
+                    out.append(" << \",\" <<\n");
+                }
+                ++i;
+                final String choiceName = token.name();
+                out.append(String.format(
+                    "    \"\\\"%1$s\\\": \" << m.%1$s()",
+                    choiceName
+                ));
+            }
+        }
+
+        out.append(" << \"}\";\n}");
+
+        return out;
+    }
+
     private CharSequence generateEnumValues(final List<Token> tokens, final Token encodingToken)
     {
         final StringBuilder sb = new StringBuilder();
@@ -648,6 +696,54 @@ public class Cpp98Generator implements CodeGenerator
             "    }\n",
             encodingToken.encoding().applicableNullValue().toString(),
             enumName
+        ));
+
+        return sb;
+    }
+
+    private CharSequence generateEnumToStringMethod(final List<Token> tokens, final Token encodingToken)
+    {
+        final String enumName = formatClassName(encodingToken.name());
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
+           "    static const char* const c_str(const %1$s::Value value)\n" +
+           "    {\n" +
+           "        switch (value)\n" +
+           "        {\n",
+           enumName
+        ));
+
+        for (final Token token : tokens)
+        {
+            sb.append(String.format(
+                "            case %1$s: return \"%1$s\";\n",
+                token.name())
+            );
+        }
+
+        sb.append(String.format(
+            "            case NULL_VALUE: return \"NULL_VALUE\";\n" +
+            "        }\n\n" +
+            "        throw std::runtime_error(\"unknown value for enum %1$s [E103]:\");\n" +
+            "    }\n",
+            enumName
+        ));
+
+        return sb;
+    }
+
+    private CharSequence generateEnumOStreamOperator(final Token encodingToken)
+    {
+        final String enumName = formatClassName(encodingToken.name());
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
+            "ostream& operator<<(ostream& os, %1$s::Value m)\n" +
+            "{\n" +
+            "    return os << %1$s::c_str(m);\n" +
+            "}\n",
+           enumName
         ));
 
         return sb;
@@ -1398,6 +1494,18 @@ public class Cpp98Generator implements CodeGenerator
         ));
 
         sb.append(String.format(
+            "\n" +
+            indent + "    const char* const %2$s_c_str(void) const\n" +
+            indent + "    {\n" +
+                             "%3$s" +
+            indent + "        return %1$s::c_str(%2$s());\n" +
+            indent + "    }\n\n",
+            enumName,
+            propertyName,
+            generateEnumFieldNotPresentCondition(token.version(), enumName, indent)
+        ));
+
+        sb.append(String.format(
             indent + "    %1$s &%2$s(const %3$s::Value value)\n" +
             indent + "    {\n" +
             indent + "        *((%4$s *)(buffer_ + offset_ + %5$d)) = %6$s(value);\n" +
@@ -1562,5 +1670,92 @@ public class Cpp98Generator implements CodeGenerator
         }
 
         return literal;
+    }
+
+    private CharSequence generateOStreamMethod(final String className, final List<Token> messageBody, final String indent)
+    {
+        final StringBuilder out = new StringBuilder();
+
+        out.append(String.format("\n" +
+            indent + "ostream& operator<<(ostream& os, %1$s& m)\n" +
+            indent + "{\n" +
+            indent + "    return os << \"{ \" << \n" +
+            indent + "        \"\\\"messageName: \\\"%1$s\\\",\" <<\n" +
+            indent + "        \"\\\"blockLength: \\\"\" << m.sbeBlockLength() << \",\" << \n" +
+            indent + "        \"\\\"templateId: \\\"\" << m.sbeTemplateId() << \",\" << \n" +
+            indent + "        \"\\\"schemaId: \\\"\" << m.sbeSchemaId() << \",\" << \n" +
+            indent + "        \"\\\"version: \\\"\" << m.sbeSchemaVersion() << ",
+            className
+        ));
+
+        int offset = 0;
+        final List<Token> rootFields = new ArrayList<>();
+        offset = collectRootFields(messageBody, offset, rootFields);
+        out.append(generateFieldsToJson(rootFields, BASE_INDENT));
+/*
+        final List<Token> groups = new ArrayList<>();
+        offset = collectGroups(messageBody, offset, groups);
+        final StringBuilder sb = new StringBuilder();
+        generateGroupsToJson(sb, groups, 0, BASE_INDENT);
+        out.append(sb);
+        final List<Token> varData = messageBody.subList(offset, messageBody.size());
+        for (final Token token : varData)
+        {
+            if (token.signal() == Signal.BEGIN_FIELD)
+            {
+                sb.append(String.format(
+                    indent + "            \"\\\"%1$s: \\\"\" << %1$s() << \",\",\n",
+                        token.name()
+                ));
+            }
+        }
+*/
+        out.append(String.format("\n" +
+            indent + "        \"}\";\n" +
+            "}\n\n"));
+        return out;
+    }
+
+    private CharSequence generateFieldsToJson(final List<Token> tokens, final String indent)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        for (final Token token : tokens)
+        {
+            if (token.signal() == Signal.BEGIN_FIELD)
+            {
+                final String propertyName = formatPropertyName(token.name());
+                sb.append(String.format(
+                    "\",\" <<\n" +
+                    indent + "            \"\\\"%1$s: \\\"\" << m.%1$s() << ",
+                    propertyName
+                ));
+            }
+        }
+
+        return sb;
+    }
+
+    private int generateGroupsToJson(final StringBuilder sb, final List<Token> tokens, int index, final String indent)
+    {
+        for (int size = tokens.size(); index < size; index++)
+        {
+            if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
+            {
+                final Token groupToken = tokens.get(index);
+                final String groupName = groupToken.name();
+
+                final List<Token> rootFields = new ArrayList<>();
+                index = collectRootFields(tokens, ++index, rootFields);
+                sb.append(generateFieldsToJson(rootFields, indent + INDENT));
+
+                if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
+                {
+                    index = generateGroupsToJson(sb, tokens, index, indent + INDENT);
+                }
+            }
+        }
+
+        return index;
     }
 }
