@@ -2059,7 +2059,7 @@ public class JavaGenerator implements CodeGenerator
 
             case DOUBLE:
                 literal = value.endsWith("NaN") ? "Double.NaN" : value + "d";
-            break;
+                break;
         }
 
         return literal;
