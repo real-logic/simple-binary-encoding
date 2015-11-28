@@ -23,7 +23,7 @@
 
     <path id="perf.tools.classpath">
         <fileset dir="perf/lib" includes="**/*.jar"/>
-        <file file="build/libs/sbe-all-1.1.7-RC2-SNAPSHOT.jar"/>
+        <file file="build/libs/sbe-all-1.1.8-RC2-SNAPSHOT.jar"/>
     </path>
 
     <path id="perf.build.classpath">
