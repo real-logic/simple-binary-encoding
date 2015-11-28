@@ -1507,6 +1507,7 @@ public class Cpp98Generator implements CodeGenerator
                     return "SBE_NULLVALUE_UINT64";
             }
         }
+
         return generateLiteral(primitiveType, encoding.applicableNullValue().toString());
     }
 
@@ -1531,14 +1532,7 @@ public class Cpp98Generator implements CodeGenerator
                 break;
 
             case FLOAT:
-                if (value.endsWith("NaN"))
-                {
-                    literal = "SBE_FLOAT_NAN";
-                }
-                else
-                {
-                    literal = value + "f";
-                }
+                literal = value.endsWith("NaN") ? "SBE_FLOAT_NAN" : value + "f";
                 break;
 
             case INT64:
@@ -1550,14 +1544,7 @@ public class Cpp98Generator implements CodeGenerator
                 break;
 
             case DOUBLE:
-                if (value.endsWith("NaN"))
-                {
-                    literal = "SBE_DOUBLE_NAN";
-                }
-                else
-                {
-                    literal = value;
-                }
+                literal = value.endsWith("NaN") ? "SBE_DOUBLE_NAN" : value;
                 break;
         }
 

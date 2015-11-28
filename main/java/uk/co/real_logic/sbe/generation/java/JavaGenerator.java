@@ -2046,14 +2046,7 @@ public class JavaGenerator implements CodeGenerator
                 break;
 
             case FLOAT:
-                if (value.endsWith("NaN"))
-                {
-                    literal = "Float.NaN";
-                }
-                else
-                {
-                    literal = value + "f";
-                }
+                literal = value.endsWith("NaN") ? "Float.NaN" : value + "f";
                 break;
 
             case INT64:
@@ -2065,14 +2058,8 @@ public class JavaGenerator implements CodeGenerator
                 break;
 
             case DOUBLE:
-                if (value.endsWith("NaN"))
-                {
-                    literal = "Double.NaN";
-                }
-                else
-                {
-                    literal = value + "d";
-                }
+                literal = value.endsWith("NaN") ? "Double.NaN" : value + "d";
+            break;
         }
 
         return literal;
