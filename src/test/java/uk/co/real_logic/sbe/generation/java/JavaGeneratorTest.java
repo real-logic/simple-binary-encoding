@@ -114,7 +114,6 @@ public class JavaGeneratorTest
 
         final Integer result = (Integer)clazz.getDeclaredMethod("templateId").invoke(flyweight);
         assertThat(result, is((int)templateId));
-
     }
 
     @Test
@@ -351,20 +350,19 @@ public class JavaGeneratorTest
     {
         final String className = "Model";
         final String fqClassName = ir.applicableNamespace() + "." + className;
+
         return encoder.getClass().getClassLoader().loadClass(fqClassName);
     }
 
     private Object getCarDecoder(final UnsafeBuffer buffer, final Object encoder) throws Exception
     {
         final Object decoder = compileCarDecoder().newInstance();
+
         return wrap(buffer, decoder, getSbeBlockLength(encoder), getSbeSchemaVersion(encoder));
     }
 
     private static Object wrap(
-        final UnsafeBuffer buffer,
-        final Object decoder,
-        final int blockLength,
-        final int version) throws Exception
+        final UnsafeBuffer buffer, final Object decoder, final int blockLength, final int version) throws Exception
     {
         return wrap(buffer, decoder, blockLength, version, READ_ONLY_BUFFER_CLASS);
     }
@@ -416,6 +414,7 @@ public class JavaGeneratorTest
         System.out.println(fqClassName);
         final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
+
         return clazz;
     }
 
@@ -426,6 +425,7 @@ public class JavaGeneratorTest
 
         final Class<?> readerClass = compile(fqClassName);
         assertNotNull(readerClass);
+
         return readerClass;
     }
 
@@ -436,6 +436,7 @@ public class JavaGeneratorTest
 
         final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
+
         return clazz;
     }
 
@@ -463,10 +464,7 @@ public class JavaGeneratorTest
     }
 
     private static void wrap(
-        final int bufferOffset,
-        final Object flyweight,
-        final MutableDirectBuffer buffer,
-        final Class<?> bufferClass)
+        final int bufferOffset, final Object flyweight, final MutableDirectBuffer buffer, final Class<?> bufferClass)
         throws Exception
     {
         flyweight

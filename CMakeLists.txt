@@ -27,7 +27,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 ExternalProject_Add(
 	gtest
-	URL ${CMAKE_CURRENT_SOURCE_DIR}/test/lib/gtest-1.7.0.zip
+	URL ${CMAKE_CURRENT_SOURCE_DIR}/src/test/lib/gtest-1.7.0.zip
 	URL_MD5 2d6ec8ccdf5c46b05ba54a9fd1d130d7
 	INSTALL_COMMAND ""
 	LOG_CONFIGURE ON
@@ -74,17 +74,17 @@ else()
 endif()
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/codecs")
-set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test/resources")
+set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/test/resources")
 set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/perf/resources")
 set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/examples/resources")
 
 include_directories(
 	${GTEST_SOURCE_DIR}/include
-	${CMAKE_CURRENT_SOURCE_DIR}/main/cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp
 	${CODEC_TARGET_DIR}
 )
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/main/cpp)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test/cpp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/test/cpp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/cpp98)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/perf/cpp)

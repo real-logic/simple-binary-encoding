@@ -107,16 +107,16 @@ public class JavaGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_ENCODER_TYPE))
         {
             generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_ENCODER_TYPE, out, mutableBuffer, fullMutableBuffer);
-            out.append(concatEncodingTokens(tokens,
-                (token) -> generatePrimitiveEncoder(MESSAGE_HEADER_ENCODER_TYPE, token.name(), token, BASE_INDENT)));
+            out.append(concatEncodingTokens(
+                tokens, (token) -> generatePrimitiveEncoder(MESSAGE_HEADER_ENCODER_TYPE, token.name(), token, BASE_INDENT)));
             out.append("}\n");
         }
 
         try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_DECODER_TYPE))
         {
             generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_DECODER_TYPE, out, readOnlyBuffer, fullReadOnlyBuffer);
-            out.append(concatEncodingTokens(tokens,
-                (token) -> generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
+            out.append(concatEncodingTokens(
+                tokens, (token) -> generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
             out.append("}\n");
         }
     }

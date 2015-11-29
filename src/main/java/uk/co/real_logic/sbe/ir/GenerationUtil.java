@@ -68,8 +68,7 @@ public final class GenerationUtil
         return tokens.subList(1, tokens.size() - 1);
     }
 
-    public static CharSequence concatEncodingTokens(
-        final List<Token> tokens, final Function<Token, CharSequence> mapper)
+    public static CharSequence concatEncodingTokens(final List<Token> tokens, final Function<Token, CharSequence> mapper)
     {
         return concatTokens(tokens, Signal.ENCODING, mapper);
     }

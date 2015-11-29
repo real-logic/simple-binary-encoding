@@ -100,9 +100,9 @@ public class ExampleUsingGeneratedStub
             throw new IllegalStateException("Template ids do not match");
         }
 
-    final int actingBlockLength = MESSAGE_HEADER_DECODER.blockLength();
-    final int schemaId = MESSAGE_HEADER_DECODER.schemaId();
-    final int actingVersion = MESSAGE_HEADER_DECODER.version();
+        final int actingBlockLength = MESSAGE_HEADER_DECODER.blockLength();
+        final int schemaId = MESSAGE_HEADER_DECODER.schemaId();
+        final int actingVersion = MESSAGE_HEADER_DECODER.version();
 
         bufferOffset += MESSAGE_HEADER_DECODER.encodedLength();
         decode(CAR_DECODER, directBuffer, bufferOffset, actingBlockLength, schemaId, actingVersion);

@@ -32,11 +32,13 @@ version = '1.1.8-RC2-SNAPSHOT'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 ext {
-    if (!project.hasProperty('ossrhUsername'))
+    if (!project.hasProperty('ossrhUsername')) {
         ossrhUsername = ''
+    }
 
-    if (!project.hasProperty('ossrhPassword'))
+    if (!project.hasProperty('ossrhPassword')) {
         ossrhPassword = ''
+    }
 }
 
 repositories {
@@ -54,19 +56,19 @@ def generatedDir = "${project.buildDir}/generated"
 sourceSets {
     main {
         java {
-            srcDir 'main/java'
+            srcDir 'src/main/java'
         }
         resources {
-            srcDir 'main/resources'
+            srcDir 'src/main/resources'
         }
     }
 
     test {
         java {
-            srcDir 'test/java'
+            srcDir 'src/test/java'
         }
         resources {
-            srcDir 'test/resources'
+            srcDir 'src/test/resources'
         }
     }
 
@@ -81,9 +83,9 @@ dependencies {
     compile 'uk.co.real-logic:Agrona:0.4.8'
 
     testCompile 'org.hamcrest:hamcrest-all:1.3',
-            'junit:junit:4.12',
-            'org.mockito:mockito-all:1.10.19',
-            'com.google.code.gson:gson:2.3.1'
+        'junit:junit:4.12',
+        'org.mockito:mockito-all:1.10.19',
+        'com.google.code.gson:gson:2.3.1'
 
     testCompile files('build/classes/generated')
 }
@@ -120,9 +122,9 @@ task(generateExampleCodecs, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = sourceSets.main.runtimeClasspath
     systemProperties('sbe.output.dir': generatedDir,
-            'sbe.target.language': 'Java',
-            'sbe.validation.stop.on.error': 'true',
-            'sbe.validation.xsd': 'main/resources/fpl/SimpleBinary1-0.xsd')
+        'sbe.target.language': 'Java',
+        'sbe.validation.stop.on.error': 'true',
+        'sbe.validation.xsd': 'src/main/resources/fpl/SimpleBinary1-0.xsd')
     args 'examples/resources/example-schema.xml', 'examples/resources/example-extension-schema.xml'
 }
 
@@ -146,24 +148,24 @@ task runJavaExamples {
     dependsOn 'runExampleUsingGeneratedStub', 'runExampleUsingGeneratedStubExtension', 'runOtfExample'
 }
 
-task (generateJavaIrCodecs, type:JavaExec) {
+task(generateJavaIrCodecs, type: JavaExec) {
     description = "Generate Java IR Codecs"
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = sourceSets.main.runtimeClasspath
-    systemProperties('sbe.output.dir': 'main/java',
+    systemProperties('sbe.output.dir': 'src/main/java',
         'sbe.target.language': 'Java',
-        'sbe.validation.xsd': 'main/resources/fpl/SimpleBinary1-0.xsd')
-    args 'main/resources/sbe-ir.xml'
+        'sbe.validation.xsd': 'src/main/resources/fpl/SimpleBinary1-0.xsd')
+    args 'src/main/resources/sbe-ir.xml'
 }
 
-task (generateCpp98IrCodecs, type:JavaExec) {
+task(generateCpp98IrCodecs, type: JavaExec) {
     description = "Generate C++ IR Codecs"
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = sourceSets.main.runtimeClasspath
-    systemProperties('sbe.output.dir': 'main/cpp',
-            'sbe.target.language': 'Cpp98',
-            'sbe.validation.xsd': 'main/resources/fpl/SimpleBinary1-0.xsd')
-    args 'main/resources/sbe-ir.xml'
+    systemProperties('sbe.output.dir': 'src/main/cpp',
+        'sbe.target.language': 'Cpp98',
+        'sbe.validation.xsd': 'src/main/resources/fpl/SimpleBinary1-0.xsd')
+    args 'src/main/resources/sbe-ir.xml'
 }
 
 task generateIrCodecs {
@@ -174,7 +176,7 @@ task generateIrCodecs {
 javadoc {
     title = '<h1>Simple Binary Encoding</h1>'
 
-    options.bottom = '<i>Copyright &#169; 2014-2015 Real Logic Ltd. All Rights Reserved.</i>'
+    options.bottom = '<i>Copyright &#169; 2014 - 2015 Real Logic Ltd. All Rights Reserved.</i>'
     options.addStringOption('XDignore.symbol.file', '-quiet')
 }
 
@@ -210,7 +212,6 @@ shadowJar {
 def projectPom = {
     name = 'sbe'
     packaging = 'jar'
-    // optionally artifactId can be defined here
     description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency applications'
     url = 'https://github.com/real-logic/simple-binary-encoding'
 

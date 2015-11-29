@@ -161,7 +161,7 @@ public class SbeTool
 
             if (Boolean.parseBoolean(System.getProperty(GENERATE_STUBS, "true")))
             {
-                final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
+                final String outputDirName = System.getProperty(OUTPUT_DIR, "");
                 final String targetLanguage = System.getProperty(TARGET_LANGUAGE, "Java");
 
                 generate(ir, outputDirName, targetLanguage);
@@ -175,7 +175,7 @@ public class SbeTool
                 final int nameEnd = inputFilename.lastIndexOf('.');
                 final String namePart = inputFilename.substring(0, nameEnd);
 
-                final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
+                final String outputDirName = System.getProperty(OUTPUT_DIR, "");
                 final File fullPath = new File(outputDirName, namePart + ".sbeir");
 
                 try (final IrEncoder irEncoder = new IrEncoder(fullPath.getAbsolutePath(), ir))
