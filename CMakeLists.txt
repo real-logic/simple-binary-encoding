@@ -75,7 +75,7 @@ endif()
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/codecs")
 set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/test/resources")
-set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/perf/resources")
+set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/perf/resources")
 set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/examples/resources")
 
 include_directories(
@@ -87,4 +87,4 @@ include_directories(
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/test/cpp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/cpp98)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/perf/cpp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/perf/cpp)
