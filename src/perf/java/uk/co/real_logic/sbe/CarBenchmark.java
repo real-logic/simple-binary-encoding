@@ -20,7 +20,7 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
-import uk.co.real_logic.sbe.examples.*;
+import uk.co.real_logic.sbe.perf.*;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -143,7 +143,6 @@ public class CarBenchmark
         car.putMake(MAKE, 0, MAKE.length);
         car.putModel(MODEL, 0, MODEL.length);
     }
-
 
     private static void decode(
         final MessageHeaderDecoder messageHeader,

@@ -37,11 +37,50 @@ private:
     int actingBlockLength_;
     int actingVersion_;
 
-    FrameCodec(const FrameCodec&) {}
+    inline void reset(char *buffer, const int offset, const int bufferLength, const int actingBlockLength, const int actingVersion)
+    {
+        buffer_ = buffer;
+        offset_ = offset;
+        bufferLength_ = bufferLength;
+        actingBlockLength_ = actingBlockLength;
+        actingVersion_ = actingVersion;
+        positionPtr_ = &position_;
+        position(offset + actingBlockLength_);
+    }
 
 public:
 
     FrameCodec(void) : buffer_(NULL), bufferLength_(0), offset_(0) {}
+
+    FrameCodec(char *buffer, const int bufferLength, const int actingBlockLength, const int actingVersion)
+    {
+        reset(buffer, 0, bufferLength, actingBlockLength, actingVersion);
+    }
+
+    FrameCodec(const FrameCodec& codec)
+    {
+        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_, codec.actingVersion_);
+    }
+
+#if __cplusplus >= 201103L
+    FrameCodec(FrameCodec&& codec)
+    {
+        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_, codec.actingVersion_);
+    }
+
+    FrameCodec& operator=(FrameCodec&& codec)
+    {
+        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_, codec.actingVersion_);
+        return *this;
+    }
+
+#endif
+
+    FrameCodec& operator=(const FrameCodec& codec)
+    {
+        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_, codec.actingVersion_);
+        return *this;
+    }
 
     static const sbe_uint16_t sbeBlockLength(void)
     {
@@ -75,26 +114,13 @@ public:
 
     FrameCodec &wrapForEncode(char *buffer, const int offset, const int bufferLength)
     {
-        buffer_ = buffer;
-        offset_ = offset;
-        bufferLength_ = bufferLength;
-        actingBlockLength_ = sbeBlockLength();
-        actingVersion_ = sbeSchemaVersion();
-        position(offset + actingBlockLength_);
-        positionPtr_ = &position_;
+        reset(buffer, offset, bufferLength, sbeBlockLength(), sbeSchemaVersion());
         return *this;
     }
 
-    FrameCodec &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion,
-                         const int bufferLength)
+    FrameCodec &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion, const int bufferLength)
     {
-        buffer_ = buffer;
-        offset_ = offset;
-        bufferLength_ = bufferLength;
-        actingBlockLength_ = actingBlockLength;
-        actingVersion_ = actingVersion;
-        positionPtr_ = &position_;
-        position(offset + actingBlockLength_);
+        reset(buffer, offset, bufferLength, actingBlockLength, actingVersion);
         return *this;
     }
 
@@ -105,7 +131,7 @@ public:
 
     void position(const int position)
     {
-        if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), 0))
+        if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), false))
         {
             throw std::runtime_error("buffer too short [E100]");
         }

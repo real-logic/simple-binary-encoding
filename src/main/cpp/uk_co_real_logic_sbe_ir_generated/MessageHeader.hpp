@@ -27,16 +27,53 @@ private:
     int offset_;
     int actingVersion_;
 
-public:
-    MessageHeader &wrap(char *buffer, const int offset, const int actingVersion, const int bufferLength)
+    inline void reset(char *buffer, const int offset, const int bufferLength, const int actingVersion)
     {
-        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - 8)), 0))
+        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - 8)), false))
         {
             throw std::runtime_error("buffer too short for flyweight [E107]");
         }
         buffer_ = buffer;
         offset_ = offset;
         actingVersion_ = actingVersion;
+    }
+
+public:
+    MessageHeader(void) : buffer_(NULL), offset_(0) {}
+
+    MessageHeader(char *buffer, const int bufferLength, const int actingVersion)
+    {
+        reset(buffer, 0, bufferLength, actingVersion);
+    }
+
+    MessageHeader(const MessageHeader& codec) :
+        buffer_(codec.buffer_), offset_(codec.offset_), actingVersion_(codec.actingVersion_) {}
+
+#if __cplusplus >= 201103L
+    MessageHeader(MessageHeader&& codec) :
+        buffer_(codec.buffer_), offset_(codec.offset_), actingVersion_(codec.actingVersion_) {}
+
+    MessageHeader& operator=(MessageHeader&& codec)
+    {
+        buffer_ = codec.buffer_;
+        offset_ = codec.offset_;
+        actingVersion_ = codec.actingVersion_;
+        return *this;
+    }
+
+#endif
+
+    MessageHeader& operator=(const MessageHeader& codec)
+    {
+        buffer_ = codec.buffer_;
+        offset_ = codec.offset_;
+        actingVersion_ = codec.actingVersion_;
+        return *this;
+    }
+
+    MessageHeader &wrap(char *buffer, const int offset, const int actingVersion, const int bufferLength)
+    {
+        reset(buffer, offset, bufferLength, actingVersion);
         return *this;
     }
 

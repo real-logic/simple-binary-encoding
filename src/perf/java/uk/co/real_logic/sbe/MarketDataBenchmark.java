@@ -19,7 +19,7 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
-import uk.co.real_logic.sbe.samples.fix.*;
+import uk.co.real_logic.sbe.perf.fix.*;
 
 import java.nio.ByteBuffer;
 
@@ -113,7 +113,6 @@ public class MarketDataBenchmark
         mdIncGrp.aggressorSide(Side.SELL);
         mdIncGrp.mdEntryType(MDEntryType.OFFER);
     }
-
 
     private static void decode(
         final MessageHeaderDecoder messageHeader,

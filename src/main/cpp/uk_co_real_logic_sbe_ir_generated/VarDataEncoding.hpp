@@ -27,16 +27,53 @@ private:
     int offset_;
     int actingVersion_;
 
-public:
-    VarDataEncoding &wrap(char *buffer, const int offset, const int actingVersion, const int bufferLength)
+    inline void reset(char *buffer, const int offset, const int bufferLength, const int actingVersion)
     {
-        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - -1)), 0))
+        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - -1)), false))
         {
             throw std::runtime_error("buffer too short for flyweight [E107]");
         }
         buffer_ = buffer;
         offset_ = offset;
         actingVersion_ = actingVersion;
+    }
+
+public:
+    VarDataEncoding(void) : buffer_(NULL), offset_(0) {}
+
+    VarDataEncoding(char *buffer, const int bufferLength, const int actingVersion)
+    {
+        reset(buffer, 0, bufferLength, actingVersion);
+    }
+
+    VarDataEncoding(const VarDataEncoding& codec) :
+        buffer_(codec.buffer_), offset_(codec.offset_), actingVersion_(codec.actingVersion_) {}
+
+#if __cplusplus >= 201103L
+    VarDataEncoding(VarDataEncoding&& codec) :
+        buffer_(codec.buffer_), offset_(codec.offset_), actingVersion_(codec.actingVersion_) {}
+
+    VarDataEncoding& operator=(VarDataEncoding&& codec)
+    {
+        buffer_ = codec.buffer_;
+        offset_ = codec.offset_;
+        actingVersion_ = codec.actingVersion_;
+        return *this;
+    }
+
+#endif
+
+    VarDataEncoding& operator=(const VarDataEncoding& codec)
+    {
+        buffer_ = codec.buffer_;
+        offset_ = codec.offset_;
+        actingVersion_ = codec.actingVersion_;
+        return *this;
+    }
+
+    VarDataEncoding &wrap(char *buffer, const int offset, const int actingVersion, const int bufferLength)
+    {
+        reset(buffer, offset, bufferLength, actingVersion);
         return *this;
     }
 

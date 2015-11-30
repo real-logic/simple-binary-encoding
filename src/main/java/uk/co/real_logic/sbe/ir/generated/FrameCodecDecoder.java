@@ -4,6 +4,7 @@ package uk.co.real_logic.sbe.ir.generated;
 import uk.co.real_logic.sbe.codec.java.*;
 import uk.co.real_logic.agrona.DirectBuffer;
 
+@SuppressWarnings("all")
 public class FrameCodecDecoder
 {
     public static final int BLOCK_LENGTH = 12;

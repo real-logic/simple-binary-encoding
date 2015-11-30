@@ -4,7 +4,7 @@
                    id="1"
                    version="1"
                    semanticVersion="5.2"
-                   description="Code generation unit test support"
+                   description="Example schema with extension"
                    byteOrder="littleEndian">
     <types>
         <type name="cupHolderCount_t" primitiveType="uint8" presence="optional"/>
