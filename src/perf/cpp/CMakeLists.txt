@@ -1,5 +1,5 @@
 #
-# Copyright 2013 Real Logic Ltd.
+# Copyright 2014 - 2015 Real Logic Ltd.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ endif()
 
 set(SRCS_BENCHLET_MAIN benchlet-main.cpp)
 
-set(GENERATED_CODECS 
+set(GENERATED_CODECS
 	${CODEC_TARGET_DIR}/uk_co_real_logic_sbe_examples_car
 	${CODEC_TARGET_DIR}/uk_co_real_logic_sbe_samples_fix
 )

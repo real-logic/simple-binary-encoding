@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Real Logic Ltd.
+ * Copyright 2014 - 2015 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ public:
         else if (eventNumber_ == 4)
         {
             EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 2);            
+            EXPECT_EQ(g.schemaId(), 2);
         }
         else if (eventNumber_ == 5)
         {
@@ -130,7 +130,7 @@ public:
         else if (eventNumber_ == 8)
         {
             EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 2);            
+            EXPECT_EQ(g.schemaId(), 2);
         }
         else
         {

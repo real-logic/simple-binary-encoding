@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Real Logic Ltd.
+ * Copyright 2014 - 2015 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -242,7 +242,7 @@ public:
         Ir *tmplt = (Ir *)IrCollection::message(templateId, schemaVersion);
         return tmplt;
     }
-    
+
     void checkEvent(const Field &f, const Group &g)
     {
         char tmp[256];

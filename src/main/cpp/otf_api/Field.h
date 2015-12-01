@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Real Logic Ltd.
+ * Copyright 2014 - 2015 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -351,7 +351,7 @@ protected:
         presence_.push_back(ir->presence());
         addMeta(ir);
         numEncodings_++;
-        return *this;        
+        return *this;
     }
 
     Field &addEncoding(const std::string &name, const Ir::TokenPrimitiveType type,

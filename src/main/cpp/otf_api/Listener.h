@@ -1,6 +1,5 @@
-/* -*- mode: c++; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil -*- */
 /*
- * Copyright 2013 Real Logic Ltd.
+ * Copyright 2014 - 2015 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,7 +159,7 @@ public:
      * \return Listener
      * \sa OnNext, OnError, OnCompleted
      */
-    int subscribe(OnNext *onNext, 
+    int subscribe(OnNext *onNext,
                   OnError *onError = NULL,
                   OnCompleted *onCompleted = NULL);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Real Logic Ltd.
+ * Copyright 2014 - 2015 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ Listener &Listener::resetForDecode(const char *data, const int length)
     return *this;
 }
 
-int Listener::subscribe(OnNext *onNext, 
+int Listener::subscribe(OnNext *onNext,
                         OnError *onError,
                         OnCompleted *onCompleted)
 {

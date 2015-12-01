@@ -7,15 +7,12 @@ OSI layer 6 presentation for encoding and decoding application messages in binar
 Further details on the background and usage of SBE can be found on the
 [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
 
-Benchmark tools and information can be found [here](https://github.com/real-logic/simple-binary-encoding/tree/master/perf)
-and run from he root perf-build.xml file.
-
 An XSD for SBE specs can be found
-[here](https://github.com/real-logic/simple-binary-encoding/blob/master/main/resources/fpl/SimpleBinary1-0.xsd)
+[here](https://github.com/real-logic/simple-binary-encoding/blob/master/src/main/resources/fpl/SimpleBinary1-0.xsd)
 
 License (See LICENSE file for full license)
 -------------------------------------------
-Copyright 2013 Real Logic Limited
+Copyright 2014 - 2015 Real Logic Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -41,15 +38,9 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe</artifactId>
-    <version>1.1-RC2</version>
+    <version>1.3-RC3</version>
 </dependency>
 ```
-
-For .NET, you will find the [binaries on NuGet](http://www.nuget.org/packages/Adaptive.SBE/)
-
-Search for 'SBE' in NuGet or run the following command line in the NuGet console
-
-    Install-Package Adaptive.SBE
 
 
 Directory Layout

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Real Logic Ltd.
+ * Copyright 2014 - 2015 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,9 +52,9 @@ namespace sbe {
     #define SBE_LITTLE_ENDIAN_ENCODE_32(v) (v)
     #define SBE_LITTLE_ENDIAN_ENCODE_64(v) (v)
 #elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    #define SBE_BIG_ENDIAN_ENCODE_16(v) __builtin_bswap16(v) 
-    #define SBE_BIG_ENDIAN_ENCODE_32(v) __builtin_bswap32(v) 
-    #define SBE_BIG_ENDIAN_ENCODE_64(v) __builtin_bswap64(v) 
+    #define SBE_BIG_ENDIAN_ENCODE_16(v) __builtin_bswap16(v)
+    #define SBE_BIG_ENDIAN_ENCODE_32(v) __builtin_bswap32(v)
+    #define SBE_BIG_ENDIAN_ENCODE_64(v) __builtin_bswap64(v)
     #define SBE_LITTLE_ENDIAN_ENCODE_16(v) (v)
     #define SBE_LITTLE_ENDIAN_ENCODE_32(v) (v)
     #define SBE_LITTLE_ENDIAN_ENCODE_64(v) (v)
