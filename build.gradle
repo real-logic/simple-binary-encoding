@@ -126,7 +126,6 @@ task(runOtfExample, dependsOn: 'compileExamplesJava', type: JavaExec) {
 }
 
 task runJavaExamples {
-    description 'Run Java Examples'
     dependsOn 'runExampleUsingGeneratedStub', 'runExampleUsingGeneratedStubExtension', 'runOtfExample'
 }
 
@@ -151,7 +150,6 @@ task(generateCpp98IrCodecs, type: JavaExec) {
 }
 
 task generateIrCodecs {
-    description "Generate Java and C++ IR Codecs"
     dependsOn 'generateJavaIrCodecs', 'generateCpp98IrCodecs'
 }
 
