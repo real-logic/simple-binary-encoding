@@ -92,8 +92,9 @@ tasks.withType(JavaCompile) {
 }
 
 compileGeneratedJava.dependsOn 'generateExampleCodecs'
-compileExamplesJava.dependsOn 'compileGeneratedJava'
 compileGeneratedJava.classpath += sourceSets.main.runtimeClasspath
+
+compileExamplesJava.dependsOn 'compileGeneratedJava'
 compileExamplesJava.classpath += sourceSets.generated.runtimeClasspath + sourceSets.main.runtimeClasspath
 
 test {
