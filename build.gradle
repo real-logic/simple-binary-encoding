@@ -19,17 +19,13 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.2'
 }
 
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'checkstyle'
-apply plugin: 'eclipse'
-apply plugin: 'com.github.johnrengelman.shadow'
-
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
-group = 'uk.co.real-logic'
-version = '1.3-RC3-SNAPSHOT'
+def sbeGroup = 'uk.co.real-logic'
+def sbeVersion = '1.3-RC3-SNAPSHOT'
+
+group = sbeGroup
+version = sbeVersion
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 ext {
@@ -42,169 +38,10 @@ ext {
     }
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven {
-        url "http://sevntu-checkstyle.github.com/sevntu.checkstyle/maven2"
-    }
-}
-
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-
-def generatedDir = "${project.buildDir}/generated"
-
-sourceSets {
-    generated.java.srcDir generatedDir
-    examples.java.srcDir 'examples/java'
-}
-
-dependencies {
-    checkstyle "com.github.sevntu.checkstyle:sevntu-checks:1.17.0"
-
-    compile 'uk.co.real-logic:Agrona:0.4.8'
-
-    testCompile(
-        'org.hamcrest:hamcrest-all:1.3',
-        'junit:junit:4.12',
-        'org.mockito:mockito-all:1.10.19',
-        'com.google.code.gson:gson:2.3.1')
-
-    testCompile files('build/classes/generated')
-}
-
-checkstyle {
-    configFile = new File(rootDir, 'config/checkstyle.xml')
-    toolVersion = "6.12.1"
-}
-
-compileJava {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-}
-
-tasks.withType(JavaCompile) {
-    // Suppress warnings about using Unsafe and sun.misc
-    options.compilerArgs << '-XDignore.symbol.file' << '-Xlint:unchecked'
-    options.debug = true
-    options.fork = true
-    options.forkOptions.executable = 'javac'
-    options.warnings = false
-}
-
-compileGeneratedJava.dependsOn 'generateExampleCodecs'
-compileGeneratedJava.classpath += sourceSets.main.runtimeClasspath
-
-compileExamplesJava.dependsOn 'compileGeneratedJava'
-compileExamplesJava.classpath += sourceSets.generated.runtimeClasspath + sourceSets.main.runtimeClasspath
-
-test {
-    classpath += files('build/classes/generated')
-}
-
-task(generateExampleCodecs, type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = sourceSets.main.runtimeClasspath
-    systemProperties(
-        'sbe.output.dir': generatedDir,
-        'sbe.target.language': 'Java',
-        'sbe.validation.stop.on.error': 'true',
-        'sbe.validation.xsd': 'src/main/resources/fpl/SimpleBinary1-0.xsd')
-    args = ['examples/resources/example-schema.xml', 'examples/resources/example-extension-schema.xml']
-}
-
-task(runExampleUsingGeneratedStub, dependsOn: 'compileExamplesJava', type: JavaExec) {
-    classpath = sourceSets.examples.runtimeClasspath + compileExamplesJava.classpath
-    main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
-}
-
-task(runExampleUsingGeneratedStubExtension, dependsOn: 'compileExamplesJava', type: JavaExec) {
-    classpath = sourceSets.examples.runtimeClasspath + compileExamplesJava.classpath
-    main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
-}
-
-task(runOtfExample, dependsOn: 'compileExamplesJava', type: JavaExec) {
-    classpath = sourceSets.examples.runtimeClasspath + compileExamplesJava.classpath
-    main = 'uk.co.real_logic.sbe.examples.OtfExample'
-}
-
-task runJavaExamples {
-    dependsOn(
-        'runExampleUsingGeneratedStub',
-        'runExampleUsingGeneratedStubExtension',
-        'runOtfExample')
-}
-
-task(generateJavaIrCodecs, type: JavaExec) {
-    description = "Generate Java IR Codecs"
-    main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = sourceSets.main.runtimeClasspath
-    systemProperties(
-        'sbe.output.dir': 'src/main/java',
-        'sbe.target.language': 'Java',
-        'sbe.validation.xsd': 'src/main/resources/fpl/SimpleBinary1-0.xsd')
-    args = ['src/main/resources/sbe-ir.xml']
-}
-
-task(generateCpp98IrCodecs, type: JavaExec) {
-    description = "Generate C++ IR Codecs"
-    main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = sourceSets.main.runtimeClasspath
-    systemProperties(
-        'sbe.output.dir': 'src/main/cpp',
-        'sbe.target.language': 'Cpp98',
-        'sbe.validation.xsd': 'src/main/resources/fpl/SimpleBinary1-0.xsd')
-    args = ['src/main/resources/sbe-ir.xml']
-}
-
-task generateIrCodecs {
-    dependsOn 'generateJavaIrCodecs', 'generateCpp98IrCodecs'
-}
-
-javadoc {
-    title = '<h1>Simple Binary Encoding</h1>'
-
-    options.bottom = '<i>Copyright &#169; 2014 - 2015 Real Logic Ltd. All Rights Reserved.</i>'
-    options.addStringOption('XDignore.symbol.file', '-quiet')
-}
-
-jar {
-    manifest.attributes('Main-Class': 'uk.co.real_logic.sbe.SbeTool')
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-signing {
-    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-
-    shadow sourcesJar
-    shadow javadocJar
-}
-
-shadowJar {
-    baseName = 'sbe-all'
-    classifier = ''
-}
-
 def projectPom = {
     name = 'sbe'
     packaging = 'jar'
-    description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages' +
-                  ' in binary format for low-latency applications'
+    description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency applications'
     url = 'https://github.com/real-logic/simple-binary-encoding'
 
     scm {
@@ -236,48 +73,308 @@ def projectPom = {
     }
 }
 
-install {
-    repositories.mavenInstaller.pom.project(projectPom)
-}
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'signing'
+    apply plugin: 'checkstyle'
+    apply plugin: 'eclipse'
+    apply plugin: 'com.github.johnrengelman.shadow'
 
-uploadArchives {
+    group = sbeGroup
+    version = sbeVersion
+
     repositories {
-        mavenDeployer {
-            beforeDeployment {
-                MavenDeployment deployment -> signing.signPom(deployment)
-            }
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url "http://sevntu-checkstyle.github.com/sevntu.checkstyle/maven2"
+        }
+    }
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
+    dependencies {
+        checkstyle "com.github.sevntu.checkstyle:sevntu-checks:1.17.0"
 
-            pom.project(projectPom)
+        testCompile 'org.hamcrest:hamcrest-all:1.3'
+        testCompile 'junit:junit:4.12'
+        testCompile 'org.mockito:mockito-all:1.10.19'
+        testCompile 'com.google.code.gson:gson:2.3.1'
+    }
+
+    checkstyle {
+        configFile = new File(rootDir, 'config/checkstyle.xml')
+        toolVersion = "6.12.1"
+    }
+
+    compileJava {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+    tasks.withType(JavaCompile) {
+        // Suppress warnings about using Unsafe and sun.misc
+        options.compilerArgs << '-XDignore.symbol.file' << '-Xlint:unchecked'
+        options.debug = true
+        options.fork = true
+        options.forkOptions.executable = 'javac'
+        options.warnings = false
+    }
+
+    javadoc {
+        title = '<h1>Simple Binary Encoding</h1>'
+
+        options.bottom = '<i>Copyright &#169; 2014 - 2015 Real Logic Ltd. All Rights Reserved.</i>'
+        options.addStringOption('XDignore.symbol.file', '-quiet')
+    }
+
+    signing {
+        required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
+
+    install {
+        repositories.mavenInstaller.pom.project(projectPom)
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project(projectPom)
+            }
         }
     }
 }
 
-uploadShadow {
-    repositories {
-        mavenDeployer {
-            beforeDeployment {
-                MavenDeployment deployment -> signing.signPom(deployment)
-            }
+def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/resources/fpl/SimpleBinary1-0.xsd'
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
+project(':sbe-tool') {
+    dependencies {
+        compile 'uk.co.real-logic:Agrona:0.4.8'
 
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            pom.project(projectPom)
-        }
+        testCompile files('build/classes/generated')
     }
+
+    jar {
+        manifest.attributes('Main-Class': 'uk.co.real_logic.sbe.SbeTool')
+    }
+
+    sourceSets {
+        generated.java.srcDir 'build/generated'
+    }
+
+    compileGeneratedJava.dependsOn 'generateCodecs'
+    compileGeneratedJava.classpath += sourceSets.main.runtimeClasspath
+
+    compileTestJava {
+        dependsOn 'compileGeneratedJava'
+    }
+
+    task(generateCodecs, dependsOn: 'compileJava', type:JavaExec) {
+        main = 'uk.co.real_logic.sbe.SbeTool'
+        classpath = sourceSets.main.runtimeClasspath
+        systemProperties(
+            'sbe.output.dir': 'build/generated',
+            'sbe.target.language': 'Java',
+            'sbe.validation.stop.on.error': 'true',
+            'sbe.validation.xsd': validationXsdPath)
+        args = ['src/main/resources/json-printer-test-schema.xml']
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar, javadocJar
+    }
+}
+
+project(':sbe-all') {
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    dependencies {
+        compile project(':sbe-tool')
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from project(':sbe-tool').sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from project(':sbe-tool').javadoc.destinationDir
+    }
+
+    jar {
+        manifest.attributes('Main-Class': 'uk.co.real_logic.sbe.SbeTool')
+    }
+
+    shadowJar {
+        classifier = ''
+    }
+
+    artifacts {
+        archives sourcesJar, javadocJar
+    }
+}
+
+project(':sbe-samples') {
+    dependencies {
+        compile project(':sbe-tool')
+
+        compile files('build/classes/generated')
+    }
+
+    sourceSets {
+        generated.java.srcDir 'build/generated'
+    }
+
+    compileGeneratedJava.dependsOn 'generateCodecs'
+    compileGeneratedJava.classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+
+    compileJava {
+        dependsOn 'compileGeneratedJava'
+    }
+
+    task(generateCodecs, type:JavaExec) {
+        main = 'uk.co.real_logic.sbe.SbeTool'
+        classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+        systemProperties(
+            'sbe.output.dir': 'build/generated',
+            'sbe.target.language': 'Java',
+            'sbe.validation.stop.on.error': 'true',
+            'sbe.validation.xsd': validationXsdPath)
+        args = ['src/main/resources/example-schema.xml', 'src/main/resources/example-extension-schema.xml']
+    }
+
+    task(runExampleUsingGeneratedStub, dependsOn: 'compileJava', type: JavaExec) {
+        classpath = sourceSets.main.runtimeClasspath
+        main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
+    }
+
+    task(runExampleUsingGeneratedStubExtension, dependsOn: 'compileJava', type: JavaExec) {
+        classpath = sourceSets.main.runtimeClasspath
+        main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
+    }
+
+    task(runOtfExample, dependsOn: 'compileJava', type: JavaExec) {
+        classpath = sourceSets.main.runtimeClasspath
+        main = 'uk.co.real_logic.sbe.examples.OtfExample'
+    }
+
+    task runJavaExamples {
+        dependsOn 'runExampleUsingGeneratedStub', 'runExampleUsingGeneratedStubExtension', 'runOtfExample'
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar, javadocJar
+    }
+}
+
+project(':sbe-benchmarks') {
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    dependencies {
+        compile project(':sbe-tool')
+        compile 'org.openjdk.jmh:jmh-core:1.11.2'
+        compile 'org.openjdk.jmh:jmh-generator-annprocess:1.11.2'
+        compile files('build/classes/generated')
+    }
+
+    sourceSets {
+        generated.java.srcDir 'build/generated'
+    }
+
+    compileGeneratedJava.dependsOn 'generateCodecs'
+    compileGeneratedJava.classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+
+    compileJava {
+        dependsOn 'compileGeneratedJava'
+    }
+
+    task(generateCodecs, type:JavaExec) {
+        main = 'uk.co.real_logic.sbe.SbeTool'
+        classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+        systemProperties(
+            'sbe.output.dir': 'build/generated',
+            'sbe.target.language': 'Java',
+            'sbe.validation.stop.on.error': 'true')
+        args = ['src/main/resources/car.xml', 'src/main/resources/fix-message-samples.xml']
+    }
+
+    shadowJar {
+        archiveName = 'sbe-benchmarks.jar'
+        classifier = 'benchmarks'
+        manifest.attributes('Main-Class': 'org.openjdk.jmh.Main')
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar, javadocJar
+    }
+}
+
+task(generateJavaIrCodecs, type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperties(
+        'sbe.output.dir': 'sbe-tool/src/main/java',
+        'sbe.target.language': 'Java',
+        'sbe.validation.xsd': validationXsdPath)
+    args 'sbe-tool/src/main/resources/sbe-ir.xml'
+}
+
+task(generateCpp98IrCodecs, type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperties(
+        'sbe.output.dir': 'sbe-tool/src/main/cpp',
+        'sbe.target.language': 'Cpp98',
+        'sbe.validation.xsd': validationXsdPath)
+    args 'sbe-tool/src/main/resources/sbe-ir.xml'
+}
+
+task generateIrCodecs {
+    description "Generate Java and C++ IR Codecs"
+    dependsOn 'generateJavaIrCodecs', 'generateCpp98IrCodecs'
 }
 
 task wrapper(type: Wrapper) {

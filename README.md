@@ -8,7 +8,7 @@ Further details on the background and usage of SBE can be found on the
 [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
 
 An XSD for SBE specs can be found
-[here](https://github.com/real-logic/simple-binary-encoding/blob/master/src/main/resources/fpl/SimpleBinary1-0.xsd)
+[here](https://github.com/real-logic/simple-binary-encoding/blob/master/sbe-tool/src/main/resources/fpl/SimpleBinary1-0.xsd)
 
 License (See LICENSE file for full license)
 -------------------------------------------
@@ -48,15 +48,15 @@ Directory Layout
 
 Main source code
 
-    main
+    sbe-tool/src/main
 
 Unit tests
 
-    test
+    sbe-tool/src/test
 
 Examples of usage
 
-    examples
+    sbe-samples/src/main
 
 
 Build
@@ -73,9 +73,9 @@ Run the Java examples
 Distribution
 ------------
 
-Jars for the executable, source, and javadoc can be found in
+Jars for the executable, source, and javadoc for the various modules can be found in
 
-    build/libs
+    <module>/build/libs
 
 
 C++ Build using CMake
@@ -89,11 +89,16 @@ First build using gradle to generate the SBE jar.
 
     $ ./gradlew
 
-Then build and test with CMake __in the build subdirectory created by the gradle build__.
+For convenience, a script is provided that does a full clean, build, and test of all targets as a Release build.
 
-    $ cd build
-    $ cmake ..
-    $ cmake --build .
+    $ ./cppbuild/cppbuild
+
+If you are comfortable with using CMake, then a full clean, build, and test looks like:
+
+    $ mkdir -p cppbuild/Debug
+    $ cd cppbuild/Debug
+    $ cmake ../..
+    $ cmake --build . --clean-first
     $ ctest
 
 

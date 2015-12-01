@@ -27,7 +27,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 ExternalProject_Add(
 	gtest
-	URL ${CMAKE_CURRENT_SOURCE_DIR}/src/test/lib/gtest-1.7.0.zip
+	URL ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/lib/gtest-1.7.0.zip
 	URL_MD5 2d6ec8ccdf5c46b05ba54a9fd1d130d7
 	INSTALL_COMMAND ""
 	LOG_CONFIGURE ON
@@ -66,25 +66,25 @@ set(LIBSUFFIX "${CMAKE_STATIC_LIBRARY_SUFFIX}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/binaries")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 
-file(GLOB SBE_JAR ${CMAKE_CURRENT_BINARY_DIR}/libs/sbe-all-*-SNAPSHOT.jar ${CMAKE_CURRENT_BINARY_DIR}/libs/sbe-all-*-RC2.jar)
+file(GLOB SBE_JAR ${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs/sbe-all-*-SNAPSHOT.jar ${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs/sbe-all-*-RC3.jar)
 if(SBE_JAR)
 	message("latest SBE jar found: ${SBE_JAR}")
 else()
-	message(FATAL_ERROR "could not find latest SBE jar in ${CMAKE_CURRENT_BINARY_DIR}/libs")
+	message(FATAL_ERROR "could not find latest SBE jar in ${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs")
 endif()
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/codecs")
-set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/test/resources")
-set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/perf/resources")
-set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/examples/resources")
+set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/resources")
+set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/resources")
+set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/resources")
 
 include_directories(
 	${GTEST_SOURCE_DIR}/include
-	${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp
 	${CODEC_TARGET_DIR}
 )
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/test/cpp)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/cpp98)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/perf/cpp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/cpp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/cpp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/cpp)
