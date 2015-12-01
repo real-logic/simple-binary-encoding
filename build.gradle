@@ -204,7 +204,8 @@ project(':sbe-tool') {
     }
 
     artifacts {
-        archives sourcesJar, javadocJar
+        archives sourcesJar
+        archives javadocJar
     }
 }
 
@@ -234,7 +235,8 @@ project(':sbe-all') {
     }
 
     artifacts {
-        archives sourcesJar, javadocJar
+        archives sourcesJar
+        archives javadocJar
     }
 }
 
@@ -297,7 +299,8 @@ project(':sbe-samples') {
     }
 
     artifacts {
-        archives sourcesJar, javadocJar
+        archives sourcesJar
+        archives javadocJar
     }
 }
 
@@ -349,7 +352,8 @@ project(':sbe-benchmarks') {
     }
 
     artifacts {
-        archives sourcesJar, javadocJar
+        archives sourcesJar
+        archives javadocJar
     }
 }
 
