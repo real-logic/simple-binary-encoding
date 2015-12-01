@@ -94,7 +94,7 @@ public class OtfExample
     private static void encodeSchema(final ByteBuffer byteBuffer)
         throws Exception
     {
-        try (final InputStream in = new FileInputStream("examples/resources/example-schema.xml"))
+        try (final InputStream in = new FileInputStream("src/main/resources/example-schema.xml"))
         {
             final MessageSchema schema = XmlSchemaParser.parse(in, ParserOptions.DEFAULT);
             final Ir ir = new IrGenerator().generate(schema);
