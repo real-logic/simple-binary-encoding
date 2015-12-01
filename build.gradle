@@ -55,24 +55,6 @@ repositories {
 def generatedDir = "${project.buildDir}/generated"
 
 sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-        }
-        resources {
-            srcDir 'src/main/resources'
-        }
-    }
-
-    test {
-        java {
-            srcDir 'src/test/java'
-        }
-        resources {
-            srcDir 'src/test/resources'
-        }
-    }
-
     generated.java.srcDir generatedDir
     examples.java.srcDir 'examples/java'
 }
