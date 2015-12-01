@@ -188,8 +188,11 @@ signing {
 }
 
 artifacts {
-    archives sourcesJar, javadocJar
-    shadow sourcesJar, javadocJar
+    archives sourcesJar
+    archives javadocJar
+
+    shadow sourcesJar
+    shadow javadocJar
 }
 
 shadowJar {
