@@ -15,9 +15,7 @@
  */
 package uk.co.real_logic.sbe;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.perf.*;
 
@@ -68,6 +66,7 @@ public class CarBenchmark
     }
 
     @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
     public int testEncode(final MyState state)
     {
         final MessageHeaderEncoder messageHeaderEncoder = state.messageHeaderEncoder;
@@ -81,6 +80,7 @@ public class CarBenchmark
     }
 
     @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
     public int testDecode(final MyState state)
     {
         final MessageHeaderDecoder messageHeaderDecoder = state.messageHeaderDecoder;
