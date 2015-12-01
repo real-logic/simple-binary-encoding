@@ -40,8 +40,9 @@ ext {
 
 def projectPom = {
     name = 'sbe'
-    packaging = 'jar'
-    description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency applications'
+    packaging = 'pom'
+    description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages' +
+        ' in binary format for low-latency applications'
     url = 'https://github.com/real-logic/simple-binary-encoding'
 
     scm {
