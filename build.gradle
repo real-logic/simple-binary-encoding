@@ -360,7 +360,7 @@ task(generateJavaIrCodecs, type: JavaExec) {
         'sbe.output.dir': 'sbe-tool/src/main/java',
         'sbe.target.language': 'Java',
         'sbe.validation.xsd': validationXsdPath)
-    args 'sbe-tool/src/main/resources/sbe-ir.xml'
+    args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 
 task(generateCpp98IrCodecs, type: JavaExec) {
@@ -370,11 +370,11 @@ task(generateCpp98IrCodecs, type: JavaExec) {
         'sbe.output.dir': 'sbe-tool/src/main/cpp',
         'sbe.target.language': 'Cpp98',
         'sbe.validation.xsd': validationXsdPath)
-    args 'sbe-tool/src/main/resources/sbe-ir.xml'
+    args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 
 task generateIrCodecs {
-    description "Generate Java and C++ IR Codecs"
+    description = 'Generate Java and C++ IR Codecs'
     dependsOn 'generateJavaIrCodecs', 'generateCpp98IrCodecs'
 }
 
