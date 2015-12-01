@@ -64,10 +64,11 @@ dependencies {
 
     compile 'uk.co.real-logic:Agrona:0.4.8'
 
-    testCompile 'org.hamcrest:hamcrest-all:1.3',
+    testCompile(
+        'org.hamcrest:hamcrest-all:1.3',
         'junit:junit:4.12',
         'org.mockito:mockito-all:1.10.19',
-        'com.google.code.gson:gson:2.3.1'
+        'com.google.code.gson:gson:2.3.1')
 
     testCompile files('build/classes/generated')
 }
@@ -104,11 +105,12 @@ test {
 task(generateExampleCodecs, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = sourceSets.main.runtimeClasspath
-    systemProperties('sbe.output.dir': generatedDir,
+    systemProperties(
+        'sbe.output.dir': generatedDir,
         'sbe.target.language': 'Java',
         'sbe.validation.stop.on.error': 'true',
         'sbe.validation.xsd': 'src/main/resources/fpl/SimpleBinary1-0.xsd')
-    args 'examples/resources/example-schema.xml', 'examples/resources/example-extension-schema.xml'
+    args = ['examples/resources/example-schema.xml', 'examples/resources/example-extension-schema.xml']
 }
 
 task(runExampleUsingGeneratedStub, dependsOn: 'compileExamplesJava', type: JavaExec) {
@@ -127,27 +129,32 @@ task(runOtfExample, dependsOn: 'compileExamplesJava', type: JavaExec) {
 }
 
 task runJavaExamples {
-    dependsOn 'runExampleUsingGeneratedStub', 'runExampleUsingGeneratedStubExtension', 'runOtfExample'
+    dependsOn(
+        'runExampleUsingGeneratedStub',
+        'runExampleUsingGeneratedStubExtension',
+        'runOtfExample')
 }
 
 task(generateJavaIrCodecs, type: JavaExec) {
     description = "Generate Java IR Codecs"
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = sourceSets.main.runtimeClasspath
-    systemProperties('sbe.output.dir': 'src/main/java',
+    systemProperties(
+        'sbe.output.dir': 'src/main/java',
         'sbe.target.language': 'Java',
         'sbe.validation.xsd': 'src/main/resources/fpl/SimpleBinary1-0.xsd')
-    args 'src/main/resources/sbe-ir.xml'
+    args = ['src/main/resources/sbe-ir.xml']
 }
 
 task(generateCpp98IrCodecs, type: JavaExec) {
     description = "Generate C++ IR Codecs"
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = sourceSets.main.runtimeClasspath
-    systemProperties('sbe.output.dir': 'src/main/cpp',
+    systemProperties(
+        'sbe.output.dir': 'src/main/cpp',
         'sbe.target.language': 'Cpp98',
         'sbe.validation.xsd': 'src/main/resources/fpl/SimpleBinary1-0.xsd')
-    args 'src/main/resources/sbe-ir.xml'
+    args = ['src/main/resources/sbe-ir.xml']
 }
 
 task generateIrCodecs {
@@ -193,7 +200,8 @@ shadowJar {
 def projectPom = {
     name = 'sbe'
     packaging = 'jar'
-    description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency applications'
+    description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages' +
+                  ' in binary format for low-latency applications'
     url = 'https://github.com/real-logic/simple-binary-encoding'
 
     scm {
@@ -232,7 +240,9 @@ install {
 uploadArchives {
     repositories {
         mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            beforeDeployment {
+                MavenDeployment deployment -> signing.signPom(deployment)
+            }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                 authentication(userName: ossrhUsername, password: ossrhPassword)
@@ -250,7 +260,9 @@ uploadArchives {
 uploadShadow {
     repositories {
         mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            beforeDeployment {
+                MavenDeployment deployment -> signing.signPom(deployment)
+            }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                 authentication(userName: ossrhUsername, password: ossrhPassword)
