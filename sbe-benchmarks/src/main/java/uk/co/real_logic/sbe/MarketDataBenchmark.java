@@ -100,7 +100,6 @@ public class MarketDataBenchmark
         mdIncGrp.mdUpdateAction(MDUpdateAction.NEW);
         mdIncGrp.rptSeq((short)1);
         mdIncGrp.aggressorSide(Side.BUY);
-        mdIncGrp.mdEntryType(MDEntryType.BID);
 
         mdIncGrp.next();
         mdIncGrp.tradeId(1234L);
@@ -111,7 +110,6 @@ public class MarketDataBenchmark
         mdIncGrp.mdUpdateAction(MDUpdateAction.NEW);
         mdIncGrp.rptSeq((short)1);
         mdIncGrp.aggressorSide(Side.SELL);
-        mdIncGrp.mdEntryType(MDEntryType.OFFER);
     }
 
     private static void decode(
