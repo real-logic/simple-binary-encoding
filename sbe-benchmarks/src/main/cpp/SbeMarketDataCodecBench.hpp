@@ -48,7 +48,6 @@ public:
         mdIncGrp.numberOfOrders(1);
         mdIncGrp.mdUpdateAction(MDUpdateAction::NEW);
         mdIncGrp.rptSeq((short)1);
-        mdIncGrp.aggressorSide(Side::BUY);
 
         mdIncGrp.next();
         mdIncGrp.tradeId(1234L);
@@ -58,7 +57,6 @@ public:
         mdIncGrp.numberOfOrders(1);
         mdIncGrp.mdUpdateAction(MDUpdateAction::NEW);
         mdIncGrp.rptSeq((short)1);
-        mdIncGrp.aggressorSide(Side::SELL);
 
         return MessageHeader::size() + marketData_.size();
     };
