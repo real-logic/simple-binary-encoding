@@ -51,7 +51,7 @@
         <enum name="HandInst" encodingType="char">
             <validValue name="AUTOMATED_EXECUTION">1</validValue>
         </enum>
-        <enum name="CustOrderHandlingInst" encodingType="char" presence="optional" nullValue="A">
+        <enum name="CustOrderHandlingInst" encodingType="char">
             <validValue name="PHONE_SIMPLE">A</validValue>
             <validValue name="PHONE_COMPLEX">B</validValue>
             <validValue name="FCM_PROVIDED_SCREEN">C</validValue>
@@ -77,7 +77,7 @@
             <validValue name="BUY">1</validValue>
             <validValue name="SELL">2</validValue>
         </enum>
-        <enum name="TimeInForce" encodingType="char" presence="optional" nullValue="0">
+        <enum name="TimeInForce" encodingType="char">
             <validValue name="DAY">0</validValue>
             <validValue name="GOOD_TILL_CANCEL">1</validValue>
             <validValue name="FILL_AND_KILL">3</validValue>
@@ -97,18 +97,18 @@
             <validValue name="ON_FLOOR">3</validValue>
             <validValue name="NOT_ON_FLOOR">4</validValue>
         </enum>
-        <enum name="NoAllocs" encodingType="char" presence="optional" semanticType="char" nullValue="1">
+        <enum name="NoAllocs" encodingType="char" semanticType="char">
             <validValue name="ONE">1</validValue>
         </enum>
         <enum name="OFMOverride" encodingType="char" semanticType="char">
             <validValue name="ENABLED">Y</validValue>
             <validValue name="DISABLED">N</validValue>
         </enum>
-        <enum name="MMProtectionReset" encodingType="char" presence="optional" semanticType="char" nullValue="N">
+        <enum name="MMProtectionReset" encodingType="char" semanticType="char">
             <validValue name="RESET">Y</validValue>
             <validValue name="DO_NOT_RESET">N</validValue>
         </enum>
-        <enum name="SecurityIDSource" encodingType="char" presence="optional" semanticType="char" nullValue="8">
+        <enum name="SecurityIDSource" encodingType="char" semanticType="char">
             <validValue name="EXCHANGE_SYMBOL">8</validValue>
         </enum>
         <enum name="MDUpdateAction" encodingType="uint8" semanticType="int">
@@ -176,13 +176,13 @@
         <field name="Account" id="1" type="string12" semanticType="String"/>
         <field name="ClOrdID" id="11" type="string20" semanticType="String"/>
         <field name="HandInst" id="21" type="HandInst" semanticType="char"/>
-        <field name="CustOrderHandlingInst" id="1031" type="CustOrderHandlingInst" semanticType="char"/>
+        <field name="CustOrderHandlingInst" id="1031" type="CustOrderHandlingInst" semanticType="char" presence="optional" nullValue="A"/>
         <field name="OrderQty" id="38" type="IntQty32" semanticType="Qty"/>
         <field name="OrdType" id="40" type="OrdType" semanticType="char"/>
         <field name="Price" id="44" type="OptionalPrice" semanticType="Price"/>
         <field name="Side" id="54" type="Side" semanticType="char"/>
         <field name="Symbol" id="55" type="Symbol" semanticType="String"/>
-        <field name="TimeInForce" id="59" type="TimeInForce" semanticType="char"/>
+        <field name="TimeInForce" id="59" type="TimeInForce" semanticType="char" presence="optional" nullValue="0"/>
         <field name="TransactTime" id="60" type="timestamp" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
         <field name="ManualOrderIndicator" id="1028" type="BooleanType"/>
         <field name="AllocAccount" id="79" type="string10" semanticType="String"/>
@@ -220,17 +220,17 @@
         <field name="OrderID" id="37" type="int64" semanticType="int"/>
         <field name="HandInst" id="21" type="HandInst" semanticType="char"/>
         <field name="OrderQty" id="38" type="IntQty32" semanticType="Qty"/>
-        <field name="CustOrderHandlingInst" id="1031" type="CustOrderHandlingInst" semanticType="char"/>
+        <field name="CustOrderHandlingInst" id="1031" type="CustOrderHandlingInst" semanticType="char" presence="optional"/>
         <field name="OrdType" id="40" type="OrdType" semanticType="char"/>
         <field name="OrigClOrdID" id="41" type="string20" semanticType="String"/>
         <field name="Price" id="44" type="OptionalPrice" semanticType="Price"/>
         <field name="Side" id="54" type="Side" semanticType="char"/>
         <field name="Symbol" id="55" type="Symbol" semanticType="String"/>
         <field name="Test" id="58" type="string18" semanticType="String"/>
-        <field name="TimeInForce" id="59" type="TimeInForce" semanticType="char"/>
+        <field name="TimeInForce" id="59" type="TimeInForce" semanticType="char" presence="optional" nullValue="0"/>
         <field name="ManualOrderIndicator" id="1028" type="BooleanType"/>
         <field name="TransactTime" id="60" type="timestamp" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
-        <field name="NoAllocs" id="78" type="NoAllocs"/>
+        <field name="NoAllocs" id="78" type="NoAllocs" presence="optional" nullValue="1"/>
         <field name="AllocAccount" id="79" type="string10" semanticType="String"/>
         <field name="StopPx" id="99" type="OptionalPrice" semanticType="Price"/>
         <field name="SecurityDesc" id="107" type="string20" semanticType="String"/>
@@ -298,11 +298,11 @@
         <field name="QuoteID" id="117" type="string10" semanticType="String"/>
         <field name="MMAccount" id="9771" type="string12" semanticType="String"/>
         <field name="ManualOrderIndicator" id="1028" type="BooleanType"/>
-        <field name="CustOrderHandlingInst" id="1031" type="CustOrderHandlingInst" semanticType="char"/>
+        <field name="CustOrderHandlingInst" id="1031" type="CustOrderHandlingInst" semanticType="char" presence="optional"/>
         <field name="CustomerOrFirm" id="204" type="CustomerOrFirm"/>
         <field name="SelfMatchPreventionID" id="7928" type="string12" semanticType="String"/>
         <field name="CtiCode" id="9702" type="CtiCode"/>
-        <field name="MMProtectionReset" id="9773" type="MMProtectionReset"/>
+        <field name="MMProtectionReset" id="9773" type="MMProtectionReset" presence="optional" nullValue="N"/>
         <!-- <field name="NoQuoteSets" id="296" type="groupSize" groupName="QuoteSets"/> -->
         <group name="QuoteSets" id="296">
             <field name="QuoteSetID" id="302" type="string3" semanticType="String"/>
@@ -315,7 +315,7 @@
                 <field name="SecurityDesc" id="107" type="string20" semanticType="String"/>
                 <field name="SecurityType" id="167" type="string3" semanticType="String"/>
                 <field name="SecurityID" id="48" type="optionalInt64" semanticType="int"/>
-                <field name="SecurityIDSource" id="22" type="SecurityIDSource"/>
+                <field name="SecurityIDSource" id="22" type="SecurityIDSource" presence="optional" nullValue="8"/>
                 <field name="TransactTime" id="60" type="timestamp" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
                 <field name="BidPx" id="132" type="OptionalPrice" semanticType="Price"/>
                 <field name="BidSize" id="134" type="optionalInt64" semanticType="int"/>
