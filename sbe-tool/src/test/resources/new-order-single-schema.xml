@@ -3,7 +3,6 @@
                id="14"
                description="Test dictionary"
                byteOrder="littleEndian">
-
     <types>
         <type name="enumEncoding" primitiveType="char"/>
         <type name="idString" length="8" primitiveType="char" semanticType="String"/>
