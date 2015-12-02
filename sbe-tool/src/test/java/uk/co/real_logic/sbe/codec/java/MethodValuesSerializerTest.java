@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MethodValuesSerializerTest
@@ -77,7 +78,7 @@ public class MethodValuesSerializerTest
 
         public List<S> publicListS()
         {
-            return Arrays.asList(new S());
+            return Collections.singletonList(new S());
         }
 
         public E1 publicEnum()
