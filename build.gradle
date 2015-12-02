@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '1.2.2'
@@ -72,6 +71,10 @@ def projectPom = {
             url = 'https://github.com/mjpt777'
         }
     }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.9'
 }
 
 subprojects {
@@ -369,6 +372,9 @@ task generateIrCodecs {
     dependsOn 'generateJavaIrCodecs', 'generateCpp98IrCodecs'
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.9'
+task runBenchmarks(type: Exec) {
+    commandLine 'java',
+        '-Dagrona.disable.bounds.checks=true',
+        '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
+        '-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
 }
