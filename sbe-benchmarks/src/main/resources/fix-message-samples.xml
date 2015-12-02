@@ -23,7 +23,7 @@
         <type name="string20" length="20" primitiveType="char"/>
         <type name="string23" length="23" primitiveType="char"/>
         <type name="Symbol" length="6" primitiveType="char"/>
-        <type name="timestamp" primitiveType="uint64" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
+        <type name="timestamp" primitiveType="uint64" semanticType="UTCTimestamp"/>
         <type name="LocalMktDate" primitiveType="uint16" semanticType="LocalMktDate"/>
         <type name="optionalInt64" primitiveType="int64" presence="optional" semanticType="int"/>
         <composite name="messageHeader" description="Message identifiers and length of message root">
@@ -183,7 +183,7 @@
         <field name="Side" id="54" type="Side" semanticType="char"/>
         <field name="Symbol" id="55" type="Symbol" semanticType="String"/>
         <field name="TimeInForce" id="59" type="TimeInForce" semanticType="char"/>
-        <field name="TransactTime" id="60" type="timestamp" semanticType="UTCTimestamp"/>
+        <field name="TransactTime" id="60" type="timestamp" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
         <field name="ManualOrderIndicator" id="1028" type="BooleanType"/>
         <field name="AllocAccount" id="79" type="string10" semanticType="String"/>
         <field name="StopPx" id="99" type="OptionalPrice" semanticType="Price"/>
@@ -207,7 +207,7 @@
         <field name="OrigClOrdID" id="41" type="string20" semanticType="String"/>
         <field name="Side" id="54" type="Side" semanticType="char"/>
         <field name="Symbol" id="55" type="Symbol" semanticType="String"/>
-        <field name="TransactTime" id="60" type="timestamp" semanticType="UTCTimestamp"/>
+        <field name="TransactTime" id="60" type="timestamp" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
         <field name="ManualOrderIndicator" id="1028" type="BooleanType"/>
         <field name="SecurityDesc" id="107" type="string20" semanticType="String"/>
         <field name="SecurityType" id="167" type="string3" semanticType="String"/>
@@ -229,7 +229,7 @@
         <field name="Test" id="58" type="string18" semanticType="String"/>
         <field name="TimeInForce" id="59" type="TimeInForce" semanticType="char"/>
         <field name="ManualOrderIndicator" id="1028" type="BooleanType"/>
-        <field name="TransactTime" id="60" type="timestamp" semanticType="UTCTimestamp"/>
+        <field name="TransactTime" id="60" type="timestamp" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
         <field name="NoAllocs" id="78" type="NoAllocs"/>
         <field name="AllocAccount" id="79" type="string10" semanticType="String"/>
         <field name="StopPx" id="99" type="OptionalPrice" semanticType="Price"/>
@@ -259,17 +259,17 @@
             <field name="QuoteCondition" id="276" type="QuoteCondition"/>
             <field name="MdEntryPx" id="270" type="Decimal64" semanticType="Price"/>
             <field name="NumberOfOrders" id="346" type="uint32" semanticType="NumberOfOrders"/>
-            <field name="MdEntryTime" id="273" type="timestamp"/>
+            <field name="MdEntryTime" id="273" type="timestamp" timeUnit="nanosecond"/>
             <field name="MdEntrySize" id="271" type="IntQty32"/>
             <field name="TradingSessionId" id="336" type="MarketStateIdentifier"/>
             <field name="NetChgPrevDay" id="451" type="Decimal64"/>
             <field name="TickDirection" id="274" type="TickDirection"/>
             <field name="OpenCloseSettleFlag" id="286" type="OpenCloseSettleFlag"/>
-            <field name="SettleDate" id="64" type="timestamp"/>
+            <field name="SettleDate" id="64" type="timestamp" timeUnit="nanosecond"/>
             <field name="TradeCondition" id="277" type="TradeCondition"/>
             <field name="TradeVolume" id="1020" type="IntQty32"/>
             <field name="MdQuoteType" id="1070" type="MDQuoteType"/>
-            <field name="FixingBracket" id="5790" type="timestamp"/>
+            <field name="FixingBracket" id="5790" type="timestamp" timeUnit="nanosecond"/>
             <field name="AggressorSide" id="5797" type="Side"/>
             <field name="MatchEventIndicator" id="5799" type="MatchEventIndicator"/>
             <field name="TradeId" id="1003" type="uint64" semanticType="ExecID"/>
@@ -289,7 +289,7 @@
             <field name="MdUpdateAction" id="279" type="MDUpdateAction"/>
             <field name="RptSeq" id="83" type="uint8"/>
             <field name="AggressorSide" id="5797" type="Side"/>
-            <field name="MdEntryType" id="269" type="MDEntryType" constant="2"/>
+            <field name="MdEntryType" id="269" type="MDEntryType" presence="constant">2</field>
         </group>
     </sbe:message>
 
@@ -316,7 +316,7 @@
                 <field name="SecurityType" id="167" type="string3" semanticType="String"/>
                 <field name="SecurityID" id="48" type="optionalInt64" semanticType="int"/>
                 <field name="SecurityIDSource" id="22" type="SecurityIDSource"/>
-                <field name="TransactTime" id="60" type="timestamp" semanticType="UTCTimestamp"/>
+                <field name="TransactTime" id="60" type="timestamp" timeUnit="nanosecond" semanticType="UTCTimestamp"/>
                 <field name="BidPx" id="132" type="OptionalPrice" semanticType="Price"/>
                 <field name="BidSize" id="134" type="optionalInt64" semanticType="int"/>
                 <field name="OfferPx" id="133" type="OptionalPrice" semanticType="Price"/>
