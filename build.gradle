@@ -335,6 +335,7 @@ project(':sbe-benchmarks') {
             'sbe.output.dir': 'build/generated',
             'sbe.target.language': 'Java',
             'sbe.validation.stop.on.error': 'true',
+            'sbe.validation.xsd': validationXsdPath,
             'sbe.java.encoding.buffer.type': 'uk.co.real_logic.agrona.concurrent.UnsafeBuffer',
             'sbe.java.decoding.buffer.type': 'uk.co.real_logic.agrona.concurrent.UnsafeBuffer')
         args = ['src/main/resources/car.xml', 'src/main/resources/fix-message-samples.xml']
