@@ -331,7 +331,9 @@ project(':sbe-benchmarks') {
         systemProperties(
             'sbe.output.dir': 'build/generated',
             'sbe.target.language': 'Java',
-            'sbe.validation.stop.on.error': 'true')
+            'sbe.validation.stop.on.error': 'true',
+            'sbe.java.encoding.buffer.type': 'uk.co.real_logic.agrona.concurrent.UnsafeBuffer',
+            'sbe.java.decoding.buffer.type': 'uk.co.real_logic.agrona.concurrent.UnsafeBuffer')
         args = ['src/main/resources/car.xml', 'src/main/resources/fix-message-samples.xml']
     }
 
@@ -339,21 +341,6 @@ project(':sbe-benchmarks') {
         archiveName = 'sbe-benchmarks.jar'
         classifier = 'benchmarks'
         manifest.attributes('Main-Class': 'org.openjdk.jmh.Main')
-    }
-
-    task sourcesJar(type: Jar) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from javadoc.destinationDir
-    }
-
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
     }
 }
 
