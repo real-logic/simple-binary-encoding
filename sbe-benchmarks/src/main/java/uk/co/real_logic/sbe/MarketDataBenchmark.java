@@ -17,7 +17,7 @@ package uk.co.real_logic.sbe;
 
 import org.openjdk.jmh.annotations.*;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
-import uk.co.real_logic.sbe.perf.fix.*;
+import uk.co.real_logic.sbe.benchmarks.fix.*;
 
 import java.nio.ByteBuffer;
 
