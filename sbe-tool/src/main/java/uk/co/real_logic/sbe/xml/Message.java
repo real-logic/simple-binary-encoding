@@ -150,8 +150,7 @@ public class Message
         return headerType;
     }
 
-    private List<Field> parseFieldsAndGroups(final Node node)
-        throws XPathExpressionException
+    private List<Field> parseFieldsAndGroups(final Node node) throws XPathExpressionException
     {
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, XPathConstants.NODESET);

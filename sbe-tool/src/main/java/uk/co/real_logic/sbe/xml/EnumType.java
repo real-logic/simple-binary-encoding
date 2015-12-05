@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static uk.co.real_logic.sbe.xml.Presence.OPTIONAL;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleError;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.checkForValidName;
@@ -50,8 +51,7 @@ public class EnumType extends Type
      * @param node from the XML Schema Parsing
      * @throws XPathExpressionException if the XPath is invalid
      */
-    public EnumType(final Node node)
-        throws XPathExpressionException
+    public EnumType(final Node node) throws XPathExpressionException
     {
         super(node);
 
@@ -75,7 +75,7 @@ public class EnumType extends Type
                 // might not have ran into this type yet, so look for it
                 final Node encodingTypeNode =
                     (Node)xPath.compile(String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
-                               .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
+                        .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
 
                 if (null == encodingTypeNode)
                 {
@@ -96,14 +96,14 @@ public class EnumType extends Type
         final String nullValueStr = getAttributeValueOrNull(node, "nullValue");
         if (null != nullValueStr)
         {
-            if (presence() != Presence.OPTIONAL)
+            if (presence() != OPTIONAL)
             {
                 handleError(node, "nullValue set, but presence is not optional");
             }
 
             nullValue = PrimitiveValue.parse(nullValueStr, encodingType);
         }
-        else if (presence() == Presence.OPTIONAL)
+        else if (presence() == OPTIONAL)
         {
             if (null != encodedDataType && null != encodedDataType.nullValue())
             {

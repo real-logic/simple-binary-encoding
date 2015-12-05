@@ -46,8 +46,7 @@ public class SetType extends Type
      * @throws XPathExpressionException on invalid XPath.
      * @throws IllegalArgumentException on illegal encoding type.
      */
-    public SetType(final Node node)
-        throws XPathExpressionException, IllegalArgumentException
+    public SetType(final Node node) throws XPathExpressionException, IllegalArgumentException
     {
         super(node);
 

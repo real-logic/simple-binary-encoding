@@ -21,6 +21,7 @@ import uk.co.real_logic.sbe.PrimitiveValue;
 
 import org.w3c.dom.Node;
 
+import static uk.co.real_logic.sbe.xml.Presence.CONSTANT;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleError;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
@@ -58,7 +59,7 @@ public class EncodedDataType extends Type
         sinceVersion = Integer.parseInt(getAttributeValue(node, "sinceVersion", "0"));
         offsetAttribute = Integer.parseInt(getAttributeValue(node, "offset", "-1"));
 
-        if (presence() == Presence.CONSTANT)
+        if (presence() == CONSTANT)
         {
             if (node.getFirstChild() == null)
             {
@@ -76,7 +77,7 @@ public class EncodedDataType extends Type
                     }
                     else
                     {
-                        constValue = PrimitiveValue.parse(nodeValue, primitiveType, nodeValue.length(), characterEncoding);
+                        constValue = PrimitiveValue.parse(nodeValue, nodeValue.length(), characterEncoding);
                     }
                 }
                 else
@@ -188,7 +189,7 @@ public class EncodedDataType extends Type
      */
     public int encodedLength()
     {
-        if (presence() == Presence.CONSTANT)
+        if (presence() == CONSTANT)
         {
             return 0;
         }
@@ -209,7 +210,7 @@ public class EncodedDataType extends Type
     public PrimitiveValue constVal()
         throws IllegalArgumentException
     {
-        if (presence() != Presence.CONSTANT)
+        if (presence() != CONSTANT)
         {
             throw new IllegalStateException("type is not of constant presence");
         }

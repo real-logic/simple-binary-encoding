@@ -61,8 +61,7 @@ public class XmlSchemaParser
      * @param in document to be validated.
      * @throws Exception if an error occurs when parsing the document or schema.
      */
-    public static void validate(final String xsdFilename, final BufferedInputStream in)
-        throws Exception
+    public static void validate(final String xsdFilename, final BufferedInputStream in) throws Exception
     {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -83,8 +82,7 @@ public class XmlSchemaParser
      * @return {@link MessageSchema} encoding for the schema.
      * @throws Exception on parsing error.
      */
-    public static MessageSchema parse(final InputStream in, final ParserOptions options)
-        throws Exception
+    public static MessageSchema parse(final InputStream in, final ParserOptions options) throws Exception
     {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -136,16 +134,16 @@ public class XmlSchemaParser
         typeByNameMap.put("double", new EncodedDataType("double", REQUIRED, null, null, DOUBLE, 1, false));
 
         forEach((NodeList)xPath.compile(TYPE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-            node -> addTypeWithNameCheck(typeByNameMap, new EncodedDataType(node), node));
+            (node) -> addTypeWithNameCheck(typeByNameMap, new EncodedDataType(node), node));
 
         forEach((NodeList)xPath.compile(COMPOSITE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-            node -> addTypeWithNameCheck(typeByNameMap, new CompositeType(node), node));
+            (node) -> addTypeWithNameCheck(typeByNameMap, new CompositeType(node), node));
 
         forEach((NodeList)xPath.compile(ENUM_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-            node -> addTypeWithNameCheck(typeByNameMap, new EnumType(node), node));
+            (node) -> addTypeWithNameCheck(typeByNameMap, new EnumType(node), node));
 
         forEach((NodeList)xPath.compile(SET_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-            node -> addTypeWithNameCheck(typeByNameMap, new SetType(node), node));
+            (node) -> addTypeWithNameCheck(typeByNameMap, new SetType(node), node));
 
         return typeByNameMap;
     }
@@ -160,13 +158,12 @@ public class XmlSchemaParser
      * @throws Exception on parsing error.
      */
     public static Map<Long, Message> findMessages(
-        final Document document, final XPath xPath, final Map<String, Type> typeByNameMap)
-        throws Exception
+        final Document document, final XPath xPath, final Map<String, Type> typeByNameMap) throws Exception
     {
         final Map<Long, Message> messageByIdMap = new HashMap<>();
 
         forEach((NodeList)xPath.compile(MESSAGE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-            node -> addMessageWithIdCheck(messageByIdMap, new Message(node, typeByNameMap), node));
+            (node) -> addMessageWithIdCheck(messageByIdMap, new Message(node, typeByNameMap), node));
 
         return messageByIdMap;
     }
@@ -344,13 +341,14 @@ public class XmlSchemaParser
     {
         final Node parentNode = node.getParentNode();
 
-        return "at " +
+        return
+            "at " +
             "<" + parentNode.getNodeName() +
             (getAttributeValueOrNull(parentNode, "name") == null ?
                 ">" : (" name=\"" + getAttributeValueOrNull(parentNode, "name") + "\"> ")) +
             "<" + node.getNodeName() +
-            (getAttributeValueOrNull(node, "name") == null
-                ? ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
+            (getAttributeValueOrNull(node, "name") == null ?
+                ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
     }
 
     interface NodeFunction

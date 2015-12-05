@@ -214,10 +214,10 @@ public class SbeTool
         final ParserOptions.Builder optionsBuilder =
             ParserOptions
                 .builder()
-                .xsdFilename(System.getProperty(SbeTool.VALIDATION_XSD))
-                .stopOnError(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_STOP_ON_ERROR)))
-                .warningsFatal(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_WARNINGS_FATAL)))
-                .suppressOutput(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT)));
+                .xsdFilename(System.getProperty(VALIDATION_XSD))
+                .stopOnError(Boolean.parseBoolean(System.getProperty(VALIDATION_STOP_ON_ERROR)))
+                .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
+                .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
 
         try (final BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename)))
         {

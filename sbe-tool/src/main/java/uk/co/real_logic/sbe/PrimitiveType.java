@@ -117,7 +117,7 @@ public enum PrimitiveType
     {
         for (final PrimitiveType p : Singleton.VALUES)
         {
-            if (name.equals(p.name))
+            if (p.name.equals(name))
             {
                 return p;
             }

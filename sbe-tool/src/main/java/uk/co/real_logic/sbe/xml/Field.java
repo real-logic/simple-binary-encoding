@@ -183,8 +183,8 @@ public class Field
 
     public String toString()
     {
-        return "Field{" +
-            "name='" + name + '\'' +
+        return
+            "Field{name='" + name + '\'' +
             ", description='" + description + '\'' +
             ", id=" + id +
             ", type=" + type +

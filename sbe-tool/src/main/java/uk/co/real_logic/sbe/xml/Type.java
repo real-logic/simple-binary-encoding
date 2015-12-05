@@ -24,9 +24,6 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
  */
 public abstract class Type
 {
-    /** Default presence attribute for Types */
-    public static final String DEFAULT_PRESENCE = "required";
-
     private final String name;
     private final Presence presence;
     private final String description;

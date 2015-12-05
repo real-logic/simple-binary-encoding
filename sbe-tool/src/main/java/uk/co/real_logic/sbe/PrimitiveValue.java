@@ -200,14 +200,13 @@ public class PrimitiveValue
      * Parse constant value string and set representation based on type, length, and characterEncoding
      *
      * @param value expressed as a String
-     * @param primitiveType that this is supposed to be
      * @param length of the type
      * @param characterEncoding of the String
      * @return a new {@link PrimitiveValue} for the value.
      * @throws IllegalArgumentException if parsing malformed type
      */
     public static PrimitiveValue parse(
-        final String value, final PrimitiveType primitiveType, final int length, final String characterEncoding)
+        final String value, final int length, final String characterEncoding)
     {
         // TODO: handle incorrect length, characterEncoding, etc.
         return new PrimitiveValue(value.getBytes(forName(characterEncoding)), characterEncoding, length);

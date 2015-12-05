@@ -44,8 +44,7 @@ public class CompositeType extends Type
      * @param node from the XML Schema Parsing
      * @throws XPathExpressionException if the XPath is invalid.
      */
-    public CompositeType(final Node node)
-        throws XPathExpressionException
+    public CompositeType(final Node node) throws XPathExpressionException
     {
         super(node);
 
