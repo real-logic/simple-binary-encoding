@@ -277,7 +277,7 @@
     </sbe:message>
 
     <sbe:message name="MarketDataIncrementalRefreshTrades" id="2" semanticType="X" description="Trade">
-        <field name="TransactTime" id="60" type="timestamp" timeUnit="nanossecond"/>
+        <field name="TransactTime" id="60" type="timestamp" timeUnit="nanosecond"/>
         <field name="EventTimeDelta" id="37704" type="uint16"/>
         <field name="MatchEventIndicator" id="5799" type="MatchEventIndicator"/>
         <group name="MdIncGrp" id="268">
