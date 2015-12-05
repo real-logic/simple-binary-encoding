@@ -79,16 +79,13 @@
 
     <xs:element name="message" type="sbe:blockType">
         <xs:annotation>
-            <xs:documentation>
-                A message type, also known as a message template
-            </xs:documentation>
+            <xs:documentation>A message type, also known as a message template</xs:documentation>
         </xs:annotation>
     </xs:element>
 
     <xs:complexType name="blockType">
         <xs:annotation>
-            <xs:documentation>Base type of message and repeating group entry
-            </xs:documentation>
+            <xs:documentation>Base type of message and repeating group entry</xs:documentation>
         </xs:annotation>
         <xs:sequence>
             <xs:element name="field" type="sbe:fieldType" minOccurs="0" maxOccurs="unbounded">
@@ -111,8 +108,8 @@
         </xs:attribute>
         <xs:attribute name="blockLength" type="xs:nonNegativeInteger" use="optional">
             <xs:annotation>
-                <xs:documentation>Space reserved for root level of message, not
-                    include groups or variable-length data elements.
+                <xs:documentation>
+                    Space reserved for root level of message, not include groups or variable-length data elements.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -122,9 +119,7 @@
 
     <xs:complexType name="groupType">
         <xs:annotation>
-            <xs:documentation>
-                A repeating group contains an array of entries
-            </xs:documentation>
+            <xs:documentation>A repeating group contains an array of entries</xs:documentation>
         </xs:annotation>
         <xs:complexContent>
             <xs:extension base="sbe:blockType">
@@ -186,9 +181,7 @@
 
     <xs:complexType name="compositeDataType" mixed="true">
         <xs:annotation>
-            <xs:documentation>
-                A wire encoding composed of multiple parts
-            </xs:documentation>
+            <xs:documentation>A wire encoding composed of multiple parts</xs:documentation>
         </xs:annotation>
         <xs:choice maxOccurs="unbounded">
             <xs:element name="type" type="sbe:encodedDataType"/>
@@ -328,8 +321,8 @@
                     </xs:enumeration>
                     <xs:enumeration value="constant">
                         <xs:annotation>
-                            <xs:documentation>Value does not vary so it need not be
-                                serialized on the wire
+                            <xs:documentation>
+                                Value does not vary so it need not be serialized on the wire
                             </xs:documentation>
                         </xs:annotation>
                     </xs:enumeration>
