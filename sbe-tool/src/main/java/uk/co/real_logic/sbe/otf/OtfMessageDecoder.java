@@ -66,7 +66,8 @@ public class OtfMessageDecoder
         decodeFields(buffer, bufferIndex, actingVersion, msgTokens, 0, groupsBeginIndex, listener);
         bufferIndex += blockLength;
 
-        bufferIndex = decodeGroups(buffer, bufferIndex, actingVersion, msgTokens, groupsBeginIndex, varDataBeginIndex, listener);
+        bufferIndex = decodeGroups(
+            buffer, bufferIndex, actingVersion, msgTokens, groupsBeginIndex, varDataBeginIndex, listener);
 
         bufferIndex = decodeVarData(buffer, bufferIndex, msgTokens, varDataBeginIndex, msgTokens.size(), listener);
 
@@ -139,7 +140,8 @@ public class OtfMessageDecoder
 
                     if (nextGroupIndex < endGroupIndex)
                     {
-                        bufferIndex = decodeGroups(buffer, bufferIndex, actingVersion, tokens, nextGroupIndex, toIndex, listener);
+                        bufferIndex = decodeGroups(
+                            buffer, bufferIndex, actingVersion, tokens, nextGroupIndex, toIndex, listener);
                     }
 
                     listener.onEndGroup(token, g, numInGroup);
@@ -240,7 +242,8 @@ public class OtfMessageDecoder
         listener.onEndComposite(fieldToken, tokens, fromIndex, toIndex);
     }
 
-    private static int findNextOrLimit(final List<Token> tokens, final int fromIndex, final int limitIndex, final Signal signal)
+    private static int findNextOrLimit(
+        final List<Token> tokens, final int fromIndex, final int limitIndex, final Signal signal)
     {
         int i = fromIndex;
         for (; i < limitIndex; i++)

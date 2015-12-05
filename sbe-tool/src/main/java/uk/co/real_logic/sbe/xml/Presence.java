@@ -57,7 +57,7 @@ public enum Presence
     {
         for (final Presence p : values())
         {
-            if (name.equals(p.value))
+            if (p.value.equals(name))
             {
                 return p;
             }

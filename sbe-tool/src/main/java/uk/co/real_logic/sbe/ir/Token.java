@@ -104,13 +104,13 @@ public class Token
     /**
      * Construct an {@link Token} by providing values for all fields.
      *
-     * @param signal   for the token role
-     * @param name     of the token in the message
-     * @param id       as the identifier in the message declaration
-     * @param version  application within the template
-     * @param encodedLength     of the component part
-     * @param offset   in the underlying message as octets
-     * @param encoding of the primitive field
+     * @param signal        for the token role
+     * @param name          of the token in the message
+     * @param id            as the identifier in the message declaration
+     * @param version       application within the template
+     * @param encodedLength of the component part
+     * @param offset        in the underlying message as octets
+     * @param encoding      of the primitive field
      */
     public Token(
         final Signal signal,
@@ -268,7 +268,8 @@ public class Token
 
     public String toString()
     {
-        return "Token{" +
+        return
+            "Token{" +
             "signal=" + signal +
             ", name='" + name + '\'' +
             ", id=" + id +

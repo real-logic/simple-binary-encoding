@@ -86,7 +86,7 @@ public class JsonPrinter
     {
         final StringBuilder sb = new StringBuilder();
         print(encodedMessage, sb);
+
         return sb.toString();
     }
-
 }

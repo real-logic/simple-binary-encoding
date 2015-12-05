@@ -71,7 +71,7 @@ public enum TargetCodeGenerator
     {
         for (final TargetCodeGenerator target : values())
         {
-            if (name.equalsIgnoreCase(target.name()))
+            if (target.name().equalsIgnoreCase(name))
             {
                 return target;
             }

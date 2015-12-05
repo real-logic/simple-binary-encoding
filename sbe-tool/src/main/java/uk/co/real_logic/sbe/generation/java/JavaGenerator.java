@@ -25,7 +25,6 @@ import uk.co.real_logic.sbe.ir.*;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -225,8 +224,7 @@ public class JavaGenerator implements CodeGenerator
         final String parentMessageClassName,
         final List<Token> tokens,
         int index,
-        final String indent)
-        throws IOException
+        final String indent) throws IOException
     {
         for (int size = tokens.size(); index < size; index++)
         {
@@ -260,8 +258,7 @@ public class JavaGenerator implements CodeGenerator
         final String parentMessageClassName,
         final List<Token> tokens,
         int index,
-        final String indent)
-        throws IOException
+        final String indent) throws IOException
     {
         for (int size = tokens.size(); index < size; index++)
         {
@@ -1116,8 +1113,7 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> tokens,
         final Appendable out,
         int index,
-        final Function<String, String> nameMapping)
-        throws IOException
+        final Function<String, String> nameMapping) throws IOException
     {
         final List<String> groupClassNames = new ArrayList<>();
         int level = 0;
@@ -1483,8 +1479,7 @@ public class JavaGenerator implements CodeGenerator
 
     private String byteOrderString(final Encoding encoding)
     {
-        final ByteOrder byteOrder = encoding.byteOrder();
-        return sizeOfPrimitive(encoding) == 1 ? "" : ", java.nio.ByteOrder." + byteOrder;
+        return sizeOfPrimitive(encoding) == 1 ? "" : ", java.nio.ByteOrder." + encoding.byteOrder();
     }
 
     private CharSequence generateArrayPropertyEncode(
@@ -1639,10 +1634,7 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generateFixedFlyweightCode(
-        final String className,
-        final int size,
-        final boolean callsSuper,
-        final String bufferImplementation)
+        final String className, final int size, final boolean callsSuper, final String bufferImplementation)
     {
         final String body = callsSuper ? "        super.wrap(buffer, offset);\n" : "";
 
@@ -1906,8 +1898,6 @@ public class JavaGenerator implements CodeGenerator
         final String enumName = formatClassName(token.name());
         final Encoding encoding = token.encoding();
         final String typePrefix = encoding.primitiveType().primitiveName();
-        final int offset = token.offset();
-        final String byteOrderStr = byteOrderString(encoding);
 
         return String.format(
             "\n" +
@@ -1921,8 +1911,8 @@ public class JavaGenerator implements CodeGenerator
             generateTypeFieldNotPresentCondition(token.version(), indent),
             enumName,
             typePrefix,
-            offset,
-            byteOrderStr
+            token.offset(),
+            byteOrderString(encoding)
         );
     }
 
@@ -1932,8 +1922,6 @@ public class JavaGenerator implements CodeGenerator
         final String enumName = formatClassName(token.name());
         final Encoding encoding = token.encoding();
         final String typePrefix = encoding.primitiveType().primitiveName();
-        final int offset = token.offset();
-        final String byteOrderStr = byteOrderString(encoding);
 
         return String.format(
             indent + "    public %s %s(final %s value)\n" +
@@ -1945,8 +1933,8 @@ public class JavaGenerator implements CodeGenerator
             propertyName,
             enumName,
             typePrefix,
-            offset,
-            byteOrderStr
+            token.offset(),
+            byteOrderString(encoding)
         );
     }
 
@@ -1954,7 +1942,6 @@ public class JavaGenerator implements CodeGenerator
         final String propertyName, final Token token, final String indent, final String bitSetName)
     {
         final StringBuilder sb = new StringBuilder();
-        final int offset = token.offset();
 
         sb.append(String.format(
             "\n" +
@@ -1976,7 +1963,7 @@ public class JavaGenerator implements CodeGenerator
             propertyName,
             generateTypeFieldNotPresentCondition(token.version(), indent),
             propertyName,
-            offset,
+            token.offset(),
             propertyName
         ));
 
@@ -1986,8 +1973,6 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateCompositeProperty(
         final String propertyName, final Token token, final String indent, final String compositeName)
     {
-        final int offset = token.offset();
-
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
@@ -2010,7 +1995,7 @@ public class JavaGenerator implements CodeGenerator
             propertyName,
             generateTypeFieldNotPresentCondition(token.version(), indent),
             propertyName,
-            offset,
+            token.offset(),
             propertyName
         ));
 

@@ -128,7 +128,7 @@ public class MessageSchema
      */
     public Message getMessage(final long schemaId)
     {
-        return messageByIdMap.get(Long.valueOf(schemaId));
+        return messageByIdMap.get(schemaId);
     }
 
     /**

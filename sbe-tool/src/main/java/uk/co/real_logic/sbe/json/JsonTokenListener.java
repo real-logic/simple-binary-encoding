@@ -29,7 +29,6 @@ import static uk.co.real_logic.sbe.PrimitiveType.CHAR;
 
 public class JsonTokenListener implements TokenListener
 {
-
     private final byte[] tempBuffer = new byte[1024];
     private final StringBuilder output;
     private int indentation = 0;
@@ -65,7 +64,6 @@ public class JsonTokenListener implements TokenListener
         int toIndex,
         int actingVersion)
     {
-
     }
 
     public void onBitSet(
@@ -77,17 +75,14 @@ public class JsonTokenListener implements TokenListener
         int toIndex,
         int actingVersion)
     {
-
     }
 
     public void onBeginComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex)
     {
-
     }
 
     public void onEndComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex)
     {
-
     }
 
     public void onGroupHeader(Token token, int numInGroup)
@@ -127,7 +122,6 @@ public class JsonTokenListener implements TokenListener
         catch (final UnsupportedEncodingException ex)
         {
             ex.printStackTrace();
-            return;
         }
     }
 
@@ -150,7 +144,7 @@ public class JsonTokenListener implements TokenListener
     }
 
     private void appendEncodingAsString(
-            final DirectBuffer buffer, final int index, final Token typeToken, final int actingVersion)
+        final DirectBuffer buffer, final int index, final Token typeToken, final int actingVersion)
     {
         final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, actingVersion);
         if (null != constOrNotPresentValue)
@@ -166,10 +160,12 @@ public class JsonTokenListener implements TokenListener
         if (size > 1 && encoding.primitiveType() == CHAR)
         {
             doubleQuote();
+
             for (int i = 0; i < size; i++)
             {
-                output.append((char) CodecUtil.charGet(buffer, index + (i * elementSize)));
+                output.append((char)CodecUtil.charGet(buffer, index + (i * elementSize)));
             }
+
             doubleQuote();
         }
         else
@@ -217,12 +213,12 @@ public class JsonTokenListener implements TokenListener
     }
 
     private static void mapEncodingToString(
-            final StringBuilder sb, final DirectBuffer buffer, final int index, final Encoding encoding)
+        final StringBuilder sb, final DirectBuffer buffer, final int index, final Encoding encoding)
     {
         switch (encoding.primitiveType())
         {
             case CHAR:
-                sb.append('"').append((char) CodecUtil.charGet(buffer, index)).append('"');
+                sb.append('"').append((char)CodecUtil.charGet(buffer, index)).append('"');
                 break;
 
             case INT8:
@@ -340,5 +336,4 @@ public class JsonTokenListener implements TokenListener
     {
         output.append(value);
     }
-
 }

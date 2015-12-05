@@ -261,7 +261,8 @@ public class Encoding
 
     public String toString()
     {
-        return "Encoding{" +
+        return
+            "Encoding{" +
             "primitiveType=" + primitiveType +
             ", presence=" + presence +
             ", byteOrder=" + byteOrder +

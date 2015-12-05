@@ -104,25 +104,11 @@ public class MethodSelector
         final Method method)
     {
         final int mods = method.getModifiers();
-        if (!Modifier.isPublic(mods))
-        {
-            return;
-        }
-        if (Modifier.isStatic(mods))
-        {
-            return;
-        }
-        if (method.getParameterTypes().length != 0)
-        {
-            return;
-        }
-        if (method.getReturnType().equals(Void.TYPE))
-        {
-            return;
-        }
-
-        final String name = method.getName();
-        if (ignoredMethods.contains(name))
+        if (!Modifier.isPublic(mods) ||
+            Modifier.isStatic(mods) ||
+            method.getParameterTypes().length != 0 ||
+            method.getReturnType().equals(Void.TYPE) ||
+            ignoredMethods.contains(method.getName()))
         {
             return;
         }
@@ -133,9 +119,9 @@ public class MethodSelector
         }
         else
         {
-            if (sortedMethodNames.contains(name))
+            if (sortedMethodNames.contains(method.getName()))
             {
-                sortedMethods.put(name, method);
+                sortedMethods.put(method.getName(), method);
             }
             else
             {

@@ -56,44 +56,44 @@ public class JavaUtil
     /**
      * Uppercase the first character of a given String.
      *
-     * @param str to have the first character upper cased.
+     * @param s to have the first character upper cased.
      * @return a new String with the first character in uppercase.
      */
-    public static String toUpperFirstChar(final String str)
+    public static String toUpperFirstChar(final String s)
     {
-        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
     /**
      * Lowercase the first character of a given String.
      *
-     * @param str to have the first character upper cased.
+     * @param s to have the first character upper cased.
      * @return a new String with the first character in uppercase.
      */
-    public static String toLowerFirstChar(final String str)
+    public static String toLowerFirstChar(final String s)
     {
-        return Character.toLowerCase(str.charAt(0)) + str.substring(1);
+        return Character.toLowerCase(s.charAt(0)) + s.substring(1);
     }
 
     /**
      * Format a String as a property name.
      *
-     * @param str to be formatted.
+     * @param s to be formatted.
      * @return the string formatted as a property name.
      */
-    public static String formatPropertyName(final String str)
+    public static String formatPropertyName(final String s)
     {
-        return toLowerFirstChar(str);
+        return toLowerFirstChar(s);
     }
 
     /**
      * Format a String as a class name.
      *
-     * @param str to be formatted.
+     * @param s to be formatted.
      * @return the string formatted as a class name.
      */
-    public static String formatClassName(final String str)
+    public static String formatClassName(final String s)
     {
-        return toUpperFirstChar(str);
+        return toUpperFirstChar(s);
     }
 }

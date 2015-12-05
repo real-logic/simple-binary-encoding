@@ -23,7 +23,8 @@ import java.util.List;
 /**
  * Callback interface to be implemented by code wanting to decode messages on-the-fly.
  *
- * If all methods are not required then consider extending {@link AbstractTokenListener} for potential performance benefits and simpler code.
+ * If all methods are not required then consider extending {@link AbstractTokenListener}
+ * for potential performance benefits and simpler code.
  */
 public interface TokenListener
 {
@@ -46,10 +47,10 @@ public interface TokenListener
      *
      * Within a composite the typeToken and fieldToken are the same.
      *
-     * @param fieldToken in the IR representing the field of the message root or group.
-     * @param buffer containing the encoded message.
-     * @param bufferIndex at which the encoded field begins.
-     * @param typeToken of the encoded primitive value.
+     * @param fieldToken    in the IR representing the field of the message root or group.
+     * @param buffer        containing the encoded message.
+     * @param bufferIndex   at which the encoded field begins.
+     * @param typeToken     of the encoded primitive value.
      * @param actingVersion of the encoded message for determining validity of extension fields.
      */
     void onEncoding(Token fieldToken, DirectBuffer buffer, int bufferIndex, Token typeToken, int actingVersion);
@@ -57,12 +58,12 @@ public interface TokenListener
     /**
      * Enum encoded type encountered.
      *
-     * @param fieldToken in the IR representing the field of the message root or group.
-     * @param buffer containing the encoded message.
-     * @param bufferIndex at which the encoded field begins.
-     * @param tokens describing the message.
-     * @param fromIndex at which the enum metadata begins.
-     * @param toIndex at which the enum metadata ends.
+     * @param fieldToken    in the IR representing the field of the message root or group.
+     * @param buffer        containing the encoded message.
+     * @param bufferIndex   at which the encoded field begins.
+     * @param tokens        describing the message.
+     * @param fromIndex     at which the enum metadata begins.
+     * @param toIndex       at which the enum metadata ends.
      * @param actingVersion of the encoded message for determining validity of extension fields.
      */
     void onEnum(
@@ -77,12 +78,12 @@ public interface TokenListener
     /**
      * BitSet encoded type encountered.
      *
-     * @param fieldToken in the IR representing the field of the message root or group.
-     * @param buffer containing the encoded message.
-     * @param bufferIndex at which the encoded field begins.
-     * @param tokens describing the message.
-     * @param fromIndex at which the bit set metadata begins.
-     * @param toIndex at which the bit set metadata ends.
+     * @param fieldToken    in the IR representing the field of the message root or group.
+     * @param buffer        containing the encoded message.
+     * @param bufferIndex   at which the encoded field begins.
+     * @param tokens        describing the message.
+     * @param fromIndex     at which the bit set metadata begins.
+     * @param toIndex       at which the bit set metadata ends.
      * @param actingVersion of the encoded message for determining validity of extension fields.
      */
     void onBitSet(
@@ -98,9 +99,9 @@ public interface TokenListener
      * Beginning of Composite encoded type encountered.
      *
      * @param fieldToken in the IR representing the field of the message root or group.
-     * @param tokens describing the message.
-     * @param fromIndex at which the composite metadata begins.
-     * @param toIndex at which the composite metadata ends.
+     * @param tokens     describing the message.
+     * @param fromIndex  at which the composite metadata begins.
+     * @param toIndex    at which the composite metadata ends.
      */
     void onBeginComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex);
 
@@ -108,16 +109,16 @@ public interface TokenListener
      * End of Composite encoded type encountered.
      *
      * @param fieldToken in the IR representing the field of the message root or group.
-     * @param tokens describing the message.
-     * @param fromIndex at which the composite metadata begins.
-     * @param toIndex at which the composite metadata ends.
+     * @param tokens     describing the message.
+     * @param fromIndex  at which the composite metadata begins.
+     * @param toIndex    at which the composite metadata ends.
      */
     void onEndComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex);
 
     /**
      * Group encountered.
      *
-     * @param token describing the group.
+     * @param token      describing the group.
      * @param numInGroup number of times the group will be repeated.
      */
     void onGroupHeader(Token token, int numInGroup);
@@ -125,7 +126,7 @@ public interface TokenListener
     /**
      * Beginning of group encoded type encountered.
      *
-     * @param token describing the group.
+     * @param token      describing the group.
      * @param groupIndex index for the repeat count of the group.
      * @param numInGroup number of times the group will be repeated.
      */
@@ -134,7 +135,7 @@ public interface TokenListener
     /**
      * End of group encoded type encountered.
      *
-     * @param token describing the group.
+     * @param token      describing the group.
      * @param groupIndex index for the repeat count of the group.
      * @param numInGroup number of times the group will be repeated.
      */
@@ -143,11 +144,11 @@ public interface TokenListener
     /**
      * Var data field encountered.
      *
-     * @param fieldToken in the IR representing the var data field.
-     * @param buffer containing the encoded message.
+     * @param fieldToken  in the IR representing the var data field.
+     * @param buffer      containing the encoded message.
      * @param bufferIndex at which the variable data begins.
-     * @param length of the variable data in bytes.
-     * @param typeToken of the variable data. Specifically needed to determine character encoding of the variable data.
+     * @param length      of the variable data in bytes.
+     * @param typeToken   of the variable data. Specifically needed to determine character encoding of the variable data.
      */
     void onVarData(Token fieldToken, DirectBuffer buffer, int bufferIndex, int length, Token typeToken);
 }

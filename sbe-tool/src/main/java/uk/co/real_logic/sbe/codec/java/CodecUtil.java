@@ -26,8 +26,8 @@ public class CodecUtil
      * Put a character to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param value to be be written.
+     * @param index  from which to begin writing.
+     * @param value  to be be written.
      */
     public static void charPut(final MutableDirectBuffer buffer, final int index, final byte value)
     {
@@ -38,8 +38,8 @@ public class CodecUtil
      * Put an array into a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param src to be be written
+     * @param index  from which to begin writing.
+     * @param src    to be be written
      * @param offset in the src buffer to write from
      * @param length of the src buffer to copy.
      */
@@ -53,8 +53,8 @@ public class CodecUtil
      * Put a 8-bit integer to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param value to be be written.
+     * @param index  from which to begin writing.
+     * @param value  to be be written.
      */
     public static void int8Put(final MutableDirectBuffer buffer, final int index, final byte value)
     {
@@ -65,8 +65,8 @@ public class CodecUtil
      * Put an array into a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param src to be be written
+     * @param index  from which to begin writing.
+     * @param src    to be be written
      * @param offset in the src buffer to write from
      * @param length of the src buffer to copy.
      */
@@ -79,9 +79,9 @@ public class CodecUtil
     /**
      * Put a 16-bit integer to a {@link MutableDirectBuffer} at the given index.
      *
-     * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param value to be be written.
+     * @param buffer    to which the value should be written.
+     * @param index     from which to begin writing.
+     * @param value     to be be written.
      * @param byteOrder for the buffer encoding
      */
     public static void int16Put(final MutableDirectBuffer buffer, final int index, final short value, final ByteOrder byteOrder)
@@ -92,9 +92,9 @@ public class CodecUtil
     /**
      * Put a 32-bit integer to a {@link MutableDirectBuffer} at the given index.
      *
-     * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param value to be be written.
+     * @param buffer    to which the value should be written.
+     * @param index     from which to begin writing.
+     * @param value     to be be written.
      * @param byteOrder for the buffer encoding
      */
     public static void int32Put(final MutableDirectBuffer buffer, final int index, final int value, final ByteOrder byteOrder)
@@ -105,9 +105,9 @@ public class CodecUtil
     /**
      * Put a 64-bit integer to a {@link MutableDirectBuffer} at the given index.
      *
-     * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param value to be be written.
+     * @param buffer    to which the value should be written.
+     * @param index     from which to begin writing.
+     * @param value     to be be written.
      * @param byteOrder for the buffer encoding
      */
     public static void int64Put(final MutableDirectBuffer buffer, final int index, final long value, final ByteOrder byteOrder)
@@ -119,8 +119,8 @@ public class CodecUtil
      * Put a 8-bit signed integer to a {@link MutableDirectBuffer} at the given index.
      *
      * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param value to be be written.
+     * @param index  from which to begin writing.
+     * @param value  to be be written.
      * @throws IllegalArgumentException if the number is negative
      */
     public static void uint8Put(final MutableDirectBuffer buffer, final int index, final short value)
@@ -131,9 +131,9 @@ public class CodecUtil
     /**
      * Put a 16-bit signed integer to a {@link MutableDirectBuffer} at the given index.
      *
-     * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param value to be be written.
+     * @param buffer    to which the value should be written.
+     * @param index     from which to begin writing.
+     * @param value     to be be written.
      * @param byteOrder for the buffer encoding
      */
     public static void uint16Put(final MutableDirectBuffer buffer, final int index, final int value, final ByteOrder byteOrder)
@@ -144,9 +144,9 @@ public class CodecUtil
     /**
      * Put a 32-bit signed integer to a {@link MutableDirectBuffer} at the given index.
      *
-     * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param value to be be written.
+     * @param buffer    to which the value should be written.
+     * @param index     from which to begin writing.
+     * @param value     to be be written.
      * @param byteOrder for the buffer encoding
      */
     public static void uint32Put(final MutableDirectBuffer buffer, final int index, final long value, final ByteOrder byteOrder)
@@ -157,9 +157,9 @@ public class CodecUtil
     /**
      * Put a 64-bit signed integer to a {@link MutableDirectBuffer} at the given index.
      *
-     * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param value to be be written.
+     * @param buffer    to which the value should be written.
+     * @param index     from which to begin writing.
+     * @param value     to be be written.
      * @param byteOrder for the buffer encoding
      */
     public static void uint64Put(final MutableDirectBuffer buffer, final int index, final long value, final ByteOrder byteOrder)
@@ -170,9 +170,9 @@ public class CodecUtil
     /**
      * Put a float to a {@link DirectBuffer} at the given index.
      *
-     * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param value to be be written.
+     * @param buffer    to which the value should be written.
+     * @param index     from which to begin writing.
+     * @param value     to be be written.
      * @param byteOrder for the buffer encoding
      */
     public static void floatPut(final MutableDirectBuffer buffer, final int index, final float value, final ByteOrder byteOrder)
@@ -183,9 +183,9 @@ public class CodecUtil
     /**
      * Put a double to a {@link DirectBuffer} at the given index.
      *
-     * @param buffer to which the value should be written.
-     * @param index from which to begin writing.
-     * @param value to be be written.
+     * @param buffer    to which the value should be written.
+     * @param index     from which to begin writing.
+     * @param value     to be be written.
      * @param byteOrder for the buffer encoding
      */
     public static void doublePut(final MutableDirectBuffer buffer, final int index, final double value, final ByteOrder byteOrder)
@@ -197,7 +197,7 @@ public class CodecUtil
      * Get a char from a {@link DirectBuffer} at a given index.
      *
      * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
+     * @param index  from which to begin reading.
      * @return the byte representation of the value
      */
     public static byte charGet(final DirectBuffer buffer, final int index)
@@ -209,8 +209,8 @@ public class CodecUtil
      * Get from a {@link DirectBuffer} at a given index into an array.
      *
      * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
-     * @param dst into which the copy will occur
+     * @param index  from which to begin reading.
+     * @param dst    into which the copy will occur
      * @param offset at which to start in the destination
      * @param length of the array to copy
      */
@@ -223,7 +223,7 @@ public class CodecUtil
      * Get a 8-bit integer from a {@link DirectBuffer} at a given index.
      *
      * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
+     * @param index  from which to begin reading.
      * @return the byte representation of the value
      */
     public static byte int8Get(final DirectBuffer buffer, final int index)
@@ -235,8 +235,8 @@ public class CodecUtil
      * Get from a {@link DirectBuffer} at a given index into an array.
      *
      * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
-     * @param dst into which the copy will occur
+     * @param index  from which to begin reading.
+     * @param dst    into which the copy will occur
      * @param offset at which to start in the destination
      * @param length of the array to copy
      */
@@ -248,12 +248,12 @@ public class CodecUtil
     /**
      * Get a 16-bit integer from a {@link DirectBuffer} at a given index.
      *
-     * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
+     * @param buffer    from which the value should be read.
+     * @param index     from which to begin reading.
      * @param byteOrder for the buffer encoding
      * @return the short representation of the value
      */
-    public static short int16Get(final DirectBuffer buffer, final int index,  ByteOrder byteOrder)
+    public static short int16Get(final DirectBuffer buffer, final int index, ByteOrder byteOrder)
     {
         return buffer.getShort(index, byteOrder);
     }
@@ -261,8 +261,8 @@ public class CodecUtil
     /**
      * Get a 32-bit integer from a {@link DirectBuffer} at a given index.
      *
-     * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
+     * @param buffer    from which the value should be read.
+     * @param index     from which to begin reading.
      * @param byteOrder for the buffer encoding
      * @return the int representation of the value
      */
@@ -274,8 +274,8 @@ public class CodecUtil
     /**
      * Get a 64-bit integer from a {@link DirectBuffer} at a given index.
      *
-     * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
+     * @param buffer    from which the value should be read.
+     * @param index     from which to begin reading.
      * @param byteOrder for the buffer encoding
      * @return the long representation of the value
      */
@@ -288,7 +288,7 @@ public class CodecUtil
      * Get a unsigned 8-bit integer from a {@link DirectBuffer} at a given index.
      *
      * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
+     * @param index  from which to begin reading.
      * @return the short representation of the value
      */
     public static short uint8Get(final DirectBuffer buffer, final int index)
@@ -299,8 +299,8 @@ public class CodecUtil
     /**
      * Get a unsigned 16-bit integer from a {@link DirectBuffer} at a given index.
      *
-     * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
+     * @param buffer    from which the value should be read.
+     * @param index     from which to begin reading.
      * @param byteOrder for the buffer encoding
      * @return the int representation of the value
      */
@@ -312,8 +312,8 @@ public class CodecUtil
     /**
      * Get a unsigned 32-bit integer from a {@link DirectBuffer} at a given index.
      *
-     * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
+     * @param buffer    from which the value should be read.
+     * @param index     from which to begin reading.
      * @param byteOrder for the buffer encoding
      * @return the long representation of the value
      */
@@ -325,8 +325,8 @@ public class CodecUtil
     /**
      * Get a unsigned 64-bit integer from a {@link DirectBuffer} at a given index.
      *
-     * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
+     * @param buffer    from which the value should be read.
+     * @param index     from which to begin reading.
      * @param byteOrder for the buffer encoding
      * @return the long representation of the value
      */
@@ -338,8 +338,8 @@ public class CodecUtil
     /**
      * Get a 32-bit float from a {@link DirectBuffer} at a given index.
      *
-     * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
+     * @param buffer    from which the value should be read.
+     * @param index     from which to begin reading.
      * @param byteOrder for the buffer encoding
      * @return the float representation of the value
      */
@@ -351,8 +351,8 @@ public class CodecUtil
     /**
      * Get a 64-bit double from a {@link DirectBuffer} at a given index.
      *
-     * @param buffer from which the value should be read.
-     * @param index from which to begin reading.
+     * @param buffer    from which the value should be read.
+     * @param index     from which to begin reading.
      * @param byteOrder for the buffer encoding
      * @return the double representation of the value
      */
@@ -364,8 +364,8 @@ public class CodecUtil
     /**
      * Is a bit set at a given index.
      *
-     * @param buffer to read from.
-     * @param index of the beginning byte
+     * @param buffer   to read from.
+     * @param index    of the beginning byte
      * @param bitIndex bit index to read
      * @return true if the bit is set otherwise false.
      */
@@ -377,8 +377,8 @@ public class CodecUtil
     /**
      * Set a bit on or off at a given index.
      *
-     * @param buffer to write the bit too.
-     * @param index of the beginning byte.
+     * @param buffer   to write the bit too.
+     * @param index    of the beginning byte.
      * @param bitIndex bit index to set.
      * @param switchOn true sets bit to 1 and false sets it to 0.
      */
@@ -392,9 +392,9 @@ public class CodecUtil
     /**
      * Is a bit set at a given index.
      *
-     * @param buffer to read from.
-     * @param index of the beginning byte
-     * @param bitIndex bit index to read
+     * @param buffer    to read from.
+     * @param index     of the beginning byte
+     * @param bitIndex  bit index to read
      * @param byteOrder for the buffer encoding
      * @return true if the bit is set otherwise false.
      */
@@ -407,10 +407,10 @@ public class CodecUtil
     /**
      * Set a bit on or off at a given index.
      *
-     * @param buffer to write the bit too.
-     * @param index of the beginning byte.
-     * @param bitIndex bit index to set.
-     * @param switchOn true sets bit to 1 and false sets it to 0.
+     * @param buffer    to write the bit too.
+     * @param index     of the beginning byte.
+     * @param bitIndex  bit index to set.
+     * @param switchOn  true sets bit to 1 and false sets it to 0.
      * @param byteOrder for the buffer encoding
      */
     public static void uint16PutChoice(
@@ -424,9 +424,9 @@ public class CodecUtil
     /**
      * Is a bit set at a given index.
      *
-     * @param buffer to read from.
-     * @param index of the beginning byte
-     * @param bitIndex bit index to read
+     * @param buffer    to read from.
+     * @param index     of the beginning byte
+     * @param bitIndex  bit index to read
      * @param byteOrder for the buffer encoding
      * @return true if the bit is set otherwise false.
      */
@@ -439,10 +439,10 @@ public class CodecUtil
     /**
      * Set a bit on or off at a given index.
      *
-     * @param buffer to write the bit too.
-     * @param index of the beginning byte.
-     * @param bitIndex bit index to set.
-     * @param switchOn true sets bit to 1 and false sets it to 0.
+     * @param buffer    to write the bit too.
+     * @param index     of the beginning byte.
+     * @param bitIndex  bit index to set.
+     * @param switchOn  true sets bit to 1 and false sets it to 0.
      * @param byteOrder for the buffer encoding
      */
     public static void uint32PutChoice(
@@ -456,9 +456,9 @@ public class CodecUtil
     /**
      * Is a bit set at a given index.
      *
-     * @param buffer to read from.
-     * @param index of the beginning byte
-     * @param bitIndex bit index to read
+     * @param buffer    to read from.
+     * @param index     of the beginning byte
+     * @param bitIndex  bit index to read
      * @param byteOrder for the buffer encoding
      * @return true if the bit is set otherwise false.
      */
@@ -471,10 +471,10 @@ public class CodecUtil
     /**
      * Set a bit on or off at a given index.
      *
-     * @param buffer to write the bit too.
-     * @param index of the beginning byte.
-     * @param bitIndex bit index to set.
-     * @param switchOn true sets bit to 1 and false sets it to 0.
+     * @param buffer    to write the bit too.
+     * @param index     of the beginning byte.
+     * @param bitIndex  bit index to set.
+     * @param switchOn  true sets bit to 1 and false sets it to 0.
      * @param byteOrder for the buffer encoding
      */
     public static void uint64PutChoice(

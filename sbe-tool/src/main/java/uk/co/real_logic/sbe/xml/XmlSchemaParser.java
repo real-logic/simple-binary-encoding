@@ -136,40 +136,16 @@ public class XmlSchemaParser
         typeByNameMap.put("double", new EncodedDataType("double", REQUIRED, null, null, DOUBLE, 1, false));
 
         forEach((NodeList)xPath.compile(TYPE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-                new NodeFunction()
-                {
-                    public void execute(final Node node) throws XPathExpressionException
-                    {
-                        addTypeWithNameCheck(typeByNameMap, new EncodedDataType(node), node);
-                    }
-                });
+            node -> addTypeWithNameCheck(typeByNameMap, new EncodedDataType(node), node));
 
         forEach((NodeList)xPath.compile(COMPOSITE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-                new NodeFunction()
-                {
-                    public void execute(final Node node) throws XPathExpressionException
-                    {
-                        addTypeWithNameCheck(typeByNameMap, new CompositeType(node), node);
-                    }
-                });
+            node -> addTypeWithNameCheck(typeByNameMap, new CompositeType(node), node));
 
         forEach((NodeList)xPath.compile(ENUM_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-                new NodeFunction()
-                {
-                    public void execute(final Node node) throws XPathExpressionException
-                    {
-                        addTypeWithNameCheck(typeByNameMap, new EnumType(node), node);
-                    }
-                });
+            node -> addTypeWithNameCheck(typeByNameMap, new EnumType(node), node));
 
         forEach((NodeList)xPath.compile(SET_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-                new NodeFunction()
-                {
-                    public void execute(final Node node) throws XPathExpressionException
-                    {
-                        addTypeWithNameCheck(typeByNameMap, new SetType(node), node);
-                    }
-                });
+            node -> addTypeWithNameCheck(typeByNameMap, new SetType(node), node));
 
         return typeByNameMap;
     }
@@ -190,13 +166,7 @@ public class XmlSchemaParser
         final Map<Long, Message> messageByIdMap = new HashMap<>();
 
         forEach((NodeList)xPath.compile(MESSAGE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-                new NodeFunction()
-                {
-                    public void execute(final Node node) throws XPathExpressionException
-                    {
-                        addMessageWithIdCheck(messageByIdMap, new Message(node, typeByNameMap), node);
-                    }
-                });
+            node -> addMessageWithIdCheck(messageByIdMap, new Message(node, typeByNameMap), node));
 
         return messageByIdMap;
     }
@@ -360,14 +330,14 @@ public class XmlSchemaParser
     private static void addMessageWithIdCheck(
         final Map<Long, Message> messageByIdMap, final Message message, final Node node)
     {
-        if (messageByIdMap.get(Long.valueOf(message.id())) != null)
+        if (messageByIdMap.get((long)message.id()) != null)
         {
             handleError(node, "message template id already exists: " + message.id());
         }
 
         checkForValidName(node, message.name());
 
-        messageByIdMap.put(Long.valueOf(message.id()), message);
+        messageByIdMap.put((long)message.id(), message);
     }
 
     private static String formatLocationInfo(final Node node)

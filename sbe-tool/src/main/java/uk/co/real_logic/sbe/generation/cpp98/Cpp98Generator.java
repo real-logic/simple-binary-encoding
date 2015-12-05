@@ -547,46 +547,46 @@ public class Cpp98Generator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        for (final Token token : tokens)
-        {
-            if (token.signal() == Signal.CHOICE)
-            {
-                final String choiceName = token.name();
-                final String typeName = cpp98TypeName(token.encoding().primitiveType());
-                final String choiceBitPosition = token.encoding().constValue().toString();
-                final String byteOrderStr = formatByteOrderEncoding(
-                    token.encoding().byteOrder(), token.encoding().primitiveType());
+        tokens
+            .stream()
+            .filter((token) -> token.signal() == Signal.CHOICE)
+            .forEach((token) ->
+                {
+                    final String choiceName = token.name();
+                    final String typeName = cpp98TypeName(token.encoding().primitiveType());
+                    final String choiceBitPosition = token.encoding().constValue().toString();
+                    final String byteOrderStr = formatByteOrderEncoding(
+                        token.encoding().byteOrder(), token.encoding().primitiveType());
 
-                sb.append(String.format(
-                    "\n" +
-                    "    bool %1$s(void) const\n" +
-                    "    {\n" +
-                            "%2$s" +
-                    "        return (%3$s(*((%4$s *)(buffer_ + offset_))) & (0x1L << %5$s)) ? true : false;\n" +
-                    "    }\n\n",
+                    sb.append(String.format(
+                        "\n" +
+                        "    bool %1$s(void) const\n" +
+                        "    {\n" +
+                        "%2$s" +
+                        "        return (%3$s(*((%4$s *)(buffer_ + offset_))) & (0x1L << %5$s)) ? true : false;\n" +
+                        "    }\n\n",
                     choiceName,
-                    generateChoiceNotPresentCondition(token.version(), BASE_INDENT),
-                    byteOrderStr,
-                    typeName,
-                    choiceBitPosition
-                ));
+                        generateChoiceNotPresentCondition(token.version(), BASE_INDENT),
+                        byteOrderStr,
+                        typeName,
+                        choiceBitPosition
+                    ));
 
-                sb.append(String.format(
-                    "    %1$s &%2$s(const bool value)\n" +
-                    "    {\n" +
-                    "        %3$s bits = %4$s(*((%3$s *)(buffer_ + offset_)));\n" +
-                    "        bits = value ? (bits | (0x1L << %5$s)) : (bits & ~(0x1L << %5$s));\n" +
-                    "        *((%3$s *)(buffer_ + offset_)) = %4$s(bits);\n" +
-                    "        return *this;\n" +
-                    "    }\n",
-                    bitsetClassName,
-                    choiceName,
-                    typeName,
-                    byteOrderStr,
-                    choiceBitPosition
-                ));
-            }
-        }
+                    sb.append(String.format(
+                        "    %1$s &%2$s(const bool value)\n" +
+                        "    {\n" +
+                        "        %3$s bits = %4$s(*((%3$s *)(buffer_ + offset_)));\n" +
+                        "        bits = value ? (bits | (0x1L << %5$s)) : (bits & ~(0x1L << %5$s));\n" +
+                        "        *((%3$s *)(buffer_ + offset_)) = %4$s(bits);\n" +
+                        "        return *this;\n" +
+                        "    }\n",
+                        bitsetClassName,
+                        choiceName,
+                        typeName,
+                        byteOrderStr,
+                        choiceBitPosition
+                    ));
+                });
 
         return sb;
     }
