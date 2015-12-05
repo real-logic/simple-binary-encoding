@@ -109,7 +109,7 @@ public class CarBenchmark
             .code(Model.A)
             .modelYear(2005)
             .serialNumber(12345)
-            .available(BooleanType.TRUE)
+            .available(BooleanType.T)
             .putVehicleCode(VEHICLE_CODE, 0);
 
         for (int i = 0, size = CarEncoder.someNumbersLength(); i < size; i++)

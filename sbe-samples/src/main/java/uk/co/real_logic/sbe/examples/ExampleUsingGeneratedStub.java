@@ -115,7 +115,7 @@ public class ExampleUsingGeneratedStub
         car.wrap(directBuffer, bufferOffset)
             .serialNumber(1234)
             .modelYear(2013)
-            .available(BooleanType.TRUE)
+            .available(BooleanType.T)
             .code(Model.A)
             .putVehicleCode(VEHICLE_CODE, srcOffset);
 

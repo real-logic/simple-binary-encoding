@@ -129,7 +129,7 @@ public class JavaGeneratorTest
 
         final Object result = clazz.getDeclaredMethod("get", short.class).invoke(null, (short)1);
 
-        assertThat(result.toString(), is("TRUE"));
+        assertThat(result.toString(), is("T"));
     }
 
     @Test
