@@ -60,7 +60,7 @@ void encodeCar(Car &car, char *buffer, int offset, int bufferLength)
     car.wrapForEncode(buffer, offset, bufferLength)
        .serialNumber(1234)
        .modelYear(2013)
-       .available(BooleanType::TRUE)
+       .available(BooleanType::T)
        .code(Model::A)
        .putVehicleCode(VEHICLE_CODE);
 
@@ -130,13 +130,13 @@ const char *format(double value)
 
 const char *format(BooleanType::Value value)
 {
-    if (value == BooleanType::TRUE)
+    if (value == BooleanType::T)
     {
-        return "TRUE";
+        return "T";
     }
     else
     {
-        return "FALSE";
+        return "F";
     }
 }
 
@@ -144,17 +144,17 @@ const char *format(Model::Value value)
 {
     switch (value)
     {
-    case Model::A: return "A";
-    case Model::B: return "B";
-    case Model::C: return "C";
-    case Model::NULL_VALUE: return "NULL";
-    default: return "unknown";
+        case Model::A: return "A";
+        case Model::B: return "B";
+        case Model::C: return "C";
+        case Model::NULL_VALUE: return "NULL";
+        default: return "unknown";
     }
 }
 
 const char *format(bool value)
 {
-    if (value == true)
+    if (value)
     {
         return "true";
     }
@@ -279,5 +279,6 @@ int main(int argc, const char* argv[])
 
     decodeHdr(hdr, buffer, 0, sizeof(buffer));
     decodeCar(car, buffer, hdr.size(), hdr.blockLength(), hdr.version(), sizeof(buffer));
+
     return 0;
 }

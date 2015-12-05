@@ -24,7 +24,7 @@ using namespace code_generation_test;
 
 #define SERIAL_NUMBER 1234u
 #define MODEL_YEAR 2013
-#define AVAILABLE (BooleanType::TRUE)
+#define AVAILABLE (BooleanType::T)
 #define CODE (Model::A)
 #define CRUISE_CONTROL (true)
 #define SPORTS_PACK (true)

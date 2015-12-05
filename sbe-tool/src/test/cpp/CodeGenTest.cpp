@@ -24,7 +24,7 @@ using namespace code_generation_test;
 
 static const sbe_uint32_t SERIAL_NUMBER = 1234;
 static const sbe_uint16_t MODEL_YEAR = 2013;
-static const BooleanType::Value AVAILABLE = BooleanType::TRUE;
+static const BooleanType::Value AVAILABLE = BooleanType::T;
 static const Model::Value CODE = Model::A;
 static const bool CRUISE_CONTROL = true;
 static const bool SPORTS_PACK = true;

@@ -17,9 +17,9 @@
 #define _SBE_CAR_CODEC_BENCH_HPP
 
 #include "CodecBench.hpp"
-#include "uk_co_real_logic_sbe_examples_car/Car.hpp"
+#include "uk_co_real_logic_sbe_benchmarks/Car.hpp"
 
-using namespace uk_co_real_logic_sbe_examples_car;
+using namespace uk_co_real_logic_sbe_benchmarks;
 
 char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
 uint32_t SOMENUMBERS[] = { 1, 2, 3, 4, 5 };
@@ -37,7 +37,7 @@ public:
         car.wrapForEncode(buffer, 0, bufferLength)
            .serialNumber(1234)
            .modelYear(2013)
-           .available(BooleanType::YES)
+           .available(BooleanType::T)
            .code(Model::A)
            .putVehicleCode(VEHICLE_CODE)
            .putSomeNumbers((char *)SOMENUMBERS);

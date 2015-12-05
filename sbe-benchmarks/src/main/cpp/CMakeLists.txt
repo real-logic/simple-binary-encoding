@@ -18,13 +18,13 @@ find_package(Java REQUIRED)
 
 CHECK_LIBRARY_EXISTS(rt clock_gettime "time.h" HAVE_CLOCK_GETTIME_RT)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
 	message("Build type(${CMAKE_BUILD_TYPE}): perf tests turning OFF bounds checks")
 	add_definitions(-DNDEBUG)
 	add_definitions(-DSBE_NO_BOUNDS_CHECK)
-else()
+else ()
 	message("Build type(${CMAKE_BUILD_TYPE}): perf tests turning ON bounds checks")
-endif()
+endif ()
 
 set(SRCS_BENCHLET_MAIN benchlet-main.cpp)
 
@@ -33,7 +33,7 @@ set(GENERATED_CODECS
 	${CODEC_TARGET_DIR}/uk_co_real_logic_sbe_samples_fix
 )
 
-set(SBE_CAR_SCHEMA ${CODEC_PERF_SCHEMA_DIR}/car-c.xml)
+set(SBE_CAR_SCHEMA ${CODEC_PERF_SCHEMA_DIR}/car.xml)
 set(SBE_MD_SCHEMA ${CODEC_PERF_SCHEMA_DIR}/fix-message-samples.xml)
 
 add_custom_command(

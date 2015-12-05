@@ -17,10 +17,10 @@
 #define _SBE_MARKET_DATA_CODEC_BENCH_HPP
 
 #include "CodecBench.hpp"
-#include "uk_co_real_logic_sbe_perf_fix/MessageHeader.hpp"
-#include "uk_co_real_logic_sbe_perf_fix/MarketDataIncrementalRefreshTrades.hpp"
+#include "uk_co_real_logic_sbe_benchmarks_fix/MessageHeader.hpp"
+#include "uk_co_real_logic_sbe_benchmarks_fix/MarketDataIncrementalRefreshTrades.hpp"
 
-using namespace uk_co_real_logic_sbe_perf_fix;
+using namespace uk_co_real_logic_sbe_benchmarks_fix;
 
 class SbeMarketDataCodecBench : public CodecBench<SbeMarketDataCodecBench>
 {
