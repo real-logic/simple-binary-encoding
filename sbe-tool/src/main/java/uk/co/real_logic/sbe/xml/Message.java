@@ -201,98 +201,101 @@ public class Message
 
     private Field parseGroupField(final NodeList nodeList, final int nodeIndex) throws XPathExpressionException
     {
-        final String dimensionTypeName = getAttributeValue(nodeList.item(nodeIndex), "dimensionType", "groupSizeEncoding");
+        final Node node = nodeList.item(nodeIndex);
+        final String dimensionTypeName = getAttributeValue(node, "dimensionType", "groupSizeEncoding");
         Type dimensionType = typeByNameMap.get(dimensionTypeName);
         if (dimensionType == null)
         {
-            handleError(nodeList.item(nodeIndex), "could not find dimensionType: " + dimensionTypeName);
+            handleError(node, "could not find dimensionType: " + dimensionTypeName);
         }
         else if (!(dimensionType instanceof CompositeType))
         {
-            handleError(nodeList.item(nodeIndex), "dimensionType should be a composite type: " + dimensionTypeName);
+            handleError(node, "dimensionType should be a composite type: " + dimensionTypeName);
             dimensionType = null;
         }
         else
         {
-            ((CompositeType)dimensionType).checkForWellFormedGroupSizeEncoding(nodeList.item(nodeIndex));
+            ((CompositeType)dimensionType).checkForWellFormedGroupSizeEncoding(node);
         }
 
         final Field field = new Field.Builder()
-            .name(getAttributeValue(nodeList.item(nodeIndex), "name"))
-            .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
-            .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
-            .blockLength(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "blockLength", "0")))
-            .sinceVersion(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "sinceVersion", "0")))
+            .name(getAttributeValue(node, "name"))
+            .description(getAttributeValueOrNull(node, "description"))
+            .id(Integer.parseInt(getAttributeValue(node, "id")))
+            .blockLength(Integer.parseInt(getAttributeValue(node, "blockLength", "0")))
+            .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
             .dimensionType((CompositeType)dimensionType)
             .build();
 
-        XmlSchemaParser.checkForValidName(nodeList.item(nodeIndex), field.name());
+        XmlSchemaParser.checkForValidName(node, field.name());
 
-        field.groupFields(parseFieldsAndGroups(nodeList.item(nodeIndex))); // recursive call
+        field.groupFields(parseFieldsAndGroups(node)); // recursive call
 
         return field;
     }
 
     private Field parseField(final NodeList nodeList, final int nodeIndex)
     {
-        final String typeName = getAttributeValue(nodeList.item(nodeIndex), "type");
+        final Node node = nodeList.item(nodeIndex);
+        final String typeName = getAttributeValue(node, "type");
         final Type fieldType = typeByNameMap.get(typeName);
         if (fieldType == null)
         {
-            handleError(nodeList.item(nodeIndex), "could not find type: " + typeName);
+            handleError(node, "could not find type: " + typeName);
         }
 
         final Field field = new Field.Builder()
-            .name(getAttributeValue(nodeList.item(nodeIndex), "name"))
-            .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
-            .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
-            .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
-            .semanticType(getAttributeValueOrNull(nodeList.item(nodeIndex), "semanticType"))
-            .presence(Presence.get(getAttributeValue(nodeList.item(nodeIndex), "presence", "required")))
-            .sinceVersion(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "sinceVersion", "0")))
-            .epoch(getAttributeValue(nodeList.item(nodeIndex), "epoch", "unix"))
-            .timeUnit(getAttributeValue(nodeList.item(nodeIndex), "timeUnit", "nanosecond"))
+            .name(getAttributeValue(node, "name"))
+            .description(getAttributeValueOrNull(node, "description"))
+            .id(Integer.parseInt(getAttributeValue(node, "id")))
+            .offset(Integer.parseInt(getAttributeValue(node, "offset", "0")))
+            .semanticType(getAttributeValueOrNull(node, "semanticType"))
+            .presence(Presence.get(getAttributeValue(node, "presence", "required")))
+            .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
+            .epoch(getAttributeValue(node, "epoch", "unix"))
+            .timeUnit(getAttributeValue(node, "timeUnit", "nanosecond"))
             .type(fieldType)
             .build();
 
-        field.validate(nodeList.item(nodeIndex));
+        field.validate(node);
 
         return field;
     }
 
     private Field parseDataField(final NodeList nodeList, final int nodeIndex)
     {
-        final String typeName = getAttributeValue(nodeList.item(nodeIndex), "type");
+        final Node node = nodeList.item(nodeIndex);
+        final String typeName = getAttributeValue(node, "type");
         final Type fieldType = typeByNameMap.get(typeName);
         if (fieldType == null)
         {
-            handleError(nodeList.item(nodeIndex), "could not find type: " + typeName);
+            handleError(node, "could not find type: " + typeName);
         }
         else if (!(fieldType instanceof CompositeType))
         {
-            handleError(nodeList.item(nodeIndex), "data type is not composite type: " + typeName);
+            handleError(node, "data type is not composite type: " + typeName);
         }
         else
         {
-            ((CompositeType)fieldType).checkForWellFormedVariableLengthDataEncoding(nodeList.item(nodeIndex));
+            ((CompositeType)fieldType).checkForWellFormedVariableLengthDataEncoding(node);
             ((CompositeType)fieldType).makeDataFieldCompositeType();
         }
 
         final Field field = new Field.Builder()
-            .name(getAttributeValue(nodeList.item(nodeIndex), "name"))
-            .description(getAttributeValueOrNull(nodeList.item(nodeIndex), "description"))
-            .id(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "id")))
-            .offset(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "offset", "0")))
-            .semanticType(getAttributeValueOrNull(nodeList.item(nodeIndex), "semanticType"))
-            .presence(Presence.get(getAttributeValue(nodeList.item(nodeIndex), "presence", "required")))
-            .sinceVersion(Integer.parseInt(getAttributeValue(nodeList.item(nodeIndex), "sinceVersion", "0")))
-            .epoch(getAttributeValue(nodeList.item(nodeIndex), "epoch", "unix"))
-            .timeUnit(getAttributeValue(nodeList.item(nodeIndex), "timeUnit", "nanosecond"))
+            .name(getAttributeValue(node, "name"))
+            .description(getAttributeValueOrNull(node, "description"))
+            .id(Integer.parseInt(getAttributeValue(node, "id")))
+            .offset(Integer.parseInt(getAttributeValue(node, "offset", "0")))
+            .semanticType(getAttributeValueOrNull(node, "semanticType"))
+            .presence(Presence.get(getAttributeValue(node, "presence", "required")))
+            .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
+            .epoch(getAttributeValue(node, "epoch", "unix"))
+            .timeUnit(getAttributeValue(node, "timeUnit", "nanosecond"))
             .type(fieldType)
             .variableLength(true)
             .build();
 
-        field.validate(nodeList.item(nodeIndex));
+        field.validate(node);
 
         return field;
     }
