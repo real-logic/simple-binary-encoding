@@ -411,7 +411,6 @@ public class JavaGeneratorTest
         final String className = "CarEncoder";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
-        System.out.println(fqClassName);
         final Class<?> clazz = compile(fqClassName);
         assertNotNull(clazz);
 

@@ -251,6 +251,7 @@ public class Message
             .offset(Integer.parseInt(getAttributeValue(node, "offset", "0")))
             .semanticType(getAttributeValueOrNull(node, "semanticType"))
             .presence(Presence.get(getAttributeValue(node, "presence", "required")))
+            .valueRef(getAttributeValueOrNull(node, "valueRef"))
             .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
             .epoch(getAttributeValue(node, "epoch", "unix"))
             .timeUnit(getAttributeValue(node, "timeUnit", "nanosecond"))

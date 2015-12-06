@@ -56,19 +56,20 @@
         <field name="vehicleCode" id="6" type="VehicleCode"/>
         <field name="extras" id="5" type="OptionalExtras"/>
         <field name="engine" id="7" type="Engine"/>
-        <group name="fuelFigures" id="8" dimensionType="groupSizeEncoding">
-            <field name="speed" id="9" type="uint16"/>
-            <field name="mpg" id="10" type="float"/>
+        <field name="commonModel" id="8" type="Model" presence="constant" valueRef="Model.C"/>
+        <group name="fuelFigures" id="9" dimensionType="groupSizeEncoding">
+            <field name="speed" id="10" type="uint16"/>
+            <field name="mpg" id="11" type="float"/>
         </group>
-        <group name="performanceFigures" id="11" dimensionType="groupSizeEncoding">
-            <field name="octaneRating" id="12" type="uint8"/>
-            <field name="observations" id="13" type="string20"/>
-            <group name="acceleration" id="14" dimensionType="groupSizeEncoding">
-                <field name="mph" id="15" type="uint16"/>
-                <field name="seconds" id="16" type="float"/>
+        <group name="performanceFigures" id="12" dimensionType="groupSizeEncoding">
+            <field name="octaneRating" id="13" type="uint8"/>
+            <field name="observations" id="14" type="string20"/>
+            <group name="acceleration" id="15" dimensionType="groupSizeEncoding">
+                <field name="mph" id="16" type="uint16"/>
+                <field name="seconds" id="17" type="float"/>
             </group>
         </group>
-        <data name="make" id="17" type="varDataEncoding"/>
-        <data name="model" id="18" type="varDataEncoding"/>
+        <data name="make" id="18" type="varDataEncoding"/>
+        <data name="model" id="19" type="varDataEncoding"/>
     </message>
 </messageSchema>

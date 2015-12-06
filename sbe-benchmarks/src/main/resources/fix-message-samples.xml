@@ -289,7 +289,7 @@
             <field name="MdUpdateAction" id="279" type="MDUpdateAction"/>
             <field name="RptSeq" id="83" type="uint8"/>
             <field name="AggressorSide" id="5797" type="Side"/>
-            <field name="MdEntryType" id="269" type="MDEntryType" presence="constant" valueRef="MdEntryType.TRADE"/>
+            <field name="MdEntryType" id="269" type="MDEntryType" presence="constant" valueRef="MDEntryType.TRADE"/>
         </group>
     </sbe:message>
 

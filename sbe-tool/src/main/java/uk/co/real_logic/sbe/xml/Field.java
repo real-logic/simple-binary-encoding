@@ -35,6 +35,7 @@ public class Field
     private final int offset;                  // optional for field/data (not present for group)
     private final String semanticType;         // optional for field/data (not present for group?)
     private final Presence presence;           // optional, defaults to required
+    private final String valueRef;             // optional, defaults to null
     private final int blockLength;             // optional for group (not present for field/data)
     private final CompositeType dimensionType; // required for group (not present for field/data)
     private final boolean variableLength;      // true for data (false for field/group)
@@ -53,6 +54,7 @@ public class Field
         final int offset,
         final String semanticType,
         final Presence presence,
+        final String valueRef,
         final int blockLength,
         final CompositeType dimensionType,
         final boolean variableLength,
@@ -67,6 +69,7 @@ public class Field
         this.offset = offset;
         this.semanticType = semanticType;
         this.presence = presence;
+        this.valueRef = valueRef;
         this.blockLength = blockLength;
         this.dimensionType = dimensionType;
         this.variableLength = variableLength;
@@ -89,6 +92,35 @@ public class Field
         }
 
         checkForValidName(node, name);
+
+        if (type instanceof EnumType && presence == Presence.CONSTANT)
+        {
+            if (null == valueRef)
+            {
+                handleError(node, "valueRef not set for constant Enum");
+            }
+            else
+            {
+                final int periodIndex = valueRef.indexOf('.');
+                if (-1 == periodIndex)
+                {
+                    handleError(node, "valueRef format not valid for constant Enum: " + valueRef);
+                }
+
+                final String valueRefType = valueRef.substring(0, periodIndex);
+                if (!valueRefType.equals(type.name()))
+                {
+                    handleError(node, "valueRef Enum type not found: " + valueRefType);
+                }
+
+                final String validValueName = valueRef.substring(periodIndex + 1);
+                final EnumType enumType = (EnumType)type;
+                if (null == enumType.getValidValue(validValueName))
+                {
+                    handleError(node, "valueRef Valid value name not found: " + validValueName);
+                }
+            }
+        }
     }
 
     public void groupFields(final List<Field> fields)
@@ -151,6 +183,16 @@ public class Field
         return computedBlockLength;
     }
 
+    public Presence presence()
+    {
+        return presence;
+    }
+
+    public String valueRef()
+    {
+        return valueRef;
+    }
+
     public String semanticType()
     {
         return semanticType;
@@ -191,6 +233,7 @@ public class Field
             ", offset=" + offset +
             ", semanticType='" + semanticType + '\'' +
             ", presence=" + presence +
+            ", valueRef='" + valueRef + '\'' +
             ", blockLength=" + blockLength +
             ", dimensionType=" + dimensionType +
             ", variableLength=" + variableLength +
@@ -212,6 +255,7 @@ public class Field
         private int offset;
         private String semanticType;
         private Presence presence;
+        private String refValue;
         private int blockLength;
         private CompositeType dimensionType;
         private boolean variableLength;
@@ -261,6 +305,12 @@ public class Field
             return this;
         }
 
+        public Builder valueRef(final String refValue)
+        {
+            this.refValue = refValue;
+            return this;
+        }
+
         public Builder blockLength(final int blockLength)
         {
             this.blockLength = blockLength;
@@ -307,6 +357,7 @@ public class Field
                 offset,
                 semanticType,
                 presence,
+                refValue,
                 blockLength,
                 dimensionType,
                 variableLength,
