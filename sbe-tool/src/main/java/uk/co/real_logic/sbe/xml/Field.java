@@ -110,14 +110,14 @@ public class Field
                 final String valueRefType = valueRef.substring(0, periodIndex);
                 if (!valueRefType.equals(type.name()))
                 {
-                    handleError(node, "valueRef Enum type not found: " + valueRefType);
+                    handleError(node, "valueRef for Enum name not found: " + valueRefType);
                 }
 
                 final String validValueName = valueRef.substring(periodIndex + 1);
                 final EnumType enumType = (EnumType)type;
                 if (null == enumType.getValidValue(validValueName))
                 {
-                    handleError(node, "valueRef Valid value name not found: " + validValueName);
+                    handleError(node, "valueRef for validValue name not found: " + validValueName);
                 }
             }
         }
