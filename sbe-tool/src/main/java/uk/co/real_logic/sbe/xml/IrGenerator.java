@@ -15,11 +15,13 @@
 package uk.co.real_logic.sbe.xml;
 
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,6 +110,29 @@ public class IrGenerator
 
     private void addFieldSignal(final Field field, final Signal signal)
     {
+        final Encoding.Builder encodingBuilder = new Encoding.Builder()
+            .epoch(field.epoch())
+            .timeUnit(field.timeUnit())
+            .presence(convertPresence(field.presence()))
+            .semanticType(semanticTypeOf(null, field));
+
+        if (field.presence() == Presence.CONSTANT && null != field.valueRef())
+        {
+            final String valueRef = field.valueRef();
+            final byte[] bytes;
+            try
+            {
+                bytes = valueRef.getBytes("UTF-8");
+            }
+            catch (final UnsupportedEncodingException ex)
+            {
+                throw new RuntimeException(ex);
+            }
+
+            encodingBuilder.constValue(new PrimitiveValue(bytes, "UTF-8", valueRef.length()));
+            encodingBuilder.primitiveType(PrimitiveType.CHAR);
+        }
+
         final Token token = new Token.Builder()
             .signal(signal)
             .size(field.computedBlockLength())
@@ -115,11 +140,7 @@ public class IrGenerator
             .id(field.id())
             .offset(field.computedOffset())
             .version(field.sinceVersion())
-            .encoding(new Encoding.Builder()
-                .epoch(field.epoch())
-                .timeUnit(field.timeUnit())
-                .semanticType(semanticTypeOf(null, field))
-                .build())
+            .encoding(encodingBuilder.build())
             .build();
 
         tokenList.add(token);
@@ -376,5 +397,26 @@ public class IrGenerator
         }
 
         return null != field ? field.semanticType() : null;
+    }
+
+    private Encoding.Presence convertPresence(final Presence presence)
+    {
+        Encoding.Presence encodingPresence = Encoding.Presence.REQUIRED;
+
+        if (null != presence)
+        {
+            switch (presence)
+            {
+                case OPTIONAL:
+                    encodingPresence = Encoding.Presence.OPTIONAL;
+                    break;
+
+                case CONSTANT:
+                    encodingPresence = Encoding.Presence.CONSTANT;
+                    break;
+            }
+        }
+
+        return encodingPresence;
     }
 }

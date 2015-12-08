@@ -459,6 +459,10 @@ public class JavaGeneratorTest
             System.out.println(sources);
         }
 
+        if (fqClassName.contains("Model"))
+        {
+            System.out.println("sources = " + sources.get(fqClassName));
+        }
         return aClass;
     }
 

@@ -85,8 +85,41 @@ public class Ir
         Verify.notNull(messageTokens, "messageTokens");
 
         captureTypes(messageTokens);
+        compressConstantEnums(messageTokens);
 
         messagesByIdMap.put(messageId, Collections.unmodifiableList(new ArrayList<>(messageTokens)));
+    }
+
+    private void compressConstantEnums(final List<Token> tokens)
+    {
+        final Iterator<Token> iter = tokens.iterator();
+        while (iter.hasNext())
+        {
+            final Token token = iter.next();
+            if (Signal.BEGIN_FIELD == token.signal() && token.isConstantEncoding())
+            {
+                Token nextToken = iter.next();
+                if (Signal.BEGIN_ENUM == nextToken.signal())
+                {
+                    final String valueRef = token.encoding().constValue().toString();
+                    nextToken.encodedLength(0);
+
+                    while (true)
+                    {
+                        nextToken = iter.next();
+                        if (Signal.END_ENUM == nextToken.signal())
+                        {
+                            break;
+                        }
+
+                        if (!valueRef.endsWith(nextToken.name()))
+                        {
+                            iter.remove();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
