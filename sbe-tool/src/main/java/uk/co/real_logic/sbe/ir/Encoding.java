@@ -47,8 +47,8 @@ public class Encoding
         CONSTANT
     }
 
+    private Presence presence;
     private final PrimitiveType primitiveType;
-    private final Presence presence;
     private final ByteOrder byteOrder;
     private final PrimitiveValue minValue;
     private final PrimitiveValue maxValue;
@@ -61,8 +61,8 @@ public class Encoding
 
     public Encoding()
     {
-        primitiveType = null;
         presence = Presence.REQUIRED;
+        primitiveType = null;
         byteOrder = ByteOrder.LITTLE_ENDIAN;
         minValue = null;
         maxValue = null;
@@ -75,8 +75,8 @@ public class Encoding
     }
 
     public Encoding(
-        final PrimitiveType primitiveType,
         final Presence presence,
+        final PrimitiveType primitiveType,
         final ByteOrder byteOrder,
         final PrimitiveValue minValue,
         final PrimitiveValue maxValue,
@@ -174,6 +174,16 @@ public class Encoding
     }
 
     /**
+     * Set the {@link Presence} for this encoding.
+     *
+     * @param presence the {@link Presence} for this encoding.
+     */
+    public void presence(final Presence presence)
+    {
+        this.presence = presence;
+    }
+
+    /**
      * The most applicable null value for the encoded type.
      *
      * @return most applicable null value for the encoded type.
@@ -263,8 +273,8 @@ public class Encoding
     {
         return
             "Encoding{" +
-            "primitiveType=" + primitiveType +
-            ", presence=" + presence +
+            "presence=" + presence +
+            ", primitiveType=" + primitiveType +
             ", byteOrder=" + byteOrder +
             ", minValue=" + minValue +
             ", maxValue=" + maxValue +
@@ -363,8 +373,7 @@ public class Encoding
         public Encoding build()
         {
             return new Encoding(
-                primitiveType,
-                presence,
+                presence, primitiveType,
                 byteOrder,
                 minValue,
                 maxValue,

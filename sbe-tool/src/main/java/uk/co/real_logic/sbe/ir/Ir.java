@@ -109,12 +109,17 @@ public class Ir
                         nextToken = iter.next();
                         if (Signal.END_ENUM == nextToken.signal())
                         {
+                            nextToken.encoding().presence(Encoding.Presence.CONSTANT);
                             break;
                         }
 
                         if (!valueRef.endsWith(nextToken.name()))
                         {
                             iter.remove();
+                        }
+                        else
+                        {
+                            nextToken.encoding().presence(Encoding.Presence.CONSTANT);
                         }
                     }
                 }

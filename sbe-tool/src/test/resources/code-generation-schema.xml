@@ -56,7 +56,7 @@
         <field name="vehicleCode" id="6" type="VehicleCode"/>
         <field name="extras" id="5" type="OptionalExtras"/>
         <field name="engine" id="7" type="Engine"/>
-        <field name="commonModel" id="8" type="Model" presence="constant" valueRef="Model.C"/>
+        <field name="discountedModel" id="8" type="Model" presence="constant" valueRef="Model.C"/>
         <group name="fuelFigures" id="9" dimensionType="groupSizeEncoding">
             <field name="speed" id="10" type="uint16"/>
             <field name="mpg" id="11" type="float"/>
