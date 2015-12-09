@@ -102,7 +102,7 @@ public class Ir
                 if (Signal.BEGIN_ENUM == nextToken.signal())
                 {
                     final String valueRef = token.encoding().constValue().toString();
-                    nextToken.encodedLength(0);
+                    nextToken.encodedLength(0); // TODO: encode at correct length
 
                     while (true)
                     {
@@ -113,13 +113,13 @@ public class Ir
                             break;
                         }
 
-                        if (!valueRef.endsWith(nextToken.name()))
+                        if (valueRef.endsWith(nextToken.name()))
                         {
-                            iter.remove();
+                            nextToken.encoding().presence(Encoding.Presence.CONSTANT);
                         }
                         else
                         {
-                            nextToken.encoding().presence(Encoding.Presence.CONSTANT);
+                            iter.remove();
                         }
                     }
                 }
