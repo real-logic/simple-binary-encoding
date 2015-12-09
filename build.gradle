@@ -126,6 +126,13 @@ subprojects {
         options.warnings = false
     }
 
+    test {
+        testLogging {
+//            showStandardStreams = true
+            exceptionFormat = 'full'
+        }
+    }
+
     javadoc {
         title = '<h1>Simple Binary Encoding</h1>'
 

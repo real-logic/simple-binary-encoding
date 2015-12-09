@@ -18,6 +18,11 @@ package uk.co.real_logic.sbe.xml;
 import org.junit.Test;
 import uk.co.real_logic.sbe.TestUtil;
 
+import java.util.List;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class GroupWithDataTest
@@ -26,6 +31,17 @@ public class GroupWithDataTest
     public void shouldParseSchemaSuccessfully()
         throws Exception
     {
-        parse(TestUtil.getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(TestUtil.getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
+        final List<Field> fields = schema.getMessage(1).fields();
+        final Field entriesGroup = fields.get(1);
+        final CompositeType dimensionType = entriesGroup.dimensionType();
+        final List<Field> entriesFields = entriesGroup.groupFields();
+
+        assertThat(entriesGroup.name(), is("Entries"));
+        assertThat(dimensionType.name(), is("groupSizeEncoding"));
+
+        final Field varDataField = entriesFields.get(2);
+        assertThat(varDataField.name(), is("varDataField"));
+        assertTrue(varDataField.isVariableLength());
     }
 }
