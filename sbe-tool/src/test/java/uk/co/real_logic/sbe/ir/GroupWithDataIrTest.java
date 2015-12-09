@@ -15,7 +15,6 @@
  */
 package uk.co.real_logic.sbe.ir;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.xml.IrGenerator;
@@ -33,50 +32,76 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 public class GroupWithDataIrTest
 {
     @Test
-    public void shouldGenerateCorrectIrForVarDataInRepeatingGroup()
+    public void shouldGenerateCorrectIrForSingleVarDataInRepeatingGroup()
         throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
-
-        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, ... */
-        final int groupIdx = 4;
-        final int dimensionsCompIdx = 5;
-        final int dimensionsBlEncIdx = 6;
-        final int varDataFieldIdx = 15;
-        final int lengthEncIdx = 17;
-        final int dataEncIdx = 18;
-
         final List<Token> tokens = ir.getMessage(1);
 
+        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, ... */
+
+        final Token groupToken = tokens.get(4);
+        final Token dimensionsCompToken = tokens.get(5);
+        final Token dimensionsBlEncToken = tokens.get(6);
+        final Token varDataFieldToken = tokens.get(15);
+        final Token lengthEncToken = tokens.get(17);
+        final Token dataEncToken = tokens.get(18);
+
         /* assert on the group token */
-        assertThat(tokens.get(groupIdx).signal(), is(Signal.BEGIN_GROUP));
-        assertThat(tokens.get(groupIdx).name(), is("Entries"));
-        assertThat(valueOf(tokens.get(groupIdx).id()), is(valueOf(2)));
+        assertThat(groupToken.signal(), is(Signal.BEGIN_GROUP));
+        assertThat(groupToken.name(), is("Entries"));
+        assertThat(valueOf(groupToken.id()), is(valueOf(2)));
 
         /* assert on the comp token for dimensions */
-        assertThat(tokens.get(dimensionsCompIdx).signal(), is(Signal.BEGIN_COMPOSITE));
-        assertThat(tokens.get(dimensionsCompIdx).name(), is("groupSizeEncoding"));
+        assertThat(dimensionsCompToken.signal(), is(Signal.BEGIN_COMPOSITE));
+        assertThat(dimensionsCompToken.name(), is("groupSizeEncoding"));
 
         /* assert on the enc token for dimensions blockLength */
-        assertThat(tokens.get(dimensionsBlEncIdx).signal(), is(Signal.ENCODING));
-        assertThat(tokens.get(dimensionsBlEncIdx).name(), is("blockLength"));
-        // TODO: value is variable as var data is present
+        assertThat(dimensionsBlEncToken.signal(), is(Signal.ENCODING));
+        assertThat(dimensionsBlEncToken.name(), is("blockLength"));
 
-        assertThat(tokens.get(varDataFieldIdx).signal(), is(Signal.BEGIN_VAR_DATA));
-        assertThat(tokens.get(varDataFieldIdx).name(), is("varDataField"));
-        assertThat(valueOf(tokens.get(varDataFieldIdx).id()), is(valueOf(5)));
+        assertThat(varDataFieldToken.signal(), is(Signal.BEGIN_VAR_DATA));
+        assertThat(varDataFieldToken.name(), is("varDataField"));
+        assertThat(valueOf(varDataFieldToken.id()), is(valueOf(5)));
 
-        assertThat(tokens.get(lengthEncIdx).signal(), is(Signal.ENCODING));
-        assertThat(tokens.get(lengthEncIdx).encoding().primitiveType(), is(PrimitiveType.UINT8));
+        assertThat(lengthEncToken.signal(), is(Signal.ENCODING));
+        assertThat(lengthEncToken.encoding().primitiveType(), is(PrimitiveType.UINT8));
 
-        /* assert the group node has the right IrId and xRefIrId, etc. */
-        assertThat(tokens.get(dataEncIdx).signal(), is(Signal.ENCODING));
-        assertThat(tokens.get(dataEncIdx).encoding().primitiveType(), is(PrimitiveType.CHAR));
+        assertThat(dataEncToken.signal(), is(Signal.ENCODING));
+        assertThat(dataEncToken.encoding().primitiveType(), is(PrimitiveType.CHAR));
     }
 
-    @Ignore
+    @Test
+    public void shouldGenerateCorrectIrForMultipleVarDataInRepeatingGroup()
+        throws Exception
+    {
+        final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
+        final IrGenerator irg = new IrGenerator();
+        final Ir ir = irg.generate(schema);
+        final List<Token> tokens = ir.getMessage(2);
+
+        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, ... */
+
+        final Token groupToken = tokens.get(4);
+        final Token varDataField1Token = tokens.get(15);
+        final Token varDataField2Token = tokens.get(21);
+
+        /* assert on the group token */
+        assertThat(groupToken.signal(), is(Signal.BEGIN_GROUP));
+        assertThat(groupToken.name(), is("Entries"));
+        assertThat(valueOf(groupToken.id()), is(valueOf(2)));
+
+        assertThat(varDataField1Token.signal(), is(Signal.BEGIN_VAR_DATA));
+        assertThat(varDataField1Token.name(), is("varDataField1"));
+        assertThat(valueOf(varDataField1Token.id()), is(valueOf(5)));
+
+        assertThat(varDataField2Token.signal(), is(Signal.BEGIN_VAR_DATA));
+        assertThat(varDataField2Token.name(), is("varDataField2"));
+        assertThat(valueOf(varDataField2Token.id()), is(valueOf(6)));
+    }
+
     @Test
     public void shouldGenerateCorrectIrForVarDataInNestedRepeatingGroup()
         throws Exception
@@ -84,14 +109,29 @@ public class GroupWithDataIrTest
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
+        final List<Token> tokens = ir.getMessage(3);
 
         /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, ... */
-        final int groupIdx = 4;
-        final int dimensionsCompIdx = 5;
-        final int dimensionsBlEncIdx = 6;
 
-        final List<Token> tokens = ir.getMessage(2);
+        final Token groupToken = tokens.get(4);
+        final Token nestedGroupToken = tokens.get(12);
+        final Token varDataFieldNestedToken = tokens.get(20);
+        final Token varDataFieldToken = tokens.get(27);
 
-        // TODO: complete
+        assertThat(groupToken.signal(), is(Signal.BEGIN_GROUP));
+        assertThat(groupToken.name(), is("Entries"));
+        assertThat(valueOf(groupToken.id()), is(valueOf(2)));
+
+        assertThat(nestedGroupToken.signal(), is(Signal.BEGIN_GROUP));
+        assertThat(nestedGroupToken.name(), is("NestedEntries"));
+        assertThat(valueOf(nestedGroupToken.id()), is(valueOf(4)));
+
+        assertThat(varDataFieldNestedToken.signal(), is(Signal.BEGIN_VAR_DATA));
+        assertThat(varDataFieldNestedToken.name(), is("varDataFieldNested"));
+        assertThat(valueOf(varDataFieldNestedToken.id()), is(valueOf(6)));
+
+        assertThat(varDataFieldToken.signal(), is(Signal.BEGIN_VAR_DATA));
+        assertThat(varDataFieldToken.name(), is("varDataField"));
+        assertThat(valueOf(varDataFieldToken.id()), is(valueOf(7)));
     }
 }
