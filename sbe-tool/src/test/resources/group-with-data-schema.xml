@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messageSchema package="repeating-groups-with-data"
+               id="1"
+               semanticVersion="5.2"
+               description="Unit Test"
+               byteOrder="littleEndian">
+    <types>
+        <type name="Symbol" description="Symbol" length="20" primitiveType="char" semanticType="char"/>
+        <composite name="messageHeader" description="Message identifiers and length of message root">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+        <composite name="groupSizeEncoding" description="Repeating group dimensions">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint8" semanticType="NumInGroup"/>
+        </composite>
+        <composite name="varDataEncoding" semanticType="Length">
+            <type name="length" primitiveType="uint8" semanticType="Length"/>
+            <type name="varData" primitiveType="char" semanticType="data"/>
+        </composite>
+    </types>
+    <message name="TestMessage1" id="1" description="TestMessage" blockLength="16">
+        <field name="Tag1" id="1" type="uint32" semanticType="int"/>
+        <group name="Entries" id="2" dimensionType="groupSizeEncoding">
+            <field name="TagGroup1" id="3" type="Symbol"/>
+            <field name="TagGroup2" id="4" type="int64" semanticType="int"/>
+            <data type="varDataEncoding" name="varDataField" id="1404"/>
+        </group>
+    </message>
+    <message name="TestMessage2" id="2" description="TestMessage2" blockLength="16">
+        <field name="Tag1" id="1" type="uint32" semanticType="int"/>
+        <group name="Entries" id="2" dimensionType="groupSizeEncoding">
+            <field name="TagGroup1" id="3" type="Symbol"/>
+            <group name="NestedEntries" id="4" dimensionType="groupSizeEncoding">
+                <field name="TagGroup2" id="5" type="int64" semanticType="int"/>
+                <data type="varDataEncoding" name="varDataFieldNested" id="6"/>
+            </group>
+            <data type="varDataEncoding" name="varDataField" id="7"/>
+        </group>
+    </message>
+</messageSchema>
