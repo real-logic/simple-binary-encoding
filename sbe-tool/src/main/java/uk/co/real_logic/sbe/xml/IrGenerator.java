@@ -113,7 +113,7 @@ public class IrGenerator
         final Encoding.Builder encodingBuilder = new Encoding.Builder()
             .epoch(field.epoch())
             .timeUnit(field.timeUnit())
-            .presence(convertPresence(field.presence()))
+            .presence(mapPresence(field.presence()))
             .semanticType(semanticTypeOf(null, field));
 
         if (field.presence() == Presence.CONSTANT && null != field.valueRef())
@@ -399,7 +399,7 @@ public class IrGenerator
         return null != field ? field.semanticType() : null;
     }
 
-    private Encoding.Presence convertPresence(final Presence presence)
+    private Encoding.Presence mapPresence(final Presence presence)
     {
         Encoding.Presence encodingPresence = Encoding.Presence.REQUIRED;
 
