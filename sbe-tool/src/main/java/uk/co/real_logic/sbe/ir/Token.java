@@ -100,7 +100,7 @@ public class Token
     private final String name;
     private final int id;
     private final int version;
-    private final int encodedLength;
+    private int encodedLength;
     private final int offset;
     private final Encoding encoding;
 
@@ -204,6 +204,16 @@ public class Token
     public int encodedLength()
     {
         return encodedLength;
+    }
+
+    /**
+     * Set the encoded length for this node. See {@link #encodedLength()}.
+     *
+     * @param encodedLength that is overriding existing value.
+     */
+    public void encodedLength(final int encodedLength)
+    {
+        this.encodedLength = encodedLength;
     }
 
     /**
