@@ -90,7 +90,6 @@ public class CompositeType extends Type
     {
         int offset = 0;
 
-
         for (final EncodedDataType t : containedTypeList)
         {
             if (t.isVariableLength())

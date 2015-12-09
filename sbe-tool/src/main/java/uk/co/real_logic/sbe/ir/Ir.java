@@ -102,22 +102,20 @@ public class Ir
                 if (Signal.BEGIN_ENUM == nextToken.signal())
                 {
                     final String valueRef = token.encoding().constValue().toString();
-                    nextToken.encodedLength(0); // TODO: encode at correct length
+                    nextToken.encodedLength(0);
 
                     while (true)
                     {
                         nextToken = iter.next();
+                        nextToken.encodedLength(0);
+                        nextToken.encoding().presence(Encoding.Presence.CONSTANT);
+
                         if (Signal.END_ENUM == nextToken.signal())
                         {
-                            nextToken.encoding().presence(Encoding.Presence.CONSTANT);
                             break;
                         }
 
-                        if (valueRef.endsWith(nextToken.name()))
-                        {
-                            nextToken.encoding().presence(Encoding.Presence.CONSTANT);
-                        }
-                        else
+                        if (!valueRef.endsWith(nextToken.name()))
                         {
                             iter.remove();
                         }

@@ -21,13 +21,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static javax.xml.xpath.XPathConstants.NODESET;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
@@ -51,7 +51,6 @@ public class Message
     private final int blockLength;
     private final List<Field> fieldList;
     private final String semanticType;
-    private final String headerType;
     private final int computedBlockLength;
     private final Map<String, Type> typeByNameMap;
 
@@ -62,15 +61,13 @@ public class Message
      * @param typeByNameMap holding type information for message
      * @throws XPathExpressionException on invalid XPath
      */
-    public Message(final Node messageNode, final Map<String, Type> typeByNameMap)
-        throws XPathExpressionException
+    public Message(final Node messageNode, final Map<String, Type> typeByNameMap) throws XPathExpressionException
     {
         id = Integer.parseInt(getAttributeValue(messageNode, "id"));                        // required
         name = getAttributeValue(messageNode, "name");                                      // required
         description = getAttributeValueOrNull(messageNode, "description");                  // optional
         blockLength = Integer.parseInt(getAttributeValue(messageNode, "blockLength", "0")); // 0 means not set
         semanticType = getAttributeValueOrNull(messageNode, "semanticType");                // optional
-        headerType = getAttributeValue(messageNode, "headerType", "messageHeader");         // has default
         this.typeByNameMap = typeByNameMap;
 
         fieldList = parseFieldsAndGroups(messageNode);
@@ -140,20 +137,10 @@ public class Message
         return blockLength > computedBlockLength ? blockLength : computedBlockLength;
     }
 
-    /**
-     * Return the {@link String} representing the {@link Type} for the headerStructure of this message
-     *
-     * @return the {@link String} representing the {@link Type} for the headerStructure of this message
-     */
-    public String headerType()
-    {
-        return headerType;
-    }
-
     private List<Field> parseFieldsAndGroups(final Node node) throws XPathExpressionException
     {
         final XPath xPath = XPathFactory.newInstance().newXPath();
-        final NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, XPathConstants.NODESET);
+        final NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, NODESET);
         boolean groupEncountered = false, dataEncountered = false;
 
         final List<Field> fieldList = new ArrayList<>();
@@ -347,16 +334,19 @@ public class Message
             }
             else if (null != field.type())
             {
-                final int size = field.type().encodedLength();
-
-                if (Token.VARIABLE_LENGTH == size)
+                if (Presence.CONSTANT != field.presence())
                 {
-                    variableLengthBlock = true;
-                }
+                    final int size = field.type().encodedLength();
 
-                if (!variableLengthBlock)
-                {
-                    offset += size;
+                    if (Token.VARIABLE_LENGTH == size)
+                    {
+                        variableLengthBlock = true;
+                    }
+
+                    if (!variableLengthBlock)
+                    {
+                        offset += size;
+                    }
                 }
             }
         }
