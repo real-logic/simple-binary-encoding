@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <sys/types.h>
+#include <inttypes.h>
 
 #include "otf_api/Listener.h"
 
@@ -116,7 +117,7 @@ int Listener::subscribe(OnNext *onNext,
                 {
                     char message[1024];
 
-                    ::snprintf(message, sizeof(message)-1, "no IR found for message with templateId=%ld and version=%ld [E117]", templateId_, templateVersion_);
+                    ::snprintf(message, sizeof(message)-1, "no IR found for message with templateId=%" PRId64 " and version=%" PRId64 " [E117]", templateId_, templateVersion_);
                     onError_->onError(Error(message));
                     result = -1;
                 }

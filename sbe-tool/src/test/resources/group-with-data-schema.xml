@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/RC3"
-                   package="repeating-groups-with-data"
+                   package="group.with.data"
                    id="1"
                    version="0"
                    semanticVersion="5.2"

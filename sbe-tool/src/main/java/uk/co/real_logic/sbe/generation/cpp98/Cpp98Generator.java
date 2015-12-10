@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.co.real_logic.sbe.generation.cpp98.Cpp98Util.*;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.collectDataFields;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectRootFields;
 
@@ -109,20 +110,22 @@ public class Cpp98Generator implements CodeGenerator
                 out.append(generateMessageFlyweightCode(className, msgToken));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
-                int offset = 0;
+                int index = 0;
 
                 final List<Token> rootFields = new ArrayList<>();
-                offset = collectRootFields(messageBody, offset, rootFields);
-                out.append(generateFields(className, rootFields, BASE_INDENT));
+                index = collectRootFields(messageBody, index, rootFields);
 
                 final List<Token> groups = new ArrayList<>();
-                offset = collectGroups(messageBody, offset, groups);
+                index = collectGroups(messageBody, index, groups);
+
+                final List<Token> dataFields = new ArrayList<>();
+                collectDataFields(messageBody, index, dataFields);
+
                 final StringBuilder sb = new StringBuilder();
+                out.append(generateFields(className, rootFields, BASE_INDENT));
                 generateGroups(sb, groups, 0, BASE_INDENT);
                 out.append(sb);
-
-                final List<Token> varData = messageBody.subList(offset, messageBody.size());
-                out.append(generateVarData(varData));
+                out.append(generateVarData(dataFields, BASE_INDENT));
 
                 out.append("};\n}\n#endif\n");
             }
@@ -146,8 +149,14 @@ public class Cpp98Generator implements CodeGenerator
 
                 if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
                 {
-                    index = generateGroups(sb, tokens, index, indent + INDENT);
+                    final List<Token> groups = new ArrayList<>();
+                    index = collectGroups(tokens, index, groups);
+                    generateGroups(sb, groups, 0, indent + INDENT);
                 }
+
+                final List<Token> dataFields = new ArrayList<>();
+                collectDataFields(tokens, index, dataFields);
+                sb.append(generateVarData(dataFields, indent + INDENT));
 
                 sb.append(indent).append("    };\n");
                 sb.append(generateGroupProperty(groupName, groupToken, indent));
@@ -327,7 +336,7 @@ public class Cpp98Generator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateVarData(final List<Token> tokens)
+    private CharSequence generateVarData(final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -342,19 +351,19 @@ public class Cpp98Generator implements CodeGenerator
                 final int lengthOfLengthField = lengthToken.encodedLength();
                 final String lengthCpp98Type = cpp98TypeName(lengthToken.encoding().primitiveType());
 
-                generateFieldMetaAttributeMethod(sb, token, BASE_INDENT);
+                generateFieldMetaAttributeMethod(sb, token, indent);
 
                 generateVarDataDescriptors(
-                    sb, token, propertyName, characterEncoding, lengthToken, lengthOfLengthField, lengthCpp98Type);
+                    sb, token, propertyName, characterEncoding, lengthToken, lengthOfLengthField, lengthCpp98Type, indent);
 
                 sb.append(String.format(
-                    "    const char *%1$s(void)\n" +
-                    "    {\n" +
+                    indent + "    const char *%1$s(void)\n" +
+                    indent + "    {\n" +
                              "%2$s" +
-                    "         const char *fieldPtr = (buffer_ + position() + %3$d);\n" +
-                    "         position(position() + %3$d + *((%4$s *)(buffer_ + position())));\n" +
-                    "         return fieldPtr;\n" +
-                    "    }\n\n",
+                    indent + "         const char *fieldPtr = (buffer_ + position() + %3$d);\n" +
+                    indent + "         position(position() + %3$d + *((%4$s *)(buffer_ + position())));\n" +
+                    indent + "         return fieldPtr;\n" +
+                    indent + "    }\n\n",
                     formatPropertyName(propertyName),
                     generateTypeFieldNotPresentCondition(token.version(), BASE_INDENT),
                     lengthOfLengthField,
@@ -362,19 +371,19 @@ public class Cpp98Generator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    "    int get%1$s(char *dst, const int length)\n" +
-                    "    {\n" +
+                    indent + "    int get%1$s(char *dst, const int length)\n" +
+                    indent + "    {\n" +
                             "%2$s" +
-                    "        sbe_uint64_t lengthOfLengthField = %3$d;\n" +
-                    "        sbe_uint64_t lengthPosition = position();\n" +
-                    "        position(lengthPosition + lengthOfLengthField);\n" +
-                    "        sbe_int64_t dataLength = %4$s(*((%5$s *)(buffer_ + lengthPosition)));\n" +
-                    "        int bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
-                    "        sbe_uint64_t pos = position();\n" +
-                    "        position(position() + (sbe_uint64_t)dataLength);\n" +
-                    "        ::memcpy(dst, buffer_ + pos, bytesToCopy);\n" +
-                    "        return bytesToCopy;\n" +
-                    "    }\n\n",
+                    indent + "        sbe_uint64_t lengthOfLengthField = %3$d;\n" +
+                    indent + "        sbe_uint64_t lengthPosition = position();\n" +
+                    indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                    indent + "        sbe_int64_t dataLength = %4$s(*((%5$s *)(buffer_ + lengthPosition)));\n" +
+                    indent + "        int bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
+                    indent + "        sbe_uint64_t pos = position();\n" +
+                    indent + "        position(position() + (sbe_uint64_t)dataLength);\n" +
+                    indent + "        ::memcpy(dst, buffer_ + pos, bytesToCopy);\n" +
+                    indent + "        return bytesToCopy;\n" +
+                    indent + "    }\n\n",
                     propertyName,
                     generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
                     lengthOfLengthField,
@@ -383,17 +392,17 @@ public class Cpp98Generator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    "    int put%1$s(const char *src, const int length)\n" +
-                    "    {\n" +
-                    "        sbe_uint64_t lengthOfLengthField = %2$d;\n" +
-                    "        sbe_uint64_t lengthPosition = position();\n" +
-                    "        *((%3$s *)(buffer_ + lengthPosition)) = %4$s((%3$s)length);\n" +
-                    "        position(lengthPosition + lengthOfLengthField);\n" +
-                    "        sbe_uint64_t pos = position();\n" +
-                    "        position(position() + (sbe_uint64_t)length);\n" +
-                    "        ::memcpy(buffer_ + pos, src, length);\n" +
-                    "        return length;\n" +
-                    "    }\n",
+                    indent + "    int put%1$s(const char *src, const int length)\n" +
+                    indent + "    {\n" +
+                    indent + "        sbe_uint64_t lengthOfLengthField = %2$d;\n" +
+                    indent + "        sbe_uint64_t lengthPosition = position();\n" +
+                    indent + "        *((%3$s *)(buffer_ + lengthPosition)) = %4$s((%3$s)length);\n" +
+                    indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                    indent + "        sbe_uint64_t pos = position();\n" +
+                    indent + "        position(position() + (sbe_uint64_t)length);\n" +
+                    indent + "        ::memcpy(buffer_ + pos, src, length);\n" +
+                    indent + "        return length;\n" +
+                    indent + "    }\n",
                     propertyName,
                     lengthOfLengthField,
                     lengthCpp98Type,
@@ -412,31 +421,32 @@ public class Cpp98Generator implements CodeGenerator
         final String characterEncoding,
         final Token lengthToken,
         final Integer sizeOfLengthField,
-        final String lengthCpp98Type)
+        final String lengthCpp98Type,
+        final String indent)
     {
         sb.append(String.format(
             "\n"  +
-            "    static const char *%1$sCharacterEncoding()\n" +
-            "    {\n" +
-            "        return \"%2$s\";\n" +
-            "    }\n\n",
+            indent + "    static const char *%1$sCharacterEncoding()\n" +
+            indent + "    {\n" +
+            indent + "        return \"%2$s\";\n" +
+            indent + "    }\n\n",
             formatPropertyName(propertyName),
             characterEncoding
         ));
 
         sb.append(String.format(
-            "    static const int %1$sSinceVersion(void)\n" +
-            "    {\n" +
-            "         return %2$d;\n" +
-            "    }\n\n" +
-            "    bool %1$sInActingVersion(void)\n" +
-            "    {\n" +
-            "        return (actingVersion_ >= %2$s) ? true : false;\n" +
-            "    }\n\n" +
-            "    static const int %1$sId(void)\n" +
-            "    {\n" +
-            "        return %3$d;\n" +
-            "    }\n\n",
+            indent + "    static const int %1$sSinceVersion(void)\n" +
+            indent + "    {\n" +
+            indent + "         return %2$d;\n" +
+            indent + "    }\n\n" +
+            indent + "    bool %1$sInActingVersion(void)\n" +
+            indent + "    {\n" +
+            indent + "        return (actingVersion_ >= %2$s) ? true : false;\n" +
+            indent + "    }\n\n" +
+            indent + "    static const int %1$sId(void)\n" +
+            indent + "    {\n" +
+            indent + "        return %3$d;\n" +
+            indent + "    }\n\n",
             formatPropertyName(propertyName),
             (long)token.version(),
             token.id()
@@ -444,21 +454,21 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            "    static const int %sHeaderSize()\n" +
-            "    {\n" +
-            "        return %d;\n" +
-            "    }\n",
+            indent + "    static const int %sHeaderSize()\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n",
             toLowerFirstChar(propertyName),
             sizeOfLengthField
         ));
 
         sb.append(String.format(
             "\n" +
-            "    sbe_int64_t %1$sLength(void) const\n" +
-            "    {\n" +
-                    "%2$s" +
-            "        return %3$s(*((%4$s *)(buffer_ + position())));\n" +
-            "    }\n\n",
+            indent + "    sbe_int64_t %1$sLength(void) const\n" +
+            indent + "    {\n" +
+                "%2$s" +
+            indent + "        return %3$s(*((%4$s *)(buffer_ + position())));\n" +
+            indent + "    }\n\n",
             formatPropertyName(propertyName),
             generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
             formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
