@@ -47,20 +47,33 @@ public final class GenerationUtil
         return index;
     }
 
-    public static int collectGroups(final List<Token> tokens, int index, final List<Token> groups)
+    public static int collectGroups(final List<Token> tokens, final int index, final List<Token> groups)
     {
-        for (int size = tokens.size(); index < size; index++)
+        int groupStart = -1;
+        int groupEnd = index;
+        for (int i = index, size = tokens.size(); i < size; i++)
         {
-            final Token token = tokens.get(index);
-            if (Signal.BEGIN_VAR_DATA == token.signal())
+            final Token token = tokens.get(i);
+            if (Signal.BEGIN_GROUP == token.signal() && -1 == groupStart)
             {
-                return index;
+                groupStart = i;
             }
 
-            groups.add(token);
+            if (Signal.END_GROUP == token.signal())
+            {
+                groupEnd = i;
+            }
         }
 
-        return index;
+        if (groupStart > -1)
+        {
+            for (int i = groupStart; i <= groupEnd; i++)
+            {
+                groups.add(tokens.get(i));
+            }
+        }
+
+        return groupEnd;
     }
 
     public static List<Token> getMessageBody(final List<Token> tokens)
