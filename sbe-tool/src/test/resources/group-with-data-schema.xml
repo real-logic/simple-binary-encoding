@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<messageSchema package="repeating-groups-with-data"
-               id="1"
-               semanticVersion="5.2"
-               description="Unit Test"
-               byteOrder="littleEndian">
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/RC3"
+                   package="repeating-groups-with-data"
+                   id="1"
+                   version="0"
+                   semanticVersion="5.2"
+                   byteOrder="littleEndian">
     <types>
         <type name="Symbol" description="Symbol" length="20" primitiveType="char" semanticType="char"/>
         <composite name="messageHeader" description="Message identifiers and length of message root">
@@ -18,38 +19,38 @@
         </composite>
         <composite name="varDataEncoding" semanticType="Length">
             <type name="length" primitiveType="uint8" semanticType="Length"/>
-            <type name="varData" primitiveType="char" semanticType="data"/>
+            <type name="varData" primitiveType="char" semanticType="data" characterEncoding="UTF-8"/>
         </composite>
     </types>
 
-    <message name="TestMessage1" id="1" description="Group with single vardata" blockLength="16">
+    <sbe:message name="TestMessage1" id="1" description="Group with single var data" blockLength="16">
         <field name="Tag1" id="1" type="uint32" semanticType="int"/>
         <group name="Entries" id="2" dimensionType="groupSizeEncoding">
             <field name="TagGroup1" id="3" type="Symbol"/>
             <field name="TagGroup2" id="4" type="int64" semanticType="int"/>
-            <data type="varDataEncoding" name="varDataField" id="5"/>
+            <data name="varDataField" id="5" type="varDataEncoding"/>
         </group>
-    </message>
+    </sbe:message>
 
-    <message name="TestMessage2" id="2" description="Group with multiple vardata" blockLength="16">
+    <sbe:message name="TestMessage2" id="2" description="Group with multiple var data" blockLength="16">
         <field name="Tag1" id="1" type="uint32" semanticType="int"/>
         <group name="Entries" id="2" dimensionType="groupSizeEncoding">
             <field name="TagGroup1" id="3" type="Symbol"/>
             <field name="TagGroup2" id="4" type="int64" semanticType="int"/>
-            <data type="varDataEncoding" name="varDataField1" id="5"/>
-            <data type="varDataEncoding" name="varDataField2" id="6"/>
+            <data name="varDataField1" id="5" type="varDataEncoding"/>
+            <data name="varDataField2" id="6" type="varDataEncoding"/>
         </group>
-    </message>
+    </sbe:message>
 
-    <message name="TestMessage3" id="3" description="Nested group with vardata" blockLength="16">
+    <sbe:message name="TestMessage3" id="3" description="Nested group with var data" blockLength="16">
         <field name="Tag1" id="1" type="uint32" semanticType="int"/>
         <group name="Entries" id="2" dimensionType="groupSizeEncoding">
             <field name="TagGroup1" id="3" type="Symbol"/>
             <group name="NestedEntries" id="4" dimensionType="groupSizeEncoding">
                 <field name="TagGroup2" id="5" type="int64" semanticType="int"/>
-                <data type="varDataEncoding" name="varDataFieldNested" id="6"/>
+                <data name="varDataFieldNested" id="6" type="varDataEncoding"/>
             </group>
-            <data type="varDataEncoding" name="varDataField" id="7"/>
+            <data name="varDataField" id="7" type="varDataEncoding"/>
         </group>
-    </message>
-</messageSchema>
+    </sbe:message>
+</sbe:messageSchema>
