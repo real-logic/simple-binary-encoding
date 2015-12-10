@@ -91,8 +91,7 @@ public class OtfExample
         }
     }
 
-    private static void encodeSchema(final ByteBuffer byteBuffer)
-        throws Exception
+    private static void encodeSchema(final ByteBuffer byteBuffer) throws Exception
     {
         try (final InputStream in = new FileInputStream("src/main/resources/example-schema.xml"))
         {
@@ -124,8 +123,7 @@ public class OtfExample
         byteBuffer.position(bufferOffset);
     }
 
-    private static Ir decodeIr(final ByteBuffer buffer)
-        throws IOException
+    private static Ir decodeIr(final ByteBuffer buffer) throws IOException
     {
         try (final IrDecoder irDecoder = new IrDecoder(buffer))
         {

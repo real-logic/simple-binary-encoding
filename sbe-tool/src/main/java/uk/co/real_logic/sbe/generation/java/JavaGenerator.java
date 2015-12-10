@@ -1824,7 +1824,7 @@ public class JavaGenerator implements CodeGenerator
                         break;
 
                     case BEGIN_ENUM:
-                        sb.append(generateEnumDecoder(propertyName, encodingToken, indent));
+                        sb.append(generateEnumDecoder(signalToken, propertyName, encodingToken, indent));
                         break;
 
                     case BEGIN_SET:
@@ -1893,32 +1893,54 @@ public class JavaGenerator implements CodeGenerator
         ));
     }
 
-    private CharSequence generateEnumDecoder(final String propertyName, final Token token, final String indent)
+    private CharSequence generateEnumDecoder(
+        final Token signalToken, final String propertyName, final Token token, final String indent)
     {
         final String enumName = formatClassName(token.name());
         final Encoding encoding = token.encoding();
         final String typePrefix = encoding.primitiveType().primitiveName();
 
-        return String.format(
-            "\n" +
-            indent + "    public %s %s()\n" +
-            indent + "    {\n" +
-            "%s" +
-            indent + "        return %s.get(CodecUtil.%sGet(buffer, offset + %d%s));\n" +
-            indent + "    }\n\n",
-            enumName,
-            propertyName,
-            generateTypeFieldNotPresentCondition(token.version(), indent),
-            enumName,
-            typePrefix,
-            token.offset(),
-            byteOrderString(encoding)
-        );
+        if (token.isConstantEncoding())
+        {
+            return String.format(
+                "\n" +
+                indent + "    public %s %s()\n" +
+                indent + "    {\n" +
+                indent + "        return %s;\n" +
+                indent + "    }\n\n",
+                enumName,
+                propertyName,
+                signalToken.encoding().constValue().toString()
+            );
+        }
+        else
+        {
+            return String.format(
+                "\n" +
+                indent + "    public %s %s()\n" +
+                indent + "    {\n" +
+                "%s" +
+                indent + "        return %s.get(CodecUtil.%sGet(buffer, offset + %d%s));\n" +
+                indent + "    }\n\n",
+                enumName,
+                propertyName,
+                generateTypeFieldNotPresentCondition(token.version(), indent),
+                enumName,
+                typePrefix,
+                token.offset(),
+                byteOrderString(encoding)
+            );
+        }
     }
 
     private CharSequence generateEnumEncoder(
         final String containingClassName, final String propertyName, final Token token, final String indent)
     {
+        if (token.isConstantEncoding())
+        {
+            return "";
+        }
+
         final String enumName = formatClassName(token.name());
         final Encoding encoding = token.encoding();
         final String typePrefix = encoding.primitiveType().primitiveName();

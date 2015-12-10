@@ -205,6 +205,8 @@ public class ExampleUsingGeneratedStubExtension
         sb.append("\ncar.extras.sportsPack=").append(extras.sportsPack());
         sb.append("\ncar.extras.sunRoof=").append(extras.sunRoof());
 
+        sb.append("\ncar.discountedModel=").append(car.discountedModel());
+
         final extension.EngineDecoder engine = car.engine();
         sb.append("\ncar.engine.capacity=").append(engine.capacity());
         sb.append("\ncar.engine.numCylinders=").append(engine.numCylinders());

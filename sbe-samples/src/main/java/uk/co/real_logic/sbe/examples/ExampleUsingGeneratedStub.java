@@ -200,6 +200,8 @@ public class ExampleUsingGeneratedStub
         sb.append("\ncar.extras.sportsPack=").append(extras.sportsPack());
         sb.append("\ncar.extras.sunRoof=").append(extras.sunRoof());
 
+        sb.append("\ncar.discountedModel=").append(car.discountedModel());
+
         final EngineDecoder engine = car.engine();
         sb.append("\ncar.engine.capacity=").append(engine.capacity());
         sb.append("\ncar.engine.numCylinders=").append(engine.numCylinders());
@@ -229,17 +231,17 @@ public class ExampleUsingGeneratedStub
             }
         }
 
-    sb.append("\ncar.make.semanticType=").append(CarEncoder.makeMetaAttribute(MetaAttribute.SEMANTIC_TYPE));
-    sb.append("\ncar.make=").append(car.make());
+        sb.append("\ncar.make.semanticType=").append(CarEncoder.makeMetaAttribute(MetaAttribute.SEMANTIC_TYPE));
+        sb.append("\ncar.make=").append(car.make());
 
-    sb.append("\ncar.model=").append(
-        new String(buffer, 0, car.getModel(buffer, 0, buffer.length), CarEncoder.modelCharacterEncoding()));
+        sb.append("\ncar.model=").append(
+            new String(buffer, 0, car.getModel(buffer, 0, buffer.length), CarEncoder.modelCharacterEncoding()));
 
-    final UnsafeBuffer tempBuffer = new UnsafeBuffer(buffer);
-    final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());
-    sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength));
+        final UnsafeBuffer tempBuffer = new UnsafeBuffer(buffer);
+        final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());
+        sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength));
 
-    sb.append("\ncar.encodedLength=").append(car.encodedLength());
+        sb.append("\ncar.encodedLength=").append(car.encodedLength());
 
         System.out.println(sb);
     }
