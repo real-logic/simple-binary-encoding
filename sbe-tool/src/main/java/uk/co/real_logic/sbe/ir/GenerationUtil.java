@@ -50,7 +50,7 @@ public final class GenerationUtil
     public static int collectGroups(final List<Token> tokens, final int index, final List<Token> groups)
     {
         int groupStart = -1;
-        int groupEnd = index;
+        int groupEnd = -1;
         for (int i = index, size = tokens.size(); i < size; i++)
         {
             final Token token = tokens.get(i);
@@ -73,7 +73,28 @@ public final class GenerationUtil
             }
         }
 
-        return groupEnd;
+        return groupEnd > -1 ? groupEnd + 1 : index;
+    }
+
+    public static int collectDataFields(final List<Token> tokens, final int index, final List<Token> dataFields)
+    {
+        int dataEnd = index;
+        while (dataEnd < tokens.size())
+        {
+            if (Signal.BEGIN_VAR_DATA != tokens.get(dataEnd).signal())
+            {
+                break;
+            }
+
+            for (int p = 0; p < 6; p++)
+            {
+                dataFields.add(tokens.get(dataEnd + p));
+            }
+
+            dataEnd += 6;
+        }
+
+        return dataEnd;
     }
 
     public static List<Token> getMessageBody(final List<Token> tokens)

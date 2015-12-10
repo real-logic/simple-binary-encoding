@@ -150,12 +150,15 @@ public class JavaGenerator implements CodeGenerator
             final Token msgToken = tokens.get(0);
             final List<Token> messageBody = getMessageBody(tokens);
 
-            int offset = 0;
+            int index = 0;
             final List<Token> rootFields = new ArrayList<>();
-            offset = collectRootFields(messageBody, offset, rootFields);
+            index = collectRootFields(messageBody, index, rootFields);
+
             final List<Token> groups = new ArrayList<>();
-            offset = collectGroups(messageBody, offset, groups);
-            final List<Token> dataFields = messageBody.subList(offset, messageBody.size());
+            index = collectGroups(messageBody, index, groups);
+
+            final List<Token> dataFields = new ArrayList<>();
+            collectDataFields(messageBody, index, dataFields);
 
             generateDecoder(BASE_INDENT, groups, rootFields, dataFields, msgToken);
             generateEncoder(BASE_INDENT, groups, rootFields, dataFields, msgToken);
