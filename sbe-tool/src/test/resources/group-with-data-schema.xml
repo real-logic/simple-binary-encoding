@@ -6,7 +6,7 @@
                    semanticVersion="5.2"
                    byteOrder="littleEndian">
     <types>
-        <type name="Symbol" description="Symbol" length="20" primitiveType="char" semanticType="char"/>
+        <type name="Symbol" description="Symbol" length="9" primitiveType="char" semanticType="char"/>
         <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>

@@ -193,7 +193,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             indent + "    inline void wrapForDecode(char *buffer, int *pos, const int actingVersion," +
-            indent + " const int bufferLength)\n" +
+                     " const int bufferLength)\n" +
             indent + "    {\n" +
             indent + "        buffer_ = buffer;\n" +
             indent + "        bufferLength_ = bufferLength;\n" +
@@ -214,7 +214,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             indent + "    inline void wrapForEncode(char *buffer, const int count," +
-            indent + " int *pos, const int actingVersion, const int bufferLength)\n" +
+                     " int *pos, const int actingVersion, const int bufferLength)\n" +
             indent + "    {\n" +
             indent + "        buffer_ = buffer;\n" +
             indent + "        bufferLength_ = bufferLength;\n" +
@@ -240,6 +240,18 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n" +
+            indent + "    sbe_uint64_t position(void) const\n" +
+            indent + "    {\n" +
+            indent + "        return *positionPtr_;\n" +
+            indent + "    }\n\n" +
+            indent + "    void position(const int position)\n" +
+            indent + "    {\n" +
+            indent + "        if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), false))\n" +
+            indent + "        {\n" +
+            indent + "             throw std::runtime_error(\"buffer too short [E100]\");\n" +
+            indent + "        }\n" +
+            indent + "        *positionPtr_ = position;\n" +
+            indent + "    }\n\n" +
             indent + "    inline int count(void) const\n" +
             indent + "    {\n" +
             indent + "        return count_;\n" +
@@ -264,8 +276,7 @@ public class Cpp98Generator implements CodeGenerator
 
         sb.append(String.format(
             indent + "#if __cplusplus < 201103L\n" +
-            indent + "    template<class Func>\n" +
-            indent + "    inline void forEach(Func& func)\n" +
+            indent + "    template<class Func> inline void forEach(Func& func)\n" +
             indent + "    {\n" +
             indent + "        while(hasNext())\n" +
             indent + "        {\n" +
