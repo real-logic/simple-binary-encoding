@@ -53,4 +53,12 @@
             <data name="varDataField" id="7" type="varDataEncoding"/>
         </group>
     </sbe:message>
+
+    <sbe:message name="TestMessage4" id="4" description="Group with only multiple var data" blockLength="16">
+        <field name="Tag1" id="1" type="uint32" semanticType="int"/>
+        <group name="Entries" id="2" dimensionType="groupSizeEncoding">
+            <data name="varDataField1" id="5" type="varDataEncoding"/>
+            <data name="varDataField2" id="6" type="varDataEncoding"/>
+        </group>
+    </sbe:message>
 </sbe:messageSchema>

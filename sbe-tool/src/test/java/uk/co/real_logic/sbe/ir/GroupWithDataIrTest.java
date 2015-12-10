@@ -134,4 +134,33 @@ public class GroupWithDataIrTest
         assertThat(varDataFieldToken.name(), is("varDataField"));
         assertThat(valueOf(varDataFieldToken.id()), is(valueOf(7)));
     }
+
+    @Test
+    public void shouldGenerateCorrectIrForOnlyMultipleVarDataInRepeatingGroup()
+        throws Exception
+    {
+        final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
+        final IrGenerator irg = new IrGenerator();
+        final Ir ir = irg.generate(schema);
+        final List<Token> tokens = ir.getMessage(4);
+
+        /* 0=msg, 1=field, 2=enc, 3=fieldend, 4=group, 5=comp, 6=enc, 7=enc, 8=compend, ... */
+
+        final Token groupToken = tokens.get(4);
+        final Token varDataField1Token = tokens.get(9);
+        final Token varDataField2Token = tokens.get(15);
+
+        /* assert on the group token */
+        assertThat(groupToken.signal(), is(Signal.BEGIN_GROUP));
+        assertThat(groupToken.name(), is("Entries"));
+        assertThat(valueOf(groupToken.id()), is(valueOf(2)));
+
+        assertThat(varDataField1Token.signal(), is(Signal.BEGIN_VAR_DATA));
+        assertThat(varDataField1Token.name(), is("varDataField1"));
+        assertThat(valueOf(varDataField1Token.id()), is(valueOf(5)));
+
+        assertThat(varDataField2Token.signal(), is(Signal.BEGIN_VAR_DATA));
+        assertThat(varDataField2Token.name(), is("varDataField2"));
+        assertThat(valueOf(varDataField2Token.id()), is(valueOf(6)));
+    }
 }
