@@ -116,7 +116,7 @@ public:
 
     	entries.next();
 
-		entries.putVarDataField1(VAR_DATA_FIELD_1_IDX_0, VAR_DATA_FIELD_1_IDX_0_LENGTH);
+        entries.putVarDataField1(VAR_DATA_FIELD_1_IDX_0, VAR_DATA_FIELD_1_IDX_0_LENGTH);
     	entries.putVarDataField2(VAR_DATA_FIELD_2_IDX_0, VAR_DATA_FIELD_2_IDX_0_LENGTH);
 
     	entries.next();
