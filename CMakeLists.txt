@@ -73,7 +73,7 @@ else()
 	message(FATAL_ERROR "could not find latest SBE jar in ${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs")
 endif()
 
-set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/codecs")
+set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/resources")
 set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/resources")
 set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/resources")
