@@ -232,7 +232,6 @@ public class ExampleUsingGeneratedStub
             }
         }
 
-        sb.append("\ncar.make.semanticType=").append(CarEncoder.makeMetaAttribute(MetaAttribute.SEMANTIC_TYPE));
         sb.append("\ncar.make=").append(car.make());
 
         sb.append("\ncar.model=").append(
