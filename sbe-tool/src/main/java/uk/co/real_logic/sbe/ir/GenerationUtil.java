@@ -51,15 +51,21 @@ public final class GenerationUtil
     {
         int groupStart = -1;
         int groupEnd = -1;
+        int depth = 0;
         for (int i = index, size = tokens.size(); i < size; i++)
         {
             final Token token = tokens.get(i);
-            if (Signal.BEGIN_GROUP == token.signal() && -1 == groupStart)
+            if (Signal.BEGIN_GROUP == token.signal())
             {
-                groupStart = i;
+                if (-1 == groupStart)
+                {
+                    groupStart = i;
+                }
+
+                depth++;
             }
 
-            if (Signal.END_GROUP == token.signal())
+            if (Signal.END_GROUP == token.signal() && --depth >= 0)
             {
                 groupEnd = i;
             }

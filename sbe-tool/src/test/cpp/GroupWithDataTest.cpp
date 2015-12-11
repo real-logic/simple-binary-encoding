@@ -18,6 +18,7 @@
 #include "gtest/gtest.h"
 #include "group_with_data/TestMessage1.hpp"
 #include "group_with_data/TestMessage2.hpp"
+#include "group_with_data/TestMessage3.hpp"
 #include "group_with_data/TestMessage4.hpp"
 
 using namespace std;
@@ -128,6 +129,7 @@ public:
 
     TestMessage1 msg1_;
     TestMessage2 msg2_;
+    TestMessage3 msg3_;
     TestMessage4 msg4_;
 };
 
