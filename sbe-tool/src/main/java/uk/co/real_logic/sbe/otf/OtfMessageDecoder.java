@@ -169,8 +169,11 @@ public class OtfMessageDecoder
             if (Signal.BEGIN_VAR_DATA == token.signal())
             {
                 final Token lengthToken = tokens.get(i + 2);
-                final int length = getInt(buffer, bufferIndex + lengthToken.offset(),
-                    lengthToken.encoding().primitiveType(), lengthToken.encoding().byteOrder());
+                final int length = getInt(
+                    buffer,
+                    bufferIndex + lengthToken.offset(),
+                    lengthToken.encoding().primitiveType(),
+                    lengthToken.encoding().byteOrder());
 
                 final Token varDataToken = tokens.get(i + 3);
                 bufferIndex += varDataToken.offset();

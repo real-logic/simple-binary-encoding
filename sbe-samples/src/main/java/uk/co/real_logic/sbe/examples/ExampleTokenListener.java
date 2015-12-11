@@ -21,6 +21,7 @@ import uk.co.real_logic.sbe.codec.java.CodecUtil;
 import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.otf.TokenListener;
+import uk.co.real_logic.sbe.otf.Util;
 
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -207,7 +208,7 @@ public class ExampleTokenListener implements TokenListener
             return constOrNotPresentValue.longValue();
         }
 
-        return getLong(buffer, bufferIndex, typeToken.encoding());
+        return Util.getLong(buffer, bufferIndex, typeToken.encoding());
     }
 
     private static PrimitiveValue constOrNotPresentValue(final Token token, final int actingVersion)
@@ -276,42 +277,6 @@ public class ExampleTokenListener implements TokenListener
             case DOUBLE:
                 sb.append(CodecUtil.doubleGet(buffer, index, encoding.byteOrder()));
                 break;
-        }
-    }
-
-    private static long getLong(final DirectBuffer buffer, final int index, final Encoding encoding)
-    {
-        switch (encoding.primitiveType())
-        {
-            case CHAR:
-                return CodecUtil.charGet(buffer, index);
-
-            case INT8:
-                return CodecUtil.int8Get(buffer, index);
-
-            case INT16:
-                return CodecUtil.int16Get(buffer, index, encoding.byteOrder());
-
-            case INT32:
-                return CodecUtil.int32Get(buffer, index, encoding.byteOrder());
-
-            case INT64:
-                return CodecUtil.int64Get(buffer, index, encoding.byteOrder());
-
-            case UINT8:
-                return CodecUtil.uint8Get(buffer, index);
-
-            case UINT16:
-                return CodecUtil.uint16Get(buffer, index, encoding.byteOrder());
-
-            case UINT32:
-                return CodecUtil.uint32Get(buffer, index, encoding.byteOrder());
-
-            case UINT64:
-                return CodecUtil.uint64Get(buffer, index, encoding.byteOrder());
-
-            default:
-                throw new IllegalArgumentException("Unsupported type for long: " + encoding.primitiveType());
         }
     }
 
