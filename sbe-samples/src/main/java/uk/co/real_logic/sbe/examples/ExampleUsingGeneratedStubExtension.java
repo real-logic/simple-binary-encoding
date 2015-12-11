@@ -24,7 +24,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 import static extension.CarEncoder.cupHolderCountNullValue;
-import static extension.CarEncoder.makeMetaAttribute;
 
 public class ExampleUsingGeneratedStubExtension
 {
