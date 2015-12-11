@@ -187,7 +187,7 @@ public class JavaGenerator implements CodeGenerator
             generateEncoderGroups(sb, className, groups, 0, indent);
             out.append(sb);
 
-            out.append(generateVarDataEncoders(className, varData, indent));
+            out.append(generateDataEncoders(className, varData, indent));
             out.append("}\n");
         }
     }
@@ -215,6 +215,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(sb);
 
             out.append(generateDataDecoders(dataFields, BASE_INDENT));
+
             out.append("}\n");
         }
     }
@@ -245,6 +246,10 @@ public class JavaGenerator implements CodeGenerator
                 {
                     index = generateDecoderGroups(sb, parentMessageClassName, tokens, index, indent + INDENT);
                 }
+
+                final List<Token> dataFields = new ArrayList<>();
+                collectDataFields(tokens, index, dataFields);
+                sb.append(generateDataDecoders(dataFields, indent + INDENT));
 
                 sb.append(indent).append("    }\n");
             }
@@ -280,6 +285,10 @@ public class JavaGenerator implements CodeGenerator
                 {
                     index = generateEncoderGroups(sb, parentMessageClassName, tokens, index, indent + INDENT);
                 }
+
+                final List<Token> dataFields = new ArrayList<>();
+                collectDataFields(tokens, index, dataFields);
+                sb.append(generateDataEncoders(groupClassName, dataFields, indent + INDENT));
 
                 sb.append(indent).append("    }\n");
             }
@@ -619,7 +628,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public int %sLength()\n" +
                 indent + "    {\n" +
                 indent + "%s" +
-                indent + "        final int limit = limit();\n" +
+                indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        return CodecUtil.%sGet(buffer, limit%s);\n" +
                 indent + "    }\n",
                 toLowerFirstChar(propertyName),
@@ -635,7 +644,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateVarDataEncoders(final String className, final List<Token> tokens, final String indent)
+    private CharSequence generateDataEncoders(final String className, final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -709,11 +718,11 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public String %1$s()\n" +
             indent + "    {\n" +
-            indent + "%2$s" +
+                     "%2$s" +
             indent + "        final int sizeOfLengthField = %3$d;\n" +
-            indent + "        final int limit = limit();\n" +
+            indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        final int dataLength = CodecUtil.%4$sGet(buffer, limit%5$s);\n" +
-            indent + "        limit(limit + sizeOfLengthField + dataLength);\n" +
+            indent + "        parentMessage.limit(limit + sizeOfLengthField + dataLength);\n" +
             indent + "        final byte[] tmp = new byte[dataLength];\n" +
             indent + "        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);\n\n" +
             indent + "        final String value;\n" +
@@ -728,7 +737,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return value;\n" +
             indent + "    }\n",
             toLowerFirstChar(propertyName),
-            generateStringNotPresentCondition(token.version(), BASE_INDENT),
+            generateStringNotPresentCondition(token.version(), indent),
             sizeOfLengthField,
             lengthTypePrefix,
             byteOrderStr,
@@ -782,8 +791,8 @@ public class JavaGenerator implements CodeGenerator
             indent + "        }\n\n" +
             indent + "        final int length = bytes.length;\n" +
             indent + "        final int sizeOfLengthField = %3$d;\n" +
-            indent + "        final int limit = limit();\n" +
-            indent + "        limit(limit + sizeOfLengthField + length);\n" +
+            indent + "        final int limit = parentMessage.limit();\n" +
+            indent + "        parentMessage.limit(limit + sizeOfLengthField + length);\n" +
             indent + "        CodecUtil.%4$sPut(buffer, limit, (%5$s)length%6$s);\n" +
             indent + "        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);\n\n" +
             indent + "        return this;\n" +
@@ -810,20 +819,21 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-            indent + "    public int get%s(final %s dst, final int dstOffset, final int length)\n" +
+            indent + "    public int get%s(\n" +
+            indent + "        final %s dst, final int dstOffset, final int length)\n" +
             indent + "    {\n" +
-            indent + "%s" +
+                     "%s" +
             indent + "        final int sizeOfLengthField = %d;\n" +
-            indent + "        final int limit = limit();\n" +
+            indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        final int dataLength = CodecUtil.%sGet(buffer, limit%s);\n" +
             indent + "        final int bytesCopied = Math.min(length, dataLength);\n" +
-            indent + "        limit(limit + sizeOfLengthField + dataLength);\n" +
+            indent + "        parentMessage.limit(limit + sizeOfLengthField + dataLength);\n" +
             indent + "        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
             indent + "        return bytesCopied;\n" +
             indent + "    }\n",
             propertyName,
             exchangeType,
-            generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
+            generateArrayFieldNotPresentCondition(token.version(), indent),
             sizeOfLengthField,
             lengthTypePrefix,
             byteOrderStr
@@ -842,11 +852,12 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-            indent + "    public int put%s(final %s src, final int srcOffset, final int length)\n" +
+            indent + "    public int put%s(\n" +
+            indent + "        final %s src, final int srcOffset, final int length)\n" +
             indent + "    {\n" +
             indent + "        final int sizeOfLengthField = %d;\n" +
-            indent + "        final int limit = limit();\n" +
-            indent + "        limit(limit + sizeOfLengthField + length);\n" +
+            indent + "        final int limit = parentMessage.limit();\n" +
+            indent + "        parentMessage.limit(limit + sizeOfLengthField + length);\n" +
             indent + "        CodecUtil.%sPut(buffer, limit, (%s)length%s);\n" +
             indent + "        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);\n\n" +
             indent + "        return length;\n" +

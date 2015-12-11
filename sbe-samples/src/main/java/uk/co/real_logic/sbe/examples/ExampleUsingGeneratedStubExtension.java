@@ -141,9 +141,9 @@ public class ExampleUsingGeneratedStubExtension
             .putManufacturerCode(MANUFACTURER_CODE, srcOffset);
 
         car.fuelFiguresCount(3)
-            .next().speed(30).mpg(35.9f)
-            .next().speed(55).mpg(49.0f)
-            .next().speed(75).mpg(40.0f);
+            .next().speed(30).mpg(35.9f).usageDescription("Urban Cycle")
+            .next().speed(55).mpg(49.0f).usageDescription("Combined Cycle")
+            .next().speed(75).mpg(40.0f).usageDescription("Highway Cycle");
 
         final baseline.CarEncoder.PerformanceFiguresEncoder perfFigures = car.performanceFiguresCount(2);
         perfFigures.next()
@@ -226,6 +226,7 @@ public class ExampleUsingGeneratedStubExtension
         {
             sb.append("\ncar.fuelFigures.speed=").append(fuelFigures.speed());
             sb.append("\ncar.fuelFigures.mpg=").append(fuelFigures.mpg());
+            sb.append("\ncar.fuelFigures.usageDescription=").append(fuelFigures.usageDescription());
         }
 
         for (final extension.CarDecoder.PerformanceFiguresDecoder performanceFigures : car.performanceFigures())
