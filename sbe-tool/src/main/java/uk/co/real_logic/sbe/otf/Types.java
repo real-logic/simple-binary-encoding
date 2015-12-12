@@ -22,9 +22,9 @@ import uk.co.real_logic.sbe.ir.Encoding;
 import java.nio.ByteOrder;
 
 /**
- * Utility functions to help with on-the-fly decoding.
+ * Utility functions for applying to types to help with on-the-fly (OTF) decoding.
  */
-public class Util
+public class Types
 {
     /**
      * Get an integer value from a buffer at a given index for a {@link PrimitiveType}.
@@ -100,6 +100,65 @@ public class Util
 
             default:
                 throw new IllegalArgumentException("Unsupported type for long: " + encoding.primitiveType());
+        }
+    }
+
+    /**
+     * Append an encoding as a String to a {@link StringBuilder}.
+     *
+     * @param sb       to append the encoding to.
+     * @param buffer   containing the encoded value.
+     * @param index    at which the encoded value exists.
+     * @param encoding representing the encoded value.
+     */
+    public static void appendAsString(
+        final StringBuilder sb, final DirectBuffer buffer, final int index, final Encoding encoding)
+    {
+        switch (encoding.primitiveType())
+        {
+            case CHAR:
+                sb.append('\'').append((char)buffer.getByte(index)).append('\'');
+                break;
+
+            case INT8:
+                sb.append(buffer.getByte(index));
+                break;
+
+            case INT16:
+                sb.append(buffer.getShort(index, encoding.byteOrder()));
+                break;
+
+            case INT32:
+                sb.append(buffer.getInt(index, encoding.byteOrder()));
+                break;
+
+            case INT64:
+                sb.append(buffer.getLong(index, encoding.byteOrder()));
+                break;
+
+            case UINT8:
+                sb.append((short)(buffer.getByte(index) & 0xFF));
+                break;
+
+            case UINT16:
+                sb.append(buffer.getShort(index, encoding.byteOrder()) & 0xFFFF);
+                break;
+
+            case UINT32:
+                sb.append(buffer.getInt(index, encoding.byteOrder()) & 0xFFFF_FFFFL);
+                break;
+
+            case UINT64:
+                sb.append(buffer.getLong(index, encoding.byteOrder()));
+                break;
+
+            case FLOAT:
+                sb.append(buffer.getFloat(index, encoding.byteOrder()));
+                break;
+
+            case DOUBLE:
+                sb.append(buffer.getDouble(index, encoding.byteOrder()));
+                break;
         }
     }
 }

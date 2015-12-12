@@ -26,7 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class CodecUtilTest
+public class TypesTest
 {
     private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
     private static final int BUFFER_CAPACITY = 64;
@@ -43,7 +43,7 @@ public class CodecUtilTest
 
         for (int i = 0; i < 8; i++)
         {
-            final boolean result = CodecUtil.uint8GetChoice(buffer, bufferIndex, i);
+            final boolean result = 0 != (buffer.getByte(bufferIndex) & (1 << i));
             if (bitIndex == i)
             {
                 assertTrue(result);
@@ -63,7 +63,9 @@ public class CodecUtilTest
         short total = 0;
         for (int i = 0; i < 8; i++)
         {
-            CodecUtil.uint8PutChoice(buffer, bufferIndex, i, true);
+            byte bits = buffer.getByte(bufferIndex);
+            bits = (byte)(bits | (1 << i));
+            buffer.putByte(bufferIndex, bits);
             total += (1 << i);
             assertThat(buffer.getByte(bufferIndex), is((byte)total));
         }
@@ -79,7 +81,7 @@ public class CodecUtilTest
 
         for (int i = 0; i < 16; i++)
         {
-            final boolean result = CodecUtil.uint16GetChoice(buffer, bufferIndex, i, BYTE_ORDER);
+            final boolean result = 0 != (buffer.getShort(bufferIndex, BYTE_ORDER) & (1 << i));
             if (bitIndex == i)
             {
                 assertTrue(result);
@@ -99,7 +101,9 @@ public class CodecUtilTest
         int total = 0;
         for (int i = 0; i < 16; i++)
         {
-            CodecUtil.uint16PutChoice(buffer, bufferIndex, i, true, BYTE_ORDER);
+            short bits = buffer.getShort(bufferIndex, BYTE_ORDER);
+            bits = (short)(bits | (1 << i));
+            buffer.putShort(bufferIndex, bits, BYTE_ORDER);
             total += (1 << i);
             assertThat(buffer.getShort(bufferIndex, BYTE_ORDER), is((short)total));
         }
@@ -115,7 +119,7 @@ public class CodecUtilTest
 
         for (int i = 0; i < 32; i++)
         {
-            final boolean result = CodecUtil.uint32GetChoice(buffer, bufferIndex, i, BYTE_ORDER);
+            final boolean result = 0 != (buffer.getInt(bufferIndex, BYTE_ORDER) & (1 << i));
             if (bitIndex == i)
             {
                 assertTrue(result);
@@ -135,7 +139,9 @@ public class CodecUtilTest
 
         for (int i = 0; i < 32; i++)
         {
-            CodecUtil.uint32PutChoice(buffer, bufferIndex, i, true, BYTE_ORDER);
+            int bits = buffer.getInt(bufferIndex, BYTE_ORDER);
+            bits = bits | (1 << i);
+            buffer.putInt(bufferIndex, bits, BYTE_ORDER);
             total += (1 << i);
             assertThat(buffer.getInt(bufferIndex, BYTE_ORDER), is((int)total));
         }

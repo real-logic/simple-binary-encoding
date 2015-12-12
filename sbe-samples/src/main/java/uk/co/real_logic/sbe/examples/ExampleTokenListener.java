@@ -17,11 +17,10 @@ package uk.co.real_logic.sbe.examples;
 
 import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.codec.java.CodecUtil;
 import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.otf.TokenListener;
-import uk.co.real_logic.sbe.otf.Util;
+import uk.co.real_logic.sbe.otf.Types;
 
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -190,7 +189,7 @@ public class ExampleTokenListener implements TokenListener
 
         for (int i = 0, size = typeToken.arrayLength(); i < size; i++)
         {
-            mapEncodingToString(sb, buffer, index + (i * elementSize), encoding);
+            Types.appendAsString(sb, buffer, index + (i * elementSize), encoding);
             sb.append(", ");
         }
 
@@ -208,7 +207,7 @@ public class ExampleTokenListener implements TokenListener
             return constOrNotPresentValue.longValue();
         }
 
-        return Util.getLong(buffer, bufferIndex, typeToken.encoding());
+        return Types.getLong(buffer, bufferIndex, typeToken.encoding());
     }
 
     private static PrimitiveValue constOrNotPresentValue(final Token token, final int actingVersion)
@@ -227,57 +226,6 @@ public class ExampleTokenListener implements TokenListener
         }
 
         return null;
-    }
-
-    private static void mapEncodingToString(
-        final StringBuilder sb, final DirectBuffer buffer, final int index, final Encoding encoding)
-    {
-        switch (encoding.primitiveType())
-        {
-            case CHAR:
-                sb.append('\'').append((char)CodecUtil.charGet(buffer, index)).append('\'');
-                break;
-
-            case INT8:
-                sb.append(CodecUtil.int8Get(buffer, index));
-                break;
-
-            case INT16:
-                sb.append(CodecUtil.int16Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case INT32:
-                sb.append(CodecUtil.int32Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case INT64:
-                sb.append(CodecUtil.int64Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case UINT8:
-                sb.append(CodecUtil.uint8Get(buffer, index));
-                break;
-
-            case UINT16:
-                sb.append(CodecUtil.uint16Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case UINT32:
-                sb.append(CodecUtil.uint32Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case UINT64:
-                sb.append(CodecUtil.uint64Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case FLOAT:
-                sb.append(CodecUtil.floatGet(buffer, index, encoding.byteOrder()));
-                break;
-
-            case DOUBLE:
-                sb.append(CodecUtil.doubleGet(buffer, index, encoding.byteOrder()));
-                break;
-        }
     }
 
     private void printScope()

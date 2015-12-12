@@ -106,7 +106,7 @@ public class OtfHeaderDecoder
      */
     public int getTemplateId(final DirectBuffer buffer, final int bufferOffset)
     {
-        return Util.getInt(buffer, bufferOffset + templateIdOffset, templateIdType, templateIdByteOrder);
+        return Types.getInt(buffer, bufferOffset + templateIdOffset, templateIdType, templateIdByteOrder);
     }
 
     /**
@@ -118,7 +118,7 @@ public class OtfHeaderDecoder
      */
     public int getSchemaId(final DirectBuffer buffer, final int bufferOffset)
     {
-        return Util.getInt(buffer, bufferOffset + schemaIdOffset, schemaIdType, schemaIdByteOrder);
+        return Types.getInt(buffer, bufferOffset + schemaIdOffset, schemaIdType, schemaIdByteOrder);
     }
 
     /**
@@ -130,7 +130,7 @@ public class OtfHeaderDecoder
      */
     public int getSchemaVersion(final DirectBuffer buffer, final int bufferOffset)
     {
-        return Util.getInt(buffer, bufferOffset + schemaVersionOffset, schemaVersionType, schemaVersionByteOrder);
+        return Types.getInt(buffer, bufferOffset + schemaVersionOffset, schemaVersionType, schemaVersionByteOrder);
     }
 
     /**
@@ -142,6 +142,6 @@ public class OtfHeaderDecoder
      */
     public int getBlockLength(final DirectBuffer buffer, final int bufferOffset)
     {
-        return Util.getInt(buffer, bufferOffset + blockLengthOffset, blockLengthType, blockLengthByteOrder);
+        return Types.getInt(buffer, bufferOffset + blockLengthOffset, blockLengthType, blockLengthByteOrder);
     }
 }

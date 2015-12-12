@@ -21,7 +21,7 @@ import uk.co.real_logic.sbe.ir.Token;
 
 import java.util.List;
 
-import static uk.co.real_logic.sbe.otf.Util.getInt;
+import static uk.co.real_logic.sbe.otf.Types.getInt;
 
 /**
  * On-the-fly decoder that dynamically decodes messages based on the IR for a schema.
