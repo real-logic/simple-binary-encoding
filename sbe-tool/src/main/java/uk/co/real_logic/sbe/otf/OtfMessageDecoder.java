@@ -16,12 +16,13 @@
 package uk.co.real_logic.sbe.otf;
 
 import uk.co.real_logic.agrona.DirectBuffer;
-import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 
 import java.util.List;
 
-import static uk.co.real_logic.sbe.otf.Types.getInt;
+import static uk.co.real_logic.sbe.ir.Signal.BEGIN_FIELD;
+import static uk.co.real_logic.sbe.ir.Signal.BEGIN_GROUP;
+import static uk.co.real_logic.sbe.ir.Signal.BEGIN_VAR_DATA;
 
 /**
  * On-the-fly decoder that dynamically decodes messages based on the IR for a schema.
@@ -35,14 +36,11 @@ import static uk.co.real_logic.sbe.otf.Types.getInt;
  */
 public class OtfMessageDecoder
 {
-    private static final int GROUP_DIM_TYPE_TOKENS = 5;
-    private static final int VAR_DATA_TOKENS = 5;
-
     /**
      * Decode a message from the provided buffer based on the message schema described with IR {@link Token}s.
      *
      * @param buffer        containing the encoded message.
-     * @param bufferIndex   at which the message encoding starts in the buffer.
+     * @param bufferIdx     at which the message encoding starts in the buffer.
      * @param actingVersion of the encoded message for dealing with extension fields.
      * @param blockLength   of the root message fields.
      * @param msgTokens     in IR format describing the message structure.
@@ -51,212 +49,207 @@ public class OtfMessageDecoder
      */
     public static int decode(
         final DirectBuffer buffer,
-        int bufferIndex,
+        int bufferIdx,
         final int actingVersion,
         final int blockLength,
         final List<Token> msgTokens,
         final TokenListener listener)
     {
-        final int groupsBeginIndex = findNextOrLimit(msgTokens, 1, msgTokens.size(), Signal.BEGIN_GROUP);
-        final int varDataSearchStart = groupsBeginIndex != msgTokens.size() ? groupsBeginIndex : 1;
-        final int varDataBeginIndex = findNextOrLimit(msgTokens, varDataSearchStart, msgTokens.size(), Signal.BEGIN_VAR_DATA);
+        final int numTokens = msgTokens.size();
 
         listener.onBeginMessage(msgTokens.get(0));
 
-        decodeFields(buffer, bufferIndex, actingVersion, msgTokens, 0, groupsBeginIndex, listener);
-        bufferIndex += blockLength;
+        int tokenIdx = decodeFields(buffer, bufferIdx, actingVersion, msgTokens, 1, numTokens, listener);
+        bufferIdx += blockLength;
 
-        bufferIndex = decodeGroups(
-            buffer, bufferIndex, actingVersion, msgTokens, groupsBeginIndex, varDataBeginIndex, listener);
+        long packedValues = decodeGroups(buffer, bufferIdx, actingVersion, msgTokens, tokenIdx, numTokens, listener);
 
-        bufferIndex = decodeVarData(buffer, bufferIndex, msgTokens, varDataBeginIndex, msgTokens.size(), listener);
+        packedValues = decodeData(buffer, bufferIndex(packedValues), msgTokens, tokenIndex(packedValues), numTokens, listener);
 
-        listener.onEndMessage(msgTokens.get(msgTokens.size() - 1));
+        listener.onEndMessage(msgTokens.get(tokenIndex(packedValues)));
 
-        return bufferIndex;
+        return bufferIndex(packedValues);
     }
 
-    private static void decodeFields(
+    private static int decodeFields(
         final DirectBuffer buffer,
-        final int bufferIndex,
+        final int bufferIdx,
         final int actingVersion,
         final List<Token> tokens,
-        final int fromIndex,
-        final int toIndex,
+        int tokenIdx,
+        final int numTokens,
         final TokenListener listener)
     {
-        for (int i = fromIndex; i < toIndex; i++)
+        while (tokenIdx < numTokens)
         {
-            if (Signal.BEGIN_FIELD == tokens.get(i).signal())
+            final Token fieldToken = tokens.get(tokenIdx);
+            if (BEGIN_FIELD != fieldToken.signal())
             {
-                i = decodeField(buffer, bufferIndex, tokens, i, actingVersion, listener);
+                break;
             }
+
+            final int nextFieldIdx = tokenIdx + fieldToken.componentTokenCount();
+            tokenIdx++;
+
+            final Token typeToken = tokens.get(tokenIdx);
+            final int offset = typeToken.offset();
+
+            switch (typeToken.signal())
+            {
+                case BEGIN_COMPOSITE:
+                    decodeComposite(
+                        fieldToken, buffer, bufferIdx + offset, tokens, tokenIdx, nextFieldIdx - 2, actingVersion, listener);
+                    break;
+
+                case BEGIN_ENUM:
+                    listener.onEnum(
+                        fieldToken, buffer, bufferIdx + offset, tokens, tokenIdx, nextFieldIdx - 2, actingVersion);
+                    break;
+
+                case BEGIN_SET:
+                    listener.onBitSet(
+                        fieldToken, buffer, bufferIdx + offset, tokens, tokenIdx, nextFieldIdx - 2, actingVersion);
+                    break;
+
+                case ENCODING:
+                    listener.onEncoding(fieldToken, buffer, bufferIdx + offset, typeToken, actingVersion);
+                    break;
+            }
+
+            tokenIdx = nextFieldIdx;
         }
+
+        return tokenIdx;
     }
 
-    private static int decodeGroups(
+    private static long decodeGroups(
         final DirectBuffer buffer,
-        int bufferIndex,
+        int bufferIdx,
         final int actingVersion,
         final List<Token> tokens,
-        final int fromIndex,
-        final int toIndex,
+        int tokenIdx,
+        final int numTokens,
         final TokenListener listener)
     {
-        for (int i = fromIndex; i < toIndex; i++)
+        while (tokenIdx < numTokens)
         {
-            final Token token = tokens.get(i);
-
-            if (Signal.BEGIN_GROUP == token.signal())
+            final Token token = tokens.get(tokenIdx);
+            if (BEGIN_GROUP != token.signal())
             {
-                final Token blockLengthToken = tokens.get(i + 2);
-                final int blockLength = getInt(
-                    buffer, bufferIndex + blockLengthToken.offset(),
-                    blockLengthToken.encoding().primitiveType(),
-                    blockLengthToken.encoding().byteOrder());
-
-                final Token numInGroupToken = tokens.get(i + 3);
-                final int numInGroup = getInt(
-                    buffer, bufferIndex + numInGroupToken.offset(),
-                    numInGroupToken.encoding().primitiveType(),
-                    numInGroupToken.encoding().byteOrder());
-
-                final Token dimensionTypeComposite = tokens.get(i + 1);
-                bufferIndex += dimensionTypeComposite.encodedLength();
-
-                final int beginFieldsIndex = i + GROUP_DIM_TYPE_TOKENS;
-                final int endGroupIndex = findNextOrLimit(tokens, beginFieldsIndex, toIndex, Signal.END_GROUP);
-                final int nextGroupIndex = findNextOrLimit(tokens, beginFieldsIndex, toIndex, Signal.BEGIN_GROUP);
-                final int endOfFieldsIndex = Math.min(endGroupIndex, nextGroupIndex) - 1;
-
-                listener.onGroupHeader(token, numInGroup);
-
-                for (int g = 0; g < numInGroup; g++)
-                {
-                    listener.onBeginGroup(token, g, numInGroup);
-
-                    decodeFields(buffer, bufferIndex, actingVersion, tokens, beginFieldsIndex, endOfFieldsIndex, listener);
-                    bufferIndex += blockLength;
-
-                    if (nextGroupIndex < endGroupIndex)
-                    {
-                        bufferIndex = decodeGroups(
-                            buffer, bufferIndex, actingVersion, tokens, nextGroupIndex, toIndex, listener);
-                    }
-
-                    listener.onEndGroup(token, g, numInGroup);
-                }
-
-                i = endGroupIndex;
+                break;
             }
-        }
 
-        return bufferIndex;
-    }
+            final Token blockLengthToken = tokens.get(tokenIdx + 2);
+            final int blockLength = Types.getInt(
+                buffer,
+                bufferIdx + blockLengthToken.offset(),
+                blockLengthToken.encoding().primitiveType(),
+                blockLengthToken.encoding().byteOrder());
 
-    private static int decodeVarData(
-        final DirectBuffer buffer,
-        int bufferIndex,
-        final List<Token> tokens,
-        final int fromIndex,
-        final int toIndex,
-        final TokenListener listener)
-    {
-        for (int i = fromIndex; i < toIndex; i++)
-        {
-            final Token token = tokens.get(i);
+            final Token numInGroupToken = tokens.get(tokenIdx + 3);
+            final int numInGroup = Types.getInt(
+                buffer,
+                bufferIdx + numInGroupToken.offset(),
+                numInGroupToken.encoding().primitiveType(),
+                numInGroupToken.encoding().byteOrder());
 
-            if (Signal.BEGIN_VAR_DATA == token.signal())
+            final Token dimensionTypeComposite = tokens.get(tokenIdx + 1);
+            bufferIdx += dimensionTypeComposite.encodedLength();
+
+            final int beginFieldsIdx = tokenIdx + dimensionTypeComposite.componentTokenCount() + 1;
+            final int endGroupIdx = tokenIdx + (token.componentTokenCount() - 1);
+
+            listener.onGroupHeader(token, numInGroup);
+
+            for (int g = 0; g < numInGroup; g++)
             {
-                final Token lengthToken = tokens.get(i + 2);
-                final int length = getInt(
-                    buffer,
-                    bufferIndex + lengthToken.offset(),
-                    lengthToken.encoding().primitiveType(),
-                    lengthToken.encoding().byteOrder());
+                listener.onBeginGroup(token, g, numInGroup);
 
-                final Token varDataToken = tokens.get(i + 3);
-                bufferIndex += varDataToken.offset();
+                final int afterFieldsIdx = decodeFields(
+                    buffer, bufferIdx, actingVersion, tokens, beginFieldsIdx, numTokens, listener);
+                bufferIdx += blockLength;
 
-                listener.onVarData(token, buffer, bufferIndex, length, varDataToken);
+                long packedValues = decodeGroups(
+                    buffer, bufferIdx, actingVersion, tokens, afterFieldsIdx, numTokens, listener);
+                bufferIdx = bufferIndex(packedValues);
 
-                bufferIndex += length;
-                i += VAR_DATA_TOKENS;
+                listener.onEndGroup(token, g, numInGroup);
             }
+
+            tokenIdx = endGroupIdx + 1;
         }
 
-        return bufferIndex;
-    }
-
-    private static int decodeField(
-        final DirectBuffer buffer,
-        final int bufferIndex,
-        final List<Token> tokens,
-        final int fromIndex,
-        final int actingVersion,
-        final TokenListener listener)
-    {
-        final int toIndex = findNextOrLimit(tokens, fromIndex + 1, tokens.size(), Signal.END_FIELD);
-        final Token fieldToken = tokens.get(fromIndex);
-        final Token typeToken = tokens.get(fromIndex + 1);
-        final int offset = typeToken.offset();
-
-        switch (typeToken.signal())
-        {
-            case BEGIN_COMPOSITE:
-                decodeComposite(
-                    fieldToken, buffer, bufferIndex + offset, tokens, fromIndex + 1, toIndex - 1, actingVersion, listener);
-                break;
-
-            case BEGIN_ENUM:
-                listener.onEnum(fieldToken, buffer, bufferIndex + offset, tokens, fromIndex + 1, toIndex - 1, actingVersion);
-                break;
-
-            case BEGIN_SET:
-                listener.onBitSet(fieldToken, buffer, bufferIndex + offset, tokens, fromIndex + 1, toIndex - 1, actingVersion);
-                break;
-
-            case ENCODING:
-                listener.onEncoding(fieldToken, buffer, bufferIndex + offset, typeToken, actingVersion);
-                break;
-        }
-
-        return toIndex;
+        return pack(bufferIdx, tokenIdx);
     }
 
     private static void decodeComposite(
         final Token fieldToken,
         final DirectBuffer buffer,
-        final int bufferIndex,
+        final int bufferIdx,
         final List<Token> tokens,
-        final int fromIndex,
+        final int tokenIdx,
         final int toIndex,
         final int actingVersion,
         final TokenListener listener)
     {
-        listener.onBeginComposite(fieldToken, tokens, fromIndex, toIndex);
+        listener.onBeginComposite(fieldToken, tokens, tokenIdx, toIndex);
 
-        for (int i = fromIndex + 1; i < toIndex; i++)
+        for (int i = tokenIdx + 1; i < toIndex; i++)
         {
             final Token token = tokens.get(i);
-            listener.onEncoding(token, buffer, bufferIndex + token.offset(), token, actingVersion);
+            listener.onEncoding(token, buffer, bufferIdx + token.offset(), token, actingVersion);
         }
 
-        listener.onEndComposite(fieldToken, tokens, fromIndex, toIndex);
+        listener.onEndComposite(fieldToken, tokens, tokenIdx, toIndex);
     }
 
-    private static int findNextOrLimit(
-        final List<Token> tokens, final int fromIndex, final int limitIndex, final Signal signal)
+    private static long decodeData(
+        final DirectBuffer buffer,
+        int bufferIdx,
+        final List<Token> tokens,
+        int tokenIdx,
+        final int numTokens,
+        final TokenListener listener)
     {
-        int i = fromIndex;
-        for (; i < limitIndex; i++)
+        while (tokenIdx < numTokens)
         {
-            if (tokens.get(i).signal() == signal)
+            final Token token = tokens.get(tokenIdx);
+            if (BEGIN_VAR_DATA != token.signal())
             {
                 break;
             }
+
+            final Token lengthToken = tokens.get(tokenIdx + 2);
+            final int length = Types.getInt(
+                buffer,
+                bufferIdx + lengthToken.offset(),
+                lengthToken.encoding().primitiveType(),
+                lengthToken.encoding().byteOrder());
+
+            final Token dataToken = tokens.get(tokenIdx + 3);
+            bufferIdx += dataToken.offset();
+
+            listener.onVarData(token, buffer, bufferIdx, length, dataToken);
+
+            bufferIdx += length;
+            tokenIdx += token.componentTokenCount();
         }
 
-        return i;
+        return pack(bufferIdx, tokenIdx);
+    }
+
+    private static long pack(final int bufferIndex, final int tokenIndex)
+    {
+        return ((long)bufferIndex << 32) | tokenIndex;
+    }
+
+    private static int bufferIndex(final long packedValues)
+    {
+        return (int)(packedValues >>> 32);
+    }
+
+    private static int tokenIndex(final long packedValues)
+    {
+        return (int)packedValues;
     }
 }
