@@ -157,13 +157,12 @@ public class OtfMessageDecoder
             bufferIdx += dimensionTypeComposite.encodedLength();
 
             final int beginFieldsIdx = tokenIdx + dimensionTypeComposite.componentTokenCount() + 1;
-            final int endGroupIdx = tokenIdx + (token.componentTokenCount() - 1);
 
             listener.onGroupHeader(token, numInGroup);
 
-            for (int g = 0; g < numInGroup; g++)
+            for (int i = 0; i < numInGroup; i++)
             {
-                listener.onBeginGroup(token, g, numInGroup);
+                listener.onBeginGroup(token, i, numInGroup);
 
                 final int afterFieldsIdx = decodeFields(
                     buffer, bufferIdx, actingVersion, tokens, beginFieldsIdx, numTokens, listener);
@@ -177,10 +176,10 @@ public class OtfMessageDecoder
 
                 bufferIdx = bufferIndex(packedValues);
 
-                listener.onEndGroup(token, g, numInGroup);
+                listener.onEndGroup(token, i, numInGroup);
             }
 
-            tokenIdx = endGroupIdx + 1;
+            tokenIdx += token.componentTokenCount();
         }
 
         return pack(bufferIdx, tokenIdx);
