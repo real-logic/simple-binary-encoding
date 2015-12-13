@@ -17,10 +17,10 @@ package uk.co.real_logic.sbe.json;
 
 import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.codec.java.CodecUtil;
 import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.otf.TokenListener;
+import uk.co.real_logic.sbe.otf.Types;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -38,17 +38,18 @@ public class JsonTokenListener implements TokenListener
         this.output = output;
     }
 
-    public void onBeginMessage(Token token)
+    public void onBeginMessage(final Token token)
     {
         startObject();
     }
 
-    public void onEndMessage(Token token)
+    public void onEndMessage(final Token token)
     {
         endObject();
     }
 
-    public void onEncoding(Token fieldToken, DirectBuffer buffer, int bufferIndex, Token typeToken, int actingVersion)
+    public void onEncoding(
+        final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final Token typeToken, final int actingVersion)
     {
         property(fieldToken);
         appendEncodingAsString(buffer, bufferIndex, typeToken, actingVersion);
@@ -56,57 +57,58 @@ public class JsonTokenListener implements TokenListener
     }
 
     public void onEnum(
-        Token fieldToken,
-        DirectBuffer buffer,
-        int bufferIndex,
-        List<Token> tokens,
-        int fromIndex,
-        int toIndex,
-        int actingVersion)
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final List<Token> tokens,
+        final int fromIndex,
+        final int toIndex,
+        final int actingVersion)
     {
     }
 
     public void onBitSet(
-        Token fieldToken,
-        DirectBuffer buffer,
-        int bufferIndex,
-        List<Token> tokens,
-        int fromIndex,
-        int toIndex,
-        int actingVersion)
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final List<Token> tokens,
+        final int fromIndex,
+        final int toIndex,
+        final int actingVersion)
     {
     }
 
-    public void onBeginComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex)
+    public void onBeginComposite(final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
     }
 
-    public void onEndComposite(Token fieldToken, List<Token> tokens, int fromIndex, int toIndex)
+    public void onEndComposite(final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
     }
 
-    public void onGroupHeader(Token token, int numInGroup)
+    public void onGroupHeader(final Token token, final int numInGroup)
     {
         property(token);
-        append("[\n");
+        output.append("[\n");
     }
 
-    public void onBeginGroup(Token token, int groupIndex, int numInGroup)
+    public void onBeginGroup(final Token token, final int groupIndex, final int numInGroup)
     {
         startObject();
     }
 
-    public void onEndGroup(Token token, int groupIndex, int numInGroup)
+    public void onEndGroup(final Token token, final int groupIndex, final int numInGroup)
     {
         endObject();
         if (isLastGroup(groupIndex, numInGroup))
         {
             backup();
-            append("],\n");
+            output.append("],\n");
         }
     }
 
-    public void onVarData(Token fieldToken, DirectBuffer buffer, int bufferIndex, int length, Token typeToken)
+    public void onVarData(
+        final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final int length, final Token typeToken)
     {
         try
         {
@@ -114,7 +116,7 @@ public class JsonTokenListener implements TokenListener
             doubleQuote();
 
             buffer.getBytes(bufferIndex, tempBuffer, 0, length);
-            append(new String(tempBuffer, 0, length, typeToken.encoding().characterEncoding()));
+            output.append(new String(tempBuffer, 0, length, typeToken.encoding().characterEncoding()));
 
             doubleQuote();
             next();
@@ -125,22 +127,22 @@ public class JsonTokenListener implements TokenListener
         }
     }
 
-    private boolean isLastGroup(int groupIndex, int numInGroup)
+    private boolean isLastGroup(final int groupIndex, final int numInGroup)
     {
         return groupIndex == numInGroup - 1;
     }
 
     private void next()
     {
-        append(",\n");
+        output.append(",\n");
     }
 
-    private void property(Token token)
+    private void property(final Token token)
     {
         indent();
         doubleQuote();
-        append(token.name());
-        append("\": ");
+        output.append(token.name());
+        output.append("\": ");
     }
 
     private void appendEncodingAsString(
@@ -149,7 +151,7 @@ public class JsonTokenListener implements TokenListener
         final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, actingVersion);
         if (null != constOrNotPresentValue)
         {
-            append(constOrNotPresentValue.toString());
+            output.append(constOrNotPresentValue.toString());
             return;
         }
 
@@ -163,7 +165,7 @@ public class JsonTokenListener implements TokenListener
 
             for (int i = 0; i < size; i++)
             {
-                output.append((char)CodecUtil.charGet(buffer, index + (i * elementSize)));
+                output.append((char)buffer.getByte(index + (i * elementSize)));
             }
 
             doubleQuote();
@@ -172,19 +174,19 @@ public class JsonTokenListener implements TokenListener
         {
             if (size > 1)
             {
-                append("[");
+                output.append('[');
             }
 
             for (int i = 0; i < size; i++)
             {
-                mapEncodingToString(output, buffer, index + (i * elementSize), encoding);
-                append(", ");
+                Types.appendAsString(output, buffer, index + (i * elementSize), encoding);
+                output.append(", ");
             }
 
             backup();
             if (size > 1)
             {
-                append("]");
+                output.append(']');
             }
         }
     }
@@ -212,128 +214,37 @@ public class JsonTokenListener implements TokenListener
         return null;
     }
 
-    private static void mapEncodingToString(
-        final StringBuilder sb, final DirectBuffer buffer, final int index, final Encoding encoding)
-    {
-        switch (encoding.primitiveType())
-        {
-            case CHAR:
-                sb.append('"').append((char)CodecUtil.charGet(buffer, index)).append('"');
-                break;
-
-            case INT8:
-                sb.append(CodecUtil.int8Get(buffer, index));
-                break;
-
-            case INT16:
-                sb.append(CodecUtil.int16Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case INT32:
-                sb.append(CodecUtil.int32Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case INT64:
-                sb.append(CodecUtil.int64Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case UINT8:
-                sb.append(CodecUtil.uint8Get(buffer, index));
-                break;
-
-            case UINT16:
-                sb.append(CodecUtil.uint16Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case UINT32:
-                sb.append(CodecUtil.uint32Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case UINT64:
-                sb.append(CodecUtil.uint64Get(buffer, index, encoding.byteOrder()));
-                break;
-
-            case FLOAT:
-                sb.append(CodecUtil.floatGet(buffer, index, encoding.byteOrder()));
-                break;
-
-            case DOUBLE:
-                sb.append(CodecUtil.doubleGet(buffer, index, encoding.byteOrder()));
-                break;
-        }
-    }
-
-    private static long getLong(final DirectBuffer buffer, final int index, final Encoding encoding)
-    {
-        switch (encoding.primitiveType())
-        {
-            case CHAR:
-                return CodecUtil.charGet(buffer, index);
-
-            case INT8:
-                return CodecUtil.int8Get(buffer, index);
-
-            case INT16:
-                return CodecUtil.int16Get(buffer, index, encoding.byteOrder());
-
-            case INT32:
-                return CodecUtil.int32Get(buffer, index, encoding.byteOrder());
-
-            case INT64:
-                return CodecUtil.int64Get(buffer, index, encoding.byteOrder());
-
-            case UINT8:
-                return CodecUtil.uint8Get(buffer, index);
-
-            case UINT16:
-                return CodecUtil.uint16Get(buffer, index, encoding.byteOrder());
-
-            case UINT32:
-                return CodecUtil.uint32Get(buffer, index, encoding.byteOrder());
-
-            case UINT64:
-                return CodecUtil.uint64Get(buffer, index, encoding.byteOrder());
-
-            default:
-                throw new IllegalArgumentException("Unsupported type for long: " + encoding.primitiveType());
-        }
-    }
-
     private void indent()
     {
         for (int i = 0; i < indentation; i++)
         {
-            append("    ");
+            output.append("    ");
         }
     }
 
     private void doubleQuote()
     {
-        append("\"");
+        output.append('\"');
     }
 
     private void startObject()
     {
         indent();
-        append("{\n");
+        output.append("{\n");
         indentation++;
     }
 
     private void endObject()
     {
         backup();
-        append("\n");
+        output.append('\n');
         indentation--;
         indent();
-        append("}");
+        output.append('}');
+
         if (indentation > 0)
         {
             next();
         }
-    }
-
-    private void append(final CharSequence value)
-    {
-        output.append(value);
     }
 }
