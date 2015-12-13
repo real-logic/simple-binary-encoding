@@ -59,7 +59,7 @@ public class OtfMessageDecoder
 
         listener.onBeginMessage(msgTokens.get(0));
 
-        int tokenIdx = decodeFields(buffer, bufferIdx, actingVersion, msgTokens, 1, numTokens, listener);
+        final int tokenIdx = decodeFields(buffer, bufferIdx, actingVersion, msgTokens, 1, numTokens, listener);
         bufferIdx += blockLength;
 
         long packedValues = decodeGroups(buffer, bufferIdx, actingVersion, msgTokens, tokenIdx, numTokens, listener);
@@ -171,6 +171,10 @@ public class OtfMessageDecoder
 
                 long packedValues = decodeGroups(
                     buffer, bufferIdx, actingVersion, tokens, afterFieldsIdx, numTokens, listener);
+
+                packedValues = decodeData(
+                    buffer, bufferIndex(packedValues), tokens, tokenIndex(packedValues), numTokens, listener);
+
                 bufferIdx = bufferIndex(packedValues);
 
                 listener.onEndGroup(token, g, numInGroup);

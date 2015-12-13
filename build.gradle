@@ -295,7 +295,7 @@ project(':sbe-samples') {
     }
 
     task runJavaExamples {
-        dependsOn 'runExampleUsingGeneratedStub', 'runExampleUsingGeneratedStubExtension'
+        dependsOn 'runExampleUsingGeneratedStub', 'runExampleUsingGeneratedStubExtension', 'runOtfExample'
     }
 
     task sourcesJar(type: Jar) {
