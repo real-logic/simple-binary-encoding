@@ -357,7 +357,7 @@ project(':sbe-benchmarks') {
 
 task(generateJavaIrCodecs, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'sbe-tool/src/main/java',
         'sbe.target.language': 'Java',
@@ -367,7 +367,7 @@ task(generateJavaIrCodecs, type: JavaExec) {
 
 task(generateCpp98IrCodecs, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'sbe-tool/src/main/cpp',
         'sbe.target.language': 'Cpp98',

@@ -86,11 +86,12 @@ public class Ir
 
         captureTypes(messageTokens);
         compressConstantEnums(messageTokens);
+        countComponentTokens(messageTokens);
 
         messagesByIdMap.put(messageId, Collections.unmodifiableList(new ArrayList<>(messageTokens)));
     }
 
-    private void compressConstantEnums(final List<Token> tokens)
+    private static void compressConstantEnums(final List<Token> tokens)
     {
         final Iterator<Token> iter = tokens.iterator();
         while (iter.hasNext())
@@ -121,6 +122,32 @@ public class Ir
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private static void countComponentTokens(final List<Token> tokens)
+    {
+        final Map<String, Deque<Integer>> map = new HashMap<>();
+
+        for (int i = 0, size = tokens.size(); i < size; i++)
+        {
+            final Token token = tokens.get(i);
+            final Signal signal = token.signal();
+
+            if (signal.name().startsWith("BEGIN_"))
+            {
+                final String componentType = signal.name().substring(6);
+                map.computeIfAbsent(componentType, (key) -> new LinkedList<>()).push(i);
+            }
+            else if (signal.name().startsWith("END_"))
+            {
+                final String componentType = signal.name().substring(4);
+                final int beginIndex = map.get(componentType).pop();
+
+                final int componentTokenCount = (i - beginIndex) + 1;
+                tokens.get(beginIndex).componentTokenCount(componentTokenCount);
+                token.componentTokenCount(componentTokenCount);
             }
         }
     }

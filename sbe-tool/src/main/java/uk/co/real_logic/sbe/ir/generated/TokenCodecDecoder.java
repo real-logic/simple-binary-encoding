@@ -7,7 +7,7 @@ import uk.co.real_logic.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public class TokenCodecDecoder
 {
-    public static final int BLOCK_LENGTH = 20;
+    public static final int BLOCK_LENGTH = 24;
     public static final int TEMPLATE_ID = 2;
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
@@ -73,7 +73,6 @@ public class TokenCodecDecoder
 
     public void limit(final int limit)
     {
-        buffer.checkLimit(limit);
         this.limit = limit;
     }
 
@@ -108,6 +107,7 @@ public class TokenCodecDecoder
     {
         return 2147483647;
     }
+
 
     public int tokenOffset()
     {
@@ -147,6 +147,7 @@ public class TokenCodecDecoder
         return 2147483647;
     }
 
+
     public int tokenSize()
     {
         return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -184,6 +185,7 @@ public class TokenCodecDecoder
     {
         return 2147483647;
     }
+
 
     public int fieldId()
     {
@@ -223,15 +225,55 @@ public class TokenCodecDecoder
         return 2147483647;
     }
 
+
     public int tokenVersion()
     {
         return CodecUtil.int32Get(buffer, offset + 12, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
 
-    public static int signalId()
+    public static int componentTokenCountId()
     {
         return 15;
+    }
+
+    public static String componentTokenCountMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    public static int componentTokenCountNullValue()
+    {
+        return -2147483648;
+    }
+
+    public static int componentTokenCountMinValue()
+    {
+        return -2147483647;
+    }
+
+    public static int componentTokenCountMaxValue()
+    {
+        return 2147483647;
+    }
+
+
+    public int componentTokenCount()
+    {
+        return CodecUtil.int32Get(buffer, offset + 16, java.nio.ByteOrder.LITTLE_ENDIAN);
+    }
+
+
+    public static int signalId()
+    {
+        return 16;
     }
 
     public static String signalMetaAttribute(final MetaAttribute metaAttribute)
@@ -248,13 +290,13 @@ public class TokenCodecDecoder
 
     public SignalCodec signal()
     {
-        return SignalCodec.get(CodecUtil.uint8Get(buffer, offset + 16));
+        return SignalCodec.get(CodecUtil.uint8Get(buffer, offset + 20));
     }
 
 
     public static int primitiveTypeId()
     {
-        return 16;
+        return 17;
     }
 
     public static String primitiveTypeMetaAttribute(final MetaAttribute metaAttribute)
@@ -271,13 +313,13 @@ public class TokenCodecDecoder
 
     public PrimitiveTypeCodec primitiveType()
     {
-        return PrimitiveTypeCodec.get(CodecUtil.uint8Get(buffer, offset + 17));
+        return PrimitiveTypeCodec.get(CodecUtil.uint8Get(buffer, offset + 21));
     }
 
 
     public static int byteOrderId()
     {
-        return 17;
+        return 18;
     }
 
     public static String byteOrderMetaAttribute(final MetaAttribute metaAttribute)
@@ -294,13 +336,13 @@ public class TokenCodecDecoder
 
     public ByteOrderCodec byteOrder()
     {
-        return ByteOrderCodec.get(CodecUtil.uint8Get(buffer, offset + 18));
+        return ByteOrderCodec.get(CodecUtil.uint8Get(buffer, offset + 22));
     }
 
 
     public static int presenceId()
     {
-        return 18;
+        return 19;
     }
 
     public static String presenceMetaAttribute(final MetaAttribute metaAttribute)
@@ -317,13 +359,13 @@ public class TokenCodecDecoder
 
     public PresenceCodec presence()
     {
-        return PresenceCodec.get(CodecUtil.uint8Get(buffer, offset + 19));
+        return PresenceCodec.get(CodecUtil.uint8Get(buffer, offset + 23));
     }
 
 
     public static int nameId()
     {
-        return 19;
+        return 20;
     }
 
     public static String nameCharacterEncoding()
@@ -350,34 +392,31 @@ public class TokenCodecDecoder
 
     public int nameLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getName(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getName(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getName(final byte[] dst, final int dstOffset, final int length)
+    public int getName(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -386,10 +425,9 @@ public class TokenCodecDecoder
     public String name()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
@@ -408,7 +446,7 @@ public class TokenCodecDecoder
 
     public static int constValueId()
     {
-        return 20;
+        return 21;
     }
 
     public static String constValueCharacterEncoding()
@@ -435,34 +473,31 @@ public class TokenCodecDecoder
 
     public int constValueLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getConstValue(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getConstValue(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getConstValue(final byte[] dst, final int dstOffset, final int length)
+    public int getConstValue(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -471,10 +506,9 @@ public class TokenCodecDecoder
     public String constValue()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
@@ -493,7 +527,7 @@ public class TokenCodecDecoder
 
     public static int minValueId()
     {
-        return 21;
+        return 22;
     }
 
     public static String minValueCharacterEncoding()
@@ -520,34 +554,31 @@ public class TokenCodecDecoder
 
     public int minValueLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getMinValue(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getMinValue(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getMinValue(final byte[] dst, final int dstOffset, final int length)
+    public int getMinValue(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -556,10 +587,9 @@ public class TokenCodecDecoder
     public String minValue()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
@@ -578,7 +608,7 @@ public class TokenCodecDecoder
 
     public static int maxValueId()
     {
-        return 22;
+        return 23;
     }
 
     public static String maxValueCharacterEncoding()
@@ -605,34 +635,31 @@ public class TokenCodecDecoder
 
     public int maxValueLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getMaxValue(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getMaxValue(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getMaxValue(final byte[] dst, final int dstOffset, final int length)
+    public int getMaxValue(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -641,10 +668,9 @@ public class TokenCodecDecoder
     public String maxValue()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
@@ -663,7 +689,7 @@ public class TokenCodecDecoder
 
     public static int nullValueId()
     {
-        return 23;
+        return 24;
     }
 
     public static String nullValueCharacterEncoding()
@@ -690,34 +716,31 @@ public class TokenCodecDecoder
 
     public int nullValueLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getNullValue(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getNullValue(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getNullValue(final byte[] dst, final int dstOffset, final int length)
+    public int getNullValue(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -726,10 +749,9 @@ public class TokenCodecDecoder
     public String nullValue()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
@@ -748,7 +770,7 @@ public class TokenCodecDecoder
 
     public static int characterEncodingId()
     {
-        return 24;
+        return 25;
     }
 
     public static String characterEncodingCharacterEncoding()
@@ -775,34 +797,31 @@ public class TokenCodecDecoder
 
     public int characterEncodingLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getCharacterEncoding(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getCharacterEncoding(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getCharacterEncoding(final byte[] dst, final int dstOffset, final int length)
+    public int getCharacterEncoding(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -811,10 +830,9 @@ public class TokenCodecDecoder
     public String characterEncoding()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
@@ -833,7 +851,7 @@ public class TokenCodecDecoder
 
     public static int epochId()
     {
-        return 25;
+        return 26;
     }
 
     public static String epochCharacterEncoding()
@@ -860,34 +878,31 @@ public class TokenCodecDecoder
 
     public int epochLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getEpoch(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getEpoch(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getEpoch(final byte[] dst, final int dstOffset, final int length)
+    public int getEpoch(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -896,10 +911,9 @@ public class TokenCodecDecoder
     public String epoch()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
@@ -918,7 +932,7 @@ public class TokenCodecDecoder
 
     public static int timeUnitId()
     {
-        return 26;
+        return 27;
     }
 
     public static String timeUnitCharacterEncoding()
@@ -945,34 +959,31 @@ public class TokenCodecDecoder
 
     public int timeUnitLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getTimeUnit(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getTimeUnit(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getTimeUnit(final byte[] dst, final int dstOffset, final int length)
+    public int getTimeUnit(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -981,10 +992,9 @@ public class TokenCodecDecoder
     public String timeUnit()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
@@ -1003,7 +1013,7 @@ public class TokenCodecDecoder
 
     public static int semanticTypeId()
     {
-        return 27;
+        return 28;
     }
 
     public static String semanticTypeCharacterEncoding()
@@ -1030,34 +1040,31 @@ public class TokenCodecDecoder
 
     public int semanticTypeLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getSemanticType(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getSemanticType(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getSemanticType(final byte[] dst, final int dstOffset, final int length)
+    public int getSemanticType(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -1066,10 +1073,9 @@ public class TokenCodecDecoder
     public String semanticType()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 

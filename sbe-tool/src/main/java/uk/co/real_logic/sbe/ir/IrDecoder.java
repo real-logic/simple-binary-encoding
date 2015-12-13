@@ -187,6 +187,7 @@ public class IrDecoder implements AutoCloseable
             .size(tokenDecoder.tokenSize())
             .id(tokenDecoder.fieldId())
             .version(tokenDecoder.tokenVersion())
+            .componentTokenCount(tokenDecoder.componentTokenCount())
             .signal(mapSignal(tokenDecoder.signal()));
 
         final PrimitiveType type = mapPrimitiveType(tokenDecoder.primitiveType());

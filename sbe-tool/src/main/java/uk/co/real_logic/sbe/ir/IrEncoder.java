@@ -163,6 +163,7 @@ public class IrEncoder implements AutoCloseable
             .tokenSize(token.encodedLength())
             .fieldId(token.id())
             .tokenVersion(token.version())
+            .componentTokenCount(token.componentTokenCount())
             .signal(mapSignal(token.signal()))
             .primitiveType(mapPrimitiveType(type))
             .byteOrder(mapByteOrder(encoding.byteOrder()))

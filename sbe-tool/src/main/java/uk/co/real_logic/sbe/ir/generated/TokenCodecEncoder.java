@@ -7,7 +7,7 @@ import uk.co.real_logic.agrona.MutableDirectBuffer;
 @SuppressWarnings("all")
 public class TokenCodecEncoder
 {
-    public static final int BLOCK_LENGTH = 20;
+    public static final int BLOCK_LENGTH = 24;
     public static final int TEMPLATE_ID = 2;
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
@@ -69,7 +69,6 @@ public class TokenCodecEncoder
 
     public void limit(final int limit)
     {
-        buffer.checkLimit(limit);
         this.limit = limit;
     }
 
@@ -87,11 +86,13 @@ public class TokenCodecEncoder
     {
         return 2147483647;
     }
+
     public TokenCodecEncoder tokenOffset(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
+
 
     public static int tokenSizeNullValue()
     {
@@ -107,11 +108,13 @@ public class TokenCodecEncoder
     {
         return 2147483647;
     }
+
     public TokenCodecEncoder tokenSize(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
+
 
     public static int fieldIdNullValue()
     {
@@ -127,11 +130,13 @@ public class TokenCodecEncoder
     {
         return 2147483647;
     }
+
     public TokenCodecEncoder fieldId(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
+
 
     public static int tokenVersionNullValue()
     {
@@ -147,35 +152,59 @@ public class TokenCodecEncoder
     {
         return 2147483647;
     }
+
     public TokenCodecEncoder tokenVersion(final int value)
     {
         CodecUtil.int32Put(buffer, offset + 12, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
+
+
+    public static int componentTokenCountNullValue()
+    {
+        return -2147483648;
+    }
+
+    public static int componentTokenCountMinValue()
+    {
+        return -2147483647;
+    }
+
+    public static int componentTokenCountMaxValue()
+    {
+        return 2147483647;
+    }
+
+    public TokenCodecEncoder componentTokenCount(final int value)
+    {
+        CodecUtil.int32Put(buffer, offset + 16, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return this;
+    }
+
     public TokenCodecEncoder signal(final SignalCodec value)
     {
-        CodecUtil.uint8Put(buffer, offset + 16, value.value());
+        CodecUtil.uint8Put(buffer, offset + 20, value.value());
         return this;
     }
     public TokenCodecEncoder primitiveType(final PrimitiveTypeCodec value)
     {
-        CodecUtil.uint8Put(buffer, offset + 17, value.value());
+        CodecUtil.uint8Put(buffer, offset + 21, value.value());
         return this;
     }
     public TokenCodecEncoder byteOrder(final ByteOrderCodec value)
     {
-        CodecUtil.uint8Put(buffer, offset + 18, value.value());
+        CodecUtil.uint8Put(buffer, offset + 22, value.value());
         return this;
     }
     public TokenCodecEncoder presence(final PresenceCodec value)
     {
-        CodecUtil.uint8Put(buffer, offset + 19, value.value());
+        CodecUtil.uint8Put(buffer, offset + 23, value.value());
         return this;
     }
 
     public static int nameId()
     {
-        return 19;
+        return 20;
     }
 
     public static String nameCharacterEncoding()
@@ -195,22 +224,24 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putName(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public int putName(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public int putName(final byte[] src, final int srcOffset, final int length)
+    public int putName(
+        final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
@@ -231,8 +262,8 @@ public class TokenCodecEncoder
 
         final int length = bytes.length;
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
@@ -241,7 +272,7 @@ public class TokenCodecEncoder
 
     public static int constValueId()
     {
-        return 20;
+        return 21;
     }
 
     public static String constValueCharacterEncoding()
@@ -261,22 +292,24 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putConstValue(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public int putConstValue(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public int putConstValue(final byte[] src, final int srcOffset, final int length)
+    public int putConstValue(
+        final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
@@ -297,8 +330,8 @@ public class TokenCodecEncoder
 
         final int length = bytes.length;
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
@@ -307,7 +340,7 @@ public class TokenCodecEncoder
 
     public static int minValueId()
     {
-        return 21;
+        return 22;
     }
 
     public static String minValueCharacterEncoding()
@@ -327,22 +360,24 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putMinValue(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public int putMinValue(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public int putMinValue(final byte[] src, final int srcOffset, final int length)
+    public int putMinValue(
+        final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
@@ -363,8 +398,8 @@ public class TokenCodecEncoder
 
         final int length = bytes.length;
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
@@ -373,7 +408,7 @@ public class TokenCodecEncoder
 
     public static int maxValueId()
     {
-        return 22;
+        return 23;
     }
 
     public static String maxValueCharacterEncoding()
@@ -393,22 +428,24 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putMaxValue(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public int putMaxValue(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public int putMaxValue(final byte[] src, final int srcOffset, final int length)
+    public int putMaxValue(
+        final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
@@ -429,8 +466,8 @@ public class TokenCodecEncoder
 
         final int length = bytes.length;
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
@@ -439,7 +476,7 @@ public class TokenCodecEncoder
 
     public static int nullValueId()
     {
-        return 23;
+        return 24;
     }
 
     public static String nullValueCharacterEncoding()
@@ -459,22 +496,24 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putNullValue(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public int putNullValue(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public int putNullValue(final byte[] src, final int srcOffset, final int length)
+    public int putNullValue(
+        final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
@@ -495,8 +534,8 @@ public class TokenCodecEncoder
 
         final int length = bytes.length;
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
@@ -505,7 +544,7 @@ public class TokenCodecEncoder
 
     public static int characterEncodingId()
     {
-        return 24;
+        return 25;
     }
 
     public static String characterEncodingCharacterEncoding()
@@ -525,22 +564,24 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putCharacterEncoding(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public int putCharacterEncoding(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public int putCharacterEncoding(final byte[] src, final int srcOffset, final int length)
+    public int putCharacterEncoding(
+        final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
@@ -561,8 +602,8 @@ public class TokenCodecEncoder
 
         final int length = bytes.length;
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
@@ -571,7 +612,7 @@ public class TokenCodecEncoder
 
     public static int epochId()
     {
-        return 25;
+        return 26;
     }
 
     public static String epochCharacterEncoding()
@@ -591,22 +632,24 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putEpoch(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public int putEpoch(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public int putEpoch(final byte[] src, final int srcOffset, final int length)
+    public int putEpoch(
+        final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
@@ -627,8 +670,8 @@ public class TokenCodecEncoder
 
         final int length = bytes.length;
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
@@ -637,7 +680,7 @@ public class TokenCodecEncoder
 
     public static int timeUnitId()
     {
-        return 26;
+        return 27;
     }
 
     public static String timeUnitCharacterEncoding()
@@ -657,22 +700,24 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putTimeUnit(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public int putTimeUnit(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public int putTimeUnit(final byte[] src, final int srcOffset, final int length)
+    public int putTimeUnit(
+        final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
@@ -693,8 +738,8 @@ public class TokenCodecEncoder
 
         final int length = bytes.length;
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
@@ -703,7 +748,7 @@ public class TokenCodecEncoder
 
     public static int semanticTypeId()
     {
-        return 27;
+        return 28;
     }
 
     public static String semanticTypeCharacterEncoding()
@@ -723,22 +768,24 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putSemanticType(final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public int putSemanticType(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
     }
 
-    public int putSemanticType(final byte[] src, final int srcOffset, final int length)
+    public int putSemanticType(
+        final byte[] src, final int srcOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
@@ -759,8 +806,8 @@ public class TokenCodecEncoder
 
         final int length = bytes.length;
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        limit(limit + sizeOfLengthField + length);
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
         CodecUtil.uint8Put(buffer, limit, (short)length);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 

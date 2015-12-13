@@ -10,6 +10,7 @@ public class MessageHeaderEncoder
     public static final int ENCODED_LENGTH = 8;
     private MutableDirectBuffer buffer;
     private int offset;
+
     public MessageHeaderEncoder wrap(final MutableDirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -36,11 +37,13 @@ public class MessageHeaderEncoder
     {
         return 65534;
     }
+
     public MessageHeaderEncoder blockLength(final int value)
     {
         CodecUtil.uint16Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
+
 
     public static int templateIdNullValue()
     {
@@ -56,11 +59,13 @@ public class MessageHeaderEncoder
     {
         return 65534;
     }
+
     public MessageHeaderEncoder templateId(final int value)
     {
         CodecUtil.uint16Put(buffer, offset + 2, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
+
 
     public static int schemaIdNullValue()
     {
@@ -76,11 +81,13 @@ public class MessageHeaderEncoder
     {
         return 65534;
     }
+
     public MessageHeaderEncoder schemaId(final int value)
     {
         CodecUtil.uint16Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
+
 
     public static int versionNullValue()
     {
@@ -96,9 +103,11 @@ public class MessageHeaderEncoder
     {
         return 65534;
     }
+
     public MessageHeaderEncoder version(final int value)
     {
         CodecUtil.uint16Put(buffer, offset + 6, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
+
 }

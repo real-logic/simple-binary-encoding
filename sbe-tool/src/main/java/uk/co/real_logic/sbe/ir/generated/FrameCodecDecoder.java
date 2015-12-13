@@ -73,7 +73,6 @@ public class FrameCodecDecoder
 
     public void limit(final int limit)
     {
-        buffer.checkLimit(limit);
         this.limit = limit;
     }
 
@@ -108,6 +107,7 @@ public class FrameCodecDecoder
     {
         return 2147483647;
     }
+
 
     public int irId()
     {
@@ -147,6 +147,7 @@ public class FrameCodecDecoder
         return 2147483647;
     }
 
+
     public int irVersion()
     {
         return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -185,6 +186,7 @@ public class FrameCodecDecoder
         return 2147483647;
     }
 
+
     public int schemaVersion()
     {
         return CodecUtil.int32Get(buffer, offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -220,34 +222,31 @@ public class FrameCodecDecoder
 
     public int packageNameLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getPackageName(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getPackageName(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getPackageName(final byte[] dst, final int dstOffset, final int length)
+    public int getPackageName(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -256,10 +255,9 @@ public class FrameCodecDecoder
     public String packageName()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
@@ -305,34 +303,31 @@ public class FrameCodecDecoder
 
     public int namespaceNameLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getNamespaceName(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getNamespaceName(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getNamespaceName(final byte[] dst, final int dstOffset, final int length)
+    public int getNamespaceName(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -341,10 +336,9 @@ public class FrameCodecDecoder
     public String namespaceName()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 
@@ -390,34 +384,31 @@ public class FrameCodecDecoder
 
     public int semanticVersionLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
-
+        final int limit = parentMessage.limit();
         return CodecUtil.uint8Get(buffer, limit);
     }
 
-    public int getSemanticVersion(final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getSemanticVersion(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
-    public int getSemanticVersion(final byte[] dst, final int dstOffset, final int length)
+    public int getSemanticVersion(
+        final byte[] dst, final int dstOffset, final int length)
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
         final int bytesCopied = Math.min(length, dataLength);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
@@ -426,10 +417,9 @@ public class FrameCodecDecoder
     public String semanticVersion()
     {
         final int sizeOfLengthField = 1;
-        final int limit = limit();
-        buffer.checkLimit(limit + sizeOfLengthField);
+        final int limit = parentMessage.limit();
         final int dataLength = CodecUtil.uint8Get(buffer, limit);
-        limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
 

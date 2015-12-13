@@ -10,6 +10,7 @@ public class VarDataEncodingDecoder
     public static final int ENCODED_LENGTH = -1;
     private DirectBuffer buffer;
     private int offset;
+
     public VarDataEncodingDecoder wrap(final DirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -37,6 +38,7 @@ public class VarDataEncodingDecoder
         return (short)254;
     }
 
+
     public short length()
     {
         return CodecUtil.uint8Get(buffer, offset + 0);
@@ -57,4 +59,5 @@ public class VarDataEncodingDecoder
     {
         return (short)254;
     }
+
 }

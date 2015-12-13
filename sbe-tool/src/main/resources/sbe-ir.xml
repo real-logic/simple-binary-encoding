@@ -78,18 +78,19 @@
         <field name="tokenSize" id="12" type="int32"/>
         <field name="fieldId" id="13" type="int32"/>
         <field name="tokenVersion" id="14" type="int32"/>
-        <field name="signal" id="15" type="SignalCodec"/>
-        <field name="primitiveType" id="16" type="PrimitiveTypeCodec"/>
-        <field name="byteOrder" id="17" type="ByteOrderCodec"/>
-        <field name="presence" id="18" type="PresenceCodec"/>
-        <data name="name" id="19" type="varDataEncoding"/>
-        <data name="constValue" id="20" type="varDataEncoding"/>
-        <data name="minValue" id="21" type="varDataEncoding"/>
-        <data name="maxValue" id="22" type="varDataEncoding"/>
-        <data name="nullValue" id="23" type="varDataEncoding"/>
-        <data name="characterEncoding" id="24" type="varDataEncoding"/>
-        <data name="epoch" id="25" type="varDataEncoding"/>
-        <data name="timeUnit" id="26" type="varDataEncoding"/>
-        <data name="semanticType" id="27" type="varDataEncoding"/>
+        <field name="componentTokenCount" id="15" type="int32"/>
+        <field name="signal" id="16" type="SignalCodec"/>
+        <field name="primitiveType" id="17" type="PrimitiveTypeCodec"/>
+        <field name="byteOrder" id="18" type="ByteOrderCodec"/>
+        <field name="presence" id="19" type="PresenceCodec"/>
+        <data name="name" id="20" type="varDataEncoding"/>
+        <data name="constValue" id="21" type="varDataEncoding"/>
+        <data name="minValue" id="22" type="varDataEncoding"/>
+        <data name="maxValue" id="23" type="varDataEncoding"/>
+        <data name="nullValue" id="24" type="varDataEncoding"/>
+        <data name="characterEncoding" id="25" type="varDataEncoding"/>
+        <data name="epoch" id="26" type="varDataEncoding"/>
+        <data name="timeUnit" id="27" type="varDataEncoding"/>
+        <data name="semanticType" id="28" type="varDataEncoding"/>
     </sbe:message>
 </sbe:messageSchema>

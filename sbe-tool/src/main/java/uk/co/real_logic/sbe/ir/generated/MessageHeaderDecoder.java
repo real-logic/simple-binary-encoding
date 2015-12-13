@@ -10,6 +10,7 @@ public class MessageHeaderDecoder
     public static final int ENCODED_LENGTH = 8;
     private DirectBuffer buffer;
     private int offset;
+
     public MessageHeaderDecoder wrap(final DirectBuffer buffer, final int offset)
     {
         this.buffer = buffer;
@@ -37,6 +38,7 @@ public class MessageHeaderDecoder
         return 65534;
     }
 
+
     public int blockLength()
     {
         return CodecUtil.uint16Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -57,6 +59,7 @@ public class MessageHeaderDecoder
     {
         return 65534;
     }
+
 
     public int templateId()
     {
@@ -79,6 +82,7 @@ public class MessageHeaderDecoder
         return 65534;
     }
 
+
     public int schemaId()
     {
         return CodecUtil.uint16Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -99,6 +103,7 @@ public class MessageHeaderDecoder
     {
         return 65534;
     }
+
 
     public int version()
     {
