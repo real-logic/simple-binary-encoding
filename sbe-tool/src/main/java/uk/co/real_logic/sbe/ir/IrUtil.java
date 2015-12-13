@@ -19,7 +19,6 @@ import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.codec.java.CodecUtil;
 import uk.co.real_logic.sbe.ir.generated.ByteOrderCodec;
 import uk.co.real_logic.sbe.ir.generated.PresenceCodec;
 import uk.co.real_logic.sbe.ir.generated.PrimitiveTypeCodec;
@@ -274,53 +273,53 @@ public class IrUtil
             case CHAR:
                 if (value.size() == 1)
                 {
-                    CodecUtil.charPut(buffer, 0, (byte)value.longValue());
+                    buffer.putByte(0, (byte)value.longValue());
                     return 1;
                 }
                 else
                 {
-                    CodecUtil.charsPut(buffer, 0, value.byteArrayValue(), 0, value.byteArrayValue().length);
+                    buffer.putBytes(0, value.byteArrayValue(), 0, value.byteArrayValue().length);
                     return value.byteArrayValue().length;
                 }
 
             case INT8:
-                CodecUtil.int8Put(buffer, 0, (byte)value.longValue());
+                buffer.putByte(0, (byte)value.longValue());
                 return 1;
 
             case INT16:
-                CodecUtil.int16Put(buffer, 0, (short)value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                buffer.putShort(0, (short)value.longValue(), ByteOrder.LITTLE_ENDIAN);
                 return 2;
 
             case INT32:
-                CodecUtil.int32Put(buffer, 0, (int)value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                buffer.putInt(0, (int)value.longValue(), ByteOrder.LITTLE_ENDIAN);
                 return 4;
 
             case INT64:
-                CodecUtil.int64Put(buffer, 0, value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                buffer.putLong(0, value.longValue(), ByteOrder.LITTLE_ENDIAN);
                 return 8;
 
             case UINT8:
-                CodecUtil.uint8Put(buffer, 0, (short)value.longValue());
+                buffer.putByte(0, (byte)value.longValue());
                 return 1;
 
             case UINT16:
-                CodecUtil.uint16Put(buffer, 0, (int)value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                buffer.putShort(0, (short)value.longValue(), ByteOrder.LITTLE_ENDIAN);
                 return 2;
 
             case UINT32:
-                CodecUtil.uint32Put(buffer, 0, value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                buffer.putInt(0, (int)value.longValue(), ByteOrder.LITTLE_ENDIAN);
                 return 4;
 
             case UINT64:
-                CodecUtil.uint64Put(buffer, 0, value.longValue(), ByteOrder.LITTLE_ENDIAN);
+                buffer.putLong(0, value.longValue(), ByteOrder.LITTLE_ENDIAN);
                 return 8;
 
             case FLOAT:
-                CodecUtil.floatPut(buffer, 0, (float)value.doubleValue(), ByteOrder.LITTLE_ENDIAN);
+                buffer.putFloat(0, (float)value.doubleValue(), ByteOrder.LITTLE_ENDIAN);
                 return 4;
 
             case DOUBLE:
-                CodecUtil.doublePut(buffer, 0, value.doubleValue(), ByteOrder.LITTLE_ENDIAN);
+                buffer.putDouble(0, value.doubleValue(), ByteOrder.LITTLE_ENDIAN);
                 return 8;
 
             default:
@@ -340,44 +339,44 @@ public class IrUtil
             case CHAR:
                 if (length == 1)
                 {
-                    return new PrimitiveValue(CodecUtil.charGet(buffer, 0), 1);
+                    return new PrimitiveValue(buffer.getByte(0), 1);
                 }
                 else
                 {
                     final byte[] array = new byte[length];
-                    CodecUtil.charsGet(buffer, 0, array, 0, array.length);
+                    buffer.getBytes(0, array, 0, array.length);
                     return new PrimitiveValue(array, "UTF-8", array.length);
                 }
 
             case INT8:
-                return new PrimitiveValue(CodecUtil.int8Get(buffer, 0), 1);
+                return new PrimitiveValue(buffer.getByte(0), 1);
 
             case INT16:
-                return new PrimitiveValue(CodecUtil.int16Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 2);
+                return new PrimitiveValue(buffer.getShort(0, ByteOrder.LITTLE_ENDIAN), 2);
 
             case INT32:
-                return new PrimitiveValue(CodecUtil.int32Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 4);
+                return new PrimitiveValue(buffer.getInt(0, ByteOrder.LITTLE_ENDIAN), 4);
 
             case INT64:
-                return new PrimitiveValue(CodecUtil.int64Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 8);
+                return new PrimitiveValue(buffer.getLong(0, ByteOrder.LITTLE_ENDIAN), 8);
 
             case UINT8:
-                return new PrimitiveValue(CodecUtil.uint8Get(buffer, 0), 1);
+                return new PrimitiveValue((short)(buffer.getByte(0) & 0xFF), 1);
 
             case UINT16:
-                return new PrimitiveValue(CodecUtil.uint16Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 2);
+                return new PrimitiveValue(buffer.getShort(0, ByteOrder.LITTLE_ENDIAN) & 0xFFFF, 2);
 
             case UINT32:
-                return new PrimitiveValue(CodecUtil.uint32Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 4);
+                return new PrimitiveValue(buffer.getInt(0, ByteOrder.LITTLE_ENDIAN) & 0xFFFF_FFFFL, 4);
 
             case UINT64:
-                return new PrimitiveValue(CodecUtil.uint64Get(buffer, 0, ByteOrder.LITTLE_ENDIAN), 8);
+                return new PrimitiveValue(buffer.getLong(0, ByteOrder.LITTLE_ENDIAN), 8);
 
             case FLOAT:
-                return new PrimitiveValue(CodecUtil.floatGet(buffer, 0, ByteOrder.LITTLE_ENDIAN), 4);
+                return new PrimitiveValue(buffer.getFloat(0, ByteOrder.LITTLE_ENDIAN), 4);
 
             case DOUBLE:
-                return new PrimitiveValue(CodecUtil.doubleGet(buffer, 0, ByteOrder.LITTLE_ENDIAN), 8);
+                return new PrimitiveValue(buffer.getDouble(0, ByteOrder.LITTLE_ENDIAN), 8);
 
             default:
                 return null;
