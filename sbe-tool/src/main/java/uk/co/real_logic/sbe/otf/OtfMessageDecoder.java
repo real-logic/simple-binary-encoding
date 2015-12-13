@@ -55,20 +55,19 @@ public class OtfMessageDecoder
         final List<Token> msgTokens,
         final TokenListener listener)
     {
-        final int numTokens = msgTokens.size();
-
         listener.onBeginMessage(msgTokens.get(0));
 
+        final int numTokens = msgTokens.size();
         final int tokenIdx = decodeFields(buffer, bufferIdx, actingVersion, msgTokens, 1, numTokens, listener);
         bufferIdx += blockLength;
 
-        long packedValues = decodeGroups(buffer, bufferIdx, actingVersion, msgTokens, tokenIdx, numTokens, listener);
+        final long packedValues = decodeGroups(buffer, bufferIdx, actingVersion, msgTokens, tokenIdx, numTokens, listener);
 
-        packedValues = decodeData(buffer, bufferIndex(packedValues), msgTokens, tokenIndex(packedValues), numTokens, listener);
+        bufferIdx = decodeData(buffer, bufferIndex(packedValues), msgTokens, tokenIndex(packedValues), numTokens, listener);
 
-        listener.onEndMessage(msgTokens.get(tokenIndex(packedValues)));
+        listener.onEndMessage(msgTokens.get(numTokens - 1));
 
-        return bufferIndex(packedValues);
+        return bufferIdx;
     }
 
     private static int decodeFields(
@@ -168,13 +167,11 @@ public class OtfMessageDecoder
                     buffer, bufferIdx, actingVersion, tokens, beginFieldsIdx, numTokens, listener);
                 bufferIdx += blockLength;
 
-                long packedValues = decodeGroups(
+                final long packedValues = decodeGroups(
                     buffer, bufferIdx, actingVersion, tokens, afterFieldsIdx, numTokens, listener);
 
-                packedValues = decodeData(
+                bufferIdx = decodeData(
                     buffer, bufferIndex(packedValues), tokens, tokenIndex(packedValues), numTokens, listener);
-
-                bufferIdx = bufferIndex(packedValues);
 
                 listener.onEndGroup(token, i, numInGroup);
             }
@@ -206,7 +203,7 @@ public class OtfMessageDecoder
         listener.onEndComposite(fieldToken, tokens, tokenIdx, toIndex);
     }
 
-    private static long decodeData(
+    private static int decodeData(
         final DirectBuffer buffer,
         int bufferIdx,
         final List<Token> tokens,
@@ -238,7 +235,7 @@ public class OtfMessageDecoder
             tokenIdx += token.componentTokenCount();
         }
 
-        return pack(bufferIdx, tokenIdx);
+        return bufferIdx;
     }
 
     private static long pack(final int bufferIndex, final int tokenIndex)
