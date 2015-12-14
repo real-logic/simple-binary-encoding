@@ -88,7 +88,7 @@ public class Ir
         compressConstantEnums(messageTokens);
         countComponentTokens(messageTokens);
 
-        messagesByIdMap.put(messageId, Collections.unmodifiableList(new ArrayList<>(messageTokens)));
+        messagesByIdMap.put(messageId, new ArrayList<>(messageTokens));
     }
 
     private static void compressConstantEnums(final List<Token> tokens)
