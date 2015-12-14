@@ -1251,7 +1251,7 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generatePrimitivePropertyDecodeMethods(
         final String propertyName, final Token token, final String indent)
     {
-        return token.switchArray(
+        return token.switchOnLength(
             () -> generateSingleValuePropertyDecode(propertyName, token, indent),
             () -> generateArrayPropertyDecode(propertyName, token, indent));
     }
@@ -1259,7 +1259,7 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generatePrimitivePropertyEncodeMethods(
         final String containingClassName, final String propertyName, final Token token, final String indent)
     {
-        return token.switchArray(
+        return token.switchOnLength(
             () -> generateSingleValuePropertyEncode(containingClassName, propertyName, token, indent),
             () -> generateArrayPropertyEncode(containingClassName, propertyName, token, indent));
     }

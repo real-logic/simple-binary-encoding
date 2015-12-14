@@ -235,7 +235,15 @@ public class Token
         return encodedLength / encoding.primitiveType().size();
     }
 
-    public CharSequence switchArray(final Supplier<CharSequence> single, final Supplier<CharSequence> array)
+    /**
+     * Switch which approach to take based on the length of the token. If length is zero then an empty
+     * {@link String} is returned.
+     *
+     * @param single to be used when length is one.
+     * @param array  to be used when length is greater than one.
+     * @return the {@link CharSequence} representing the token depending on the length.
+     */
+    public CharSequence switchOnLength(final Supplier<CharSequence> single, final Supplier<CharSequence> array)
     {
         final int arrayLength = arrayLength();
 
