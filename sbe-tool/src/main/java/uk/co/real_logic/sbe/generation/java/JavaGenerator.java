@@ -1334,7 +1334,7 @@ public class JavaGenerator implements CodeGenerator
         return String.format(
             indent + "    public %s %s(final %s value)\n" +
             indent + "    {\n" +
-            indent + "        %s;\n\n" +
+            indent + "        %s;\n" +
             indent + "        return this;\n" +
             indent + "    }\n\n",
             formatClassName(containingClassName),
