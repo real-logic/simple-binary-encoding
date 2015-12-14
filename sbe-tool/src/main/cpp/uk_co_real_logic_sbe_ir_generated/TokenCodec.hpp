@@ -84,7 +84,7 @@ public:
 
     static const sbe_uint16_t sbeBlockLength(void)
     {
-        return (sbe_uint16_t)20;
+        return (sbe_uint16_t)24;
     }
 
     static const sbe_uint16_t sbeTemplateId(void)
@@ -369,9 +369,63 @@ public:
         return *this;
     }
 
-    static const int signalId(void)
+    static const int componentTokenCountId(void)
     {
         return 15;
+    }
+
+    static const int componentTokenCountSinceVersion(void)
+    {
+         return 0;
+    }
+
+    bool componentTokenCountInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
+    }
+
+
+    static const char *componentTokenCountMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    static const sbe_int32_t componentTokenCountNullValue()
+    {
+        return SBE_NULLVALUE_INT32;
+    }
+
+    static const sbe_int32_t componentTokenCountMinValue()
+    {
+        return -2147483647;
+    }
+
+    static const sbe_int32_t componentTokenCountMaxValue()
+    {
+        return 2147483647;
+    }
+
+    sbe_int32_t componentTokenCount(void) const
+    {
+        return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 16)));
+    }
+
+    TokenCodec &componentTokenCount(const sbe_int32_t value)
+    {
+        *((sbe_int32_t *)(buffer_ + offset_ + 16)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
+        return *this;
+    }
+
+    static const int signalId(void)
+    {
+        return 16;
     }
 
     static const int signalSinceVersion(void)
@@ -399,18 +453,18 @@ public:
 
     SignalCodec::Value signal(void) const
     {
-        return SignalCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 16))));
+        return SignalCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 20))));
     }
 
     TokenCodec &signal(const SignalCodec::Value value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 16)) = (value);
+        *((sbe_uint8_t *)(buffer_ + offset_ + 20)) = (value);
         return *this;
     }
 
     static const int primitiveTypeId(void)
     {
-        return 16;
+        return 17;
     }
 
     static const int primitiveTypeSinceVersion(void)
@@ -438,18 +492,18 @@ public:
 
     PrimitiveTypeCodec::Value primitiveType(void) const
     {
-        return PrimitiveTypeCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 17))));
+        return PrimitiveTypeCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 21))));
     }
 
     TokenCodec &primitiveType(const PrimitiveTypeCodec::Value value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 17)) = (value);
+        *((sbe_uint8_t *)(buffer_ + offset_ + 21)) = (value);
         return *this;
     }
 
     static const int byteOrderId(void)
     {
-        return 17;
+        return 18;
     }
 
     static const int byteOrderSinceVersion(void)
@@ -477,18 +531,18 @@ public:
 
     ByteOrderCodec::Value byteOrder(void) const
     {
-        return ByteOrderCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 18))));
+        return ByteOrderCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 22))));
     }
 
     TokenCodec &byteOrder(const ByteOrderCodec::Value value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 18)) = (value);
+        *((sbe_uint8_t *)(buffer_ + offset_ + 22)) = (value);
         return *this;
     }
 
     static const int presenceId(void)
     {
-        return 18;
+        return 19;
     }
 
     static const int presenceSinceVersion(void)
@@ -516,12 +570,12 @@ public:
 
     PresenceCodec::Value presence(void) const
     {
-        return PresenceCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 19))));
+        return PresenceCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 23))));
     }
 
     TokenCodec &presence(const PresenceCodec::Value value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 19)) = (value);
+        *((sbe_uint8_t *)(buffer_ + offset_ + 23)) = (value);
         return *this;
     }
 
@@ -554,7 +608,7 @@ public:
 
     static const int nameId(void)
     {
-        return 19;
+        return 20;
     }
 
 
@@ -629,7 +683,7 @@ public:
 
     static const int constValueId(void)
     {
-        return 20;
+        return 21;
     }
 
 
@@ -704,7 +758,7 @@ public:
 
     static const int minValueId(void)
     {
-        return 21;
+        return 22;
     }
 
 
@@ -779,7 +833,7 @@ public:
 
     static const int maxValueId(void)
     {
-        return 22;
+        return 23;
     }
 
 
@@ -854,7 +908,7 @@ public:
 
     static const int nullValueId(void)
     {
-        return 23;
+        return 24;
     }
 
 
@@ -929,7 +983,7 @@ public:
 
     static const int characterEncodingId(void)
     {
-        return 24;
+        return 25;
     }
 
 
@@ -1004,7 +1058,7 @@ public:
 
     static const int epochId(void)
     {
-        return 25;
+        return 26;
     }
 
 
@@ -1079,7 +1133,7 @@ public:
 
     static const int timeUnitId(void)
     {
-        return 26;
+        return 27;
     }
 
 
@@ -1154,7 +1208,7 @@ public:
 
     static const int semanticTypeId(void)
     {
-        return 27;
+        return 28;
     }
 
 

@@ -186,6 +186,8 @@ public:
     ::int32_t offset() const;
     /// Retrieve the size value of the current token
     ::int32_t size() const;
+    /// Retrieve the count of tokens in current component
+    ::int32_t componentTokenCount() const;
     /// Retrieve the Ir::TokenSignal of the current token
     TokenSignal signal() const;
     /// Retrieve the Ir::TokenByteOrder of the current token

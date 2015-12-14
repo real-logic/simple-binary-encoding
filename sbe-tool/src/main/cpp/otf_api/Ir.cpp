@@ -140,6 +140,11 @@ bool Ir::end() const
     return impl_->tokenCodec.tokenSize();
 }
 
+::int32_t Ir::componentTokenCount() const
+{
+    return impl_->tokenCodec.componentTokenCount();
+}
+
 Ir::TokenSignal Ir::signal() const
 {
     // the serialized IR and the Ir::TokenSignal enums MUST be kept in sync!
