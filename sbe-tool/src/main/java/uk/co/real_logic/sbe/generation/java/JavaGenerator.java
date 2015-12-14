@@ -1470,7 +1470,7 @@ public class JavaGenerator implements CodeGenerator
                                           "\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
                 "%s" +
-                indent + "        CodecUtil.charsGet(buffer, this.offset + %d, dst, dstOffset, length);\n" +
+                indent + "        buffer.getBytes(this.offset + %d, dst, dstOffset, length);\n" +
                 indent + "        return length;\n" +
                 indent + "    }\n\n",
                 toUpperFirstChar(propertyName),
@@ -1548,7 +1548,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "            throw new IndexOutOfBoundsException(" +
                                           "\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
                 indent + "        }\n\n" +
-                indent + "        CodecUtil.charsPut(buffer, this.offset + %d, src, srcOffset, length);\n" +
+                indent + "        buffer.putBytes(this.offset + %d, src, srcOffset, length);\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
                 formatClassName(containingClassName),
@@ -1656,7 +1656,8 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateFixedFlyweightCode(
         final String className, final int size, final boolean callsSuper, final String bufferImplementation)
     {
-        final String body = callsSuper ? "        super.wrap(buffer, offset);\n" : "";
+        final String body = callsSuper ?
+            "        super.wrap(buffer, offset);\n" : "";
 
         return String.format(
             "    public static final int ENCODED_LENGTH = %2$d;\n" +
