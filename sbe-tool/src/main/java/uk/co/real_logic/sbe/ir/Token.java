@@ -236,24 +236,24 @@ public class Token
     }
 
     /**
-     * Switch which approach to take based on the length of the token. If length is zero then an empty
+     * Match which approach to take based on the length of the token. If length is zero then an empty
      * {@link String} is returned.
      *
-     * @param single to be used when length is one.
-     * @param array  to be used when length is greater than one.
+     * @param one  to be used when length is one.
+     * @param many to be used when length is greater than one.
      * @return the {@link CharSequence} representing the token depending on the length.
      */
-    public CharSequence switchOnLength(final Supplier<CharSequence> single, final Supplier<CharSequence> array)
+    public CharSequence matchOnLength(final Supplier<CharSequence> one, final Supplier<CharSequence> many)
     {
         final int arrayLength = arrayLength();
 
         if (arrayLength == 1)
         {
-            return single.get();
+            return one.get();
         }
         else if (arrayLength > 1)
         {
-            return array.get();
+            return many.get();
         }
 
         return "";

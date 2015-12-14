@@ -1244,17 +1244,17 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generatePrimitivePropertyDecodeMethods(
         final String propertyName, final Token token, final String indent)
     {
-        return token.switchOnLength(
-            () -> generateSingleValuePropertyDecode(propertyName, token, indent),
-            () -> generateArrayPropertyDecode(propertyName, token, indent));
+        return token.matchOnLength(
+            () -> generatePrimitivePropertyDecode(propertyName, token, indent),
+            () -> generatePrimitiveArrayPropertyDecode(propertyName, token, indent));
     }
 
     private CharSequence generatePrimitivePropertyEncodeMethods(
         final String containingClassName, final String propertyName, final Token token, final String indent)
     {
-        return token.switchOnLength(
-            () -> generateSingleValuePropertyEncode(containingClassName, propertyName, token, indent),
-            () -> generateArrayPropertyEncode(containingClassName, propertyName, token, indent));
+        return token.matchOnLength(
+            () -> generatePrimitivePropertyEncode(containingClassName, propertyName, token, indent),
+            () -> generatePrimitiveArrayPropertyEncode(containingClassName, propertyName, token, indent));
     }
 
     private CharSequence generatePrimitiveFieldMetaData(final String propertyName, final Token token, final String indent)
@@ -1300,7 +1300,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateSingleValuePropertyDecode(
+    private CharSequence generatePrimitivePropertyDecode(
         final String propertyName, final Token token, final String indent)
     {
         final Encoding encoding = token.encoding();
@@ -1323,7 +1323,7 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateSingleValuePropertyEncode(
+    private CharSequence generatePrimitivePropertyEncode(
         final String containingClassName, final String propertyName, final Token token, final String indent)
     {
         final Encoding encoding = token.encoding();
@@ -1409,7 +1409,7 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateArrayPropertyDecode(final String propertyName, final Token token, final String indent)
+    private CharSequence generatePrimitiveArrayPropertyDecode(final String propertyName, final Token token, final String indent)
     {
         final Encoding encoding = token.encoding();
         final String javaTypeName = javaTypeName(encoding.primitiveType());
@@ -1489,7 +1489,7 @@ public class JavaGenerator implements CodeGenerator
         return sizeOfPrimitive(encoding) == 1 ? "" : ", java.nio.ByteOrder." + encoding.byteOrder();
     }
 
-    private CharSequence generateArrayPropertyEncode(
+    private CharSequence generatePrimitiveArrayPropertyEncode(
         final String containingClassName, final String propertyName, final Token token, final String indent)
     {
         final Encoding encoding = token.encoding();
