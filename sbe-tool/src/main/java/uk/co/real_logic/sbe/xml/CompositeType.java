@@ -21,13 +21,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static javax.xml.xpath.XPathConstants.NODESET;
 
 /**
  * SBE compositeType.
@@ -35,9 +33,9 @@ import java.util.Map;
 public class CompositeType extends Type
 {
     public static final String COMPOSITE_TYPE = "composite";
+    public static final String SUB_TYPES_EXP = EncodedDataType.ENCODED_DATA_TYPE;
 
-    private final List<EncodedDataType> containedTypeList = new ArrayList<>();
-    private final Map<String, EncodedDataType> containedTypeByNameMap = new HashMap<>();
+    private final Map<String, EncodedDataType> containedTypeByNameMap = new LinkedHashMap<>();
     private final int sinceVersion;
 
     /**
@@ -52,20 +50,15 @@ public class CompositeType extends Type
 
         sinceVersion = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "sinceVersion", "0"));
         final XPath xPath = XPathFactory.newInstance().newXPath();
-        final NodeList list = (NodeList)xPath.compile(EncodedDataType.ENCODED_DATA_TYPE).evaluate(node, XPathConstants.NODESET);
+        final NodeList list = (NodeList)xPath.compile(SUB_TYPES_EXP).evaluate(node, NODESET);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             final EncodedDataType type = new EncodedDataType(list.item(i));
 
-            if (containedTypeByNameMap.get(type.name()) != null)
+            if (containedTypeByNameMap.put(type.name(), type) != null)
             {
                 XmlSchemaParser.handleError(node, "composite already contains type named: " + type.name());
-            }
-            else
-            {
-                containedTypeList.add(type);
-                containedTypeByNameMap.put(type.name(), type);
             }
         }
 
@@ -92,7 +85,7 @@ public class CompositeType extends Type
     {
         int offset = 0;
 
-        for (final EncodedDataType t : containedTypeList)
+        for (final EncodedDataType t : containedTypeByNameMap.values())
         {
             if (t.isVariableLength())
             {
@@ -127,7 +120,7 @@ public class CompositeType extends Type
      */
     public List<EncodedDataType> getTypeList()
     {
-        return containedTypeList;
+        return new ArrayList<>(containedTypeByNameMap.values());
     }
 
     /**
@@ -219,7 +212,7 @@ public class CompositeType extends Type
     {
         int offset = 0;
 
-        for (final EncodedDataType edt : containedTypeList)
+        for (final EncodedDataType edt : containedTypeByNameMap.values())
         {
             final int offsetAttribute = edt.offsetAttribute();
 
