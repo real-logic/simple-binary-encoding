@@ -1905,7 +1905,6 @@ public class JavaGenerator implements CodeGenerator
     {
         final String enumName = formatClassName(token.name());
         final Encoding encoding = token.encoding();
-        final String typePrefix = encoding.primitiveType().primitiveName();
 
         if (token.isConstantEncoding())
         {
