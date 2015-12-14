@@ -111,7 +111,7 @@ public class FrameCodecDecoder
 
     public int irId()
     {
-        return CodecUtil.int32Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getInt(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
 
@@ -150,7 +150,7 @@ public class FrameCodecDecoder
 
     public int irVersion()
     {
-        return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getInt(offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
 
@@ -189,7 +189,7 @@ public class FrameCodecDecoder
 
     public int schemaVersion()
     {
-        return CodecUtil.int32Get(buffer, offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getInt(offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
 
@@ -223,7 +223,7 @@ public class FrameCodecDecoder
     public int packageNameLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getPackageName(
@@ -231,7 +231,7 @@ public class FrameCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -244,7 +244,7 @@ public class FrameCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -256,7 +256,7 @@ public class FrameCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
@@ -304,7 +304,7 @@ public class FrameCodecDecoder
     public int namespaceNameLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getNamespaceName(
@@ -312,7 +312,7 @@ public class FrameCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -325,7 +325,7 @@ public class FrameCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -337,7 +337,7 @@ public class FrameCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
@@ -385,7 +385,7 @@ public class FrameCodecDecoder
     public int semanticVersionLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getSemanticVersion(
@@ -393,7 +393,7 @@ public class FrameCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -406,7 +406,7 @@ public class FrameCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -418,7 +418,7 @@ public class FrameCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);

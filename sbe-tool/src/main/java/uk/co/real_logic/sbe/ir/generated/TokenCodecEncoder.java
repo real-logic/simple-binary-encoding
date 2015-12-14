@@ -89,7 +89,8 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder tokenOffset(final int value)
     {
-        CodecUtil.int32Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 
@@ -111,7 +112,8 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder tokenSize(final int value)
     {
-        CodecUtil.int32Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 
@@ -133,7 +135,8 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder fieldId(final int value)
     {
-        CodecUtil.int32Put(buffer, offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 
@@ -155,7 +158,8 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder tokenVersion(final int value)
     {
-        CodecUtil.int32Put(buffer, offset + 12, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(offset + 12, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 
@@ -177,28 +181,29 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder componentTokenCount(final int value)
     {
-        CodecUtil.int32Put(buffer, offset + 16, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(offset + 16, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 
     public TokenCodecEncoder signal(final SignalCodec value)
     {
-        CodecUtil.uint8Put(buffer, offset + 20, value.value());
+        buffer.putByte(offset + 20, (byte)value.value());
         return this;
     }
     public TokenCodecEncoder primitiveType(final PrimitiveTypeCodec value)
     {
-        CodecUtil.uint8Put(buffer, offset + 21, value.value());
+        buffer.putByte(offset + 21, (byte)value.value());
         return this;
     }
     public TokenCodecEncoder byteOrder(final ByteOrderCodec value)
     {
-        CodecUtil.uint8Put(buffer, offset + 22, value.value());
+        buffer.putByte(offset + 22, (byte)value.value());
         return this;
     }
     public TokenCodecEncoder presence(final PresenceCodec value)
     {
-        CodecUtil.uint8Put(buffer, offset + 23, value.value());
+        buffer.putByte(offset + 23, (byte)value.value());
         return this;
     }
 
@@ -230,7 +235,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -242,7 +248,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -264,7 +271,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;
@@ -298,7 +306,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -310,7 +319,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -332,7 +342,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;
@@ -366,7 +377,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -378,7 +390,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -400,7 +413,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;
@@ -434,7 +448,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -446,7 +461,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -468,7 +484,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;
@@ -502,7 +519,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -514,7 +532,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -536,7 +555,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;
@@ -570,7 +590,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -582,7 +603,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -604,7 +626,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;
@@ -638,7 +661,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -650,7 +674,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -672,7 +697,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;
@@ -706,7 +732,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -718,7 +745,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -740,7 +768,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;
@@ -774,7 +803,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -786,7 +816,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -808,7 +839,8 @@ public class TokenCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;

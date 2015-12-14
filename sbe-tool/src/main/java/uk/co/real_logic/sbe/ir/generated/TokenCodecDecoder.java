@@ -111,7 +111,7 @@ public class TokenCodecDecoder
 
     public int tokenOffset()
     {
-        return CodecUtil.int32Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getInt(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
 
@@ -150,7 +150,7 @@ public class TokenCodecDecoder
 
     public int tokenSize()
     {
-        return CodecUtil.int32Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getInt(offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
 
@@ -189,7 +189,7 @@ public class TokenCodecDecoder
 
     public int fieldId()
     {
-        return CodecUtil.int32Get(buffer, offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getInt(offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
 
@@ -228,7 +228,7 @@ public class TokenCodecDecoder
 
     public int tokenVersion()
     {
-        return CodecUtil.int32Get(buffer, offset + 12, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getInt(offset + 12, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
 
@@ -267,7 +267,7 @@ public class TokenCodecDecoder
 
     public int componentTokenCount()
     {
-        return CodecUtil.int32Get(buffer, offset + 16, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getInt(offset + 16, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
 
@@ -290,7 +290,7 @@ public class TokenCodecDecoder
 
     public SignalCodec signal()
     {
-        return SignalCodec.get(CodecUtil.uint8Get(buffer, offset + 20));
+        return SignalCodec.get((short)(buffer.getByte(offset + 20) & 0xFF));
     }
 
 
@@ -313,7 +313,7 @@ public class TokenCodecDecoder
 
     public PrimitiveTypeCodec primitiveType()
     {
-        return PrimitiveTypeCodec.get(CodecUtil.uint8Get(buffer, offset + 21));
+        return PrimitiveTypeCodec.get((short)(buffer.getByte(offset + 21) & 0xFF));
     }
 
 
@@ -336,7 +336,7 @@ public class TokenCodecDecoder
 
     public ByteOrderCodec byteOrder()
     {
-        return ByteOrderCodec.get(CodecUtil.uint8Get(buffer, offset + 22));
+        return ByteOrderCodec.get((short)(buffer.getByte(offset + 22) & 0xFF));
     }
 
 
@@ -359,7 +359,7 @@ public class TokenCodecDecoder
 
     public PresenceCodec presence()
     {
-        return PresenceCodec.get(CodecUtil.uint8Get(buffer, offset + 23));
+        return PresenceCodec.get((short)(buffer.getByte(offset + 23) & 0xFF));
     }
 
 
@@ -393,7 +393,7 @@ public class TokenCodecDecoder
     public int nameLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getName(
@@ -401,7 +401,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -414,7 +414,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -426,7 +426,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
@@ -474,7 +474,7 @@ public class TokenCodecDecoder
     public int constValueLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getConstValue(
@@ -482,7 +482,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -495,7 +495,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -507,7 +507,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
@@ -555,7 +555,7 @@ public class TokenCodecDecoder
     public int minValueLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getMinValue(
@@ -563,7 +563,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -576,7 +576,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -588,7 +588,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
@@ -636,7 +636,7 @@ public class TokenCodecDecoder
     public int maxValueLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getMaxValue(
@@ -644,7 +644,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -657,7 +657,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -669,7 +669,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
@@ -717,7 +717,7 @@ public class TokenCodecDecoder
     public int nullValueLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getNullValue(
@@ -725,7 +725,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -738,7 +738,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -750,7 +750,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
@@ -798,7 +798,7 @@ public class TokenCodecDecoder
     public int characterEncodingLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getCharacterEncoding(
@@ -806,7 +806,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -819,7 +819,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -831,7 +831,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
@@ -879,7 +879,7 @@ public class TokenCodecDecoder
     public int epochLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getEpoch(
@@ -887,7 +887,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -900,7 +900,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -912,7 +912,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
@@ -960,7 +960,7 @@ public class TokenCodecDecoder
     public int timeUnitLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getTimeUnit(
@@ -968,7 +968,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -981,7 +981,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -993,7 +993,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
@@ -1041,7 +1041,7 @@ public class TokenCodecDecoder
     public int semanticTypeLength()
     {
         final int limit = parentMessage.limit();
-        return CodecUtil.uint8Get(buffer, limit);
+        return (short)(buffer.getByte(limit) & 0xFF);
     }
 
     public int getSemanticType(
@@ -1049,7 +1049,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -1062,7 +1062,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
@@ -1074,7 +1074,7 @@ public class TokenCodecDecoder
     {
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
-        final int dataLength = CodecUtil.uint8Get(buffer, limit);
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         parentMessage.limit(limit + sizeOfLengthField + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);

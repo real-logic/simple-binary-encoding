@@ -41,7 +41,7 @@ public class MessageHeaderDecoder
 
     public int blockLength()
     {
-        return CodecUtil.uint16Get(buffer, offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getShort(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF;
     }
 
 
@@ -63,7 +63,7 @@ public class MessageHeaderDecoder
 
     public int templateId()
     {
-        return CodecUtil.uint16Get(buffer, offset + 2, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getShort(offset + 2, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF;
     }
 
 
@@ -85,7 +85,7 @@ public class MessageHeaderDecoder
 
     public int schemaId()
     {
-        return CodecUtil.uint16Get(buffer, offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getShort(offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF;
     }
 
 
@@ -107,7 +107,7 @@ public class MessageHeaderDecoder
 
     public int version()
     {
-        return CodecUtil.uint16Get(buffer, offset + 6, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return buffer.getShort(offset + 6, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF;
     }
 
 }

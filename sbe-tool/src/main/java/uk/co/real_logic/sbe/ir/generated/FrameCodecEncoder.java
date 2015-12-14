@@ -89,7 +89,8 @@ public class FrameCodecEncoder
 
     public FrameCodecEncoder irId(final int value)
     {
-        CodecUtil.int32Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 
@@ -111,7 +112,8 @@ public class FrameCodecEncoder
 
     public FrameCodecEncoder irVersion(final int value)
     {
-        CodecUtil.int32Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 
@@ -133,7 +135,8 @@ public class FrameCodecEncoder
 
     public FrameCodecEncoder schemaVersion(final int value)
     {
-        CodecUtil.int32Put(buffer, offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 
@@ -166,7 +169,8 @@ public class FrameCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -178,7 +182,8 @@ public class FrameCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -200,7 +205,8 @@ public class FrameCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;
@@ -234,7 +240,8 @@ public class FrameCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -246,7 +253,8 @@ public class FrameCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -268,7 +276,8 @@ public class FrameCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;
@@ -302,7 +311,8 @@ public class FrameCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -314,7 +324,8 @@ public class FrameCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
 
         return length;
@@ -336,7 +347,8 @@ public class FrameCodecEncoder
         final int sizeOfLengthField = 1;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + sizeOfLengthField + length);
-        CodecUtil.uint8Put(buffer, limit, (short)length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
         buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
 
         return this;

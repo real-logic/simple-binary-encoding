@@ -40,7 +40,8 @@ public class MessageHeaderEncoder
 
     public MessageHeaderEncoder blockLength(final int value)
     {
-        CodecUtil.uint16Put(buffer, offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(offset + 0, (short)value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 
@@ -62,7 +63,8 @@ public class MessageHeaderEncoder
 
     public MessageHeaderEncoder templateId(final int value)
     {
-        CodecUtil.uint16Put(buffer, offset + 2, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(offset + 2, (short)value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 
@@ -84,7 +86,8 @@ public class MessageHeaderEncoder
 
     public MessageHeaderEncoder schemaId(final int value)
     {
-        CodecUtil.uint16Put(buffer, offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(offset + 4, (short)value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 
@@ -106,7 +109,8 @@ public class MessageHeaderEncoder
 
     public MessageHeaderEncoder version(final int value)
     {
-        CodecUtil.uint16Put(buffer, offset + 6, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(offset + 6, (short)value, java.nio.ByteOrder.LITTLE_ENDIAN);
+
         return this;
     }
 

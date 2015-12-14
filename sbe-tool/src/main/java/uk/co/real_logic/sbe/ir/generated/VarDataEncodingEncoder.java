@@ -40,7 +40,8 @@ public class VarDataEncodingEncoder
 
     public VarDataEncodingEncoder length(final short value)
     {
-        CodecUtil.uint8Put(buffer, offset + 0, value);
+        buffer.putByte(offset + 0, (byte)value);
+
         return this;
     }
 

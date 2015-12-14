@@ -41,7 +41,7 @@ public class VarDataEncodingDecoder
 
     public short length()
     {
-        return CodecUtil.uint8Get(buffer, offset + 0);
+        return (short)(buffer.getByte(offset + 0) & 0xFF);
     }
 
 
