@@ -34,6 +34,8 @@ import java.util.Map;
  */
 public class CompositeType extends Type
 {
+    public static final String COMPOSITE_TYPE = "composite";
+
     private final List<EncodedDataType> containedTypeList = new ArrayList<>();
     private final Map<String, EncodedDataType> containedTypeByNameMap = new HashMap<>();
     private final int sinceVersion;
@@ -50,7 +52,7 @@ public class CompositeType extends Type
 
         sinceVersion = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "sinceVersion", "0"));
         final XPath xPath = XPathFactory.newInstance().newXPath();
-        final NodeList list = (NodeList)xPath.compile("type").evaluate(node, XPathConstants.NODESET);
+        final NodeList list = (NodeList)xPath.compile(EncodedDataType.ENCODED_DATA_TYPE).evaluate(node, XPathConstants.NODESET);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {

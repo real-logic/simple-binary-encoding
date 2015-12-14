@@ -46,10 +46,10 @@ public class XmlSchemaParser
     /** Key for storing {@link ErrorHandler} as user data in XML document */
     public static final String ERROR_HANDLER_KEY = "SbeErrorHandler";
 
-    public static final String TYPE_XPATH_EXPR = "/messageSchema/types/type";
-    public static final String COMPOSITE_XPATH_EXPR = "/messageSchema/types/composite";
-    public static final String ENUM_XPATH_EXPR = "/messageSchema/types/enum";
-    public static final String SET_XPATH_EXPR = "/messageSchema/types/set";
+    public static final String TYPE_XPATH_EXPR = "/messageSchema/types/" + EncodedDataType.ENCODED_DATA_TYPE;
+    public static final String COMPOSITE_XPATH_EXPR = "/messageSchema/types/" + CompositeType.COMPOSITE_TYPE;
+    public static final String ENUM_XPATH_EXPR = "/messageSchema/types/" + EnumType.ENUM_TYPE;
+    public static final String SET_XPATH_EXPR = "/messageSchema/types/" + SetType.SET_TYPE;
     public static final String MESSAGE_SCHEMA_XPATH_EXPR = "/messageSchema";
 
     public static final String MESSAGE_XPATH_EXPR = "/messageSchema/message";

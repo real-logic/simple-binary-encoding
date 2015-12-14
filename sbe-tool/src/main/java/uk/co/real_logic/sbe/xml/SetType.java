@@ -35,6 +35,8 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
  */
 public class SetType extends Type
 {
+    public static final String SET_TYPE = "set";
+
     private final PrimitiveType encodingType;
     private final Map<PrimitiveValue, Choice> choiceByPrimitiveValueMap = new LinkedHashMap<>();
     private final Map<String, Choice> choiceByNameMap = new LinkedHashMap<>();

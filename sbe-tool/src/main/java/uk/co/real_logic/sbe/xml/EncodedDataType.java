@@ -32,6 +32,8 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
  */
 public class EncodedDataType extends Type
 {
+    public static final String ENCODED_DATA_TYPE = "type";
+
     private final PrimitiveType primitiveType;
     private final int length;
     private final PrimitiveValue constValue;

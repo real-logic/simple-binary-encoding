@@ -40,6 +40,8 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
  */
 public class EnumType extends Type
 {
+    public static final String ENUM_TYPE = "enum";
+
     private final PrimitiveType encodingType;
     private final PrimitiveValue nullValue;
     private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new LinkedHashMap<>();
