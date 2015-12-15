@@ -1133,43 +1133,46 @@ public class JavaGenerator implements CodeGenerator
         int index,
         final Function<String, String> nameMapping) throws IOException
     {
-        final List<String> groupClassNames = new ArrayList<>();
-        int level = 0;
-
-        for (int size = tokens.size(); index < size; index++)
+        if (shouldGenerateGroupOrderAnnotation)
         {
-            if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
-            {
-                if (++level == 1)
-                {
-                    final Token groupToken = tokens.get(index);
-                    final String groupName = groupToken.name();
-                    groupClassNames.add(formatClassName(nameMapping.apply(groupName)));
-                }
-            }
-            else if (tokens.get(index).signal() == Signal.END_GROUP)
-            {
-                if (--level < 0)
-                {
-                    break;
-                }
-            }
-        }
+            final List<String> groupClassNames = new ArrayList<>();
+            int level = 0;
 
-        if (!groupClassNames.isEmpty() && shouldGenerateGroupOrderAnnotation)
-        {
-            out.append(indent).append("@uk.co.real_logic.sbe.codec.java.GroupOrder({");
-            index = 0;
-            for (final String name : groupClassNames)
+            for (int size = tokens.size(); index < size; index++)
             {
-                out.append(className).append('.').append(name).append(".class");
-                if (++index < groupClassNames.size())
+                if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
                 {
-                    out.append(", ");
+                    if (++level == 1)
+                    {
+                        final Token groupToken = tokens.get(index);
+                        final String groupName = groupToken.name();
+                        groupClassNames.add(formatClassName(nameMapping.apply(groupName)));
+                    }
+                }
+                else if (tokens.get(index).signal() == Signal.END_GROUP)
+                {
+                    if (--level < 0)
+                    {
+                        break;
+                    }
                 }
             }
 
-            out.append("})\n");
+            if (!groupClassNames.isEmpty())
+            {
+                out.append(indent).append("@uk.co.real_logic.sbe.codec.java.GroupOrder({");
+                index = 0;
+                for (final String name : groupClassNames)
+                {
+                    out.append(className).append('.').append(name).append(".class");
+                    if (++index < groupClassNames.size())
+                    {
+                        out.append(", ");
+                    }
+                }
+
+                out.append("})\n");
+            }
         }
     }
 
