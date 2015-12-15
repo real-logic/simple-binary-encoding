@@ -61,7 +61,7 @@ public class Ir
         this.id = id;
         this.version = version;
         this.semanticVersion = semanticVersion;
-        this.headerStructure = new HeaderStructure(Collections.unmodifiableList(new ArrayList<>(headerTokens)));
+        this.headerStructure = new HeaderStructure(new ArrayList<>(headerTokens));
     }
 
     /**
@@ -290,7 +290,7 @@ public class Ir
         }
         while (endSignal != token.signal());
 
-        typesByNameMap.put(tokens.get(index).name(), Collections.unmodifiableList(typeTokens));
+        typesByNameMap.put(tokens.get(index).name(), typeTokens);
 
         return index;
     }

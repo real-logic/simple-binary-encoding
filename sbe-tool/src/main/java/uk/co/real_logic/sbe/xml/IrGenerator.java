@@ -98,6 +98,7 @@ public class IrGenerator
         final Token token = new Token.Builder()
             .signal(signal)
             .name(msg.name())
+            .description(msg.description())
             .size(msg.blockLength())
             .id(msg.id())
             .version(version)
@@ -138,6 +139,7 @@ public class IrGenerator
             .signal(signal)
             .size(field.computedBlockLength())
             .name(field.name())
+            .description(field.description())
             .id(field.id())
             .offset(field.computedOffset())
             .version(field.sinceVersion())
@@ -210,6 +212,7 @@ public class IrGenerator
         if (field != null)
         {
             builder.version(field.sinceVersion());
+            builder.description(field.description());
         }
 
         tokenList.add(builder.build());
@@ -252,6 +255,7 @@ public class IrGenerator
         if (field != null)
         {
             builder.version(field.sinceVersion());
+            builder.description(field.description());
         }
 
         tokenList.add(builder.build());
@@ -280,6 +284,7 @@ public class IrGenerator
         if (field != null)
         {
             builder.version(field.sinceVersion());
+            builder.description(field.description());
         }
 
         tokenList.add(builder.build());
@@ -302,6 +307,7 @@ public class IrGenerator
         if (field != null)
         {
             builder.version(field.sinceVersion());
+            builder.description(field.description());
         }
 
         tokenList.add(builder.build());
@@ -358,6 +364,7 @@ public class IrGenerator
         if (field != null)
         {
             tokenBuilder.version(field.sinceVersion());
+            tokenBuilder.description(field.description());
         }
 
         switch (type.presence())

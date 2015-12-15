@@ -1090,4 +1090,85 @@ public class TokenCodecDecoder
 
         return value;
     }
+
+    public static int descriptionId()
+    {
+        return 29;
+    }
+
+    public static String descriptionCharacterEncoding()
+    {
+        return "UTF-8";
+    }
+
+    public static String descriptionMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    public static int descriptionHeaderLength()
+    {
+        return 1;
+    }
+
+    public int descriptionLength()
+    {
+        final int limit = parentMessage.limit();
+        return (short)(buffer.getByte(limit) & 0xFF);
+    }
+
+    public int getDescription(
+        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = parentMessage.limit();
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        final int bytesCopied = Math.min(length, dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
+    }
+
+    public int getDescription(
+        final byte[] dst, final int dstOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = parentMessage.limit();
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        final int bytesCopied = Math.min(length, dataLength);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+
+        return bytesCopied;
+    }
+
+    public String description()
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = parentMessage.limit();
+        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        final byte[] tmp = new byte[dataLength];
+        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
+
+        final String value;
+        try
+        {
+            value = new String(tmp, "UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        return value;
+    }
 }

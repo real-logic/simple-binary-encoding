@@ -839,4 +839,75 @@ public class TokenCodecEncoder
 
         return this;
     }
+
+    public static int descriptionId()
+    {
+        return 29;
+    }
+
+    public static String descriptionCharacterEncoding()
+    {
+        return "UTF-8";
+    }
+
+    public static String descriptionMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    public int putDescription(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+
+        return length;
+    }
+
+    public int putDescription(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int sizeOfLengthField = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+
+        return length;
+    }
+
+    public TokenCodecEncoder description(final String value)
+    {
+        final byte[] bytes;
+        try
+        {
+            bytes = value.getBytes("UTF-8");
+        }
+        catch (final java.io.UnsupportedEncodingException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+
+        final int length = bytes.length;
+        final int sizeOfLengthField = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + sizeOfLengthField + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+
+        return this;
+    }
 }

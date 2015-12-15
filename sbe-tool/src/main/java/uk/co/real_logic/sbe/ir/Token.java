@@ -98,6 +98,7 @@ public class Token
 
     private final Signal signal;
     private final String name;
+    private final String description;
     private final int id;
     private final int version;
     private int encodedLength;
@@ -110,6 +111,7 @@ public class Token
      *
      * @param signal              for the token role
      * @param name                of the token in the message
+     * @param description         of what the token is for
      * @param id                  as the identifier in the message declaration
      * @param version             application within the template
      * @param encodedLength       of the component part
@@ -120,6 +122,7 @@ public class Token
     public Token(
         final Signal signal,
         final String name,
+        final String description,
         final int id,
         final int version,
         final int encodedLength,
@@ -133,6 +136,7 @@ public class Token
 
         this.signal = signal;
         this.name = name;
+        this.description = description;
         this.id = id;
         this.version = version;
         this.encodedLength = encodedLength;
@@ -159,6 +163,16 @@ public class Token
     public String name()
     {
         return name;
+    }
+
+    /**
+     * Description for what the token is to be used for.
+     *
+     * @return description for what the token is to be used for.
+     */
+    public String description()
+    {
+        return description;
     }
 
     /**
@@ -313,23 +327,24 @@ public class Token
 
     public String toString()
     {
-        return
-            "Token{" +
-                "signal=" + signal +
-                ", name='" + name + '\'' +
-                ", id=" + id +
-                ", version=" + version +
-                ", encodedLength=" + encodedLength +
-                ", offset=" + offset +
-                ", componentTokenCount=" + componentTokenCount +
-                ", encoding=" + encoding +
-                '}';
+        return "Token{" +
+            "signal=" + signal +
+            ", name='" + name + '\'' +
+            ", description='" + description + '\'' +
+            ", id=" + id +
+            ", version=" + version +
+            ", encodedLength=" + encodedLength +
+            ", offset=" + offset +
+            ", componentTokenCount=" + componentTokenCount +
+            ", encoding=" + encoding +
+            '}';
     }
 
     public static class Builder
     {
         private Signal signal;
         private String name;
+        private String description;
         private int id = INVALID_ID;
         private int version = 0;
         private int size = 0;
@@ -346,6 +361,12 @@ public class Token
         public Builder name(final String name)
         {
             this.name = name;
+            return this;
+        }
+
+        public Builder description(final String description)
+        {
+            this.description = description;
             return this;
         }
 
@@ -387,7 +408,7 @@ public class Token
 
         public Token build()
         {
-            return new Token(signal, name, id, version, size, offset, componentTokenCount, encoding);
+            return new Token(signal, name, description, id, version, size, offset, componentTokenCount, encoding);
         }
     }
 }

@@ -216,6 +216,9 @@ public class IrDecoder implements AutoCloseable
         final String semanticType = tokenDecoder.semanticType();
         encBuilder.semanticType(semanticType.isEmpty() ? null : semanticType);
 
+        final String description = tokenDecoder.description();
+        tokenBuilder.description(description.isEmpty() ? null : description);
+
         offset += tokenDecoder.encodedLength();
 
         return tokenBuilder.encoding(encBuilder.build()).build();

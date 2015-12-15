@@ -92,5 +92,6 @@
         <data name="epoch" id="26" type="varDataEncoding"/>
         <data name="timeUnit" id="27" type="varDataEncoding"/>
         <data name="semanticType" id="28" type="varDataEncoding"/>
+        <data name="description" id="29" type="varDataEncoding"/>
     </sbe:message>
 </sbe:messageSchema>
