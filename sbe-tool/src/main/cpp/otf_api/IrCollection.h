@@ -246,6 +246,7 @@ protected:
             token.getEpoch(tmp, sizeof(tmp));
             token.getTimeUnit(tmp, sizeof(tmp));
             token.getSemanticType(tmp, sizeof(tmp));
+            token.getDescription(tmp, sizeof(tmp));
 
             size += token.size();
 
@@ -294,6 +295,7 @@ protected:
             token.getEpoch(tmp, sizeof(tmp));
             token.getTimeUnit(tmp, sizeof(tmp));
             token.getSemanticType(tmp, sizeof(tmp));
+            token.getDescription(tmp, sizeof(tmp));
 
             size += token.size();
 

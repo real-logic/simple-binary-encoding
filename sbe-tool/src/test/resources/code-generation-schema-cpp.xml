@@ -49,13 +49,13 @@
     <message name="Car" id="1" description="Description of a basic Car">
         <field name="charConst" id="100" type="CharConstType"/>
         <field name="serialNumber" id="1" type="uint32"/>
-        <field name="modelYear" id="2" type="ModelYear"/>
+        <field name="modelYear" id="2" type="ModelYear" description="Description of model year"/>
         <field name="available" id="3" type="BooleanType"/>
         <field name="code" id="4" type="Model"/>
         <field name="vehicleCode" id="6" type="VehicleCode"/>
         <field name="extras" id="5" type="OptionalExtras"/>
         <field name="engine" id="7" type="Engine"/>
-        <group name="fuelFigures" id="8" dimensionType="groupSizeEncoding">
+        <group name="fuelFigures" id="8" dimensionType="groupSizeEncoding" description="Description of this group">
             <field name="speed" id="9" type="uint16"/>
             <field name="mpg" id="10" type="float"/>
         </group>

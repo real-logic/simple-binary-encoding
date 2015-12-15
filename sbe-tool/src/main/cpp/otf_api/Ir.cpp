@@ -41,6 +41,7 @@ struct Ir::Impl
     char epoch[256];
     char timeUnit[256];
     char semanticType[256];
+    char description[256];
     int nameLength;
     int constValueLength;
     int minValueLength;
@@ -50,6 +51,7 @@ struct Ir::Impl
     int epochLength;
     int timeUnitLength;
     int semanticTypeLength;
+    int descriptionLength;
     ::uint32_t serializedTokenSize;
 };
 
@@ -97,6 +99,7 @@ void Ir::readTokenAtCurrentPosition()
     impl_->epochLength = impl_->tokenCodec.getEpoch(impl_->epoch, sizeof(tmp));
     impl_->timeUnitLength = impl_->tokenCodec.getTimeUnit(impl_->timeUnit, sizeof(tmp));
     impl_->semanticTypeLength = impl_->tokenCodec.getSemanticType(impl_->semanticType, sizeof(tmp));
+    impl_->descriptionLength = impl_->tokenCodec.getDescription(impl_->description, sizeof(tmp));
 
     impl_->serializedTokenSize = impl_->tokenCodec.size();
 }
@@ -401,6 +404,7 @@ void Ir::addToken(::uint32_t offset,
     tokenCodec.putEpoch(NULL, 0);
     tokenCodec.putTimeUnit(NULL, 0);
     tokenCodec.putSemanticType(NULL, 0);
+    tokenCodec.putDescription(NULL, 0);
 
     cursorOffset_ += tokenCodec.size();
     len_ = cursorOffset_;

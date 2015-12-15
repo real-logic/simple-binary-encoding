@@ -1253,6 +1253,81 @@ public:
         ::memcpy(buffer_ + pos, src, length);
         return length;
     }
+
+    static const char *descriptionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::EPOCH: return "unix";
+            case MetaAttribute::TIME_UNIT: return "nanosecond";
+            case MetaAttribute::SEMANTIC_TYPE: return "";
+        }
+
+        return "";
+    }
+
+    static const char *descriptionCharacterEncoding()
+    {
+        return "UTF-8";
+    }
+
+    static const int descriptionSinceVersion(void)
+    {
+         return 0;
+    }
+
+    bool descriptionInActingVersion(void)
+    {
+        return (actingVersion_ >= 0) ? true : false;
+    }
+
+    static const int descriptionId(void)
+    {
+        return 29;
+    }
+
+
+    static const int descriptionHeaderSize()
+    {
+        return 1;
+    }
+
+    sbe_int64_t descriptionLength(void) const
+    {
+        return (*((sbe_uint8_t *)(buffer_ + position())));
+    }
+
+    const char *description(void)
+    {
+         const char *fieldPtr = (buffer_ + position() + 1);
+         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         return fieldPtr;
+    }
+
+    int getDescription(char *dst, const int length)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        int bytesToCopy = (length < dataLength) ? length : dataLength;
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)dataLength);
+        ::memcpy(dst, buffer_ + pos, bytesToCopy);
+        return bytesToCopy;
+    }
+
+    int putDescription(const char *src, const int length)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
+        position(lengthPosition + lengthOfLengthField);
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)length);
+        ::memcpy(buffer_ + pos, src, length);
+        return length;
+    }
 };
 }
 #endif
