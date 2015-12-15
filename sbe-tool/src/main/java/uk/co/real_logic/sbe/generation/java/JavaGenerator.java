@@ -973,53 +973,52 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateChoiceDecoders(final List<Token> tokens)
     {
-        return concatTokens(tokens, Signal.CHOICE,
+        return concatTokens(
+            tokens,
+            Signal.CHOICE,
             (token) ->
             {
                 final String choiceName = formatPropertyName(token.name());
                 final Encoding encoding = token.encoding();
-                final String typePrefix = encoding.primitiveType().primitiveName();
-                final String choiceBitPosition = encoding.constValue().toString();
+                final String choiceBitIndex = encoding.constValue().toString();
                 final String byteOrderStr = byteOrderString(encoding);
 
                 return String.format(
                     "\n" +
                     "    public boolean %s()\n" +
                     "    {\n" +
-                    "        return CodecUtil.%sGetChoice(buffer, offset, %s%s);\n" +
-                    "    }\n\n",
+                    "        return %s;\n" +
+                    "    }\n",
                     choiceName,
-                    typePrefix,
-                    choiceBitPosition,
-                    byteOrderStr
+                    generateChoiceGet(encoding.primitiveType(), "offset", choiceBitIndex, byteOrderStr)
                 );
             });
     }
 
     private CharSequence generateChoiceEncoders(final String bitSetClassName, final List<Token> tokens)
     {
-        return concatTokens(tokens, Signal.CHOICE, (token) ->
-        {
-            final String choiceName = formatPropertyName(token.name());
-            final Encoding encoding = token.encoding();
-            final String typePrefix = encoding.primitiveType().primitiveName();
-            final String choiceBitPosition = encoding.constValue().toString();
-            final String byteOrderStr = byteOrderString(encoding);
+        return concatTokens(
+            tokens,
+            Signal.CHOICE,
+            (token) ->
+            {
+                final String choiceName = formatPropertyName(token.name());
+                final Encoding encoding = token.encoding();
+                final String choiceBitIndex = encoding.constValue().toString();
+                final String byteOrderStr = byteOrderString(encoding);
 
-            return String.format(
-                "\n" +
-                "    public %s %s(final boolean value)\n" +
-                "    {\n" +
-                "        CodecUtil.%sPutChoice(buffer, offset, %s, value%s);\n" +
-                "        return this;\n" +
-                "    }\n",
-                bitSetClassName,
-                choiceName,
-                typePrefix,
-                choiceBitPosition,
-                byteOrderStr
-            );
-        });
+                return String.format(
+                    "\n" +
+                    "    public %s %s(final boolean value)\n" +
+                    "    {\n" +
+                    "%s\n" +
+                    "        return this;\n" +
+                    "    }\n",
+                    bitSetClassName,
+                    choiceName,
+                    generateChoicePut(encoding.primitiveType(), "offset", choiceBitIndex, byteOrderStr)
+                );
+            });
     }
 
     private CharSequence generateEnumValues(final List<Token> tokens)
@@ -1104,7 +1103,6 @@ public class JavaGenerator implements CodeGenerator
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
             "package %s;\n\n" +
-            "import uk.co.real_logic.sbe.codec.java.*;\n" +
             "import %s;\n\n",
             packageName,
             fqBuffer
@@ -1156,7 +1154,7 @@ public class JavaGenerator implements CodeGenerator
             return;
         }
 
-        out.append(indent).append("@GroupOrder({");
+        out.append(indent).append("@uk.co.real_logic.sbe.codec.java.GroupOrder({");
         index = 0;
         for (final String name : groupClassNames)
         {
@@ -2103,7 +2101,7 @@ public class JavaGenerator implements CodeGenerator
                 return "buffer.getDouble(" + index + byteOrder + ")";
         }
 
-        return "";
+        throw new IllegalArgumentException("primitive type not supported: " + type);
     }
 
     private String generatePut(final PrimitiveType type, final String index, final String value, final String byteOrder)
@@ -2140,6 +2138,59 @@ public class JavaGenerator implements CodeGenerator
                 return "buffer.putDouble(" + index + ", " + value + byteOrder + ")";
         }
 
-        return "";
+        throw new IllegalArgumentException("primitive type not supported: " + type);
+    }
+
+    private String generateChoiceGet(final PrimitiveType type, final String index, final String bitIndex, final String byteOrder)
+    {
+        switch (type)
+        {
+            case UINT8:
+                return "0 != (buffer.getByte(" + index + ") & (1 << " + bitIndex + "))";
+
+            case UINT16:
+                return "0 != (buffer.getShort(" + index + byteOrder + ") & (1 << " + bitIndex + "))";
+
+            case UINT32:
+                return "0 != (buffer.getInt(" + index + byteOrder + ") & (1 << " + bitIndex + "))";
+
+            case UINT64:
+                return "0 != (buffer.getLong(" + index + byteOrder + ") & (1L << " + bitIndex + "))";
+        }
+
+        throw new IllegalArgumentException("primitive type not supported: " + type);
+    }
+
+    private String generateChoicePut(
+        final PrimitiveType type, final String index, final String bitIndex, final String byteOrder)
+    {
+        switch (type)
+        {
+            case UINT8:
+                return
+                    "        byte bits = buffer.getByte(" + index + ");\n" +
+                    "        bits = (byte)(value ? bits | (1 << " + bitIndex + ") : bits & ~(1 << " + bitIndex + "));\n" +
+                    "        buffer.putByte(" + index + ", bits);";
+
+            case UINT16:
+                return
+                    "        short bits = buffer.getShort(" + index + byteOrder + ");\n" +
+                    "        bits = (short)(value ? bits | (1 << " + bitIndex + ") : bits & ~(1 << " + bitIndex + "));\n" +
+                    "        buffer.putShort(" + index + ", bits" + byteOrder + ");";
+
+            case UINT32:
+                return
+                    "        int bits = buffer.getInt(" + index + byteOrder + ");\n" +
+                    "        bits = value ? bits | (1 << " + bitIndex + ") : bits & ~(1 << " + bitIndex + ");\n" +
+                    "        buffer.putInt(" + index + ", bits" + byteOrder + ");";
+
+            case UINT64:
+                return
+                    "        long bits = buffer.getLong(" + index + byteOrder + ");\n" +
+                    "        bits = value ? bits | (1L << " + bitIndex + ") : bits & ~(1L << " + bitIndex + ");\n" +
+                    "        buffer.putLong(" + index + ", bits" + byteOrder + ");";
+        }
+
+        throw new IllegalArgumentException("primitive type not supported: " + type);
     }
 }

@@ -1,7 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.codec.java.*;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 
 @SuppressWarnings("all")
@@ -90,7 +89,6 @@ public class FrameCodecEncoder
     public FrameCodecEncoder irId(final int value)
     {
         buffer.putInt(offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-
         return this;
     }
 
@@ -113,7 +111,6 @@ public class FrameCodecEncoder
     public FrameCodecEncoder irVersion(final int value)
     {
         buffer.putInt(offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-
         return this;
     }
 
@@ -136,7 +133,6 @@ public class FrameCodecEncoder
     public FrameCodecEncoder schemaVersion(final int value)
     {
         buffer.putInt(offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-
         return this;
     }
 

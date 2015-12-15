@@ -1,7 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.codec.java.*;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 
 @SuppressWarnings("all")
@@ -41,7 +40,6 @@ public class VarDataEncodingEncoder
     public VarDataEncodingEncoder length(final short value)
     {
         buffer.putByte(offset + 0, (byte)value);
-
         return this;
     }
 

@@ -1,7 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.codec.java.*;
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 
 @SuppressWarnings("all")
@@ -90,7 +89,6 @@ public class TokenCodecEncoder
     public TokenCodecEncoder tokenOffset(final int value)
     {
         buffer.putInt(offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-
         return this;
     }
 
@@ -113,7 +111,6 @@ public class TokenCodecEncoder
     public TokenCodecEncoder tokenSize(final int value)
     {
         buffer.putInt(offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-
         return this;
     }
 
@@ -136,7 +133,6 @@ public class TokenCodecEncoder
     public TokenCodecEncoder fieldId(final int value)
     {
         buffer.putInt(offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-
         return this;
     }
 
@@ -159,7 +155,6 @@ public class TokenCodecEncoder
     public TokenCodecEncoder tokenVersion(final int value)
     {
         buffer.putInt(offset + 12, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-
         return this;
     }
 
@@ -182,7 +177,6 @@ public class TokenCodecEncoder
     public TokenCodecEncoder componentTokenCount(final int value)
     {
         buffer.putInt(offset + 16, value, java.nio.ByteOrder.LITTLE_ENDIAN);
-
         return this;
     }
 

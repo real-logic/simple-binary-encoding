@@ -1,7 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.sbe.codec.java.*;
 import uk.co.real_logic.agrona.DirectBuffer;
 
 @SuppressWarnings("all")
@@ -41,7 +40,7 @@ public class MessageHeaderDecoder
 
     public int blockLength()
     {
-        return buffer.getShort(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF;
+        return (buffer.getShort(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
 
@@ -63,7 +62,7 @@ public class MessageHeaderDecoder
 
     public int templateId()
     {
-        return buffer.getShort(offset + 2, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF;
+        return (buffer.getShort(offset + 2, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
 
@@ -85,7 +84,7 @@ public class MessageHeaderDecoder
 
     public int schemaId()
     {
-        return buffer.getShort(offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF;
+        return (buffer.getShort(offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
 
@@ -107,7 +106,7 @@ public class MessageHeaderDecoder
 
     public int version()
     {
-        return buffer.getShort(offset + 6, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF;
+        return (buffer.getShort(offset + 6, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
 }
