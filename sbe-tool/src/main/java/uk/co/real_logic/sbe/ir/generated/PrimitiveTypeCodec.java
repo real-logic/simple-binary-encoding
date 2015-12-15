@@ -1,6 +1,7 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
+@javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.PrimitiveTypeCodec"})
 public enum PrimitiveTypeCodec
 {
     NONE((short)0),

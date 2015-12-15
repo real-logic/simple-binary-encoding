@@ -183,7 +183,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(className))
         {
-            out.append(generateFileHeader(ir.applicableNamespace(), fullMutableBuffer));
+            out.append(generateFileHeader(className, ir.applicableNamespace(), fullMutableBuffer));
 
             generateAnnotations(indent, className, groups, out, 0, this::encoderName);
             out.append(generateClassDeclaration(className));
@@ -210,7 +210,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(className))
         {
-            out.append(generateFileHeader(ir.applicableNamespace(), fullReadOnlyBuffer));
+            out.append(generateFileHeader(className, ir.applicableNamespace(), fullReadOnlyBuffer));
 
             generateAnnotations(indent, className, groups, out, 0, this::decoderName);
             out.append(generateClassDeclaration(className));
@@ -903,7 +903,7 @@ public class JavaGenerator implements CodeGenerator
         final Token token, final String encoderName, final Writer out, final String buffer, final String fullBuffer)
         throws IOException
     {
-        out.append(generateFileHeader(ir.applicableNamespace(), fullBuffer));
+        out.append(generateFileHeader(encoderName, ir.applicableNamespace(), fullBuffer));
         out.append(generateClassDeclaration(encoderName));
         out.append(generateFixedFlyweightCode(encoderName, token.encodedLength(), false, buffer));
     }
@@ -914,7 +914,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateEnumFileHeader(ir.applicableNamespace()));
+            out.append(generateEnumFileHeader(enumName, ir.applicableNamespace()));
             out.append(generateEnumDeclaration(enumName));
 
             out.append(generateEnumValues(getMessageBody(tokens)));
@@ -1105,23 +1105,29 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFileHeader(final String packageName, final String fqBuffer)
+    private CharSequence generateFileHeader(final String className, final String packageName, final String fqBuffer)
     {
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
             "package %s;\n\n" +
-            "import %s;\n\n",
+            "import %s;\n\n" +
+            "@javax.annotation.Generated(value = {\"%s.%s\"})\n",
             packageName,
-            fqBuffer
+            fqBuffer,
+            packageName,
+            className
         );
     }
 
-    private CharSequence generateEnumFileHeader(final String packageName)
+    private CharSequence generateEnumFileHeader(final String className, final String packageName)
     {
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
-            "package %s;\n\n",
-            packageName
+            "package %s;\n\n" +
+            "@javax.annotation.Generated(value = {\"%s.%s\"})\n",
+            packageName,
+            packageName,
+            className
         );
     }
 
@@ -1193,12 +1199,14 @@ public class JavaGenerator implements CodeGenerator
             out.append(String.format(
                 "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
                 "package %s;\n\n" +
+                "@javax.annotation.Generated(value = {\"%s.MetaAttribute\"})" +
                 "public enum MetaAttribute\n" +
                 "{\n" +
                 "    EPOCH,\n" +
                 "    TIME_UNIT,\n" +
                 "    SEMANTIC_TYPE\n" +
                 "}\n",
+                ir.applicableNamespace(),
                 ir.applicableNamespace()
             ));
         }

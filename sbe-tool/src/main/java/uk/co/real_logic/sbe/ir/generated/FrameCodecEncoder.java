@@ -3,6 +3,7 @@ package uk.co.real_logic.sbe.ir.generated;
 
 import uk.co.real_logic.agrona.MutableDirectBuffer;
 
+@javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder"})
 @SuppressWarnings("all")
 public class FrameCodecEncoder
 {
