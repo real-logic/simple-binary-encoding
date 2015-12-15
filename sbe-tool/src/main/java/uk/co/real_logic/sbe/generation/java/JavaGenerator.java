@@ -45,9 +45,14 @@ public class JavaGenerator implements CodeGenerator
     private final String mutableBuffer;
     private final String fullReadOnlyBuffer;
     private final String readOnlyBuffer;
+    private final boolean shouldGenerateGroupOrderAnnotation;
 
     public JavaGenerator(
-        final Ir ir, final String mutableBuffer, final String readOnlyBuffer, final OutputManager outputManager)
+        final Ir ir,
+        final String mutableBuffer,
+        final String readOnlyBuffer,
+        final boolean shouldGenerateGroupOrderAnnotation,
+        final OutputManager outputManager)
         throws IOException
     {
         Verify.notNull(ir, "ir");
@@ -61,6 +66,8 @@ public class JavaGenerator implements CodeGenerator
 
         this.readOnlyBuffer = validateBufferImplementation(readOnlyBuffer, DirectBuffer.class);
         this.fullReadOnlyBuffer = readOnlyBuffer;
+
+        this.shouldGenerateGroupOrderAnnotation = shouldGenerateGroupOrderAnnotation;
     }
 
     private String validateBufferImplementation(
@@ -1149,23 +1156,21 @@ public class JavaGenerator implements CodeGenerator
             }
         }
 
-        if (groupClassNames.isEmpty())
+        if (!groupClassNames.isEmpty() && shouldGenerateGroupOrderAnnotation)
         {
-            return;
-        }
-
-        out.append(indent).append("@uk.co.real_logic.sbe.codec.java.GroupOrder({");
-        index = 0;
-        for (final String name : groupClassNames)
-        {
-            out.append(className).append('.').append(name).append(".class");
-            if (++index < groupClassNames.size())
+            out.append(indent).append("@uk.co.real_logic.sbe.codec.java.GroupOrder({");
+            index = 0;
+            for (final String name : groupClassNames)
             {
-                out.append(", ");
+                out.append(className).append('.').append(name).append(".class");
+                if (++index < groupClassNames.size())
+                {
+                    out.append(", ");
+                }
             }
-        }
 
-        out.append("})\n");
+            out.append("})\n");
+        }
     }
 
     private CharSequence generateClassDeclaration(final String className)

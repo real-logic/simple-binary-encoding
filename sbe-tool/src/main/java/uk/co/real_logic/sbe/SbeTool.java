@@ -111,6 +111,11 @@ public class SbeTool
     public static final String JAVA_DECODING_BUFFER_TYPE = "sbe.java.decoding.buffer.type";
 
     /**
+     * Should the {@link uk.co.real_logic.sbe.codec.java.GroupOrder} annotation be added to generated stubs.
+     */
+    public static final String JAVA_GROUP_ORDER_ANNOTATION = "sbe.java.generate.group-order.annotation";
+
+    /**
      * Default class to use as the buffer mutable implementation in generated code.
      */
     public static final String JAVA_DEFAULT_ENCODING_BUFFER_TYPE = MutableDirectBuffer.class.getName();
