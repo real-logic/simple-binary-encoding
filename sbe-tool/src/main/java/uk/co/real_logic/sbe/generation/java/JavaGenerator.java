@@ -1199,7 +1199,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(String.format(
                 "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
                 "package %s;\n\n" +
-                "@javax.annotation.Generated(value = {\"%s.MetaAttribute\"})" +
+                "@javax.annotation.Generated(value = {\"%s.MetaAttribute\"})\n" +
                 "public enum MetaAttribute\n" +
                 "{\n" +
                 "    EPOCH,\n" +
