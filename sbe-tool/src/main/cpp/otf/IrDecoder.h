@@ -33,6 +33,8 @@
 #include <memory>
 #include <exception>
 #include <vector>
+#include <functional>
+#include <algorithm>
 
 #include "uk_co_real_logic_sbe_ir_generated/TokenCodec.hpp"
 #include "uk_co_real_logic_sbe_ir_generated/FrameCodec.hpp"
