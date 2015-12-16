@@ -743,6 +743,9 @@ public class Cpp98Generator implements CodeGenerator
             "#  define SBE_FLOAT_NAN NAN\n" +
             "#  define SBE_DOUBLE_NAN NAN\n" +
             "#endif\n\n" +
+            "#if __cplusplus < 201103L\n" +
+            "#  include <functional>\n" +
+            "#endif\n\n" +
             "#include <sbe/sbe.hpp>\n\n",
             namespaceName.toUpperCase(),
             className.toUpperCase()
