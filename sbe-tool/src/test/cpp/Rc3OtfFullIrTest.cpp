@@ -206,7 +206,7 @@ public:
 
 };
 
-TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectltInOrder)
+TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectlyInOrder)
 {
     ASSERT_EQ(encodeHdrAndCar(), 113);
 
