@@ -503,11 +503,30 @@ TEST_F(CodeGenTest, shouldbeAbleUseOnStackCodecsAndGroupForEach)
 
     Car::FuelFigures &fuelFigures = carDecoder.fuelFigures();
     EXPECT_EQ(fuelFigures.count(), FUEL_FIGURES_COUNT);
+
+#if __cplusplus >= 201103L
+    fuelFigures.forEach([&](Car::FuelFigures &) { cbs.countOfFuelFigures++; });
+#else
     fuelFigures.forEach(cbs);
+#endif
 
     Car::PerformanceFigures &performanceFigures = carDecoder.performanceFigures();
     EXPECT_EQ(performanceFigures.count(), PERFORMANCE_FIGURES_COUNT);
+
+#if __cplusplus >= 201103L
+    performanceFigures.forEach([&](Car::PerformanceFigures& performanceFigures)
+    {
+        Car::PerformanceFigures::Acceleration acceleration = performanceFigures.acceleration();
+
+        cbs.countOfPerformanceFigures++;
+        acceleration.forEach([&](Car::PerformanceFigures::Acceleration&)
+        {
+            cbs.countOfAccelerations++;
+        });
+    });
+#else
     performanceFigures.forEach(cbs);
+#endif
 
     EXPECT_EQ(cbs.countOfFuelFigures, FUEL_FIGURES_COUNT);
     EXPECT_EQ(cbs.countOfPerformanceFigures, PERFORMANCE_FIGURES_COUNT);

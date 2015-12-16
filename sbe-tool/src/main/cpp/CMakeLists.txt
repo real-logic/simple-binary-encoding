@@ -15,20 +15,23 @@
 #
 
 set(SOURCE
-	otf_api/Ir.cpp
-	otf_api/Listener.cpp
+    otf_api/Ir.cpp
+    otf_api/Listener.cpp
 )
 
 set(HEADERS
-	otf_api/Field.h
-	otf_api/Group.h
-	otf_api/Ir.h
-	otf_api/IrCollection.h
-	otf_api/Listener.h
-	otf_api/OnCompleted.h
-	otf_api/OnError.h
-	otf_api/OnNext.h
-	sbe/sbe.hpp
+    otf_api/Field.h
+    otf_api/Group.h
+    otf_api/Ir.h
+    otf_api/IrCollection.h
+    otf_api/Listener.h
+    otf_api/OnCompleted.h
+    otf_api/OnError.h
+    otf_api/OnNext.h
+    sbe/sbe.hpp
+    otf/IrDecoder.h
+    otf/Token.h
+    otf/Encoding.h
 )
 
 add_library(sbe STATIC ${SOURCE} ${HEADERS})

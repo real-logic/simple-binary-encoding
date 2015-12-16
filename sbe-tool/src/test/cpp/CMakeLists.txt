@@ -56,6 +56,7 @@ sbe_test(OtfIrTest)
 sbe_test(OtfMessageHeaderTest)
 sbe_test(OtfMessageTest)
 sbe_test(OtfVariableDataTest)
+sbe_test(Rc3OtfFullIrTest)
 
 # codec tests
 sbe_test(BoundsCheckTest codecs)
