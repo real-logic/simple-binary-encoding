@@ -32,6 +32,8 @@ set(HEADERS
     otf/IrDecoder.h
     otf/Token.h
     otf/Encoding.h
+    otf/OtfMessageDecoder.h
+    otf/OtfHeaderDecoder.h
 )
 
 add_library(sbe STATIC ${SOURCE} ${HEADERS})

@@ -105,6 +105,21 @@ public:
         return m_version;
     }
 
+    inline const Encoding& encoding() const
+    {
+        return m_encoding;
+    }
+
+    inline int encodedLength() const
+    {
+        return m_encodedLength;
+    }
+
+    inline int offset() const
+    {
+        return m_offset;
+    }
+
 private:
     const int m_offset;
     const int m_fieldId;

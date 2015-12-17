@@ -20,6 +20,8 @@
 #include "code_generation_test/Car.hpp"
 #include "otf/Token.h"
 #include "otf/IrDecoder.h"
+#include "otf/OtfHeaderDecoder.h"
+#include "otf/OtfMessageDecoder.h"
 
 using namespace std;
 using namespace code_generation_test;
