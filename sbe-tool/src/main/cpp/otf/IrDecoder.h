@@ -195,11 +195,6 @@ private:
         return 0;
     }
 
-    static void getString(std::string& str, long strLen, const char *ptr)
-    {
-        str.assign(ptr, static_cast<unsigned long>(strLen));
-    }
-
     int decodeAndAddToken(std::shared_ptr<std::vector<Token>> tokens, int offset)
     {
         TokenCodec tokenCodec;
@@ -214,25 +209,38 @@ private:
         std::int32_t id = tokenCodec.fieldId();
         std::int32_t version = tokenCodec.tokenVersion();
         std::int32_t componentTokenCount = tokenCodec.componentTokenCount();
-        std::string name;
-        std::string characterEncoding;
-        std::string epoch;
-        std::string timeUnit;
-        std::string semanticType;
-        std::string description;
+        char tmpBuffer[256];
+        int tmpLen = 0;
 
-        getString(name, tokenCodec.nameLength(), tokenCodec.name());
+        tmpLen = tokenCodec.getName(tmpBuffer, sizeof(tmpBuffer));
+        std::string name(tmpBuffer, static_cast<std::size_t>(tmpLen));
 
-        PrimitiveValue constValue(type, tokenCodec.constValueLength(), tokenCodec.constValue());
-        PrimitiveValue minValue(type, tokenCodec.minValueLength(), tokenCodec.minValue());
-        PrimitiveValue maxValue(type, tokenCodec.maxValueLength(), tokenCodec.maxValue());
-        PrimitiveValue nullValue(type, tokenCodec.nullValueLength(), tokenCodec.nullValue());
+        tmpLen = tokenCodec.getConstValue(tmpBuffer, sizeof(tmpBuffer));
+        PrimitiveValue constValue(type, tmpLen, tmpBuffer);
 
-        getString(characterEncoding, tokenCodec.characterEncodingLength(), tokenCodec.characterEncoding());
-        getString(epoch, tokenCodec.epochLength(), tokenCodec.epoch());
-        getString(timeUnit, tokenCodec.timeUnitLength(), tokenCodec.timeUnit());
-        getString(semanticType, tokenCodec.semanticTypeLength(), tokenCodec.semanticType());
-        getString(description, tokenCodec.descriptionLength(), tokenCodec.description());
+        tmpLen = tokenCodec.getMinValue(tmpBuffer, sizeof(tmpBuffer));
+        PrimitiveValue minValue(type, tmpLen, tmpBuffer);
+
+        tmpLen = tokenCodec.getMaxValue(tmpBuffer, sizeof(tmpBuffer));
+        PrimitiveValue maxValue(type, tmpLen, tmpBuffer);
+
+        tmpLen = tokenCodec.getNullValue(tmpBuffer, sizeof(tmpBuffer));
+        PrimitiveValue nullValue(type, tmpLen, tmpBuffer);
+
+        tmpLen = tokenCodec.getCharacterEncoding(tmpBuffer, sizeof(tmpBuffer));
+        std::string characterEncoding(tmpBuffer, tmpLen);
+
+        tmpLen = tokenCodec.getEpoch(tmpBuffer, sizeof(tmpBuffer));
+        std::string epoch(tmpBuffer, tmpLen);
+
+        tmpLen = tokenCodec.getTimeUnit(tmpBuffer, sizeof(tmpBuffer));
+        std::string timeUnit(tmpBuffer, tmpLen);
+
+        tmpLen = tokenCodec.getSemanticType(tmpBuffer, sizeof(tmpBuffer));
+        std::string semanticType(tmpBuffer, tmpLen);
+
+        tmpLen = tokenCodec.getDescription(tmpBuffer, sizeof(tmpBuffer));
+        std::string description(tmpBuffer, tmpLen);
 
         Encoding encoding(
             type, presence, byteOrder, minValue, maxValue, nullValue, constValue,
