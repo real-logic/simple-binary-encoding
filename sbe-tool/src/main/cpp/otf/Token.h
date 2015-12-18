@@ -120,6 +120,16 @@ public:
         return m_offset;
     }
 
+    inline int componentTokenCount() const
+    {
+        return m_componentTokenCount;
+    }
+
+    inline bool isConstantEncoding() const
+    {
+        return m_encoding.presence() == Presence::SBE_CONSTANT;
+    }
+
 private:
     const int m_offset;
     const int m_fieldId;

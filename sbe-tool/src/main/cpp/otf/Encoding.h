@@ -99,8 +99,9 @@ enum class Presence : int
 class PrimitiveValue
 {
 public:
-    PrimitiveValue(PrimitiveType type, long valueLength, const char *value)
+    PrimitiveValue(PrimitiveType type, size_t valueLength, const char *value)
     {
+        m_type = type;
         if (0 == valueLength)
         {
             type = PrimitiveType::NONE;
@@ -110,16 +111,92 @@ public:
         switch (type)
         {
             case PrimitiveType::CHAR:
-
+                if (valueLength > 1)
+                {
+                    // save pointer into the serialized IR at this stage. Be aware that the serialized IR must be kept around
+                    m_arrayValue = value;
+                    m_size = valueLength;
+                }
+                else
+                {
+                    m_value.asInt = *(char *) value;
+                    m_size = 1;
+                }
                 break;
             case PrimitiveType::INT8:
-                m_value.m_int8 = *(sbe_int8_t *)value;
+                m_value.asInt = *(std::int8_t *)value;
                 m_size = 1;
                 break;
+            case PrimitiveType::INT16:
+                m_value.asInt = *(std::int16_t *)value;
+                m_size = 2;
+                break;
+            case PrimitiveType::INT32:
+                m_value.asInt = *(std::int32_t *)value;
+                m_size = 4;
+                break;
+            case PrimitiveType::INT64:
+                m_value.asInt = *(std::int64_t *)value;
+                m_size = 8;
+                break;
+            case PrimitiveType::UINT8:
+                m_value.asUInt = *(std::uint8_t *)value;
+                m_size = 1;
+                break;
+            case PrimitiveType::UINT16:
+                m_value.asUInt = *(std::uint16_t *)value;
+                m_size = 2;
+                break;
+            case PrimitiveType::UINT32:
+                m_value.asUInt = *(std::uint32_t *)value;
+                m_size = 4;
+                break;
+            case PrimitiveType::UINT64:
+                m_value.asUInt = *(std::uint64_t *)value;
+                m_size = 8;
+                break;
+            case PrimitiveType::FLOAT:
+                m_value.asDouble = *(float *)value;
+                m_size = 4;
+                break;
+            case PrimitiveType::DOUBLE:
+                m_value.asDouble = *(double *)value;
+                m_size = 8;
+                break;
             default:
-                type = PrimitiveType::NONE;
+                m_type = PrimitiveType::NONE;
                 break;
         }
+    }
+
+    inline std::int64_t getAsInt() const
+    {
+        return m_value.asInt;
+    }
+
+    inline std::uint64_t getAsUInt() const
+    {
+        return m_value.asUInt;
+    }
+
+    inline double getDouble() const
+    {
+        return m_value.asDouble;
+    }
+
+    inline const char *getArray() const
+    {
+        return m_arrayValue;
+    }
+
+    inline size_t size() const
+    {
+        return m_size;
+    }
+
+    inline PrimitiveType primitiveType() const
+    {
+        return m_type;
     }
 
 private:
@@ -127,18 +204,11 @@ private:
     size_t m_size;
     union
     {
-        char m_charValue;
-        sbe_int8_t m_int8;
-        std::int16_t m_int16;
-        std::int32_t m_int32;
-        std::int64_t m_int64;
-        std::uint8_t m_uint8;
-        std::uint16_t m_uint16;
-        std::uint32_t m_uint32;
-        std::uint64_t m_uint64;
-        float m_float;
-        double m_double;
+        std::int64_t asInt;
+        std::uint64_t asUInt;
+        double asDouble;
     } m_value;
+    const char *m_arrayValue = nullptr;
 };
 
 class Encoding
@@ -271,6 +341,11 @@ public:
         }
     }
 
+    inline Presence presence() const
+    {
+        return m_presence;
+    }
+
     inline ByteOrder byteOrder() const
     {
         return m_byteOrder;
@@ -281,19 +356,24 @@ public:
         return m_primitiveType;
     }
 
-    inline std::int64_t getAsInt(const char *buffer)
+    inline std::int64_t getAsInt(const char *buffer) const
     {
         return getInt(m_primitiveType, m_byteOrder, buffer);
     }
 
-    inline std::int64_t getAsUInt(const char *buffer)
+    inline std::uint64_t getAsUInt(const char *buffer) const
     {
         return getUInt(m_primitiveType, m_byteOrder, buffer);
     }
 
-    inline double getAsDouble(const char *buffer)
+    inline double getAsDouble(const char *buffer) const
     {
         return getDouble(m_primitiveType, m_byteOrder, buffer);
+    }
+
+    inline const PrimitiveValue& constValue() const
+    {
+        return m_constValue;
     }
 
 private:
