@@ -949,4 +949,5 @@ TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectlyAndInOrder)
 
     const std::size_t result =
         OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
+    EXPECT_EQ(result, static_cast<std::size_t>(encodedCarAndHdrLength - MessageHeader::size()));
 }

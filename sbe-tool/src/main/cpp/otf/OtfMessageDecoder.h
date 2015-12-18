@@ -87,6 +87,8 @@ template<typename TokenListener>
 static void decodeComposite(
     Token& fieldToken,
     const char *buffer,
+    std::size_t bufferIndex,
+    std::size_t length,
     std::shared_ptr<std::vector<Token>> tokens,
     size_t tokenIndex,
     size_t toIndex,
@@ -98,7 +100,7 @@ static void decodeComposite(
     for (size_t i = tokenIndex + 1; i < toIndex; i++)
     {
         Token &token = tokens->at(i);
-        listener.onEncoding(token, buffer + token.offset(), token, actingVersion);
+        listener.onEncoding(token, buffer + bufferIndex + token.offset(), token, actingVersion);
     }
 
     listener.onEndComposite(fieldToken, *tokens.get(), tokenIndex, toIndex);
@@ -107,7 +109,8 @@ static void decodeComposite(
 template<typename TokenListener>
 static size_t decodeFields(
     const char *buffer,
-    size_t length,
+    std::size_t bufferIndex,
+    std::size_t length,
     std::uint64_t actingVersion,
     std::shared_ptr<std::vector<Token>> tokens,
     size_t tokenIndex,
@@ -126,13 +129,13 @@ static size_t decodeFields(
         tokenIndex++;
 
         Token& typeToken = tokens->at(tokenIndex);
-        const int offset = typeToken.offset();
+        const std::size_t offset = bufferIndex + typeToken.offset();
 
         switch (typeToken.signal())
         {
             case Signal::BEGIN_COMPOSITE:
                 decodeComposite<TokenListener>(
-                    fieldToken, buffer + offset, tokens, tokenIndex, nextFieldIndex - 2, actingVersion, listener);
+                    fieldToken, buffer, offset, length, tokens, tokenIndex, nextFieldIndex - 2, actingVersion, listener);
                 break;
             case Signal::BEGIN_ENUM:
                 listener.onEnum(fieldToken, buffer + offset, *tokens.get(), tokenIndex, nextFieldIndex - 2, actingVersion);
@@ -156,14 +159,13 @@ static size_t decodeFields(
 template<typename TokenListener>
 std::size_t decodeData(
     const char *buffer,
+    std::size_t bufferIndex,
     std::size_t length,
     std::shared_ptr<std::vector<Token>> tokens,
     std::size_t tokenIndex,
     const std::size_t numTokens,
     TokenListener& listener)
 {
-    size_t bufferIndex = 0;
-
     while (tokenIndex < numTokens)
     {
         Token& token = tokens->at(tokenIndex);
@@ -185,12 +187,13 @@ std::size_t decodeData(
         tokenIndex += token.componentTokenCount();
     }
 
-    return tokenIndex;
+    return bufferIndex;
 }
 
 template<typename TokenListener>
 std::pair<size_t, size_t> decodeGroups(
     const char *buffer,
+    std::size_t bufferIndex,
     std::size_t length,
     std::uint64_t actingVersion,
     std::shared_ptr<std::vector<Token>> tokens,
@@ -198,8 +201,6 @@ std::pair<size_t, size_t> decodeGroups(
     const size_t numTokens,
     TokenListener& listener)
 {
-    size_t bufferIndex = 0;
-
     while (tokenIndex < numTokens)
     {
         Token& token = tokens->at(tokenIndex);
@@ -226,13 +227,13 @@ std::pair<size_t, size_t> decodeGroups(
             listener.onBeginGroup(token, i, numInGroup);
 
             size_t afterFieldsIndex =
-                decodeFields(buffer + bufferIndex, length, actingVersion, tokens, beginFieldsIndex, numTokens, listener);
+                decodeFields(buffer, bufferIndex, length, actingVersion, tokens, beginFieldsIndex, numTokens, listener);
             bufferIndex += blockLength;
 
             std::pair<size_t, size_t> groupsResult =
-                decodeGroups(buffer + bufferIndex, length, actingVersion, tokens, afterFieldsIndex, numTokens, listener);
+                decodeGroups(buffer, bufferIndex, length, actingVersion, tokens, afterFieldsIndex, numTokens, listener);
 
-            bufferIndex += groupsResult.first;
+            bufferIndex = groupsResult.first;
 
             listener.onEndGroup(token, i, numInGroup);
         }
@@ -249,7 +250,7 @@ std::pair<size_t, size_t> decodeGroups(
 template<typename TokenListener>
 std::size_t decode(
     const char *buffer,
-    size_t length,
+    std::size_t length,
     std::uint64_t actingVersion,
     size_t blockLength,
     std::shared_ptr<std::vector<Token>> msgTokens,
@@ -258,15 +259,15 @@ std::size_t decode(
     listener.onBeginMessage(msgTokens->at(0));
 
     size_t numTokens = msgTokens->size();
-    const size_t tokenIndex = decodeFields(buffer, length, actingVersion, msgTokens, 1, numTokens, listener);
+    const size_t tokenIndex = decodeFields(buffer, 0, length, actingVersion, msgTokens, 1, numTokens, listener);
 
     size_t bufferIndex = blockLength;
 
     std::pair<size_t, size_t> groupResult =
-        decodeGroups(buffer + bufferIndex, length, actingVersion, msgTokens, tokenIndex, numTokens, listener);
+        decodeGroups(buffer, bufferIndex, length, actingVersion, msgTokens, tokenIndex, numTokens, listener);
 
     bufferIndex =
-        decodeData(buffer + bufferIndex + groupResult.first, length, msgTokens, groupResult.second, numTokens, listener);
+        decodeData(buffer, groupResult.first, length, msgTokens, groupResult.second, numTokens, listener);
 
     listener.onEndMessage(msgTokens->at(numTokens - 1));
 
