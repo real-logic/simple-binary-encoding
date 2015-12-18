@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<messageSchema package="code.generation.test"
+<messageSchema package="code.generation.test.cpp"
                id="6"
                semanticVersion="5.2"
                description="Code generation unit test support for C++"

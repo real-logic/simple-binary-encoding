@@ -16,11 +16,11 @@
 #include <iostream>
 
 #include "gtest/gtest.h"
-#include "code_generation_test/MessageHeader.hpp"
-#include "code_generation_test/Car.hpp"
+#include "code_generation_test_cpp/MessageHeader.hpp"
+#include "code_generation_test_cpp/Car.hpp"
 
 using namespace std;
-using namespace code_generation_test;
+using namespace code_generation_test_cpp;
 
 static const sbe_uint32_t SERIAL_NUMBER = 1234;
 static const sbe_uint16_t MODEL_YEAR = 2013;

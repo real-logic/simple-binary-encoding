@@ -233,7 +233,7 @@ std::pair<size_t, size_t> decodeGroups(
             std::pair<size_t, size_t> groupsResult =
                 decodeGroups(buffer, bufferIndex, length, actingVersion, tokens, afterFieldsIndex, numTokens, listener);
 
-            bufferIndex = groupsResult.first;
+            bufferIndex = decodeData(buffer, groupsResult.first, length, tokens, groupsResult.second, numTokens, listener);
 
             listener.onEndGroup(token, i, numInGroup);
         }

@@ -31,6 +31,7 @@ endfunction()
 
 find_package(Java REQUIRED)
 
+set(CODE_GENERATION_SCHEMA ${CODEC_SCHEMA_DIR}/code-generation-schema.xml)
 set(CODE_GENERATION_SCHEMA_CPP ${CODEC_SCHEMA_DIR}/code-generation-schema-cpp.xml)
 set(COMPOSITE_OFFSETS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-offsets-schema.xml)
 set(MESSAGE_BLOCK_LENGTH_TEST ${CODEC_SCHEMA_DIR}/message-block-length-test.xml)
@@ -42,8 +43,8 @@ set(GENERATED_CODECS
 
 add_custom_command(
 	OUTPUT ${GENERATED_CODECS}
-	DEPENDS ${CODE_GENERATION_SCHEMA_CPP} ${COMPOSITE_OFFSETS_SCHEMA} ${MESSAGE_BLOCK_LENGTH_TEST}
-	COMMAND ${Java_JAVA_EXECUTABLE} -Dsbe.output.dir=${CODEC_TARGET_DIR} -Dsbe.generate.ir="true" -Dsbe.target.language="cpp98" -jar ${SBE_JAR} ${CODE_GENERATION_SCHEMA_CPP} ${COMPOSITE_OFFSETS_SCHEMA} ${MESSAGE_BLOCK_LENGTH_TEST} ${GROUP_WITH_DATA_SCHEMA}
+	DEPENDS ${CODE_GENERATION_SCHEMA} ${CODE_GENERATION_SCHEMA_CPP} ${COMPOSITE_OFFSETS_SCHEMA} ${MESSAGE_BLOCK_LENGTH_TEST}
+	COMMAND ${Java_JAVA_EXECUTABLE} -Dsbe.output.dir=${CODEC_TARGET_DIR} -Dsbe.generate.ir="true" -Dsbe.target.language="cpp98" -jar ${SBE_JAR} ${CODE_GENERATION_SCHEMA} ${CODE_GENERATION_SCHEMA_CPP} ${COMPOSITE_OFFSETS_SCHEMA} ${MESSAGE_BLOCK_LENGTH_TEST} ${GROUP_WITH_DATA_SCHEMA}
 )
 
 add_custom_target(codecs DEPENDS ${GENERATED_CODECS})
@@ -56,7 +57,6 @@ sbe_test(OtfIrTest)
 sbe_test(OtfMessageHeaderTest)
 sbe_test(OtfMessageTest)
 sbe_test(OtfVariableDataTest)
-sbe_test(Rc3OtfFullIrTest)
 
 # codec tests
 sbe_test(BoundsCheckTest codecs)
@@ -64,5 +64,5 @@ sbe_test(CodeGenTest codecs)
 sbe_test(CompositeOffsetsCodeGenTest codecs)
 sbe_test(CompositeOffsetsIrTest codecs)
 sbe_test(MessageBlockLengthTest codecs)
-sbe_test(OtfFullIrTest codecs)
 sbe_test(GroupWithDataTest codecs)
+sbe_test(Rc3OtfFullIrTest)

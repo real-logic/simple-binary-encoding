@@ -26,28 +26,30 @@
 using namespace std;
 using namespace code_generation_test;
 
-static const char *SCHEMA_FILENAME = "code-generation-schema-cpp.sbeir";
+static const char *SCHEMA_FILENAME = "code-generation-schema.sbeir";
 
-static const uint8_t fieldIdCharConst = 100;
 static const uint8_t fieldIdSerialNumber = 1;
 static const uint8_t fieldIdModelYear = 2;
 static const uint8_t fieldIdAvailable = 3;
 static const uint8_t fieldIdCode = 4;
+static const uint8_t fieldIdSomeNumbers = 5;
 static const uint8_t fieldIdVehicleCode = 6;
-static const uint8_t fieldIdExtras = 5;
-static const uint8_t fieldIdEngine = 7;
-static const uint8_t fieldIdFuelFigures = 8;
-static const uint8_t fieldIdFuelSpeed = 9;
-static const uint8_t fieldIdFuelMpg = 10;
-static const uint8_t fieldIdPerformanceFigures = 11;
-static const uint8_t fieldIdPerfOctaneRating = 12;
-static const uint8_t fieldIdPerfAcceleration = 13;
-static const uint8_t fieldIdPerfAccMph = 14;
-static const uint8_t fieldIdPerfAccSeconds = 15;
-static const uint8_t fieldIdMake = 16;
-static const uint8_t fieldIdModel = 17;
+static const uint8_t fieldIdExtras = 7;
+static const uint8_t fieldIdDiscountedModel = 8;
+static const uint8_t fieldIdEngine = 9;
+static const uint8_t fieldIdFuelFigures = 10;
+static const uint8_t fieldIdFuelSpeed = 11;
+static const uint8_t fieldIdFuelMpg = 12;
+static const uint8_t fieldIdFuelUsageDescription = 200;
+static const uint8_t fieldIdPerformanceFigures = 13;
+static const uint8_t fieldIdPerfOctaneRating = 14;
+static const uint8_t fieldIdPerfAcceleration = 15;
+static const uint8_t fieldIdPerfAccMph = 16;
+static const uint8_t fieldIdPerfAccSeconds = 17;
+static const uint8_t fieldIdMake = 18;
+static const uint8_t fieldIdModel = 19;
+static const uint8_t fieldIdActivationCode = 20;
 
-static const char charConstValue = 'g';
 static const sbe_uint32_t SERIAL_NUMBER = 1234;
 static const sbe_uint16_t MODEL_YEAR = 2013;
 static const BooleanType::Value AVAILABLE = BooleanType::T;
@@ -58,13 +60,18 @@ static const bool SUNROOF = false;
 
 static char VEHICLE_CODE[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
 static char MANUFACTURER_CODE[] = { '1', '2', '3' };
+static const char *FUEL_FIGURES_1_USAGE_DESCRIPTION = "Urban Cycle";
+static const char *FUEL_FIGURES_2_USAGE_DESCRIPTION = "Combined Cycle";
+static const char *FUEL_FIGURES_3_USAGE_DESCRIPTION = "Highway Cycle";
 static const char *MAKE = "Honda";
 static const char *MODEL = "Civic VTi";
+static const char *ACTIVATION_CODE = "deadbeef";
 
 static const int VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
 static const int MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
 static const size_t MAKE_LENGTH = 5;
 static const size_t MODEL_LENGTH = 9;
+static const size_t ACTIVATION_CODE_LENGTH = 8;
 static const size_t PERFORMANCE_FIGURES_COUNT = 2;
 static const size_t FUEL_FIGURES_COUNT = 3;
 static const size_t ACCELERATION_COUNT = 3;
@@ -95,7 +102,7 @@ static const sbe_float_t perf2cSeconds = 11.8f;
 static const sbe_uint16_t engineCapacity = 2000;
 static const sbe_uint8_t engineNumCylinders = 4;
 
-static const int encodedCarAndHdrLength = 113;
+static const int encodedCarAndHdrLength = 179 + 8;
 
 // This enum represents the expected events that
 // will be received during the decoding process.
@@ -103,13 +110,14 @@ static const int encodedCarAndHdrLength = 113;
 enum EventNumber
 {
     EN_beginMessage = 0,
-    EN_charConst,
     EN_serialNumber,
     EN_modelYear,
     EN_available,
     EN_code,
+    EN_someNumbers,
     EN_vehicleCode,
     EN_extras,
+    EN_discountedModel,
     EN_beginEngine,
     EN_engine_capacity,
     EN_engine_numCylinders,
@@ -121,14 +129,17 @@ enum EventNumber
     EN_beginFuelFigures1,
     EN_fuelFigures1_speed,
     EN_fuelFigures1_mpg,
+    EN_fuelFigures1_usageDescription,
     EN_endFuelFigures1,
     EN_beginFuelFigures2,
     EN_fuelFigures2_speed,
     EN_fuelFigures2_mpg,
+    EN_fuelFigures2_usageDescription,
     EN_endFuelFigures2,
     EN_beginFuelFigures3,
     EN_fuelFigures3_speed,
     EN_fuelFigures3_mpg,
+    EN_fuelFigures3_usageDescription,
     EN_endFuelFigures3,
     EN_groupPerformanceFigures,
     EN_beginPerformanceFigures1,
@@ -165,6 +176,7 @@ enum EventNumber
     EN_endPerformanceFigures2,
     EN_make,
     EN_model,
+    EN_activationCode,
     EN_endMessage
 };
 
@@ -198,6 +210,11 @@ public:
             .code(CODE)
             .putVehicleCode(VEHICLE_CODE);
 
+        for (int i = 0; i < Car::someNumbersLength(); i++)
+        {
+            car.someNumbers(i, i);
+        }
+
         car.extras().clear()
             .cruiseControl(CRUISE_CONTROL)
             .sportsPack(SPORTS_PACK)
@@ -208,10 +225,23 @@ public:
             .numCylinders(engineNumCylinders)
             .putManufacturerCode(MANUFACTURER_CODE);
 
-        car.fuelFiguresCount(FUEL_FIGURES_COUNT)
-            .next().speed(fuel1Speed).mpg(fuel1Mpg)
-            .next().speed(fuel2Speed).mpg(fuel2Mpg)
+        Car::FuelFigures& fuelFigures = car.fuelFiguresCount(FUEL_FIGURES_COUNT);
+
+        fuelFigures
+            .next().speed(fuel1Speed).mpg(fuel1Mpg);
+
+        fuelFigures.putUsageDescription(
+            FUEL_FIGURES_1_USAGE_DESCRIPTION, static_cast<int>(strlen(FUEL_FIGURES_1_USAGE_DESCRIPTION)));
+
+        fuelFigures
+            .next().speed(fuel2Speed).mpg(fuel2Mpg);
+        fuelFigures.putUsageDescription(
+            FUEL_FIGURES_2_USAGE_DESCRIPTION, static_cast<int>(strlen(FUEL_FIGURES_2_USAGE_DESCRIPTION)));
+
+        fuelFigures
             .next().speed(fuel3Speed).mpg(fuel3Mpg);
+        fuelFigures.putUsageDescription(
+            FUEL_FIGURES_3_USAGE_DESCRIPTION, static_cast<int>(strlen(FUEL_FIGURES_3_USAGE_DESCRIPTION)));
 
         Car::PerformanceFigures &perfFigs = car.performanceFiguresCount(PERFORMANCE_FIGURES_COUNT);
 
@@ -231,6 +261,7 @@ public:
 
         car.putMake(MAKE, static_cast<int>(strlen(MAKE)));
         car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
+        car.putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
 
         return hdr.size() + car.size();
     }
@@ -265,23 +296,10 @@ public:
 
         switch (EventNumber(m_eventNumber))
         {
-            case EN_charConst:
-            {
-                EXPECT_EQ(fieldToken.fieldId(), fieldIdCharConst);
-                EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
-                EXPECT_EQ(encoding.presence(), Presence::SBE_CONSTANT);
-                EXPECT_TRUE(typeToken.isConstantEncoding());
-                EXPECT_EQ(typeToken.encodedLength(), 0);
-
-                const PrimitiveValue value = encoding.constValue();
-
-                EXPECT_EQ(value.getAsInt(), static_cast<std::int64_t>(charConstValue));
-                break;
-            }
             case EN_serialNumber:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdSerialNumber);
-                EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT32);
+                EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT64);
                 EXPECT_EQ(encoding.getAsUInt(buffer), static_cast<std::uint64_t>(SERIAL_NUMBER));
                 break;
             }
@@ -290,6 +308,18 @@ public:
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdModelYear);
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT16);
                 EXPECT_EQ(encoding.getAsUInt(buffer), static_cast<std::uint64_t>(MODEL_YEAR));
+                break;
+            }
+            case EN_someNumbers:
+            {
+                EXPECT_EQ(fieldToken.fieldId(), fieldIdSomeNumbers);
+                EXPECT_EQ(encoding.primitiveType(), PrimitiveType::INT32);
+                EXPECT_EQ(typeToken.encodedLength(), 4 * 5);
+
+                for (int i = 0; i < Car::someNumbersLength(); i++)
+                {
+                    EXPECT_EQ(encoding.getAsInt(buffer + (i * 4)), i);
+                }
                 break;
             }
             case EN_vehicleCode:
@@ -542,6 +572,34 @@ public:
                     if (constValue == value)
                     {
                         EXPECT_EQ(token.name(), std::string("A"));
+                        found = true;
+                    }
+                }
+                EXPECT_TRUE(found);
+                break;
+            }
+            case EN_discountedModel:
+            {
+                EXPECT_EQ(fieldToken.fieldId(), fieldIdDiscountedModel);
+                EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
+                EXPECT_EQ(encoding.presence(), Presence::SBE_CONSTANT);
+                EXPECT_TRUE(typeToken.isConstantEncoding());
+                EXPECT_EQ(typeToken.encodedLength(), 0);
+
+                const PrimitiveValue value = encoding.constValue();
+
+                EXPECT_EQ(value.getAsInt(), static_cast<std::int64_t>('C'));
+                bool found = false;
+                for (size_t i = fromIndex + 1; i < toIndex; i++)
+                {
+                    const Token& token = tokens.at(i);
+                    const std::int64_t constValue = token.encoding().constValue().getAsInt();
+
+                    cout << "    " << token.name() << " = " << constValue << "\n";
+
+                    if (constValue == value.getAsInt())
+                    {
+                        EXPECT_EQ(token.name(), std::string("C"));
                         found = true;
                     }
                 }
@@ -886,6 +944,27 @@ public:
 
         switch (EventNumber(m_eventNumber))
         {
+            case EN_fuelFigures1_usageDescription:
+            {
+                EXPECT_EQ(fieldToken.fieldId(), fieldIdFuelUsageDescription);
+                EXPECT_EQ(length, strlen(FUEL_FIGURES_1_USAGE_DESCRIPTION));
+                EXPECT_EQ(std::string(buffer, length), FUEL_FIGURES_1_USAGE_DESCRIPTION);
+                break;
+            }
+            case EN_fuelFigures2_usageDescription:
+            {
+                EXPECT_EQ(fieldToken.fieldId(), fieldIdFuelUsageDescription);
+                EXPECT_EQ(length, strlen(FUEL_FIGURES_2_USAGE_DESCRIPTION));
+                EXPECT_EQ(std::string(buffer, length), FUEL_FIGURES_2_USAGE_DESCRIPTION);
+                break;
+            }
+            case EN_fuelFigures3_usageDescription:
+            {
+                EXPECT_EQ(fieldToken.fieldId(), fieldIdFuelUsageDescription);
+                EXPECT_EQ(length, strlen(FUEL_FIGURES_3_USAGE_DESCRIPTION));
+                EXPECT_EQ(std::string(buffer, length), FUEL_FIGURES_3_USAGE_DESCRIPTION);
+                break;
+            }
             case EN_make:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdMake);
@@ -898,6 +977,13 @@ public:
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdModel);
                 EXPECT_EQ(length, MODEL_LENGTH);
                 EXPECT_EQ(std::string(buffer, MODEL_LENGTH), MODEL);
+                break;
+            }
+            case EN_activationCode:
+            {
+                EXPECT_EQ(fieldToken.fieldId(), fieldIdActivationCode);
+                EXPECT_EQ(length, ACTIVATION_CODE_LENGTH);
+                EXPECT_EQ(std::string(buffer, ACTIVATION_CODE_LENGTH), ACTIVATION_CODE);
                 break;
             }
             default:

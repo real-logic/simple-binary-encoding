@@ -16,11 +16,11 @@
 #include <iostream>
 
 #include "gtest/gtest.h"
-#include "code_generation_test/MessageHeader.hpp"
-#include "code_generation_test/Car.hpp"
+#include "code_generation_test_cpp/MessageHeader.hpp"
+#include "code_generation_test_cpp/Car.hpp"
 
 using namespace std;
-using namespace code_generation_test;
+using namespace code_generation_test_cpp;
 
 #define SERIAL_NUMBER 1234u
 #define MODEL_YEAR 2013
