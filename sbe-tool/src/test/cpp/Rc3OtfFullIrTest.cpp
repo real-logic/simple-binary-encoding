@@ -61,8 +61,8 @@ static char MANUFACTURER_CODE[] = { '1', '2', '3' };
 static const char *MAKE = "Honda";
 static const char *MODEL = "Civic VTi";
 
-static const size_t VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
-static const size_t MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
+static const int VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
+static const int MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
 static const size_t MAKE_LENGTH = 5;
 static const size_t MODEL_LENGTH = 9;
 static const size_t PERFORMANCE_FIGURES_COUNT = 2;
@@ -229,8 +229,8 @@ public:
             .next().mph(perf2bMph).seconds(perf2bSeconds)
             .next().mph(perf2cMph).seconds(perf2cSeconds);
 
-        car.putMake(MAKE, strlen(MAKE));
-        car.putModel(MODEL, strlen(MODEL));
+        car.putMake(MAKE, static_cast<int>(strlen(MAKE)));
+        car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
 
         return hdr.size() + car.size();
     }
@@ -296,7 +296,7 @@ public:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdVehicleCode);
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
-                EXPECT_EQ(typeToken.encodedLength(), static_cast<int>(VEHICLE_CODE_LENGTH));
+                EXPECT_EQ(typeToken.encodedLength(), VEHICLE_CODE_LENGTH);
                 EXPECT_EQ(std::string(buffer, VEHICLE_CODE_LENGTH), std::string(VEHICLE_CODE, VEHICLE_CODE_LENGTH));
                 break;
             }
@@ -315,13 +315,14 @@ public:
             case EN_engine_maxRpms:
             {
                 EXPECT_TRUE(typeToken.isConstantEncoding());
+                EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT16);
                 EXPECT_EQ(encoding.constValue().getAsUInt(), static_cast<std::uint64_t>(9000));
                 break;
             }
             case EN_engine_manufacturerCode:
             {
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
-                EXPECT_EQ(typeToken.encodedLength(), static_cast<int>(MANUFACTURER_CODE_LENGTH));
+                EXPECT_EQ(typeToken.encodedLength(), MANUFACTURER_CODE_LENGTH);
                 EXPECT_EQ(std::string(buffer, MANUFACTURER_CODE_LENGTH), std::string(MANUFACTURER_CODE, MANUFACTURER_CODE_LENGTH));
                 break;
             }
@@ -330,8 +331,8 @@ public:
                 EXPECT_TRUE(typeToken.isConstantEncoding());
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
 
-                const PrimitiveValue value = encoding.constValue();
-                EXPECT_EQ(value.size(), static_cast<size_t>(6));
+                const PrimitiveValue& value = encoding.constValue();
+                EXPECT_EQ(value.size(), static_cast<std::size_t>(6));
                 EXPECT_EQ(std::string(value.getArray(), value.size()), std::string("Petrol"));
                 break;
             }
@@ -486,8 +487,8 @@ public:
         Token& fieldToken,
         const char *buffer,
         std::vector<Token>& tokens,
-        int fromIndex,
-        int toIndex,
+        std::size_t fromIndex,
+        std::size_t toIndex,
         std::uint64_t actingVersion)
     {
         cout << m_eventNumber << ": Enum " << fieldToken.name() << "\n";
@@ -558,8 +559,8 @@ public:
         Token& fieldToken,
         const char *buffer,
         std::vector<Token>& tokens,
-        int fromIndex,
-        int toIndex,
+        std::size_t fromIndex,
+        std::size_t toIndex,
         std::uint64_t actingVersion)
     {
         cout << m_eventNumber << ": Bit Set " << fieldToken.name() << "\n";
@@ -608,8 +609,8 @@ public:
     void onBeginComposite(
         Token& fieldToken,
         std::vector<Token>& tokens,
-        int fromIndex,
-        int toIndex)
+        std::size_t fromIndex,
+        std::size_t toIndex)
     {
         cout << m_eventNumber << ": Begin Composite " << fieldToken.name() << "\n";
 
@@ -630,8 +631,8 @@ public:
     void onEndComposite(
         Token& fieldToken,
         std::vector<Token>& tokens,
-        int fromIndex,
-        int toIndex)
+        std::size_t fromIndex,
+        std::size_t toIndex)
     {
         cout << m_eventNumber << ": End Composite " << fieldToken.name() << "\n";
 
@@ -651,7 +652,7 @@ public:
 
     void onGroupHeader(
         Token& token,
-        int numInGroup)
+        std::uint64_t numInGroup)
     {
         cout << m_eventNumber << ": Group Header " << token.name() << " num " << numInGroup << "\n";
 
@@ -691,8 +692,8 @@ public:
 
     void onBeginGroup(
         Token& token,
-        int groupIndex,
-        int numInGroup)
+        std::uint64_t groupIndex,
+        std::uint64_t numInGroup)
     {
         cout << m_eventNumber << ": Begin Group " << token.name() << " " << groupIndex + 1 << "/" << numInGroup << "\n";
 
@@ -701,77 +702,77 @@ public:
             case EN_beginFuelFigures1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdFuelFigures);
-                EXPECT_EQ(groupIndex, 0);
+                EXPECT_EQ(groupIndex, 0u);
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
             case EN_beginFuelFigures2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdFuelFigures);
-                EXPECT_EQ(groupIndex, 1);
+                EXPECT_EQ(groupIndex, 1u);
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
             case EN_beginFuelFigures3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdFuelFigures);
-                EXPECT_EQ(groupIndex, 2);
+                EXPECT_EQ(groupIndex, 2u);
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
             case EN_beginPerformanceFigures1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerformanceFigures);
-                EXPECT_EQ(groupIndex, 0);
+                EXPECT_EQ(groupIndex, 0u);
                 EXPECT_EQ(numInGroup, PERFORMANCE_FIGURES_COUNT);
                 break;
             }
             case EN_performanceFigures1_beginAcceleration1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 0);
+                EXPECT_EQ(groupIndex, 0u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
             case EN_performanceFigures1_beginAcceleration2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 1);
+                EXPECT_EQ(groupIndex, 1u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
             case EN_performanceFigures1_beginAcceleration3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 2);
+                EXPECT_EQ(groupIndex, 2u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
             case EN_beginPerformanceFigures2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerformanceFigures);
-                EXPECT_EQ(groupIndex, 1);
+                EXPECT_EQ(groupIndex, 1u);
                 EXPECT_EQ(numInGroup, PERFORMANCE_FIGURES_COUNT);
                 break;
             }
             case EN_performanceFigures2_beginAcceleration1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 0);
+                EXPECT_EQ(groupIndex, 0u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
             case EN_performanceFigures2_beginAcceleration2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 1);
+                EXPECT_EQ(groupIndex, 1u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
             case EN_performanceFigures2_beginAcceleration3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 2);
+                EXPECT_EQ(groupIndex, 2u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
@@ -784,8 +785,8 @@ public:
 
     void onEndGroup(
         Token& token,
-        int groupIndex,
-        int numInGroup)
+        std::uint64_t groupIndex,
+        std::uint64_t numInGroup)
     {
         cout << m_eventNumber << ": End Group " << token.name() << " " << groupIndex + 1 << "/" << numInGroup << "\n";
 
@@ -794,77 +795,77 @@ public:
             case EN_endFuelFigures1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdFuelFigures);
-                EXPECT_EQ(groupIndex, 0);
+                EXPECT_EQ(groupIndex, 0u);
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
             case EN_endFuelFigures2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdFuelFigures);
-                EXPECT_EQ(groupIndex, 1);
+                EXPECT_EQ(groupIndex, 1u);
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
             case EN_endFuelFigures3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdFuelFigures);
-                EXPECT_EQ(groupIndex, 2);
+                EXPECT_EQ(groupIndex, 2u);
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
             case EN_endPerformanceFigures1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerformanceFigures);
-                EXPECT_EQ(groupIndex, 0);
+                EXPECT_EQ(groupIndex, 0u);
                 EXPECT_EQ(numInGroup, PERFORMANCE_FIGURES_COUNT);
                 break;
             }
             case EN_performanceFigures1_endAcceleration1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 0);
+                EXPECT_EQ(groupIndex, 0u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
             case EN_performanceFigures1_endAcceleration2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 1);
+                EXPECT_EQ(groupIndex, 1u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
             case EN_performanceFigures1_endAcceleration3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 2);
+                EXPECT_EQ(groupIndex, 2u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
             case EN_endPerformanceFigures2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerformanceFigures);
-                EXPECT_EQ(groupIndex, 1);
+                EXPECT_EQ(groupIndex, 1u);
                 EXPECT_EQ(numInGroup, PERFORMANCE_FIGURES_COUNT);
                 break;
             }
             case EN_performanceFigures2_endAcceleration1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 0);
+                EXPECT_EQ(groupIndex, 0u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
             case EN_performanceFigures2_endAcceleration2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 1);
+                EXPECT_EQ(groupIndex, 1u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
             case EN_performanceFigures2_endAcceleration3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
-                EXPECT_EQ(groupIndex, 2);
+                EXPECT_EQ(groupIndex, 2u);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
@@ -878,7 +879,7 @@ public:
     void onVarData(
         Token& fieldToken,
         const char *buffer,
-        size_t length,
+        std::uint64_t length,
         Token& typeToken)
     {
         cout << m_eventNumber << ": Data " << fieldToken.name() << "\n";
@@ -888,14 +889,14 @@ public:
             case EN_make:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdMake);
-                EXPECT_EQ(length, static_cast<size_t>(MAKE_LENGTH));
+                EXPECT_EQ(length, MAKE_LENGTH);
                 EXPECT_EQ(std::string(buffer, MAKE_LENGTH), MAKE);
                 break;
             }
             case EN_model:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdModel);
-                EXPECT_EQ(length, static_cast<size_t>(MODEL_LENGTH));
+                EXPECT_EQ(length, MODEL_LENGTH);
                 EXPECT_EQ(std::string(buffer, MODEL_LENGTH), MODEL);
                 break;
             }
@@ -942,10 +943,10 @@ TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectlyAndInOrder)
 
     EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
     const char *messageBuffer = m_buffer + headerDecoder.encodedLength();
-    size_t length = encodedCarAndHdrLength - headerDecoder.encodedLength();
+    std::size_t length = encodedCarAndHdrLength - headerDecoder.encodedLength();
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
 
-    const int result =
+    const std::size_t result =
         OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
 }

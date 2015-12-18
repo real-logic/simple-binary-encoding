@@ -67,7 +67,7 @@ public:
         });
     }
 
-    inline int encodedLength() const
+    inline std::int32_t encodedLength() const
     {
         return m_encodedLength;
     }
@@ -98,11 +98,11 @@ public:
 
 private:
     std::shared_ptr<std::vector<Token>> m_tokens;
-    int m_encodedLength;
-    int m_blockLengthOffset;
-    int m_templateIdOffset;
-    int m_schemaIdOffset;
-    int m_schemaVersionOffset;
+    std::int32_t m_encodedLength;
+    std::int32_t m_blockLengthOffset;
+    std::int32_t m_templateIdOffset;
+    std::int32_t m_schemaIdOffset;
+    std::int32_t m_schemaVersionOffset;
     PrimitiveType m_blockLengthType;
     PrimitiveType m_templateIdType;
     PrimitiveType m_schemaIdType;

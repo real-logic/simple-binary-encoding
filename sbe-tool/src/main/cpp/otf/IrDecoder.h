@@ -51,16 +51,8 @@ class IrDecoder
 {
 public:
     IrDecoder() :
-        m_buffer(nullptr), m_length(0)
+        m_length(0)
     {
-    }
-
-    ~IrDecoder()
-    {
-        if (nullptr != m_buffer)
-        {
-            delete [] m_buffer;
-        }
     }
 
     int decode(char *buffer, int length)
@@ -79,14 +71,15 @@ public:
         {
             return -1;
         }
-        m_buffer = new char[m_length];
+        std::unique_ptr<char[]> buffer(new char[m_length]);
+        m_buffer = std::move(buffer);
 
-        if (readFileIntoBuffer(m_buffer, filename, m_length) < 0)
+        if (readFileIntoBuffer(m_buffer.get(), filename, m_length) < 0)
         {
             return -1;
         }
 
-        return decode(m_buffer, m_length);
+        return decode(m_buffer.get(), m_length);
     }
 
     std::shared_ptr<std::vector<Token>> header()
@@ -119,7 +112,7 @@ public:
 
 protected:
     // OS specifics
-    static int getFileSize(const char *filename)
+    static long getFileSize(const char *filename)
     {
         struct stat fileStat;
 
@@ -144,7 +137,7 @@ protected:
         int fd = fileno(fptr);
         while (remaining > 0)
         {
-            int sz = ::read(fd, buffer + (length - remaining), (4098 < remaining) ? 4098 : remaining);
+            long sz = ::read(fd, buffer + (length - remaining), (4098 < remaining) ? 4098 : remaining);
             remaining -= sz;
             if (sz < 0)
             {
@@ -160,8 +153,8 @@ protected:
 private:
     std::shared_ptr<std::vector<Token>> m_headerTokens;
     std::vector<std::shared_ptr<std::vector<Token>>> m_messages;
-    char *m_buffer;
-    int m_length;
+    std::unique_ptr<char[]> m_buffer;
+    long m_length;
     int m_id;
 
     int decodeIr()
@@ -170,7 +163,7 @@ private:
         int offset = 0, tmpLen = 0;
         char tmp[256];
 
-        frame.wrapForDecode(m_buffer, offset, frame.sbeBlockLength(), frame.sbeSchemaVersion(), m_length);
+        frame.wrapForDecode(m_buffer.get(), offset, frame.sbeBlockLength(), frame.sbeSchemaVersion(), m_length);
 
         tmpLen = frame.getPackageName(tmp, sizeof(tmp));
         std::cout << "Reading IR package=\"" << std::string(tmp, tmpLen) << "\" id=" << frame.irId() << "\n";
@@ -210,17 +203,17 @@ private:
     int decodeAndAddToken(std::shared_ptr<std::vector<Token>> tokens, int offset)
     {
         TokenCodec tokenCodec;
-        tokenCodec.wrapForDecode(m_buffer, offset, tokenCodec.sbeBlockLength(), tokenCodec.sbeSchemaVersion(), m_length);
+        tokenCodec.wrapForDecode(m_buffer.get(), offset, tokenCodec.sbeBlockLength(), tokenCodec.sbeSchemaVersion(), m_length);
 
         Signal signal = static_cast<Signal>(tokenCodec.signal());
         PrimitiveType type = static_cast<PrimitiveType>(tokenCodec.primitiveType());
         Presence presence = static_cast<Presence>(tokenCodec.presence());
         ByteOrder byteOrder = static_cast<ByteOrder>(tokenCodec.byteOrder());
-        int tokenOffset = tokenCodec.tokenOffset();
-        int tokenSize = tokenCodec.tokenSize();
-        int id = tokenCodec.fieldId();
-        int version = tokenCodec.tokenVersion();
-        int componentTokenCount = tokenCodec.componentTokenCount();
+        std::int32_t tokenOffset = tokenCodec.tokenOffset();
+        std::int32_t tokenSize = tokenCodec.tokenSize();
+        std::int32_t id = tokenCodec.fieldId();
+        std::int32_t version = tokenCodec.tokenVersion();
+        std::int32_t componentTokenCount = tokenCodec.componentTokenCount();
         std::string name;
         std::string characterEncoding;
         std::string epoch;

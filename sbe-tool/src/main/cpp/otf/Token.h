@@ -70,11 +70,11 @@ class Token
 {
 public:
     Token(
-        int offset,
-        int fieldId,
-        int version,
-        int encodedLength,
-        int componentTokenCount,
+        std::int32_t offset,
+        std::int32_t fieldId,
+        std::int32_t version,
+        std::int32_t encodedLength,
+        std::int32_t componentTokenCount,
         Signal signal,
         std::string name,
         std::string description,
@@ -95,12 +95,12 @@ public:
         return m_name;
     }
 
-    inline int fieldId() const
+    inline std::int32_t fieldId() const
     {
         return m_fieldId;
     }
 
-    inline int tokenVersion() const
+    inline std::int32_t tokenVersion() const
     {
         return m_version;
     }
@@ -110,17 +110,17 @@ public:
         return m_encoding;
     }
 
-    inline int encodedLength() const
+    inline std::int32_t encodedLength() const
     {
         return m_encodedLength;
     }
 
-    inline int offset() const
+    inline std::int32_t offset() const
     {
         return m_offset;
     }
 
-    inline int componentTokenCount() const
+    inline std::int32_t componentTokenCount() const
     {
         return m_componentTokenCount;
     }
@@ -131,11 +131,11 @@ public:
     }
 
 private:
-    const int m_offset;
-    const int m_fieldId;
-    const int m_version;
-    const int m_encodedLength;
-    const int m_componentTokenCount;
+    const std::int32_t m_offset;
+    const std::int32_t m_fieldId;
+    const std::int32_t m_version;
+    const std::int32_t m_encodedLength;
+    const std::int32_t m_componentTokenCount;
     Signal m_signal;
     std::string m_name;
     std::string m_description;

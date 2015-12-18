@@ -39,189 +39,49 @@ typedef std::function<void(
     Token& fieldToken,
     const char *buffer,
     std::vector<Token>& tokens,
-    int fromIndex,
-    int toIndex,
+    std::size_t fromIndex,
+    std::size_t toIndex,
     std::uint64_t actingVersion)> on_enum_t;
 
 typedef std::function<void(
     Token& fieldToken,
     const char *buffer,
     std::vector<Token>& tokens,
-    int fromIndex,
-    int toIndex,
+    std::size_t fromIndex,
+    std::size_t toIndex,
     std::uint64_t actingVersion)> on_bit_set_t;
 
 typedef std::function<void(
     Token& fieldToken,
     std::vector<Token>& tokens,
-    int fromIndex,
-    int toIndex)> on_begin_composite_t;
+    std::size_t fromIndex,
+    std::size_t toIndex)> on_begin_composite_t;
 
 typedef std::function<void(
     Token& fieldToken,
     std::vector<Token>& tokens,
-    int fromIndex,
-    int toIndex)> on_end_composite_t;
+    std::size_t fromIndex,
+    std::size_t toIndex)> on_end_composite_t;
 
 typedef std::function<void(
     Token& token,
-    int numInGroup)> on_group_header_t;
+    std::uint64_t numInGroup)> on_group_header_t;
 
 typedef std::function<void(
     Token& token,
-    int groupIndex,
-    int numInGroup)> on_begin_group_t;
+    std::uint64_t groupIndex,
+    std::uint64_t numInGroup)> on_begin_group_t;
 
 typedef std::function<void(
     Token& token,
-    int groupIndex,
-    int numInGroup)> on_end_group_t;
+    std::uint64_t groupIndex,
+    std::uint64_t numInGroup)> on_end_group_t;
 
 typedef std::function<void(
     Token& fieldToken,
     const char *buffer,
-    size_t length,
+    std::uint64_t length,
     Token& typeToken)> on_var_data_t;
-
-// Builder allows us to avoid vtable overhead and leverage some ease of use
-class TokenListenerBuilder
-{
-public:
-
-    inline TokenListenerBuilder& onBeginMessage(on_begin_message_t onBeginMessage)
-    {
-        m_onBeginMessage = onBeginMessage;
-        return *this;
-    }
-
-    inline TokenListenerBuilder& onEndMessage(on_end_message_t onEndMessage)
-    {
-        m_onEndMessage = onEndMessage;
-        return *this;
-    }
-
-    inline TokenListenerBuilder& onEncoding(on_encoding_t onEncoding)
-    {
-        m_onEncoding = onEncoding;
-        return *this;
-    }
-
-    inline TokenListenerBuilder& onEnum(on_enum_t onEnum)
-    {
-        m_onEnum = onEnum;
-        return *this;
-    }
-
-    inline TokenListenerBuilder& onBitSet(on_bit_set_t onBitSet)
-    {
-        m_onBitSet = onBitSet;
-        return *this;
-    }
-
-    inline TokenListenerBuilder& onBeginComposite(on_begin_composite_t onBeginComposite)
-    {
-        m_onBeginComposite = onBeginComposite;
-        return *this;
-    }
-
-    inline TokenListenerBuilder& onEndComposite(on_begin_composite_t onEndComposite)
-    {
-        m_onEndComposite = onEndComposite;
-        return *this;
-    }
-
-    inline TokenListenerBuilder& onGroupHeader(on_group_header_t onGroupHeader)
-    {
-        m_onGroupHeader = onGroupHeader;
-        return *this;
-    }
-
-    inline TokenListenerBuilder& onBeginGroup(on_begin_group_t onBeginGroup)
-    {
-        m_onBeginGroup = onBeginGroup;
-        return *this;
-    }
-
-    inline TokenListenerBuilder& onEndGroup(on_begin_group_t onEndGroup)
-    {
-        m_onEndGroup = onEndGroup;
-        return *this;
-    }
-
-    inline TokenListenerBuilder& onVarData(on_var_data_t onVarData)
-    {
-        m_onVarData = onVarData;
-        return *this;
-    }
-
-    inline on_begin_message_t onBeginMessage() const
-    {
-        return m_onBeginMessage;
-    }
-
-    inline on_end_message_t onEndMessage() const
-    {
-        return m_onEndMessage;
-    }
-
-    inline on_encoding_t onEncoding() const
-    {
-        return m_onEncoding;
-    }
-
-    inline on_enum_t onEnum() const
-    {
-        return m_onEnum;
-    }
-
-    inline on_bit_set_t onBitSet() const
-    {
-        return m_onBitSet;
-    }
-
-    inline on_begin_composite_t onBeginComposite() const
-    {
-        return m_onBeginComposite;
-    }
-
-    inline on_end_composite_t onEndComposite() const
-    {
-        return m_onEndComposite;
-    }
-
-    inline on_group_header_t onGroupHeader() const
-    {
-        return m_onGroupHeader;
-    }
-
-    inline on_begin_group_t onBeginGroup() const
-    {
-        return m_onBeginGroup;
-    }
-
-    inline on_end_group_t onEndGroup() const
-    {
-        return m_onEndGroup;
-    }
-
-    inline on_var_data_t onVarData() const
-    {
-        return m_onVarData;
-    }
-
-private:
-    on_begin_message_t m_onBeginMessage = [](Token&) { /* no op */ };
-    on_end_message_t m_onEndMessage = [](Token&) { /* no op */ };
-    on_encoding_t m_onEncoding = [](Token&, const char *, Token&, std::uint64_t) { /* no op */ };
-    on_enum_t m_onEnum = [](Token&, const char *, std::vector<Token>&, int, int, std::uint64_t) { /* no op */ };
-    on_bit_set_t m_onBitSet = [](Token&, const char *, std::vector<Token>&, int, int, std::uint64_t) { /* no op */ };
-    on_begin_composite_t m_onBeginComposite = [](Token&, std::vector<Token>&, int, int) { /* no op */ };
-    on_end_composite_t m_onEndComposite = [](Token&, std::vector<Token>&, int, int) { /* no op */ };
-    on_group_header_t m_onGroupHeader = [](Token&, int) { /* no op */ };
-    on_begin_group_t m_onBeginGroup = [](Token&, int, int) { /* no op */ };
-    on_end_group_t m_onEndGroup = [](Token&, int, int) { /* no op */ };
-    on_var_data_t m_onVarData = [](Token&, const char *, size_t, Token&) { /* no op */ };
-};
 
 template<typename TokenListener>
 static void decodeComposite(
@@ -294,12 +154,12 @@ static size_t decodeFields(
 }
 
 template<typename TokenListener>
-size_t decodeData(
+std::size_t decodeData(
     const char *buffer,
-    size_t length,
+    std::size_t length,
     std::shared_ptr<std::vector<Token>> tokens,
-    size_t tokenIndex,
-    const size_t numTokens,
+    std::size_t tokenIndex,
+    const std::size_t numTokens,
     TokenListener& listener)
 {
     size_t bufferIndex = 0;
@@ -331,7 +191,7 @@ size_t decodeData(
 template<typename TokenListener>
 std::pair<size_t, size_t> decodeGroups(
     const char *buffer,
-    size_t length,
+    std::size_t length,
     std::uint64_t actingVersion,
     std::shared_ptr<std::vector<Token>> tokens,
     size_t tokenIndex,
@@ -387,7 +247,7 @@ std::pair<size_t, size_t> decodeGroups(
  * Entry point for decoder.
  */
 template<typename TokenListener>
-size_t decode(
+std::size_t decode(
     const char *buffer,
     size_t length,
     std::uint64_t actingVersion,

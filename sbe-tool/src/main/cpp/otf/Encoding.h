@@ -20,26 +20,27 @@
 #include <string>
 
 #if defined(WIN32) || defined(_WIN32)
-    #define SBE_OTF_BIG_ENDIAN_ENCODE_16(v) _byteswap_ushort(v)
-    #define SBE_OTF_BIG_ENDIAN_ENCODE_32(v) _byteswap_ulong(v)
-    #define SBE_OTF_BIG_ENDIAN_ENCODE_64(v) _byteswap_uint64(v)
-    #define SBE_OTF_LITTLE_ENDIAN_ENCODE_16(v) (v)
-    #define SBE_OTF_LITTLE_ENDIAN_ENCODE_32(v) (v)
-    #define SBE_OTF_LITTLE_ENDIAN_ENCODE_64(v) (v)
+#    define SBE_OTF_BSWAP_16(v) _byteswap_ushort(v)
+#    define SBE_OTF_BSWAP_32(v) _byteswap_ulong(v)
+#    define SBE_OTF_BSWAP_64(v) _byteswap_uint64(v)
+#else // assuming gcc/clang
+#    define SBE_OTF_BSWAP_16(v) __builtin_bswap16(v)
+#    define SBE_OTF_BSWAP_32(v) __builtin_bswap32(v)
+#    define SBE_OTF_BSWAP_64(v) __builtin_bswap64(v)
+#endif
+
+#if defined(WIN32) || defined(_WIN32)
+#    define SBE_OTF_BYTE_ORDER_16(o,v) ((o == ByteOrder::SBE_LITTLE_ENDIAN) ? (v) : SBE_OTF_BSWAP_16(v))
+#    define SBE_OTF_BYTE_ORDER_32(o,v) ((o == ByteOrder::SBE_LITTLE_ENDIAN) ? (v) : SBE_OTF_BSWAP_32(v))
+#    define SBE_OTF_BYTE_ORDER_64(o,v) ((o == ByteOrder::SBE_LITTLE_ENDIAN) ? (v) : SBE_OTF_BSWAP_64(v))
 #elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    #define SBE_OTF_BIG_ENDIAN_ENCODE_16(v) __builtin_bswap16(v)
-    #define SBE_OTF_BIG_ENDIAN_ENCODE_32(v) __builtin_bswap32(v)
-    #define SBE_OTF_BIG_ENDIAN_ENCODE_64(v) __builtin_bswap64(v)
-    #define SBE_OTF_LITTLE_ENDIAN_ENCODE_16(v) (v)
-    #define SBE_OTF_LITTLE_ENDIAN_ENCODE_32(v) (v)
-    #define SBE_OTF_LITTLE_ENDIAN_ENCODE_64(v) (v)
+#    define SBE_OTF_BYTE_ORDER_16(o,v) ((o == ByteOrder::SBE_LITTLE_ENDIAN) ? (v) : SBE_OTF_BSWAP_16(v))
+#    define SBE_OTF_BYTE_ORDER_32(o,v) ((o == ByteOrder::SBE_LITTLE_ENDIAN) ? (v) : SBE_OTF_BSWAP_32(v))
+#    define SBE_OTF_BYTE_ORDER_64(o,v) ((o == ByteOrder::SBE_LITTLE_ENDIAN) ? (v) : SBE_OTF_BSWAP_64(v))
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-    #define SBE_OTF_LITTLE_ENDIAN_ENCODE_16(v) __builtin_bswap16(v)
-    #define SBE_OTF_LITTLE_ENDIAN_ENCODE_32(v) __builtin_bswap32(v)
-    #define SBE_OTF_LITTLE_ENDIAN_ENCODE_64(v) __builtin_bswap64(v)
-    #define SBE_OTF_BIG_ENDIAN_ENCODE_16(v) (v)
-    #define SBE_OTF_BIG_ENDIAN_ENCODE_32(v) (v)
-    #define SBE_OTF_BIG_ENDIAN_ENCODE_64(v) (v)
+#    define SBE_OTF_BYTE_ORDER_16(o,v) ((o == ByteOrder::SBE_BIG_ENDIAN) ? (v) : SBE_OTF_BSWAP_16(v))
+#    define SBE_OTF_BYTE_ORDER_32(o,v) ((o == ByteOrder::SBE_BIG_ENDIAN) ? (v) : SBE_OTF_BSWAP_32(v))
+#    define SBE_OTF_BYTE_ORDER_64(o,v) ((o == ByteOrder::SBE_BIG_ENDIAN) ? (v) : SBE_OTF_BSWAP_64(v))
 #else
     #error "Byte Ordering of platform not determined. Set __BYTE_ORDER__ manually before including this file."
 #endif
@@ -99,7 +100,7 @@ enum class Presence : int
 class PrimitiveValue
 {
 public:
-    PrimitiveValue(PrimitiveType type, size_t valueLength, const char *value)
+    PrimitiveValue(PrimitiveType type, std::size_t valueLength, const char *value)
     {
         m_type = type;
         if (0 == valueLength)
@@ -113,8 +114,7 @@ public:
             case PrimitiveType::CHAR:
                 if (valueLength > 1)
                 {
-                    // save pointer into the serialized IR at this stage. Be aware that the serialized IR must be kept around
-                    m_arrayValue = value;
+                    m_arrayValue = std::string(value, valueLength);
                     m_size = valueLength;
                 }
                 else
@@ -123,46 +123,57 @@ public:
                     m_size = 1;
                 }
                 break;
+
             case PrimitiveType::INT8:
                 m_value.asInt = *(std::int8_t *)value;
                 m_size = 1;
                 break;
+
             case PrimitiveType::INT16:
                 m_value.asInt = *(std::int16_t *)value;
                 m_size = 2;
                 break;
+
             case PrimitiveType::INT32:
                 m_value.asInt = *(std::int32_t *)value;
                 m_size = 4;
                 break;
+
             case PrimitiveType::INT64:
                 m_value.asInt = *(std::int64_t *)value;
                 m_size = 8;
                 break;
+
             case PrimitiveType::UINT8:
                 m_value.asUInt = *(std::uint8_t *)value;
                 m_size = 1;
                 break;
+
             case PrimitiveType::UINT16:
                 m_value.asUInt = *(std::uint16_t *)value;
                 m_size = 2;
                 break;
+
             case PrimitiveType::UINT32:
                 m_value.asUInt = *(std::uint32_t *)value;
                 m_size = 4;
                 break;
+
             case PrimitiveType::UINT64:
                 m_value.asUInt = *(std::uint64_t *)value;
                 m_size = 8;
                 break;
+
             case PrimitiveType::FLOAT:
                 m_value.asDouble = *(float *)value;
                 m_size = 4;
                 break;
+
             case PrimitiveType::DOUBLE:
                 m_value.asDouble = *(double *)value;
                 m_size = 8;
                 break;
+
             default:
                 m_type = PrimitiveType::NONE;
                 break;
@@ -179,17 +190,17 @@ public:
         return m_value.asUInt;
     }
 
-    inline double getDouble() const
+    inline double getAsDouble() const
     {
         return m_value.asDouble;
     }
 
     inline const char *getArray() const
     {
-        return m_arrayValue;
+        return m_arrayValue.c_str(); // in C++11 data() and c_str() are equivalent and are null terminated after length
     }
 
-    inline size_t size() const
+    inline std::size_t size() const
     {
         return m_size;
     }
@@ -201,14 +212,14 @@ public:
 
 private:
     PrimitiveType m_type;
-    size_t m_size;
+    std::size_t m_size;
     union
     {
         std::int64_t asInt;
         std::uint64_t asUInt;
         double asDouble;
     } m_value;
-    const char *m_arrayValue = nullptr;
+    std::string m_arrayValue;  // use this to store all the types, not just char arrays
 };
 
 class Encoding
@@ -232,8 +243,6 @@ public:
     {
     }
 
-    // TODO: finish these with appropriate ordering
-
     static inline char getChar(const char *buffer)
     {
         return *(char *)buffer;
@@ -246,17 +255,17 @@ public:
 
     static inline std::int16_t getInt16(const char *buffer, const ByteOrder byteOrder)
     {
-        return *(std::int16_t *)buffer;
+        return SBE_OTF_BYTE_ORDER_16(byteOrder, *(std::int16_t *)buffer);
     }
 
     static inline std::int32_t getInt32(const char *buffer, const ByteOrder byteOrder)
     {
-        return *(std::int32_t *)buffer;
+        return SBE_OTF_BYTE_ORDER_32(byteOrder, *(std::int32_t *)buffer);
     }
 
     static inline std::int64_t getInt64(const char *buffer, const ByteOrder byteOrder)
     {
-        return *(std::int64_t *)buffer;
+        return SBE_OTF_BYTE_ORDER_64(byteOrder, *(std::int64_t *)buffer);
     }
 
     static inline std::uint8_t getUInt8(const char *buffer)
@@ -266,27 +275,27 @@ public:
 
     static inline std::uint16_t getUInt16(const char *buffer, const ByteOrder byteOrder)
     {
-        return *(std::uint16_t *)buffer;
+        return SBE_OTF_BYTE_ORDER_16(byteOrder, *(std::uint16_t *)buffer);
     }
 
     static inline std::uint32_t getUInt32(const char *buffer, const ByteOrder byteOrder)
     {
-        return *(std::uint32_t *)buffer;
+        return SBE_OTF_BYTE_ORDER_32(byteOrder, *(std::uint32_t *)buffer);
     }
 
     static inline std::uint64_t getUInt64(const char *buffer, const ByteOrder byteOrder)
     {
-        return *(std::uint64_t *)buffer;
+        return SBE_OTF_BYTE_ORDER_64(byteOrder, *(std::uint64_t *)buffer);
     }
 
     static inline float getFloat(const char *buffer, const ByteOrder byteOrder)
     {
-        return *(float *)buffer;
+        return SBE_OTF_BYTE_ORDER_32(byteOrder, *(float *)buffer);
     }
 
     static inline double getDouble(const char *buffer, const ByteOrder byteOrder)
     {
-        return *(double *)buffer;
+        return SBE_OTF_BYTE_ORDER_64(byteOrder, *(double *)buffer);
     }
 
     static inline std::int64_t getInt(const PrimitiveType type, const ByteOrder byteOrder, const char *buffer)
