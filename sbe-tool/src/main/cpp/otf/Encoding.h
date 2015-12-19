@@ -97,6 +97,61 @@ enum class Presence : int
         SBE_CONSTANT = 2
 };
 
+std::size_t lengthOfType(PrimitiveType type)
+{
+    switch (type)
+    {
+        case PrimitiveType::CHAR:
+        {
+            return 1;
+        }
+        case PrimitiveType::INT8:
+        {
+            return 1;
+        }
+        case PrimitiveType::INT16:
+        {
+            return 2;
+        }
+        case PrimitiveType::INT32:
+        {
+            return 4;
+        }
+        case PrimitiveType::INT64:
+        {
+            return 8;
+        }
+        case PrimitiveType::UINT8:
+        {
+            return 1;
+        }
+        case PrimitiveType::UINT16:
+        {
+            return 2;
+        }
+        case PrimitiveType::UINT32:
+        {
+            return 4;
+        }
+        case PrimitiveType::UINT64:
+        {
+            return 8;
+        }
+        case PrimitiveType::FLOAT:
+        {
+            return 4;
+        }
+        case PrimitiveType::DOUBLE:
+        {
+            return 8;
+        }
+        default:
+        {
+            return 0;
+        }
+    }
+}
+
 class PrimitiveValue
 {
 public:
