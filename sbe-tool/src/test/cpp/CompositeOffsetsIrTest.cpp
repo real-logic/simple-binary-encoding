@@ -18,40 +18,42 @@
 #include "gtest/gtest.h"
 #include "composite_offsets_test/MessageHeader.hpp"
 #include "composite_offsets_test/TestMessage1.hpp"
-#include "otf_api/Ir.h"
-#include "otf_api/IrCollection.h"
-#include "otf_api/Listener.h"
+#include "otf/OtfHeaderDecoder.h"
+#include "otf/OtfMessageDecoder.h"
+#include "otf/IrDecoder.h"
 
 using namespace std;
 using namespace composite_offsets_test;
+using namespace sbe::otf;
 
-class CompositeOffsetsIrTest : public testing::Test, public IrCollection, public Ir::Callback,
-                                public OnNext, public OnError, public OnCompleted
+static const char *SCHEMA_FILENAME = "composite-offsets-schema.sbeir";
+
+class CompositeOffsetsIrTest : public testing::Test, public OtfMessageDecoder::BasicTokenListener
 {
 public:
-    char buffer[2048];
-    Listener listener;
-    int eventNumber_;
+    char m_buffer[2048];
+    IrDecoder m_irDecoder;
+    int m_eventNumber;
 
     virtual void SetUp()
     {
-        eventNumber_ = 0;
+        m_eventNumber = 0;
     }
 
     virtual int encodeHdrAndMsg()
     {
-        MessageHeader hdr_;
-        TestMessage1 msg_;
+        MessageHeader hdr;
+        TestMessage1 msg;
 
-        hdr_.wrap(buffer, 0, 0, sizeof(buffer))
+        hdr.wrap(m_buffer, 0, 0, sizeof(m_buffer))
             .blockLength(TestMessage1::sbeBlockLength())
             .templateId(TestMessage1::sbeTemplateId())
             .schemaId(TestMessage1::sbeSchemaId())
             .version(TestMessage1::sbeSchemaVersion());
 
-        msg_.wrapForEncode(buffer, hdr_.size(), sizeof(buffer));
+        msg.wrapForEncode(m_buffer, hdr.size(), sizeof(m_buffer));
 
-        TestMessage1::Entries &entries = msg_.entriesCount(2);
+        TestMessage1::Entries &entries = msg.entriesCount(2);
 
         entries.next()
             .tagGroup1(10)
@@ -61,125 +63,104 @@ public:
             .tagGroup1(30)
             .tagGroup2(40);
 
-        return hdr_.size() + msg_.size();
+        return hdr.size() + msg.size();
     }
 
-    virtual Ir *irForTemplateId(const int templateId, const int schemaVersion)
+    virtual void onEncoding(
+        Token& fieldToken,
+        const char *buffer,
+        Token& typeToken,
+        std::uint64_t actingVersion)
     {
-        EXPECT_EQ(templateId, TestMessage1::sbeTemplateId());
-        EXPECT_EQ(schemaVersion, TestMessage1::sbeSchemaVersion());
+        switch (m_eventNumber++)
+        {
+            case 1:
+            {
+                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::UINT64);
+                EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 10u);
+                break;
+            }
+            case 2:
+            {
+                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::INT64);
+                EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 20);
+                break;
+            }
+            case 3:
+            {
+                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::UINT64);
+                EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 30u);
+                break;
+            }
+            case 4:
+            {
+                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::INT64);
+                EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 40);
+                break;
+            }
+            default:
+                FAIL() << "unknown event number " << m_eventNumber;
+        }
 
-        Ir *tmplt = (Ir *)IrCollection::message(templateId, schemaVersion);
-        return tmplt;
     }
 
-    void checkEvent(const Field &f, const Group &g)
+    virtual void onGroupHeader(
+        Token& token,
+        std::uint64_t numInGroup)
     {
-        if (eventNumber_ == 0)
+        switch (m_eventNumber++)
         {
-            EXPECT_EQ(f.isComposite(), true);
-            EXPECT_EQ(f.numEncodings(), 4);
-            EXPECT_EQ(f.primitiveType(0), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(0), TestMessage1::sbeBlockLength());
-            EXPECT_EQ(f.primitiveType(1), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(1), TestMessage1::sbeTemplateId());
-            EXPECT_EQ(f.primitiveType(2), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(2), TestMessage1::sbeSchemaId());
-            EXPECT_EQ(f.primitiveType(3), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(3), TestMessage1::sbeSchemaVersion());
-        }
-        else if (eventNumber_ == 1)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 2);
-        }
-        else if (eventNumber_ == 2)
-        {
-            EXPECT_EQ(f.schemaId(), 3);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.getUInt(), 10u);
-        }
-        else if (eventNumber_ == 3)
-        {
-            EXPECT_EQ(f.schemaId(), 4);
-            EXPECT_EQ(f.primitiveType(), Ir::INT64);
-            EXPECT_EQ(f.getInt(), 20);
-        }
-        else if (eventNumber_ == 4)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 2);
-        }
-        else if (eventNumber_ == 5)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 2);
-        }
-        else if (eventNumber_ == 6)
-        {
-            EXPECT_EQ(f.schemaId(), 3);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.getUInt(), 30u);
-        }
-        else if (eventNumber_ == 7)
-        {
-            EXPECT_EQ(f.schemaId(), 4);
-            EXPECT_EQ(f.primitiveType(), Ir::INT64);
-            EXPECT_EQ(f.getInt(), 40);
-        }
-        else if (eventNumber_ == 8)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 2);
-        }
-        else
-        {
-            exit(1);
+            case 0:
+            {
+                EXPECT_EQ(numInGroup, 2u);
+                break;
+            }
+            default:
+                FAIL() << "unknown event number " << m_eventNumber;
         }
     }
-
-    virtual int onNext(const Field &f)
-    {
-        Group dummy;
-
-        checkEvent(f, dummy);
-        eventNumber_++;
-        return 0;
-    }
-
-    virtual int onNext(const Group &g)
-    {
-        Field dummy;
-
-        checkEvent(dummy, g);
-        eventNumber_++;
-        return 0;
-    }
-
-    virtual int onError(const Error &e)
-    {
-        std::cout << "Error " << e.message() << "\n";
-        exit(1);
-        return 0;
-    }
-
-    virtual int onCompleted()
-    {
-        EXPECT_EQ(eventNumber_, 9);
-        return 0;
-    }
-
 };
+
+TEST_F(CompositeOffsetsIrTest, shouldHandleDecodingOfMessageHeaderCorrectly)
+{
+    ASSERT_EQ(encodeHdrAndMsg(), 52);
+
+    ASSERT_GE(m_irDecoder.decode(SCHEMA_FILENAME), 0);
+
+    std::shared_ptr<std::vector<Token>> headerTokens = m_irDecoder.header();
+
+    ASSERT_TRUE(headerTokens != nullptr);
+
+    OtfHeaderDecoder headerDecoder(headerTokens);
+
+    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
+    EXPECT_EQ(headerDecoder.getTemplateId(m_buffer), TestMessage1::sbeTemplateId());
+    EXPECT_EQ(headerDecoder.getBlockLength(m_buffer), TestMessage1::sbeBlockLength());
+    EXPECT_EQ(headerDecoder.getSchemaId(m_buffer), TestMessage1::sbeSchemaId());
+    EXPECT_EQ(headerDecoder.getSchemaVersion(m_buffer), TestMessage1::sbeSchemaVersion());
+}
 
 TEST_F(CompositeOffsetsIrTest, shouldHandleAllEventsCorrectltInOrder)
 {
     ASSERT_EQ(encodeHdrAndMsg(), 52);
 
-    ASSERT_GE(IrCollection::loadFromFile("composite-offsets-schema.sbeir"), 0);
+    ASSERT_GE(m_irDecoder.decode(SCHEMA_FILENAME), 0);
 
-    listener.dispatchMessageByHeader(IrCollection::header(), this)
-            .resetForDecode(buffer, 52)
-            .subscribe(this, this, this);
+    std::shared_ptr<std::vector<Token>> headerTokens = m_irDecoder.header();
+    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(TestMessage1::sbeTemplateId(), TestMessage1::sbeSchemaVersion());
 
-    ASSERT_EQ(listener.bufferOffset(), 52);
+    ASSERT_TRUE(headerTokens != nullptr);
+    ASSERT_TRUE(messageTokens!= nullptr);
+
+    OtfHeaderDecoder headerDecoder(headerTokens);
+
+    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
+    const char *messageBuffer = m_buffer + headerDecoder.encodedLength();
+    std::size_t length = 52 - headerDecoder.encodedLength();
+    std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
+    std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
+
+    const std::size_t result =
+        OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
+    EXPECT_EQ(result, static_cast<std::size_t>(52 - MessageHeader::size()));
 }

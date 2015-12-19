@@ -83,6 +83,68 @@ typedef std::function<void(
     std::uint64_t length,
     Token& typeToken)> on_var_data_t;
 
+class BasicTokenListener
+{
+public:
+    virtual void onBeginMessage(Token& token) {}
+
+    virtual void onEndMessage(Token& token) {}
+
+    virtual void onEncoding(
+        Token& fieldToken,
+        const char *buffer,
+        Token& typeToken,
+        std::uint64_t actingVersion) {}
+
+    virtual void onEnum(
+        Token& fieldToken,
+        const char *buffer,
+        std::vector<Token>& tokens,
+        std::size_t fromIndex,
+        std::size_t toIndex,
+        std::uint64_t actingVersion) {}
+
+    virtual void onBitSet(
+        Token& fieldToken,
+        const char *buffer,
+        std::vector<Token>& tokens,
+        std::size_t fromIndex,
+        std::size_t toIndex,
+        std::uint64_t actingVersion) {}
+
+    virtual void onBeginComposite(
+        Token& fieldToken,
+        std::vector<Token>& tokens,
+        std::size_t fromIndex,
+        std::size_t toIndex) {}
+
+    virtual void onEndComposite(
+        Token& fieldToken,
+        std::vector<Token>& tokens,
+        std::size_t fromIndex,
+        std::size_t toIndex) {}
+
+    virtual void onGroupHeader(
+        Token& token,
+        std::uint64_t numInGroup) {}
+
+    virtual void onBeginGroup(
+        Token& token,
+        std::uint64_t groupIndex,
+        std::uint64_t numInGroup) {}
+
+    virtual void onEndGroup(
+        Token& token,
+        std::uint64_t groupIndex,
+        std::uint64_t numInGroup) {}
+
+    virtual void onVarData(
+        Token& fieldToken,
+        const char *buffer,
+        std::uint64_t length,
+        Token& typeToken) {}
+};
+
 template<typename TokenListener>
 static void decodeComposite(
     Token& fieldToken,
