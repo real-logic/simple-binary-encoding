@@ -21,6 +21,8 @@
 
 #include "Token.h"
 
+using namespace sbe::otf;
+
 namespace sbe {
 namespace otf {
 namespace OtfMessageDecoder {

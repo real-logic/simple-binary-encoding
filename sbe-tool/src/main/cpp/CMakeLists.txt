@@ -14,20 +14,7 @@
 # limitations under the License.
 #
 
-set(SOURCE
-    otf_api/Ir.cpp
-    otf_api/Listener.cpp
-)
-
 set(HEADERS
-    otf_api/Field.h
-    otf_api/Group.h
-    otf_api/Ir.h
-    otf_api/IrCollection.h
-    otf_api/Listener.h
-    otf_api/OnCompleted.h
-    otf_api/OnError.h
-    otf_api/OnNext.h
     sbe/sbe.hpp
     otf/IrDecoder.h
     otf/Token.h
@@ -36,4 +23,4 @@ set(HEADERS
     otf/OtfHeaderDecoder.h
 )
 
-add_library(sbe STATIC ${SOURCE} ${HEADERS})
+add_library(sbe STATIC ${HEADERS} dummy.cpp)

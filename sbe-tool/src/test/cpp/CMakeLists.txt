@@ -49,15 +49,6 @@ add_custom_command(
 
 add_custom_target(codecs DEPENDS ${GENERATED_CODECS})
 
-# OTF tests
-sbe_test(BasicOtfApiTest)
-sbe_test(OtfArrayTest)
-sbe_test(OtfGroupTest)
-sbe_test(OtfIrTest)
-sbe_test(OtfMessageHeaderTest)
-sbe_test(OtfMessageTest)
-sbe_test(OtfVariableDataTest)
-
 # codec tests
 sbe_test(BoundsCheckTest codecs)
 sbe_test(CodeGenTest codecs)

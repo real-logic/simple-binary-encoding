@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 - 2015 Real Logic Ltd.
+ * Copyright 2015 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,30 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef _ONCOMPLETED_H_
-#define _ONCOMPLETED_H_
+#include "otf/IrDecoder.h"
+#include "otf/OtfHeaderDecoder.h"
+#include "otf/OtfMessageDecoder.h"
+#include "sbe/sbe.hpp"
 
-namespace sbe {
-namespace on_the_fly {
-
-/**
- * \brief Interface used for indicating completion of decoding a message
+/*
+ * File to make CMake happier about the header only dependencies for the OTF and sbe header.
  */
-class OnCompleted
-{
-public:
-    /**
-     * \brief Method called when Listener successfully completes decoding a message
-     *
-     * \return 0 for success and -1 for failure
-     */
-    virtual int onCompleted(void) = 0;
-
-    virtual ~OnCompleted() {}
-};
-
-} // namepsace on_the_fly
-
-} // namespace sbe
-
-#endif /* _ONCOMPLETED_H_ */
