@@ -224,7 +224,7 @@ template<typename TokenListener>
 std::size_t decodeData(
     const char *buffer,
     std::size_t bufferIndex,
-    std::size_t length,
+    const std::size_t length,
     std::shared_ptr<std::vector<Token>> tokens,
     std::size_t tokenIndex,
     const std::size_t numTokens,
@@ -239,11 +239,22 @@ std::size_t decodeData(
         }
 
         Token& lengthToken = tokens->at(tokenIndex + 2);
+
+        if ((bufferIndex + lengthToken.offset()) > length)
+        {
+            throw std::runtime_error("length too short for data length field");
+        }
+
         // TODO: is length always unsigned according to spec?
         std::uint64_t dataLength = lengthToken.encoding().getAsUInt(buffer + bufferIndex + lengthToken.offset());
 
         Token& dataToken = tokens->at(tokenIndex + 3);
         bufferIndex += dataToken.offset();
+
+        if ((bufferIndex + dataLength) > length)
+        {
+            throw std::runtime_error("length too short for data field");
+        }
 
         listener.onVarData(token, buffer + bufferIndex, dataLength, dataToken);
 
@@ -258,7 +269,7 @@ template<typename TokenListener>
 std::pair<size_t, size_t> decodeGroups(
     const char *buffer,
     std::size_t bufferIndex,
-    std::size_t length,
+    const std::size_t length,
     std::uint64_t actingVersion,
     std::shared_ptr<std::vector<Token>> tokens,
     size_t tokenIndex,
@@ -273,14 +284,21 @@ std::pair<size_t, size_t> decodeGroups(
             break;
         }
 
-        Token& blockLengthToken = tokens->at(tokenIndex + 2);
-        std::uint64_t blockLength = blockLengthToken.encoding().getAsUInt(buffer + bufferIndex + blockLengthToken.offset());
+        Token& dimensionsTypeComposite = tokens->at(tokenIndex + 1);
+        std::size_t dimensionsLength = static_cast<std::size_t>(dimensionsTypeComposite.encodedLength());
 
+        if ((bufferIndex + dimensionsLength) > length)
+        {
+            throw std::runtime_error("length too short for group dimensions");
+        }
+
+        Token& blockLengthToken = tokens->at(tokenIndex + 2);
         Token& numInGroupToken = tokens->at(tokenIndex + 3);
+
+        std::uint64_t blockLength = blockLengthToken.encoding().getAsUInt(buffer + bufferIndex + blockLengthToken.offset());
         std::uint64_t numInGroup = numInGroupToken.encoding().getAsUInt(buffer + bufferIndex + numInGroupToken.offset());
 
-        Token& dimensionsTypeComposite = tokens->at(tokenIndex + 1);
-        bufferIndex += static_cast<size_t>(dimensionsTypeComposite.encodedLength());
+        bufferIndex += dimensionsLength;
 
         size_t beginFieldsIndex = tokenIndex + dimensionsTypeComposite.componentTokenCount() + 1;
 
@@ -289,6 +307,11 @@ std::pair<size_t, size_t> decodeGroups(
         for (std::uint64_t i = 0; i < numInGroup; i++)
         {
             listener.onBeginGroup(token, i, numInGroup);
+
+            if ((bufferIndex + blockLength) > length)
+            {
+                throw std::runtime_error("length too short for group blockLength");
+            }
 
             size_t afterFieldsIndex =
                 decodeFields(buffer, bufferIndex, length, actingVersion, tokens, beginFieldsIndex, numTokens, listener);
@@ -314,13 +337,18 @@ std::pair<size_t, size_t> decodeGroups(
 template<typename TokenListener>
 std::size_t decode(
     const char *buffer,
-    std::size_t length,
+    const std::size_t length,
     std::uint64_t actingVersion,
     size_t blockLength,
     std::shared_ptr<std::vector<Token>> msgTokens,
     TokenListener& listener)
 {
     listener.onBeginMessage(msgTokens->at(0));
+
+    if (length < blockLength)
+    {
+        throw std::runtime_error("length too short for message blockLength");
+    }
 
     size_t numTokens = msgTokens->size();
     const size_t tokenIndex = decodeFields(buffer, 0, length, actingVersion, msgTokens, 1, numTokens, listener);

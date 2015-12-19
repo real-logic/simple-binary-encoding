@@ -1037,3 +1037,38 @@ TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectlyAndInOrder)
         OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
     EXPECT_EQ(result, static_cast<std::size_t>(encodedCarAndHdrLength - MessageHeader::size()));
 }
+
+class Rc3OtfFullIrLengthTest : public Rc3OtfFullIrTest, public ::testing::WithParamInterface<int>
+{
+};
+
+TEST_P(Rc3OtfFullIrLengthTest, shouldExceptionIfLengthTooShort)
+{
+    ASSERT_EQ(encodeHdrAndCar(), encodedCarAndHdrLength);
+
+    ASSERT_GE(m_irDecoder.decode(SCHEMA_FILENAME), 0);
+
+    std::shared_ptr<std::vector<Token>> headerTokens = m_irDecoder.header();
+    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(Car::sbeTemplateId(), Car::sbeSchemaVersion());
+
+    ASSERT_TRUE(headerTokens != nullptr);
+    ASSERT_TRUE(messageTokens!= nullptr);
+
+    OtfHeaderDecoder headerDecoder(headerTokens);
+
+    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
+    const char *messageBuffer = m_buffer + headerDecoder.encodedLength();
+    std::size_t length = static_cast<std::size_t>(GetParam());
+    std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
+    std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
+
+    EXPECT_THROW(
+    {
+        OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
+    }, std::runtime_error);
+}
+
+INSTANTIATE_TEST_CASE_P(
+    LengthUpToHdrAndCar,
+    Rc3OtfFullIrLengthTest,
+    ::testing::Range(0, encodedCarAndHdrLength - MessageHeader::size(), 1));
