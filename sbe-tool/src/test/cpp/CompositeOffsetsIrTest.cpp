@@ -163,4 +163,6 @@ TEST_F(CompositeOffsetsIrTest, shouldHandleAllEventsCorrectltInOrder)
     const std::size_t result =
         OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
     EXPECT_EQ(result, static_cast<std::size_t>(52 - MessageHeader::size()));
+
+    EXPECT_EQ(m_eventNumber, 5);
 }

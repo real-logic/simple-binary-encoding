@@ -20,6 +20,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include "Token.h"
 

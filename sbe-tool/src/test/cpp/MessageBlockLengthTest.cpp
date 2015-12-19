@@ -18,44 +18,44 @@
 #include "gtest/gtest.h"
 #include "message_block_length_test/MessageHeader.hpp"
 #include "message_block_length_test/MsgName.hpp"
-#include "otf_api/Ir.h"
-#include "otf_api/IrCollection.h"
-#include "otf_api/Listener.h"
+#include "otf/IrDecoder.h"
+#include "otf/OtfHeaderDecoder.h"
+#include "otf/OtfMessageDecoder.h"
 
 using namespace std;
 using namespace message_block_length_test;
+using namespace sbe::otf;
 
-class MessageBlockLengthIrTest : public testing::Test, public IrCollection, public Ir::Callback,
-                                 public OnNext, public OnError, public OnCompleted
+class MessageBlockLengthIrTest : public testing::Test, public OtfMessageDecoder::BasicTokenListener
 {
 public:
-    char buffer[2048];
-    Listener listener;
-    int eventNumber_;
+    char m_buffer[2048];
+    IrDecoder m_irDecoder;
+    int m_eventNumber;
 
     virtual void SetUp()
     {
-        eventNumber_ = 0;
+        m_eventNumber = 0;
     }
 
     virtual int encodeHdrAndMsg()
     {
-        MessageHeader hdr_;
-        MsgName msg_;
+        MessageHeader hdr;
+        MsgName msg;
 
-        hdr_.wrap(buffer, 0, 0, sizeof(buffer))
+        hdr.wrap(m_buffer, 0, 0, sizeof(m_buffer))
             .blockLength(MsgName::sbeBlockLength())
             .templateId(MsgName::sbeTemplateId())
             .schemaId(MsgName::sbeSchemaId())
             .version(MsgName::sbeSchemaVersion());
 
-        msg_.wrapForEncode(buffer, hdr_.size(), sizeof(buffer));
+        msg.wrapForEncode(m_buffer, hdr.size(), sizeof(m_buffer));
 
-        msg_.field1(187);
-        msg_.field2().clear()
+        msg.field1(187);
+        msg.field2().clear()
             .choice1(true);
 
-        MsgName::GrName &grp = msg_.grNameCount(2);
+        MsgName::GrName &grp = msg.grNameCount(2);
 
         grp.next()
            .grField1(10)
@@ -65,141 +65,98 @@ public:
            .grField1(30)
            .grField2(40);
 
-        return hdr_.size() + msg_.size();
+        return hdr.size() + msg.size();
     }
 
-    virtual Ir *irForTemplateId(const int templateId, const int schemaVersion)
+    virtual void onEncoding(
+        Token& fieldToken,
+        const char *buffer,
+        Token& typeToken,
+        std::uint64_t actingVersion)
     {
-        EXPECT_EQ(templateId, MsgName::sbeTemplateId());
-        EXPECT_EQ(schemaVersion, MsgName::sbeSchemaVersion());
+        switch (m_eventNumber++)
+        {
+            case 0:
+            {
+                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::UINT64);
+                EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 187u);
+                break;
+            }
+            case 3:
+            {
+                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::UINT64);
+                EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 10u);
+                break;
+            }
+            case 4:
+            {
+                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::INT64);
+                EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 20);
+                break;
+            }
+            case 5:
+            {
+                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::UINT64);
+                EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 30u);
+                break;
+            }
+            case 6:
+            {
+                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::INT64);
+                EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 40);
+                break;
+            }
+            default:
+                FAIL() << "unknown event number " << m_eventNumber;
+        }
 
-        Ir *tmplt = (Ir *)IrCollection::message(templateId, schemaVersion);
-        return tmplt;
     }
 
-    void checkEvent(const Field &f, const Group &g)
+    virtual void onBitSet(
+        Token& fieldToken,
+        const char *buffer,
+        std::vector<Token>& tokens,
+        std::size_t fromIndex,
+        std::size_t toIndex,
+        std::uint64_t actingVersion)
     {
-        if (eventNumber_ == 0)
+        switch (m_eventNumber++)
         {
-            EXPECT_EQ(f.isComposite(), true);
-            EXPECT_EQ(f.numEncodings(), 4);
-            EXPECT_EQ(f.primitiveType(0), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(0), MsgName::sbeBlockLength());
-            EXPECT_EQ(f.primitiveType(1), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(1), MsgName::sbeTemplateId());
-            EXPECT_EQ(f.primitiveType(2), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(2), MsgName::sbeSchemaId());
-            EXPECT_EQ(f.primitiveType(3), Ir::UINT16);
-            EXPECT_EQ(f.getUInt(3), MsgName::sbeSchemaVersion());
-        }
-        else if (eventNumber_ == 1)
-        {
-            EXPECT_EQ(f.schemaId(), 11);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.getUInt(), 187u);
-        }
-        else if (eventNumber_ == 2)
-        {
-            EXPECT_EQ(f.isSet(), true);
-            EXPECT_EQ(f.schemaId(), 12);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT8);
-            EXPECT_EQ(f.getUInt(), 0x2u);
-        }
-        else if (eventNumber_ == 3)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 20);
-            EXPECT_EQ(g.numInGroup(), 2);
-            EXPECT_EQ(g.iteration(), 0);
-        }
-        else if (eventNumber_ == 4)
-        {
-            EXPECT_EQ(f.schemaId(), 21);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.getUInt(), 10u);
-        }
-        else if (eventNumber_ == 5)
-        {
-            EXPECT_EQ(f.schemaId(), 22);
-            EXPECT_EQ(f.primitiveType(), Ir::INT64);
-            EXPECT_EQ(f.getInt(), 20);
-        }
-        else if (eventNumber_ == 6)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 20);
-            EXPECT_EQ(g.numInGroup(), 2);
-            EXPECT_EQ(g.iteration(), 0);
-        }
-        else if (eventNumber_ == 7)
-        {
-            EXPECT_EQ(g.event(), Group::START);
-            EXPECT_EQ(g.schemaId(), 20);
-            EXPECT_EQ(g.numInGroup(), 2);
-            EXPECT_EQ(g.iteration(), 1);
-        }
-        else if (eventNumber_ == 8)
-        {
-            EXPECT_EQ(f.schemaId(), 21);
-            EXPECT_EQ(f.primitiveType(), Ir::UINT64);
-            EXPECT_EQ(f.getUInt(), 30u);
-        }
-        else if (eventNumber_ == 9)
-        {
-            EXPECT_EQ(f.schemaId(), 22);
-            EXPECT_EQ(f.primitiveType(), Ir::INT64);
-            EXPECT_EQ(f.getInt(), 40);
-        }
-        else if (eventNumber_ == 10)
-        {
-            EXPECT_EQ(g.event(), Group::END);
-            EXPECT_EQ(g.schemaId(), 20);
-            EXPECT_EQ(g.numInGroup(), 2);
-            EXPECT_EQ(g.iteration(), 1);
-        }
-        else
-        {
-            exit(1);
+            case 1:
+            {
+                const Token& typeToken = tokens.at(fromIndex + 1);
+                const Encoding& encoding = typeToken.encoding();
+
+                EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT8);
+                EXPECT_EQ(encoding.getAsUInt(buffer), 0x2u);
+                break;
+            }
+            default:
+                FAIL() << "unknown event number " << m_eventNumber;
         }
     }
 
-    virtual int onNext(const Field &f)
+    virtual void onGroupHeader(
+        Token& token,
+        std::uint64_t numInGroup)
     {
-        Group dummy;
-
-        checkEvent(f, dummy);
-        eventNumber_++;
-        return 0;
+        switch (m_eventNumber++)
+        {
+            case 2:
+            {
+                EXPECT_EQ(numInGroup, 2u);
+                break;
+            }
+            default:
+                FAIL() << "unknown event number " << m_eventNumber;
+        }
     }
-
-    virtual int onNext(const Group &g)
-    {
-        Field dummy;
-
-        checkEvent(dummy, g);
-        eventNumber_++;
-        return 0;
-    }
-
-    virtual int onError(const Error &e)
-    {
-        std::cout << "Error " << e.message() << "\n";
-        exit(1);
-        return 0;
-    }
-
-    virtual int onCompleted()
-    {
-        EXPECT_EQ(eventNumber_, 11);
-        return 0;
-    }
-
 };
 
 TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
 {
     int sz = encodeHdrAndMsg();
-    const char *bufferPtr = buffer;
+    const char *bufferPtr = m_buffer;
 
     ASSERT_EQ(sz, 54);
     EXPECT_EQ(*((::uint16_t *)bufferPtr), MsgName::sbeBlockLength());
@@ -213,11 +170,25 @@ TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
     EXPECT_EQ(*((::uint16_t *)(bufferPtr + 19)), 16u); // groupSizeEncoding blockLength
     EXPECT_EQ(*((::uint8_t *)(bufferPtr + 21)), 2u);   // groupSizeEncoding numInGroup
 
-    ASSERT_GE(IrCollection::loadFromFile("message-block-length-test.sbeir"), 0);
+    ASSERT_GE(m_irDecoder.decode("message-block-length-test.sbeir"), 0);
 
-    listener.dispatchMessageByHeader(IrCollection::header(), this)
-            .resetForDecode(buffer, 54)
-            .subscribe(this, this, this);
+    std::shared_ptr<std::vector<Token>> headerTokens = m_irDecoder.header();
+    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(MsgName::sbeTemplateId(), MsgName::sbeSchemaVersion());
 
-    ASSERT_EQ(listener.bufferOffset(), 54);
+    ASSERT_TRUE(headerTokens != nullptr);
+    ASSERT_TRUE(messageTokens!= nullptr);
+
+    OtfHeaderDecoder headerDecoder(headerTokens);
+
+    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
+    const char *messageBuffer = m_buffer + headerDecoder.encodedLength();
+    std::size_t length = 54 - headerDecoder.encodedLength();
+    std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
+    std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
+
+    const std::size_t result =
+        OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
+    EXPECT_EQ(result, static_cast<std::size_t>(54 - MessageHeader::size()));
+
+    EXPECT_EQ(m_eventNumber, 7);
 }
