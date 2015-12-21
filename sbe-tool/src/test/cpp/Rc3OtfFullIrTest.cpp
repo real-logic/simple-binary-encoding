@@ -994,6 +994,10 @@ public:
     }
 };
 
+class Rc3OtfFullIrLengthTest : public Rc3OtfFullIrTest, public ::testing::WithParamInterface<int>
+{
+};
+
 TEST_F(Rc3OtfFullIrTest, shouldHandleDecodingOfMessageHeaderCorrectly)
 {
     ASSERT_EQ(encodeHdrAndCar(), encodedCarAndHdrLength);
@@ -1038,10 +1042,6 @@ TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectlyAndInOrder)
     EXPECT_EQ(result, static_cast<std::size_t>(encodedCarAndHdrLength - MessageHeader::size()));
 }
 
-class Rc3OtfFullIrLengthTest : public Rc3OtfFullIrTest, public ::testing::WithParamInterface<int>
-{
-};
-
 TEST_P(Rc3OtfFullIrLengthTest, shouldExceptionIfLengthTooShort)
 {
     ASSERT_EQ(encodeHdrAndCar(), encodedCarAndHdrLength);
@@ -1057,14 +1057,18 @@ TEST_P(Rc3OtfFullIrLengthTest, shouldExceptionIfLengthTooShort)
     OtfHeaderDecoder headerDecoder(headerTokens);
 
     EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
-    const char *messageBuffer = m_buffer + headerDecoder.encodedLength();
     std::size_t length = static_cast<std::size_t>(GetParam());
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
 
+    // set up so that if an error occurs, we intentionally write off the end of a new buffer so that valgrind can help
+    // catch errors as well.
     EXPECT_THROW(
     {
-        OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
+        std::unique_ptr<char[]> decodeBuffer(new char[length]);
+
+        ::memcpy(decodeBuffer.get(), m_buffer + headerDecoder.encodedLength(), length);
+        OtfMessageDecoder::decode(decodeBuffer.get(), length, actingVersion, blockLength, messageTokens, *this);
     }, std::runtime_error);
 }
 

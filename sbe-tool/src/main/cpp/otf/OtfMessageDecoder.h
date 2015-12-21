@@ -239,8 +239,9 @@ std::size_t decodeData(
         }
 
         Token& lengthToken = tokens->at(tokenIndex + 2);
+        Token& dataToken = tokens->at(tokenIndex + 3);
 
-        if ((bufferIndex + lengthToken.offset()) > length)
+        if ((bufferIndex + dataToken.offset()) > length)
         {
             throw std::runtime_error("length too short for data length field");
         }
@@ -248,7 +249,6 @@ std::size_t decodeData(
         // TODO: is length always unsigned according to spec?
         std::uint64_t dataLength = lengthToken.encoding().getAsUInt(buffer + bufferIndex + lengthToken.offset());
 
-        Token& dataToken = tokens->at(tokenIndex + 3);
         bufferIndex += dataToken.offset();
 
         if ((bufferIndex + dataLength) > length)
