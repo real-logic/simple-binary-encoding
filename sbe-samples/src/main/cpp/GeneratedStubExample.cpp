@@ -205,7 +205,6 @@ std::size_t decodeCar(Car &car, char *buffer, int offset, int actingBlockLength,
     sb.append("\ncar.performanceFigures.acceleration.secondsId=").append(format(Car::PerformanceFigures::Acceleration::secondsId()));
     sb.append("\ncar.makeId=").append(format(Car::makeId()));
     sb.append("\ncar.makeCharacterEncoding=").append(Car::makeCharacterEncoding());
-    sb.append("\ncar.makeMetaAttribute.SEMANTIC_TYPE=").append(Car::makeMetaAttribute(MetaAttribute::SEMANTIC_TYPE));
     sb.append("\ncar.modelId=").append(format(Car::modelId()));
     sb.append("\ncar.modelCharacterEncoding=").append(Car::modelCharacterEncoding());
     sb.append("\ncar.activationCodeId=").append(format(Car::activationCodeId()));
@@ -235,6 +234,8 @@ std::size_t decodeCar(Car &car, char *buffer, int offset, int actingBlockLength,
     sb.append("\ncar.extras.cruiseControl=").append(format(extras.cruiseControl()));
     sb.append("\ncar.extras.sportsPack=").append(format(extras.sportsPack()));
     sb.append("\ncar.extras.sunRoof=").append(format(extras.sunRoof()));
+
+    sb.append("\ncar.discountedModel=").append(format(car.discountedModel()));
 
     Engine &engine = car.engine();
     sb.append("\ncar.engine.capacity=").append(format((int)engine.capacity()));
