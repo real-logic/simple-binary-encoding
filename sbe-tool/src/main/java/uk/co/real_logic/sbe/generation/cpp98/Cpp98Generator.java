@@ -1337,7 +1337,7 @@ public class Cpp98Generator implements CodeGenerator
                         break;
 
                     case BEGIN_ENUM:
-                        sb.append(generateEnumProperty(containingClassName, propertyName, encodingToken, indent));
+                        sb.append(generateEnumProperty(containingClassName, signalToken, propertyName, encodingToken, indent));
                         break;
 
                     case BEGIN_SET:
@@ -1398,7 +1398,11 @@ public class Cpp98Generator implements CodeGenerator
     }
 
     private CharSequence generateEnumProperty(
-        final String containingClassName, final String propertyName, final Token token, final String indent)
+        final String containingClassName,
+        final Token signalToken,
+        final String propertyName,
+        final Token token,
+        final String indent)
     {
         final String enumName = token.name();
         final String typeName = cpp98TypeName(token.encoding().primitiveType());
@@ -1406,34 +1410,54 @@ public class Cpp98Generator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format(
-            "\n" +
-            indent + "    %1$s::Value %2$s(void) const\n" +
-            indent + "    {\n" +
-                             "%3$s" +
-            indent + "        return %1$s::get(%4$s(*((%5$s *)(buffer_ + offset_ + %6$d))));\n" +
-            indent + "    }\n\n",
-            enumName,
-            propertyName,
-            generateEnumFieldNotPresentCondition(token.version(), enumName, indent),
-            formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
-            typeName,
-            offset
-        ));
+        if (token.isConstantEncoding())
+        {
+            final String constValue = signalToken.encoding().constValue().toString();
 
-        sb.append(String.format(
-            indent + "    %1$s &%2$s(const %3$s::Value value)\n" +
-            indent + "    {\n" +
-            indent + "        *((%4$s *)(buffer_ + offset_ + %5$d)) = %6$s(value);\n" +
-            indent + "        return *this;\n" +
-            indent + "    }\n",
-            formatClassName(containingClassName),
-            propertyName,
-            enumName,
-            typeName,
-            offset,
-            formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())
-        ));
+            sb.append(String.format(
+                "\n" +
+                indent + "    %1$s::Value %2$s(void) const\n" +
+                indent + "    {\n" +
+                "%3$s" +
+                indent + "        return %1$s::Value::%4$s;\n" +
+                indent + "    }\n\n",
+                enumName,
+                propertyName,
+                generateEnumFieldNotPresentCondition(token.version(), enumName, indent),
+                constValue.substring(constValue.indexOf(".") + 1)
+            ));
+        }
+        else
+        {
+            sb.append(String.format(
+                "\n" +
+                indent + "    %1$s::Value %2$s(void) const\n" +
+                indent + "    {\n" +
+                "%3$s" +
+                indent + "        return %1$s::get(%4$s(*((%5$s *)(buffer_ + offset_ + %6$d))));\n" +
+                indent + "    }\n\n",
+                enumName,
+                propertyName,
+                generateEnumFieldNotPresentCondition(token.version(), enumName, indent),
+                formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
+                typeName,
+                offset
+            ));
+
+            sb.append(String.format(
+                indent + "    %1$s &%2$s(const %3$s::Value value)\n" +
+                indent + "    {\n" +
+                indent + "        *((%4$s *)(buffer_ + offset_ + %5$d)) = %6$s(value);\n" +
+                indent + "        return *this;\n" +
+                indent + "    }\n",
+                formatClassName(containingClassName),
+                propertyName,
+                enumName,
+                typeName,
+                offset,
+                formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())
+            ));
+        }
 
         return sb;
     }
