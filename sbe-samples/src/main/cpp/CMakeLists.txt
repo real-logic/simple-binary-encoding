@@ -29,9 +29,9 @@ add_custom_command(
 )
 add_custom_target(examples_codecs DEPENDS ${GENERATED_CODECS})
 
-add_executable(sbeExample SbeExample.cpp)
+add_executable(GeneratedStubExample GeneratedStubExample.cpp)
 add_executable(OtfExample OtfExample.cpp)
 target_link_libraries(OtfExample sbe)
 
-add_dependencies(sbeExample examples_codecs)
+add_dependencies(GeneratedStubExample examples_codecs)
 add_dependencies(OtfExample examples_codecs)

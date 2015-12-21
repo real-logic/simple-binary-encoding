@@ -34,7 +34,7 @@ const char *MAKE = "Honda";
 const char *MODEL = "Civic VTi";
 const int messageHeaderVersion = 0;
 
-void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset, int bufferLength)
+std::size_t encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset, int bufferLength)
 {
     // encode the header
     hdr.wrap(buffer, offset, messageHeaderVersion, bufferLength)
@@ -42,9 +42,11 @@ void encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset, int buffe
        .templateId(Car::sbeTemplateId())
        .schemaId(Car::sbeSchemaId())
        .version(Car::sbeSchemaVersion());
+
+    return static_cast<std::size_t>(hdr.size());
 }
 
-void decodeHdr(MessageHeader &hdr, char *buffer, int offset, int bufferLength)
+std::size_t decodeHdr(MessageHeader &hdr, char *buffer, int offset, int bufferLength)
 {
     hdr.wrap(buffer, offset, messageHeaderVersion, bufferLength);
 
@@ -53,9 +55,12 @@ void decodeHdr(MessageHeader &hdr, char *buffer, int offset, int bufferLength)
     cout << "messageHeader.templateId=" << hdr.templateId() << endl;
     cout << "messageHeader.schemaId=" << hdr.schemaId() << endl;
     cout << "messageHeader.schemaVersion=" << (sbe_uint32_t)hdr.version() << endl;
+    cout << "messageHeader.size=" << hdr.size() << endl;
+
+    return static_cast<std::size_t>(hdr.size());
 }
 
-void encodeCar(Car &car, char *buffer, int offset, int bufferLength)
+std::size_t encodeCar(Car &car, char *buffer, int offset, int bufferLength)
 {
     car.wrapForEncode(buffer, offset, bufferLength)
        .serialNumber(1234)
@@ -79,10 +84,19 @@ void encodeCar(Car &car, char *buffer, int offset, int bufferLength)
        .numCylinders((short)4)
        .putManufacturerCode(MANUFACTURER_CODE);
 
-    car.fuelFiguresCount(3)
-       .next().speed(30).mpg(35.9f)
-       .next().speed(55).mpg(49.0f)
-       .next().speed(75).mpg(40.0f);
+    Car::FuelFigures& fuelFigures = car.fuelFiguresCount(3);
+
+    fuelFigures
+        .next().speed(30).mpg(35.9f);
+    fuelFigures.putUsageDescription("Urban Cycle", 11);
+
+    fuelFigures
+        .next().speed(55).mpg(49.0f);
+    fuelFigures.putUsageDescription("Combined Cycle", 14);
+
+    fuelFigures
+        .next().speed(75).mpg(40.0f);
+    fuelFigures.putUsageDescription("Highway Cycle", 13);
 
     Car::PerformanceFigures &performanceFigures = car.performanceFiguresCount(2);
 
@@ -100,8 +114,11 @@ void encodeCar(Car &car, char *buffer, int offset, int bufferLength)
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-    car.putMake(MAKE, strlen(MAKE));
-    car.putModel(MODEL, strlen(MODEL));
+    car.putMake(MAKE, static_cast<int>(::strlen(MAKE)));
+    car.putModel(MODEL, static_cast<int>(::strlen(MODEL)));
+    car.putActivationCode("deadbeef", 8);
+
+    return static_cast<std::size_t>(car.size());
 }
 
 const char *format(int value)
@@ -164,7 +181,7 @@ const char *format(bool value)
     }
 }
 
-void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int actingVersion, int bufferLength)
+std::size_t decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int actingVersion, int bufferLength)
 {
     car.wrapForDecode(buffer, offset, actingBlockLength, actingVersion, bufferLength);
     std::string sb;
@@ -180,6 +197,7 @@ void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int ac
     sb.append("\ncar.fuelFiguresId=").append(format(Car::fuelFiguresId()));
     sb.append("\ncar.fuelFigures.speedId=").append(format(Car::FuelFigures::speedId()));
     sb.append("\ncar.fuelFigures.mpgId=").append(format(Car::FuelFigures::mpgId()));
+    sb.append("\ncar.fuelFigures.usageDescriptionId=").append(format(Car::FuelFigures::usageDescriptionId()));
     sb.append("\ncar.performanceFiguresId=").append(format(Car::performanceFiguresId()));
     sb.append("\ncar.performanceFigures.octaneRatingId=").append(format(Car::PerformanceFigures::octaneRatingId()));
     sb.append("\ncar.performanceFigures.accelerationId=").append(format(Car::PerformanceFigures::accelerationId()));
@@ -190,6 +208,8 @@ void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int ac
     sb.append("\ncar.makeMetaAttribute.SEMANTIC_TYPE=").append(Car::makeMetaAttribute(MetaAttribute::SEMANTIC_TYPE));
     sb.append("\ncar.modelId=").append(format(Car::modelId()));
     sb.append("\ncar.modelCharacterEncoding=").append(Car::modelCharacterEncoding());
+    sb.append("\ncar.activationCodeId=").append(format(Car::activationCodeId()));
+    sb.append("\ncar.activationCodeCharacterEncoding=").append(Car::activationCodeCharacterEncoding());
 
     sb.append("\n");
 
@@ -238,6 +258,10 @@ void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int ac
         fuelFigures.next();
         sb.append("\ncar.fuelFigures.speed=").append(format((int)fuelFigures.speed()));
         sb.append("\ncar.fuelFigures.mpg=").append(format((double)fuelFigures.mpg()));
+
+        sb.append("\ncar.fuelFigures.usageDescriptionLength=").append(format((int)fuelFigures.usageDescriptionLength()));
+        bytesCopied = fuelFigures.getUsageDescription(tmp, sizeof(tmp));
+        sb.append("\ncar.fuelFigures.usageDescription=").append(tmp, bytesCopied);
     }
 
     Car::PerformanceFigures &performanceFigures = car.performanceFigures();
@@ -263,7 +287,15 @@ void decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int ac
     sb.append("\ncar.modelLength=").append(format((int)bytesCopied));
     sb.append("\ncar.model=").append(tmp, bytesCopied);
 
+    bytesCopied = car.getActivationCode(tmp, sizeof(tmp));
+    sb.append("\ncar.activationCodeLength=").append(format((int)bytesCopied));
+    sb.append("\ncar.activationCode=").append(tmp, bytesCopied);
+
+    sb.append("\ncar.size=").append(format((int)car.size()));
+
     cout << sb << endl;
+
+    return static_cast<std::size_t>(car.size());
 }
 
 int main(int argc, const char* argv[])
@@ -272,13 +304,27 @@ int main(int argc, const char* argv[])
     MessageHeader hdr;
     Car car;
 
-    encodeHdr(hdr, car, buffer, 0, sizeof(buffer));
-    encodeCar(car, buffer, hdr.size(), sizeof(buffer));
+    std::size_t encodeHdrLength = encodeHdr(hdr, car, buffer, 0, sizeof(buffer));
+    std::size_t encodeMsgLength = encodeCar(car, buffer, hdr.size(), sizeof(buffer));
 
-    cout << "Encoding size is " << hdr.size() << " + " << car.size() << endl;
+    cout << "Encoded Lengths are " << encodeHdrLength << " + " << encodeMsgLength << endl;
 
-    decodeHdr(hdr, buffer, 0, sizeof(buffer));
-    decodeCar(car, buffer, hdr.size(), hdr.blockLength(), hdr.version(), sizeof(buffer));
+    std::size_t decodeHdrLength = decodeHdr(hdr, buffer, 0, sizeof(buffer));
+    std::size_t decodeMsgLength = decodeCar(car, buffer, hdr.size(), hdr.blockLength(), hdr.version(), sizeof(buffer));
 
-    return 0;
+    cout << "Decoded Lengths are " << decodeHdrLength << " + " << decodeMsgLength << endl;
+
+    if (encodeHdrLength != decodeHdrLength)
+    {
+        cerr << "Encode/Decode header lengths do not match\n";
+        return EXIT_FAILURE;
+    }
+
+    if (encodeMsgLength != decodeMsgLength)
+    {
+        cerr << "Encode/Decode message lengths do not match\n";
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 }
