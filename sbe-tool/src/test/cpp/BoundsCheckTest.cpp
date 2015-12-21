@@ -176,6 +176,7 @@ public:
 
     virtual int decodeCarFuelFigures()
     {
+        char tmp[256];
         Car::FuelFigures &fuelFigures = m_carDecoder.fuelFigures();
         EXPECT_EQ(fuelFigures.count(), 3);
 
@@ -183,22 +184,22 @@ public:
         fuelFigures.next();
         EXPECT_EQ(fuelFigures.speed(), 30);
         EXPECT_EQ(fuelFigures.mpg(), 35.9f);
-        EXPECT_EQ(fuelFigures.usageDescriptionLength(), 11);
-        EXPECT_EQ(std::string(fuelFigures.usageDescription(), 11), "Urban Cycle");
+        EXPECT_EQ(fuelFigures.getUsageDescription(tmp, sizeof(tmp)), 11);
+        EXPECT_EQ(std::string(tmp, 11), "Urban Cycle");
 
         EXPECT_TRUE(fuelFigures.hasNext());
         fuelFigures.next();
         EXPECT_EQ(fuelFigures.speed(), 55);
         EXPECT_EQ(fuelFigures.mpg(), 49.0f);
-        EXPECT_EQ(fuelFigures.usageDescriptionLength(), 14);
-        EXPECT_EQ(std::string(fuelFigures.usageDescription(), 14), "Combined Cycle");
+        EXPECT_EQ(fuelFigures.getUsageDescription(tmp, sizeof(tmp)), 14);
+        EXPECT_EQ(std::string(tmp, 14), "Combined Cycle");
 
         EXPECT_TRUE(fuelFigures.hasNext());
         fuelFigures.next();
         EXPECT_EQ(fuelFigures.speed(), 75);
         EXPECT_EQ(fuelFigures.mpg(), 40.0f);
-        EXPECT_EQ(fuelFigures.usageDescriptionLength(), 13);
-        EXPECT_EQ(std::string(fuelFigures.usageDescription(), 13), "Highway Cycle");
+        EXPECT_EQ(fuelFigures.getUsageDescription(tmp, sizeof(tmp)), 13);
+        EXPECT_EQ(std::string(tmp, 13), "Highway Cycle");
 
         return m_carDecoder.size();
     }
@@ -255,14 +256,16 @@ public:
 
     virtual int decodeCarMakeModelAndActivationCode()
     {
-        EXPECT_EQ(m_carDecoder.makeLength(), 5);
-        EXPECT_EQ(std::string(m_carDecoder.make(), 5), "Honda");
+        char tmp[256];
 
-        EXPECT_EQ(m_carDecoder.modelLength(), 9);
-        EXPECT_EQ(std::string(m_carDecoder.model(), 9), "Civic VTi");
+        EXPECT_EQ(m_carDecoder.getMake(tmp, sizeof(tmp)), 5);
+        EXPECT_EQ(std::string(tmp, 5), "Honda");
 
-        EXPECT_EQ(m_carDecoder.activationCodeLength(), 8);
-        EXPECT_EQ(std::string(m_carDecoder.activationCode(), 8), "deadbeef");
+        EXPECT_EQ(m_carDecoder.getModel(tmp, sizeof(tmp)), 9);
+        EXPECT_EQ(std::string(tmp, 9), "Civic VTi");
+
+        EXPECT_EQ(m_carDecoder.getActivationCode(tmp, sizeof(tmp)), 8);
+        EXPECT_EQ(std::string(tmp, 8), "deadbeef");
 
         EXPECT_EQ(m_carDecoder.size(), encodedCarSz);
 
@@ -273,7 +276,6 @@ public:
     MessageHeader m_hdrDecoder;
     Car m_car;
     Car m_carDecoder;
-    char m_buffer[2048];
 };
 
 class HeaderBoundsCheckTest : public BoundsCheckTest, public ::testing::WithParamInterface<int>
@@ -283,22 +285,26 @@ class HeaderBoundsCheckTest : public BoundsCheckTest, public ::testing::WithPara
 TEST_P(HeaderBoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodeOfHeader)
 {
     const int length = GetParam();
+    std::unique_ptr<char[]> buffer(new char[length]);
 
     EXPECT_THROW(
     {
-        encodeHdr(m_buffer, 0, length);
+        encodeHdr(buffer.get(), 0, length);
     }, std::runtime_error);
 }
 
 TEST_P(HeaderBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfHeader)
 {
     const int length = GetParam();
+    char encodeBuffer[MessageHeader::size()];
+    std::unique_ptr<char[]> buffer(new char[length]);
 
-    encodeHdr(m_buffer, 0, sizeof(m_buffer));
+    encodeHdr(encodeBuffer, 0, sizeof(encodeBuffer));
 
     EXPECT_THROW(
     {
-        decodeHdr(m_buffer, 0, length);
+        std::memcpy(buffer.get(), encodeBuffer, length);
+        decodeHdr(buffer.get(), 0, length);
     }, std::runtime_error);
 }
 
@@ -314,10 +320,11 @@ class MessageBoundsCheckTest : public BoundsCheckTest, public ::testing::WithPar
 TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodeOfMessage)
 {
     const int length = GetParam();
+    std::unique_ptr<char[]> buffer(new char[length]);
 
     EXPECT_THROW(
     {
-        encodeCarRoot(m_buffer, 0, length);
+        encodeCarRoot(buffer.get(), 0, length);
         encodeCarFuelFigures();
         encodeCarPerformanceFigures();
         encodeCarMakeModelAndActivationCode();
@@ -327,15 +334,18 @@ TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodeOfMessa
 TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfMessage)
 {
     const int length = GetParam();
+    char encodeBuffer[179];
+    std::unique_ptr<char[]> buffer(new char[length]);
 
-    encodeCarRoot(m_buffer, 0, sizeof(m_buffer));
+    encodeCarRoot(encodeBuffer, 0, sizeof(encodeBuffer));
     encodeCarFuelFigures();
     encodeCarPerformanceFigures();
     encodeCarMakeModelAndActivationCode();
 
     EXPECT_THROW(
     {
-        decodeCarRoot(m_buffer, 0, length);
+        std::memcpy(buffer.get(), encodeBuffer, length);
+        decodeCarRoot(buffer.get(), 0, length);
         decodeCarFuelFigures();
         decodeCarPerformanceFigures();
         decodeCarMakeModelAndActivationCode();
