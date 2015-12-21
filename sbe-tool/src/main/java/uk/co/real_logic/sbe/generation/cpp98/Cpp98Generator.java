@@ -407,8 +407,8 @@ public class Cpp98Generator implements CodeGenerator
                     indent + "    {\n" +
                     indent + "        sbe_uint64_t lengthOfLengthField = %2$d;\n" +
                     indent + "        sbe_uint64_t lengthPosition = position();\n" +
-                    indent + "        *((%3$s *)(buffer_ + lengthPosition)) = %4$s((%3$s)length);\n" +
                     indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                    indent + "        *((%3$s *)(buffer_ + lengthPosition)) = %4$s((%3$s)length);\n" +
                     indent + "        sbe_uint64_t pos = position();\n" +
                     indent + "        position(position() + (sbe_uint64_t)length);\n" +
                     indent + "        ::memcpy(buffer_ + pos, src, length);\n" +
