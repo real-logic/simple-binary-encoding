@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 #include <iostream>
+#include <memory>
+#include <cstring>
 
 #include "gtest/gtest.h"
 #include "code_generation_test/MessageHeader.hpp"
