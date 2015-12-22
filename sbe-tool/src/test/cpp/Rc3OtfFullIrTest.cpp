@@ -16,8 +16,8 @@
 #include <iostream>
 
 #include "gtest/gtest.h"
-#include "code_generation_test/MessageHeader.hpp"
-#include "code_generation_test/Car.hpp"
+#include "code_generation_test/MessageHeader.h"
+#include "code_generation_test/Car.h"
 #include "otf/Token.h"
 #include "otf/IrDecoder.h"
 #include "otf/OtfHeaderDecoder.h"

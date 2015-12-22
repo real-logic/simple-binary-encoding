@@ -20,8 +20,8 @@
 #include <algorithm>
 #include <iomanip>
 
-#include "baseline/MessageHeader.hpp"
-#include "baseline/Car.hpp"
+#include "baseline/MessageHeader.h"
+#include "baseline/Car.h"
 
 #include "otf/IrDecoder.h"
 #include "otf/OtfHeaderDecoder.h"

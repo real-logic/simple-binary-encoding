@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "benchlet.hpp"
-#include "SbeCarCodecBench.hpp"
+#include "benchlet.h"
+#include "SbeCarCodecBench.h"
 
 #define MAX_CAR_BUFFER (1000*1000)
 #define MAX_N 10

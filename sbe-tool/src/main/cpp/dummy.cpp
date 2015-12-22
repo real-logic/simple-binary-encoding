@@ -16,7 +16,7 @@
 #include "otf/IrDecoder.h"
 #include "otf/OtfHeaderDecoder.h"
 #include "otf/OtfMessageDecoder.h"
-#include "sbe/sbe.hpp"
+#include "sbe/sbe.h"
 
 /*
  * File to make CMake happier about the header only dependencies for the OTF and sbe header.

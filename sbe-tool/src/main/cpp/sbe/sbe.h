@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef _SBE_HPP_
-#define _SBE_HPP_
+#ifndef _SBE_H_
+#define _SBE_H_
 
 #if !defined(__STDC_LIMIT_MACROS)
     #define __STDC_LIMIT_MACROS 1
@@ -23,19 +23,20 @@
 #include <stdint.h>
 #include <limits.h>
 #include <stdexcept>
+#include <cstdint>
 
 /*
- * Types used by C++ codec. Might have to be platform specific at some stage.
+ * Types used by C++ codecs
  */
 typedef char sbe_char_t;
-typedef ::int8_t sbe_int8_t;
-typedef ::int16_t sbe_int16_t;
-typedef ::int32_t sbe_int32_t;
-typedef ::int64_t sbe_int64_t;
-typedef ::uint8_t sbe_uint8_t;
-typedef ::uint16_t sbe_uint16_t;
-typedef ::uint32_t sbe_uint32_t;
-typedef ::uint64_t sbe_uint64_t;
+typedef std::int8_t sbe_int8_t;
+typedef std::int16_t sbe_int16_t;
+typedef std::int32_t sbe_int32_t;
+typedef std::int64_t sbe_int64_t;
+typedef std::uint8_t sbe_uint8_t;
+typedef std::uint16_t sbe_uint16_t;
+typedef std::uint32_t sbe_uint32_t;
+typedef std::uint64_t sbe_uint64_t;
 typedef float sbe_float_t;
 typedef double sbe_double_t;
 
@@ -121,4 +122,4 @@ enum Attribute
 
 }
 
-#endif /* _SBE_HPP_ */
+#endif

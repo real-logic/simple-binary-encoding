@@ -16,8 +16,8 @@
 #include <iostream>
 
 #include "gtest/gtest.h"
-#include "composite_offsets_test/MessageHeader.hpp"
-#include "composite_offsets_test/TestMessage1.hpp"
+#include "composite_offsets_test/MessageHeader.h"
+#include "composite_offsets_test/TestMessage1.h"
 
 using namespace std;
 using namespace composite_offsets_test;

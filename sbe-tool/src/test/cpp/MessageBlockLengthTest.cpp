@@ -16,8 +16,8 @@
 #include <iostream>
 
 #include "gtest/gtest.h"
-#include "message_block_length_test/MessageHeader.hpp"
-#include "message_block_length_test/MsgName.hpp"
+#include "message_block_length_test/MessageHeader.h"
+#include "message_block_length_test/MsgName.h"
 #include "otf/IrDecoder.h"
 #include "otf/OtfHeaderDecoder.h"
 #include "otf/OtfMessageDecoder.h"

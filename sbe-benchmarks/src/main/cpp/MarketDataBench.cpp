@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "benchlet.hpp"
-#include "SbeMarketDataCodecBench.hpp"
+#include "benchlet.h"
+#include "SbeMarketDataCodecBench.h"
 
 #define MAX_MD_BUFFER (1000*1000)
 

@@ -25,7 +25,7 @@ set(EXAMPLES_SCHEMA ${CODEC_EXAMPLES_SCHEMA_DIR}/example-schema.xml)
 add_custom_command(
 	OUTPUT ${GENERATED_CODECS}
 	DEPENDS ${EXAMPLES_SCHEMA}
-	COMMAND ${Java_JAVA_EXECUTABLE} -Dsbe.output.dir=${CODEC_TARGET_DIR} -Dsbe.generate.ir="true" -Dsbe.target.language="cpp98" -jar ${SBE_JAR} ${EXAMPLES_SCHEMA}
+	COMMAND ${Java_JAVA_EXECUTABLE} -Dsbe.output.dir=${CODEC_TARGET_DIR} -Dsbe.generate.ir="true" -Dsbe.target.language="cpp" -jar ${SBE_JAR} ${EXAMPLES_SCHEMA}
 )
 add_custom_target(examples_codecs DEPENDS ${GENERATED_CODECS})
 

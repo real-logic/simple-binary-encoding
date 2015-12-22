@@ -16,8 +16,8 @@
 #include <iostream>
 
 #include "gtest/gtest.h"
-#include "code_generation_test/MessageHeader.hpp"
-#include "code_generation_test/Car.hpp"
+#include "code_generation_test/MessageHeader.h"
+#include "code_generation_test/Car.h"
 
 using namespace std;
 using namespace code_generation_test;

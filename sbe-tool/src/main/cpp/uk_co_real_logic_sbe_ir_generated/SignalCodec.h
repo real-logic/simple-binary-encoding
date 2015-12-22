@@ -1,6 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
-#ifndef _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_SIGNALCODEC_HPP_
-#define _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_SIGNALCODEC_HPP_
+#ifndef _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_SIGNALCODEC_H_
+#define _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_SIGNALCODEC_H_
 
 #if defined(SBE_HAVE_CMATH)
 /* cmath needed for std::numeric_limits<double>::quiet_NaN() */
@@ -14,7 +14,13 @@
 #  define SBE_DOUBLE_NAN NAN
 #endif
 
-#include <sbe/sbe.hpp>
+#if __cplusplus >= 201103L
+#  include <cstdint>
+#  include <functional>
+#  include <string>
+#endif
+
+#include <sbe/sbe.h>
 
 using namespace sbe;
 

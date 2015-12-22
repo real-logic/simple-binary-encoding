@@ -1,6 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
-#ifndef _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_FRAMECODEC_HPP_
-#define _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_FRAMECODEC_HPP_
+#ifndef _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_FRAMECODEC_H_
+#define _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_FRAMECODEC_H_
 
 #if defined(SBE_HAVE_CMATH)
 /* cmath needed for std::numeric_limits<double>::quiet_NaN() */
@@ -14,13 +14,19 @@
 #  define SBE_DOUBLE_NAN NAN
 #endif
 
-#include <sbe/sbe.hpp>
+#if __cplusplus >= 201103L
+#  include <cstdint>
+#  include <functional>
+#  include <string>
+#endif
 
-#include <uk_co_real_logic_sbe_ir_generated/ByteOrderCodec.hpp>
-#include <uk_co_real_logic_sbe_ir_generated/SignalCodec.hpp>
-#include <uk_co_real_logic_sbe_ir_generated/PresenceCodec.hpp>
-#include <uk_co_real_logic_sbe_ir_generated/PrimitiveTypeCodec.hpp>
-#include <uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp>
+#include <sbe/sbe.h>
+
+#include "ByteOrderCodec.h"
+#include "SignalCodec.h"
+#include "PresenceCodec.h"
+#include "PrimitiveTypeCodec.h"
+#include "VarDataEncoding.h"
 
 using namespace sbe;
 
@@ -51,6 +57,11 @@ private:
 public:
 
     FrameCodec(void) : buffer_(NULL), bufferLength_(0), offset_(0) {}
+
+    FrameCodec(char *buffer, const int bufferLength)
+    {
+        reset(buffer, 0, bufferLength, sbeBlockLength(), sbeSchemaVersion());
+    }
 
     FrameCodec(char *buffer, const int bufferLength, const int actingBlockLength, const int actingVersion)
     {
@@ -382,12 +393,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getPackageNameAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    FrameCodec &putPackageName(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 
     static const char *namespaceNameMetaAttribute(const MetaAttribute::Attribute metaAttribute)
@@ -457,12 +492,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getNamespaceNameAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    FrameCodec &putNamespaceName(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 
     static const char *semanticVersionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
@@ -532,12 +591,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getSemanticVersionAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    FrameCodec &putSemanticVersion(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 };
 }

@@ -16,9 +16,9 @@
 #ifndef _SBE_MARKET_DATA_CODEC_BENCH_HPP
 #define _SBE_MARKET_DATA_CODEC_BENCH_HPP
 
-#include "CodecBench.hpp"
-#include "uk_co_real_logic_sbe_benchmarks_fix/MessageHeader.hpp"
-#include "uk_co_real_logic_sbe_benchmarks_fix/MarketDataIncrementalRefreshTrades.hpp"
+#include "CodecBench.h"
+#include "uk_co_real_logic_sbe_benchmarks_fix/MessageHeader.h"
+#include "uk_co_real_logic_sbe_benchmarks_fix/MarketDataIncrementalRefreshTrades.h"
 
 using namespace uk_co_real_logic_sbe_benchmarks_fix;
 

@@ -15,7 +15,7 @@
 #
 
 set(HEADERS
-    sbe/sbe.hpp
+        sbe/sbe.h
     otf/IrDecoder.h
     otf/Token.h
     otf/Encoding.h

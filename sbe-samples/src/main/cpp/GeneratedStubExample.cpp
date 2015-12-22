@@ -18,8 +18,8 @@
 
 #include <stdio.h>
 
-#include "baseline/MessageHeader.hpp"
-#include "baseline/Car.hpp"
+#include "baseline/MessageHeader.h"
+#include "baseline/Car.h"
 
 using namespace std;
 using namespace baseline;

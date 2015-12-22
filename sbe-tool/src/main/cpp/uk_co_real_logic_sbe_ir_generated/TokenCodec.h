@@ -1,6 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
-#ifndef _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_TOKENCODEC_HPP_
-#define _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_TOKENCODEC_HPP_
+#ifndef _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_TOKENCODEC_H_
+#define _UK_CO_REAL_LOGIC_SBE_IR_GENERATED_TOKENCODEC_H_
 
 #if defined(SBE_HAVE_CMATH)
 /* cmath needed for std::numeric_limits<double>::quiet_NaN() */
@@ -14,13 +14,19 @@
 #  define SBE_DOUBLE_NAN NAN
 #endif
 
-#include <sbe/sbe.hpp>
+#if __cplusplus >= 201103L
+#  include <cstdint>
+#  include <functional>
+#  include <string>
+#endif
 
-#include <uk_co_real_logic_sbe_ir_generated/ByteOrderCodec.hpp>
-#include <uk_co_real_logic_sbe_ir_generated/SignalCodec.hpp>
-#include <uk_co_real_logic_sbe_ir_generated/PresenceCodec.hpp>
-#include <uk_co_real_logic_sbe_ir_generated/PrimitiveTypeCodec.hpp>
-#include <uk_co_real_logic_sbe_ir_generated/VarDataEncoding.hpp>
+#include <sbe/sbe.h>
+
+#include "ByteOrderCodec.h"
+#include "SignalCodec.h"
+#include "PresenceCodec.h"
+#include "PrimitiveTypeCodec.h"
+#include "VarDataEncoding.h"
 
 using namespace sbe;
 
@@ -51,6 +57,11 @@ private:
 public:
 
     TokenCodec(void) : buffer_(NULL), bufferLength_(0), offset_(0) {}
+
+    TokenCodec(char *buffer, const int bufferLength)
+    {
+        reset(buffer, 0, bufferLength, sbeBlockLength(), sbeSchemaVersion());
+    }
 
     TokenCodec(char *buffer, const int bufferLength, const int actingBlockLength, const int actingVersion)
     {
@@ -646,12 +657,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getNameAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    TokenCodec &putName(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 
     static const char *constValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
@@ -721,12 +756,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getConstValueAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    TokenCodec &putConstValue(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 
     static const char *minValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
@@ -796,12 +855,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getMinValueAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    TokenCodec &putMinValue(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 
     static const char *maxValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
@@ -871,12 +954,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getMaxValueAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    TokenCodec &putMaxValue(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 
     static const char *nullValueMetaAttribute(const MetaAttribute::Attribute metaAttribute)
@@ -946,12 +1053,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getNullValueAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    TokenCodec &putNullValue(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 
     static const char *characterEncodingMetaAttribute(const MetaAttribute::Attribute metaAttribute)
@@ -1021,12 +1152,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getCharacterEncodingAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    TokenCodec &putCharacterEncoding(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 
     static const char *epochMetaAttribute(const MetaAttribute::Attribute metaAttribute)
@@ -1096,12 +1251,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getEpochAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    TokenCodec &putEpoch(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 
     static const char *timeUnitMetaAttribute(const MetaAttribute::Attribute metaAttribute)
@@ -1171,12 +1350,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getTimeUnitAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    TokenCodec &putTimeUnit(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 
     static const char *semanticTypeMetaAttribute(const MetaAttribute::Attribute metaAttribute)
@@ -1246,12 +1449,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getSemanticTypeAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    TokenCodec &putSemanticType(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 
     static const char *descriptionMetaAttribute(const MetaAttribute::Attribute metaAttribute)
@@ -1321,12 +1548,36 @@ public:
     {
         sbe_uint64_t lengthOfLengthField = 1;
         sbe_uint64_t lengthPosition = position();
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
         sbe_uint64_t pos = position();
         position(position() + (sbe_uint64_t)length);
         ::memcpy(buffer_ + pos, src, length);
         return length;
+    }
+
+    const std::string getDescriptionAsString()
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
+        sbe_uint64_t pos = position();
+        const std::string result(buffer_ + pos, dataLength);
+        position(position() + (sbe_uint64_t)dataLength);
+        return std::move(result);
+    }
+
+    TokenCodec &putDescription(const std::string& str)
+    {
+        sbe_uint64_t lengthOfLengthField = 1;
+        sbe_uint64_t lengthPosition = position();
+        position(lengthPosition + lengthOfLengthField);
+        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
+        sbe_uint64_t pos = position();
+        position(position() + (sbe_uint64_t)str.length());
+        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        return *this;
     }
 };
 }
