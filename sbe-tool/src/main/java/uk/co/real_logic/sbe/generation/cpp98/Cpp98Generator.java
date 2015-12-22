@@ -125,7 +125,7 @@ public class Cpp98Generator implements CodeGenerator
                 out.append(generateFields(className, rootFields, BASE_INDENT));
                 generateGroups(sb, groups, 0, BASE_INDENT);
                 out.append(sb);
-                out.append(generateVarData(dataFields, BASE_INDENT));
+                out.append(generateVarData(className, dataFields, BASE_INDENT));
 
                 out.append("};\n}\n#endif\n");
             }
@@ -156,7 +156,7 @@ public class Cpp98Generator implements CodeGenerator
 
                 final List<Token> dataFields = new ArrayList<>();
                 collectDataFields(tokens, index, dataFields);
-                sb.append(generateVarData(dataFields, indent + INDENT));
+                sb.append(generateVarData(formatClassName(groupName), dataFields, indent + INDENT));
 
                 sb.append(indent).append("    };\n");
                 sb.append(generateGroupProperty(groupName, groupToken, indent));
@@ -347,7 +347,7 @@ public class Cpp98Generator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateVarData(final List<Token> tokens, final String indent)
+    private CharSequence generateVarData(final String className, final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -413,7 +413,46 @@ public class Cpp98Generator implements CodeGenerator
                     indent + "        position(position() + (sbe_uint64_t)length);\n" +
                     indent + "        ::memcpy(buffer_ + pos, src, length);\n" +
                     indent + "        return length;\n" +
+                    indent + "    }\n\n",
+                    propertyName,
+                    lengthOfLengthField,
+                    lengthCpp98Type,
+                    formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType())
+                ));
+
+                sb.append(String.format(
+                    indent + "    const std::string get%1$sAsString()\n" +
+                    indent + "    {\n" +
+                             "%2$s" +
+                    indent + "        sbe_uint64_t lengthOfLengthField = %3$d;\n" +
+                    indent + "        sbe_uint64_t lengthPosition = position();\n" +
+                    indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                    indent + "        sbe_int64_t dataLength = %4$s(*((%5$s *)(buffer_ + lengthPosition)));\n" +
+                    indent + "        sbe_uint64_t pos = position();\n" +
+                    indent + "        const std::string result(buffer_ + pos, dataLength);\n" +
+                    indent + "        position(position() + (sbe_uint64_t)dataLength);\n" +
+                    indent + "        return std::move(result);\n" +
+                    indent + "    }\n\n",
+                    propertyName,
+                    generateStringNotPresentCondition(token.version(), BASE_INDENT),
+                    lengthOfLengthField,
+                    formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
+                    lengthCpp98Type
+                ));
+
+                sb.append(String.format(
+                    indent + "    %1$s &put%2$s(const std::string& str)\n" +
+                    indent + "    {\n" +
+                    indent + "        sbe_uint64_t lengthOfLengthField = %3$d;\n" +
+                    indent + "        sbe_uint64_t lengthPosition = position();\n" +
+                    indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                    indent + "        *((%4$s *)(buffer_ + lengthPosition)) = %5$s((%4$s)str.length());\n" +
+                    indent + "        sbe_uint64_t pos = position();\n" +
+                    indent + "        position(position() + (sbe_uint64_t)str.length());\n" +
+                    indent + "        ::memcpy(buffer_ + pos, str.c_str(), str.length());\n" +
+                    indent + "        return *this;\n" +
                     indent + "    }\n",
+                    className,
                     propertyName,
                     lengthOfLengthField,
                     lengthCpp98Type,
@@ -707,6 +746,22 @@ public class Cpp98Generator implements CodeGenerator
         );
     }
 
+    private CharSequence generateStringNotPresentCondition(final int sinceVersion, final String indent)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            indent + "        if (actingVersion_ < %1$d)\n" +
+            indent + "        {\n" +
+            indent + "            return std::string(\"\");\n" +
+            indent + "        }\n\n",
+            sinceVersion
+        );
+    }
+
     private CharSequence generateTypeFieldNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
@@ -745,6 +800,7 @@ public class Cpp98Generator implements CodeGenerator
             "#endif\n\n" +
             "#if __cplusplus >= 201103L\n" +
             "#  include <functional>\n" +
+            "#  include <string>\n" +
             "#endif\n\n" +
             "#include <sbe/sbe.hpp>\n\n",
             namespaceName.toUpperCase(),
@@ -1008,12 +1064,38 @@ public class Cpp98Generator implements CodeGenerator
             indent + "    {\n" +
             indent + "        ::memcpy(buffer_ + offset_ + %3$d, src, %4$d);\n" +
             indent + "        return *this;\n" +
-            indent + "    }\n",
+            indent + "    }\n\n",
             containingClassName,
             toUpperFirstChar(propertyName),
             offset,
             token.arrayLength()
         ));
+
+        if (token.encoding().primitiveType() == PrimitiveType.CHAR)
+        {
+            sb.append(String.format(
+                indent + "    std::string get%1$sAsString() const\n" +
+                indent + "    {\n" +
+                indent + "        std::string result(buffer_ + offset_ + %2$d, %3$d);\n" +
+                indent + "        return std::move(result);\n" +
+                indent + "    }\n\n",
+                toUpperFirstChar(propertyName),
+                offset,
+                token.arrayLength()
+            ));
+
+            sb.append(String.format(
+                indent + "    %1$s &put%2$s(const std::string& str)\n" +
+                indent + "    {\n" +
+                indent + "        ::memcpy(buffer_ + offset_ + %3$d, str.c_str(), %4$d);\n" +
+                indent + "        return *this;\n" +
+                indent + "    }\n\n",
+                containingClassName,
+                toUpperFirstChar(propertyName),
+                offset,
+                token.arrayLength()
+            ));
+        }
 
         return sb;
     }
