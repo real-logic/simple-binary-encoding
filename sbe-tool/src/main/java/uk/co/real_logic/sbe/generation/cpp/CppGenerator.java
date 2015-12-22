@@ -803,7 +803,7 @@ public class CppGenerator implements CodeGenerator
             "#  include <functional>\n" +
             "#  include <string>\n" +
             "#endif\n\n" +
-            "#include <sbe/sbe.hpp>\n\n",
+            "#include <sbe/sbe.h>\n\n",
             namespaceName.toUpperCase(),
             className.toUpperCase()
         ));
