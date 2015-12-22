@@ -785,8 +785,8 @@ public class CppGenerator implements CodeGenerator
         sb.append("/* Generated SBE (Simple Binary Encoding) message codec */\n");
 
         sb.append(String.format(
-            "#ifndef _%1$s_%2$s_HPP_\n" +
-            "#define _%1$s_%2$s_HPP_\n\n" +
+            "#ifndef _%1$s_%2$s_H_\n" +
+            "#define _%1$s_%2$s_H_\n\n" +
             "#if defined(SBE_HAVE_CMATH)\n" +
             "/* cmath needed for std::numeric_limits<double>::quiet_NaN() */\n" +
             "#  include <cmath>\n" +
