@@ -22,6 +22,8 @@
 using namespace std;
 using namespace code_generation_test;
 
+static const std::size_t BUFFER_LEN = 2048;
+
 static const sbe_uint32_t SERIAL_NUMBER = 1234;
 static const sbe_uint16_t MODEL_YEAR = 2013;
 static const BooleanType::Value AVAILABLE = BooleanType::T;
@@ -196,7 +198,7 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarStaticFields)
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
 {
-    char buffer[2048];
+    char buffer[BUFFER_LEN];
     const char *bp = buffer;
 
     int sz = encodeHdr(buffer, 0, sizeof(buffer));
@@ -210,7 +212,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeAndDecodeMessageHeaderCorrectly)
 {
-    char buffer[2048];
+    char buffer[BUFFER_LEN];
 
     encodeHdr(buffer, 0, sizeof(buffer));
 
@@ -274,7 +276,7 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarFieldIdsAndCharacterEncoding)
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
 {
-    char buffer[2048];
+    char buffer[BUFFER_LEN];
     const char *bp = buffer;
     int sz = encodeCar(buffer, 0, sizeof(buffer));
 
@@ -407,7 +409,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeHeaderPlusCarCorrectly)
 {
-    char buffer[2048];
+    char buffer[BUFFER_LEN];
     const char *bp = buffer;
 
     int hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
@@ -425,7 +427,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeHeaderPlusCarCorrectly)
 
 TEST_F(CodeGenTest, shouldbeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
 {
-    char buffer[2048];
+    char buffer[BUFFER_LEN];
 
     int hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
     int carSz = encodeCar(buffer, m_hdr.size(), sizeof(buffer) - m_hdr.size());
@@ -583,9 +585,9 @@ struct CallbacksForEach
 
 TEST_F(CodeGenTest, shouldbeAbleUseOnStackCodecsAndGroupForEach)
 {
-    char buffer[2048];
+    char buffer[BUFFER_LEN];
     MessageHeader hdr(buffer, sizeof(buffer), 0);
-    Car car(buffer + hdr.size(), sizeof(buffer) - hdr.size(), Car::sbeBlockLength(), Car::sbeSchemaVersion());
+    Car car(buffer + hdr.size(), sizeof(buffer) - hdr.size());
 
     int hdrSz = encodeHdr(hdr);
     int carSz = encodeCar(car);
@@ -655,3 +657,123 @@ TEST_F(CodeGenTest, shouldbeAbleUseOnStackCodecsAndGroupForEach)
     EXPECT_EQ(carDecoder.size(), expectedCarSize);
 }
 
+static const std::size_t offsetVehicleCode = 32;
+static const std::size_t offsetUsageDesc1Length = 54;
+static const std::size_t offsetUsageDesc1Data = offsetUsageDesc1Length + sizeof(std::uint8_t);
+static const std::size_t offsetUsageDesc2Length = 72;
+static const std::size_t offsetUsageDesc2Data = offsetUsageDesc2Length + sizeof(std::uint8_t);
+static const std::size_t offsetUsageDesc3Length = 93;
+static const std::size_t offsetUsageDesc3Data = offsetUsageDesc3Length + sizeof(std::uint8_t);
+static const std::size_t offsetMakeLength = 154;
+static const std::size_t offsetMakeData = offsetMakeLength + sizeof(std::uint8_t);
+static const std::size_t offsetModelLength = 160;
+static const std::size_t offsetModelData = offsetModelLength + sizeof(std::uint8_t);
+static const std::size_t offsetActivationCodeLength = 170;
+static const std::size_t offsetActivationCodeData = offsetActivationCodeLength + sizeof(std::uint8_t);
+
+TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
+{
+    std::string vehicleCode(VEHICLE_CODE, Car::vehicleCodeLength());
+    std::string usageDesc1(FUEL_FIGURES_1_USAGE_DESCRIPTION, FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH);
+    std::string usageDesc2(FUEL_FIGURES_2_USAGE_DESCRIPTION, FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH);
+    std::string usageDesc3(FUEL_FIGURES_3_USAGE_DESCRIPTION, FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH);
+    std::string make(MAKE, MAKE_LENGTH);
+    std::string model(MODEL, MODEL_LENGTH);
+    std::string activationCode(ACTIVATION_CODE, ACTIVATION_CODE_LENGTH);
+
+    char buffer[BUFFER_LEN];
+    int baseOffset = MessageHeader::size();
+    Car car;
+    car.wrapForEncode(buffer, baseOffset, sizeof(buffer));
+
+    car.putVehicleCode(vehicleCode);
+
+    car.fuelFiguresCount(FUEL_FIGURES_COUNT)
+        .next().putUsageDescription(usageDesc1)
+        .next().putUsageDescription(usageDesc2)
+        .next().putUsageDescription(usageDesc3);
+
+    Car::PerformanceFigures &perfFigs = car.performanceFiguresCount(PERFORMANCE_FIGURES_COUNT);
+
+    perfFigs.next()
+        .accelerationCount(ACCELERATION_COUNT).next().next().next();
+
+    perfFigs.next()
+        .accelerationCount(ACCELERATION_COUNT).next().next().next();
+
+    car.putMake(make)
+        .putModel(model)
+        .putActivationCode(activationCode);
+
+    EXPECT_EQ(car.size(), expectedCarSize);
+
+    EXPECT_EQ(std::string(buffer + baseOffset + offsetVehicleCode, VEHICLE_CODE_LENGTH), vehicleCode);
+
+    EXPECT_EQ(*(std::uint8_t *)(buffer + baseOffset + offsetUsageDesc1Length), FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH);
+    EXPECT_EQ(std::string(buffer + baseOffset + offsetUsageDesc1Data, FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH), usageDesc1);
+
+    EXPECT_EQ(*(std::uint8_t *)(buffer + baseOffset + offsetUsageDesc2Length), FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH);
+    EXPECT_EQ(std::string(buffer + baseOffset + offsetUsageDesc2Data, FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH), usageDesc2);
+
+    EXPECT_EQ(*(std::uint8_t *)(buffer + baseOffset + offsetUsageDesc3Length), FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH);
+    EXPECT_EQ(std::string(buffer + baseOffset + offsetUsageDesc3Data, FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH), usageDesc3);
+
+    EXPECT_EQ(*(std::uint8_t *)(buffer + baseOffset + offsetMakeLength), MAKE_LENGTH);
+    EXPECT_EQ(std::string(buffer + baseOffset + offsetMakeData, MAKE_LENGTH), make);
+
+    EXPECT_EQ(*(std::uint8_t *)(buffer + baseOffset + offsetModelLength), MODEL_LENGTH);
+    EXPECT_EQ(std::string(buffer + baseOffset + offsetModelData, MODEL_LENGTH), model);
+
+    EXPECT_EQ(*(std::uint8_t *)(buffer + baseOffset + offsetActivationCodeLength), ACTIVATION_CODE_LENGTH);
+    EXPECT_EQ(std::string(buffer + baseOffset + offsetActivationCodeData, ACTIVATION_CODE_LENGTH), activationCode);
+}
+
+TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForDecode)
+{
+    char buffer[2048];
+    Car carEncoder(buffer, sizeof(buffer));
+
+    int carSz = encodeCar(carEncoder);
+
+    EXPECT_EQ(carSz, expectedCarSize);
+
+    Car carDecoder(buffer, carSz, Car::sbeBlockLength(), Car::sbeSchemaVersion());
+
+    std::string vehicleCode(VEHICLE_CODE, Car::vehicleCodeLength());
+    std::string usageDesc1(FUEL_FIGURES_1_USAGE_DESCRIPTION, FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH);
+    std::string usageDesc2(FUEL_FIGURES_2_USAGE_DESCRIPTION, FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH);
+    std::string usageDesc3(FUEL_FIGURES_3_USAGE_DESCRIPTION, FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH);
+    std::string make(MAKE, MAKE_LENGTH);
+    std::string model(MODEL, MODEL_LENGTH);
+    std::string activationCode(ACTIVATION_CODE, ACTIVATION_CODE_LENGTH);
+
+    EXPECT_EQ(carDecoder.getVehicleCodeAsString(), vehicleCode);
+
+    Car::FuelFigures &fuelFigures = carDecoder.fuelFigures();
+
+    fuelFigures.next();
+    EXPECT_EQ(fuelFigures.getUsageDescriptionAsString(), usageDesc1);
+
+    fuelFigures.next();
+    EXPECT_EQ(fuelFigures.getUsageDescriptionAsString(), usageDesc2);
+
+    fuelFigures.next();
+    EXPECT_EQ(fuelFigures.getUsageDescriptionAsString(), usageDesc3);
+
+    Car::PerformanceFigures &perfFigures = carDecoder.performanceFigures();
+
+    perfFigures.next();
+    Car::PerformanceFigures::Acceleration &acceleration = perfFigures.acceleration();
+
+    acceleration.next().next().next();
+
+    perfFigures.next();
+    acceleration = perfFigures.acceleration();
+    acceleration.next().next().next();
+
+    EXPECT_EQ(carDecoder.getMakeAsString(), make);
+    EXPECT_EQ(carDecoder.getModelAsString(), model);
+    EXPECT_EQ(carDecoder.getActivationCodeAsString(), activationCode);
+
+    EXPECT_EQ(carDecoder.size(), expectedCarSize);
+}
