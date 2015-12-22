@@ -1239,6 +1239,10 @@ public class Cpp98Generator implements CodeGenerator
     {
         return String.format(
             "    %1$s(void) : buffer_(NULL), bufferLength_(0), offset_(0) {}\n\n" +
+            "    %1$s(char *buffer, const int bufferLength)\n" +
+            "    {\n" +
+            "        reset(buffer, 0, bufferLength, sbeBlockLength(), sbeSchemaVersion());\n" +
+            "    }\n\n" +
             "    %1$s(char *buffer, const int bufferLength, const int actingBlockLength, const int actingVersion)\n" +
             "    {\n" +
             "        reset(buffer, 0, bufferLength, actingBlockLength, actingVersion);\n" +
