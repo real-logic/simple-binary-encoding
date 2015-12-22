@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.generation.cpp98;
+package uk.co.real_logic.sbe.generation.cpp;
 
 import uk.co.real_logic.agrona.generation.OutputManager;
 import uk.co.real_logic.agrona.Verify;
@@ -66,7 +66,7 @@ public class NamespaceOutputManager implements OutputManager
      */
     public Writer createOutput(final String name) throws IOException
     {
-        final File targetFile = new File(outputDir, name + ".hpp");
+        final File targetFile = new File(outputDir, name + ".h");
         return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetFile), "UTF-8"));
     }
 }

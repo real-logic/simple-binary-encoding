@@ -365,19 +365,19 @@ task(generateJavaIrCodecs, type: JavaExec) {
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 
-task(generateCpp98IrCodecs, type: JavaExec) {
+task(generateCppIrCodecs, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'sbe-tool/src/main/cpp',
-        'sbe.target.language': 'Cpp98',
+        'sbe.target.language': 'Cpp',
         'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 
 task generateIrCodecs {
     description = 'Generate Java and C++ IR Codecs'
-    dependsOn 'generateJavaIrCodecs', 'generateCpp98IrCodecs'
+    dependsOn 'generateJavaIrCodecs', 'generateCppIrCodecs'
 }
 
 task runBenchmarks(type: Exec) {

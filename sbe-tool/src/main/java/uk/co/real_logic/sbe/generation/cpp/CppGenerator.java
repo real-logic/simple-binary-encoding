@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.generation.cpp98;
+package uk.co.real_logic.sbe.generation.cpp;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
@@ -26,12 +26,12 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.generation.cpp98.Cpp98Util.*;
+import static uk.co.real_logic.sbe.generation.cpp.CppUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectDataFields;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectRootFields;
 
-public class Cpp98Generator implements CodeGenerator
+public class CppGenerator implements CodeGenerator
 {
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
@@ -39,7 +39,7 @@ public class Cpp98Generator implements CodeGenerator
     private final Ir ir;
     private final OutputManager outputManager;
 
-    public Cpp98Generator(final Ir ir, final OutputManager outputManager)
+    public CppGenerator(final Ir ir, final OutputManager outputManager)
         throws IOException
     {
         Verify.notNull(ir, "ir");
@@ -799,6 +799,7 @@ public class Cpp98Generator implements CodeGenerator
             "#  define SBE_DOUBLE_NAN NAN\n" +
             "#endif\n\n" +
             "#if __cplusplus >= 201103L\n" +
+            "#  include <cstdint>\n" +
             "#  include <functional>\n" +
             "#  include <string>\n" +
             "#endif\n\n" +
@@ -812,8 +813,7 @@ public class Cpp98Generator implements CodeGenerator
             for (final String incName : typesToInclude)
             {
                 sb.append(String.format(
-                    "#include <%1$s/%2$s.hpp>\n",
-                    namespaceName,
+                    "#include \"%1$s.h\"\n",
                     toUpperFirstChar(incName)
                 ));
             }

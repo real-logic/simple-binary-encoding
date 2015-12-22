@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.generation.cpp98;
+package uk.co.real_logic.sbe.generation.cpp;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 
@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Utilities for mapping between IR and the C++ language.
  */
-public class Cpp98Util
+public class CppUtil
 {
     private static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
 

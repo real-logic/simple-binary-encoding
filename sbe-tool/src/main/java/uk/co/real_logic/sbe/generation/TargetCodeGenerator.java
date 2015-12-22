@@ -16,8 +16,8 @@
 package uk.co.real_logic.sbe.generation;
 
 import uk.co.real_logic.agrona.generation.PackageOutputManager;
-import uk.co.real_logic.sbe.generation.cpp98.Cpp98Generator;
-import uk.co.real_logic.sbe.generation.cpp98.NamespaceOutputManager;
+import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
+import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
@@ -43,11 +43,11 @@ public enum TargetCodeGenerator
             }
         },
 
-    CPP98()
+    CPP()
         {
             public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
             {
-                return new Cpp98Generator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
+                return new CppGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
             }
         };
 
