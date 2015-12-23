@@ -218,15 +218,31 @@ public class IrGenerator
         tokenList.add(builder.build());
 
         int offset = 0;
-        for (final Type edt : type.getTypeList())
+        for (final Type elementType : type.getTypeList())
         {
-            if (edt.offsetAttribute() != -1)
+            if (elementType.offsetAttribute() != -1)
             {
-                offset = edt.offsetAttribute();
+                offset = elementType.offsetAttribute();
             }
 
-            add((EncodedDataType)edt, offset, field);
-            offset += edt.encodedLength();
+            if (elementType instanceof EncodedDataType)
+            {
+                add((EncodedDataType) elementType, offset, field);
+            }
+            else if (elementType instanceof EnumType)
+            {
+                add((EnumType) elementType, offset, field);
+            }
+            else if (elementType instanceof  SetType)
+            {
+                add((SetType) elementType, offset, field);
+            }
+            else if (elementType instanceof CompositeType)
+            {
+                add((CompositeType) elementType, offset, field);
+            }
+
+            offset += elementType.encodedLength();
         }
 
         tokenList.add(builder.signal(Signal.END_COMPOSITE).build());
