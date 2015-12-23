@@ -17,7 +17,8 @@ package uk.co.real_logic.sbe.xml;
 
 import org.w3c.dom.Node;
 
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
 /**
  * An SBE type. One of encodedDataType, compositeType, enumType, or setType per the SBE spec.
@@ -106,4 +107,8 @@ public abstract class Type
     {
         return semanticType;
     }
+
+    public abstract boolean isVariableLength();
+
+    public abstract int offsetAttribute();
 }

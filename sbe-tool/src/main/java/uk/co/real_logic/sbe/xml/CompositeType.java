@@ -37,9 +37,9 @@ import static uk.co.real_logic.sbe.PrimitiveType.isUnsigned;
 public class CompositeType extends Type
 {
     public static final String COMPOSITE_TYPE = "composite";
-    public static final String SUB_TYPES_EXP = "type|enum|set|composite";
+    public static final String SUB_TYPES_EXP = "type|enum|set|composite|ref";
 
-    private final Map<String, EncodedDataType> containedTypeByNameMap = new LinkedHashMap<>();
+    private final Map<String, Type> containedTypeByNameMap = new LinkedHashMap<>();
     private final int sinceVersion;
 
     /**
@@ -64,21 +64,43 @@ public class CompositeType extends Type
             switch (nodeName)
             {
                 case "type":
-                    final EncodedDataType type = new EncodedDataType(subTypeNode);
+                    final EncodedDataType encodedDataType = new EncodedDataType(subTypeNode);
 
-                    if (containedTypeByNameMap.put(type.name(), type) != null)
+                    if (containedTypeByNameMap.put(encodedDataType.name(), encodedDataType) != null)
                     {
-                        XmlSchemaParser.handleError(node, "composite already contains type named: " + type.name());
+                        XmlSchemaParser.handleError(node, "composite already contains type named: " + encodedDataType.name());
                     }
                     break;
 
                 case "enum":
+                    final EnumType enumType = new EnumType(subTypeNode);
+
+                    if (containedTypeByNameMap.put(enumType.name(), enumType) != null)
+                    {
+                        XmlSchemaParser.handleError(node, "composite already contains type named: " + enumType.name());
+                    }
                     break;
 
                 case "set":
+                    final SetType setType = new SetType(subTypeNode);
+
+                    if (containedTypeByNameMap.put(setType.name(), setType) != null)
+                    {
+                        XmlSchemaParser.handleError(node, "composite already contains type named: " + setType.name());
+                    }
                     break;
 
                 case "composite":
+                    final CompositeType compositeType = new CompositeType(subTypeNode);
+
+                    if (containedTypeByNameMap.put(compositeType.name(), compositeType) != null)
+                    {
+                        XmlSchemaParser.handleError(node, "composite already contains type named: " + compositeType.name());
+                    }
+                    break;
+
+                case "ref":
+                    XmlSchemaParser.handleError(node, "\"ref\" not yet supported");
                     break;
 
                 default:
@@ -95,7 +117,7 @@ public class CompositeType extends Type
      * @param name of the EncodedDataType to return
      * @return type requested
      */
-    public EncodedDataType getType(final String name)
+    public Type getType(final String name)
     {
         return containedTypeByNameMap.get(name);
     }
@@ -109,7 +131,7 @@ public class CompositeType extends Type
     {
         int offset = 0;
 
-        for (final EncodedDataType t : containedTypeByNameMap.values())
+        for (final Type t : containedTypeByNameMap.values())
         {
             if (t.isVariableLength())
             {
@@ -138,11 +160,11 @@ public class CompositeType extends Type
     }
 
     /**
-     * Return list of the EncodedDataTypes that compose this composite
+     * Return list of the Type that compose this composite
      *
      * @return {@link List} that holds the types in this composite
      */
-    public List<EncodedDataType> getTypeList()
+    public List<Type> getTypeList()
     {
         return new ArrayList<>(containedTypeByNameMap.values());
     }
@@ -153,7 +175,7 @@ public class CompositeType extends Type
      */
     public void makeDataFieldCompositeType()
     {
-        final EncodedDataType edt = containedTypeByNameMap.get("varData");
+        final EncodedDataType edt = (EncodedDataType)containedTypeByNameMap.get("varData");
         if (edt != null)
         {
             edt.variableLength(true);
@@ -168,8 +190,8 @@ public class CompositeType extends Type
      */
     public void checkForWellFormedGroupSizeEncoding(final Node node)
     {
-        final EncodedDataType blockLengthType = containedTypeByNameMap.get("blockLength");
-        final EncodedDataType numInGroupType = containedTypeByNameMap.get("numInGroup");
+        final EncodedDataType blockLengthType = (EncodedDataType)containedTypeByNameMap.get("blockLength");
+        final EncodedDataType numInGroupType = (EncodedDataType)containedTypeByNameMap.get("numInGroup");
 
         if (blockLengthType == null)
         {
@@ -202,7 +224,7 @@ public class CompositeType extends Type
      */
     public void checkForWellFormedVariableLengthDataEncoding(final Node node)
     {
-        final EncodedDataType lengthType = containedTypeByNameMap.get("length");
+        final EncodedDataType lengthType = (EncodedDataType)containedTypeByNameMap.get("length");
 
         if (lengthType == null)
         {
@@ -231,10 +253,10 @@ public class CompositeType extends Type
      */
     public void checkForWellFormedMessageHeader(final Node node)
     {
-        final EncodedDataType blockLengthType = containedTypeByNameMap.get("blockLength");
-        final EncodedDataType templateIdType = containedTypeByNameMap.get("templateId");
-        final EncodedDataType schemaIdType = containedTypeByNameMap.get("schemaId");
-        final EncodedDataType versionType = containedTypeByNameMap.get("version");
+        final EncodedDataType blockLengthType = (EncodedDataType)containedTypeByNameMap.get("blockLength");
+        final EncodedDataType templateIdType = (EncodedDataType)containedTypeByNameMap.get("templateId");
+        final EncodedDataType schemaIdType = (EncodedDataType)containedTypeByNameMap.get("schemaId");
+        final EncodedDataType versionType = (EncodedDataType)containedTypeByNameMap.get("version");
 
         if (blockLengthType == null)
         {
@@ -286,7 +308,7 @@ public class CompositeType extends Type
     {
         int offset = 0;
 
-        for (final EncodedDataType edt : containedTypeByNameMap.values())
+        for (final Type edt : containedTypeByNameMap.values())
         {
             final int offsetAttribute = edt.offsetAttribute();
 
@@ -304,5 +326,15 @@ public class CompositeType extends Type
 
             offset += edt.encodedLength();
         }
+    }
+
+    public boolean isVariableLength()
+    {
+        return false;
+    }
+
+    public int offsetAttribute()
+    {
+        return -1;
     }
 }

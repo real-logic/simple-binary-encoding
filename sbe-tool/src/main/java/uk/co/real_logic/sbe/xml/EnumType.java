@@ -205,6 +205,16 @@ public class EnumType extends Type
         return validValueByNameMap.values();
     }
 
+    public boolean isVariableLength()
+    {
+        return false;
+    }
+
+    public int offsetAttribute()
+    {
+        return -1;
+    }
+
     /**
      * Class to hold valid values for EnumType
      */

@@ -218,14 +218,14 @@ public class IrGenerator
         tokenList.add(builder.build());
 
         int offset = 0;
-        for (final EncodedDataType edt : type.getTypeList())
+        for (final Type edt : type.getTypeList())
         {
             if (edt.offsetAttribute() != -1)
             {
                 offset = edt.offsetAttribute();
             }
 
-            add(edt, offset, field);
+            add((EncodedDataType)edt, offset, field);
             offset += edt.encodedLength();
         }
 

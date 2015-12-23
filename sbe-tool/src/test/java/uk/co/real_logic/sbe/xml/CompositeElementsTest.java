@@ -15,7 +15,6 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.co.real_logic.sbe.TestUtil;
 
@@ -27,7 +26,6 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class CompositeElementsTest
 {
-    @Ignore
     @Test
     public void shouldParseSchemaSuccessfully()
         throws Exception
@@ -37,6 +35,30 @@ public class CompositeElementsTest
         final Field composite = fields.get(0);
 
         assertThat(composite.name(), is("structure"));
-        final CompositeType type = (CompositeType)composite.type();
+        final CompositeType compositeType = (CompositeType)composite.type();
+
+        assertThat(compositeType.name(), is("outer"));
+        final List<Type> elements = compositeType.getTypeList();
+
+        final EnumType enumType = (EnumType)elements.get(0);
+        final EncodedDataType encodedDataType = (EncodedDataType)elements.get(1);
+        final SetType setType = (SetType)elements.get(2);
+        final CompositeType nestedCompositeType = (CompositeType)elements.get(3);
+
+        assertThat(enumType.name(), is("ENUM"));
+        assertThat(encodedDataType.name(), is("zeroth"));
+        assertThat(setType.name(), is("SET"));
+        assertThat(nestedCompositeType.name(), is("inner"));
+
+        final List<Type> nestedElements = nestedCompositeType.getTypeList();
+
+        final EncodedDataType first = (EncodedDataType)nestedElements.get(0);
+        final EncodedDataType second = (EncodedDataType)nestedElements.get(1);
+
+        assertThat(first.name(), is("first"));
+        assertThat(second.name(), is("second"));
+
+        assertThat(nestedCompositeType.encodedLength(), is(16));
+        assertThat(compositeType.encodedLength(), is(22));
     }
 }

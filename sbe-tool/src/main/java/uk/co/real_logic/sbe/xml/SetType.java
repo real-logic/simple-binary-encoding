@@ -163,6 +163,16 @@ public class SetType extends Type
         return choiceByNameMap.values();
     }
 
+    public boolean isVariableLength()
+    {
+        return false;
+    }
+
+    public int offsetAttribute()
+    {
+        return -1;
+    }
+
     /** Holder for valid values for EnumType */
     public static class Choice
     {
