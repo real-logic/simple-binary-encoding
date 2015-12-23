@@ -106,6 +106,20 @@ public enum PrimitiveType
         return nullValue;
     }
 
+    public static boolean isUnsigned(PrimitiveType type)
+    {
+        switch (type)
+        {
+            case UINT8:
+            case UINT16:
+            case UINT32:
+            case UINT64:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     /**
      * Lookup PrimitiveType by String name and return Enum.
      *

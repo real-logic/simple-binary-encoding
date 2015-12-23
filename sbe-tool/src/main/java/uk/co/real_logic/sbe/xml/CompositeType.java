@@ -15,17 +15,21 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.ir.Token;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.ir.Token;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static javax.xml.xpath.XPathConstants.NODESET;
+import static uk.co.real_logic.sbe.PrimitiveType.isUnsigned;
 
 /**
  * SBE compositeType.
@@ -33,7 +37,7 @@ import static javax.xml.xpath.XPathConstants.NODESET;
 public class CompositeType extends Type
 {
     public static final String COMPOSITE_TYPE = "composite";
-    public static final String SUB_TYPES_EXP = EncodedDataType.ENCODED_DATA_TYPE;
+    public static final String SUB_TYPES_EXP = "type|enum|set|composite";
 
     private final Map<String, EncodedDataType> containedTypeByNameMap = new LinkedHashMap<>();
     private final int sinceVersion;
@@ -54,11 +58,31 @@ public class CompositeType extends Type
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            final EncodedDataType type = new EncodedDataType(list.item(i));
+            final Node subTypeNode = list.item(i);
+            final String nodeName = subTypeNode.getNodeName();
 
-            if (containedTypeByNameMap.put(type.name(), type) != null)
+            switch (nodeName)
             {
-                XmlSchemaParser.handleError(node, "composite already contains type named: " + type.name());
+                case "type":
+                    final EncodedDataType type = new EncodedDataType(subTypeNode);
+
+                    if (containedTypeByNameMap.put(type.name(), type) != null)
+                    {
+                        XmlSchemaParser.handleError(node, "composite already contains type named: " + type.name());
+                    }
+                    break;
+
+                case "enum":
+                    break;
+
+                case "set":
+                    break;
+
+                case "composite":
+                    break;
+
+                default:
+                    throw new IllegalStateException("Unknown node name: " + nodeName);
             }
         }
 
@@ -144,14 +168,29 @@ public class CompositeType extends Type
      */
     public void checkForWellFormedGroupSizeEncoding(final Node node)
     {
-        if (containedTypeByNameMap.get("blockLength") == null)
+        final EncodedDataType blockLengthType = containedTypeByNameMap.get("blockLength");
+        final EncodedDataType numInGroupType = containedTypeByNameMap.get("numInGroup");
+
+        if (blockLengthType == null)
         {
             XmlSchemaParser.handleError(node, "composite for group encodedLength encoding must have \"blockLength\"");
         }
+        else if (!isUnsigned(blockLengthType.primitiveType()))
+        {
+            XmlSchemaParser.handleError(node, "\"blockLength\" must be unsigned type");
+        }
 
-        if (containedTypeByNameMap.get("numInGroup") == null)
+        if (numInGroupType == null)
         {
             XmlSchemaParser.handleError(node, "composite for group encodedLength encoding must have \"numInGroup\"");
+        }
+        else if (!isUnsigned(numInGroupType.primitiveType()))
+        {
+            XmlSchemaParser.handleError(node, "\"numInGroup\" must be unsigned type");
+        }
+        else if (numInGroupType.primitiveType() != PrimitiveType.UINT8 && numInGroupType.primitiveType() != PrimitiveType.UINT16)
+        {
+            XmlSchemaParser.handleWarning(node, "\"numInGroup\" should be UINT8 or UINT16");
         }
     }
 
@@ -163,9 +202,19 @@ public class CompositeType extends Type
      */
     public void checkForWellFormedVariableLengthDataEncoding(final Node node)
     {
-        if (containedTypeByNameMap.get("length") == null)
+        final EncodedDataType lengthType = containedTypeByNameMap.get("length");
+
+        if (lengthType == null)
         {
             XmlSchemaParser.handleError(node, "composite for variable length data encoding must have \"length\"");
+        }
+        else if (!isUnsigned(lengthType.primitiveType()))
+        {
+            XmlSchemaParser.handleError(node, "\"length\" must be unsigned type");
+        }
+        else if (lengthType.primitiveType() != PrimitiveType.UINT8 && lengthType.primitiveType() != PrimitiveType.UINT16)
+        {
+            XmlSchemaParser.handleWarning(node, "\"length\" should be UINT8 or UINT16");
         }
 
         if (containedTypeByNameMap.get("varData") == null)
@@ -182,24 +231,49 @@ public class CompositeType extends Type
      */
     public void checkForWellFormedMessageHeader(final Node node)
     {
-        if (containedTypeByNameMap.get("blockLength") == null)
+        final EncodedDataType blockLengthType = containedTypeByNameMap.get("blockLength");
+        final EncodedDataType templateIdType = containedTypeByNameMap.get("templateId");
+        final EncodedDataType schemaIdType = containedTypeByNameMap.get("schemaId");
+        final EncodedDataType versionType = containedTypeByNameMap.get("version");
+
+        if (blockLengthType == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"blockLength\"");
         }
+        else if (!isUnsigned(blockLengthType.primitiveType()))
+        {
+            XmlSchemaParser.handleError(node, "\"blockLength\" must be unsigned");
+        }
+        else if (blockLengthType.primitiveType() != PrimitiveType.UINT16)
+        {
+            XmlSchemaParser.handleWarning(node, "\"blockLength\" should be UINT16");
+        }
 
-        if (containedTypeByNameMap.get("templateId") == null)
+        if (templateIdType == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"templateId\"");
         }
+        else if (templateIdType.primitiveType() != PrimitiveType.UINT16)
+        {
+            XmlSchemaParser.handleError(node, "\"templateId\" must be UINT16");
+        }
 
-        if (containedTypeByNameMap.get("schemaId") == null)
+        if (schemaIdType == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"schemaId\"");
         }
+        else if (schemaIdType.primitiveType() != PrimitiveType.UINT16)
+        {
+            XmlSchemaParser.handleError(node, "\"schemaId\" must be UINT16");
+        }
 
-        if (containedTypeByNameMap.get("version") == null)
+        if (versionType == null)
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"version\"");
+        }
+        else if (versionType.primitiveType() != PrimitiveType.UINT16)
+        {
+            XmlSchemaParser.handleError(node, "\"version\" must be UINT16");
         }
     }
 

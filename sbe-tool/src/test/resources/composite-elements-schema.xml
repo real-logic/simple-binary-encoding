@@ -16,6 +16,7 @@
                 <validValue name="Value1">1</validValue>
                 <validValue name="Value10">10</validValue>
             </enum>
+            <type name="zeroth" primitiveType="uint8"/>
             <set name="SET" description="set as uint32" encodingType="uint32" semanticType="int">
                 <choice name="Bit0">0</choice>
                 <choice name="Bit16">16</choice>
@@ -28,7 +29,7 @@
         </composite>
     </types>
 
-    <message name="M1" id="1">
+    <message name="Msg" id="1">
         <field name="structure" id="42" type="outer"/>
     </message>
 </messageSchema>
