@@ -38,7 +38,7 @@ public:
         m_eventNumber = 0;
     }
 
-    virtual int encodeHdrAndMsg()
+    virtual std::uint64_t encodeHdrAndMsg()
     {
         MessageHeader hdr;
         MsgName msg;
@@ -49,7 +49,7 @@ public:
             .schemaId(MsgName::sbeSchemaId())
             .version(MsgName::sbeSchemaVersion());
 
-        msg.wrapForEncode(m_buffer, hdr.size(), sizeof(m_buffer));
+        msg.wrapForEncode(m_buffer, hdr.encodedLength(), sizeof(m_buffer));
 
         msg.field1(187);
         msg.field2().clear()
@@ -65,7 +65,7 @@ public:
            .grField1(30)
            .grField2(40);
 
-        return hdr.size() + msg.size();
+        return hdr.encodedLength() + msg.encodedLength();
     }
 
     virtual void onEncoding(
@@ -155,10 +155,10 @@ public:
 
 TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
 {
-    int sz = encodeHdrAndMsg();
+    std::uint64_t sz = encodeHdrAndMsg();
     const char *bufferPtr = m_buffer;
 
-    ASSERT_EQ(sz, 54);
+    ASSERT_EQ(sz, 54u);
     EXPECT_EQ(*((::uint16_t *)bufferPtr), MsgName::sbeBlockLength());
     EXPECT_EQ(*((::uint16_t *)(bufferPtr + 2)), MsgName::sbeTemplateId());
     EXPECT_EQ(*((::uint16_t *)(bufferPtr + 4)), MsgName::sbeSchemaId());
@@ -180,7 +180,7 @@ TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
-    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
+    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::encodedLength());
     const char *messageBuffer = m_buffer + headerDecoder.encodedLength();
     std::size_t length = 54 - headerDecoder.encodedLength();
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
@@ -188,7 +188,7 @@ TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
 
     const std::size_t result =
         OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
-    EXPECT_EQ(result, static_cast<std::size_t>(54 - MessageHeader::size()));
+    EXPECT_EQ(result, static_cast<std::size_t>(54 - MessageHeader::encodedLength()));
 
     EXPECT_EQ(m_eventNumber, 7);
 }

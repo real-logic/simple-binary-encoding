@@ -102,7 +102,7 @@ static const sbe_float_t perf2cSeconds = 11.8f;
 static const sbe_uint16_t engineCapacity = 2000;
 static const sbe_uint8_t engineNumCylinders = 4;
 
-static const int encodedCarAndHdrLength = 179 + 8;
+static const std::uint64_t encodedCarAndHdrLength = 179 + 8;
 
 // This enum represents the expected events that
 // will be received during the decoding process.
@@ -192,7 +192,7 @@ public:
         m_eventNumber = 0;
     }
 
-    virtual int encodeHdrAndCar()
+    virtual std::uint64_t encodeHdrAndCar()
     {
         MessageHeader hdr;
         Car car;
@@ -203,16 +203,16 @@ public:
             .schemaId(Car::sbeSchemaId())
             .version(Car::sbeSchemaVersion());
 
-        car.wrapForEncode(m_buffer, hdr.size(), sizeof(m_buffer))
+        car.wrapForEncode(m_buffer, hdr.encodedLength(), sizeof(m_buffer))
             .serialNumber(SERIAL_NUMBER)
             .modelYear(MODEL_YEAR)
             .available(AVAILABLE)
             .code(CODE)
             .putVehicleCode(VEHICLE_CODE);
 
-        for (int i = 0; i < Car::someNumbersLength(); i++)
+        for (std::uint64_t i = 0; i < Car::someNumbersLength(); i++)
         {
-            car.someNumbers(i, i);
+            car.someNumbers(i, static_cast<std::int32_t>(i));
         }
 
         car.extras().clear()
@@ -263,7 +263,7 @@ public:
         car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
         car.putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
 
-        return hdr.size() + car.size();
+        return hdr.encodedLength() + car.encodedLength();
     }
 
     void onBeginMessage(Token& token)
@@ -316,9 +316,9 @@ public:
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::INT32);
                 EXPECT_EQ(typeToken.encodedLength(), 4 * 5);
 
-                for (int i = 0; i < Car::someNumbersLength(); i++)
+                for (std::uint64_t i = 0; i < Car::someNumbersLength(); i++)
                 {
-                    EXPECT_EQ(encoding.getAsInt(buffer + (i * 4)), i);
+                    EXPECT_EQ(encoding.getAsInt(buffer + (i * 4)), static_cast<std::int64_t>(i));
                 }
                 break;
             }
@@ -1010,7 +1010,7 @@ TEST_F(Rc3OtfFullIrTest, shouldHandleDecodingOfMessageHeaderCorrectly)
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
-    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
+    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::encodedLength());
     EXPECT_EQ(headerDecoder.getTemplateId(m_buffer), Car::sbeTemplateId());
     EXPECT_EQ(headerDecoder.getBlockLength(m_buffer), Car::sbeBlockLength());
     EXPECT_EQ(headerDecoder.getSchemaId(m_buffer), Car::sbeSchemaId());
@@ -1031,7 +1031,7 @@ TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectlyAndInOrder)
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
-    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
+    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::encodedLength());
     const char *messageBuffer = m_buffer + headerDecoder.encodedLength();
     std::size_t length = encodedCarAndHdrLength - headerDecoder.encodedLength();
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
@@ -1039,7 +1039,7 @@ TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectlyAndInOrder)
 
     const std::size_t result =
         OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
-    EXPECT_EQ(result, static_cast<std::size_t>(encodedCarAndHdrLength - MessageHeader::size()));
+    EXPECT_EQ(result, static_cast<std::size_t>(encodedCarAndHdrLength - MessageHeader::encodedLength()));
 }
 
 TEST_P(Rc3OtfFullIrLengthTest, shouldExceptionIfLengthTooShort)
@@ -1056,7 +1056,7 @@ TEST_P(Rc3OtfFullIrLengthTest, shouldExceptionIfLengthTooShort)
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
-    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
+    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::encodedLength());
     std::size_t length = static_cast<std::size_t>(GetParam());
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
@@ -1075,4 +1075,4 @@ TEST_P(Rc3OtfFullIrLengthTest, shouldExceptionIfLengthTooShort)
 INSTANTIATE_TEST_CASE_P(
     LengthUpToHdrAndCar,
     Rc3OtfFullIrLengthTest,
-    ::testing::Range(0, encodedCarAndHdrLength - MessageHeader::size(), 1));
+    ::testing::Range(0, static_cast<int>(encodedCarAndHdrLength - MessageHeader::encodedLength()), 1));

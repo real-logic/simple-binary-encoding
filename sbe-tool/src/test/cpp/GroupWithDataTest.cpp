@@ -25,12 +25,12 @@ using namespace std;
 using namespace group_with_data;
 
 static const sbe_uint32_t TAG_1 = 32;
-static const int ENTRIES_COUNT = 2;
+static const std::uint64_t ENTRIES_COUNT = 2;
 
 static const char TAG_GROUP_1_IDX_0[] = { 'T', 'a', 'g', 'G', 'r', 'o', 'u', 'p', '0' };
 static const char TAG_GROUP_1_IDX_1[] = { 'T', 'a', 'g', 'G', 'r', 'o', 'u', 'p', '1' };
-static const int TAG_GROUP_1_IDX_0_LENGTH = sizeof(TAG_GROUP_1_IDX_0);
-static const int TAG_GROUP_1_IDX_1_LENGTH = sizeof(TAG_GROUP_1_IDX_1);
+static const std::uint64_t TAG_GROUP_1_IDX_0_LENGTH = sizeof(TAG_GROUP_1_IDX_0);
+static const std::uint64_t TAG_GROUP_1_IDX_1_LENGTH = sizeof(TAG_GROUP_1_IDX_1);
 
 static const sbe_int64_t TAG_GROUP_2_IDX_0 = -120;
 static const sbe_int64_t TAG_GROUP_2_IDX_1 = 120;
@@ -41,100 +41,100 @@ static const sbe_int64_t TAG_GROUP_2_IDX_4 = 77;
 static const sbe_int64_t TAG_GROUP_2_IDX_5 = 78;
 
 static const char *VAR_DATA_FIELD_IDX_0 = "neg idx 0";
-static const int VAR_DATA_FIELD_IDX_0_LENGTH = 9;
+static const std::uint64_t VAR_DATA_FIELD_IDX_0_LENGTH = 9;
 static const char *VAR_DATA_FIELD_IDX_1 = "idx 1 positive";
-static const int VAR_DATA_FIELD_IDX_1_LENGTH = 14;
+static const std::uint64_t VAR_DATA_FIELD_IDX_1_LENGTH = 14;
 
-static const int NESTED_ENTRIES_COUNT = 3;
+static const std::uint64_t NESTED_ENTRIES_COUNT = 3;
 
 static const char *VAR_DATA_FIELD_NESTED_IDX_0 = "zero";
-static const int VAR_DATA_FIELD_NESTED_IDX_0_LENGTH = 4;
+static const std::uint64_t VAR_DATA_FIELD_NESTED_IDX_0_LENGTH = 4;
 static const char *VAR_DATA_FIELD_NESTED_IDX_1 = "one";
-static const int VAR_DATA_FIELD_NESTED_IDX_1_LENGTH = 3;
+static const std::uint64_t VAR_DATA_FIELD_NESTED_IDX_1_LENGTH = 3;
 static const char *VAR_DATA_FIELD_NESTED_IDX_2 = "two";
-static const int VAR_DATA_FIELD_NESTED_IDX_2_LENGTH = 3;
+static const std::uint64_t VAR_DATA_FIELD_NESTED_IDX_2_LENGTH = 3;
 
 static const char *VAR_DATA_FIELD_NESTED_IDX_3 = "three";
-static const int VAR_DATA_FIELD_NESTED_IDX_3_LENGTH = 5;
+static const std::uint64_t VAR_DATA_FIELD_NESTED_IDX_3_LENGTH = 5;
 static const char *VAR_DATA_FIELD_NESTED_IDX_4 = "four";
-static const int VAR_DATA_FIELD_NESTED_IDX_4_LENGTH = 4;
+static const std::uint64_t VAR_DATA_FIELD_NESTED_IDX_4_LENGTH = 4;
 static const char *VAR_DATA_FIELD_NESTED_IDX_5 = "five";
-static const int VAR_DATA_FIELD_NESTED_IDX_5_LENGTH = 4;
+static const std::uint64_t VAR_DATA_FIELD_NESTED_IDX_5_LENGTH = 4;
 
 static const char *VAR_DATA_FIELD_1_IDX_0 = "neg idx 0";
-static const int VAR_DATA_FIELD_1_IDX_0_LENGTH = 9;
+static const std::uint64_t VAR_DATA_FIELD_1_IDX_0_LENGTH = 9;
 static const char *VAR_DATA_FIELD_1_IDX_1 = "idx 1 positive";
-static const int VAR_DATA_FIELD_1_IDX_1_LENGTH = 14;
+static const std::uint64_t VAR_DATA_FIELD_1_IDX_1_LENGTH = 14;
 
 static const char *VAR_DATA_FIELD_2_IDX_0 = "negative index 0";
-static const int VAR_DATA_FIELD_2_IDX_0_LENGTH = 16;
+static const std::uint64_t VAR_DATA_FIELD_2_IDX_0_LENGTH = 16;
 static const char *VAR_DATA_FIELD_2_IDX_1 = "index 1 pos";
-static const int VAR_DATA_FIELD_2_IDX_1_LENGTH = 11;
+static const std::uint64_t VAR_DATA_FIELD_2_IDX_1_LENGTH = 11;
 
-static const int expectedTestMessage1Size = 78;
-static const int expectedTestMessage2Size = 107;
-static const int expectedTestMessage3Size = 145;
-static const int expectedTestMessage4Size = 73;
+static const std::uint64_t expectedTestMessage1Size = 78;
+static const std::uint64_t expectedTestMessage2Size = 107;
+static const std::uint64_t expectedTestMessage3Size = 145;
+static const std::uint64_t expectedTestMessage4Size = 73;
 
 class GroupWithDataTest : public testing::Test
 {
 public:
 
-    virtual int encodeTestMessage1(char *buffer, int offset, int bufferLength)
+    virtual std::uint64_t encodeTestMessage1(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
-        msg1_.wrapForEncode(buffer, offset, bufferLength);
+        m_msg1.wrapForEncode(buffer, offset, bufferLength);
 
-    	msg1_.tag1(TAG_1);
+        m_msg1.tag1(TAG_1);
 
-    	TestMessage1::Entries &entries = msg1_.entriesCount(ENTRIES_COUNT);
+        TestMessage1::Entries &entries = m_msg1.entriesCount(ENTRIES_COUNT);
 
-    	entries.next()
-    		.putTagGroup1(TAG_GROUP_1_IDX_0)
-    		.tagGroup2(TAG_GROUP_2_IDX_0);
+        entries.next()
+            .putTagGroup1(TAG_GROUP_1_IDX_0)
+            .tagGroup2(TAG_GROUP_2_IDX_0);
 
-    	entries.putVarDataField(VAR_DATA_FIELD_IDX_0, VAR_DATA_FIELD_IDX_0_LENGTH);
+        entries.putVarDataField(VAR_DATA_FIELD_IDX_0, VAR_DATA_FIELD_IDX_0_LENGTH);
 
-    	entries.next()
-    		.putTagGroup1(TAG_GROUP_1_IDX_1)
-    		.tagGroup2(TAG_GROUP_2_IDX_1);
+        entries.next()
+            .putTagGroup1(TAG_GROUP_1_IDX_1)
+            .tagGroup2(TAG_GROUP_2_IDX_1);
 
-    	entries.putVarDataField(VAR_DATA_FIELD_IDX_1, VAR_DATA_FIELD_IDX_1_LENGTH);
+        entries.putVarDataField(VAR_DATA_FIELD_IDX_1, VAR_DATA_FIELD_IDX_1_LENGTH);
 
-        return msg1_.size();
+        return m_msg1.encodedLength();
     }
 
-    virtual int encodeTestMessage2(char *buffer, int offset, int bufferLength)
+    virtual std::uint64_t encodeTestMessage2(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
-        msg2_.wrapForEncode(buffer, offset, bufferLength);
+        m_msg2.wrapForEncode(buffer, offset, bufferLength);
 
-    	msg2_.tag1(TAG_1);
+        m_msg2.tag1(TAG_1);
 
-    	TestMessage2::Entries &entries = msg2_.entriesCount(ENTRIES_COUNT);
+        TestMessage2::Entries &entries = m_msg2.entriesCount(ENTRIES_COUNT);
 
-    	entries.next()
-    		.putTagGroup1(TAG_GROUP_1_IDX_0)
-    		.tagGroup2(TAG_GROUP_2_IDX_0);
+        entries.next()
+            .putTagGroup1(TAG_GROUP_1_IDX_0)
+            .tagGroup2(TAG_GROUP_2_IDX_0);
 
         entries.putVarDataField1(VAR_DATA_FIELD_1_IDX_0, VAR_DATA_FIELD_1_IDX_0_LENGTH);
-    	entries.putVarDataField2(VAR_DATA_FIELD_2_IDX_0, VAR_DATA_FIELD_2_IDX_0_LENGTH);
+        entries.putVarDataField2(VAR_DATA_FIELD_2_IDX_0, VAR_DATA_FIELD_2_IDX_0_LENGTH);
 
-    	entries.next()
-    		.putTagGroup1(TAG_GROUP_1_IDX_1)
-    		.tagGroup2(TAG_GROUP_2_IDX_1);
+        entries.next()
+            .putTagGroup1(TAG_GROUP_1_IDX_1)
+            .tagGroup2(TAG_GROUP_2_IDX_1);
 
-    	entries.putVarDataField1(VAR_DATA_FIELD_1_IDX_1, VAR_DATA_FIELD_1_IDX_1_LENGTH);
-    	entries.putVarDataField2(VAR_DATA_FIELD_2_IDX_1, VAR_DATA_FIELD_2_IDX_1_LENGTH);
+        entries.putVarDataField1(VAR_DATA_FIELD_1_IDX_1, VAR_DATA_FIELD_1_IDX_1_LENGTH);
+        entries.putVarDataField2(VAR_DATA_FIELD_2_IDX_1, VAR_DATA_FIELD_2_IDX_1_LENGTH);
 
-        return msg2_.size();
+        return m_msg2.encodedLength();
     }
 
-    virtual int encodeTestMessage3(char *buffer, int offset, int bufferLength)
+    virtual std::uint64_t encodeTestMessage3(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
-        msg3_.wrapForEncode(buffer, offset, bufferLength);
+        m_msg3.wrapForEncode(buffer, offset, bufferLength);
 
-        msg3_.tag1(TAG_1);
+        m_msg3.tag1(TAG_1);
 
-        TestMessage3::Entries &entries = msg3_.entriesCount(ENTRIES_COUNT);
+        TestMessage3::Entries &entries = m_msg3.entriesCount(ENTRIES_COUNT);
 
         entries.next()
             .putTagGroup1(TAG_GROUP_1_IDX_0);
@@ -180,43 +180,43 @@ public:
 
         entries.putVarDataField(VAR_DATA_FIELD_IDX_1, VAR_DATA_FIELD_IDX_1_LENGTH);
 
-        return msg3_.size();
+        return m_msg3.encodedLength();
     }
 
-    virtual int encodeTestMessage4(char *buffer, int offset, int bufferLength)
+    virtual std::uint64_t encodeTestMessage4(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
-        msg4_.wrapForEncode(buffer, offset, bufferLength);
+        m_msg4.wrapForEncode(buffer, offset, bufferLength);
 
-    	msg4_.tag1(TAG_1);
+        m_msg4.tag1(TAG_1);
 
-    	TestMessage4::Entries &entries = msg4_.entriesCount(ENTRIES_COUNT);
+        TestMessage4::Entries &entries = m_msg4.entriesCount(ENTRIES_COUNT);
 
-    	entries.next();
+        entries.next();
 
         entries.putVarDataField1(VAR_DATA_FIELD_1_IDX_0, VAR_DATA_FIELD_1_IDX_0_LENGTH);
-    	entries.putVarDataField2(VAR_DATA_FIELD_2_IDX_0, VAR_DATA_FIELD_2_IDX_0_LENGTH);
+        entries.putVarDataField2(VAR_DATA_FIELD_2_IDX_0, VAR_DATA_FIELD_2_IDX_0_LENGTH);
 
-    	entries.next();
+        entries.next();
 
-    	entries.putVarDataField1(VAR_DATA_FIELD_1_IDX_1, VAR_DATA_FIELD_1_IDX_1_LENGTH);
-    	entries.putVarDataField2(VAR_DATA_FIELD_2_IDX_1, VAR_DATA_FIELD_2_IDX_1_LENGTH);
+        entries.putVarDataField1(VAR_DATA_FIELD_1_IDX_1, VAR_DATA_FIELD_1_IDX_1_LENGTH);
+        entries.putVarDataField2(VAR_DATA_FIELD_2_IDX_1, VAR_DATA_FIELD_2_IDX_1_LENGTH);
 
-        return msg4_.size();
+        return m_msg4.encodedLength();
     }
 
-    TestMessage1 msg1_;
-    TestMessage2 msg2_;
-    TestMessage3 msg3_;
-    TestMessage4 msg4_;
+    TestMessage1 m_msg1;
+    TestMessage2 m_msg2;
+    TestMessage3 m_msg3;
+    TestMessage4 m_msg4;
 };
 
 TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage1Correctly)
 {
     char buffer[2048];
     const char *bp = buffer;
-    int sz = encodeTestMessage1(buffer, 0, sizeof(buffer));
+    std::uint64_t sz = encodeTestMessage1(buffer, 0, sizeof(buffer));
 
-    int offset = 0;
+    std::uint64_t offset = 0;
     EXPECT_EQ(*(sbe_uint32_t *)(bp + offset), TAG_1);
     EXPECT_EQ(TestMessage1::sbeBlockLength(), 16);
     offset += 16;  // root blockLength of 16
@@ -251,7 +251,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage1Correctly)
 TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage1Correctly)
 {
     char buffer[2048];
-    int sz = encodeTestMessage1(buffer, 0, sizeof(buffer));
+    std::uint64_t sz = encodeTestMessage1(buffer, 0, sizeof(buffer));
 
     EXPECT_EQ(sz, expectedTestMessage1Size);
 
@@ -280,16 +280,16 @@ TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage1Correctly)
     EXPECT_EQ(entries.varDataFieldLength(), VAR_DATA_FIELD_IDX_1_LENGTH);
     EXPECT_EQ(std::string(entries.varDataField(), VAR_DATA_FIELD_IDX_1_LENGTH), VAR_DATA_FIELD_IDX_1);
 
-    EXPECT_EQ(msg1Decoder.size(), expectedTestMessage1Size);
+    EXPECT_EQ(msg1Decoder.encodedLength(), expectedTestMessage1Size);
 }
 
 TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage2Correctly)
 {
     char buffer[2048];
     const char *bp = buffer;
-    int sz = encodeTestMessage2(buffer, 0, sizeof(buffer));
+    std::uint64_t sz = encodeTestMessage2(buffer, 0, sizeof(buffer));
 
-    int offset = 0;
+    std::uint64_t offset = 0;
     EXPECT_EQ(*(sbe_uint32_t *)(bp + offset), TAG_1);
     EXPECT_EQ(TestMessage2::sbeBlockLength(), 16);
     offset += 16;  // root blockLength of 16
@@ -332,7 +332,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage2Correctly)
 TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage2Correctly)
 {
     char buffer[2048];
-    int sz = encodeTestMessage2(buffer, 0, sizeof(buffer));
+    std::uint64_t sz = encodeTestMessage2(buffer, 0, sizeof(buffer));
 
     EXPECT_EQ(sz, expectedTestMessage2Size);
 
@@ -365,16 +365,16 @@ TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage2Correctly)
     EXPECT_EQ(entries.varDataField2Length(), VAR_DATA_FIELD_2_IDX_1_LENGTH);
     EXPECT_EQ(std::string(entries.varDataField2(), VAR_DATA_FIELD_2_IDX_1_LENGTH), VAR_DATA_FIELD_2_IDX_1);
 
-    EXPECT_EQ(msg2Decoder.size(), expectedTestMessage2Size);
+    EXPECT_EQ(msg2Decoder.encodedLength(), expectedTestMessage2Size);
 }
 
 TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage3Correctly)
 {
     char buffer[2048];
     const char *bp = buffer;
-    int sz = encodeTestMessage3(buffer, 0, sizeof(buffer));
+    std::uint64_t sz = encodeTestMessage3(buffer, 0, sizeof(buffer));
 
-    int offset = 0;
+    std::uint64_t offset = 0;
     EXPECT_EQ(*(sbe_uint32_t *)(bp + offset), TAG_1);
     EXPECT_EQ(TestMessage1::sbeBlockLength(), 16);
     offset += 16;  // root blockLength of 16
@@ -461,7 +461,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage3Correctly)
 TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage3Correctly)
 {
     char buffer[2048];
-    int sz = encodeTestMessage3(buffer, 0, sizeof(buffer));
+    std::uint64_t sz = encodeTestMessage3(buffer, 0, sizeof(buffer));
 
     EXPECT_EQ(sz, expectedTestMessage3Size);
 
@@ -535,16 +535,16 @@ TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage3Correctly)
     EXPECT_EQ(entries.varDataFieldLength(), VAR_DATA_FIELD_IDX_1_LENGTH);
     EXPECT_EQ(std::string(entries.varDataField(), VAR_DATA_FIELD_IDX_1_LENGTH), VAR_DATA_FIELD_IDX_1);
 
-    EXPECT_EQ(msg3Decoder.size(), expectedTestMessage3Size);
+    EXPECT_EQ(msg3Decoder.encodedLength(), expectedTestMessage3Size);
 }
 
 TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage4Correctly)
 {
     char buffer[2048];
     const char *bp = buffer;
-    int sz = encodeTestMessage4(buffer, 0, sizeof(buffer));
+    std::uint64_t sz = encodeTestMessage4(buffer, 0, sizeof(buffer));
 
-    int offset = 0;
+    std::uint64_t offset = 0;
     EXPECT_EQ(*(sbe_uint32_t *)(bp + offset), TAG_1);
     EXPECT_EQ(TestMessage4::sbeBlockLength(), 16);
     offset += 16;  // root blockLength of 16
@@ -579,7 +579,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage4Correctly)
 TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage4Correctly)
 {
     char buffer[2048];
-    int sz = encodeTestMessage4(buffer, 0, sizeof(buffer));
+    std::uint64_t sz = encodeTestMessage4(buffer, 0, sizeof(buffer));
 
     EXPECT_EQ(sz, expectedTestMessage4Size);
 
@@ -606,5 +606,5 @@ TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage4Correctly)
     EXPECT_EQ(entries.varDataField2Length(), VAR_DATA_FIELD_2_IDX_1_LENGTH);
     EXPECT_EQ(std::string(entries.varDataField2(), VAR_DATA_FIELD_2_IDX_1_LENGTH), VAR_DATA_FIELD_2_IDX_1);
 
-    EXPECT_EQ(msg4Decoder.size(), expectedTestMessage4Size);
+    EXPECT_EQ(msg4Decoder.encodedLength(), expectedTestMessage4Size);
 }

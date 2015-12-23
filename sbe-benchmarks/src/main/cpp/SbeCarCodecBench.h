@@ -32,7 +32,7 @@ int MODELLEN = strlen(MODEL);
 class SbeCarCodecBench : public CodecBench<SbeCarCodecBench>
 {
 public:
-    int encode(char *buffer, const int bufferLength)
+    std::uint64_t encode(char *buffer, const std::uint64_t bufferLength)
     {
         car.wrapForEncode(buffer, 0, bufferLength)
            .serialNumber(1234)
@@ -76,10 +76,10 @@ public:
         car.putMake(MAKE, MAKELEN);
         car.putModel(MODEL, MODELLEN);
 
-        return car.size();
+        return car.encodedLength();
     };
 
-    virtual int decode(const char *buffer, const int bufferLength)
+    virtual std::uint64_t decode(const char *buffer, const std::uint64_t bufferLength)
     {
         car.wrapForDecode((char *)buffer, 0, Car::sbeBlockLength(), Car::sbeSchemaVersion(), bufferLength);
 
@@ -133,7 +133,7 @@ public:
         tmpChar = car.make();
         tmpChar = car.model();
 
-        return car.size();
+        return car.encodedLength();
     };
 
 private:

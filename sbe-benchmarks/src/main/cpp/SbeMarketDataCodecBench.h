@@ -25,7 +25,7 @@ using namespace uk_co_real_logic_sbe_benchmarks_fix;
 class SbeMarketDataCodecBench : public CodecBench<SbeMarketDataCodecBench>
 {
 public:
-    virtual int encode(char *buffer, const int bufferLength)
+    virtual std::uint64_t encode(char *buffer, const std::uint64_t bufferLength)
     {
         messageHeader_.wrap(buffer, 0, 0, bufferLength);
         messageHeader_.blockLength(marketData_.sbeBlockLength());
@@ -33,7 +33,7 @@ public:
         messageHeader_.schemaId(marketData_.sbeSchemaId());
         messageHeader_.version(marketData_.sbeSchemaVersion());
 
-        marketData_.wrapForEncode(buffer + messageHeader_.size(), 0, bufferLength);
+        marketData_.wrapForEncode(buffer + messageHeader_.encodedLength(), 0, bufferLength);
         marketData_.transactTime(1234L);
         marketData_.eventTimeDelta(987);
         marketData_.matchEventIndicator(MatchEventIndicator::END_EVENT);
@@ -58,10 +58,10 @@ public:
         mdIncGrp.mdUpdateAction(MDUpdateAction::NEW);
         mdIncGrp.rptSeq((short)1);
 
-        return MessageHeader::size() + marketData_.size();
+        return MessageHeader::encodedLength() + marketData_.encodedLength();
     };
 
-    virtual int decode(const char *buffer, const int bufferLength)
+    virtual std::uint64_t decode(const char *buffer, const std::uint64_t bufferLength)
     {
         int64_t actingVersion;
         int64_t actingBlockLength;
@@ -72,7 +72,7 @@ public:
         actingVersion = messageHeader_.version();
 
 
-        marketData_.wrapForDecode((char *)buffer, messageHeader_.size(), actingBlockLength, actingVersion, bufferLength);
+        marketData_.wrapForDecode((char *)buffer, messageHeader_.encodedLength(), actingBlockLength, actingVersion, bufferLength);
 
         marketData_.transactTime();
         marketData_.eventTimeDelta();
@@ -93,7 +93,7 @@ public:
             mdIncGrp.mdEntryType();
         }
 
-        return MessageHeader::size() + marketData_.size();
+        return MessageHeader::encodedLength() + marketData_.encodedLength();
     };
 
 private:

@@ -40,7 +40,7 @@ public:
         m_eventNumber = 0;
     }
 
-    virtual int encodeHdrAndMsg()
+    virtual std::uint64_t encodeHdrAndMsg()
     {
         MessageHeader hdr;
         TestMessage1 msg;
@@ -51,7 +51,7 @@ public:
             .schemaId(TestMessage1::sbeSchemaId())
             .version(TestMessage1::sbeSchemaVersion());
 
-        msg.wrapForEncode(m_buffer, hdr.size(), sizeof(m_buffer));
+        msg.wrapForEncode(m_buffer, hdr.encodedLength(), sizeof(m_buffer));
 
         TestMessage1::Entries &entries = msg.entriesCount(2);
 
@@ -63,7 +63,7 @@ public:
             .tagGroup1(30)
             .tagGroup2(40);
 
-        return hdr.size() + msg.size();
+        return hdr.encodedLength() + msg.encodedLength();
     }
 
     virtual void onEncoding(
@@ -123,7 +123,7 @@ public:
 
 TEST_F(CompositeOffsetsIrTest, shouldHandleDecodingOfMessageHeaderCorrectly)
 {
-    ASSERT_EQ(encodeHdrAndMsg(), 52);
+    ASSERT_EQ(encodeHdrAndMsg(), 52u);
 
     ASSERT_GE(m_irDecoder.decode(SCHEMA_FILENAME), 0);
 
@@ -133,7 +133,7 @@ TEST_F(CompositeOffsetsIrTest, shouldHandleDecodingOfMessageHeaderCorrectly)
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
-    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
+    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::encodedLength());
     EXPECT_EQ(headerDecoder.getTemplateId(m_buffer), TestMessage1::sbeTemplateId());
     EXPECT_EQ(headerDecoder.getBlockLength(m_buffer), TestMessage1::sbeBlockLength());
     EXPECT_EQ(headerDecoder.getSchemaId(m_buffer), TestMessage1::sbeSchemaId());
@@ -142,7 +142,7 @@ TEST_F(CompositeOffsetsIrTest, shouldHandleDecodingOfMessageHeaderCorrectly)
 
 TEST_F(CompositeOffsetsIrTest, shouldHandleAllEventsCorrectltInOrder)
 {
-    ASSERT_EQ(encodeHdrAndMsg(), 52);
+    ASSERT_EQ(encodeHdrAndMsg(), 52u);
 
     ASSERT_GE(m_irDecoder.decode(SCHEMA_FILENAME), 0);
 
@@ -154,7 +154,7 @@ TEST_F(CompositeOffsetsIrTest, shouldHandleAllEventsCorrectltInOrder)
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
-    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::size());
+    EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::encodedLength());
     const char *messageBuffer = m_buffer + headerDecoder.encodedLength();
     std::size_t length = 52 - headerDecoder.encodedLength();
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
@@ -162,7 +162,7 @@ TEST_F(CompositeOffsetsIrTest, shouldHandleAllEventsCorrectltInOrder)
 
     const std::size_t result =
         OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
-    EXPECT_EQ(result, static_cast<std::size_t>(52 - MessageHeader::size()));
+    EXPECT_EQ(result, static_cast<std::size_t>(52 - MessageHeader::encodedLength()));
 
     EXPECT_EQ(m_eventNumber, 5);
 }

@@ -68,9 +68,9 @@ public:
         });
     }
 
-    inline std::int32_t encodedLength() const
+    inline std::uint32_t encodedLength() const
     {
-        return m_encodedLength;
+        return static_cast<std::uint32_t>(m_encodedLength);
     }
 
     /*

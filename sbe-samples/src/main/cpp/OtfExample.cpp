@@ -58,10 +58,13 @@ public:
     {
         const Encoding& encoding = token.encoding();
         const PrimitiveType type = encoding.primitiveType();
-        const int length = (token.isConstantEncoding()) ? encoding.constValue().size() : token.encodedLength();
+        const std::uint64_t length =
+            (token.isConstantEncoding()) ?
+                encoding.constValue().size() :
+                static_cast<std::uint64_t>(token.encodedLength());
         std::ostringstream result;
 
-        size_t num = length / lengthOfType(type);
+        std::uint64_t num = length / lengthOfType(type);
 
         switch (type)
         {
@@ -333,7 +336,7 @@ static const sbe_float_t perf2cSeconds = 11.8f;
 static const sbe_uint16_t engineCapacity = 2000;
 static const sbe_uint8_t engineNumCylinders = 4;
 
-int encodeHdrAndCar(char *buffer, int length)
+std::uint64_t encodeHdrAndCar(char *buffer, std::uint64_t length)
 {
     MessageHeader hdr;
     Car car;
@@ -344,16 +347,16 @@ int encodeHdrAndCar(char *buffer, int length)
         .schemaId(Car::sbeSchemaId())
         .version(Car::sbeSchemaVersion());
 
-    car.wrapForEncode(buffer, hdr.size(), length - hdr.size())
+    car.wrapForEncode(buffer, hdr.encodedLength(), length - hdr.encodedLength())
         .serialNumber(SERIAL_NUMBER)
         .modelYear(MODEL_YEAR)
         .available(AVAILABLE)
         .code(CODE)
         .putVehicleCode(VEHICLE_CODE);
 
-    for (int i = 0; i < Car::someNumbersLength(); i++)
+    for (std::uint64_t i = 0; i < Car::someNumbersLength(); i++)
     {
-        car.someNumbers(i, i);
+        car.someNumbers(i, static_cast<std::int32_t>(i));
     }
 
     car.extras().clear()
@@ -404,7 +407,7 @@ int encodeHdrAndCar(char *buffer, int length)
     car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
     car.putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
 
-    return hdr.size() + car.size();
+    return hdr.encodedLength() + car.encodedLength();
 }
 
 int main(int argc, char **argv)
@@ -412,7 +415,7 @@ int main(int argc, char **argv)
     char buffer[2048];
     ExampleTokenListener tokenListener;
 
-    int sz = encodeHdrAndCar(buffer, sizeof(buffer));
+    std::uint64_t sz = encodeHdrAndCar(buffer, sizeof(buffer));
 
     IrDecoder irDecoder;
 
@@ -428,7 +431,7 @@ int main(int argc, char **argv)
     OtfHeaderDecoder headerDecoder(headerTokens);
 
     const char *messageBuffer = buffer + headerDecoder.encodedLength();
-    std::size_t length = sz - headerDecoder.encodedLength();
+    std::uint64_t length = sz - headerDecoder.encodedLength();
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(buffer);
 

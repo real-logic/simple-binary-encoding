@@ -1192,7 +1192,7 @@ public class CppGenerator implements CodeGenerator
             "    inline void reset(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength," +
             " const std::uint64_t actingVersion)\n" +
             "    {\n" +
-            "        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - %2$s)), false))\n" +
+            "        if (SBE_BOUNDS_CHECK_EXPECT(((offset + %2$s) > bufferLength), false))\n" +
             "        {\n" +
             "            throw std::runtime_error(\"buffer too short for flyweight [E107]\");\n" +
             "        }\n" +

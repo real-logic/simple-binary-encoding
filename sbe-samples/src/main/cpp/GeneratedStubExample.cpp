@@ -17,6 +17,8 @@
 #include <string>
 
 #include <stdio.h>
+#include <inttypes.h>
+#include <iomanip>
 
 #include "baseline/MessageHeader.h"
 #include "baseline/Car.h"
@@ -34,7 +36,7 @@ const char *MAKE = "Honda";
 const char *MODEL = "Civic VTi";
 const int messageHeaderVersion = 0;
 
-std::size_t encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset, int bufferLength)
+std::size_t encodeHdr(MessageHeader &hdr, Car &car, char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
 {
     // encode the header
     hdr.wrap(buffer, offset, messageHeaderVersion, bufferLength)
@@ -43,10 +45,10 @@ std::size_t encodeHdr(MessageHeader &hdr, Car &car, char *buffer, int offset, in
        .schemaId(Car::sbeSchemaId())
        .version(Car::sbeSchemaVersion());
 
-    return static_cast<std::size_t>(hdr.size());
+    return hdr.encodedLength();
 }
 
-std::size_t decodeHdr(MessageHeader &hdr, char *buffer, int offset, int bufferLength)
+std::size_t decodeHdr(MessageHeader &hdr, char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
 {
     hdr.wrap(buffer, offset, messageHeaderVersion, bufferLength);
 
@@ -54,13 +56,13 @@ std::size_t decodeHdr(MessageHeader &hdr, char *buffer, int offset, int bufferLe
     cout << "messageHeader.blockLength=" << hdr.blockLength() << endl;
     cout << "messageHeader.templateId=" << hdr.templateId() << endl;
     cout << "messageHeader.schemaId=" << hdr.schemaId() << endl;
-    cout << "messageHeader.schemaVersion=" << (sbe_uint32_t)hdr.version() << endl;
-    cout << "messageHeader.size=" << hdr.size() << endl;
+    cout << "messageHeader.schemaVersion=" << hdr.version() << endl;
+    cout << "messageHeader.encodedLength=" << hdr.encodedLength() << endl;
 
-    return static_cast<std::size_t>(hdr.size());
+    return hdr.encodedLength();
 }
 
-std::size_t encodeCar(Car &car, char *buffer, int offset, int bufferLength)
+std::size_t encodeCar(Car &car, char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
 {
     car.wrapForEncode(buffer, offset, bufferLength)
        .serialNumber(1234)
@@ -69,9 +71,9 @@ std::size_t encodeCar(Car &car, char *buffer, int offset, int bufferLength)
        .code(Model::A)
        .putVehicleCode(VEHICLE_CODE);
 
-    for (int i = 0, size = car.someNumbersLength(); i < size; i++)
+    for (std::uint64_t i = 0, size = car.someNumbersLength(); i < size; i++)
     {
-        car.someNumbers(i, i);
+        car.someNumbers(i, static_cast<std::int32_t>(i));
     }
 
     car.extras().clear()
@@ -114,36 +116,13 @@ std::size_t encodeCar(Car &car, char *buffer, int offset, int bufferLength)
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-    car.putMake(MAKE, static_cast<int>(::strlen(MAKE)));
-    car.putModel(MODEL, static_cast<int>(::strlen(MODEL)));
+    car.putMake(MAKE, 5);
+    car.putModel(MODEL, 9);
     car.putActivationCode("deadbeef", 8);
 
-    return static_cast<std::size_t>(car.size());
+    return car.encodedLength();
 }
 
-const char *format(int value)
-{
-    static char buffer[1024];
-
-    snprintf(buffer, sizeof(buffer) - 1, "%d", value);
-    return buffer;
-}
-
-const char *format(char value)
-{
-    static char buffer[3];
-
-    snprintf(buffer, sizeof(buffer) - 1, "%c", value);
-    return buffer;
-}
-
-const char *format(double value)
-{
-    static char buffer[80];
-
-    snprintf(buffer, sizeof(buffer) - 1, "%g", value);
-    return buffer;
-}
 
 const char *format(BooleanType::Value value)
 {
@@ -181,122 +160,128 @@ const char *format(bool value)
     }
 }
 
-std::size_t decodeCar(Car &car, char *buffer, int offset, int actingBlockLength, int actingVersion, int bufferLength)
+std::size_t decodeCar(
+    Car &car, char *buffer, std::uint64_t offset, std::uint64_t actingBlockLength,
+    std::uint64_t actingVersion, std::uint64_t bufferLength)
 {
     car.wrapForDecode(buffer, offset, actingBlockLength, actingVersion, bufferLength);
-    std::string sb;
 
-    sb.append("\ncar.serialNumberId=").append(format(Car::serialNumberId()));
-    sb.append("\ncar.modelYearId=").append(format(Car::modelYearId()));
-    sb.append("\ncar.availableId=").append(format(Car::availableId()));
-    sb.append("\ncar.codeId=").append(format(Car::codeId()));
-    sb.append("\ncar.someNumbersId=").append(format(Car::someNumbersId()));
-    sb.append("\ncar.vehicleCodeId=").append(format(Car::vehicleCodeId()));
-    sb.append("\ncar.extrasId=").append(format(Car::extrasId()));
-    sb.append("\ncar.engineId=").append(format(Car::engineId()));
-    sb.append("\ncar.fuelFiguresId=").append(format(Car::fuelFiguresId()));
-    sb.append("\ncar.fuelFigures.speedId=").append(format(Car::FuelFigures::speedId()));
-    sb.append("\ncar.fuelFigures.mpgId=").append(format(Car::FuelFigures::mpgId()));
-    sb.append("\ncar.fuelFigures.usageDescriptionId=").append(format(Car::FuelFigures::usageDescriptionId()));
-    sb.append("\ncar.performanceFiguresId=").append(format(Car::performanceFiguresId()));
-    sb.append("\ncar.performanceFigures.octaneRatingId=").append(format(Car::PerformanceFigures::octaneRatingId()));
-    sb.append("\ncar.performanceFigures.accelerationId=").append(format(Car::PerformanceFigures::accelerationId()));
-    sb.append("\ncar.performanceFigures.acceleration.mphId=").append(format(Car::PerformanceFigures::Acceleration::mphId()));
-    sb.append("\ncar.performanceFigures.acceleration.secondsId=").append(format(Car::PerformanceFigures::Acceleration::secondsId()));
-    sb.append("\ncar.makeId=").append(format(Car::makeId()));
-    sb.append("\ncar.makeCharacterEncoding=").append(Car::makeCharacterEncoding());
-    sb.append("\ncar.modelId=").append(format(Car::modelId()));
-    sb.append("\ncar.modelCharacterEncoding=").append(Car::modelCharacterEncoding());
-    sb.append("\ncar.activationCodeId=").append(format(Car::activationCodeId()));
-    sb.append("\ncar.activationCodeCharacterEncoding=").append(Car::activationCodeCharacterEncoding());
+    std::cout.setf(std::ios::fixed);
 
-    sb.append("\n");
+    std::cout << "\ncar.serialNumberId=" << Car::serialNumberId();
+    std::cout << "\ncar.modelYearId=" << Car::modelYearId();
+    std::cout << "\ncar.availableId=" << Car::availableId();
+    std::cout << "\ncar.codeId=" << Car::codeId();
+    std::cout << "\ncar.someNumbersId=" << Car::someNumbersId();
+    std::cout << "\ncar.vehicleCodeId=" << Car::vehicleCodeId();
+    std::cout << "\ncar.extrasId=" << Car::extrasId();
+    std::cout << "\ncar.engineId=" << Car::engineId();
+    std::cout << "\ncar.fuelFiguresId=" << Car::fuelFiguresId();
+    std::cout << "\ncar.fuelFigures.speedId=" << Car::FuelFigures::speedId();
+    std::cout << "\ncar.fuelFigures.mpgId=" << Car::FuelFigures::mpgId();
+    std::cout << "\ncar.fuelFigures.usageDescriptionId=" << Car::FuelFigures::usageDescriptionId();
+    std::cout << "\ncar.performanceFiguresId=" << Car::performanceFiguresId();
+    std::cout << "\ncar.performanceFigures.octaneRatingId=" << Car::PerformanceFigures::octaneRatingId();
+    std::cout << "\ncar.performanceFigures.accelerationId=" << Car::PerformanceFigures::accelerationId();
+    std::cout << "\ncar.performanceFigures.acceleration.mphId=" << Car::PerformanceFigures::Acceleration::mphId();
+    std::cout << "\ncar.performanceFigures.acceleration.secondsId=" << Car::PerformanceFigures::Acceleration::secondsId();
+    std::cout << "\ncar.makeId=" << Car::makeId();
+    std::cout << "\ncar.makeCharacterEncoding=" << Car::makeCharacterEncoding();
+    std::cout << "\ncar.modelId=" << Car::modelId();
+    std::cout << "\ncar.modelCharacterEncoding=" << Car::modelCharacterEncoding();
+    std::cout << "\ncar.activationCodeId=" << Car::activationCodeId();
+    std::cout << "\ncar.activationCodeCharacterEncoding=" << Car::activationCodeCharacterEncoding();
 
-    sb.append("\ncar.serialNumber=").append(format((int)car.serialNumber()));
-    sb.append("\ncar.modelYear=").append(format((int)car.modelYear()));
-    sb.append("\ncar.available=").append(format(car.available()));
-    sb.append("\ncar.code=").append(format(car.code()));
+    std::cout << "\n";
 
-    sb.append("\ncar.someNumbers=");
-    for (int i = 0, size = Car::someNumbersLength(); i < size; i++)
+    std::cout << "\ncar.serialNumber=" << car.serialNumber();
+    std::cout << "\ncar.modelYear=" << car.modelYear();
+    std::cout << "\ncar.available=" << format(car.available());
+    std::cout << "\ncar.code=" << format(car.code());
+
+    std::cout << "\ncar.someNumbers=";
+    std::string separator("");
+    for (std::uint64_t i = 0; i < Car::someNumbersLength(); i++)
     {
-        sb.append(format(car.someNumbers(i))).append(", ");
+        std::cout << separator << car.someNumbers(i);
+        separator = ", ";
     }
 
-    sb.append("\ncar.vehicleCodeLength=").append(format((int)car.vehicleCodeLength()));
-    sb.append("\ncar.vehicleCode=");
-    for (int i = 0, size = Car::vehicleCodeLength(); i < size; i++)
+    std::cout << "\ncar.vehicleCode=";
+    separator = "";
+    for (std::uint64_t i = 0; i < Car::vehicleCodeLength(); i++)
     {
-        sb.append(format((char)car.vehicleCode(i)));
+        std::cout << separator << car.vehicleCode(i);
+        separator = ", ";
     }
 
     OptionalExtras &extras = car.extras();
-    sb.append("\ncar.extras.cruiseControl=").append(format(extras.cruiseControl()));
-    sb.append("\ncar.extras.sportsPack=").append(format(extras.sportsPack()));
-    sb.append("\ncar.extras.sunRoof=").append(format(extras.sunRoof()));
+    std::cout << "\ncar.extras.cruiseControl=" << format(extras.cruiseControl());
+    std::cout << "\ncar.extras.sportsPack=" << format(extras.sportsPack());
+    std::cout << "\ncar.extras.sunRoof=" << format(extras.sunRoof());
 
-    sb.append("\ncar.discountedModel=").append(format(car.discountedModel()));
+    std::cout << "\ncar.discountedModel=" << format(car.discountedModel());
 
     Engine &engine = car.engine();
-    sb.append("\ncar.engine.capacity=").append(format((int)engine.capacity()));
-    sb.append("\ncar.engine.numCylinders=").append(format((int)engine.numCylinders()));
-    sb.append("\ncar.engine.maxRpm=").append(format((int)engine.maxRpm()));
-    sb.append("\ncar.engine.manufacturerCodeLength=").append(format((int)engine.manufacturerCodeLength()));
-    sb.append("\ncar.engine.manufacturerCode=");
-    for (int i = 0, size = Engine::manufacturerCodeLength(); i < size; i++)
+    std::cout << "\ncar.engine.capacity=" << (int)engine.capacity();
+    std::cout << "\ncar.engine.numCylinders=" << (int)engine.numCylinders();
+    std::cout << "\ncar.engine.maxRpm=" << (int)engine.maxRpm();
+    std::cout << "\ncar.engine.manufacturerCodeLength=" << (int)engine.manufacturerCodeLength();
+    std::cout << "\ncar.engine.manufacturerCode=";
+    separator = "";
+    for (std::uint64_t i = 0; i < Engine::manufacturerCodeLength(); i++)
     {
-        sb.append(format((char)engine.manufacturerCode(i)));
+        std::cout << separator << engine.manufacturerCode(i);
+        separator = ", ";
     }
 
     char tmp[1024];
-    int bytesCopied = engine.getFuel(tmp, sizeof(tmp));
-    sb.append("\ncar.engine.fuelLength=").append(format(bytesCopied));
-    sb.append("\ncar.engine.fuel=").append(tmp, bytesCopied);
+    std::uint64_t bytesCopied = engine.getFuel(tmp, sizeof(tmp));
+    std::cout << "\ncar.engine.fuelLength=" << bytesCopied;
+    std::cout << "\ncar.engine.fuel=" << std::string(tmp, bytesCopied);
 
     Car::FuelFigures &fuelFigures = car.fuelFigures();
     while (fuelFigures.hasNext())
     {
         fuelFigures.next();
-        sb.append("\ncar.fuelFigures.speed=").append(format((int)fuelFigures.speed()));
-        sb.append("\ncar.fuelFigures.mpg=").append(format((double)fuelFigures.mpg()));
+        std::cout << "\ncar.fuelFigures.speed=" << (int)fuelFigures.speed();
+        std::cout << "\ncar.fuelFigures.mpg=" << std::setprecision(1) << (double)fuelFigures.mpg();
 
-        sb.append("\ncar.fuelFigures.usageDescriptionLength=").append(format((int)fuelFigures.usageDescriptionLength()));
-        bytesCopied = fuelFigures.getUsageDescription(tmp, sizeof(tmp));
-        sb.append("\ncar.fuelFigures.usageDescription=").append(tmp, bytesCopied);
+        std::string usageDesc = fuelFigures.getUsageDescriptionAsString();
+        std::cout << "\ncar.fuelFigures.usageDescriptionLength=" << usageDesc.length();
+        std::cout << "\ncar.fuelFigures.usageDescription=" << usageDesc;
     }
 
     Car::PerformanceFigures &performanceFigures = car.performanceFigures();
     while (performanceFigures.hasNext())
     {
         performanceFigures.next();
-        sb.append("\ncar.performanceFigures.octaneRating=").append(format((int)performanceFigures.octaneRating()));
+        std::cout << "\ncar.performanceFigures.octaneRating=" << (std::uint64_t)performanceFigures.octaneRating();
 
         Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
         while (acceleration.hasNext())
         {
             acceleration.next();
-            sb.append("\ncar.performanceFigures.acceleration.mph=").append(format((int)acceleration.mph()));
-            sb.append("\ncar.performanceFigures.acceleration.seconds=").append(format((double)acceleration.seconds()));
+            std::cout << "\ncar.performanceFigures.acceleration.mph=" << acceleration.mph();
+            std::cout << "\ncar.performanceFigures.acceleration.seconds=" << std::setprecision(1) << acceleration.seconds();
         }
     }
 
     bytesCopied = car.getMake(tmp, sizeof(tmp));
-    sb.append("\ncar.makeLength=").append(format((int)bytesCopied));
-    sb.append("\ncar.make=").append(tmp, bytesCopied);
+    std::cout << "\ncar.makeLength=" << bytesCopied;
+    std::cout << "\ncar.make=" << std::string(tmp, bytesCopied);
 
     bytesCopied = car.getModel(tmp, sizeof(tmp));
-    sb.append("\ncar.modelLength=").append(format((int)bytesCopied));
-    sb.append("\ncar.model=").append(tmp, bytesCopied);
+    std::cout << "\ncar.modelLength=" << bytesCopied;
+    std::cout << "\ncar.model=" << std::string(tmp, bytesCopied);
 
     bytesCopied = car.getActivationCode(tmp, sizeof(tmp));
-    sb.append("\ncar.activationCodeLength=").append(format((int)bytesCopied));
-    sb.append("\ncar.activationCode=").append(tmp, bytesCopied);
+    std::cout << "\ncar.activationCodeLength=" << bytesCopied;
+    std::cout << "\ncar.activationCode=" << std::string(tmp, bytesCopied);
 
-    sb.append("\ncar.size=").append(format((int)car.size()));
+    std::cout << "\ncar.encodedLength=" << (int)car.encodedLength() << "\n";
 
-    cout << sb << endl;
-
-    return static_cast<std::size_t>(car.size());
+    return car.encodedLength();
 }
 
 int main(int argc, const char* argv[])
@@ -306,12 +291,12 @@ int main(int argc, const char* argv[])
     Car car;
 
     std::size_t encodeHdrLength = encodeHdr(hdr, car, buffer, 0, sizeof(buffer));
-    std::size_t encodeMsgLength = encodeCar(car, buffer, hdr.size(), sizeof(buffer));
+    std::size_t encodeMsgLength = encodeCar(car, buffer, hdr.encodedLength(), sizeof(buffer));
 
     cout << "Encoded Lengths are " << encodeHdrLength << " + " << encodeMsgLength << endl;
 
     std::size_t decodeHdrLength = decodeHdr(hdr, buffer, 0, sizeof(buffer));
-    std::size_t decodeMsgLength = decodeCar(car, buffer, hdr.size(), hdr.blockLength(), hdr.version(), sizeof(buffer));
+    std::size_t decodeMsgLength = decodeCar(car, buffer, hdr.encodedLength(), hdr.blockLength(), hdr.version(), sizeof(buffer));
 
     cout << "Decoded Lengths are " << decodeHdrLength << " + " << decodeMsgLength << endl;
 

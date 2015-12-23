@@ -38,14 +38,14 @@ static const char *MAKE = "Honda";
 static const char *MODEL = "Civic VTi";
 static const char *ACTIVATION_CODE = "deadbeef";
 
-static const int encodedHdrSz = 8;
-static const int encodedCarSz = 179;
+static const std::uint64_t encodedHdrSz = 8;
+static const std::uint64_t encodedCarSz = 179;
 
 class BoundsCheckTest : public testing::Test
 {
 public:
 
-    virtual int encodeHdr(char *buffer, int offset, int bufferLength)
+    virtual std::uint64_t encodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_hdr.wrap(buffer, offset, 0, bufferLength)
             .blockLength(Car::sbeBlockLength())
@@ -53,10 +53,10 @@ public:
             .schemaId(Car::sbeSchemaId())
             .version(Car::sbeSchemaVersion());
 
-        return m_hdr.size();
+        return m_hdr.encodedLength();
     }
 
-    virtual int decodeHdr(char *buffer, int offset, int bufferLength)
+    virtual std::uint64_t decodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_hdrDecoder.wrap(buffer, offset, 0, bufferLength);
 
@@ -65,10 +65,10 @@ public:
         EXPECT_EQ(m_hdrDecoder.schemaId(), Car::sbeSchemaId());
         EXPECT_EQ(m_hdrDecoder.version(), Car::sbeSchemaVersion());
 
-        return m_hdrDecoder.size();
+        return m_hdrDecoder.encodedLength();
     }
 
-    virtual int encodeCarRoot(char *buffer, int offset, int bufferLength)
+    virtual std::uint64_t encodeCarRoot(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_car.wrapForEncode(buffer, offset, bufferLength)
             .serialNumber(SERIAL_NUMBER)
@@ -77,9 +77,9 @@ public:
             .code(CODE)
             .putVehicleCode(VEHICLE_CODE);
 
-        for (int i = 0; i < Car::someNumbersLength(); i++)
+        for (std::uint64_t i = 0; i < Car::someNumbersLength(); i++)
         {
-            m_car.someNumbers(i, i);
+            m_car.someNumbers(i, static_cast<std::int32_t>(i));
         }
 
         m_car.extras().clear()
@@ -92,10 +92,10 @@ public:
             .numCylinders((short)4)
             .putManufacturerCode(MANUFACTURER_CODE);
 
-        return m_car.size();
+        return m_car.encodedLength();
     }
 
-    virtual int encodeCarFuelFigures()
+    virtual std::uint64_t encodeCarFuelFigures()
     {
         Car::FuelFigures& fuelFigures = m_car.fuelFiguresCount(3);
 
@@ -111,10 +111,10 @@ public:
             .next().speed(75).mpg(40.0f);
         fuelFigures.putUsageDescription("Highway Cycle", 13);
 
-        return m_car.size();
+        return m_car.encodedLength();
     }
 
-    virtual int encodeCarPerformanceFigures()
+    virtual std::uint64_t encodeCarPerformanceFigures()
     {
         Car::PerformanceFigures &perfFigs = m_car.performanceFiguresCount(2);
 
@@ -132,19 +132,19 @@ public:
                 .next().mph(60).seconds(7.1f)
                 .next().mph(100).seconds(11.8f);
 
-        return m_car.size();
+        return m_car.encodedLength();
     }
 
-    virtual int encodeCarMakeModelAndActivationCode()
+    virtual std::uint64_t encodeCarMakeModelAndActivationCode()
     {
         m_car.putMake(MAKE, static_cast<int>(strlen(MAKE)));
         m_car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
         m_car.putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
 
-        return m_car.size();
+        return m_car.encodedLength();
     }
 
-    virtual int decodeCarRoot(char *buffer, const int offset, const int bufferLength)
+    virtual std::uint64_t decodeCarRoot(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength)
     {
         m_carDecoder.wrapForDecode(buffer, offset, Car::sbeBlockLength(), Car::sbeSchemaVersion(), bufferLength);
         EXPECT_EQ(m_carDecoder.serialNumber(), SERIAL_NUMBER);
@@ -152,13 +152,13 @@ public:
         EXPECT_EQ(m_carDecoder.available(), AVAILABLE);
         EXPECT_EQ(m_carDecoder.code(), CODE);
 
-        EXPECT_EQ(m_carDecoder.someNumbersLength(), 5);
-        for (int i = 0; i < 5; i++)
+        EXPECT_EQ(m_carDecoder.someNumbersLength(), 5u);
+        for (std::uint64_t i = 0; i < 5; i++)
         {
-            EXPECT_EQ(m_carDecoder.someNumbers(i), i);
+            EXPECT_EQ(m_carDecoder.someNumbers(i), static_cast<std::int32_t>(i));
         }
 
-        EXPECT_EQ(m_carDecoder.vehicleCodeLength(), 6);
+        EXPECT_EQ(m_carDecoder.vehicleCodeLength(), 6u);
         EXPECT_EQ(std::string(m_carDecoder.vehicleCode(), 6), std::string(VEHICLE_CODE, 6));
         EXPECT_EQ(m_carDecoder.extras().cruiseControl(), true);
         EXPECT_EQ(m_carDecoder.extras().sportsPack(), true);
@@ -168,55 +168,55 @@ public:
         EXPECT_EQ(engine.capacity(), 2000);
         EXPECT_EQ(engine.numCylinders(), 4);
         EXPECT_EQ(engine.maxRpm(), 9000);
-        EXPECT_EQ(engine.manufacturerCodeLength(), 3);
+        EXPECT_EQ(engine.manufacturerCodeLength(), 3u);
         EXPECT_EQ(std::string(engine.manufacturerCode(), 3), std::string(MANUFACTURER_CODE, 3));
-        EXPECT_EQ(engine.fuelLength(), 6);
+        EXPECT_EQ(engine.fuelLength(), 6u);
         EXPECT_EQ(std::string(engine.fuel(), 6), std::string("Petrol"));
 
-        return m_carDecoder.size();
+        return m_carDecoder.encodedLength();
     }
 
-    virtual int decodeCarFuelFigures()
+    virtual std::uint64_t decodeCarFuelFigures()
     {
         char tmp[256];
         Car::FuelFigures &fuelFigures = m_carDecoder.fuelFigures();
-        EXPECT_EQ(fuelFigures.count(), 3);
+        EXPECT_EQ(fuelFigures.count(), 3u);
 
         EXPECT_TRUE(fuelFigures.hasNext());
         fuelFigures.next();
         EXPECT_EQ(fuelFigures.speed(), 30);
         EXPECT_EQ(fuelFigures.mpg(), 35.9f);
-        EXPECT_EQ(fuelFigures.getUsageDescription(tmp, sizeof(tmp)), 11);
+        EXPECT_EQ(fuelFigures.getUsageDescription(tmp, sizeof(tmp)), 11u);
         EXPECT_EQ(std::string(tmp, 11), "Urban Cycle");
 
         EXPECT_TRUE(fuelFigures.hasNext());
         fuelFigures.next();
         EXPECT_EQ(fuelFigures.speed(), 55);
         EXPECT_EQ(fuelFigures.mpg(), 49.0f);
-        EXPECT_EQ(fuelFigures.getUsageDescription(tmp, sizeof(tmp)), 14);
+        EXPECT_EQ(fuelFigures.getUsageDescription(tmp, sizeof(tmp)), 14u);
         EXPECT_EQ(std::string(tmp, 14), "Combined Cycle");
 
         EXPECT_TRUE(fuelFigures.hasNext());
         fuelFigures.next();
         EXPECT_EQ(fuelFigures.speed(), 75);
         EXPECT_EQ(fuelFigures.mpg(), 40.0f);
-        EXPECT_EQ(fuelFigures.getUsageDescription(tmp, sizeof(tmp)), 13);
+        EXPECT_EQ(fuelFigures.getUsageDescription(tmp, sizeof(tmp)), 13u);
         EXPECT_EQ(std::string(tmp, 13), "Highway Cycle");
 
-        return m_carDecoder.size();
+        return m_carDecoder.encodedLength();
     }
 
-    virtual int decodeCarPerformanceFigures()
+    virtual std::uint64_t decodeCarPerformanceFigures()
     {
         Car::PerformanceFigures &performanceFigures = m_carDecoder.performanceFigures();
-        EXPECT_EQ(performanceFigures.count(), 2);
+        EXPECT_EQ(performanceFigures.count(), 2u);
 
         EXPECT_TRUE(performanceFigures.hasNext());
         performanceFigures.next();
         EXPECT_EQ(performanceFigures.octaneRating(), 95);
 
         Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
-        EXPECT_EQ(acceleration.count(), 3);
+        EXPECT_EQ(acceleration.count(), 3u);
         EXPECT_TRUE(acceleration.hasNext());
         acceleration.next();
         EXPECT_EQ(acceleration.mph(), 30);
@@ -237,7 +237,7 @@ public:
         EXPECT_EQ(performanceFigures.octaneRating(), 99);
 
         acceleration = performanceFigures.acceleration();
-        EXPECT_EQ(acceleration.count(), 3);
+        EXPECT_EQ(acceleration.count(), 3u);
         EXPECT_TRUE(acceleration.hasNext());
         acceleration.next();
         EXPECT_EQ(acceleration.mph(), 30);
@@ -253,25 +253,25 @@ public:
         EXPECT_EQ(acceleration.mph(), 100);
         EXPECT_EQ(acceleration.seconds(), 11.8f);
 
-        return m_carDecoder.size();
+        return m_carDecoder.encodedLength();
     }
 
-    virtual int decodeCarMakeModelAndActivationCode()
+    virtual std::uint64_t decodeCarMakeModelAndActivationCode()
     {
         char tmp[256];
 
-        EXPECT_EQ(m_carDecoder.getMake(tmp, sizeof(tmp)), 5);
+        EXPECT_EQ(m_carDecoder.getMake(tmp, sizeof(tmp)), 5u);
         EXPECT_EQ(std::string(tmp, 5), "Honda");
 
-        EXPECT_EQ(m_carDecoder.getModel(tmp, sizeof(tmp)), 9);
+        EXPECT_EQ(m_carDecoder.getModel(tmp, sizeof(tmp)), 9u);
         EXPECT_EQ(std::string(tmp, 9), "Civic VTi");
 
-        EXPECT_EQ(m_carDecoder.getActivationCode(tmp, sizeof(tmp)), 8);
+        EXPECT_EQ(m_carDecoder.getActivationCode(tmp, sizeof(tmp)), 8u);
         EXPECT_EQ(std::string(tmp, 8), "deadbeef");
 
-        EXPECT_EQ(m_carDecoder.size(), encodedCarSz);
+        EXPECT_EQ(m_carDecoder.encodedLength(), encodedCarSz);
 
-        return m_carDecoder.size();
+        return m_carDecoder.encodedLength();
     }
 
     MessageHeader m_hdr;
@@ -298,7 +298,7 @@ TEST_P(HeaderBoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodeOfHeader
 TEST_P(HeaderBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfHeader)
 {
     const int length = GetParam();
-    char encodeBuffer[MessageHeader::size()];
+    char encodeBuffer[MessageHeader::encodedLength()];
     std::unique_ptr<char[]> buffer(new char[length]);
 
     encodeHdr(encodeBuffer, 0, sizeof(encodeBuffer));
@@ -313,7 +313,7 @@ TEST_P(HeaderBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfHeader
 INSTANTIATE_TEST_CASE_P(
     HeaderLengthTest,
     HeaderBoundsCheckTest,
-    ::testing::Range(0, encodedHdrSz, 1));
+    ::testing::Range(0, static_cast<int>(encodedHdrSz), 1));
 
 class MessageBoundsCheckTest : public BoundsCheckTest, public ::testing::WithParamInterface<int>
 {
@@ -357,4 +357,4 @@ TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfMessa
 INSTANTIATE_TEST_CASE_P(
     MessageLengthTest,
     MessageBoundsCheckTest,
-    ::testing::Range(0, encodedCarSz, 1));
+    ::testing::Range(0, static_cast<int>(encodedCarSz), 1));

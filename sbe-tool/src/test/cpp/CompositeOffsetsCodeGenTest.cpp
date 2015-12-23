@@ -26,22 +26,22 @@ class CompositeOffsetsCodeGenTest : public testing::Test
 {
 public:
 
-    virtual int encodeHdr(char *buffer, int offset, int bufferLength)
+    virtual std::uint64_t encodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
-        hdr_.wrap(buffer, offset, 0, bufferLength)
+        m_hdr.wrap(buffer, offset, 0, bufferLength)
             .blockLength(TestMessage1::sbeBlockLength())
             .templateId(TestMessage1::sbeTemplateId())
             .schemaId(TestMessage1::sbeSchemaId())
             .version(TestMessage1::sbeSchemaVersion());
 
-        return hdr_.size();
+        return m_hdr.encodedLength();
     }
 
-    virtual int encodeMsg(char *buffer, int offset, int bufferLength)
+    virtual std::uint64_t encodeMsg(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
-        msg_.wrapForEncode(buffer, offset, bufferLength);
+        m_msg.wrapForEncode(buffer, offset, bufferLength);
 
-        TestMessage1::Entries &entries = msg_.entriesCount(2);
+        TestMessage1::Entries &entries = m_msg.entriesCount(2);
 
         entries.next()
             .tagGroup1(10)
@@ -51,18 +51,18 @@ public:
             .tagGroup1(30)
             .tagGroup2(40);
 
-        return msg_.size();
+        return m_msg.encodedLength();
     }
 
-    MessageHeader hdr_;
-    MessageHeader hdrDecoder_;
-    TestMessage1 msg_;
-    TestMessage1 msgDecoder_;
+    MessageHeader m_hdr;
+    MessageHeader m_hdrDecoder;
+    TestMessage1 m_msg;
+    TestMessage1 m_msgDecoder;
 };
 
 TEST_F(CompositeOffsetsCodeGenTest, shouldReturnCorrectValuesForMessageHeaderStaticFields)
 {
-    EXPECT_EQ(MessageHeader::size(), 12);
+    EXPECT_EQ(MessageHeader::encodedLength(), 12u);
     // only checking the block length field
     EXPECT_EQ(MessageHeader::blockLengthNullValue(), 65535);
     EXPECT_EQ(MessageHeader::blockLengthMinValue(), 0);
@@ -76,8 +76,8 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldReturnCorrectValuesForTestMessage1Stat
     EXPECT_EQ(TestMessage1::sbeSchemaId(), 15);
     EXPECT_EQ(TestMessage1::sbeSchemaVersion(), 0);
     EXPECT_EQ(std::string(TestMessage1::sbeSemanticType()), std::string(""));
-    EXPECT_EQ(TestMessage1::Entries::sbeBlockLength(), 16);
-    EXPECT_EQ(TestMessage1::Entries::sbeHeaderSize(), 8);
+    EXPECT_EQ(TestMessage1::Entries::sbeBlockLength(), 16u);
+    EXPECT_EQ(TestMessage1::Entries::sbeHeaderSize(), 8u);
 }
 
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
@@ -85,9 +85,9 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
     char buffer[2048];
     const char *bp = buffer;
 
-    int sz = encodeHdr(buffer, 0, sizeof(buffer));
+    std::uint64_t sz = encodeHdr(buffer, 0, sizeof(buffer));
 
-    EXPECT_EQ(sz, 12);
+    EXPECT_EQ(sz, 12u);
     EXPECT_EQ(*((::uint16_t *)bp), TestMessage1::sbeBlockLength());
     EXPECT_EQ(*((::uint16_t *)(bp + 4)), TestMessage1::sbeTemplateId());
     EXPECT_EQ(*((::uint16_t *)(bp + 8)), TestMessage1::sbeSchemaId());
@@ -100,20 +100,20 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeAndDecodeMessageHeaderCo
 
     encodeHdr(buffer, 0, sizeof(buffer));
 
-    hdrDecoder_.wrap(buffer, 0, 0, sizeof(buffer));
-    EXPECT_EQ(hdrDecoder_.blockLength(), TestMessage1::sbeBlockLength());
-    EXPECT_EQ(hdrDecoder_.templateId(), TestMessage1::sbeTemplateId());
-    EXPECT_EQ(hdrDecoder_.schemaId(), TestMessage1::sbeSchemaId());
-    EXPECT_EQ(hdrDecoder_.version(), TestMessage1::sbeSchemaVersion());
+    m_hdrDecoder.wrap(buffer, 0, 0, sizeof(buffer));
+    EXPECT_EQ(m_hdrDecoder.blockLength(), TestMessage1::sbeBlockLength());
+    EXPECT_EQ(m_hdrDecoder.templateId(), TestMessage1::sbeTemplateId());
+    EXPECT_EQ(m_hdrDecoder.schemaId(), TestMessage1::sbeSchemaId());
+    EXPECT_EQ(m_hdrDecoder.version(), TestMessage1::sbeSchemaVersion());
 }
 
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageCorrectly)
 {
     char buffer[2048];
     const char *bp = buffer;
-    int sz = encodeMsg(buffer, 0, sizeof(buffer));
+    std::uint64_t sz = encodeMsg(buffer, 0, sizeof(buffer));
 
-    EXPECT_EQ(sz, 40);
+    EXPECT_EQ(sz, 40u);
 
     EXPECT_EQ(*(::uint16_t *)bp, TestMessage1::Entries::sbeBlockLength());
     EXPECT_EQ(*(::uint8_t *)(bp + 7), 2u);
@@ -126,23 +126,23 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageCorrectly)
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToDecodeHeaderAndMsgCorrectly)
 {
     char buffer[2048];
-    int hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
-    int sz = encodeMsg(buffer, hdrSz, sizeof(buffer));
+    std::uint64_t hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
+    std::uint64_t sz = encodeMsg(buffer, hdrSz, sizeof(buffer));
 
-    EXPECT_EQ(hdrSz, 12);
-    EXPECT_EQ(sz, 40);
+    EXPECT_EQ(hdrSz, 12u);
+    EXPECT_EQ(sz, 40u);
 
-    hdrDecoder_.wrap(buffer, 0, 0, hdrSz + sz);
+    m_hdrDecoder.wrap(buffer, 0, 0, hdrSz + sz);
 
-    EXPECT_EQ(hdrDecoder_.blockLength(), TestMessage1::sbeBlockLength());
-    EXPECT_EQ(hdrDecoder_.templateId(), TestMessage1::sbeTemplateId());
-    EXPECT_EQ(hdrDecoder_.schemaId(), TestMessage1::sbeSchemaId());
-    EXPECT_EQ(hdrDecoder_.version(), TestMessage1::sbeSchemaVersion());
+    EXPECT_EQ(m_hdrDecoder.blockLength(), TestMessage1::sbeBlockLength());
+    EXPECT_EQ(m_hdrDecoder.templateId(), TestMessage1::sbeTemplateId());
+    EXPECT_EQ(m_hdrDecoder.schemaId(), TestMessage1::sbeSchemaId());
+    EXPECT_EQ(m_hdrDecoder.version(), TestMessage1::sbeSchemaVersion());
 
-    msgDecoder_.wrapForDecode(buffer, hdrSz, TestMessage1::sbeBlockLength(), TestMessage1::sbeSchemaVersion(), hdrSz + sz);
+    m_msgDecoder.wrapForDecode(buffer, hdrSz, TestMessage1::sbeBlockLength(), TestMessage1::sbeSchemaVersion(), hdrSz + sz);
 
-    TestMessage1::Entries entries = msgDecoder_.entries();
-    EXPECT_EQ(entries.count(), 2);
+    TestMessage1::Entries entries = m_msgDecoder.entries();
+    EXPECT_EQ(entries.count(), 2u);
 
     ASSERT_TRUE(entries.hasNext());
     entries.next();
@@ -154,6 +154,6 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToDecodeHeaderAndMsgCorrectly)
     EXPECT_EQ(entries.tagGroup1(), 30u);
     EXPECT_EQ(entries.tagGroup2(), 40u);
 
-    EXPECT_EQ(msgDecoder_.size(), 40);
+    EXPECT_EQ(m_msgDecoder.encodedLength(), 40u);
 }
 
