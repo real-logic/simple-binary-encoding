@@ -18,6 +18,7 @@
 #  include <cstdint>
 #  include <functional>
 #  include <string>
+#  include <cstring>
 #endif
 
 #include <sbe/sbe.h>
@@ -32,22 +33,22 @@ public:
 
     enum Value 
     {
-        NONE = (sbe_uint8_t)0,
-        CHAR = (sbe_uint8_t)1,
-        INT8 = (sbe_uint8_t)2,
-        INT16 = (sbe_uint8_t)3,
-        INT32 = (sbe_uint8_t)4,
-        INT64 = (sbe_uint8_t)5,
-        UINT8 = (sbe_uint8_t)6,
-        UINT16 = (sbe_uint8_t)7,
-        UINT32 = (sbe_uint8_t)8,
-        UINT64 = (sbe_uint8_t)9,
-        FLOAT = (sbe_uint8_t)10,
-        DOUBLE = (sbe_uint8_t)11,
-        NULL_VALUE = (sbe_uint8_t)255
+        NONE = (std::uint8_t)0,
+        CHAR = (std::uint8_t)1,
+        INT8 = (std::uint8_t)2,
+        INT16 = (std::uint8_t)3,
+        INT32 = (std::uint8_t)4,
+        INT64 = (std::uint8_t)5,
+        UINT8 = (std::uint8_t)6,
+        UINT16 = (std::uint8_t)7,
+        UINT32 = (std::uint8_t)8,
+        UINT64 = (std::uint8_t)9,
+        FLOAT = (std::uint8_t)10,
+        DOUBLE = (std::uint8_t)11,
+        NULL_VALUE = (std::uint8_t)255
     };
 
-    static PrimitiveTypeCodec::Value get(const sbe_uint8_t value)
+    static PrimitiveTypeCodec::Value get(const std::uint8_t value)
     {
         switch (value)
         {

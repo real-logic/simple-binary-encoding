@@ -18,6 +18,7 @@
 #  include <cstdint>
 #  include <functional>
 #  include <string>
+#  include <cstring>
 #endif
 
 #include <sbe/sbe.h>
@@ -35,53 +36,55 @@ namespace uk_co_real_logic_sbe_ir_generated {
 class TokenCodec
 {
 private:
-    char *buffer_;
-    int bufferLength_;
-    int *positionPtr_;
-    int offset_;
-    int position_;
-    int actingBlockLength_;
-    int actingVersion_;
+    char *m_buffer;
+    std::uint64_t m_bufferLength;
+    std::uint64_t *m_positionPtr;
+    std::uint64_t m_offset;
+    std::uint64_t m_position;
+    std::uint64_t m_actingBlockLength;
+    std::uint64_t m_actingVersion;
 
-    inline void reset(char *buffer, const int offset, const int bufferLength, const int actingBlockLength, const int actingVersion)
+    inline void reset(
+        char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength,
+        const std::uint64_t actingBlockLength, const std::uint64_t actingVersion)
     {
-        buffer_ = buffer;
-        offset_ = offset;
-        bufferLength_ = bufferLength;
-        actingBlockLength_ = actingBlockLength;
-        actingVersion_ = actingVersion;
-        positionPtr_ = &position_;
-        position(offset + actingBlockLength_);
+        m_buffer = buffer;
+        m_offset = offset;
+        m_bufferLength = bufferLength;
+        m_actingBlockLength = actingBlockLength;
+        m_actingVersion = actingVersion;
+        m_positionPtr = &m_position;
+        position(offset + m_actingBlockLength);
     }
 
 public:
 
-    TokenCodec(void) : buffer_(NULL), bufferLength_(0), offset_(0) {}
+    TokenCodec(void) : m_buffer(nullptr), m_bufferLength(0), m_offset(0) {}
 
-    TokenCodec(char *buffer, const int bufferLength)
+    TokenCodec(char *buffer, const std::uint64_t bufferLength)
     {
         reset(buffer, 0, bufferLength, sbeBlockLength(), sbeSchemaVersion());
     }
 
-    TokenCodec(char *buffer, const int bufferLength, const int actingBlockLength, const int actingVersion)
+    TokenCodec(char *buffer, const std::uint64_t bufferLength, const std::uint64_t actingBlockLength, const std::uint64_t actingVersion)
     {
         reset(buffer, 0, bufferLength, actingBlockLength, actingVersion);
     }
 
     TokenCodec(const TokenCodec& codec)
     {
-        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_, codec.actingVersion_);
+        reset(codec.m_buffer, codec.m_offset, codec.m_bufferLength, codec.m_actingBlockLength, codec.m_actingVersion);
     }
 
 #if __cplusplus >= 201103L
     TokenCodec(TokenCodec&& codec)
     {
-        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_, codec.actingVersion_);
+        reset(codec.m_buffer, codec.m_offset, codec.m_bufferLength, codec.m_actingBlockLength, codec.m_actingVersion);
     }
 
     TokenCodec& operator=(TokenCodec&& codec)
     {
-        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_, codec.actingVersion_);
+        reset(codec.m_buffer, codec.m_offset, codec.m_bufferLength, codec.m_actingBlockLength, codec.m_actingVersion);
         return *this;
     }
 
@@ -89,28 +92,28 @@ public:
 
     TokenCodec& operator=(const TokenCodec& codec)
     {
-        reset(codec.buffer_, codec.offset_, codec.bufferLength_, codec.actingBlockLength_, codec.actingVersion_);
+        reset(codec.m_buffer, codec.m_offset, codec.m_bufferLength, codec.m_actingBlockLength, codec.m_actingVersion);
         return *this;
     }
 
-    static const sbe_uint16_t sbeBlockLength(void)
+    static const std::uint16_t sbeBlockLength(void)
     {
-        return (sbe_uint16_t)24;
+        return (std::uint16_t)24;
     }
 
-    static const sbe_uint16_t sbeTemplateId(void)
+    static const std::uint16_t sbeTemplateId(void)
     {
-        return (sbe_uint16_t)2;
+        return (std::uint16_t)2;
     }
 
-    static const sbe_uint16_t sbeSchemaId(void)
+    static const std::uint16_t sbeSchemaId(void)
     {
-        return (sbe_uint16_t)1;
+        return (std::uint16_t)1;
     }
 
-    static const sbe_uint16_t sbeSchemaVersion(void)
+    static const std::uint16_t sbeSchemaVersion(void)
     {
-        return (sbe_uint16_t)0;
+        return (std::uint16_t)0;
     }
 
     static const char *sbeSemanticType(void)
@@ -118,65 +121,67 @@ public:
         return "";
     }
 
-    sbe_uint64_t offset(void) const
+    std::uint64_t offset(void) const
     {
-        return offset_;
+        return m_offset;
     }
 
-    TokenCodec &wrapForEncode(char *buffer, const int offset, const int bufferLength)
+    TokenCodec &wrapForEncode(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength)
     {
         reset(buffer, offset, bufferLength, sbeBlockLength(), sbeSchemaVersion());
         return *this;
     }
 
-    TokenCodec &wrapForDecode(char *buffer, const int offset, const int actingBlockLength, const int actingVersion, const int bufferLength)
+    TokenCodec &wrapForDecode(
+         char *buffer, const std::uint64_t offset, const std::uint64_t actingBlockLength,
+         const std::uint64_t actingVersion, const std::uint64_t bufferLength)
     {
         reset(buffer, offset, bufferLength, actingBlockLength, actingVersion);
         return *this;
     }
 
-    sbe_uint64_t position(void) const
+    std::uint64_t position(void) const
     {
-        return position_;
+        return m_position;
     }
 
-    void position(const int position)
+    void position(const std::uint64_t position)
     {
-        if (SBE_BOUNDS_CHECK_EXPECT((position > bufferLength_), false))
+        if (SBE_BOUNDS_CHECK_EXPECT((position > m_bufferLength), false))
         {
             throw std::runtime_error("buffer too short [E100]");
         }
-        position_ = position;
+        m_position = position;
     }
 
-    int size(void) const
+    std::uint64_t encodedLength(void) const
     {
-        return position() - offset_;
+        return position() - m_offset;
     }
 
     char *buffer(void)
     {
-        return buffer_;
+        return m_buffer;
     }
 
-    int actingVersion(void) const
+    std::uint64_t actingVersion(void) const
     {
-        return actingVersion_;
+        return m_actingVersion;
     }
 
-    static const int tokenOffsetId(void)
+    static const std::uint16_t tokenOffsetId(void)
     {
         return 11;
     }
 
-    static const int tokenOffsetSinceVersion(void)
+    static const std::uint64_t tokenOffsetSinceVersion(void)
     {
          return 0;
     }
 
     bool tokenOffsetInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= tokenOffsetSinceVersion()) ? true : false;
     }
 
 
@@ -192,45 +197,45 @@ public:
         return "";
     }
 
-    static const sbe_int32_t tokenOffsetNullValue()
+    static const std::int32_t tokenOffsetNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const sbe_int32_t tokenOffsetMinValue()
+    static const std::int32_t tokenOffsetMinValue()
     {
         return -2147483647;
     }
 
-    static const sbe_int32_t tokenOffsetMaxValue()
+    static const std::int32_t tokenOffsetMaxValue()
     {
         return 2147483647;
     }
 
-    sbe_int32_t tokenOffset(void) const
+    std::int32_t tokenOffset(void) const
     {
-        return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 0)));
+        return SBE_LITTLE_ENDIAN_ENCODE_32(*((std::int32_t *)(m_buffer + m_offset + 0)));
     }
 
-    TokenCodec &tokenOffset(const sbe_int32_t value)
+    TokenCodec &tokenOffset(const std::int32_t value)
     {
-        *((sbe_int32_t *)(buffer_ + offset_ + 0)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
+        *((std::int32_t *)(m_buffer + m_offset + 0)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;
     }
 
-    static const int tokenSizeId(void)
+    static const std::uint16_t tokenSizeId(void)
     {
         return 12;
     }
 
-    static const int tokenSizeSinceVersion(void)
+    static const std::uint64_t tokenSizeSinceVersion(void)
     {
          return 0;
     }
 
     bool tokenSizeInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= tokenSizeSinceVersion()) ? true : false;
     }
 
 
@@ -246,45 +251,45 @@ public:
         return "";
     }
 
-    static const sbe_int32_t tokenSizeNullValue()
+    static const std::int32_t tokenSizeNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const sbe_int32_t tokenSizeMinValue()
+    static const std::int32_t tokenSizeMinValue()
     {
         return -2147483647;
     }
 
-    static const sbe_int32_t tokenSizeMaxValue()
+    static const std::int32_t tokenSizeMaxValue()
     {
         return 2147483647;
     }
 
-    sbe_int32_t tokenSize(void) const
+    std::int32_t tokenSize(void) const
     {
-        return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 4)));
+        return SBE_LITTLE_ENDIAN_ENCODE_32(*((std::int32_t *)(m_buffer + m_offset + 4)));
     }
 
-    TokenCodec &tokenSize(const sbe_int32_t value)
+    TokenCodec &tokenSize(const std::int32_t value)
     {
-        *((sbe_int32_t *)(buffer_ + offset_ + 4)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
+        *((std::int32_t *)(m_buffer + m_offset + 4)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;
     }
 
-    static const int fieldIdId(void)
+    static const std::uint16_t fieldIdId(void)
     {
         return 13;
     }
 
-    static const int fieldIdSinceVersion(void)
+    static const std::uint64_t fieldIdSinceVersion(void)
     {
          return 0;
     }
 
     bool fieldIdInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= fieldIdSinceVersion()) ? true : false;
     }
 
 
@@ -300,45 +305,45 @@ public:
         return "";
     }
 
-    static const sbe_int32_t fieldIdNullValue()
+    static const std::int32_t fieldIdNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const sbe_int32_t fieldIdMinValue()
+    static const std::int32_t fieldIdMinValue()
     {
         return -2147483647;
     }
 
-    static const sbe_int32_t fieldIdMaxValue()
+    static const std::int32_t fieldIdMaxValue()
     {
         return 2147483647;
     }
 
-    sbe_int32_t fieldId(void) const
+    std::int32_t fieldId(void) const
     {
-        return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 8)));
+        return SBE_LITTLE_ENDIAN_ENCODE_32(*((std::int32_t *)(m_buffer + m_offset + 8)));
     }
 
-    TokenCodec &fieldId(const sbe_int32_t value)
+    TokenCodec &fieldId(const std::int32_t value)
     {
-        *((sbe_int32_t *)(buffer_ + offset_ + 8)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
+        *((std::int32_t *)(m_buffer + m_offset + 8)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;
     }
 
-    static const int tokenVersionId(void)
+    static const std::uint16_t tokenVersionId(void)
     {
         return 14;
     }
 
-    static const int tokenVersionSinceVersion(void)
+    static const std::uint64_t tokenVersionSinceVersion(void)
     {
          return 0;
     }
 
     bool tokenVersionInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= tokenVersionSinceVersion()) ? true : false;
     }
 
 
@@ -354,45 +359,45 @@ public:
         return "";
     }
 
-    static const sbe_int32_t tokenVersionNullValue()
+    static const std::int32_t tokenVersionNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const sbe_int32_t tokenVersionMinValue()
+    static const std::int32_t tokenVersionMinValue()
     {
         return -2147483647;
     }
 
-    static const sbe_int32_t tokenVersionMaxValue()
+    static const std::int32_t tokenVersionMaxValue()
     {
         return 2147483647;
     }
 
-    sbe_int32_t tokenVersion(void) const
+    std::int32_t tokenVersion(void) const
     {
-        return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 12)));
+        return SBE_LITTLE_ENDIAN_ENCODE_32(*((std::int32_t *)(m_buffer + m_offset + 12)));
     }
 
-    TokenCodec &tokenVersion(const sbe_int32_t value)
+    TokenCodec &tokenVersion(const std::int32_t value)
     {
-        *((sbe_int32_t *)(buffer_ + offset_ + 12)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
+        *((std::int32_t *)(m_buffer + m_offset + 12)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;
     }
 
-    static const int componentTokenCountId(void)
+    static const std::uint16_t componentTokenCountId(void)
     {
         return 15;
     }
 
-    static const int componentTokenCountSinceVersion(void)
+    static const std::uint64_t componentTokenCountSinceVersion(void)
     {
          return 0;
     }
 
     bool componentTokenCountInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= componentTokenCountSinceVersion()) ? true : false;
     }
 
 
@@ -408,45 +413,45 @@ public:
         return "";
     }
 
-    static const sbe_int32_t componentTokenCountNullValue()
+    static const std::int32_t componentTokenCountNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const sbe_int32_t componentTokenCountMinValue()
+    static const std::int32_t componentTokenCountMinValue()
     {
         return -2147483647;
     }
 
-    static const sbe_int32_t componentTokenCountMaxValue()
+    static const std::int32_t componentTokenCountMaxValue()
     {
         return 2147483647;
     }
 
-    sbe_int32_t componentTokenCount(void) const
+    std::int32_t componentTokenCount(void) const
     {
-        return SBE_LITTLE_ENDIAN_ENCODE_32(*((sbe_int32_t *)(buffer_ + offset_ + 16)));
+        return SBE_LITTLE_ENDIAN_ENCODE_32(*((std::int32_t *)(m_buffer + m_offset + 16)));
     }
 
-    TokenCodec &componentTokenCount(const sbe_int32_t value)
+    TokenCodec &componentTokenCount(const std::int32_t value)
     {
-        *((sbe_int32_t *)(buffer_ + offset_ + 16)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
+        *((std::int32_t *)(m_buffer + m_offset + 16)) = SBE_LITTLE_ENDIAN_ENCODE_32(value);
         return *this;
     }
 
-    static const int signalId(void)
+    static const std::uint16_t signalId(void)
     {
         return 16;
     }
 
-    static const int signalSinceVersion(void)
+    static const std::uint64_t signalSinceVersion(void)
     {
          return 0;
     }
 
     bool signalInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= signalSinceVersion()) ? true : false;
     }
 
 
@@ -464,28 +469,28 @@ public:
 
     SignalCodec::Value signal(void) const
     {
-        return SignalCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 20))));
+        return SignalCodec::get((*((std::uint8_t *)(m_buffer + m_offset + 20))));
     }
 
     TokenCodec &signal(const SignalCodec::Value value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 20)) = (value);
+        *((std::uint8_t *)(m_buffer + m_offset + 20)) = (value);
         return *this;
     }
 
-    static const int primitiveTypeId(void)
+    static const std::uint16_t primitiveTypeId(void)
     {
         return 17;
     }
 
-    static const int primitiveTypeSinceVersion(void)
+    static const std::uint64_t primitiveTypeSinceVersion(void)
     {
          return 0;
     }
 
     bool primitiveTypeInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= primitiveTypeSinceVersion()) ? true : false;
     }
 
 
@@ -503,28 +508,28 @@ public:
 
     PrimitiveTypeCodec::Value primitiveType(void) const
     {
-        return PrimitiveTypeCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 21))));
+        return PrimitiveTypeCodec::get((*((std::uint8_t *)(m_buffer + m_offset + 21))));
     }
 
     TokenCodec &primitiveType(const PrimitiveTypeCodec::Value value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 21)) = (value);
+        *((std::uint8_t *)(m_buffer + m_offset + 21)) = (value);
         return *this;
     }
 
-    static const int byteOrderId(void)
+    static const std::uint16_t byteOrderId(void)
     {
         return 18;
     }
 
-    static const int byteOrderSinceVersion(void)
+    static const std::uint64_t byteOrderSinceVersion(void)
     {
          return 0;
     }
 
     bool byteOrderInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= byteOrderSinceVersion()) ? true : false;
     }
 
 
@@ -542,28 +547,28 @@ public:
 
     ByteOrderCodec::Value byteOrder(void) const
     {
-        return ByteOrderCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 22))));
+        return ByteOrderCodec::get((*((std::uint8_t *)(m_buffer + m_offset + 22))));
     }
 
     TokenCodec &byteOrder(const ByteOrderCodec::Value value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 22)) = (value);
+        *((std::uint8_t *)(m_buffer + m_offset + 22)) = (value);
         return *this;
     }
 
-    static const int presenceId(void)
+    static const std::uint16_t presenceId(void)
     {
         return 19;
     }
 
-    static const int presenceSinceVersion(void)
+    static const std::uint64_t presenceSinceVersion(void)
     {
          return 0;
     }
 
     bool presenceInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= presenceSinceVersion()) ? true : false;
     }
 
 
@@ -581,12 +586,12 @@ public:
 
     PresenceCodec::Value presence(void) const
     {
-        return PresenceCodec::get((*((sbe_uint8_t *)(buffer_ + offset_ + 23))));
+        return PresenceCodec::get((*((std::uint8_t *)(m_buffer + m_offset + 23))));
     }
 
     TokenCodec &presence(const PresenceCodec::Value value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 23)) = (value);
+        *((std::uint8_t *)(m_buffer + m_offset + 23)) = (value);
         return *this;
     }
 
@@ -607,85 +612,85 @@ public:
         return "UTF-8";
     }
 
-    static const int nameSinceVersion(void)
+    static const std::uint64_t nameSinceVersion(void)
     {
          return 0;
     }
 
     bool nameInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= nameSinceVersion()) ? true : false;
     }
 
-    static const int nameId(void)
+    static const std::uint16_t nameId(void)
     {
         return 20;
     }
 
 
-    static const int nameHeaderSize()
+    static const std::uint64_t nameHeaderSize()
     {
         return 1;
     }
 
-    sbe_int64_t nameLength(void) const
+    std::uint8_t nameLength(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + position())));
+        return (*((std::uint8_t *)(m_buffer + position())));
     }
 
     const char *name(void)
     {
-         const char *fieldPtr = (buffer_ + position() + 1);
-         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         const char *fieldPtr = (m_buffer + position() + 1);
+         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
-    int getName(char *dst, const int length)
+    std::uint64_t getName(char *dst, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        int bytesToCopy = (length < dataLength) ? length : dataLength;
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)dataLength);
-        ::memcpy(dst, buffer_ + pos, bytesToCopy);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
+        std::uint64_t pos = position();
+        position(position() + dataLength);
+        std::memcpy(dst, m_buffer + pos, bytesToCopy);
         return bytesToCopy;
     }
 
-    int putName(const char *src, const int length)
+    std::uint64_t putName(const char *src, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)length);
-        ::memcpy(buffer_ + pos, src, length);
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        std::uint64_t pos = position();
+        position(position() + length);
+        std::memcpy(m_buffer + pos, src, length);
         return length;
     }
 
     const std::string getNameAsString()
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        sbe_uint64_t pos = position();
-        const std::string result(buffer_ + pos, dataLength);
-        position(position() + (sbe_uint64_t)dataLength);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t pos = position();
+        const std::string result(m_buffer + pos, dataLength);
+        position(position() + dataLength);
         return std::move(result);
     }
 
     TokenCodec &putName(const std::string& str)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)str.length());
-        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        std::uint64_t pos = position();
+        position(position() + str.length());
+        std::memcpy(m_buffer + pos, str.c_str(), str.length());
         return *this;
     }
 
@@ -706,85 +711,85 @@ public:
         return "UTF-8";
     }
 
-    static const int constValueSinceVersion(void)
+    static const std::uint64_t constValueSinceVersion(void)
     {
          return 0;
     }
 
     bool constValueInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= constValueSinceVersion()) ? true : false;
     }
 
-    static const int constValueId(void)
+    static const std::uint16_t constValueId(void)
     {
         return 21;
     }
 
 
-    static const int constValueHeaderSize()
+    static const std::uint64_t constValueHeaderSize()
     {
         return 1;
     }
 
-    sbe_int64_t constValueLength(void) const
+    std::uint8_t constValueLength(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + position())));
+        return (*((std::uint8_t *)(m_buffer + position())));
     }
 
     const char *constValue(void)
     {
-         const char *fieldPtr = (buffer_ + position() + 1);
-         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         const char *fieldPtr = (m_buffer + position() + 1);
+         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
-    int getConstValue(char *dst, const int length)
+    std::uint64_t getConstValue(char *dst, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        int bytesToCopy = (length < dataLength) ? length : dataLength;
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)dataLength);
-        ::memcpy(dst, buffer_ + pos, bytesToCopy);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
+        std::uint64_t pos = position();
+        position(position() + dataLength);
+        std::memcpy(dst, m_buffer + pos, bytesToCopy);
         return bytesToCopy;
     }
 
-    int putConstValue(const char *src, const int length)
+    std::uint64_t putConstValue(const char *src, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)length);
-        ::memcpy(buffer_ + pos, src, length);
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        std::uint64_t pos = position();
+        position(position() + length);
+        std::memcpy(m_buffer + pos, src, length);
         return length;
     }
 
     const std::string getConstValueAsString()
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        sbe_uint64_t pos = position();
-        const std::string result(buffer_ + pos, dataLength);
-        position(position() + (sbe_uint64_t)dataLength);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t pos = position();
+        const std::string result(m_buffer + pos, dataLength);
+        position(position() + dataLength);
         return std::move(result);
     }
 
     TokenCodec &putConstValue(const std::string& str)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)str.length());
-        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        std::uint64_t pos = position();
+        position(position() + str.length());
+        std::memcpy(m_buffer + pos, str.c_str(), str.length());
         return *this;
     }
 
@@ -805,85 +810,85 @@ public:
         return "UTF-8";
     }
 
-    static const int minValueSinceVersion(void)
+    static const std::uint64_t minValueSinceVersion(void)
     {
          return 0;
     }
 
     bool minValueInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= minValueSinceVersion()) ? true : false;
     }
 
-    static const int minValueId(void)
+    static const std::uint16_t minValueId(void)
     {
         return 22;
     }
 
 
-    static const int minValueHeaderSize()
+    static const std::uint64_t minValueHeaderSize()
     {
         return 1;
     }
 
-    sbe_int64_t minValueLength(void) const
+    std::uint8_t minValueLength(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + position())));
+        return (*((std::uint8_t *)(m_buffer + position())));
     }
 
     const char *minValue(void)
     {
-         const char *fieldPtr = (buffer_ + position() + 1);
-         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         const char *fieldPtr = (m_buffer + position() + 1);
+         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
-    int getMinValue(char *dst, const int length)
+    std::uint64_t getMinValue(char *dst, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        int bytesToCopy = (length < dataLength) ? length : dataLength;
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)dataLength);
-        ::memcpy(dst, buffer_ + pos, bytesToCopy);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
+        std::uint64_t pos = position();
+        position(position() + dataLength);
+        std::memcpy(dst, m_buffer + pos, bytesToCopy);
         return bytesToCopy;
     }
 
-    int putMinValue(const char *src, const int length)
+    std::uint64_t putMinValue(const char *src, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)length);
-        ::memcpy(buffer_ + pos, src, length);
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        std::uint64_t pos = position();
+        position(position() + length);
+        std::memcpy(m_buffer + pos, src, length);
         return length;
     }
 
     const std::string getMinValueAsString()
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        sbe_uint64_t pos = position();
-        const std::string result(buffer_ + pos, dataLength);
-        position(position() + (sbe_uint64_t)dataLength);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t pos = position();
+        const std::string result(m_buffer + pos, dataLength);
+        position(position() + dataLength);
         return std::move(result);
     }
 
     TokenCodec &putMinValue(const std::string& str)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)str.length());
-        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        std::uint64_t pos = position();
+        position(position() + str.length());
+        std::memcpy(m_buffer + pos, str.c_str(), str.length());
         return *this;
     }
 
@@ -904,85 +909,85 @@ public:
         return "UTF-8";
     }
 
-    static const int maxValueSinceVersion(void)
+    static const std::uint64_t maxValueSinceVersion(void)
     {
          return 0;
     }
 
     bool maxValueInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= maxValueSinceVersion()) ? true : false;
     }
 
-    static const int maxValueId(void)
+    static const std::uint16_t maxValueId(void)
     {
         return 23;
     }
 
 
-    static const int maxValueHeaderSize()
+    static const std::uint64_t maxValueHeaderSize()
     {
         return 1;
     }
 
-    sbe_int64_t maxValueLength(void) const
+    std::uint8_t maxValueLength(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + position())));
+        return (*((std::uint8_t *)(m_buffer + position())));
     }
 
     const char *maxValue(void)
     {
-         const char *fieldPtr = (buffer_ + position() + 1);
-         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         const char *fieldPtr = (m_buffer + position() + 1);
+         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
-    int getMaxValue(char *dst, const int length)
+    std::uint64_t getMaxValue(char *dst, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        int bytesToCopy = (length < dataLength) ? length : dataLength;
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)dataLength);
-        ::memcpy(dst, buffer_ + pos, bytesToCopy);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
+        std::uint64_t pos = position();
+        position(position() + dataLength);
+        std::memcpy(dst, m_buffer + pos, bytesToCopy);
         return bytesToCopy;
     }
 
-    int putMaxValue(const char *src, const int length)
+    std::uint64_t putMaxValue(const char *src, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)length);
-        ::memcpy(buffer_ + pos, src, length);
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        std::uint64_t pos = position();
+        position(position() + length);
+        std::memcpy(m_buffer + pos, src, length);
         return length;
     }
 
     const std::string getMaxValueAsString()
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        sbe_uint64_t pos = position();
-        const std::string result(buffer_ + pos, dataLength);
-        position(position() + (sbe_uint64_t)dataLength);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t pos = position();
+        const std::string result(m_buffer + pos, dataLength);
+        position(position() + dataLength);
         return std::move(result);
     }
 
     TokenCodec &putMaxValue(const std::string& str)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)str.length());
-        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        std::uint64_t pos = position();
+        position(position() + str.length());
+        std::memcpy(m_buffer + pos, str.c_str(), str.length());
         return *this;
     }
 
@@ -1003,85 +1008,85 @@ public:
         return "UTF-8";
     }
 
-    static const int nullValueSinceVersion(void)
+    static const std::uint64_t nullValueSinceVersion(void)
     {
          return 0;
     }
 
     bool nullValueInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= nullValueSinceVersion()) ? true : false;
     }
 
-    static const int nullValueId(void)
+    static const std::uint16_t nullValueId(void)
     {
         return 24;
     }
 
 
-    static const int nullValueHeaderSize()
+    static const std::uint64_t nullValueHeaderSize()
     {
         return 1;
     }
 
-    sbe_int64_t nullValueLength(void) const
+    std::uint8_t nullValueLength(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + position())));
+        return (*((std::uint8_t *)(m_buffer + position())));
     }
 
     const char *nullValue(void)
     {
-         const char *fieldPtr = (buffer_ + position() + 1);
-         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         const char *fieldPtr = (m_buffer + position() + 1);
+         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
-    int getNullValue(char *dst, const int length)
+    std::uint64_t getNullValue(char *dst, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        int bytesToCopy = (length < dataLength) ? length : dataLength;
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)dataLength);
-        ::memcpy(dst, buffer_ + pos, bytesToCopy);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
+        std::uint64_t pos = position();
+        position(position() + dataLength);
+        std::memcpy(dst, m_buffer + pos, bytesToCopy);
         return bytesToCopy;
     }
 
-    int putNullValue(const char *src, const int length)
+    std::uint64_t putNullValue(const char *src, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)length);
-        ::memcpy(buffer_ + pos, src, length);
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        std::uint64_t pos = position();
+        position(position() + length);
+        std::memcpy(m_buffer + pos, src, length);
         return length;
     }
 
     const std::string getNullValueAsString()
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        sbe_uint64_t pos = position();
-        const std::string result(buffer_ + pos, dataLength);
-        position(position() + (sbe_uint64_t)dataLength);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t pos = position();
+        const std::string result(m_buffer + pos, dataLength);
+        position(position() + dataLength);
         return std::move(result);
     }
 
     TokenCodec &putNullValue(const std::string& str)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)str.length());
-        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        std::uint64_t pos = position();
+        position(position() + str.length());
+        std::memcpy(m_buffer + pos, str.c_str(), str.length());
         return *this;
     }
 
@@ -1102,85 +1107,85 @@ public:
         return "UTF-8";
     }
 
-    static const int characterEncodingSinceVersion(void)
+    static const std::uint64_t characterEncodingSinceVersion(void)
     {
          return 0;
     }
 
     bool characterEncodingInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= characterEncodingSinceVersion()) ? true : false;
     }
 
-    static const int characterEncodingId(void)
+    static const std::uint16_t characterEncodingId(void)
     {
         return 25;
     }
 
 
-    static const int characterEncodingHeaderSize()
+    static const std::uint64_t characterEncodingHeaderSize()
     {
         return 1;
     }
 
-    sbe_int64_t characterEncodingLength(void) const
+    std::uint8_t characterEncodingLength(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + position())));
+        return (*((std::uint8_t *)(m_buffer + position())));
     }
 
     const char *characterEncoding(void)
     {
-         const char *fieldPtr = (buffer_ + position() + 1);
-         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         const char *fieldPtr = (m_buffer + position() + 1);
+         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
-    int getCharacterEncoding(char *dst, const int length)
+    std::uint64_t getCharacterEncoding(char *dst, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        int bytesToCopy = (length < dataLength) ? length : dataLength;
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)dataLength);
-        ::memcpy(dst, buffer_ + pos, bytesToCopy);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
+        std::uint64_t pos = position();
+        position(position() + dataLength);
+        std::memcpy(dst, m_buffer + pos, bytesToCopy);
         return bytesToCopy;
     }
 
-    int putCharacterEncoding(const char *src, const int length)
+    std::uint64_t putCharacterEncoding(const char *src, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)length);
-        ::memcpy(buffer_ + pos, src, length);
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        std::uint64_t pos = position();
+        position(position() + length);
+        std::memcpy(m_buffer + pos, src, length);
         return length;
     }
 
     const std::string getCharacterEncodingAsString()
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        sbe_uint64_t pos = position();
-        const std::string result(buffer_ + pos, dataLength);
-        position(position() + (sbe_uint64_t)dataLength);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t pos = position();
+        const std::string result(m_buffer + pos, dataLength);
+        position(position() + dataLength);
         return std::move(result);
     }
 
     TokenCodec &putCharacterEncoding(const std::string& str)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)str.length());
-        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        std::uint64_t pos = position();
+        position(position() + str.length());
+        std::memcpy(m_buffer + pos, str.c_str(), str.length());
         return *this;
     }
 
@@ -1201,85 +1206,85 @@ public:
         return "UTF-8";
     }
 
-    static const int epochSinceVersion(void)
+    static const std::uint64_t epochSinceVersion(void)
     {
          return 0;
     }
 
     bool epochInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= epochSinceVersion()) ? true : false;
     }
 
-    static const int epochId(void)
+    static const std::uint16_t epochId(void)
     {
         return 26;
     }
 
 
-    static const int epochHeaderSize()
+    static const std::uint64_t epochHeaderSize()
     {
         return 1;
     }
 
-    sbe_int64_t epochLength(void) const
+    std::uint8_t epochLength(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + position())));
+        return (*((std::uint8_t *)(m_buffer + position())));
     }
 
     const char *epoch(void)
     {
-         const char *fieldPtr = (buffer_ + position() + 1);
-         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         const char *fieldPtr = (m_buffer + position() + 1);
+         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
-    int getEpoch(char *dst, const int length)
+    std::uint64_t getEpoch(char *dst, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        int bytesToCopy = (length < dataLength) ? length : dataLength;
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)dataLength);
-        ::memcpy(dst, buffer_ + pos, bytesToCopy);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
+        std::uint64_t pos = position();
+        position(position() + dataLength);
+        std::memcpy(dst, m_buffer + pos, bytesToCopy);
         return bytesToCopy;
     }
 
-    int putEpoch(const char *src, const int length)
+    std::uint64_t putEpoch(const char *src, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)length);
-        ::memcpy(buffer_ + pos, src, length);
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        std::uint64_t pos = position();
+        position(position() + length);
+        std::memcpy(m_buffer + pos, src, length);
         return length;
     }
 
     const std::string getEpochAsString()
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        sbe_uint64_t pos = position();
-        const std::string result(buffer_ + pos, dataLength);
-        position(position() + (sbe_uint64_t)dataLength);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t pos = position();
+        const std::string result(m_buffer + pos, dataLength);
+        position(position() + dataLength);
         return std::move(result);
     }
 
     TokenCodec &putEpoch(const std::string& str)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)str.length());
-        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        std::uint64_t pos = position();
+        position(position() + str.length());
+        std::memcpy(m_buffer + pos, str.c_str(), str.length());
         return *this;
     }
 
@@ -1300,85 +1305,85 @@ public:
         return "UTF-8";
     }
 
-    static const int timeUnitSinceVersion(void)
+    static const std::uint64_t timeUnitSinceVersion(void)
     {
          return 0;
     }
 
     bool timeUnitInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= timeUnitSinceVersion()) ? true : false;
     }
 
-    static const int timeUnitId(void)
+    static const std::uint16_t timeUnitId(void)
     {
         return 27;
     }
 
 
-    static const int timeUnitHeaderSize()
+    static const std::uint64_t timeUnitHeaderSize()
     {
         return 1;
     }
 
-    sbe_int64_t timeUnitLength(void) const
+    std::uint8_t timeUnitLength(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + position())));
+        return (*((std::uint8_t *)(m_buffer + position())));
     }
 
     const char *timeUnit(void)
     {
-         const char *fieldPtr = (buffer_ + position() + 1);
-         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         const char *fieldPtr = (m_buffer + position() + 1);
+         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
-    int getTimeUnit(char *dst, const int length)
+    std::uint64_t getTimeUnit(char *dst, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        int bytesToCopy = (length < dataLength) ? length : dataLength;
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)dataLength);
-        ::memcpy(dst, buffer_ + pos, bytesToCopy);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
+        std::uint64_t pos = position();
+        position(position() + dataLength);
+        std::memcpy(dst, m_buffer + pos, bytesToCopy);
         return bytesToCopy;
     }
 
-    int putTimeUnit(const char *src, const int length)
+    std::uint64_t putTimeUnit(const char *src, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)length);
-        ::memcpy(buffer_ + pos, src, length);
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        std::uint64_t pos = position();
+        position(position() + length);
+        std::memcpy(m_buffer + pos, src, length);
         return length;
     }
 
     const std::string getTimeUnitAsString()
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        sbe_uint64_t pos = position();
-        const std::string result(buffer_ + pos, dataLength);
-        position(position() + (sbe_uint64_t)dataLength);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t pos = position();
+        const std::string result(m_buffer + pos, dataLength);
+        position(position() + dataLength);
         return std::move(result);
     }
 
     TokenCodec &putTimeUnit(const std::string& str)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)str.length());
-        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        std::uint64_t pos = position();
+        position(position() + str.length());
+        std::memcpy(m_buffer + pos, str.c_str(), str.length());
         return *this;
     }
 
@@ -1399,85 +1404,85 @@ public:
         return "UTF-8";
     }
 
-    static const int semanticTypeSinceVersion(void)
+    static const std::uint64_t semanticTypeSinceVersion(void)
     {
          return 0;
     }
 
     bool semanticTypeInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= semanticTypeSinceVersion()) ? true : false;
     }
 
-    static const int semanticTypeId(void)
+    static const std::uint16_t semanticTypeId(void)
     {
         return 28;
     }
 
 
-    static const int semanticTypeHeaderSize()
+    static const std::uint64_t semanticTypeHeaderSize()
     {
         return 1;
     }
 
-    sbe_int64_t semanticTypeLength(void) const
+    std::uint8_t semanticTypeLength(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + position())));
+        return (*((std::uint8_t *)(m_buffer + position())));
     }
 
     const char *semanticType(void)
     {
-         const char *fieldPtr = (buffer_ + position() + 1);
-         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         const char *fieldPtr = (m_buffer + position() + 1);
+         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
-    int getSemanticType(char *dst, const int length)
+    std::uint64_t getSemanticType(char *dst, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        int bytesToCopy = (length < dataLength) ? length : dataLength;
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)dataLength);
-        ::memcpy(dst, buffer_ + pos, bytesToCopy);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
+        std::uint64_t pos = position();
+        position(position() + dataLength);
+        std::memcpy(dst, m_buffer + pos, bytesToCopy);
         return bytesToCopy;
     }
 
-    int putSemanticType(const char *src, const int length)
+    std::uint64_t putSemanticType(const char *src, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)length);
-        ::memcpy(buffer_ + pos, src, length);
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        std::uint64_t pos = position();
+        position(position() + length);
+        std::memcpy(m_buffer + pos, src, length);
         return length;
     }
 
     const std::string getSemanticTypeAsString()
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        sbe_uint64_t pos = position();
-        const std::string result(buffer_ + pos, dataLength);
-        position(position() + (sbe_uint64_t)dataLength);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t pos = position();
+        const std::string result(m_buffer + pos, dataLength);
+        position(position() + dataLength);
         return std::move(result);
     }
 
     TokenCodec &putSemanticType(const std::string& str)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)str.length());
-        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        std::uint64_t pos = position();
+        position(position() + str.length());
+        std::memcpy(m_buffer + pos, str.c_str(), str.length());
         return *this;
     }
 
@@ -1498,85 +1503,85 @@ public:
         return "UTF-8";
     }
 
-    static const int descriptionSinceVersion(void)
+    static const std::uint64_t descriptionSinceVersion(void)
     {
          return 0;
     }
 
     bool descriptionInActingVersion(void)
     {
-        return (actingVersion_ >= 0) ? true : false;
+        return (m_actingVersion >= descriptionSinceVersion()) ? true : false;
     }
 
-    static const int descriptionId(void)
+    static const std::uint16_t descriptionId(void)
     {
         return 29;
     }
 
 
-    static const int descriptionHeaderSize()
+    static const std::uint64_t descriptionHeaderSize()
     {
         return 1;
     }
 
-    sbe_int64_t descriptionLength(void) const
+    std::uint8_t descriptionLength(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + position())));
+        return (*((std::uint8_t *)(m_buffer + position())));
     }
 
     const char *description(void)
     {
-         const char *fieldPtr = (buffer_ + position() + 1);
-         position(position() + 1 + *((sbe_uint8_t *)(buffer_ + position())));
+         const char *fieldPtr = (m_buffer + position() + 1);
+         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
-    int getDescription(char *dst, const int length)
+    std::uint64_t getDescription(char *dst, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        int bytesToCopy = (length < dataLength) ? length : dataLength;
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)dataLength);
-        ::memcpy(dst, buffer_ + pos, bytesToCopy);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
+        std::uint64_t pos = position();
+        position(position() + dataLength);
+        std::memcpy(dst, m_buffer + pos, bytesToCopy);
         return bytesToCopy;
     }
 
-    int putDescription(const char *src, const int length)
+    std::uint64_t putDescription(const char *src, const std::uint64_t length)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)length);
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)length);
-        ::memcpy(buffer_ + pos, src, length);
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        std::uint64_t pos = position();
+        position(position() + length);
+        std::memcpy(m_buffer + pos, src, length);
         return length;
     }
 
     const std::string getDescriptionAsString()
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        sbe_int64_t dataLength = (*((sbe_uint8_t *)(buffer_ + lengthPosition)));
-        sbe_uint64_t pos = position();
-        const std::string result(buffer_ + pos, dataLength);
-        position(position() + (sbe_uint64_t)dataLength);
+        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t pos = position();
+        const std::string result(m_buffer + pos, dataLength);
+        position(position() + dataLength);
         return std::move(result);
     }
 
     TokenCodec &putDescription(const std::string& str)
     {
-        sbe_uint64_t lengthOfLengthField = 1;
-        sbe_uint64_t lengthPosition = position();
+        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((sbe_uint8_t *)(buffer_ + lengthPosition)) = ((sbe_uint8_t)str.length());
-        sbe_uint64_t pos = position();
-        position(position() + (sbe_uint64_t)str.length());
-        ::memcpy(buffer_ + pos, str.c_str(), str.length());
+        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        std::uint64_t pos = position();
+        position(position() + str.length());
+        std::memcpy(m_buffer + pos, str.c_str(), str.length());
         return *this;
     }
 };

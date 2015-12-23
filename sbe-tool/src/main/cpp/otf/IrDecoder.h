@@ -55,17 +55,22 @@ public:
     {
     }
 
-    int decode(char *buffer, int length)
+    int decode(char *buffer, std::uint64_t length)
     {
+        m_length = length;
         return decodeIr();
     }
 
     int decode(const char *filename)
     {
-        if ((m_length = getFileSize(filename)) < 0)
+        long fileSize = getFileSize(filename);
+
+        if (fileSize < 0)
         {
             return -1;
         }
+
+        m_length = static_cast<std::uint64_t>(fileSize);
         std::cout << "IR Filename " << filename << " length " << m_length << std::endl;
         if (m_length == 0)
         {
@@ -124,10 +129,10 @@ protected:
         return fileStat.st_size;
     }
 
-    static int readFileIntoBuffer(char *buffer, const char *filename, int length)
+    static int readFileIntoBuffer(char *buffer, const char *filename, std::uint64_t length)
     {
         FILE *fptr = ::fopen(filename, "rb");
-        int remaining = length;
+        std::uint64_t remaining = length;
 
         if (fptr == NULL)
         {
@@ -154,13 +159,13 @@ private:
     std::shared_ptr<std::vector<Token>> m_headerTokens;
     std::vector<std::shared_ptr<std::vector<Token>>> m_messages;
     std::unique_ptr<char[]> m_buffer;
-    long m_length;
+    std::uint64_t m_length;
     int m_id;
 
     int decodeIr()
     {
         FrameCodec frame;
-        int offset = 0, tmpLen = 0;
+        std::uint64_t offset = 0, tmpLen = 0;
         char tmp[256];
 
         frame.wrapForDecode(m_buffer.get(), offset, frame.sbeBlockLength(), frame.sbeSchemaVersion(), m_length);
@@ -177,11 +182,11 @@ private:
         frame.getNamespaceName(tmp, sizeof(tmp));
         frame.getSemanticVersion(tmp, sizeof(tmp));
 
-        offset += frame.size();
+        offset += frame.encodedLength();
 
         m_headerTokens.reset(new std::vector<Token>());
 
-        int headerLength = readHeader(offset);
+        std::uint64_t headerLength = readHeader(offset);
 
         m_id = frame.irId();
 
@@ -195,7 +200,7 @@ private:
         return 0;
     }
 
-    int decodeAndAddToken(std::shared_ptr<std::vector<Token>> tokens, int offset)
+    std::uint64_t decodeAndAddToken(std::shared_ptr<std::vector<Token>> tokens, std::uint64_t offset)
     {
         TokenCodec tokenCodec;
         tokenCodec.wrapForDecode(m_buffer.get(), offset, tokenCodec.sbeBlockLength(), tokenCodec.sbeSchemaVersion(), m_length);
@@ -210,7 +215,7 @@ private:
         std::int32_t version = tokenCodec.tokenVersion();
         std::int32_t componentTokenCount = tokenCodec.componentTokenCount();
         char tmpBuffer[256];
-        int tmpLen = 0;
+        std::uint64_t tmpLen = 0;
 
         tmpLen = tokenCodec.getName(tmpBuffer, sizeof(tmpBuffer));
         std::string name(tmpBuffer, static_cast<std::size_t>(tmpLen));
@@ -251,12 +256,12 @@ private:
 
         tokens->push_back(token);
 
-        return tokenCodec.size();
+        return tokenCodec.encodedLength();
     }
 
-    int readHeader(int offset)
+    std::uint64_t readHeader(std::uint64_t offset)
     {
-        int size = 0;
+        std::uint64_t size = 0;
 
         while (offset + size < m_length)
         {
@@ -280,9 +285,9 @@ private:
         return size;
     }
 
-    int readMessage(int offset)
+    std::uint64_t readMessage(std::uint64_t offset)
     {
-        int size = 0;
+        std::uint64_t size = 0;
 
         std::shared_ptr<std::vector<Token>> tokensForMessage(new std::vector<Token>());
 
