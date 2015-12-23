@@ -1047,7 +1047,7 @@ public class CppGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    int get%1$s(char *dst, const std::uint64_t length) const\n" +
+            indent + "    std::uint64_t get%1$s(char *dst, const std::uint64_t length) const\n" +
             indent + "    {\n" +
             indent + "        if (length > %2$d)\n" +
             indent + "        {\n" +
@@ -1167,10 +1167,10 @@ public class CppGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    int get%1$s(char *dst, const std::uint64_t length) const\n" +
+            indent + "    std::uint64_t get%1$s(char *dst, const std::uint64_t length) const\n" +
             indent + "    {\n" +
             indent + "        static sbe_uint8_t %2$sValues[] = {%3$s};\n" +
-            indent + "        int bytesToCopy = (length < (int)sizeof(%2$sValues)) ? length : (int)sizeof(%2$sValues);\n\n" +
+            indent + "        std::uint64_t bytesToCopy = (length < sizeof(%2$sValues)) ? length : sizeof(%2$sValues);\n\n" +
             indent + "        std::memcpy(dst, %2$sValues, bytesToCopy);\n" +
             indent + "        return bytesToCopy;\n" +
             indent + "    }\n",
