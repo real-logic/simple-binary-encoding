@@ -30,17 +30,17 @@ public class CppUtil
 
     static
     {
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.CHAR, "sbe_char_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT8, "sbe_int8_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT16, "sbe_int16_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT32, "sbe_int32_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT64, "sbe_int64_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT8, "sbe_uint8_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT16, "sbe_uint16_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT32, "sbe_uint32_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT64, "sbe_uint64_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.FLOAT, "sbe_float_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.DOUBLE, "sbe_double_t");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.CHAR, "char");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT8, "std::int8_t");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT16, "std::int16_t");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT32, "std::int32_t");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT64, "std::int64_t");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT8, "std::uint8_t");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT16, "std::uint16_t");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT32, "std::uint32_t");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT64, "std::uint64_t");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.FLOAT, "float");
+        typeNameByPrimitiveTypeMap.put(PrimitiveType.DOUBLE, "double");
     }
 
     /**
@@ -49,7 +49,7 @@ public class CppUtil
      * @param primitiveType to map.
      * @return the name of the Java primitive that most closely maps.
      */
-    public static String cpp98TypeName(final PrimitiveType primitiveType)
+    public static String cppTypeName(final PrimitiveType primitiveType)
     {
         return typeNameByPrimitiveTypeMap.get(primitiveType);
     }
