@@ -18,6 +18,7 @@
 #  include <cstdint>
 #  include <functional>
 #  include <string>
+#  include <cstring>
 #endif
 
 #include <sbe/sbe.h>
@@ -32,13 +33,13 @@ public:
 
     enum Value 
     {
-        SBE_REQUIRED = (sbe_uint8_t)0,
-        SBE_OPTIONAL = (sbe_uint8_t)1,
-        SBE_CONSTANT = (sbe_uint8_t)2,
-        NULL_VALUE = (sbe_uint8_t)255
+        SBE_REQUIRED = (std::uint8_t)0,
+        SBE_OPTIONAL = (std::uint8_t)1,
+        SBE_CONSTANT = (std::uint8_t)2,
+        NULL_VALUE = (std::uint8_t)255
     };
 
-    static PresenceCodec::Value get(const sbe_uint8_t value)
+    static PresenceCodec::Value get(const std::uint8_t value)
     {
         switch (value)
         {

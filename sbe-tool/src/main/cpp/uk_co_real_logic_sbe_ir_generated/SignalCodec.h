@@ -18,6 +18,7 @@
 #  include <cstdint>
 #  include <functional>
 #  include <string>
+#  include <cstring>
 #endif
 
 #include <sbe/sbe.h>
@@ -32,27 +33,27 @@ public:
 
     enum Value 
     {
-        BEGIN_MESSAGE = (sbe_uint8_t)1,
-        END_MESSAGE = (sbe_uint8_t)2,
-        BEGIN_COMPOSITE = (sbe_uint8_t)3,
-        END_COMPOSITE = (sbe_uint8_t)4,
-        BEGIN_FIELD = (sbe_uint8_t)5,
-        END_FIELD = (sbe_uint8_t)6,
-        BEGIN_GROUP = (sbe_uint8_t)7,
-        END_GROUP = (sbe_uint8_t)8,
-        BEGIN_ENUM = (sbe_uint8_t)9,
-        VALID_VALUE = (sbe_uint8_t)10,
-        END_ENUM = (sbe_uint8_t)11,
-        BEGIN_SET = (sbe_uint8_t)12,
-        CHOICE = (sbe_uint8_t)13,
-        END_SET = (sbe_uint8_t)14,
-        BEGIN_VAR_DATA = (sbe_uint8_t)15,
-        END_VAR_DATA = (sbe_uint8_t)16,
-        ENCODING = (sbe_uint8_t)17,
-        NULL_VALUE = (sbe_uint8_t)255
+        BEGIN_MESSAGE = (std::uint8_t)1,
+        END_MESSAGE = (std::uint8_t)2,
+        BEGIN_COMPOSITE = (std::uint8_t)3,
+        END_COMPOSITE = (std::uint8_t)4,
+        BEGIN_FIELD = (std::uint8_t)5,
+        END_FIELD = (std::uint8_t)6,
+        BEGIN_GROUP = (std::uint8_t)7,
+        END_GROUP = (std::uint8_t)8,
+        BEGIN_ENUM = (std::uint8_t)9,
+        VALID_VALUE = (std::uint8_t)10,
+        END_ENUM = (std::uint8_t)11,
+        BEGIN_SET = (std::uint8_t)12,
+        CHOICE = (std::uint8_t)13,
+        END_SET = (std::uint8_t)14,
+        BEGIN_VAR_DATA = (std::uint8_t)15,
+        END_VAR_DATA = (std::uint8_t)16,
+        ENCODING = (std::uint8_t)17,
+        NULL_VALUE = (std::uint8_t)255
     };
 
-    static SignalCodec::Value get(const sbe_uint8_t value)
+    static SignalCodec::Value get(const std::uint8_t value)
     {
         switch (value)
         {

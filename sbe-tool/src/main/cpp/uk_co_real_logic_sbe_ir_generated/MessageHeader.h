@@ -18,6 +18,7 @@
 #  include <cstdint>
 #  include <functional>
 #  include <string>
+#  include <cstring>
 #endif
 
 #include <sbe/sbe.h>
@@ -29,41 +30,41 @@ namespace uk_co_real_logic_sbe_ir_generated {
 class MessageHeader
 {
 private:
-    char *buffer_;
-    int offset_;
-    int actingVersion_;
+    char *m_buffer;
+    std::uint64_t m_offset;
+    std::uint64_t m_actingVersion;
 
-    inline void reset(char *buffer, const int offset, const int bufferLength, const int actingVersion)
+    inline void reset(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength, const std::uint64_t actingVersion)
     {
-        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - 8)), false))
+        if (SBE_BOUNDS_CHECK_EXPECT(((offset + 8) > bufferLength), false))
         {
             throw std::runtime_error("buffer too short for flyweight [E107]");
         }
-        buffer_ = buffer;
-        offset_ = offset;
-        actingVersion_ = actingVersion;
+        m_buffer = buffer;
+        m_offset = offset;
+        m_actingVersion = actingVersion;
     }
 
 public:
-    MessageHeader(void) : buffer_(NULL), offset_(0) {}
+    MessageHeader(void) : m_buffer(nullptr), m_offset(0) {}
 
-    MessageHeader(char *buffer, const int bufferLength, const int actingVersion)
+    MessageHeader(char *buffer, const std::uint64_t bufferLength, const std::uint64_t actingVersion)
     {
         reset(buffer, 0, bufferLength, actingVersion);
     }
 
     MessageHeader(const MessageHeader& codec) :
-        buffer_(codec.buffer_), offset_(codec.offset_), actingVersion_(codec.actingVersion_) {}
+        m_buffer(codec.m_buffer), m_offset(codec.m_offset), m_actingVersion(codec.m_actingVersion) {}
 
 #if __cplusplus >= 201103L
     MessageHeader(MessageHeader&& codec) :
-        buffer_(codec.buffer_), offset_(codec.offset_), actingVersion_(codec.actingVersion_) {}
+        m_buffer(codec.m_buffer), m_offset(codec.m_offset), m_actingVersion(codec.m_actingVersion) {}
 
     MessageHeader& operator=(MessageHeader&& codec)
     {
-        buffer_ = codec.buffer_;
-        offset_ = codec.offset_;
-        actingVersion_ = codec.actingVersion_;
+        m_buffer = codec.m_buffer;
+        m_offset = codec.m_offset;
+        m_actingVersion = codec.m_actingVersion;
         return *this;
     }
 
@@ -71,125 +72,125 @@ public:
 
     MessageHeader& operator=(const MessageHeader& codec)
     {
-        buffer_ = codec.buffer_;
-        offset_ = codec.offset_;
-        actingVersion_ = codec.actingVersion_;
+        m_buffer = codec.m_buffer;
+        m_offset = codec.m_offset;
+        m_actingVersion = codec.m_actingVersion;
         return *this;
     }
 
-    MessageHeader &wrap(char *buffer, const int offset, const int actingVersion, const int bufferLength)
+    MessageHeader &wrap(char *buffer, const std::uint64_t offset, const std::uint64_t actingVersion, const std::uint64_t bufferLength)
     {
         reset(buffer, offset, bufferLength, actingVersion);
         return *this;
     }
 
-    static const int size(void)
+    static const std::uint64_t encodedLength(void)
     {
         return 8;
     }
 
 
-    static const sbe_uint16_t blockLengthNullValue()
+    static const std::uint16_t blockLengthNullValue()
     {
         return SBE_NULLVALUE_UINT16;
     }
 
-    static const sbe_uint16_t blockLengthMinValue()
+    static const std::uint16_t blockLengthMinValue()
     {
-        return (sbe_uint16_t)0;
+        return (std::uint16_t)0;
     }
 
-    static const sbe_uint16_t blockLengthMaxValue()
+    static const std::uint16_t blockLengthMaxValue()
     {
-        return (sbe_uint16_t)65534;
+        return (std::uint16_t)65534;
     }
 
-    sbe_uint16_t blockLength(void) const
+    std::uint16_t blockLength(void) const
     {
-        return SBE_LITTLE_ENDIAN_ENCODE_16(*((sbe_uint16_t *)(buffer_ + offset_ + 0)));
+        return SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + m_offset + 0)));
     }
 
-    MessageHeader &blockLength(const sbe_uint16_t value)
+    MessageHeader &blockLength(const std::uint16_t value)
     {
-        *((sbe_uint16_t *)(buffer_ + offset_ + 0)) = SBE_LITTLE_ENDIAN_ENCODE_16(value);
+        *((std::uint16_t *)(m_buffer + m_offset + 0)) = SBE_LITTLE_ENDIAN_ENCODE_16(value);
         return *this;
     }
 
-    static const sbe_uint16_t templateIdNullValue()
+    static const std::uint16_t templateIdNullValue()
     {
         return SBE_NULLVALUE_UINT16;
     }
 
-    static const sbe_uint16_t templateIdMinValue()
+    static const std::uint16_t templateIdMinValue()
     {
-        return (sbe_uint16_t)0;
+        return (std::uint16_t)0;
     }
 
-    static const sbe_uint16_t templateIdMaxValue()
+    static const std::uint16_t templateIdMaxValue()
     {
-        return (sbe_uint16_t)65534;
+        return (std::uint16_t)65534;
     }
 
-    sbe_uint16_t templateId(void) const
+    std::uint16_t templateId(void) const
     {
-        return SBE_LITTLE_ENDIAN_ENCODE_16(*((sbe_uint16_t *)(buffer_ + offset_ + 2)));
+        return SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + m_offset + 2)));
     }
 
-    MessageHeader &templateId(const sbe_uint16_t value)
+    MessageHeader &templateId(const std::uint16_t value)
     {
-        *((sbe_uint16_t *)(buffer_ + offset_ + 2)) = SBE_LITTLE_ENDIAN_ENCODE_16(value);
+        *((std::uint16_t *)(m_buffer + m_offset + 2)) = SBE_LITTLE_ENDIAN_ENCODE_16(value);
         return *this;
     }
 
-    static const sbe_uint16_t schemaIdNullValue()
+    static const std::uint16_t schemaIdNullValue()
     {
         return SBE_NULLVALUE_UINT16;
     }
 
-    static const sbe_uint16_t schemaIdMinValue()
+    static const std::uint16_t schemaIdMinValue()
     {
-        return (sbe_uint16_t)0;
+        return (std::uint16_t)0;
     }
 
-    static const sbe_uint16_t schemaIdMaxValue()
+    static const std::uint16_t schemaIdMaxValue()
     {
-        return (sbe_uint16_t)65534;
+        return (std::uint16_t)65534;
     }
 
-    sbe_uint16_t schemaId(void) const
+    std::uint16_t schemaId(void) const
     {
-        return SBE_LITTLE_ENDIAN_ENCODE_16(*((sbe_uint16_t *)(buffer_ + offset_ + 4)));
+        return SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + m_offset + 4)));
     }
 
-    MessageHeader &schemaId(const sbe_uint16_t value)
+    MessageHeader &schemaId(const std::uint16_t value)
     {
-        *((sbe_uint16_t *)(buffer_ + offset_ + 4)) = SBE_LITTLE_ENDIAN_ENCODE_16(value);
+        *((std::uint16_t *)(m_buffer + m_offset + 4)) = SBE_LITTLE_ENDIAN_ENCODE_16(value);
         return *this;
     }
 
-    static const sbe_uint16_t versionNullValue()
+    static const std::uint16_t versionNullValue()
     {
         return SBE_NULLVALUE_UINT16;
     }
 
-    static const sbe_uint16_t versionMinValue()
+    static const std::uint16_t versionMinValue()
     {
-        return (sbe_uint16_t)0;
+        return (std::uint16_t)0;
     }
 
-    static const sbe_uint16_t versionMaxValue()
+    static const std::uint16_t versionMaxValue()
     {
-        return (sbe_uint16_t)65534;
+        return (std::uint16_t)65534;
     }
 
-    sbe_uint16_t version(void) const
+    std::uint16_t version(void) const
     {
-        return SBE_LITTLE_ENDIAN_ENCODE_16(*((sbe_uint16_t *)(buffer_ + offset_ + 6)));
+        return SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + m_offset + 6)));
     }
 
-    MessageHeader &version(const sbe_uint16_t value)
+    MessageHeader &version(const std::uint16_t value)
     {
-        *((sbe_uint16_t *)(buffer_ + offset_ + 6)) = SBE_LITTLE_ENDIAN_ENCODE_16(value);
+        *((std::uint16_t *)(m_buffer + m_offset + 6)) = SBE_LITTLE_ENDIAN_ENCODE_16(value);
         return *this;
     }
 };

@@ -18,6 +18,7 @@
 #  include <cstdint>
 #  include <functional>
 #  include <string>
+#  include <cstring>
 #endif
 
 #include <sbe/sbe.h>
@@ -29,41 +30,41 @@ namespace uk_co_real_logic_sbe_ir_generated {
 class VarDataEncoding
 {
 private:
-    char *buffer_;
-    int offset_;
-    int actingVersion_;
+    char *m_buffer;
+    std::uint64_t m_offset;
+    std::uint64_t m_actingVersion;
 
-    inline void reset(char *buffer, const int offset, const int bufferLength, const int actingVersion)
+    inline void reset(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength, const std::uint64_t actingVersion)
     {
-        if (SBE_BOUNDS_CHECK_EXPECT((offset > (bufferLength - -1)), false))
+        if (SBE_BOUNDS_CHECK_EXPECT(((offset + -1) > bufferLength), false))
         {
             throw std::runtime_error("buffer too short for flyweight [E107]");
         }
-        buffer_ = buffer;
-        offset_ = offset;
-        actingVersion_ = actingVersion;
+        m_buffer = buffer;
+        m_offset = offset;
+        m_actingVersion = actingVersion;
     }
 
 public:
-    VarDataEncoding(void) : buffer_(NULL), offset_(0) {}
+    VarDataEncoding(void) : m_buffer(nullptr), m_offset(0) {}
 
-    VarDataEncoding(char *buffer, const int bufferLength, const int actingVersion)
+    VarDataEncoding(char *buffer, const std::uint64_t bufferLength, const std::uint64_t actingVersion)
     {
         reset(buffer, 0, bufferLength, actingVersion);
     }
 
     VarDataEncoding(const VarDataEncoding& codec) :
-        buffer_(codec.buffer_), offset_(codec.offset_), actingVersion_(codec.actingVersion_) {}
+        m_buffer(codec.m_buffer), m_offset(codec.m_offset), m_actingVersion(codec.m_actingVersion) {}
 
 #if __cplusplus >= 201103L
     VarDataEncoding(VarDataEncoding&& codec) :
-        buffer_(codec.buffer_), offset_(codec.offset_), actingVersion_(codec.actingVersion_) {}
+        m_buffer(codec.m_buffer), m_offset(codec.m_offset), m_actingVersion(codec.m_actingVersion) {}
 
     VarDataEncoding& operator=(VarDataEncoding&& codec)
     {
-        buffer_ = codec.buffer_;
-        offset_ = codec.offset_;
-        actingVersion_ = codec.actingVersion_;
+        m_buffer = codec.m_buffer;
+        m_offset = codec.m_offset;
+        m_actingVersion = codec.m_actingVersion;
         return *this;
     }
 
@@ -71,63 +72,63 @@ public:
 
     VarDataEncoding& operator=(const VarDataEncoding& codec)
     {
-        buffer_ = codec.buffer_;
-        offset_ = codec.offset_;
-        actingVersion_ = codec.actingVersion_;
+        m_buffer = codec.m_buffer;
+        m_offset = codec.m_offset;
+        m_actingVersion = codec.m_actingVersion;
         return *this;
     }
 
-    VarDataEncoding &wrap(char *buffer, const int offset, const int actingVersion, const int bufferLength)
+    VarDataEncoding &wrap(char *buffer, const std::uint64_t offset, const std::uint64_t actingVersion, const std::uint64_t bufferLength)
     {
         reset(buffer, offset, bufferLength, actingVersion);
         return *this;
     }
 
-    static const int size(void)
+    static const std::uint64_t encodedLength(void)
     {
         return -1;
     }
 
 
-    static const sbe_uint8_t lengthNullValue()
+    static const std::uint8_t lengthNullValue()
     {
         return SBE_NULLVALUE_UINT8;
     }
 
-    static const sbe_uint8_t lengthMinValue()
+    static const std::uint8_t lengthMinValue()
     {
-        return (sbe_uint8_t)0;
+        return (std::uint8_t)0;
     }
 
-    static const sbe_uint8_t lengthMaxValue()
+    static const std::uint8_t lengthMaxValue()
     {
-        return (sbe_uint8_t)254;
+        return (std::uint8_t)254;
     }
 
-    sbe_uint8_t length(void) const
+    std::uint8_t length(void) const
     {
-        return (*((sbe_uint8_t *)(buffer_ + offset_ + 0)));
+        return (*((std::uint8_t *)(m_buffer + m_offset + 0)));
     }
 
-    VarDataEncoding &length(const sbe_uint8_t value)
+    VarDataEncoding &length(const std::uint8_t value)
     {
-        *((sbe_uint8_t *)(buffer_ + offset_ + 0)) = (value);
+        *((std::uint8_t *)(m_buffer + m_offset + 0)) = (value);
         return *this;
     }
 
-    static const sbe_uint8_t varDataNullValue()
+    static const std::uint8_t varDataNullValue()
     {
         return SBE_NULLVALUE_UINT8;
     }
 
-    static const sbe_uint8_t varDataMinValue()
+    static const std::uint8_t varDataMinValue()
     {
-        return (sbe_uint8_t)0;
+        return (std::uint8_t)0;
     }
 
-    static const sbe_uint8_t varDataMaxValue()
+    static const std::uint8_t varDataMaxValue()
     {
-        return (sbe_uint8_t)254;
+        return (std::uint8_t)254;
     }
 };
 }
