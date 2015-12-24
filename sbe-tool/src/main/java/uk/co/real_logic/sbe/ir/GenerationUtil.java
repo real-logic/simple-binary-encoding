@@ -122,4 +122,25 @@ public final class GenerationUtil
             .map(mapper)
             .collect(joining());
     }
+
+    public static int findEndSignal(final List<Token> tokens, final int startIndex, final Signal signal, final String name)
+    {
+        int result = tokens.size() - 1;
+
+        for (int i = startIndex, endIndex = tokens.size() - 1; i < endIndex; i++)
+        {
+            final Token token = tokens.get(i);
+
+            if (signal == token.signal() && name.equals(token.name()))
+            {
+                result = i;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+
+
 }

@@ -84,7 +84,7 @@ public class Ir
     {
         Verify.notNull(messageTokens, "messageTokens");
 
-        captureTypes(messageTokens);
+        captureTypes(messageTokens, 0, messageTokens.size() - 1);
         compressConstantEnums(messageTokens);
         countComponentTokens(messageTokens);
 
@@ -256,28 +256,32 @@ public class Ir
         return namespaceName == null ? packageName : namespaceName;
     }
 
-    private void captureTypes(final List<Token> tokens)
+    private void captureTypes(final List<Token> tokens, final int beginIndex, final int endIndex)
     {
-        for (int i = 0, size = tokens.size(); i < size; i++)
+        for (int i = beginIndex; i <= endIndex; i++)
         {
-            switch (tokens.get(i).signal())
+            final Token token = tokens.get(i);
+            final int typeBeginIndex = i;
+
+            switch (token.signal())
             {
                 case BEGIN_COMPOSITE:
-                    i = captureType(tokens, i, Signal.END_COMPOSITE);
+                    i = captureType(tokens, i, Signal.END_COMPOSITE, token.name());
+                    captureTypes(tokens, typeBeginIndex + 1, i - 1);  // search within for enum, set, and nested
                     break;
 
                 case BEGIN_ENUM:
-                    i = captureType(tokens, i, Signal.END_ENUM);
+                    i = captureType(tokens, i, Signal.END_ENUM, token.name());
                     break;
 
                 case BEGIN_SET:
-                    i = captureType(tokens, i, Signal.END_SET);
+                    i = captureType(tokens, i, Signal.END_SET, token.name());
                     break;
             }
         }
     }
 
-    private int captureType(final List<Token> tokens, int index, final Signal endSignal)
+    private int captureType(final List<Token> tokens, int index, final Signal endSignal, final String endName)
     {
         final List<Token> typeTokens = new ArrayList<>();
 
@@ -288,7 +292,7 @@ public class Ir
             token = tokens.get(++index);
             typeTokens.add(token);
         }
-        while (endSignal != token.signal());
+        while (endSignal != token.signal() || !endName.equals(token.name()));
 
         typesByNameMap.put(tokens.get(index).name(), typeTokens);
 

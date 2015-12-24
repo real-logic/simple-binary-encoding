@@ -45,9 +45,9 @@ public class CompositeElementsTest
         final SetType setType = (SetType)elements.get(2);
         final CompositeType nestedCompositeType = (CompositeType)elements.get(3);
 
-        assertThat(enumType.name(), is("ENUM"));
+        assertThat(enumType.name(), is("enumOne"));
         assertThat(encodedDataType.name(), is("zeroth"));
-        assertThat(setType.name(), is("SET"));
+        assertThat(setType.name(), is("setOne"));
         assertThat(nestedCompositeType.name(), is("inner"));
 
         final List<Type> nestedElements = nestedCompositeType.getTypeList();

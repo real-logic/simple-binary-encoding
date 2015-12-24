@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<messageSchema package="composite.elements"
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/RC3"
+               package="composite.elements"
                id="3"
+               version="0"
                semanticVersion="5.2"
                description="Unit Test"
                byteOrder="littleEndian">
@@ -13,12 +15,12 @@
         </composite>
 
         <composite name="outer">
-            <enum name="ENUM" description="enum as uint8" encodingType="uint8" semanticType="int">
+            <enum name="enumOne" description="enum as uint8" encodingType="uint8" semanticType="int">
                 <validValue name="Value1">1</validValue>
                 <validValue name="Value10">10</validValue>
             </enum>
             <type name="zeroth" primitiveType="uint8"/>
-            <set name="SET" description="set as uint32" encodingType="uint32" semanticType="int">
+            <set name="setOne" description="set as uint32" encodingType="uint32" semanticType="int">
                 <choice name="Bit0">0</choice>
                 <choice name="Bit16">16</choice>
                 <choice name="Bit26">26</choice>
@@ -28,45 +30,9 @@
                 <type name="second" primitiveType="int64"/>
             </composite>
         </composite>
-
-        <composite name="outerWithOffsets">
-            <enum name="ENUM" description="enum as uint8" encodingType="uint8" offset="2" semanticType="int">
-                <validValue name="Value1">1</validValue>
-                <validValue name="Value10">10</validValue>
-            </enum>
-            <type name="zeroth" primitiveType="uint8"/>
-            <set name="SET" description="set as uint32" encodingType="uint32" offset= "8" semanticType="int">
-                <choice name="Bit0">0</choice>
-                <choice name="Bit16">16</choice>
-                <choice name="Bit26">26</choice>
-            </set>
-            <composite name="inner" offset="16">
-                <type name="first" primitiveType="int64"/>
-                <type name="second" primitiveType="int64"/>
-            </composite>
-        </composite>
-
-        <enum name="booleanEnum" encodingType="uint8" semanticType="Boolean">
-            <validValue name="F">0</validValue>
-            <validValue name="T">1</validValue>
-        </enum>
-
-        <composite name="futuresPrice">
-            <type name="mantissa" primitiveType="int64" />
-            <type name="exponent" primitiveType="int8" />
-            <ref name="isSettlement" type="booleanEnum" offset="10" />
-        </composite>
     </types>
 
-    <message name="Msg" id="1">
+    <sbe:message name="Msg" id="1">
         <field name="structure" id="42" type="outer"/>
-    </message>
-
-    <message name="Msg2" id="2">
-        <field name="structure" id="43" type="outerWithOffsets"/>
-    </message>
-
-    <message name="Msg3" id="3">
-        <field name="structure" id="43" type="futuresPrice"/>
-    </message>
-</messageSchema>
+    </sbe:message>
+</sbe:messageSchema>

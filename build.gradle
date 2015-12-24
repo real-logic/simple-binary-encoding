@@ -200,7 +200,7 @@ project(':sbe-tool') {
             'sbe.target.language': 'Java',
             'sbe.validation.stop.on.error': 'true',
             'sbe.validation.xsd': validationXsdPath)
-        args = ['src/test/resources/json-printer-test-schema.xml']
+        args = ['src/test/resources/json-printer-test-schema.xml', 'src/test/resources/composite-elements-schema.xml']
     }
 
     task sourcesJar(type: Jar) {

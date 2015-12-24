@@ -56,7 +56,7 @@ public class CompositeElementsIrTest
         assertThat(outerCompositeToken.name(), is("outer"));
 
         assertThat(enumToken.signal(), is(Signal.BEGIN_ENUM));
-        assertThat(enumToken.name(), is("ENUM"));
+        assertThat(enumToken.name(), is("enumOne"));
         assertThat(enumToken.encodedLength(), is(1));
         assertThat(enumToken.encoding().primitiveType(), is(PrimitiveType.UINT8));
         assertThat(enumToken.offset(), is(0));
@@ -66,7 +66,7 @@ public class CompositeElementsIrTest
         assertThat(zerothToken.encoding().primitiveType(), is(PrimitiveType.UINT8));
 
         assertThat(setToken.signal(), is(Signal.BEGIN_SET));
-        assertThat(setToken.name(), is("SET"));
+        assertThat(setToken.name(), is("setOne"));
         assertThat(setToken.encodedLength(), is(4));
         assertThat(setToken.encoding().primitiveType(), is(PrimitiveType.UINT32));
         assertThat(setToken.offset(), is(2));
@@ -90,10 +90,10 @@ public class CompositeElementsIrTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForCompositeElementsWithOffsetsSchema()
+    public void shouldGenerateCorrectIrForCompositeElementsWithOffsetsSchemaRc4()
         throws Exception
     {
-        final MessageSchema schema = parse(getLocalResource("composite-elements-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(getLocalResource("composite-elements-schema-rc4.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final List<Token> tokens = ir.getMessage(2);
@@ -121,7 +121,7 @@ public class CompositeElementsIrTest
         assertThat(zerothToken.encoding().primitiveType(), is(PrimitiveType.UINT8));
 
         assertThat(setToken.signal(), is(Signal.BEGIN_SET));
-        assertThat(setToken.name(), is("SET"));
+        assertThat(setToken.name(), is("setOne"));
         assertThat(setToken.encodedLength(), is(4));
         assertThat(setToken.encoding().primitiveType(), is(PrimitiveType.UINT32));
         assertThat(setToken.offset(), is(8));
@@ -148,7 +148,7 @@ public class CompositeElementsIrTest
     public void shouldGenerateCorrectIrForCompositeWithRefSchema()
         throws Exception
     {
-        final MessageSchema schema = parse(getLocalResource("composite-elements-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(getLocalResource("composite-elements-schema-rc4.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final List<Token> tokens = ir.getMessage(3);
@@ -180,6 +180,5 @@ public class CompositeElementsIrTest
 
         assertThat(endCompositeToken.signal(), is(Signal.END_COMPOSITE));
         assertThat(endCompositeToken.name(), is("futuresPrice"));
-
     }
 }

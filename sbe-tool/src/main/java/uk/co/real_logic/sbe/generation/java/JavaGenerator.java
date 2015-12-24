@@ -933,14 +933,36 @@ public class JavaGenerator implements CodeGenerator
         final String decoderName = decoderName(compositeName);
         final String encoderName = encoderName(compositeName);
 
-        final List<Token> messageBody = getMessageBody(tokens);
-
         try (final Writer out = outputManager.createOutput(decoderName))
         {
             generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fullReadOnlyBuffer);
 
-            out.append(concatEncodingTokens(
-                messageBody, (tok) -> generatePrimitiveDecoder(tok.name(), tok, BASE_INDENT)));
+            for (int i = 1, end = tokens.size() - 1; i < end; i++)
+            {
+                final Token encodingToken = tokens.get(i);
+                final String propertyName = formatPropertyName(encodingToken.name());
+                final String typeName = formatClassName(decoderName(encodingToken.name()));
+
+                switch (encodingToken.signal())
+                {
+                    case ENCODING:
+                        out.append(generatePrimitiveDecoder(encodingToken.name(), encodingToken, BASE_INDENT));
+                        break;
+
+                    case BEGIN_ENUM:
+                        out.append(generateEnumDecoder(encodingToken, propertyName, encodingToken, BASE_INDENT));
+                        break;
+
+                    case BEGIN_SET:
+                        out.append(generateBitSetProperty(propertyName, encodingToken, BASE_INDENT, typeName));
+                        break;
+
+                    case BEGIN_COMPOSITE:
+                        out.append(generateCompositeProperty(propertyName, encodingToken, BASE_INDENT, typeName));
+                        i = findEndSignal(tokens, i, Signal.END_COMPOSITE, encodingToken.name());
+                        break;
+                }
+            }
 
             out.append("}\n");
         }
@@ -949,8 +971,32 @@ public class JavaGenerator implements CodeGenerator
         {
             generateFixedFlyweightHeader(token, encoderName, out, mutableBuffer, fullMutableBuffer);
 
-            out.append(concatEncodingTokens(
-                messageBody, (tok) -> generatePrimitiveEncoder(encoderName, tok.name(), tok, BASE_INDENT)));
+            for (int i = 1, end = tokens.size() - 1; i < end; i++)
+            {
+                final Token encodingToken = tokens.get(i);
+                final String propertyName = formatPropertyName(encodingToken.name());
+                final String typeName = formatClassName(encoderName(encodingToken.name()));
+
+                switch (encodingToken.signal())
+                {
+                    case ENCODING:
+                        out.append(generatePrimitiveEncoder(encoderName, encodingToken.name(), encodingToken, BASE_INDENT));
+                        break;
+
+                    case BEGIN_ENUM:
+                        out.append(generateEnumEncoder(encoderName, propertyName, encodingToken, BASE_INDENT));
+                        break;
+
+                    case BEGIN_SET:
+                        out.append(generateBitSetProperty(propertyName, encodingToken, BASE_INDENT, typeName));
+                        break;
+
+                    case BEGIN_COMPOSITE:
+                        out.append(generateCompositeProperty(propertyName, encodingToken, BASE_INDENT, typeName));
+                        i = findEndSignal(tokens, i, Signal.END_COMPOSITE, encodingToken.name());
+                        break;
+                }
+            }
 
             out.append("}\n");
         }
@@ -1976,7 +2022,7 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private Object generateBitSetProperty(
+    private CharSequence generateBitSetProperty(
         final String propertyName, final Token token, final String indent, final String bitSetName)
     {
         final StringBuilder sb = new StringBuilder();
