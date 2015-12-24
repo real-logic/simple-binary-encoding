@@ -84,4 +84,55 @@ public class CompositeElementsIrTest
         assertThat(secondToken.offset(), is(8));
         assertThat(secondToken.encoding().primitiveType(), is(PrimitiveType.INT64));
     }
+
+    @Test
+    public void shouldGenerateCorrectIrForCompositeElementsWithOffsetsSchema()
+        throws Exception
+    {
+        final MessageSchema schema = parse(getLocalResource("composite-elements-schema.xml"), ParserOptions.DEFAULT);
+        final IrGenerator irg = new IrGenerator();
+        final Ir ir = irg.generate(schema);
+        final List<Token> tokens = ir.getMessage(2);
+
+        final Token outerCompositeToken = tokens.get(2);
+        final Token enumToken = tokens.get(3);
+        final Token zerothToken = tokens.get(7);
+        final Token setToken = tokens.get(8);
+        final Token innerCompositeToken = tokens.get(13);
+        final Token firstToken = tokens.get(14);
+        final Token secondToken = tokens.get(15);
+
+        assertThat(outerCompositeToken.signal(), is(Signal.BEGIN_COMPOSITE));
+        assertThat(outerCompositeToken.name(), is("outerWithOffsets"));
+        assertThat(outerCompositeToken.encodedLength(), is(32));
+
+        assertThat(enumToken.signal(), is(Signal.BEGIN_ENUM));
+        assertThat(enumToken.encodedLength(), is(1));
+        assertThat(enumToken.encoding().primitiveType(), is(PrimitiveType.UINT8));
+        assertThat(enumToken.offset(), is(2));
+
+        assertThat(zerothToken.signal(), is(Signal.ENCODING));
+        assertThat(zerothToken.offset(), is(3));
+        assertThat(zerothToken.encoding().primitiveType(), is(PrimitiveType.UINT8));
+
+        assertThat(setToken.signal(), is(Signal.BEGIN_SET));
+        assertThat(setToken.name(), is("SET"));
+        assertThat(setToken.encodedLength(), is(4));
+        assertThat(setToken.encoding().primitiveType(), is(PrimitiveType.UINT32));
+        assertThat(setToken.offset(), is(8));
+
+        assertThat(innerCompositeToken.signal(), is(Signal.BEGIN_COMPOSITE));
+        assertThat(innerCompositeToken.name(), is("inner"));
+        assertThat(innerCompositeToken.offset(), is(16));
+
+        assertThat(firstToken.signal(), is(Signal.ENCODING));
+        assertThat(firstToken.name(), is("first"));
+        assertThat(firstToken.offset(), is(0));
+        assertThat(firstToken.encoding().primitiveType(), is(PrimitiveType.INT64));
+
+        assertThat(secondToken.signal(), is(Signal.ENCODING));
+        assertThat(secondToken.name(), is("second"));
+        assertThat(secondToken.offset(), is(8));
+        assertThat(secondToken.encoding().primitiveType(), is(PrimitiveType.INT64));
+    }
 }

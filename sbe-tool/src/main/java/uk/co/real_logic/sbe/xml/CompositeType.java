@@ -41,6 +41,7 @@ public class CompositeType extends Type
 
     private final Map<String, Type> containedTypeByNameMap = new LinkedHashMap<>();
     private final int sinceVersion;
+    private final int offsetAttribute;
 
     /**
      * Construct a new compositeType from XML Schema.
@@ -53,6 +54,7 @@ public class CompositeType extends Type
         super(node);
 
         sinceVersion = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "sinceVersion", "0"));
+        offsetAttribute = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "offset", "-1"));
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final NodeList list = (NodeList)xPath.compile(SUB_TYPES_EXP).evaluate(node, NODESET);
 
@@ -335,6 +337,6 @@ public class CompositeType extends Type
 
     public int offsetAttribute()
     {
-        return -1;
+        return offsetAttribute;
     }
 }
