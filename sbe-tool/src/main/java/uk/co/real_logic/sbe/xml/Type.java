@@ -30,6 +30,8 @@ public abstract class Type
     private final String description;
     private final String semanticType;
 
+    private int offsetAttribute;
+
     /**
      * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
      *
@@ -41,6 +43,7 @@ public abstract class Type
         presence = Presence.get(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
         semanticType = getAttributeValueOrNull(node, "semanticType");
+        offsetAttribute = Integer.parseInt(getAttributeValue(node, "offset", "-1"));
     }
 
     /**
@@ -57,6 +60,7 @@ public abstract class Type
         this.presence = presence;
         this.description = description;
         this.semanticType = semanticType;
+        this.offsetAttribute = -1;
     }
 
     /**
@@ -110,5 +114,23 @@ public abstract class Type
 
     public abstract boolean isVariableLength();
 
-    public abstract int offsetAttribute();
+    /**
+     * Return the offset attribute of the {@link Type} from the schema
+     *
+     * @return the offset attribute value or -1 to indicate not set by the schema
+     */
+    public int offsetAttribute()
+    {
+        return offsetAttribute;
+    }
+
+    /**
+     * Set the offset attribute of the {@link Type} from the schema
+     *
+     * @param offsetAttribute to set
+     */
+    public void offsetAttribute(final int offsetAttribute)
+    {
+        this.offsetAttribute = offsetAttribute;
+    }
 }

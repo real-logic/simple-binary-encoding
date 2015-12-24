@@ -42,7 +42,6 @@ public class EnumType extends Type
 {
     public static final String ENUM_TYPE = "enum";
 
-    private final int offsetAttribute;
     private final PrimitiveType encodingType;
     private final PrimitiveValue nullValue;
     private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new LinkedHashMap<>();
@@ -57,8 +56,6 @@ public class EnumType extends Type
     public EnumType(final Node node) throws XPathExpressionException
     {
         super(node);
-
-        offsetAttribute = Integer.parseInt(getAttributeValue(node, "offset", "-1"));
 
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final String encodingTypeStr = getAttributeValue(node, "encodingType");
@@ -211,11 +208,6 @@ public class EnumType extends Type
     public boolean isVariableLength()
     {
         return false;
-    }
-
-    public int offsetAttribute()
-    {
-        return offsetAttribute;
     }
 
     /**

@@ -37,7 +37,6 @@ public class SetType extends Type
 {
     public static final String SET_TYPE = "set";
 
-    private final int offsetAttribute;
     private final PrimitiveType encodingType;
     private final Map<PrimitiveValue, Choice> choiceByPrimitiveValueMap = new LinkedHashMap<>();
     private final Map<String, Choice> choiceByNameMap = new LinkedHashMap<>();
@@ -52,8 +51,6 @@ public class SetType extends Type
     public SetType(final Node node) throws XPathExpressionException, IllegalArgumentException
     {
         super(node);
-
-        offsetAttribute = Integer.parseInt(getAttributeValue(node, "offset", "-1"));
 
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final String encodingTypeStr = getAttributeValue(node, "encodingType");
@@ -169,11 +166,6 @@ public class SetType extends Type
     public boolean isVariableLength()
     {
         return false;
-    }
-
-    public int offsetAttribute()
-    {
-        return offsetAttribute;
     }
 
     /** Holder for valid values for EnumType */

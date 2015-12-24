@@ -47,6 +47,7 @@ public class CompositeElementsIrTest
         final Token innerCompositeToken = tokens.get(13);
         final Token firstToken = tokens.get(14);
         final Token secondToken = tokens.get(15);
+        final Token endOuterCompositeToken = tokens.get(17);
 
         assertThat(fieldToken.signal(), is(Signal.BEGIN_FIELD));
         assertThat(fieldToken.name(), is("structure"));
@@ -83,6 +84,9 @@ public class CompositeElementsIrTest
         assertThat(secondToken.name(), is("second"));
         assertThat(secondToken.offset(), is(8));
         assertThat(secondToken.encoding().primitiveType(), is(PrimitiveType.INT64));
+
+        assertThat(endOuterCompositeToken.signal(), is(Signal.END_COMPOSITE));
+        assertThat(endOuterCompositeToken.name(), is("outer"));
     }
 
     @Test
@@ -101,6 +105,7 @@ public class CompositeElementsIrTest
         final Token innerCompositeToken = tokens.get(13);
         final Token firstToken = tokens.get(14);
         final Token secondToken = tokens.get(15);
+        final Token endOuterCompositeToken = tokens.get(17);
 
         assertThat(outerCompositeToken.signal(), is(Signal.BEGIN_COMPOSITE));
         assertThat(outerCompositeToken.name(), is("outerWithOffsets"));
@@ -134,5 +139,47 @@ public class CompositeElementsIrTest
         assertThat(secondToken.name(), is("second"));
         assertThat(secondToken.offset(), is(8));
         assertThat(secondToken.encoding().primitiveType(), is(PrimitiveType.INT64));
+
+        assertThat(endOuterCompositeToken.signal(), is(Signal.END_COMPOSITE));
+        assertThat(endOuterCompositeToken.name(), is("outerWithOffsets"));
+    }
+
+    @Test
+    public void shouldGenerateCorrectIrForCompositeWithRefSchema()
+        throws Exception
+    {
+        final MessageSchema schema = parse(getLocalResource("composite-elements-schema.xml"), ParserOptions.DEFAULT);
+        final IrGenerator irg = new IrGenerator();
+        final Ir ir = irg.generate(schema);
+        final List<Token> tokens = ir.getMessage(3);
+
+        final Token beginCompositeToken = tokens.get(2);
+        final Token mantissaToken = tokens.get(3);
+        final Token exponentToken = tokens.get(4);
+        final Token enumToken = tokens.get(5);
+        final Token endCompositeToken = tokens.get(9);
+
+        assertThat(beginCompositeToken.signal(), is(Signal.BEGIN_COMPOSITE));
+        assertThat(beginCompositeToken.name(), is("futuresPrice"));
+        assertThat(beginCompositeToken.encodedLength(), is(11));
+
+        assertThat(mantissaToken.signal(), is(Signal.ENCODING));
+        assertThat(mantissaToken.name(), is("mantissa"));
+        assertThat(mantissaToken.offset(), is(0));
+        assertThat(mantissaToken.encoding().primitiveType(), is(PrimitiveType.INT64));
+
+        assertThat(exponentToken.signal(), is(Signal.ENCODING));
+        assertThat(exponentToken.name(), is("exponent"));
+        assertThat(exponentToken.offset(), is(8));
+        assertThat(exponentToken.encoding().primitiveType(), is(PrimitiveType.INT8));
+
+        assertThat(enumToken.signal(), is(Signal.BEGIN_ENUM));
+        assertThat(enumToken.encodedLength(), is(1));
+        assertThat(enumToken.encoding().primitiveType(), is(PrimitiveType.UINT8));
+        assertThat(enumToken.offset(), is(10));
+
+        assertThat(endCompositeToken.signal(), is(Signal.END_COMPOSITE));
+        assertThat(endCompositeToken.name(), is("futuresPrice"));
+
     }
 }

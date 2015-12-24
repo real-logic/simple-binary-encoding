@@ -21,6 +21,7 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.ir.Token;
 
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ public class CompositeType extends Type
 
     private final Map<String, Type> containedTypeByNameMap = new LinkedHashMap<>();
     private final int sinceVersion;
-    private final int offsetAttribute;
 
     /**
      * Construct a new compositeType from XML Schema.
@@ -54,60 +54,15 @@ public class CompositeType extends Type
         super(node);
 
         sinceVersion = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "sinceVersion", "0"));
-        offsetAttribute = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "offset", "-1"));
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final NodeList list = (NodeList)xPath.compile(SUB_TYPES_EXP).evaluate(node, NODESET);
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             final Node subTypeNode = list.item(i);
-            final String nodeName = subTypeNode.getNodeName();
+            final String subTypeName = XmlSchemaParser.getAttributeValue(subTypeNode, "name");
 
-            switch (nodeName)
-            {
-                case "type":
-                    final EncodedDataType encodedDataType = new EncodedDataType(subTypeNode);
-
-                    if (containedTypeByNameMap.put(encodedDataType.name(), encodedDataType) != null)
-                    {
-                        XmlSchemaParser.handleError(node, "composite already contains type named: " + encodedDataType.name());
-                    }
-                    break;
-
-                case "enum":
-                    final EnumType enumType = new EnumType(subTypeNode);
-
-                    if (containedTypeByNameMap.put(enumType.name(), enumType) != null)
-                    {
-                        XmlSchemaParser.handleError(node, "composite already contains type named: " + enumType.name());
-                    }
-                    break;
-
-                case "set":
-                    final SetType setType = new SetType(subTypeNode);
-
-                    if (containedTypeByNameMap.put(setType.name(), setType) != null)
-                    {
-                        XmlSchemaParser.handleError(node, "composite already contains type named: " + setType.name());
-                    }
-                    break;
-
-                case "composite":
-                    final CompositeType compositeType = new CompositeType(subTypeNode);
-
-                    if (containedTypeByNameMap.put(compositeType.name(), compositeType) != null)
-                    {
-                        XmlSchemaParser.handleError(node, "composite already contains type named: " + compositeType.name());
-                    }
-                    break;
-
-                case "ref":
-                    XmlSchemaParser.handleError(node, "\"ref\" not yet supported");
-                    break;
-
-                default:
-                    throw new IllegalStateException("Unknown node name: " + nodeName);
-            }
+            addType(subTypeNode, subTypeName);
         }
 
         checkForValidOffsets(node);
@@ -335,8 +290,68 @@ public class CompositeType extends Type
         return false;
     }
 
-    public int offsetAttribute()
+    private Type addType(final Node subTypeNode, final String subTypeName) throws XPathExpressionException
     {
-        return offsetAttribute;
+        final String nodeName = subTypeNode.getNodeName();
+        Type type = null;
+
+        switch (nodeName)
+        {
+            case "type":
+                type = addType(subTypeNode, subTypeName, new EncodedDataType(subTypeNode));
+                break;
+
+            case "enum":
+                type = addType(subTypeNode, subTypeName, new EnumType(subTypeNode));
+                break;
+
+            case "set":
+                type = addType(subTypeNode, subTypeName, new SetType(subTypeNode));
+                break;
+
+            case "composite":
+                type = addType(subTypeNode, subTypeName, new CompositeType(subTypeNode));
+                break;
+
+            case "ref":
+                final XPath xPath = XPathFactory.newInstance().newXPath();
+
+                final String refName = XmlSchemaParser.getAttributeValue(subTypeNode, "name");
+                final String refType = XmlSchemaParser.getAttributeValue(subTypeNode, "type");
+                final int refOffset = Integer.parseInt(XmlSchemaParser.getAttributeValue(subTypeNode, "offset", "-1"));
+                final Node refTypeNode = (Node)xPath.compile(
+                    String.format("/messageSchema/types/*[@name=\'%s\']", refType))
+                    .evaluate(subTypeNode.getOwnerDocument(), XPathConstants.NODE);
+
+                if (refTypeNode == null)
+                {
+                    XmlSchemaParser.handleError(subTypeNode, "ref type not found: " + refType);
+                }
+                else
+                {
+                    type = addType(refTypeNode, refName);
+
+                    if (-1 != refOffset)
+                    {
+                        type.offsetAttribute(refOffset);
+                    }
+                }
+                break;
+
+            default:
+                throw new IllegalStateException("Unknown node name: " + nodeName);
+        }
+
+        return type;
+    }
+
+    private Type addType(final Node subTypeNode, final String name, final Type type)
+    {
+        if (containedTypeByNameMap.put(name, type) != null)
+        {
+            XmlSchemaParser.handleError(subTypeNode, "composite already contains type named: " + name);
+        }
+
+        return type;
     }
 }
