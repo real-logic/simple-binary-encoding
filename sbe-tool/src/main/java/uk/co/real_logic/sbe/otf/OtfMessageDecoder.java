@@ -196,8 +196,35 @@ public class OtfMessageDecoder
 
         for (int i = tokenIdx + 1; i < toIndex; i++)
         {
-            final Token token = tokens.get(i);
-            listener.onEncoding(token, buffer, bufferIdx + token.offset(), token, actingVersion);
+            final Token typeToken = tokens.get(i);
+            final int nextFieldIdx = i + typeToken.componentTokenCount();
+
+            final int offset = typeToken.offset();
+
+            switch (typeToken.signal())
+            {
+                case BEGIN_COMPOSITE:
+                    decodeComposite(
+                        fieldToken, buffer, bufferIdx + offset, tokens, i, nextFieldIdx - 1, actingVersion, listener);
+                    i = nextFieldIdx - 1;
+                    break;
+
+                case BEGIN_ENUM:
+                    listener.onEnum(
+                        fieldToken, buffer, bufferIdx + offset, tokens, i, nextFieldIdx - 1, actingVersion);
+                    i = nextFieldIdx - 1;
+                    break;
+
+                case BEGIN_SET:
+                    listener.onBitSet(
+                        fieldToken, buffer, bufferIdx + offset, tokens, i, nextFieldIdx - 1, actingVersion);
+                    i = nextFieldIdx - 1;
+                    break;
+
+                case ENCODING:
+                    listener.onEncoding(typeToken, buffer, bufferIdx + offset, typeToken, actingVersion);
+                    break;
+            }
         }
 
         listener.onEndComposite(fieldToken, tokens, tokenIdx, toIndex);

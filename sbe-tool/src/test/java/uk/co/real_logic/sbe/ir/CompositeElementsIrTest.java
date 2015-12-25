@@ -54,12 +54,14 @@ public class CompositeElementsIrTest
 
         assertThat(outerCompositeToken.signal(), is(Signal.BEGIN_COMPOSITE));
         assertThat(outerCompositeToken.name(), is("outer"));
+        assertThat(outerCompositeToken.componentTokenCount(), is(16));
 
         assertThat(enumToken.signal(), is(Signal.BEGIN_ENUM));
         assertThat(enumToken.name(), is("enumOne"));
         assertThat(enumToken.encodedLength(), is(1));
         assertThat(enumToken.encoding().primitiveType(), is(PrimitiveType.UINT8));
         assertThat(enumToken.offset(), is(0));
+        assertThat(enumToken.componentTokenCount(), is(4));
 
         assertThat(zerothToken.signal(), is(Signal.ENCODING));
         assertThat(zerothToken.offset(), is(1));
@@ -70,10 +72,12 @@ public class CompositeElementsIrTest
         assertThat(setToken.encodedLength(), is(4));
         assertThat(setToken.encoding().primitiveType(), is(PrimitiveType.UINT32));
         assertThat(setToken.offset(), is(2));
+        assertThat(setToken.componentTokenCount(), is(5));
 
         assertThat(innerCompositeToken.signal(), is(Signal.BEGIN_COMPOSITE));
         assertThat(innerCompositeToken.name(), is("inner"));
         assertThat(innerCompositeToken.offset(), is(6));
+        assertThat(innerCompositeToken.componentTokenCount(), is(4));
 
         assertThat(firstToken.signal(), is(Signal.ENCODING));
         assertThat(firstToken.name(), is("first"));

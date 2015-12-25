@@ -19,8 +19,8 @@ import composite.elements.EnumOne;
 import composite.elements.MessageHeaderEncoder;
 import composite.elements.MsgDecoder;
 import composite.elements.MsgEncoder;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.InOrder;
 import uk.co.real_logic.agrona.BitUtil;
 import uk.co.real_logic.agrona.DirectBuffer;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
@@ -28,6 +28,9 @@ import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.IrDecoder;
 import uk.co.real_logic.sbe.ir.IrEncoder;
 import uk.co.real_logic.sbe.ir.generated.MessageHeaderDecoder;
+import uk.co.real_logic.sbe.otf.OtfHeaderDecoder;
+import uk.co.real_logic.sbe.otf.OtfMessageDecoder;
+import uk.co.real_logic.sbe.otf.TokenListener;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
@@ -40,6 +43,10 @@ import java.nio.ByteBuffer;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 public class CompositeElementsGenerationTest
 {
@@ -114,9 +121,8 @@ public class CompositeElementsGenerationTest
         assertThat(msgDecoder.encodedLength(), is(22));
     }
 
-    @Ignore
     @Test
-    public void shouldOtfDecode() throws Exception
+    public void shouldOtfDecodeCorrectly() throws Exception
     {
         final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocateDirect(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);
@@ -124,9 +130,38 @@ public class CompositeElementsGenerationTest
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
+
         encodedSchemaBuffer.flip();
         final Ir ir = decodeIr(encodedSchemaBuffer);
 
+        final DirectBuffer decodeBuffer = new UnsafeBuffer(encodedMsgBuffer);
+        final OtfHeaderDecoder otfHeaderDecoder = new OtfHeaderDecoder(ir.headerStructure());
+
+        assertThat(otfHeaderDecoder.getBlockLength(decodeBuffer, 0), is(22));
+        assertThat(otfHeaderDecoder.getSchemaId(decodeBuffer, 0), is(3));
+        assertThat(otfHeaderDecoder.getTemplateId(decodeBuffer, 0), is(1));
+        assertThat(otfHeaderDecoder.getSchemaVersion(decodeBuffer, 0), is(0));
+
+        final TokenListener mockTokenListener = mock(TokenListener.class);
+
+        OtfMessageDecoder.decode(
+            decodeBuffer,
+            otfHeaderDecoder.encodedLength(),
+            MSG_ENCODER.sbeSchemaVersion(),
+            MSG_ENCODER.sbeBlockLength(),
+            ir.getMessage(MSG_ENCODER.sbeTemplateId()),
+            mockTokenListener);
+
+        final InOrder inOrder = inOrder(mockTokenListener);
+        inOrder.verify(mockTokenListener).onBeginComposite(any(), any(), eq(2), eq(17));
+        inOrder.verify(mockTokenListener).onEnum(any(), eq(decodeBuffer), eq(8), any(), eq(3), eq(6), eq(0));
+        inOrder.verify(mockTokenListener).onEncoding(any(), eq(decodeBuffer), eq(9), any(), eq(0));
+        inOrder.verify(mockTokenListener).onBitSet(any(), eq(decodeBuffer), eq(10), any(), eq(8), eq(12), eq(0));
+        inOrder.verify(mockTokenListener).onBeginComposite(any(), any(), eq(13), eq(16));
+        inOrder.verify(mockTokenListener).onEncoding(any(), eq(decodeBuffer), eq(14), any(), eq(0));
+        inOrder.verify(mockTokenListener).onEncoding(any(), eq(decodeBuffer), eq(22), any(), eq(0));
+        inOrder.verify(mockTokenListener).onEndComposite(any(), any(), eq(13), eq(16));
+        inOrder.verify(mockTokenListener).onEndComposite(any(), any(), eq(2), eq(17));
     }
 
     private static int encodeTestMessage(final ByteBuffer buffer)
@@ -142,8 +177,6 @@ public class CompositeElementsGenerationTest
             .version(MSG_ENCODER.sbeSchemaVersion());
 
         bufferOffset += MESSAGE_HEADER.encodedLength();
-
-        final int srcOffset = 0;
 
         MSG_ENCODER.wrap(directBuffer, bufferOffset).structure()
             .enumOne(EnumOne.Value10)
