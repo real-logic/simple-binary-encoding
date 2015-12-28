@@ -635,7 +635,7 @@ public class CppGenerator implements CodeGenerator
             .filter((token) -> token.signal() == Signal.CHOICE)
             .forEach((token) ->
                 {
-                    final String choiceName = token.name();
+                    final String choiceName = formatPropertyName(token.name());
                     final String typeName = cppTypeName(token.encoding().primitiveType());
                     final String choiceBitPosition = token.encoding().constValue().toString();
                     final String byteOrderStr = formatByteOrderEncoding(
@@ -648,7 +648,7 @@ public class CppGenerator implements CodeGenerator
                         "%2$s" +
                         "        return (%3$s(*((%4$s *)(m_buffer + m_offset))) & (0x1L << %5$s)) ? true : false;\n" +
                         "    }\n\n",
-                    choiceName,
+                        choiceName,
                         generateChoiceNotPresentCondition(token.version(), BASE_INDENT),
                         byteOrderStr,
                         typeName,
