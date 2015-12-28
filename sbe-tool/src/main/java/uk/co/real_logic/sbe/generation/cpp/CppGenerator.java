@@ -1226,6 +1226,7 @@ public class CppGenerator implements CodeGenerator
         return String.format(
             "private:\n" +
             "    char *m_buffer;\n" +
+            "    std::uint64_t m_bufferLength;\n" +
             "    std::uint64_t m_offset;\n" +
             "    std::uint64_t m_actingVersion;\n\n" +
             "    inline void reset(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength," +
@@ -1236,6 +1237,7 @@ public class CppGenerator implements CodeGenerator
             "            throw std::runtime_error(\"buffer too short for flyweight [E107]\");\n" +
             "        }\n" +
             "        m_buffer = buffer;\n" +
+            "        m_bufferLength = bufferLength;\n" +
             "        m_offset = offset;\n" +
             "        m_actingVersion = actingVersion;\n" +
             "    }\n\n" +
@@ -1253,6 +1255,7 @@ public class CppGenerator implements CodeGenerator
             "    %1$s& operator=(%1$s&& codec)\n" +
             "    {\n" +
             "        m_buffer = codec.m_buffer;\n" +
+            "        m_bufferLength = codec.m_bufferLength;\n" +
             "        m_offset = codec.m_offset;\n" +
             "        m_actingVersion = codec.m_actingVersion;\n" +
             "        return *this;\n" +
@@ -1261,6 +1264,7 @@ public class CppGenerator implements CodeGenerator
             "    %1$s& operator=(const %1$s& codec)\n" +
             "    {\n" +
             "        m_buffer = codec.m_buffer;\n" +
+            "        m_bufferLength = codec.m_bufferLength;\n" +
             "        m_offset = codec.m_offset;\n" +
             "        m_actingVersion = codec.m_actingVersion;\n" +
             "        return *this;\n" +
@@ -1537,7 +1541,7 @@ public class CppGenerator implements CodeGenerator
         final Token token,
         final String indent)
     {
-        final String enumName = token.name();
+        final String enumName = formatClassName(token.name());
         final String typeName = cppTypeName(token.encoding().primitiveType());
         final int offset = token.offset();
 
