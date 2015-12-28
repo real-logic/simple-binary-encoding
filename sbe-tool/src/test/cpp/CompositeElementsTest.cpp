@@ -26,6 +26,19 @@ using namespace std;
 using namespace composite_elements;
 using namespace sbe::otf;
 
+enum EventNumber
+{
+    EN_beginOuter = 0,
+    EN_enumOne,
+    EN_zeroth,
+    EN_setOne,
+    EN_beginInner,
+    EN_innerFirst,
+    EN_innerSecond,
+    EN_endInner,
+    EN_endOuter
+};
+
 class CompositeElementsTest : public testing::Test, public OtfMessageDecoder::BasicTokenListener
 {
 public:
@@ -64,46 +77,72 @@ public:
         return hdr.encodedLength() + msg.encodedLength();
     }
 
+    virtual void onBeginComposite(
+        Token &fieldToken,
+        std::vector<Token> &tokens,
+        std::size_t fromIndex,
+        std::size_t toIndex)
+    {
+        switch (EventNumber(m_eventNumber++))
+        {
+            case EN_beginOuter:
+                EXPECT_EQ(tokens.at(fromIndex).name(), "outer");
+                break;
+            case EN_beginInner:
+                EXPECT_EQ(tokens.at(fromIndex).name(), "inner");
+                break;
+            default:
+                FAIL() << "unknown beginComposite event number " << m_eventNumber - 1;
+        }
+    }
+
+    virtual void onEndComposite(
+        Token &fieldToken,
+        std::vector<Token> &tokens,
+        std::size_t fromIndex,
+        std::size_t toIndex)
+    {
+        switch (EventNumber(m_eventNumber++))
+        {
+            case EN_endInner:
+                EXPECT_EQ(tokens.at(fromIndex).name(), "inner");
+                break;
+            case EN_endOuter:
+                EXPECT_EQ(tokens.at(fromIndex).name(), "outer");
+                break;
+            default:
+                FAIL() << "unknown endComposite event number " << m_eventNumber - 1;
+        }
+    }
+
     virtual void onEncoding(
         Token& fieldToken,
         const char *buffer,
         Token& typeToken,
         std::uint64_t actingVersion)
     {
-        switch (m_eventNumber++)
+        switch (EventNumber(m_eventNumber++))
         {
-            case 0:
+            case EN_zeroth:
             {
-                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::UINT64);
-                EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 187u);
+                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::UINT8);
+                EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 42u);
                 break;
             }
-            case 3:
-            {
-                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::UINT64);
-                EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 10u);
-                break;
-            }
-            case 4:
+            case EN_innerFirst:
             {
                 EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::INT64);
-                EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 20);
+                EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 101l);
                 break;
             }
-            case 5:
-            {
-                EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::UINT64);
-                EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 30u);
-                break;
-            }
-            case 6:
+            case EN_innerSecond:
             {
                 EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::INT64);
-                EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 40);
+                EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 202l);
                 break;
             }
             default:
-                FAIL() << "unknown event number " << m_eventNumber;
+                FAIL() << "unknown Encoding event number " << m_eventNumber - 1;
         }
 
     }
@@ -116,35 +155,52 @@ public:
         std::size_t toIndex,
         std::uint64_t actingVersion)
     {
-        switch (m_eventNumber++)
+        switch (EventNumber(m_eventNumber++))
         {
-            case 1:
+            case EN_setOne:
+            {
+                const Token& typeToken = tokens.at(fromIndex + 1);
+                const Encoding& encoding = typeToken.encoding();
+
+                EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT32);
+                EXPECT_EQ(encoding.getAsUInt(buffer), 0x00010000u);
+
+                EXPECT_EQ(tokens.at(fromIndex+1).name(), "Bit0");
+                EXPECT_EQ(tokens.at(fromIndex+2).name(), "Bit16");
+                EXPECT_EQ(tokens.at(fromIndex+3).name(), "Bit26");
+                EXPECT_EQ(toIndex - 1  - fromIndex, 3u);
+                break;
+            }
+            default:
+                FAIL() << "unknown BitSet event number " << m_eventNumber - 1;
+        }
+    }
+
+    virtual void onEnum(
+        Token &fieldToken,
+        const char *buffer,
+        std::vector<Token> &tokens,
+        std::size_t fromIndex,
+        std::size_t toIndex,
+        std::uint64_t actingVersion)
+    {
+        switch (EventNumber(m_eventNumber++))
+        {
+            case EN_enumOne:
             {
                 const Token& typeToken = tokens.at(fromIndex + 1);
                 const Encoding& encoding = typeToken.encoding();
 
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT8);
-                EXPECT_EQ(encoding.getAsUInt(buffer), 0x2u);
-                break;
-            }
-            default:
-                FAIL() << "unknown event number " << m_eventNumber;
-        }
-    }
+                EXPECT_EQ(encoding.getAsUInt(buffer), 10u);
 
-    virtual void onGroupHeader(
-        Token& token,
-        std::uint64_t numInGroup)
-    {
-        switch (m_eventNumber++)
-        {
-            case 2:
-            {
-                EXPECT_EQ(numInGroup, 2u);
+                EXPECT_EQ(tokens.at(fromIndex+1).name(), "Value1");
+                EXPECT_EQ(tokens.at(fromIndex+2).name(), "Value10");
+                EXPECT_EQ(toIndex - 1  - fromIndex, 2u);
                 break;
             }
             default:
-                FAIL() << "unknown event number " << m_eventNumber;
+                FAIL() << "unknown Enum event number " << m_eventNumber - 1;
         }
     }
 };
@@ -213,7 +269,7 @@ TEST_F(CompositeElementsTest, shouldEncodeAndDecodeMsgCorrectly)
     EXPECT_EQ(msg.encodedLength(), sz - MessageHeader::encodedLength());
 }
 
-TEST_F(CompositeElementsTest, DISABLED_shouldHandleAllEventsCorrectltInOrder)
+TEST_F(CompositeElementsTest, shouldHandleAllEventsCorrectltInOrder)
 {
     std::uint64_t sz = encodeHdrAndMsg();
 
@@ -231,13 +287,13 @@ TEST_F(CompositeElementsTest, DISABLED_shouldHandleAllEventsCorrectltInOrder)
 
     EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::encodedLength());
     const char *messageBuffer = m_buffer + headerDecoder.encodedLength();
-    std::size_t length = MessageHeader::encodedLength() - headerDecoder.encodedLength();
+    std::size_t length = sz - headerDecoder.encodedLength();
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
 
     const std::size_t result =
         OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
-    EXPECT_EQ(result, static_cast<std::size_t>(Msg::sbeBlockLength() - MessageHeader::encodedLength()));
+    EXPECT_EQ(result, static_cast<std::size_t>(Msg::sbeBlockLength()));
 
-    EXPECT_EQ(m_eventNumber, 7);
+    EXPECT_EQ(m_eventNumber, 9);
 }

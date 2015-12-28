@@ -161,10 +161,32 @@ static void decodeComposite(
 {
     listener.onBeginComposite(fieldToken, *tokens.get(), tokenIndex, toIndex);
 
-    for (size_t i = tokenIndex + 1; i < toIndex; i++)
+    for (size_t i = tokenIndex + 1; i < toIndex;)
     {
         Token &token = tokens->at(i);
-        listener.onEncoding(token, buffer + bufferIndex + token.offset(), token, actingVersion);
+        const size_t nextFieldIndex = i + token.componentTokenCount();
+
+        const std::size_t offset = static_cast<std::size_t>(token.offset());
+
+        switch (token.signal())
+        {
+            case Signal::BEGIN_COMPOSITE:
+                decodeComposite(fieldToken, buffer, bufferIndex + offset, length, tokens, i, nextFieldIndex - 1, actingVersion, listener);
+                break;
+            case Signal::BEGIN_ENUM:
+                listener.onEnum(fieldToken, buffer + bufferIndex + offset, *tokens.get(), i, nextFieldIndex - 1, actingVersion);
+                break;
+            case Signal::BEGIN_SET:
+                listener.onBitSet(fieldToken, buffer + bufferIndex + offset, *tokens.get(), i, nextFieldIndex - 1, actingVersion);
+                break;
+            case Signal::ENCODING:
+                listener.onEncoding(token, buffer + bufferIndex + offset, token, actingVersion);
+                break;
+            default:
+                throw std::runtime_error("incorrect signal type in decodeComposite");
+        }
+
+        i += token.componentTokenCount();
     }
 
     listener.onEndComposite(fieldToken, *tokens.get(), tokenIndex, toIndex);
