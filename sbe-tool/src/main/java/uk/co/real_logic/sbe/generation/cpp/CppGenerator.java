@@ -59,7 +59,7 @@ public class CppGenerator implements CodeGenerator
             out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), messageHeader, null));
             out.append(generateClassDeclaration(messageHeader));
             out.append(generateFixedFlyweightCode(messageHeader, tokens.get(0).encodedLength()));
-            out.append(generatePrimitivePropertyEncodings(
+            out.append(generateCompositePropertyElements(
                 messageHeader, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("};\n}\n#endif\n");
@@ -88,6 +88,25 @@ public class CppGenerator implements CodeGenerator
             }
 
             typesToInclude.add(tokens.get(0).name());
+        }
+
+        return typesToInclude;
+    }
+
+    public List<String> generateTypesToIncludes(final List<Token> tokens)
+    {
+        final List<String> typesToInclude = new ArrayList<>();
+
+        for (final Token token : tokens)
+        {
+            switch (token.signal())
+            {
+                case BEGIN_ENUM:
+                case BEGIN_SET:
+                case BEGIN_COMPOSITE:
+                    typesToInclude.add(token.name());
+                    break;
+            }
         }
 
         return typesToInclude;
@@ -580,11 +599,12 @@ public class CppGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(compositeName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), compositeName, null));
+            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), compositeName,
+                generateTypesToIncludes(tokens.subList(1, tokens.size() - 1))));
             out.append(generateClassDeclaration(compositeName));
             out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).encodedLength()));
 
-            out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            out.append(generateCompositePropertyElements(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("};\n}\n#endif\n");
         }
@@ -847,17 +867,36 @@ public class CppGenerator implements CodeGenerator
         return "class " + name + "\n{\npublic:\n\n";
     }
 
-    private CharSequence generatePrimitivePropertyEncodings(
+    private CharSequence generateCompositePropertyElements(
         final String containingClassName, final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
-        for (final Token token : tokens)
+        for (int i = 0; i < tokens.size();)
         {
-            if (token.signal() == Signal.ENCODING)
+            final Token token = tokens.get(i);
+            final String propertyName = formatPropertyName(token.name());
+
+            switch (token.signal())
             {
-                sb.append(generatePrimitiveProperty(containingClassName, token.name(), token, indent));
+                case ENCODING:
+                    sb.append(generatePrimitiveProperty(containingClassName, propertyName, token, indent));
+                    break;
+
+                case BEGIN_ENUM:
+                    sb.append(generateEnumProperty(containingClassName, token, propertyName, token, indent));
+                    break;
+
+                case BEGIN_SET:
+                    sb.append(generateBitsetProperty(propertyName, token, indent));
+                    break;
+
+                case BEGIN_COMPOSITE:
+                    sb.append(generateCompositeProperty(propertyName, token, indent));
+                    break;
             }
+
+            i += tokens.get(i).componentTokenCount();
         }
 
        return sb;
