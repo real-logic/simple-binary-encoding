@@ -91,67 +91,6 @@ public class Ir
         messagesByIdMap.put(messageId, new ArrayList<>(messageTokens));
     }
 
-    private static void compressConstantEnums(final List<Token> tokens)
-    {
-        final Iterator<Token> iter = tokens.iterator();
-        while (iter.hasNext())
-        {
-            final Token token = iter.next();
-            if (Signal.BEGIN_FIELD == token.signal() && token.isConstantEncoding())
-            {
-                Token nextToken = iter.next();
-                if (Signal.BEGIN_ENUM == nextToken.signal())
-                {
-                    final String valueRef = token.encoding().constValue().toString();
-                    nextToken.encodedLength(0);
-
-                    while (true)
-                    {
-                        nextToken = iter.next();
-                        nextToken.encodedLength(0);
-                        nextToken.encoding().presence(Encoding.Presence.CONSTANT);
-
-                        if (Signal.END_ENUM == nextToken.signal())
-                        {
-                            break;
-                        }
-
-                        if (!valueRef.endsWith(nextToken.name()))
-                        {
-                            iter.remove();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private static void countComponentTokens(final List<Token> tokens)
-    {
-        final Map<String, Deque<Integer>> map = new HashMap<>();
-
-        for (int i = 0, size = tokens.size(); i < size; i++)
-        {
-            final Token token = tokens.get(i);
-            final Signal signal = token.signal();
-
-            if (signal.name().startsWith("BEGIN_"))
-            {
-                final String componentType = signal.name().substring(6);
-                map.computeIfAbsent(componentType, (key) -> new LinkedList<>()).push(i);
-            }
-            else if (signal.name().startsWith("END_"))
-            {
-                final String componentType = signal.name().substring(4);
-                final int beginIndex = map.get(componentType).pop();
-
-                final int componentTokenCount = (i - beginIndex) + 1;
-                tokens.get(beginIndex).componentTokenCount(componentTokenCount);
-                token.componentTokenCount(componentTokenCount);
-            }
-        }
-    }
-
     /**
      * Get the getMessage for a given identifier.
      *
@@ -254,6 +193,67 @@ public class Ir
     public String applicableNamespace()
     {
         return namespaceName == null ? packageName : namespaceName;
+    }
+
+    private static void compressConstantEnums(final List<Token> tokens)
+    {
+        final Iterator<Token> iter = tokens.iterator();
+        while (iter.hasNext())
+        {
+            final Token token = iter.next();
+            if (Signal.BEGIN_FIELD == token.signal() && token.isConstantEncoding())
+            {
+                Token nextToken = iter.next();
+                if (Signal.BEGIN_ENUM == nextToken.signal())
+                {
+                    final String valueRef = token.encoding().constValue().toString();
+                    nextToken.encodedLength(0);
+
+                    while (true)
+                    {
+                        nextToken = iter.next();
+                        nextToken.encodedLength(0);
+                        nextToken.encoding().presence(Encoding.Presence.CONSTANT);
+
+                        if (Signal.END_ENUM == nextToken.signal())
+                        {
+                            break;
+                        }
+
+                        if (!valueRef.endsWith(nextToken.name()))
+                        {
+                            iter.remove();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static void countComponentTokens(final List<Token> tokens)
+    {
+        final Map<String, Deque<Integer>> map = new HashMap<>();
+
+        for (int i = 0, size = tokens.size(); i < size; i++)
+        {
+            final Token token = tokens.get(i);
+            final Signal signal = token.signal();
+
+            if (signal.name().startsWith("BEGIN_"))
+            {
+                final String componentType = signal.name().substring(6);
+                map.computeIfAbsent(componentType, (key) -> new LinkedList<>()).push(i);
+            }
+            else if (signal.name().startsWith("END_"))
+            {
+                final String componentType = signal.name().substring(4);
+                final int beginIndex = map.get(componentType).pop();
+
+                final int componentTokenCount = (i - beginIndex) + 1;
+                tokens.get(beginIndex).componentTokenCount(componentTokenCount);
+                token.componentTokenCount(componentTokenCount);
+            }
+        }
     }
 
     private void captureTypes(final List<Token> tokens, final int beginIndex, final int endIndex)
