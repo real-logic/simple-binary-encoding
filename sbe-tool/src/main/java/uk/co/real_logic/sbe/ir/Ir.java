@@ -267,7 +267,7 @@ public class Ir
             {
                 case BEGIN_COMPOSITE:
                     i = captureType(tokens, i, Signal.END_COMPOSITE, token.name());
-                    captureTypes(tokens, typeBeginIndex + 1, i - 1);  // search within for enum, set, and nested
+                    captureTypes(tokens, typeBeginIndex + 1, i - 1);  // recurse down for nested types
                     break;
 
                 case BEGIN_ENUM:
@@ -281,7 +281,7 @@ public class Ir
         }
     }
 
-    private int captureType(final List<Token> tokens, int index, final Signal endSignal, final String endName)
+    private int captureType(final List<Token> tokens, int index, final Signal endSignal, final String name)
     {
         final List<Token> typeTokens = new ArrayList<>();
 
@@ -292,9 +292,9 @@ public class Ir
             token = tokens.get(++index);
             typeTokens.add(token);
         }
-        while (endSignal != token.signal() || !endName.equals(token.name()));
+        while (endSignal != token.signal() || !name.equals(token.name()));
 
-        typesByNameMap.put(tokens.get(index).name(), typeTokens);
+        typesByNameMap.put(name, typeTokens);
 
         return index;
     }
