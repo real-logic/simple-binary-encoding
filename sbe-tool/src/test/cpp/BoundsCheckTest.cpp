@@ -298,7 +298,7 @@ TEST_P(HeaderBoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodeOfHeader
 TEST_P(HeaderBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfHeader)
 {
     const int length = GetParam();
-    char encodeBuffer[MessageHeader::encodedLength()];
+    char encodeBuffer[8];
     std::unique_ptr<char[]> buffer(new char[length]);
 
     encodeHdr(encodeBuffer, 0, sizeof(encodeBuffer));
