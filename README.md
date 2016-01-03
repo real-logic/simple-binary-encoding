@@ -1,8 +1,8 @@
 Simple Binary Encoding (SBE)
 ============================
 
-[SBE](http://www.fixtradingcommunity.org/pg/file/fplpo/read/1196757/simple-binary-encoding-release-candidate-2) is 
-OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency applications.
+[SBE](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) is 
+OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency financial applications.
 
 Further details on the background and usage of SBE can be found on the
 [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
