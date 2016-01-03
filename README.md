@@ -1,14 +1,19 @@
 Simple Binary Encoding (SBE)
 ============================
 
-[SBE](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) is 
-OSI layer 6 presentation for encoding and decoding application messages in binary format for low-latency financial applications.
+[SBE](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) is an OSI layer 6 presentation for 
+encoding and decoding binary application messages for low-latency financial applications. This repository contains 
+the reference implementations in Java and C++.
 
 Further details on the background and usage of SBE can be found on the
 [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
 
 An XSD for SBE specs can be found
 [here](https://github.com/real-logic/simple-binary-encoding/blob/master/sbe-tool/src/main/resources/fpl/SimpleBinary1-0.xsd)
+
+This SBE implementation is designed with work very efficiently with the [Aeron](https://github.com/real-logic/Aeron) 
+messaging system for low-latency and high-throughput communications. The generated codec stubs can wrap the Aeron buffers
+directly for zero copy semantics. 
 
 License (See LICENSE file for full license)
 -------------------------------------------
@@ -26,9 +31,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+
 Binaries
 --------
-
 Binaries and dependency information for Maven, Ivy, Gradle, and others can be found at 
 [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22uk.co.real-logic%22%20AND%20a%3A%22sbe%22).
 
@@ -45,7 +50,6 @@ Example for Maven:
 
 Directory Layout
 ----------------
-
 Main source code
 
     sbe-tool/src/main
@@ -61,7 +65,6 @@ Examples of usage
 
 Build
 -----
-
 Full clean build:
 
     $ ./gradlew
@@ -70,9 +73,9 @@ Run the Java examples
 
     $ ./gradlew runJavaExamples
 
+
 Distribution
 ------------
-
 Jars for the executable, source, and javadoc for the various modules can be found in
 
     <module>/build/libs
@@ -80,7 +83,6 @@ Jars for the executable, source, and javadoc for the various modules can be foun
 
 C++ Build using CMake
 ---------------------
-
 NOTE: Linux, Mac OS, and Windows only for the moment. See
 [FAQ](https://github.com/real-logic/simple-binary-encoding/wiki/Frequently-Asked-Questions).
 Windows builds have been tested with Visual Studio Express 12.
