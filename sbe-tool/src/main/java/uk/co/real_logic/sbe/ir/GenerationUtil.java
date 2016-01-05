@@ -29,17 +29,17 @@ public final class GenerationUtil
     {
     }
 
-    public static int collectFields(final List<Token> tokens, int index, final List<Token> fields)
+    public static int collectFields(final List<Token> tokens, final int index, final List<Token> fields)
     {
         return collect(Signal.BEGIN_FIELD, tokens, index, fields);
     }
 
-    public static int collectGroups(final List<Token> tokens, int index, final List<Token> groups)
+    public static int collectGroups(final List<Token> tokens, final int index, final List<Token> groups)
     {
         return collect(Signal.BEGIN_GROUP, tokens, index, groups);
     }
 
-    public static int collectVarData(final List<Token> tokens, int index, final List<Token> varData)
+    public static int collectVarData(final List<Token> tokens, final int index, final List<Token> varData)
     {
         return collect(Signal.BEGIN_VAR_DATA, tokens, index, varData);
     }
