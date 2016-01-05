@@ -634,7 +634,7 @@ public class JavaGenerator implements CodeGenerator
                 "\n" +
                 indent + "    public int %sLength()\n" +
                 indent + "    {\n" +
-                indent + "%s" +
+                         "%s" +
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        return %s;\n" +
                 indent + "    }\n",
