@@ -267,7 +267,7 @@ public class Ir
             {
                 case BEGIN_COMPOSITE:
                     i = captureType(tokens, i, Signal.END_COMPOSITE, token.name());
-                    captureTypes(tokens, typeBeginIndex + 1, i - 1);  // recurse down for nested types
+                    captureTypes(tokens, typeBeginIndex + 1, i - 1);
                     break;
 
                 case BEGIN_ENUM:

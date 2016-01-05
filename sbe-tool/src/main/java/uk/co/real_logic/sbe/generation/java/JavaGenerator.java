@@ -158,24 +158,24 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> messageBody = getMessageBody(tokens);
 
             int index = 0;
-            final List<Token> rootFields = new ArrayList<>();
-            index = collectRootFields(messageBody, index, rootFields);
+            final List<Token> fields = new ArrayList<>();
+            index = collectFields(messageBody, index, fields);
 
             final List<Token> groups = new ArrayList<>();
             index = collectGroups(messageBody, index, groups);
 
-            final List<Token> dataFields = new ArrayList<>();
-            collectDataFields(messageBody, index, dataFields);
+            final List<Token> varData = new ArrayList<>();
+            collectVarData(messageBody, index, varData);
 
-            generateDecoder(BASE_INDENT, groups, rootFields, dataFields, msgToken);
-            generateEncoder(BASE_INDENT, groups, rootFields, dataFields, msgToken);
+            generateDecoder(BASE_INDENT, fields, groups, varData, msgToken);
+            generateEncoder(BASE_INDENT, fields, groups, varData, msgToken);
         }
     }
 
     private void generateEncoder(
         final String indent,
+        final List<Token> fields,
         final List<Token> groups,
-        final List<Token> rootFields,
         final List<Token> varData,
         final Token msgToken) throws IOException
     {
@@ -188,22 +188,22 @@ public class JavaGenerator implements CodeGenerator
             generateAnnotations(indent, className, groups, out, 0, this::encoderName);
             out.append(generateClassDeclaration(className));
             out.append(generateEncoderFlyweightCode(className, msgToken));
-            out.append(generateEncoderFields(className, rootFields, indent));
+            out.append(generateEncoderFields(className, fields, indent));
 
             final StringBuilder sb = new StringBuilder();
-            generateEncoderGroups(sb, className, groups, 0, indent);
+            generateEncoderGroups(sb, className, groups, indent);
             out.append(sb);
 
-            out.append(generateDataEncoders(className, varData, indent));
+            out.append(generateEncoderVarData(className, varData, indent));
             out.append("}\n");
         }
     }
 
     private void generateDecoder(
         final String indent,
+        final List<Token> fields,
         final List<Token> groups,
-        final List<Token> rootFields,
-        final List<Token> dataFields,
+        final List<Token> varData,
         final Token msgToken) throws IOException
     {
         final String className = formatClassName(decoderName(msgToken.name()));
@@ -215,26 +215,25 @@ public class JavaGenerator implements CodeGenerator
             generateAnnotations(indent, className, groups, out, 0, this::decoderName);
             out.append(generateClassDeclaration(className));
             out.append(generateDecoderFlyweightCode(className, msgToken));
-            out.append(generateDecoderFields(rootFields, BASE_INDENT));
+            out.append(generateDecoderFields(fields, BASE_INDENT));
 
             final StringBuilder sb = new StringBuilder();
-            generateDecoderGroups(sb, className, groups, 0, BASE_INDENT);
+            generateDecoderGroups(sb, className, groups, BASE_INDENT);
             out.append(sb);
 
-            out.append(generateDataDecoders(dataFields, BASE_INDENT));
+            out.append(generateDecoderVarData(varData, BASE_INDENT));
 
             out.append("}\n");
         }
     }
 
-    private int generateDecoderGroups(
+    private void generateDecoderGroups(
         final StringBuilder sb,
-        final String parentMessageClassName,
+        final String outerClassName,
         final List<Token> tokens,
-        int index,
         final String indent) throws IOException
     {
-        for (int size = tokens.size(); index < size; index++)
+        for (int index = 0, size = tokens.size(); index < size; index++)
         {
             final Token groupToken = tokens.get(index);
             if (groupToken.signal() == Signal.BEGIN_GROUP)
@@ -243,36 +242,36 @@ public class JavaGenerator implements CodeGenerator
                 sb.append(generateGroupDecoderProperty(groupName, groupToken, indent));
 
                 generateAnnotations(indent + INDENT, groupName, tokens, sb, index + 1, this::decoderName);
-                generateGroupDecoderClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
+                generateGroupDecoderClassHeader(sb, groupName, outerClassName, tokens, index, indent + INDENT);
 
-                final List<Token> rootFields = new ArrayList<>();
-                index = collectRootFields(tokens, ++index, rootFields);
-                sb.append(generateDecoderFields(rootFields, indent + INDENT));
+                ++index;
+                final int groupHeaderTokenCount = tokens.get(index).componentTokenCount();
+                index += groupHeaderTokenCount;
 
-                if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
-                {
-                    index = generateDecoderGroups(sb, parentMessageClassName, tokens, index, indent + INDENT);
-                }
+                final List<Token> fields = new ArrayList<>();
+                index = collectFields(tokens, index, fields);
+                sb.append(generateDecoderFields(fields, indent + INDENT));
 
-                final List<Token> dataFields = new ArrayList<>();
-                collectDataFields(tokens, index, dataFields);
-                sb.append(generateDataDecoders(dataFields, indent + INDENT));
+                final List<Token> groups = new ArrayList<>();
+                index = collectGroups(tokens, index, groups);
+                generateDecoderGroups(sb, outerClassName, groups, indent + INDENT);
+
+                final List<Token> varData = new ArrayList<>();
+                index = collectVarData(tokens, index, varData);
+                sb.append(generateDecoderVarData(varData, indent + INDENT));
 
                 sb.append(indent).append("    }\n");
             }
         }
-
-        return index;
     }
 
-    private int generateEncoderGroups(
+    private void generateEncoderGroups(
         final StringBuilder sb,
-        final String parentMessageClassName,
+        final String outerClassName,
         final List<Token> tokens,
-        int index,
         final String indent) throws IOException
     {
-        for (int size = tokens.size(); index < size; index++)
+        for (int index = 0, size = tokens.size(); index < size; index++)
         {
             final Token groupToken = tokens.get(index);
             if (groupToken.signal() == Signal.BEGIN_GROUP)
@@ -282,26 +281,27 @@ public class JavaGenerator implements CodeGenerator
                 sb.append(generateGroupEncoderProperty(groupName, groupToken, indent));
 
                 generateAnnotations(indent + INDENT, groupClassName, tokens, sb, index + 1, this::encoderName);
-                generateGroupEncoderClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
+                generateGroupEncoderClassHeader(sb, groupName, outerClassName, tokens, index, indent + INDENT);
 
-                final List<Token> rootFields = new ArrayList<>();
-                index = collectRootFields(tokens, ++index, rootFields);
-                sb.append(generateEncoderFields(groupClassName, rootFields, indent + INDENT));
+                ++index;
+                final int groupHeaderTokenCount = tokens.get(index).componentTokenCount();
+                index += groupHeaderTokenCount;
 
-                if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
-                {
-                    index = generateEncoderGroups(sb, parentMessageClassName, tokens, index, indent + INDENT);
-                }
+                final List<Token> fields = new ArrayList<>();
+                index = collectFields(tokens, index, fields);
+                sb.append(generateEncoderFields(groupClassName, fields, indent + INDENT));
 
-                final List<Token> dataFields = new ArrayList<>();
-                collectDataFields(tokens, index, dataFields);
-                sb.append(generateDataEncoders(groupClassName, dataFields, indent + INDENT));
+                final List<Token> groups = new ArrayList<>();
+                index = collectGroups(tokens, index, groups);
+                generateEncoderGroups(sb, outerClassName, groups, indent + INDENT);
+
+                final List<Token> varData = new ArrayList<>();
+                index = collectVarData(tokens, index, varData);
+                sb.append(generateEncoderVarData(groupClassName, varData, indent + INDENT));
 
                 sb.append(indent).append("    }\n");
             }
         }
-
-        return index;
     }
 
     private void generateGroupDecoderClassHeader(
@@ -596,7 +596,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateDataDecoders(final List<Token> tokens, final String indent)
+    private CharSequence generateDecoderVarData(final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -650,7 +650,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateDataEncoders(final String className, final List<Token> tokens, final String indent)
+    private CharSequence generateEncoderVarData(final String className, final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1842,27 +1842,27 @@ public class JavaGenerator implements CodeGenerator
 
         eachField(
             tokens,
-            (signalToken, encodingToken) ->
+            (fieldToken, typeToken) ->
             {
-                final String propertyName = formatPropertyName(signalToken.name());
-                final String typeName = formatClassName(encoderName(encodingToken.name()));
+                final String propertyName = formatPropertyName(fieldToken.name());
+                final String typeName = formatClassName(encoderName(typeToken.name()));
 
-                switch (encodingToken.signal())
+                switch (typeToken.signal())
                 {
                     case ENCODING:
-                        sb.append(generatePrimitiveEncoder(containingClassName, propertyName, encodingToken, indent));
+                        sb.append(generatePrimitiveEncoder(containingClassName, propertyName, typeToken, indent));
                         break;
 
                     case BEGIN_ENUM:
-                        sb.append(generateEnumEncoder(containingClassName, propertyName, encodingToken, indent));
+                        sb.append(generateEnumEncoder(containingClassName, propertyName, typeToken, indent));
                         break;
 
                     case BEGIN_SET:
-                        sb.append(generateBitSetProperty(propertyName, encodingToken, indent, typeName));
+                        sb.append(generateBitSetProperty(propertyName, typeToken, indent, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
-                        sb.append(generateCompositeProperty(propertyName, encodingToken, indent, typeName));
+                        sb.append(generateCompositeProperty(propertyName, typeToken, indent, typeName));
                         break;
                 }
             });
@@ -1876,30 +1876,30 @@ public class JavaGenerator implements CodeGenerator
 
         eachField(
             tokens,
-            (signalToken, encodingToken) ->
+            (fieldToken, typeToken) ->
             {
-                final String propertyName = formatPropertyName(signalToken.name());
-                final String typeName = decoderName(formatClassName(encodingToken.name()));
+                final String propertyName = formatPropertyName(fieldToken.name());
+                final String typeName = decoderName(formatClassName(typeToken.name()));
 
-                generateFieldIdMethod(sb, signalToken, indent);
-                generateFieldMetaAttributeMethod(sb, signalToken, indent);
+                generateFieldIdMethod(sb, fieldToken, indent);
+                generateFieldMetaAttributeMethod(sb, fieldToken, indent);
 
-                switch (encodingToken.signal())
+                switch (typeToken.signal())
                 {
                     case ENCODING:
-                        sb.append(generatePrimitiveDecoder(propertyName, encodingToken, indent));
+                        sb.append(generatePrimitiveDecoder(propertyName, typeToken, indent));
                         break;
 
                     case BEGIN_ENUM:
-                        sb.append(generateEnumDecoder(signalToken, propertyName, encodingToken, indent));
+                        sb.append(generateEnumDecoder(fieldToken, propertyName, typeToken, indent));
                         break;
 
                     case BEGIN_SET:
-                        sb.append(generateBitSetProperty(propertyName, encodingToken, indent, typeName));
+                        sb.append(generateBitSetProperty(propertyName, typeToken, indent, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
-                        sb.append(generateCompositeProperty(propertyName, encodingToken, indent, typeName));
+                        sb.append(generateCompositeProperty(propertyName, typeToken, indent, typeName));
                         break;
                 }
             });
@@ -1909,14 +1909,18 @@ public class JavaGenerator implements CodeGenerator
 
     private void eachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
     {
-        for (int i = 0, size = tokens.size(); i < size; i++)
+        for (int i = 0, size = tokens.size(); i < size;)
         {
-            final Token signalToken = tokens.get(i);
-            if (signalToken.signal() == Signal.BEGIN_FIELD)
+            final Token fieldToken = tokens.get(i);
+            if (fieldToken.signal() == Signal.BEGIN_FIELD)
             {
                 final Token encodingToken = tokens.get(i + 1);
-
-                consumer.accept(signalToken, encodingToken);
+                consumer.accept(fieldToken, encodingToken);
+                i += fieldToken.componentTokenCount();
+            }
+            else
+            {
+                ++i;
             }
         }
     }

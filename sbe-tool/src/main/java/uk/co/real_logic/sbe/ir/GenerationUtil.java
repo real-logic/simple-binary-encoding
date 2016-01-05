@@ -29,78 +29,39 @@ public final class GenerationUtil
     {
     }
 
-    public static int collectRootFields(final List<Token> tokens, int index, final List<Token> rootFields)
+    public static int collectFields(final List<Token> tokens, int index, final List<Token> fields)
     {
-        for (int size = tokens.size(); index < size; index++)
+        return collect(Signal.BEGIN_FIELD, tokens, index, fields);
+    }
+
+    public static int collectGroups(final List<Token> tokens, int index, final List<Token> groups)
+    {
+        return collect(Signal.BEGIN_GROUP, tokens, index, groups);
+    }
+
+    public static int collectVarData(final List<Token> tokens, int index, final List<Token> varData)
+    {
+        return collect(Signal.BEGIN_VAR_DATA, tokens, index, varData);
+    }
+
+    public static int collect(final Signal signal, final List<Token> tokens, int index, final List<Token> collected)
+    {
+        while (index < tokens.size())
         {
             final Token token = tokens.get(index);
-            if (Signal.BEGIN_GROUP == token.signal() ||
-                Signal.END_GROUP == token.signal() ||
-                Signal.BEGIN_VAR_DATA == token.signal())
-            {
-                return index;
-            }
-
-            rootFields.add(token);
-        }
-
-        return index;
-    }
-
-    public static int collectGroups(final List<Token> tokens, final int index, final List<Token> groups)
-    {
-        int groupStart = -1;
-        int groupEnd = -1;
-        int depth = 0;
-        for (int i = index, size = tokens.size(); i < size; i++)
-        {
-            final Token token = tokens.get(i);
-            if (Signal.BEGIN_GROUP == token.signal())
-            {
-                if (-1 == groupStart)
-                {
-                    groupStart = i;
-                }
-
-                depth++;
-            }
-
-            if (Signal.END_GROUP == token.signal() && --depth >= 0)
-            {
-                groupEnd = i;
-            }
-        }
-
-        if (groupStart > -1)
-        {
-            for (int i = groupStart; i <= groupEnd; i++)
-            {
-                groups.add(tokens.get(i));
-            }
-        }
-
-        return groupEnd > -1 ? groupEnd + 1 : index;
-    }
-
-    public static int collectDataFields(final List<Token> tokens, final int index, final List<Token> dataFields)
-    {
-        int dataEnd = index;
-        while (dataEnd < tokens.size())
-        {
-            if (Signal.BEGIN_VAR_DATA != tokens.get(dataEnd).signal())
+            if (signal != token.signal())
             {
                 break;
             }
 
-            for (int p = 0; p < 6; p++)
+            final int tokenCount = token.componentTokenCount();
+            for (final int limit = index + tokenCount; index < limit; index++)
             {
-                dataFields.add(tokens.get(dataEnd + p));
+                collected.add(tokens.get(index));
             }
-
-            dataEnd += 6;
         }
 
-        return dataEnd;
+        return index;
     }
 
     public static List<Token> getMessageBody(final List<Token> tokens)
@@ -140,7 +101,4 @@ public final class GenerationUtil
 
         return result;
     }
-
-
-
 }

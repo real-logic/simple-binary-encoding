@@ -27,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.co.real_logic.sbe.generation.cpp.CppUtil.*;
-import static uk.co.real_logic.sbe.ir.GenerationUtil.collectDataFields;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
-import static uk.co.real_logic.sbe.ir.GenerationUtil.collectRootFields;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 
 public class CppGenerator implements CodeGenerator
 {
@@ -131,20 +131,20 @@ public class CppGenerator implements CodeGenerator
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int index = 0;
 
-                final List<Token> rootFields = new ArrayList<>();
-                index = collectRootFields(messageBody, index, rootFields);
+                final List<Token> fields = new ArrayList<>();
+                index = collectFields(messageBody, index, fields);
 
                 final List<Token> groups = new ArrayList<>();
                 index = collectGroups(messageBody, index, groups);
 
-                final List<Token> dataFields = new ArrayList<>();
-                collectDataFields(messageBody, index, dataFields);
+                final List<Token> varData = new ArrayList<>();
+                collectVarData(messageBody, index, varData);
 
                 final StringBuilder sb = new StringBuilder();
-                out.append(generateFields(className, rootFields, BASE_INDENT));
+                out.append(generateFields(className, fields, BASE_INDENT));
                 generateGroups(sb, groups, 0, BASE_INDENT);
                 out.append(sb);
-                out.append(generateVarData(className, dataFields, BASE_INDENT));
+                out.append(generateVarData(className, varData, BASE_INDENT));
 
                 out.append("};\n}\n#endif\n");
             }
@@ -163,20 +163,21 @@ public class CppGenerator implements CodeGenerator
 
                 generateGroupClassHeader(sb, groupName, tokens, index, indent + INDENT);
 
-                final List<Token> rootFields = new ArrayList<>();
-                index = collectRootFields(tokens, ++index, rootFields);
-                sb.append(generateFields(groupName, rootFields, indent + INDENT));
+                ++index;
+                final int groupHeaderTokenCount = tokens.get(index).componentTokenCount();
+                index += groupHeaderTokenCount;
 
-                if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
-                {
-                    final List<Token> groups = new ArrayList<>();
-                    index = collectGroups(tokens, index, groups);
-                    generateGroups(sb, groups, 0, indent + INDENT);
-                }
+                final List<Token> fields = new ArrayList<>();
+                index = collectFields(tokens, index, fields);
+                sb.append(generateFields(groupName, fields, indent + INDENT));
 
-                final List<Token> dataFields = new ArrayList<>();
-                collectDataFields(tokens, index, dataFields);
-                sb.append(generateVarData(formatClassName(groupName), dataFields, indent + INDENT));
+                final List<Token> groups = new ArrayList<>();
+                index = collectGroups(tokens, index, groups);
+                generateGroups(sb, groups, 0, indent + INDENT);
+
+                final List<Token> varData = new ArrayList<>();
+                collectVarData(tokens, index, varData);
+                sb.append(generateVarData(formatClassName(groupName), varData, indent + INDENT));
 
                 sb.append(indent).append("    };\n");
                 sb.append(generateGroupProperty(groupName, groupToken, cppTypeForNumInGroup, indent));
