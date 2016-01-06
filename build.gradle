@@ -21,7 +21,7 @@ plugins {
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
 def sbeGroup = 'uk.co.real-logic'
-def sbeVersion = '1.3-RC3-SNAPSHOT'
+def sbeVersion = '1.3-RC3'
 
 group = sbeGroup
 version = sbeVersion
@@ -172,7 +172,7 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
-        compile 'uk.co.real-logic:Agrona:0.4.9-SNAPSHOT'
+        compile 'uk.co.real-logic:Agrona:0.4.9'
 
         testCompile files('build/classes/generated')
     }
@@ -352,6 +352,21 @@ project(':sbe-benchmarks') {
         archiveName = 'sbe-benchmarks.jar'
         classifier = 'benchmarks'
         manifest.attributes('Main-Class': 'org.openjdk.jmh.Main')
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
     }
 }
 
