@@ -129,16 +129,16 @@ public class CppGenerator implements CodeGenerator
                 out.append(generateMessageFlyweightCode(className, msgToken));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
-                int index = 0;
+                int i = 0;
 
                 final List<Token> fields = new ArrayList<>();
-                index = collectFields(messageBody, index, fields);
+                i = collectFields(messageBody, i, fields);
 
                 final List<Token> groups = new ArrayList<>();
-                index = collectGroups(messageBody, index, groups);
+                i = collectGroups(messageBody, i, groups);
 
                 final List<Token> varData = new ArrayList<>();
-                collectVarData(messageBody, index, varData);
+                collectVarData(messageBody, i, varData);
 
                 final StringBuilder sb = new StringBuilder();
                 out.append(generateFields(className, fields, BASE_INDENT));
@@ -179,7 +179,7 @@ public class CppGenerator implements CodeGenerator
             generateGroups(sb, groups, indent + INDENT);
 
             final List<Token> varData = new ArrayList<>();
-            collectVarData(tokens, i, varData);
+            i = collectVarData(tokens, i, varData);
             sb.append(generateVarData(formatClassName(groupName), varData, indent + INDENT));
 
             sb.append(indent).append("    };\n");
