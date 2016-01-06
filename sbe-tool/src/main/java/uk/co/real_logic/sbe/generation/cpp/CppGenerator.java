@@ -142,7 +142,7 @@ public class CppGenerator implements CodeGenerator
 
                 final StringBuilder sb = new StringBuilder();
                 out.append(generateFields(className, fields, BASE_INDENT));
-                generateGroups(sb, groups, 0, BASE_INDENT);
+                generateGroups(sb, groups, BASE_INDENT);
                 out.append(sb);
                 out.append(generateVarData(className, varData, BASE_INDENT));
 
@@ -151,40 +151,40 @@ public class CppGenerator implements CodeGenerator
         }
     }
 
-    private int generateGroups(final StringBuilder sb, final List<Token> tokens, int index, final String indent)
+    private void generateGroups(final StringBuilder sb, final List<Token> tokens, final String indent)
     {
-        for (int size = tokens.size(); index < size; index++)
+        for (int i = 0, size = tokens.size(); i < size; i++)
         {
-            if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
+            final Token groupToken = tokens.get(i);
+            if (groupToken.signal() != Signal.BEGIN_GROUP)
             {
-                final Token groupToken = tokens.get(index);
-                final String groupName = groupToken.name();
-                final String cppTypeForNumInGroup = cppTypeName(tokens.get(index + 3).encoding().primitiveType());
-
-                generateGroupClassHeader(sb, groupName, tokens, index, indent + INDENT);
-
-                ++index;
-                final int groupHeaderTokenCount = tokens.get(index).componentTokenCount();
-                index += groupHeaderTokenCount;
-
-                final List<Token> fields = new ArrayList<>();
-                index = collectFields(tokens, index, fields);
-                sb.append(generateFields(groupName, fields, indent + INDENT));
-
-                final List<Token> groups = new ArrayList<>();
-                index = collectGroups(tokens, index, groups);
-                generateGroups(sb, groups, 0, indent + INDENT);
-
-                final List<Token> varData = new ArrayList<>();
-                collectVarData(tokens, index, varData);
-                sb.append(generateVarData(formatClassName(groupName), varData, indent + INDENT));
-
-                sb.append(indent).append("    };\n");
-                sb.append(generateGroupProperty(groupName, groupToken, cppTypeForNumInGroup, indent));
+                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
             }
-        }
 
-        return index;
+            final String groupName = groupToken.name();
+            final String cppTypeForNumInGroup = cppTypeName(tokens.get(i + 3).encoding().primitiveType());
+
+            generateGroupClassHeader(sb, groupName, tokens, i, indent + INDENT);
+
+            ++i;
+            final int groupHeaderTokenCount = tokens.get(i).componentTokenCount();
+            i += groupHeaderTokenCount;
+
+            final List<Token> fields = new ArrayList<>();
+            i = collectFields(tokens, i, fields);
+            sb.append(generateFields(groupName, fields, indent + INDENT));
+
+            final List<Token> groups = new ArrayList<>();
+            i = collectGroups(tokens, i, groups);
+            generateGroups(sb, groups, indent + INDENT);
+
+            final List<Token> varData = new ArrayList<>();
+            collectVarData(tokens, i, varData);
+            sb.append(generateVarData(formatClassName(groupName), varData, indent + INDENT));
+
+            sb.append(indent).append("    };\n");
+            sb.append(generateGroupProperty(groupName, groupToken, cppTypeForNumInGroup, indent));
+        }
     }
 
     private void generateGroupClassHeader(
@@ -374,114 +374,118 @@ public class CppGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        for (int i = 0, size = tokens.size(); i < size; i++)
+        for (int i = 0, size = tokens.size(); i < size;)
         {
             final Token token = tokens.get(i);
-            if (token.signal() == Signal.BEGIN_VAR_DATA)
+            if (token.signal() != Signal.BEGIN_VAR_DATA)
             {
-                final String propertyName = toUpperFirstChar(token.name());
-                final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
-                final Token lengthToken = tokens.get(i + 2);
-                final int lengthOfLengthField = lengthToken.encodedLength();
-                final String lengthCppType = cppTypeName(lengthToken.encoding().primitiveType());
-
-                generateFieldMetaAttributeMethod(sb, token, indent);
-
-                generateVarDataDescriptors(
-                    sb, token, propertyName, characterEncoding, lengthToken, lengthOfLengthField, lengthCppType, indent);
-
-                sb.append(String.format(
-                    indent + "    const char *%1$s(void)\n" +
-                    indent + "    {\n" +
-                             "%2$s" +
-                    indent + "         const char *fieldPtr = (m_buffer + position() + %3$d);\n" +
-                    indent + "         position(position() + %3$d + *((%4$s *)(m_buffer + position())));\n" +
-                    indent + "         return fieldPtr;\n" +
-                    indent + "    }\n\n",
-                    formatPropertyName(propertyName),
-                    generateTypeFieldNotPresentCondition(token.version(), BASE_INDENT),
-                    lengthOfLengthField,
-                    lengthCppType
-                ));
-
-                sb.append(String.format(
-                    indent + "    std::uint64_t get%1$s(char *dst, const std::uint64_t length)\n" +
-                    indent + "    {\n" +
-                            "%2$s" +
-                    indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
-                    indent + "        std::uint64_t lengthPosition = position();\n" +
-                    indent + "        position(lengthPosition + lengthOfLengthField);\n" +
-                    indent + "        std::uint64_t dataLength = %4$s(*((%5$s *)(m_buffer + lengthPosition)));\n" +
-                    indent + "        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
-                    indent + "        std::uint64_t pos = position();\n" +
-                    indent + "        position(position() + dataLength);\n" +
-                    indent + "        std::memcpy(dst, m_buffer + pos, bytesToCopy);\n" +
-                    indent + "        return bytesToCopy;\n" +
-                    indent + "    }\n\n",
-                    propertyName,
-                    generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
-                    lengthOfLengthField,
-                    formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
-                    lengthCppType
-                ));
-
-                sb.append(String.format(
-                    indent + "    std::uint64_t put%1$s(const char *src, const std::uint64_t length)\n" +
-                    indent + "    {\n" +
-                    indent + "        std::uint64_t lengthOfLengthField = %2$d;\n" +
-                    indent + "        std::uint64_t lengthPosition = position();\n" +
-                    indent + "        position(lengthPosition + lengthOfLengthField);\n" +
-                    indent + "        *((%3$s *)(m_buffer + lengthPosition)) = %4$s((%3$s)length);\n" +
-                    indent + "        std::uint64_t pos = position();\n" +
-                    indent + "        position(position() + length);\n" +
-                    indent + "        std::memcpy(m_buffer + pos, src, length);\n" +
-                    indent + "        return length;\n" +
-                    indent + "    }\n\n",
-                    propertyName,
-                    lengthOfLengthField,
-                    lengthCppType,
-                    formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType())
-                ));
-
-                sb.append(String.format(
-                    indent + "    const std::string get%1$sAsString()\n" +
-                    indent + "    {\n" +
-                             "%2$s" +
-                    indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
-                    indent + "        std::uint64_t lengthPosition = position();\n" +
-                    indent + "        position(lengthPosition + lengthOfLengthField);\n" +
-                    indent + "        std::uint64_t dataLength = %4$s(*((%5$s *)(m_buffer + lengthPosition)));\n" +
-                    indent + "        std::uint64_t pos = position();\n" +
-                    indent + "        const std::string result(m_buffer + pos, dataLength);\n" +
-                    indent + "        position(position() + dataLength);\n" +
-                    indent + "        return std::move(result);\n" +
-                    indent + "    }\n\n",
-                    propertyName,
-                    generateStringNotPresentCondition(token.version(), BASE_INDENT),
-                    lengthOfLengthField,
-                    formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
-                    lengthCppType
-                ));
-
-                sb.append(String.format(
-                    indent + "    %1$s &put%2$s(const std::string& str)\n" +
-                    indent + "    {\n" +
-                    indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
-                    indent + "        std::uint64_t lengthPosition = position();\n" +
-                    indent + "        position(lengthPosition + lengthOfLengthField);\n" +
-                    indent + "        *((%4$s *)(m_buffer + lengthPosition)) = %5$s((%4$s)str.length());\n" +
-                    indent + "        std::uint64_t pos = position();\n" +
-                    indent + "        position(position() + str.length());\n" +
-                    indent + "        std::memcpy(m_buffer + pos, str.c_str(), str.length());\n" +
-                    indent + "        return *this;\n" +
-                    indent + "    }\n",
-                    className,
-                    propertyName,
-                    lengthOfLengthField,
-                    lengthCppType,
-                    formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType())
-                ));
+                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + token);
             }
+
+            final String propertyName = toUpperFirstChar(token.name());
+            final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
+            final Token lengthToken = tokens.get(i + 2);
+            final int lengthOfLengthField = lengthToken.encodedLength();
+            final String lengthCppType = cppTypeName(lengthToken.encoding().primitiveType());
+
+            generateFieldMetaAttributeMethod(sb, token, indent);
+
+            generateVarDataDescriptors(
+                sb, token, propertyName, characterEncoding, lengthToken, lengthOfLengthField, lengthCppType, indent);
+
+            sb.append(String.format(
+                indent + "    const char *%1$s(void)\n" +
+                indent + "    {\n" +
+                         "%2$s" +
+                indent + "         const char *fieldPtr = (m_buffer + position() + %3$d);\n" +
+                indent + "         position(position() + %3$d + *((%4$s *)(m_buffer + position())));\n" +
+                indent + "         return fieldPtr;\n" +
+                indent + "    }\n\n",
+                formatPropertyName(propertyName),
+                generateTypeFieldNotPresentCondition(token.version(), BASE_INDENT),
+                lengthOfLengthField,
+                lengthCppType
+            ));
+
+            sb.append(String.format(
+                indent + "    std::uint64_t get%1$s(char *dst, const std::uint64_t length)\n" +
+                indent + "    {\n" +
+                        "%2$s" +
+                indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
+                indent + "        std::uint64_t lengthPosition = position();\n" +
+                indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                indent + "        std::uint64_t dataLength = %4$s(*((%5$s *)(m_buffer + lengthPosition)));\n" +
+                indent + "        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
+                indent + "        std::uint64_t pos = position();\n" +
+                indent + "        position(position() + dataLength);\n" +
+                indent + "        std::memcpy(dst, m_buffer + pos, bytesToCopy);\n" +
+                indent + "        return bytesToCopy;\n" +
+                indent + "    }\n\n",
+                propertyName,
+                generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
+                lengthOfLengthField,
+                formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
+                lengthCppType
+            ));
+
+            sb.append(String.format(
+                indent + "    std::uint64_t put%1$s(const char *src, const std::uint64_t length)\n" +
+                indent + "    {\n" +
+                indent + "        std::uint64_t lengthOfLengthField = %2$d;\n" +
+                indent + "        std::uint64_t lengthPosition = position();\n" +
+                indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                indent + "        *((%3$s *)(m_buffer + lengthPosition)) = %4$s((%3$s)length);\n" +
+                indent + "        std::uint64_t pos = position();\n" +
+                indent + "        position(position() + length);\n" +
+                indent + "        std::memcpy(m_buffer + pos, src, length);\n" +
+                indent + "        return length;\n" +
+                indent + "    }\n\n",
+                propertyName,
+                lengthOfLengthField,
+                lengthCppType,
+                formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType())
+            ));
+
+            sb.append(String.format(
+                indent + "    const std::string get%1$sAsString()\n" +
+                indent + "    {\n" +
+                         "%2$s" +
+                indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
+                indent + "        std::uint64_t lengthPosition = position();\n" +
+                indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                indent + "        std::uint64_t dataLength = %4$s(*((%5$s *)(m_buffer + lengthPosition)));\n" +
+                indent + "        std::uint64_t pos = position();\n" +
+                indent + "        const std::string result(m_buffer + pos, dataLength);\n" +
+                indent + "        position(position() + dataLength);\n" +
+                indent + "        return std::move(result);\n" +
+                indent + "    }\n\n",
+                propertyName,
+                generateStringNotPresentCondition(token.version(), BASE_INDENT),
+                lengthOfLengthField,
+                formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
+                lengthCppType
+            ));
+
+            sb.append(String.format(
+                indent + "    %1$s &put%2$s(const std::string& str)\n" +
+                indent + "    {\n" +
+                indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
+                indent + "        std::uint64_t lengthPosition = position();\n" +
+                indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                indent + "        *((%4$s *)(m_buffer + lengthPosition)) = %5$s((%4$s)str.length());\n" +
+                indent + "        std::uint64_t pos = position();\n" +
+                indent + "        position(position() + str.length());\n" +
+                indent + "        std::memcpy(m_buffer + pos, str.c_str(), str.length());\n" +
+                indent + "        return *this;\n" +
+                indent + "    }\n",
+                className,
+                propertyName,
+                lengthOfLengthField,
+                lengthCppType,
+                formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType())
+            ));
+
+            i += token.componentTokenCount();
         }
 
         return sb;

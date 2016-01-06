@@ -233,35 +233,37 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> tokens,
         final String indent) throws IOException
     {
-        for (int index = 0, size = tokens.size(); index < size; index++)
+        for (int i = 0, size = tokens.size(); i < size; i++)
         {
-            final Token groupToken = tokens.get(index);
-            if (groupToken.signal() == Signal.BEGIN_GROUP)
+            final Token groupToken = tokens.get(i);
+            if (groupToken.signal() != Signal.BEGIN_GROUP)
             {
-                final String groupName = decoderName(formatClassName(groupToken.name()));
-                sb.append(generateGroupDecoderProperty(groupName, groupToken, indent));
-
-                generateAnnotations(indent + INDENT, groupName, tokens, sb, index + 1, this::decoderName);
-                generateGroupDecoderClassHeader(sb, groupName, outerClassName, tokens, index, indent + INDENT);
-
-                ++index;
-                final int groupHeaderTokenCount = tokens.get(index).componentTokenCount();
-                index += groupHeaderTokenCount;
-
-                final List<Token> fields = new ArrayList<>();
-                index = collectFields(tokens, index, fields);
-                sb.append(generateDecoderFields(fields, indent + INDENT));
-
-                final List<Token> groups = new ArrayList<>();
-                index = collectGroups(tokens, index, groups);
-                generateDecoderGroups(sb, outerClassName, groups, indent + INDENT);
-
-                final List<Token> varData = new ArrayList<>();
-                index = collectVarData(tokens, index, varData);
-                sb.append(generateDecoderVarData(varData, indent + INDENT));
-
-                sb.append(indent).append("    }\n");
+                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
             }
+
+            final String groupName = decoderName(formatClassName(groupToken.name()));
+            sb.append(generateGroupDecoderProperty(groupName, groupToken, indent));
+
+            generateAnnotations(indent + INDENT, groupName, tokens, sb, i + 1, this::decoderName);
+            generateGroupDecoderClassHeader(sb, groupName, outerClassName, tokens, i, indent + INDENT);
+
+            ++i;
+            final int groupHeaderTokenCount = tokens.get(i).componentTokenCount();
+            i += groupHeaderTokenCount;
+
+            final List<Token> fields = new ArrayList<>();
+            i = collectFields(tokens, i, fields);
+            sb.append(generateDecoderFields(fields, indent + INDENT));
+
+            final List<Token> groups = new ArrayList<>();
+            i = collectGroups(tokens, i, groups);
+            generateDecoderGroups(sb, outerClassName, groups, indent + INDENT);
+
+            final List<Token> varData = new ArrayList<>();
+            i = collectVarData(tokens, i, varData);
+            sb.append(generateDecoderVarData(varData, indent + INDENT));
+
+            sb.append(indent).append("    }\n");
         }
     }
 
@@ -271,36 +273,38 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> tokens,
         final String indent) throws IOException
     {
-        for (int index = 0, size = tokens.size(); index < size; index++)
+        for (int i = 0, size = tokens.size(); i < size; i++)
         {
-            final Token groupToken = tokens.get(index);
-            if (groupToken.signal() == Signal.BEGIN_GROUP)
+            final Token groupToken = tokens.get(i);
+            if (groupToken.signal() != Signal.BEGIN_GROUP)
             {
-                final String groupName = groupToken.name();
-                final String groupClassName = formatClassName(encoderName(groupName));
-                sb.append(generateGroupEncoderProperty(groupName, groupToken, indent));
-
-                generateAnnotations(indent + INDENT, groupClassName, tokens, sb, index + 1, this::encoderName);
-                generateGroupEncoderClassHeader(sb, groupName, outerClassName, tokens, index, indent + INDENT);
-
-                ++index;
-                final int groupHeaderTokenCount = tokens.get(index).componentTokenCount();
-                index += groupHeaderTokenCount;
-
-                final List<Token> fields = new ArrayList<>();
-                index = collectFields(tokens, index, fields);
-                sb.append(generateEncoderFields(groupClassName, fields, indent + INDENT));
-
-                final List<Token> groups = new ArrayList<>();
-                index = collectGroups(tokens, index, groups);
-                generateEncoderGroups(sb, outerClassName, groups, indent + INDENT);
-
-                final List<Token> varData = new ArrayList<>();
-                index = collectVarData(tokens, index, varData);
-                sb.append(generateEncoderVarData(groupClassName, varData, indent + INDENT));
-
-                sb.append(indent).append("    }\n");
+                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
             }
+
+            final String groupName = groupToken.name();
+            final String groupClassName = formatClassName(encoderName(groupName));
+            sb.append(generateGroupEncoderProperty(groupName, groupToken, indent));
+
+            generateAnnotations(indent + INDENT, groupClassName, tokens, sb, i + 1, this::encoderName);
+            generateGroupEncoderClassHeader(sb, groupName, outerClassName, tokens, i, indent + INDENT);
+
+            ++i;
+            final int groupHeaderTokenCount = tokens.get(i).componentTokenCount();
+            i += groupHeaderTokenCount;
+
+            final List<Token> fields = new ArrayList<>();
+            i = collectFields(tokens, i, fields);
+            sb.append(generateEncoderFields(groupClassName, fields, indent + INDENT));
+
+            final List<Token> groups = new ArrayList<>();
+            i = collectGroups(tokens, i, groups);
+            generateEncoderGroups(sb, outerClassName, groups, indent + INDENT);
+
+            final List<Token> varData = new ArrayList<>();
+            i = collectVarData(tokens, i, varData);
+            sb.append(generateEncoderVarData(groupClassName, varData, indent + INDENT));
+
+            sb.append(indent).append("    }\n");
         }
     }
 
@@ -600,12 +604,12 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        for (int i = 0, size = tokens.size(); i < size; i++)
+        for (int i = 0, size = tokens.size(); i < size;)
         {
             final Token token = tokens.get(i);
             if (token.signal() != Signal.BEGIN_VAR_DATA)
             {
-                continue;
+                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + token);
             }
 
             generateFieldIdMethod(sb, token, indent);
@@ -645,6 +649,8 @@ public class JavaGenerator implements CodeGenerator
 
             generateDataDecodeMethods(
                 sb, token, propertyName, sizeOfLengthField, lengthType, byteOrderStr, characterEncoding, indent);
+
+            i += token.componentTokenCount();
         }
 
         return sb;
@@ -654,12 +660,12 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        for (int i = 0, size = tokens.size(); i < size; i++)
+        for (int i = 0, size = tokens.size(); i < size;)
         {
             final Token token = tokens.get(i);
             if (token.signal() != Signal.BEGIN_VAR_DATA)
             {
-                continue;
+                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + token);
             }
 
             generateFieldIdMethod(sb, token, indent);
@@ -684,6 +690,8 @@ public class JavaGenerator implements CodeGenerator
                 characterEncoding,
                 className,
                 indent);
+
+            i += token.componentTokenCount();
         }
 
         return sb;
