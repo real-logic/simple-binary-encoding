@@ -11,6 +11,8 @@ Further details on the background and usage of SBE can be found on the
 An XSD for SBE specs can be found
 [here](https://github.com/real-logic/simple-binary-encoding/blob/master/sbe-tool/src/main/resources/fpl/SimpleBinary1-0.xsd)
 
+For the latest version information and changes see the [Change Log](https://github.com/real-logic/simple-binary-encoding/wiki/Change-Log). 
+
 This SBE implementation is designed with work very efficiently with the [Aeron](https://github.com/real-logic/Aeron) 
 messaging system for low-latency and high-throughput communications. The generated codec stubs can wrap the Aeron buffers
 directly for zero copy semantics. 
