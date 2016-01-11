@@ -19,6 +19,8 @@
         <property name="tabWidth" value="4"/>
         <property name="severity" value="error"/>
 
+        <module name="Indentation"/>
+
         <module name="ConstantName"/>
 
         <module name="FinalLocalVariable"/>

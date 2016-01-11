@@ -61,9 +61,9 @@ public class ExampleTokenListener implements TokenListener
 
         printScope();
         out.append(fieldToken.name())
-           .append('=')
-           .append(value)
-           .println();
+            .append('=')
+            .append(value)
+            .println();
     }
 
     public void onEnum(
@@ -90,9 +90,9 @@ public class ExampleTokenListener implements TokenListener
 
         printScope();
         out.append(fieldToken.name())
-           .append('=')
-           .append(value)
-           .println();
+            .append('=')
+            .append(value)
+            .println();
     }
 
     public void onBitSet(
@@ -137,9 +137,9 @@ public class ExampleTokenListener implements TokenListener
     {
         printScope();
         out.append(token.name())
-           .append(" Group Header : numInGroup=")
-           .append(Integer.toString(numInGroup))
-           .println();
+            .append(" Group Header : numInGroup=")
+            .append(Integer.toString(numInGroup))
+            .println();
     }
 
     public void onBeginGroup(final Token token, final int groupIndex, final int numInGroup)
@@ -169,9 +169,9 @@ public class ExampleTokenListener implements TokenListener
 
         printScope();
         out.append(fieldToken.name())
-           .append('=')
-           .append(value)
-           .println();
+            .append('=')
+            .append(value)
+            .println();
     }
 
     private static CharSequence readEncodingAsString(
