@@ -218,7 +218,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             indent + "    inline void wrapForDecode(char *buffer, std::uint64_t *pos, const std::uint64_t actingVersion," +
-                     " const std::uint64_t bufferLength)\n" +
+                " const std::uint64_t bufferLength)\n" +
             indent + "    {\n" +
             indent + "        m_buffer = buffer;\n" +
             indent + "        m_bufferLength = bufferLength;\n" +
@@ -235,7 +235,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             indent + "    inline void wrapForEncode(char *buffer, const %3$s count," +
-                     " std::uint64_t *pos, const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
+                " std::uint64_t *pos, const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
             indent + "    {\n" +
             indent + "        m_buffer = buffer;\n" +
             indent + "        m_bufferLength = bufferLength;\n" +
@@ -396,7 +396,7 @@ public class CppGenerator implements CodeGenerator
             sb.append(String.format(
                 indent + "    const char *%1$s(void)\n" +
                 indent + "    {\n" +
-                         "%2$s" +
+                    "%2$s" +
                 indent + "         const char *fieldPtr = (m_buffer + position() + %3$d);\n" +
                 indent + "         position(position() + %3$d + *((%4$s *)(m_buffer + position())));\n" +
                 indent + "         return fieldPtr;\n" +
@@ -410,7 +410,7 @@ public class CppGenerator implements CodeGenerator
             sb.append(String.format(
                 indent + "    std::uint64_t get%1$s(char *dst, const std::uint64_t length)\n" +
                 indent + "    {\n" +
-                        "%2$s" +
+                    "%2$s" +
                 indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
                 indent + "        std::uint64_t lengthPosition = position();\n" +
                 indent + "        position(lengthPosition + lengthOfLengthField);\n" +
@@ -449,7 +449,7 @@ public class CppGenerator implements CodeGenerator
             sb.append(String.format(
                 indent + "    const std::string get%1$sAsString()\n" +
                 indent + "    {\n" +
-                         "%2$s" +
+                    "%2$s" +
                 indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
                 indent + "        std::uint64_t lengthPosition = position();\n" +
                 indent + "        position(lengthPosition + lengthOfLengthField);\n" +
@@ -638,7 +638,8 @@ public class CppGenerator implements CodeGenerator
         tokens
             .stream()
             .filter((token) -> token.signal() == Signal.CHOICE)
-            .forEach((token) ->
+            .forEach(
+                (token) ->
                 {
                     final String choiceName = formatPropertyName(token.name());
                     final String typeName = cppTypeName(token.encoding().primitiveType());
@@ -712,12 +713,12 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-           "    static %1$s::Value get(const %2$s value)\n" +
-           "    {\n" +
-           "        switch (value)\n" +
-           "        {\n",
-           enumName,
-           cppTypeName(tokens.get(0).encoding().primitiveType())
+            "    static %1$s::Value get(const %2$s value)\n" +
+            "    {\n" +
+            "        switch (value)\n" +
+            "        {\n",
+            enumName,
+            cppTypeName(tokens.get(0).encoding().primitiveType())
         ));
 
         for (final Token token : tokens)
@@ -904,7 +905,7 @@ public class CppGenerator implements CodeGenerator
             i += tokens.get(i).componentTokenCount();
         }
 
-       return sb;
+        return sb;
     }
 
     private CharSequence generatePrimitiveProperty(
@@ -999,7 +1000,7 @@ public class CppGenerator implements CodeGenerator
             "\n" +
             indent + "    %1$s %2$s(void) const\n" +
             indent + "    {\n" +
-                              "%3$s" +
+                "%3$s" +
             indent + "        return %4$s(*((%1$s *)(m_buffer + m_offset + %5$d)));\n" +
             indent + "    }\n\n",
             cppTypeName,
@@ -1061,7 +1062,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw std::runtime_error(\"index out of range for %2$s [E104]\");\n" +
             indent + "        }\n\n" +
-                             "%4$s" +
+                "%4$s" +
             indent + "        return %5$s(*((%1$s *)(m_buffer + m_offset + %6$d + (index * %7$d))));\n" +
             indent + "    }\n\n",
             cppTypeName,
@@ -1097,7 +1098,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "             throw std::runtime_error(\"length too large for get%1$s [E106]\");\n" +
             indent + "        }\n\n" +
-                             "%3$s" +
+                "%3$s" +
             indent + "        std::memcpy(dst, m_buffer + m_offset + %4$d, length);\n" +
             indent + "        return length;\n" +
             indent + "    }\n\n",

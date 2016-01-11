@@ -34,7 +34,8 @@ public class ValidationUtil
         return Character.isLetterOrDigit(c) || c == '_';
     }
 
-    private static final Set<String> CPP_KEYWORDS = new HashSet<>(Arrays.asList(new String[]
+    private static final Set<String> CPP_KEYWORDS = new HashSet<>(
+        Arrays.asList(new String[]
         {
             "alignas", "and", "and_eq", "asm", "auto",
             "bitand", "bitor", "bool", "break", "case",
@@ -107,7 +108,8 @@ public class ValidationUtil
         return true;
     }
 
-    private static final Set<String> JAVA_KEYWORDS = new HashSet<>(Arrays.asList(new String[]
+    private static final Set<String> JAVA_KEYWORDS = new HashSet<>(
+        Arrays.asList(new String[]
         {
             "abstract", "assert", "boolean", "break", "byte",
             "case", "catch", "char", "class", "const",

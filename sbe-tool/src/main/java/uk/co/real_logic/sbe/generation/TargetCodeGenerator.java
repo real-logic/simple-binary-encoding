@@ -31,25 +31,25 @@ import static uk.co.real_logic.sbe.SbeTool.*;
 public enum TargetCodeGenerator
 {
     JAVA()
+    {
+        public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
         {
-            public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
-            {
-                return new JavaGenerator(
-                    ir,
-                    System.getProperty(JAVA_ENCODING_BUFFER_TYPE, JAVA_DEFAULT_ENCODING_BUFFER_TYPE),
-                    System.getProperty(JAVA_DECODING_BUFFER_TYPE, JAVA_DEFAULT_DECODING_BUFFER_TYPE),
-                    Boolean.getBoolean(JAVA_GROUP_ORDER_ANNOTATION),
-                    new PackageOutputManager(outputDir, ir.applicableNamespace()));
-            }
-        },
+            return new JavaGenerator(
+                ir,
+                System.getProperty(JAVA_ENCODING_BUFFER_TYPE, JAVA_DEFAULT_ENCODING_BUFFER_TYPE),
+                System.getProperty(JAVA_DECODING_BUFFER_TYPE, JAVA_DEFAULT_DECODING_BUFFER_TYPE),
+                Boolean.getBoolean(JAVA_GROUP_ORDER_ANNOTATION),
+                new PackageOutputManager(outputDir, ir.applicableNamespace()));
+        }
+    },
 
     CPP()
+    {
+        public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
         {
-            public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
-            {
-                return new CppGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
-            }
-        };
+            return new CppGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
+        }
+    };
 
 
     /**

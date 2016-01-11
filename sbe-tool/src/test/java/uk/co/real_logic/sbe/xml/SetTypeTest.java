@@ -102,6 +102,7 @@ public class SetTypeTest
             {
                 foundBit3++;
             }
+
             count++;
         }
 
@@ -172,31 +173,31 @@ public class SetTypeTest
         parseTestXmlWithMap("/types/set", testXmlString);
     }
 
-     @Test
-     public void shouldHandleEncodingTypesWithNamedTypes()
-         throws Exception
-     {
-         final MessageSchema schema = parse(TestUtil.getLocalResource("encoding-types-schema.xml"), ParserOptions.DEFAULT);
-         final List<Field> fields = schema.getMessage(1).fields();
+    @Test
+    public void shouldHandleEncodingTypesWithNamedTypes()
+        throws Exception
+    {
+        final MessageSchema schema = parse(TestUtil.getLocalResource("encoding-types-schema.xml"), ParserOptions.DEFAULT);
+        final List<Field> fields = schema.getMessage(1).fields();
 
-         assertNotNull(fields);
+        assertNotNull(fields);
 
-         SetType type = (SetType)fields.get(3).type();
+        SetType type = (SetType)fields.get(3).type();
 
-         assertThat(type.encodingType(), is(PrimitiveType.UINT8));
+        assertThat(type.encodingType(), is(PrimitiveType.UINT8));
 
-         type = (SetType)fields.get(4).type();
+        type = (SetType)fields.get(4).type();
 
-         assertThat(type.encodingType(), is(PrimitiveType.UINT16));
+        assertThat(type.encodingType(), is(PrimitiveType.UINT16));
 
-         type = (SetType)fields.get(5).type();
+        type = (SetType)fields.get(5).type();
 
-         assertThat(type.encodingType(), is(PrimitiveType.UINT32));
+        assertThat(type.encodingType(), is(PrimitiveType.UINT32));
 
-         type = (SetType)fields.get(6).type();
+        type = (SetType)fields.get(6).type();
 
-         assertThat(type.encodingType(), is(PrimitiveType.UINT64));
-     }
+        assertThat(type.encodingType(), is(PrimitiveType.UINT64));
+    }
 
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
