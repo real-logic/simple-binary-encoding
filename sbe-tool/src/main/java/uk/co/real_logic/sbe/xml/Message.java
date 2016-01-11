@@ -65,6 +65,8 @@ public class Message
     {
         id = Integer.parseInt(getAttributeValue(messageNode, "id"));                        // required
         name = getAttributeValue(messageNode, "name");                                      // required
+        checkForValidName(messageNode, name);
+
         description = getAttributeValueOrNull(messageNode, "description");                  // optional
         blockLength = Integer.parseInt(getAttributeValue(messageNode, "blockLength", "0")); // 0 means not set
         semanticType = getAttributeValueOrNull(messageNode, "semanticType");                // optional

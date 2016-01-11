@@ -17,6 +17,7 @@ package uk.co.real_logic.sbe.xml;
 
 import org.w3c.dom.Node;
 
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.checkForValidName;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
@@ -40,6 +41,8 @@ public abstract class Type
     public Type(final Node node)
     {
         name = getAttributeValue(node, "name");
+        checkForValidName(node, name);
+
         presence = Presence.get(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
         semanticType = getAttributeValueOrNull(node, "semanticType");
