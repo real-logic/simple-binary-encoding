@@ -91,7 +91,7 @@ public class Field
             }
         }
 
-        checkForValidName(node, name);
+        checkForValidName(node, Character.toLowerCase(name.charAt(0)) + name.substring(1));
 
         if (type instanceof EnumType && presence == Presence.CONSTANT)
         {
