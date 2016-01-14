@@ -25,21 +25,21 @@ import java.util.Map;
  */
 public class JavaUtil
 {
-    private static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
+    private static final Map<PrimitiveType, String> TYPE_NAME_BY_PRIMITIVE_TYPE_MAP = new EnumMap<>(PrimitiveType.class);
 
     static
     {
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.CHAR, "byte");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT8, "byte");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT16, "short");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT32, "int");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT64, "long");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT8, "short");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT16, "int");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT32, "long");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT64, "long");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.FLOAT, "float");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.DOUBLE, "double");
+        TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.CHAR, "byte");
+        TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.INT8, "byte");
+        TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.INT16, "short");
+        TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.INT32, "int");
+        TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.INT64, "long");
+        TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.UINT8, "short");
+        TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.UINT16, "int");
+        TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.UINT32, "long");
+        TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.UINT64, "long");
+        TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.FLOAT, "float");
+        TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.DOUBLE, "double");
     }
 
     /**
@@ -50,7 +50,7 @@ public class JavaUtil
      */
     public static String javaTypeName(final PrimitiveType primitiveType)
     {
-        return typeNameByPrimitiveTypeMap.get(primitiveType);
+        return TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.get(primitiveType);
     }
 
     /**
