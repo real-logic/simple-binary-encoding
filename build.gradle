@@ -172,7 +172,7 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
-        compile 'uk.co.real-logic:Agrona:0.4.9'
+        compile 'uk.co.real-logic:Agrona:0.4.10-SNAPSHOT'
 
         testCompile files('build/classes/generated')
     }
@@ -319,8 +319,8 @@ project(':sbe-benchmarks') {
 
     dependencies {
         compile project(':sbe-tool')
-        compile 'org.openjdk.jmh:jmh-core:1.11.2'
-        compile 'org.openjdk.jmh:jmh-generator-annprocess:1.11.2'
+        compile 'org.openjdk.jmh:jmh-core:1.11.3'
+        compile 'org.openjdk.jmh:jmh-generator-annprocess:1.11.3'
         compile files('build/classes/generated')
     }
 
