@@ -21,7 +21,7 @@ plugins {
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
 def sbeGroup = 'uk.co.real-logic'
-def sbeVersion = '1.3.1-RC3-SNAPSHOT'
+def sbeVersion = '1.3.1-RC3'
 
 group = sbeGroup
 version = sbeVersion
@@ -75,6 +75,10 @@ def projectPom = {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.10'
+}
+
+configurations {
+    shadow
 }
 
 subprojects {
@@ -143,28 +147,11 @@ subprojects {
     signing {
         required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
         sign configurations.archives
+        sign configurations.shadow
     }
 
     install {
         repositories.mavenInstaller.pom.project(projectPom)
-    }
-
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project(projectPom)
-            }
-        }
     }
 }
 
@@ -172,7 +159,7 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
-        compile 'uk.co.real-logic:Agrona:0.4.10-SNAPSHOT'
+        compile 'uk.co.real-logic:Agrona:0.4.10'
 
         testCompile files('build/classes/generated')
     }
@@ -201,6 +188,24 @@ project(':sbe-tool') {
             'sbe.validation.stop.on.error': 'true',
             'sbe.validation.xsd': validationXsdPath)
         args = ['src/test/resources/json-printer-test-schema.xml', 'src/test/resources/composite-elements-schema.xml']
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project(projectPom)
+            }
+        }
     }
 
     task sourcesJar(type: Jar) {
@@ -236,12 +241,47 @@ project(':sbe-all') {
         from project(':sbe-tool').javadoc.destinationDir
     }
 
-    jar {
+    shadowJar {
+        classifier = ''
         manifest.attributes('Main-Class': 'uk.co.real_logic.sbe.SbeTool')
     }
 
-    shadowJar {
-        classifier = ''
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project(projectPom)
+            }
+        }
+    }
+
+    uploadShadow {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project(projectPom)
+            }
+        }
+
+        mustRunAfter 'uploadArchives'
     }
 
     artifacts {
@@ -296,6 +336,24 @@ project(':sbe-samples') {
 
     task runJavaExamples {
         dependsOn 'runExampleUsingGeneratedStub', 'runExampleUsingGeneratedStubExtension', 'runOtfExample'
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project(projectPom)
+            }
+        }
     }
 
     task sourcesJar(type: Jar) {
@@ -354,6 +412,24 @@ project(':sbe-benchmarks') {
         manifest.attributes('Main-Class': 'org.openjdk.jmh.Main')
     }
 
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project(projectPom)
+            }
+        }
+    }
+
     task sourcesJar(type: Jar) {
         classifier = 'sources'
         from sourceSets.main.allSource
@@ -400,4 +476,8 @@ task runBenchmarks(type: Exec) {
         '-Dagrona.disable.bounds.checks=true',
         '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
         '-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
+}
+
+task uploadToMavenCentral {
+    dependsOn 'sbe-tool:uploadArchives', 'sbe-samples:uploadArchives', 'sbe-benchmarks:uploadArchives', 'sbe-all:uploadArchives', 'sbe-all:uploadShadow'
 }
