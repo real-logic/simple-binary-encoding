@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 
 public class ExampleUsingGeneratedStub
 {
@@ -154,7 +155,7 @@ public class ExampleUsingGeneratedStub
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-        car.make(new String(MAKE));
+        car.make(new String(MAKE, Charset.forName("UTF-8")));
         car.putModel(MODEL, srcOffset, MODEL.length);
         car.putActivationCode(ACTIVATION_CODE, 0, ACTIVATION_CODE.capacity());
 
@@ -239,7 +240,7 @@ public class ExampleUsingGeneratedStub
 
         final UnsafeBuffer tempBuffer = new UnsafeBuffer(buffer);
         final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());
-        sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength));
+        sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength, Charset.forName("UTF-8")));
 
         sb.append("\ncar.encodedLength=").append(car.encodedLength());
 
