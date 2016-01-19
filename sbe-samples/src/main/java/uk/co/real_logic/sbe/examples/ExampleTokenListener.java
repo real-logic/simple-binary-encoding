@@ -217,12 +217,9 @@ public class ExampleTokenListener implements TokenListener
         {
             return encoding.constValue();
         }
-        else if (token.isOptionalEncoding())
+        else if (token.isOptionalEncoding() && actingVersion < token.version())
         {
-            if (actingVersion < token.version())
-            {
-                return encoding.applicableNullValue();
-            }
+            return encoding.applicableNullValue();
         }
 
         return null;

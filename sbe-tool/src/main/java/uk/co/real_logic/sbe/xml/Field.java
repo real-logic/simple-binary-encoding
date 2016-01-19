@@ -83,12 +83,9 @@ public class Field
 
     public void validate(final Node node)
     {
-        if (type != null)
+        if (type != null && semanticType != null && type.semanticType() != null && !semanticType.equals(type.semanticType()))
         {
-            if (semanticType != null && type.semanticType() != null && !semanticType.equals(type.semanticType()))
-            {
-                handleError(node, "Mismatched semanticType on type and field: " + name);
-            }
+            handleError(node, "Mismatched semanticType on type and field: " + name);
         }
 
         checkForValidName(node, Character.toLowerCase(name.charAt(0)) + name.substring(1));

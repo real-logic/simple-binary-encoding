@@ -1209,12 +1209,9 @@ public class JavaGenerator implements CodeGenerator
                         groupClassNames.add(formatClassName(nameMapping.apply(groupName)));
                     }
                 }
-                else if (tokens.get(index).signal() == Signal.END_GROUP)
+                else if (tokens.get(index).signal() == Signal.END_GROUP && --level < 0)
                 {
-                    if (--level < 0)
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
 

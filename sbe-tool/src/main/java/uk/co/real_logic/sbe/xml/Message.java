@@ -334,21 +334,18 @@ public class Message
 
                 variableLengthBlock = true;
             }
-            else if (null != field.type())
+            else if (null != field.type() && Presence.CONSTANT != field.presence())
             {
-                if (Presence.CONSTANT != field.presence())
+                final int size = field.type().encodedLength();
+
+                if (Token.VARIABLE_LENGTH == size)
                 {
-                    final int size = field.type().encodedLength();
+                    variableLengthBlock = true;
+                }
 
-                    if (Token.VARIABLE_LENGTH == size)
-                    {
-                        variableLengthBlock = true;
-                    }
-
-                    if (!variableLengthBlock)
-                    {
-                        offset += size;
-                    }
+                if (!variableLengthBlock)
+                {
+                    offset += size;
                 }
             }
         }

@@ -46,12 +46,9 @@ public class NamespaceOutputManager implements OutputManager
             namespaceName.replace('.', '_');
 
         outputDir = new File(dirName);
-        if (!outputDir.exists())
+        if (!outputDir.exists() && !outputDir.mkdirs())
         {
-            if (!outputDir.mkdirs())
-            {
-                throw new IllegalStateException("Unable to create directory: " + dirName);
-            }
+            throw new IllegalStateException("Unable to create directory: " + dirName);
         }
     }
 
