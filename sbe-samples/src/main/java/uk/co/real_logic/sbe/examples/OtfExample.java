@@ -36,12 +36,17 @@ import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-public class OtfExample
+public final class OtfExample
 {
     private static final MessageHeaderEncoder MESSAGE_HEADER = new MessageHeaderEncoder();
     private static final CarEncoder CAR_ENCODER = new CarEncoder();
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
+
+    private OtfExample()
+    {
+        throw new AssertionError("Must not instantiate this class.");
+    }
 
     public static void main(final String[] args) throws Exception
     {

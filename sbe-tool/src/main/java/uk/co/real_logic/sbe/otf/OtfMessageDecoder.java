@@ -34,8 +34,13 @@ import static uk.co.real_logic.sbe.ir.Signal.BEGIN_VAR_DATA;
  * be reused repeatably by calling {@link OtfMessageDecoder#decode(DirectBuffer, int, int, int, List, TokenListener)}
  * which is thread safe to be used across multiple threads.
  */
-public class OtfMessageDecoder
+public final class OtfMessageDecoder
 {
+    private OtfMessageDecoder()
+    {
+        throw new AssertionError("Must not instantiate this class.");
+    }
+
     /**
      * Decode a message from the provided buffer based on the message schema described with IR {@link Token}s.
      *

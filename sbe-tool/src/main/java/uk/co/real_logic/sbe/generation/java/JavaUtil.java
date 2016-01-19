@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Utilities for mapping between IR and the Java language.
  */
-public class JavaUtil
+public final class JavaUtil
 {
     private static final Map<PrimitiveType, String> TYPE_NAME_BY_PRIMITIVE_TYPE_MAP = new EnumMap<>(PrimitiveType.class);
 
@@ -41,6 +41,12 @@ public class JavaUtil
         TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.FLOAT, "float");
         TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.DOUBLE, "double");
     }
+
+    private JavaUtil()
+    {
+        throw new AssertionError("Must not instantiate this class.");
+    }
+
 
     /**
      * Map the name of a {@link uk.co.real_logic.sbe.PrimitiveType} to a Java primitive type name.

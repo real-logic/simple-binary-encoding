@@ -53,8 +53,13 @@ import java.io.FileInputStream;
  * <li><code>sbe.output.dir</code>: Target directory for code generation, defaults to current directory.</li>
  * </ul>
  */
-public class SbeTool
+public final class SbeTool
 {
+    private SbeTool()
+    {
+        throw new AssertionError("Must not instantiate this class.");
+    }
+
     /**
      * Boolean system property to control throwing exceptions on all errors
      */

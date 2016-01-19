@@ -25,7 +25,7 @@ import java.nio.channels.FileChannel;
 
 import static extension.CarEncoder.cupHolderCountNullValue;
 
-public class ExampleUsingGeneratedStubExtension
+public final class ExampleUsingGeneratedStubExtension
 {
     private static final String ENCODING_FILENAME = "sbe.encoding.filename";
     private static final byte[] VEHICLE_CODE;
@@ -56,6 +56,11 @@ public class ExampleUsingGeneratedStubExtension
         {
             throw new RuntimeException(ex);
         }
+    }
+
+    private ExampleUsingGeneratedStubExtension()
+    {
+        throw new AssertionError("Must not instantiate this class.");
     }
 
     public static void main(final String[] args) throws Exception

@@ -22,8 +22,13 @@ import java.util.Set;
 /**
  * Various validation utilities used across parser, IR, and generator
  */
-public class ValidationUtil
+public final class ValidationUtil
 {
+    private ValidationUtil()
+    {
+        throw new AssertionError("Must not instantiate this class.");
+    }
+
     private static boolean isSbeCppIdentifierStart(final char c)
     {
         return Character.isLetter(c) || c == '_';

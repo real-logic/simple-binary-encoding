@@ -24,8 +24,13 @@ import java.nio.ByteOrder;
 /**
  * Utility functions for applying to types to help with on-the-fly (OTF) decoding.
  */
-public class Types
+public final class Types
 {
+    private Types()
+    {
+        throw new AssertionError("Must not instantiate this class.");
+    }
+
     /**
      * Get an integer value from a buffer at a given index for a {@link PrimitiveType}.
      *
