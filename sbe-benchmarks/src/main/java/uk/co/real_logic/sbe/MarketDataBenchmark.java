@@ -173,9 +173,9 @@ public class MarketDataBenchmark
         System.out.printf(
             "%d - %d(ns) average duration for %s.testEncode() - message encodedLength %d\n",
             runNumber,
-            (totalDuration / reps),
+            totalDuration / reps,
             benchmark.getClass().getName(),
-            (state.marketDataEncoder.encodedLength() + state.messageHeaderEncoder.encodedLength()));
+            state.marketDataEncoder.encodedLength() + state.messageHeaderEncoder.encodedLength());
     }
 
     private static void perfTestDecode(final int runNumber)
@@ -195,8 +195,8 @@ public class MarketDataBenchmark
         System.out.printf(
             "%d - %d(ns) average duration for %s.testDecode() - message encodedLength %d\n",
             runNumber,
-            (totalDuration / reps),
+            totalDuration / reps,
             benchmark.getClass().getName(),
-            (state.marketDataDecoder.encodedLength() + state.messageHeaderDecoder.encodedLength()));
+            state.marketDataDecoder.encodedLength() + state.messageHeaderDecoder.encodedLength());
     }
 }

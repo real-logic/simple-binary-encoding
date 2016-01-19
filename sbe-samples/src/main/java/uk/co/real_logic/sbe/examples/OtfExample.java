@@ -66,7 +66,6 @@ public class OtfExample
         final UnsafeBuffer buffer = new UnsafeBuffer(encodedMsgBuffer);
 
         final int templateId = headerDecoder.getTemplateId(buffer, bufferOffset);
-        final int schemaId = headerDecoder.getSchemaId(buffer, bufferOffset);
         final int actingVersion = headerDecoder.getSchemaVersion(buffer, bufferOffset);
         final int blockLength = headerDecoder.getBlockLength(buffer, bufferOffset);
 
