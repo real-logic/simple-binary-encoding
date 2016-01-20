@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Utilities for mapping between IR and the C++ language.
  */
-public class CppUtil
+public final class CppUtil
 {
     private static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
 
@@ -41,6 +41,11 @@ public class CppUtil
         typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT64, "std::uint64_t");
         typeNameByPrimitiveTypeMap.put(PrimitiveType.FLOAT, "float");
         typeNameByPrimitiveTypeMap.put(PrimitiveType.DOUBLE, "double");
+    }
+
+    private CppUtil()
+    {
+        throw new AssertionError("Must not instantiate this class.");
     }
 
     /**

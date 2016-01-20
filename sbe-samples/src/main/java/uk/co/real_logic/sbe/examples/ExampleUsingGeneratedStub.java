@@ -25,15 +25,15 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
-public class ExampleUsingGeneratedStub
+public final class ExampleUsingGeneratedStub
 {
+
     private static final String ENCODING_FILENAME = "sbe.encoding.filename";
     private static final byte[] VEHICLE_CODE;
     private static final byte[] MANUFACTURER_CODE;
     private static final byte[] MAKE;
     private static final byte[] MODEL;
     private static final UnsafeBuffer ACTIVATION_CODE;
-
     private static final MessageHeaderDecoder MESSAGE_HEADER_DECODER = new MessageHeaderDecoder();
     private static final MessageHeaderEncoder MESSAGE_HEADER_ENCODER = new MessageHeaderEncoder();
     private static final CarDecoder CAR_DECODER = new CarDecoder();
@@ -53,6 +53,11 @@ public class ExampleUsingGeneratedStub
         {
             throw new RuntimeException(ex);
         }
+    }
+
+    private ExampleUsingGeneratedStub()
+    {
+        throw new AssertionError("Must not instantiate this class.");
     }
 
     public static void main(final String[] args) throws Exception

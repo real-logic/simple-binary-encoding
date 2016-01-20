@@ -27,9 +27,14 @@ import uk.co.real_logic.sbe.ir.generated.SignalCodec;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
 
-public class IrUtil
+public final class IrUtil
 {
     public static final byte[] EMPTY_BUFFER = new byte[0];
+
+    private IrUtil()
+    {
+        throw new AssertionError("Must not instantiate this class.");
+    }
 
     public static ByteOrderCodec mapByteOrder(final ByteOrder byteOrder)
     {

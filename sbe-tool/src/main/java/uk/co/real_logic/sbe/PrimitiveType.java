@@ -144,8 +144,13 @@ public enum PrimitiveType
      * Used to hold a reference to the values array without having it defensively copied
      * on every call to {@link PrimitiveType#values()}.
      */
-    static class Singleton
+    static final class Singleton
     {
+        private Singleton()
+        {
+            throw new AssertionError("Must not instantiate this class.");
+        }
+
         public static final PrimitiveType[] VALUES = PrimitiveType.values();
     }
 }
