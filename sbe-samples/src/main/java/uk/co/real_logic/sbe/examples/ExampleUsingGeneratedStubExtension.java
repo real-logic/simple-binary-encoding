@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 
 import static extension.CarEncoder.cupHolderCountNullValue;
 
@@ -247,7 +248,7 @@ public class ExampleUsingGeneratedStubExtension
 
         final UnsafeBuffer tempBuffer = new UnsafeBuffer(buffer);
         final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());
-        sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength));
+        sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength, Charset.forName("UTF-8")));
 
         sb.append("\ncar.encodedLength=").append(car.encodedLength());
 
