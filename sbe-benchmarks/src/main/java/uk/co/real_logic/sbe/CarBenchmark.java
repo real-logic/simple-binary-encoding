@@ -130,11 +130,13 @@ public class CarBenchmark
            .next().speed(75).mpg(40.0f);
 
         final CarEncoder.PerformanceFiguresEncoder perfFigures = car.performanceFiguresCount(2);
-        perfFigures.next().octaneRating((short)95)
+        perfFigures
+            .next().octaneRating((short)95)
                    .accelerationCount(3).next().mph(30).seconds(4.0f)
                    .next().mph(60).seconds(7.5f)
                    .next().mph(100).seconds(12.2f);
-        perfFigures.next().octaneRating((short)99)
+        perfFigures
+            .next().octaneRating((short)99)
                    .accelerationCount(3).next().mph(30).seconds(3.8f)
                    .next().mph(60).seconds(7.1f)
                    .next().mph(100).seconds(11.8f);
@@ -239,9 +241,9 @@ public class CarBenchmark
         System.out.printf(
             "%d - %d(ns) average duration for %s.testEncode() - message encodedLength %d\n",
             runNumber,
-            (totalDuration / reps),
+            totalDuration / reps,
             benchmark.getClass().getName(),
-            (state.carEncoder.encodedLength() + state.messageHeaderEncoder.encodedLength()));
+            state.carEncoder.encodedLength() + state.messageHeaderEncoder.encodedLength());
     }
 
     private static void perfTestDecode(final int runNumber)
@@ -261,8 +263,8 @@ public class CarBenchmark
         System.out.printf(
             "%d - %d(ns) average duration for %s.testDecode() - message encodedLength %d\n",
             runNumber,
-            (totalDuration / reps),
+            totalDuration / reps,
             benchmark.getClass().getName(),
-            (state.carDecoder.encodedLength() + state.messageHeaderDecoder.encodedLength()));
+            state.carDecoder.encodedLength() + state.messageHeaderDecoder.encodedLength());
     }
 }
