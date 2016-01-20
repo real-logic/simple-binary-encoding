@@ -127,7 +127,7 @@ public class JsonTokenListener implements TokenListener
         }
     }
 
-    private boolean isLastGroup(final int groupIndex, final int numInGroup)
+    private static boolean isLastGroup(final int groupIndex, final int numInGroup)
     {
         return groupIndex == numInGroup - 1;
     }

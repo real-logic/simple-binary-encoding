@@ -198,7 +198,7 @@ public class ExampleTokenListener implements TokenListener
         return sb;
     }
 
-    private long readEncodingAsLong(
+    private static long readEncodingAsLong(
         final DirectBuffer buffer, final int bufferIndex, final Token typeToken, final int actingVersion)
     {
         final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, actingVersion);

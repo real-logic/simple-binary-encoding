@@ -128,7 +128,7 @@ public class IrDecoder implements AutoCloseable
         return index;
     }
 
-    private int captureMessage(final List<Token> tokens, int index, final Ir ir)
+    private static int captureMessage(final List<Token> tokens, int index, final Ir ir)
     {
         final List<Token> messageTokens = new ArrayList<>();
 
