@@ -70,7 +70,7 @@ public class JavaGenerator implements CodeGenerator
         this.shouldGenerateGroupOrderAnnotation = shouldGenerateGroupOrderAnnotation;
     }
 
-    private String validateBufferImplementation(
+    private static String validateBufferImplementation(
         final String fullyQualifiedBufferImplementation, final Class<?> bufferClass)
     {
         Verify.notNull(fullyQualifiedBufferImplementation, "fullyQualifiedBufferImplementation");
@@ -460,7 +460,7 @@ public class JavaGenerator implements CodeGenerator
         ));
     }
 
-    private String primitiveTypeName(final Token token)
+    private static String primitiveTypeName(final Token token)
     {
         return javaTypeName(token.encoding().primitiveType());
     }
@@ -524,7 +524,7 @@ public class JavaGenerator implements CodeGenerator
         ));
     }
 
-    private CharSequence generateGroupDecoderProperty(final String groupName, final Token token, final String indent)
+    private static CharSequence generateGroupDecoderProperty(final String groupName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
         final String className = formatClassName(groupName);
@@ -1159,7 +1159,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFileHeader(final String className, final String packageName, final String fqBuffer)
+    private static CharSequence generateFileHeader(final String className, final String packageName, final String fqBuffer)
     {
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
@@ -1173,7 +1173,7 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateEnumFileHeader(final String className, final String packageName)
+    private static CharSequence generateEnumFileHeader(final String className, final String packageName)
     {
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
@@ -1233,7 +1233,7 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private CharSequence generateClassDeclaration(final String className)
+    private static CharSequence generateClassDeclaration(final String className)
     {
         return String.format(
             "@SuppressWarnings(\"all\")\n" +
@@ -1263,7 +1263,7 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private CharSequence generateEnumDeclaration(final String name)
+    private static CharSequence generateEnumDeclaration(final String name)
     {
         return "public enum " + name + "\n{\n";
     }
@@ -1426,7 +1426,7 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateArrayFieldNotPresentCondition(final int sinceVersion, final String indent)
+    private static CharSequence generateArrayFieldNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
         {
@@ -1442,7 +1442,7 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateStringNotPresentCondition(final int sinceVersion, final String indent)
+    private static CharSequence generateStringNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
         {
@@ -1458,7 +1458,7 @@ public class JavaGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateTypeFieldNotPresentCondition(final int sinceVersion, final String indent)
+    private static CharSequence generateTypeFieldNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
         {
@@ -1535,7 +1535,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private void generateArrayLengthMethod(
+    private static void generateArrayLengthMethod(
         final String propertyName, final String indent, final int fieldLength, final StringBuilder sb)
     {
         sb.append(String.format(
@@ -1612,12 +1612,12 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private int sizeOfPrimitive(final Encoding encoding)
+    private static int sizeOfPrimitive(final Encoding encoding)
     {
         return encoding.primitiveType().size();
     }
 
-    private void generateCharacterEncodingMethod(
+    private static void generateCharacterEncodingMethod(
         final StringBuilder sb, final String propertyName, final String encoding, final String indent)
     {
         sb.append(String.format(
@@ -1688,7 +1688,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateByteLiteralList(final byte[] bytes)
+    private static CharSequence generateByteLiteralList(final byte[] bytes)
     {
         final StringBuilder values = new StringBuilder();
         for (final byte b : bytes)
@@ -1704,7 +1704,7 @@ public class JavaGenerator implements CodeGenerator
         return values;
     }
 
-    private CharSequence generateFixedFlyweightCode(
+    private static CharSequence generateFixedFlyweightCode(
         final String className, final int size, final boolean callsSuper, final String bufferImplementation)
     {
         final String body = callsSuper ?
@@ -1912,7 +1912,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private void eachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
+    private static void eachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
     {
         for (int i = 0, size = tokens.size(); i < size;)
         {
@@ -1930,7 +1930,7 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private void generateFieldIdMethod(final StringBuilder sb, final Token token, final String indent)
+    private static void generateFieldIdMethod(final StringBuilder sb, final Token token, final String indent)
     {
         sb.append(String.format(
             "\n" +
@@ -1943,7 +1943,7 @@ public class JavaGenerator implements CodeGenerator
         ));
     }
 
-    private void generateFieldMetaAttributeMethod(final StringBuilder sb, final Token token, final String indent)
+    private static void generateFieldMetaAttributeMethod(final StringBuilder sb, final Token token, final String indent)
     {
         final Encoding encoding = token.encoding();
         final String epoch = encoding.epoch() == null ? "" : encoding.epoch();

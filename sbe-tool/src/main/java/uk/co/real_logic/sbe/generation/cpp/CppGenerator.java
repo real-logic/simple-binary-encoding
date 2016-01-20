@@ -187,7 +187,7 @@ public class CppGenerator implements CodeGenerator
         }
     }
 
-    private void generateGroupClassHeader(
+    private static void generateGroupClassHeader(
         final StringBuilder sb, final String groupName, final List<Token> tokens, final int index, final String indent)
     {
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
@@ -317,7 +317,7 @@ public class CppGenerator implements CodeGenerator
         ));
     }
 
-    private CharSequence generateGroupProperty(
+    private static CharSequence generateGroupProperty(
         final String groupName, final Token token, final String cppTypeForNumInGroup, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
@@ -615,7 +615,7 @@ public class CppGenerator implements CodeGenerator
         }
     }
 
-    private CharSequence generateChoiceNotPresentCondition(final int sinceVersion, final String indent)
+    private static CharSequence generateChoiceNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
         {
@@ -707,7 +707,7 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateEnumLookupMethod(final List<Token> tokens, final Token encodingToken)
+    private static CharSequence generateEnumLookupMethod(final List<Token> tokens, final Token encodingToken)
     {
         final String enumName = formatClassName(encodingToken.name());
         final StringBuilder sb = new StringBuilder();
@@ -759,7 +759,7 @@ public class CppGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateArrayFieldNotPresentCondition(final int sinceVersion, final String indent)
+    private static CharSequence generateArrayFieldNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
         {
@@ -775,7 +775,7 @@ public class CppGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateStringNotPresentCondition(final int sinceVersion, final String indent)
+    private static CharSequence generateStringNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
         {
@@ -791,7 +791,7 @@ public class CppGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateTypeFieldNotPresentCondition(final int sinceVersion, final String indent)
+    private static CharSequence generateTypeFieldNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
         {
@@ -807,7 +807,10 @@ public class CppGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateFileHeader(final String namespaceName, final String className, final List<String> typesToInclude)
+    private static CharSequence generateFileHeader(
+        final String namespaceName,
+        final String className,
+        final List<String> typesToInclude)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -859,7 +862,7 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateClassDeclaration(final String className)
+    private static CharSequence generateClassDeclaration(final String className)
     {
         return String.format(
             "class %s\n" +
@@ -868,7 +871,7 @@ public class CppGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateEnumDeclaration(final String name)
+    private static CharSequence generateEnumDeclaration(final String name)
     {
         return "class " + name + "\n{\npublic:\n\n";
     }
@@ -1227,7 +1230,7 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFixedFlyweightCode(final String className, final int size)
+    private static CharSequence generateFixedFlyweightCode(final String className, final int size)
     {
         return String.format(
             "private:\n" +
@@ -1290,7 +1293,7 @@ public class CppGenerator implements CodeGenerator
         );
     }
 
-    private CharSequence generateConstructorsAndOperators(final String className)
+    private static CharSequence generateConstructorsAndOperators(final String className)
     {
         return String.format(
             "    %1$s(void) : m_buffer(nullptr), m_bufferLength(0), m_offset(0) {}\n\n" +
@@ -1497,7 +1500,7 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private void generateFieldMetaAttributeMethod(final StringBuilder sb, final Token token, final String indent)
+    private static void generateFieldMetaAttributeMethod(final StringBuilder sb, final Token token, final String indent)
     {
         final Encoding encoding = token.encoding();
         final String epoch = encoding.epoch() == null ? "" : encoding.epoch();
@@ -1523,7 +1526,10 @@ public class CppGenerator implements CodeGenerator
         ));
     }
 
-    private CharSequence generateEnumFieldNotPresentCondition(final int sinceVersion, final String enumName, final String indent)
+    private static CharSequence generateEnumFieldNotPresentCondition(
+        final int sinceVersion,
+        final String enumName,
+        final String indent)
     {
         if (0 == sinceVersion)
         {
@@ -1605,7 +1611,7 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private Object generateBitsetProperty(final String propertyName, final Token token, final String indent)
+    private static Object generateBitsetProperty(final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1636,7 +1642,7 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private Object generateCompositeProperty(final String propertyName, final Token token, final String indent)
+    private static Object generateCompositeProperty(final String propertyName, final Token token, final String indent)
     {
         final String compositeName = formatClassName(token.name());
         final int offset = token.offset();

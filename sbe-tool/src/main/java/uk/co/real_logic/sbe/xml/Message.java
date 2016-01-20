@@ -379,7 +379,7 @@ public class Message
         return blockLength;
     }
 
-    private void validateBlockLength(final Node node, final long specifiedBlockLength, final long computedBlockLength)
+    private static void validateBlockLength(final Node node, final long specifiedBlockLength, final long computedBlockLength)
     {
         if (0 != specifiedBlockLength && computedBlockLength > specifiedBlockLength)
         {

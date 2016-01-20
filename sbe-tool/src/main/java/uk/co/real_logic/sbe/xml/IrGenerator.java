@@ -412,7 +412,7 @@ public class IrGenerator
         tokenList.add(token);
     }
 
-    private String semanticTypeOf(final Type type, final Field field)
+    private static String semanticTypeOf(final Type type, final Field field)
     {
         final String typeSemanticType = null != type ? type.semanticType() : null;
         if (typeSemanticType != null)
