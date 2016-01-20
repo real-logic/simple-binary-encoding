@@ -20,6 +20,8 @@ import uk.co.real_logic.agrona.Verify;
 
 import java.io.*;
 
+import static java.io.File.separatorChar;
+
 /**
  * {@link OutputManager} for managing the creation of C++98 source files as the target of code generation.
  * The character encoding for the {@link java.io.Writer} is UTF-8.
@@ -29,7 +31,7 @@ public class NamespaceOutputManager implements OutputManager
     private final File outputDir;
 
     /**
-     * Create a new {@link uk.co.real_logic.agrona.generation.OutputManager} for generating C++98 source files into a given package.
+     * Create a new {@link OutputManager} for generating C++98 source files into a given package.
      *
      * @param baseDirectoryName for the generated source code.
      * @param namespaceName for the generated source code relative to the baseDirectoryName.
@@ -42,8 +44,8 @@ public class NamespaceOutputManager implements OutputManager
         Verify.notNull(namespaceName, "applicableNamespace");
 
         final String dirName =
-            (baseDirectoryName.endsWith("" + File.separatorChar) ? baseDirectoryName : baseDirectoryName + File.separatorChar) +
-            namespaceName.replace('.', '_');
+            (baseDirectoryName.endsWith("" + separatorChar) ? baseDirectoryName : baseDirectoryName + separatorChar) +
+                namespaceName.replace('.', '_');
 
         outputDir = new File(dirName);
         if (!outputDir.exists() && !outputDir.mkdirs())

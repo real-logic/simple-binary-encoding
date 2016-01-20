@@ -212,14 +212,13 @@ public class ExampleTokenListener implements TokenListener
 
     private static PrimitiveValue constOrNotPresentValue(final Token token, final int actingVersion)
     {
-        final Encoding encoding = token.encoding();
         if (token.isConstantEncoding())
         {
-            return encoding.constValue();
+            return token.encoding().constValue();
         }
         else if (token.isOptionalEncoding() && actingVersion < token.version())
         {
-            return encoding.applicableNullValue();
+            return token.encoding().applicableNullValue();
         }
 
         return null;
