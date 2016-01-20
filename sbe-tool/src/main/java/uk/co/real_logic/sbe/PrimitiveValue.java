@@ -17,7 +17,6 @@ package uk.co.real_logic.sbe;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import static java.lang.Double.doubleToLongBits;
@@ -155,7 +154,7 @@ public class PrimitiveValue
                 {
                     throw new IllegalArgumentException("Constant char value malformed: " + value);
                 }
-                return new PrimitiveValue((long)value.getBytes(Charset.forName("UTF-8"))[0], 1);
+                return new PrimitiveValue((long)value.getBytes(forName("US-ASCII"))[0], 1);
 
             case INT8:
                 return new PrimitiveValue(Byte.parseByte(value), 1);

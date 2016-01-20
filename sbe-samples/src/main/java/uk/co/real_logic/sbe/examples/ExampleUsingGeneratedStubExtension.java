@@ -22,7 +22,6 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 
 import static extension.CarEncoder.cupHolderCountNullValue;
 
@@ -38,9 +37,6 @@ public class ExampleUsingGeneratedStubExtension
     private static final baseline.MessageHeaderDecoder MESSAGE_HEADER_DECODER = new baseline.MessageHeaderDecoder();
     private static final baseline.MessageHeaderEncoder MESSAGE_HEADER_ENCODER = new baseline.MessageHeaderEncoder();
     private static final baseline.CarEncoder CAR_ENCODER_0 = new baseline.CarEncoder();
-    private static final extension.CarEncoder CAR_ENCODER_1 = new extension.CarEncoder();
-
-    private static final baseline.CarDecoder CAR_DECODER_0 = new baseline.CarDecoder();
     private static final extension.CarDecoder CAR_DECODER_1 = new extension.CarDecoder();
 
     static
@@ -51,7 +47,7 @@ public class ExampleUsingGeneratedStubExtension
             MANUFACTURER_CODE = "123".getBytes(baseline.EngineEncoder.manufacturerCodeCharacterEncoding());
             MAKE = "Honda".getBytes(baseline.CarEncoder.makeCharacterEncoding());
             MODEL = "Civic VTi".getBytes(baseline.CarEncoder.modelCharacterEncoding());
-            ACTIVATION_CODE = new UnsafeBuffer(ByteBuffer.wrap(new byte[]{'d', 'e', 'a', 'd', 'b', 'e', 'e', 'f'}));
+            ACTIVATION_CODE = new UnsafeBuffer("abcdef".getBytes(baseline.CarEncoder.activationCodeCharacterEncoding()));
         }
         catch (final UnsupportedEncodingException ex)
         {
@@ -248,7 +244,8 @@ public class ExampleUsingGeneratedStubExtension
 
         final UnsafeBuffer tempBuffer = new UnsafeBuffer(buffer);
         final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());
-        sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength, Charset.forName("UTF-8")));
+        sb.append("\ncar.activationCode=").append(
+            new String(buffer, 0, tempBufferLength, extension.CarEncoder.activationCodeCharacterEncoding()));
 
         sb.append("\ncar.encodedLength=").append(car.encodedLength());
 

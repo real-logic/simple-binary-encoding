@@ -47,7 +47,7 @@ public class ExampleUsingGeneratedStub
             MANUFACTURER_CODE = "123".getBytes(EngineEncoder.manufacturerCodeCharacterEncoding());
             MAKE = "Honda".getBytes(CarEncoder.makeCharacterEncoding());
             MODEL = "Civic VTi".getBytes(CarEncoder.modelCharacterEncoding());
-            ACTIVATION_CODE = new UnsafeBuffer(ByteBuffer.wrap(new byte[]{'d', 'e', 'a', 'd', 'b', 'e', 'e', 'f'}));
+            ACTIVATION_CODE = new UnsafeBuffer("abcdef".getBytes(CarEncoder.activationCodeCharacterEncoding()));
         }
         catch (final UnsupportedEncodingException ex)
         {
@@ -240,7 +240,8 @@ public class ExampleUsingGeneratedStub
 
         final UnsafeBuffer tempBuffer = new UnsafeBuffer(buffer);
         final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());
-        sb.append("\ncar.activationCode=").append(new String(buffer, 0, tempBufferLength, Charset.forName("UTF-8")));
+        sb.append("\ncar.activationCode=").append(
+            new String(buffer, 0, tempBufferLength, CarEncoder.activationCodeCharacterEncoding()));
 
         sb.append("\ncar.encodedLength=").append(car.encodedLength());
 
