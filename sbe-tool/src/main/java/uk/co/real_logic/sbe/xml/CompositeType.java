@@ -197,8 +197,7 @@ public class CompositeType extends Type
             XmlSchemaParser.handleWarning(node, "\"length\" should be UINT8 or UINT16");
         }
 
-        final String presence = getAttributeValueOrNull(node, "presence");
-        if ("optional".equals(presence))
+        if ("optional".equals(getAttributeValueOrNull(node, "presence")))
         {
             XmlSchemaParser.handleError(node, "composite for variable length data encoding cannot have presence=\"optional\"");
         }
