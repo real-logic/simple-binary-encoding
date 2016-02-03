@@ -31,6 +31,7 @@ import java.util.Map;
 
 import static javax.xml.xpath.XPathConstants.NODESET;
 import static uk.co.real_logic.sbe.PrimitiveType.isUnsigned;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
 /**
  * SBE compositeType.
@@ -194,6 +195,12 @@ public class CompositeType extends Type
         else if (lengthType.primitiveType() != PrimitiveType.UINT8 && lengthType.primitiveType() != PrimitiveType.UINT16)
         {
             XmlSchemaParser.handleWarning(node, "\"length\" should be UINT8 or UINT16");
+        }
+
+        final String presence = getAttributeValueOrNull(node, "presence");
+        if ("optional".equals(presence))
+        {
+            XmlSchemaParser.handleError(node, "composite for variable length data encoding cannot have presence=\"optional\"");
         }
 
         if (containedTypeByNameMap.get("varData") == null)
