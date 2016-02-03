@@ -31,6 +31,7 @@ class MessageHeader
 {
 private:
     char *m_buffer;
+    std::uint64_t m_bufferLength;
     std::uint64_t m_offset;
     std::uint64_t m_actingVersion;
 
@@ -41,6 +42,7 @@ private:
             throw std::runtime_error("buffer too short for flyweight [E107]");
         }
         m_buffer = buffer;
+        m_bufferLength = bufferLength;
         m_offset = offset;
         m_actingVersion = actingVersion;
     }
@@ -63,6 +65,7 @@ public:
     MessageHeader& operator=(MessageHeader&& codec)
     {
         m_buffer = codec.m_buffer;
+        m_bufferLength = codec.m_bufferLength;
         m_offset = codec.m_offset;
         m_actingVersion = codec.m_actingVersion;
         return *this;
@@ -73,6 +76,7 @@ public:
     MessageHeader& operator=(const MessageHeader& codec)
     {
         m_buffer = codec.m_buffer;
+        m_bufferLength = codec.m_bufferLength;
         m_offset = codec.m_offset;
         m_actingVersion = codec.m_actingVersion;
         return *this;

@@ -23,6 +23,7 @@
 
 #include <sbe/sbe.h>
 
+
 using namespace sbe;
 
 namespace uk_co_real_logic_sbe_ir_generated {
@@ -31,6 +32,7 @@ class VarDataEncoding
 {
 private:
     char *m_buffer;
+    std::uint64_t m_bufferLength;
     std::uint64_t m_offset;
     std::uint64_t m_actingVersion;
 
@@ -41,6 +43,7 @@ private:
             throw std::runtime_error("buffer too short for flyweight [E107]");
         }
         m_buffer = buffer;
+        m_bufferLength = bufferLength;
         m_offset = offset;
         m_actingVersion = actingVersion;
     }
@@ -63,6 +66,7 @@ public:
     VarDataEncoding& operator=(VarDataEncoding&& codec)
     {
         m_buffer = codec.m_buffer;
+        m_bufferLength = codec.m_bufferLength;
         m_offset = codec.m_offset;
         m_actingVersion = codec.m_actingVersion;
         return *this;
@@ -73,6 +77,7 @@ public:
     VarDataEncoding& operator=(const VarDataEncoding& codec)
     {
         m_buffer = codec.m_buffer;
+        m_bufferLength = codec.m_bufferLength;
         m_offset = codec.m_offset;
         m_actingVersion = codec.m_actingVersion;
         return *this;
