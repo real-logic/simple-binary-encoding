@@ -680,6 +680,16 @@ public class JavaGenerator implements CodeGenerator
             final String lengthJavaType = javaTypeName(lengthEncoding.primitiveType());
             final String byteOrderStr = byteOrderString(lengthEncoding);
 
+            sb.append(String.format(
+                "\n" +
+                indent + "    public static int %sHeaderLength()\n" +
+                indent + "    {\n" +
+                indent + "        return %d;\n" +
+                indent + "    }\n",
+                toLowerFirstChar(propertyName),
+                sizeOfLengthField
+            ));
+
             generateDataEncodeMethods(
                 sb,
                 propertyName,
