@@ -742,12 +742,12 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public String %1$s()\n" +
             indent + "    {\n" +
                      "%2$s" +
-            indent + "        final int sizeOfLengthField = %3$d;\n" +
+            indent + "        final int headerLength = %3$d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        final int dataLength = %4$s;\n" +
-            indent + "        parentMessage.limit(limit + sizeOfLengthField + dataLength);\n" +
+            indent + "        parentMessage.limit(limit + headerLength + dataLength);\n" +
             indent + "        final byte[] tmp = new byte[dataLength];\n" +
-            indent + "        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);\n\n" +
+            indent + "        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);\n\n" +
             indent + "        final String value;\n" +
             indent + "        try\n" +
             indent + "        {\n" +
@@ -780,6 +780,7 @@ public class JavaGenerator implements CodeGenerator
     {
         generateDataTypedEncoder(
             sb,
+            className,
             propertyName,
             sizeOfLengthField,
             fullReadOnlyBuffer,
@@ -790,6 +791,7 @@ public class JavaGenerator implements CodeGenerator
 
         generateDataTypedEncoder(
             sb,
+            className,
             propertyName,
             sizeOfLengthField,
             "byte[]",
@@ -812,12 +814,12 @@ public class JavaGenerator implements CodeGenerator
             indent + "            throw new RuntimeException(ex);\n" +
             indent + "        }\n\n" +
             indent + "        final int length = bytes.length;\n" +
-            indent + "        final int sizeOfLengthField = %4$d;\n" +
+            indent + "        final int headerLength = %4$d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
-            indent + "        parentMessage.limit(limit + sizeOfLengthField + length);\n" +
+            indent + "        parentMessage.limit(limit + headerLength + length);\n" +
             indent + "        final %5$s l = (%5$s)length;\n" +
             indent + "        %6$s;\n" +
-            indent + "        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);\n\n" +
+            indent + "        buffer.putBytes(limit + headerLength, bytes, 0, length);\n\n" +
             indent + "        return this;\n" +
             indent + "    }\n",
             className,
@@ -845,12 +847,12 @@ public class JavaGenerator implements CodeGenerator
             indent + "        final %s dst, final int dstOffset, final int length)\n" +
             indent + "    {\n" +
                      "%s" +
-            indent + "        final int sizeOfLengthField = %d;\n" +
+            indent + "        final int headerLength = %d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        final int dataLength = %s;\n" +
             indent + "        final int bytesCopied = Math.min(length, dataLength);\n" +
-            indent + "        parentMessage.limit(limit + sizeOfLengthField + dataLength);\n" +
-            indent + "        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
+            indent + "        parentMessage.limit(limit + headerLength + dataLength);\n" +
+            indent + "        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);\n\n" +
             indent + "        return bytesCopied;\n" +
             indent + "    }\n",
             propertyName,
@@ -863,6 +865,7 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateDataTypedEncoder(
         final StringBuilder sb,
+        final String className,
         final String propertyName,
         final int sizeOfLengthField,
         final String exchangeType,
@@ -873,17 +876,18 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-            indent + "    public int put%1$s(\n" +
-            indent + "        final %2$s src, final int srcOffset, final int length)\n" +
+            indent + "    public %1$s put%2$s(\n" +
+            indent + "        final %3$s src, final int srcOffset, final int length)\n" +
             indent + "    {\n" +
-            indent + "        final int sizeOfLengthField = %3$d;\n" +
+            indent + "        final int headerLength = %4$d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
-            indent + "        parentMessage.limit(limit + sizeOfLengthField + length);\n" +
-            indent + "        final %4$s l = (%4$s)length;\n" +
-            indent + "        %5$s;\n" +
-            indent + "        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);\n\n" +
-            indent + "        return length;\n" +
+            indent + "        parentMessage.limit(limit + headerLength + length);\n" +
+            indent + "        final %5$s l = (%5$s)length;\n" +
+            indent + "        %6$s;\n" +
+            indent + "        buffer.putBytes(limit + headerLength, src, srcOffset, length);\n\n" +
+            indent + "        return this;\n" +
             indent + "    }\n",
+            className,
             propertyName,
             exchangeType,
             sizeOfLengthField,

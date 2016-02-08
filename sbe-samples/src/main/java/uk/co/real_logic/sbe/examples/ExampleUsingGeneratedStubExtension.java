@@ -155,9 +155,9 @@ public class ExampleUsingGeneratedStubExtension
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-        car.putMake(MAKE, srcOffset, MAKE.length);
-        car.putModel(MODEL, srcOffset, MODEL.length);
-        car.putActivationCode(ACTIVATION_CODE, 0, ACTIVATION_CODE.capacity());
+        car.putMake(MAKE, srcOffset, MAKE.length)
+            .putModel(MODEL, srcOffset, MODEL.length)
+            .putActivationCode(ACTIVATION_CODE, 0, ACTIVATION_CODE.capacity());
 
         return car.encodedLength();
     }

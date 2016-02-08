@@ -399,12 +399,12 @@ public class TokenCodecDecoder
     public int getName(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -412,24 +412,24 @@ public class TokenCodecDecoder
     public int getName(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
     public String name()
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
-        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
+        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
         final String value;
         try
@@ -480,12 +480,12 @@ public class TokenCodecDecoder
     public int getConstValue(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -493,24 +493,24 @@ public class TokenCodecDecoder
     public int getConstValue(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
     public String constValue()
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
-        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
+        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
         final String value;
         try
@@ -561,12 +561,12 @@ public class TokenCodecDecoder
     public int getMinValue(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -574,24 +574,24 @@ public class TokenCodecDecoder
     public int getMinValue(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
     public String minValue()
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
-        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
+        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
         final String value;
         try
@@ -642,12 +642,12 @@ public class TokenCodecDecoder
     public int getMaxValue(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -655,24 +655,24 @@ public class TokenCodecDecoder
     public int getMaxValue(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
     public String maxValue()
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
-        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
+        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
         final String value;
         try
@@ -723,12 +723,12 @@ public class TokenCodecDecoder
     public int getNullValue(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -736,24 +736,24 @@ public class TokenCodecDecoder
     public int getNullValue(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
     public String nullValue()
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
-        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
+        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
         final String value;
         try
@@ -804,12 +804,12 @@ public class TokenCodecDecoder
     public int getCharacterEncoding(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -817,24 +817,24 @@ public class TokenCodecDecoder
     public int getCharacterEncoding(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
     public String characterEncoding()
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
-        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
+        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
         final String value;
         try
@@ -885,12 +885,12 @@ public class TokenCodecDecoder
     public int getEpoch(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -898,24 +898,24 @@ public class TokenCodecDecoder
     public int getEpoch(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
     public String epoch()
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
-        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
+        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
         final String value;
         try
@@ -966,12 +966,12 @@ public class TokenCodecDecoder
     public int getTimeUnit(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -979,24 +979,24 @@ public class TokenCodecDecoder
     public int getTimeUnit(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
     public String timeUnit()
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
-        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
+        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
         final String value;
         try
@@ -1047,12 +1047,12 @@ public class TokenCodecDecoder
     public int getSemanticType(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -1060,24 +1060,24 @@ public class TokenCodecDecoder
     public int getSemanticType(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
     public String semanticType()
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
-        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
+        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
         final String value;
         try
@@ -1128,12 +1128,12 @@ public class TokenCodecDecoder
     public int getDescription(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
@@ -1141,24 +1141,24 @@ public class TokenCodecDecoder
     public int getDescription(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
         final int bytesCopied = Math.min(length, dataLength);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
-        buffer.getBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);
+        parentMessage.limit(limit + headerLength + dataLength);
+        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
     }
 
     public String description()
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
         final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
-        parentMessage.limit(limit + sizeOfLengthField + dataLength);
+        parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
-        buffer.getBytes(limit + sizeOfLengthField, tmp, 0, dataLength);
+        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
         final String value;
         try

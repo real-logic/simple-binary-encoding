@@ -160,30 +160,35 @@ public class FrameCodecEncoder
         return "";
     }
 
-    public int putPackageName(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int packageNameHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putPackageName(
-        final byte[] src, final int srcOffset, final int length)
+    public FrameCodecEncoder putPackageName(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public FrameCodecEncoder putPackageName(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public FrameCodecEncoder packageName(final String value)
@@ -199,12 +204,12 @@ public class FrameCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
@@ -231,30 +236,35 @@ public class FrameCodecEncoder
         return "";
     }
 
-    public int putNamespaceName(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int namespaceNameHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putNamespaceName(
-        final byte[] src, final int srcOffset, final int length)
+    public FrameCodecEncoder putNamespaceName(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public FrameCodecEncoder putNamespaceName(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public FrameCodecEncoder namespaceName(final String value)
@@ -270,12 +280,12 @@ public class FrameCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
@@ -302,30 +312,35 @@ public class FrameCodecEncoder
         return "";
     }
 
-    public int putSemanticVersion(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int semanticVersionHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putSemanticVersion(
-        final byte[] src, final int srcOffset, final int length)
+    public FrameCodecEncoder putSemanticVersion(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public FrameCodecEncoder putSemanticVersion(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public FrameCodecEncoder semanticVersion(final String value)
@@ -341,12 +356,12 @@ public class FrameCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }

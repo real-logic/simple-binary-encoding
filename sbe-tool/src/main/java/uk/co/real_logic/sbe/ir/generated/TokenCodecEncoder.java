@@ -224,30 +224,35 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putName(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int nameHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putName(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putName(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public TokenCodecEncoder putName(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public TokenCodecEncoder name(final String value)
@@ -263,12 +268,12 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
@@ -295,30 +300,35 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putConstValue(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int constValueHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putConstValue(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putConstValue(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public TokenCodecEncoder putConstValue(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public TokenCodecEncoder constValue(final String value)
@@ -334,12 +344,12 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
@@ -366,30 +376,35 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putMinValue(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int minValueHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putMinValue(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putMinValue(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public TokenCodecEncoder putMinValue(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public TokenCodecEncoder minValue(final String value)
@@ -405,12 +420,12 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
@@ -437,30 +452,35 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putMaxValue(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int maxValueHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putMaxValue(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putMaxValue(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public TokenCodecEncoder putMaxValue(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public TokenCodecEncoder maxValue(final String value)
@@ -476,12 +496,12 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
@@ -508,30 +528,35 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putNullValue(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int nullValueHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putNullValue(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putNullValue(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public TokenCodecEncoder putNullValue(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public TokenCodecEncoder nullValue(final String value)
@@ -547,12 +572,12 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
@@ -579,30 +604,35 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putCharacterEncoding(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int characterEncodingHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putCharacterEncoding(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putCharacterEncoding(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public TokenCodecEncoder putCharacterEncoding(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public TokenCodecEncoder characterEncoding(final String value)
@@ -618,12 +648,12 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
@@ -650,30 +680,35 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putEpoch(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int epochHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putEpoch(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putEpoch(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public TokenCodecEncoder putEpoch(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public TokenCodecEncoder epoch(final String value)
@@ -689,12 +724,12 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
@@ -721,30 +756,35 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putTimeUnit(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int timeUnitHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putTimeUnit(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putTimeUnit(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public TokenCodecEncoder putTimeUnit(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public TokenCodecEncoder timeUnit(final String value)
@@ -760,12 +800,12 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
@@ -792,30 +832,35 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putSemanticType(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int semanticTypeHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putSemanticType(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putSemanticType(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public TokenCodecEncoder putSemanticType(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public TokenCodecEncoder semanticType(final String value)
@@ -831,12 +876,12 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
@@ -863,30 +908,35 @@ public class TokenCodecEncoder
         return "";
     }
 
-    public int putDescription(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public static int descriptionHeaderLength()
     {
-        final int sizeOfLengthField = 1;
-        final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
-
-        return length;
+        return 1;
     }
 
-    public int putDescription(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putDescription(
+        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, src, srcOffset, length);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
-        return length;
+        return this;
+    }
+
+    public TokenCodecEncoder putDescription(
+        final byte[] src, final int srcOffset, final int length)
+    {
+        final int headerLength = 1;
+        final int limit = parentMessage.limit();
+        parentMessage.limit(limit + headerLength + length);
+        final short l = (short)length;
+        buffer.putByte(limit, (byte)l);
+        buffer.putBytes(limit + headerLength, src, srcOffset, length);
+
+        return this;
     }
 
     public TokenCodecEncoder description(final String value)
@@ -902,12 +952,12 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
-        final int sizeOfLengthField = 1;
+        final int headerLength = 1;
         final int limit = parentMessage.limit();
-        parentMessage.limit(limit + sizeOfLengthField + length);
+        parentMessage.limit(limit + headerLength + length);
         final short l = (short)length;
         buffer.putByte(limit, (byte)l);
-        buffer.putBytes(limit + sizeOfLengthField, bytes, 0, length);
+        buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
     }
