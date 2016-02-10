@@ -44,8 +44,8 @@ Example for Maven:
 ```xml
 <dependency>
     <groupId>uk.co.real-logic</groupId>
-    <artifactId>sbe</artifactId>
-    <version>1.3-RC3</version>
+    <artifactId>sbe-all</artifactId>
+    <version>1.3.2-RC3</version>
 </dependency>
 ```
 
