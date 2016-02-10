@@ -122,20 +122,19 @@ public:
         Car::FuelFigures& fuelFigures = car.fuelFiguresCount(FUEL_FIGURES_COUNT);
 
         fuelFigures
-            .next().speed(fuel1Speed).mpg(fuel1Mpg);
-
-        fuelFigures.putUsageDescription(
-            FUEL_FIGURES_1_USAGE_DESCRIPTION, static_cast<int>(strlen(FUEL_FIGURES_1_USAGE_DESCRIPTION)));
-
-        fuelFigures
-            .next().speed(fuel2Speed).mpg(fuel2Mpg);
-        fuelFigures.putUsageDescription(
-            FUEL_FIGURES_2_USAGE_DESCRIPTION, static_cast<int>(strlen(FUEL_FIGURES_2_USAGE_DESCRIPTION)));
+            .next().speed(fuel1Speed).mpg(fuel1Mpg)
+            .putUsageDescription(
+                FUEL_FIGURES_1_USAGE_DESCRIPTION, static_cast<int>(strlen(FUEL_FIGURES_1_USAGE_DESCRIPTION)));
 
         fuelFigures
-            .next().speed(fuel3Speed).mpg(fuel3Mpg);
-        fuelFigures.putUsageDescription(
-            FUEL_FIGURES_3_USAGE_DESCRIPTION, static_cast<int>(strlen(FUEL_FIGURES_3_USAGE_DESCRIPTION)));
+            .next().speed(fuel2Speed).mpg(fuel2Mpg)
+            .putUsageDescription(
+                FUEL_FIGURES_2_USAGE_DESCRIPTION, static_cast<int>(strlen(FUEL_FIGURES_2_USAGE_DESCRIPTION)));
+
+        fuelFigures
+            .next().speed(fuel3Speed).mpg(fuel3Mpg)
+            .putUsageDescription(
+                FUEL_FIGURES_3_USAGE_DESCRIPTION, static_cast<int>(strlen(FUEL_FIGURES_3_USAGE_DESCRIPTION)));
 
         Car::PerformanceFigures &perfFigs = car.performanceFiguresCount(PERFORMANCE_FIGURES_COUNT);
 
@@ -153,9 +152,9 @@ public:
                 .next().mph(perf2bMph).seconds(perf2bSeconds)
                 .next().mph(perf2cMph).seconds(perf2cSeconds);
 
-        car.putMake(MAKE, static_cast<int>(strlen(MAKE)));
-        car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
-        car.putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
+        car.putMake(MAKE, static_cast<int>(strlen(MAKE)))
+            .putModel(MODEL, static_cast<int>(strlen(MODEL)))
+            .putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
 
         return car.encodedLength();
     }

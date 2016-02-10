@@ -628,7 +628,7 @@ public:
     }
 
 
-    static const std::uint64_t nameHeaderSize()
+    static const std::uint64_t nameHeaderLength()
     {
         return 1;
     }
@@ -658,7 +658,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putName(const char *src, const std::uint64_t length)
+    TokenCodec &putName(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -667,7 +667,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getNameAsString()
@@ -727,7 +727,7 @@ public:
     }
 
 
-    static const std::uint64_t constValueHeaderSize()
+    static const std::uint64_t constValueHeaderLength()
     {
         return 1;
     }
@@ -757,7 +757,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putConstValue(const char *src, const std::uint64_t length)
+    TokenCodec &putConstValue(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -766,7 +766,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getConstValueAsString()
@@ -826,7 +826,7 @@ public:
     }
 
 
-    static const std::uint64_t minValueHeaderSize()
+    static const std::uint64_t minValueHeaderLength()
     {
         return 1;
     }
@@ -856,7 +856,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putMinValue(const char *src, const std::uint64_t length)
+    TokenCodec &putMinValue(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -865,7 +865,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getMinValueAsString()
@@ -925,7 +925,7 @@ public:
     }
 
 
-    static const std::uint64_t maxValueHeaderSize()
+    static const std::uint64_t maxValueHeaderLength()
     {
         return 1;
     }
@@ -955,7 +955,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putMaxValue(const char *src, const std::uint64_t length)
+    TokenCodec &putMaxValue(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -964,7 +964,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getMaxValueAsString()
@@ -1024,7 +1024,7 @@ public:
     }
 
 
-    static const std::uint64_t nullValueHeaderSize()
+    static const std::uint64_t nullValueHeaderLength()
     {
         return 1;
     }
@@ -1054,7 +1054,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putNullValue(const char *src, const std::uint64_t length)
+    TokenCodec &putNullValue(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -1063,7 +1063,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getNullValueAsString()
@@ -1123,7 +1123,7 @@ public:
     }
 
 
-    static const std::uint64_t characterEncodingHeaderSize()
+    static const std::uint64_t characterEncodingHeaderLength()
     {
         return 1;
     }
@@ -1153,7 +1153,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putCharacterEncoding(const char *src, const std::uint64_t length)
+    TokenCodec &putCharacterEncoding(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -1162,7 +1162,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getCharacterEncodingAsString()
@@ -1222,7 +1222,7 @@ public:
     }
 
 
-    static const std::uint64_t epochHeaderSize()
+    static const std::uint64_t epochHeaderLength()
     {
         return 1;
     }
@@ -1252,7 +1252,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putEpoch(const char *src, const std::uint64_t length)
+    TokenCodec &putEpoch(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -1261,7 +1261,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getEpochAsString()
@@ -1321,7 +1321,7 @@ public:
     }
 
 
-    static const std::uint64_t timeUnitHeaderSize()
+    static const std::uint64_t timeUnitHeaderLength()
     {
         return 1;
     }
@@ -1351,7 +1351,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putTimeUnit(const char *src, const std::uint64_t length)
+    TokenCodec &putTimeUnit(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -1360,7 +1360,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getTimeUnitAsString()
@@ -1420,7 +1420,7 @@ public:
     }
 
 
-    static const std::uint64_t semanticTypeHeaderSize()
+    static const std::uint64_t semanticTypeHeaderLength()
     {
         return 1;
     }
@@ -1450,7 +1450,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putSemanticType(const char *src, const std::uint64_t length)
+    TokenCodec &putSemanticType(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -1459,7 +1459,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getSemanticTypeAsString()
@@ -1519,7 +1519,7 @@ public:
     }
 
 
-    static const std::uint64_t descriptionHeaderSize()
+    static const std::uint64_t descriptionHeaderLength()
     {
         return 1;
     }
@@ -1549,7 +1549,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putDescription(const char *src, const std::uint64_t length)
+    TokenCodec &putDescription(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -1558,7 +1558,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getDescriptionAsString()
