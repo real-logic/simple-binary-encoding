@@ -429,7 +429,7 @@ public class CppGenerator implements CodeGenerator
             ));
 
             sb.append(String.format(
-                indent + "    std::uint64_t put%1$s(const char *src, const std::uint64_t length)\n" +
+                indent + "    %5$s &put%1$s(const char *src, const std::uint64_t length)\n" +
                 indent + "    {\n" +
                 indent + "        std::uint64_t lengthOfLengthField = %2$d;\n" +
                 indent + "        std::uint64_t lengthPosition = position();\n" +
@@ -438,12 +438,13 @@ public class CppGenerator implements CodeGenerator
                 indent + "        std::uint64_t pos = position();\n" +
                 indent + "        position(position() + length);\n" +
                 indent + "        std::memcpy(m_buffer + pos, src, length);\n" +
-                indent + "        return length;\n" +
+                indent + "        return *this;\n" +
                 indent + "    }\n\n",
                 propertyName,
                 lengthOfLengthField,
                 lengthCppType,
-                formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType())
+                formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
+                className
             ));
 
             sb.append(String.format(
@@ -531,7 +532,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static const std::uint64_t %sHeaderSize()\n" +
+            indent + "    static const std::uint64_t %sHeaderLength()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n",
