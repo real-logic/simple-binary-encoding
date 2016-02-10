@@ -89,16 +89,16 @@ std::size_t encodeCar(Car &car, char *buffer, std::uint64_t offset, std::uint64_
     Car::FuelFigures& fuelFigures = car.fuelFiguresCount(3);
 
     fuelFigures
-        .next().speed(30).mpg(35.9f);
-    fuelFigures.putUsageDescription("Urban Cycle", 11);
+        .next().speed(30).mpg(35.9f)
+        .putUsageDescription("Urban Cycle", 11);
 
     fuelFigures
-        .next().speed(55).mpg(49.0f);
-    fuelFigures.putUsageDescription("Combined Cycle", 14);
+        .next().speed(55).mpg(49.0f)
+        .putUsageDescription("Combined Cycle", 14);
 
     fuelFigures
-        .next().speed(75).mpg(40.0f);
-    fuelFigures.putUsageDescription("Highway Cycle", 13);
+        .next().speed(75).mpg(40.0f)
+        .putUsageDescription("Highway Cycle", 13);
 
     Car::PerformanceFigures &performanceFigures = car.performanceFiguresCount(2);
 
@@ -116,9 +116,9 @@ std::size_t encodeCar(Car &car, char *buffer, std::uint64_t offset, std::uint64_
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-    car.putMake(MAKE, 5);
-    car.putModel(MODEL, 9);
-    car.putActivationCode("deadbeef", 8);
+    car.putMake(MAKE, 5)
+        .putModel(MODEL, 9)
+        .putActivationCode("deadbeef", 8);
 
     return car.encodedLength();
 }

@@ -403,9 +403,9 @@ std::uint64_t encodeHdrAndCar(char *buffer, std::uint64_t length)
         .next().mph(perf2bMph).seconds(perf2bSeconds)
         .next().mph(perf2cMph).seconds(perf2cSeconds);
 
-    car.putMake(MAKE, static_cast<int>(strlen(MAKE)));
-    car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
-    car.putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
+    car.putMake(MAKE, static_cast<int>(strlen(MAKE)))
+        .putModel(MODEL, static_cast<int>(strlen(MODEL)))
+        .putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
 
     return hdr.encodedLength() + car.encodedLength();
 }

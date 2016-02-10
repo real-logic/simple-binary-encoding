@@ -364,7 +364,7 @@ public:
     }
 
 
-    static const std::uint64_t packageNameHeaderSize()
+    static const std::uint64_t packageNameHeaderLength()
     {
         return 1;
     }
@@ -394,7 +394,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putPackageName(const char *src, const std::uint64_t length)
+    FrameCodec &putPackageName(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -403,7 +403,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getPackageNameAsString()
@@ -463,7 +463,7 @@ public:
     }
 
 
-    static const std::uint64_t namespaceNameHeaderSize()
+    static const std::uint64_t namespaceNameHeaderLength()
     {
         return 1;
     }
@@ -493,7 +493,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putNamespaceName(const char *src, const std::uint64_t length)
+    FrameCodec &putNamespaceName(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -502,7 +502,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getNamespaceNameAsString()
@@ -562,7 +562,7 @@ public:
     }
 
 
-    static const std::uint64_t semanticVersionHeaderSize()
+    static const std::uint64_t semanticVersionHeaderLength()
     {
         return 1;
     }
@@ -592,7 +592,7 @@ public:
         return bytesToCopy;
     }
 
-    std::uint64_t putSemanticVersion(const char *src, const std::uint64_t length)
+    FrameCodec &putSemanticVersion(const char *src, const std::uint64_t length)
     {
         std::uint64_t lengthOfLengthField = 1;
         std::uint64_t lengthPosition = position();
@@ -601,7 +601,7 @@ public:
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
-        return length;
+        return *this;
     }
 
     const std::string getSemanticVersionAsString()
