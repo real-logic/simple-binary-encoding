@@ -88,7 +88,7 @@ public class Field
             handleError(node, "Mismatched semanticType on type and field: " + name);
         }
 
-        checkForValidName(node, Character.toLowerCase(name.charAt(0)) + name.substring(1));
+        checkForValidName(node, name);
 
         if (type instanceof EnumType && presence == Presence.CONSTANT)
         {

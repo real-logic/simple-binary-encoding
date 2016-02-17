@@ -759,7 +759,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        }\n\n" +
             indent + "        return value;\n" +
             indent + "    }\n",
-            toLowerFirstChar(propertyName),
+            formatPropertyName(propertyName),
             generateStringNotPresentCondition(token.version(), indent),
             sizeOfLengthField,
             generateGet(lengthType, "limit", byteOrderStr),
@@ -823,7 +823,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return this;\n" +
             indent + "    }\n",
             className,
-            toLowerFirstChar(propertyName),
+            formatPropertyName(propertyName),
             characterEncoding,
             sizeOfLengthField,
             lengthJavaType,

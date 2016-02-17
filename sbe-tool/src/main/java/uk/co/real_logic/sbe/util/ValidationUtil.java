@@ -18,12 +18,15 @@ package uk.co.real_logic.sbe.util;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Various validation utilities used across parser, IR, and generator
  */
 public class ValidationUtil
 {
+    private static final Pattern PATTERN = Pattern.compile("\\.");
+
     private static boolean isSbeCppIdentifierStart(final char c)
     {
         return Character.isLetter(c) || c == '_';
@@ -86,11 +89,11 @@ public class ValidationUtil
         return true;
     }
 
-    private static boolean possibleCppKeyword(final String stringVal)
+    private static boolean possibleCppKeyword(final String value)
     {
-        for (int i = 0, size = stringVal.length(); i < size; i++)
+        for (int i = 0, size = value.length(); i < size; i++)
         {
-            final char c = stringVal.charAt(i);
+            final char c = value.charAt(i);
 
             if (i == 0 && isSbeCppIdentifierStart(c))
             {
@@ -121,8 +124,7 @@ public class ValidationUtil
             "return", "short", "static", "strictfp", "super",
             "switch", "synchronized", "this", "throw", "throws",
             "transient", "try", "void", "volatile", "while",
-            // literals
-            "null", "true", "false"
+            "null", "true", "false", "_"
         }));
 
     /**
@@ -136,16 +138,9 @@ public class ValidationUtil
      */
     public static boolean isSbeJavaName(final String value)
     {
-        for (final String token : value.split("\\.", -1))
+        for (final String token : PATTERN.split(value, -1))
         {
-            if (possibleJavaKeyword(token))
-            {
-                if (JAVA_KEYWORDS.contains(token))
-                {
-                    return false;
-                }
-            }
-            else
+            if (isJavaKeyword(token))
             {
                 return false;
             }
@@ -154,16 +149,27 @@ public class ValidationUtil
         return true;
     }
 
-    private static boolean possibleJavaKeyword(final String value)
+    /**
+     * Is this token a Java keyword?
+     *
+     * @param token to be tested.
+     * @return true if a Java keyword otherwise false.
+     */
+    public static boolean isJavaKeyword(final String token)
     {
-        if (value.length() == 0)
+        return possibleJavaKeyword(token) && JAVA_KEYWORDS.contains(token);
+    }
+
+    private static boolean possibleJavaKeyword(final String token)
+    {
+        if (token.length() == 0)
         {
             return false;
         }
 
-        for (int i = 0, size = value.length(); i < size; i++)
+        for (int i = 0, size = token.length(); i < size; i++)
         {
-            final char c = value.charAt(i);
+            final char c = token.charAt(i);
 
             if (i == 0 && Character.isJavaIdentifierStart(c))
             {

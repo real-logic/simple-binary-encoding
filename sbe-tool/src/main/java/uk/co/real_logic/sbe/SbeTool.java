@@ -126,6 +126,14 @@ public class SbeTool
     public static final String JAVA_DEFAULT_DECODING_BUFFER_TYPE = DirectBuffer.class.getName();
 
     /**
+     * Specifies token that should be appended to keywords to avoid compilation errors.
+     *
+     * If none is supplied then use of keywords results in an error during schema parsing. The
+     * underscore character is a good example fo a token to use.
+     */
+    public static final String KEYWORD_APPEND_TOKEN = "sbe.keyword.append.token";
+
+    /**
      * Main entry point for the SBE Tool.
      *
      * @param args command line arguments. A single filename is expected.

@@ -16,6 +16,8 @@
 package uk.co.real_logic.sbe.generation.java;
 
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.SbeTool;
+import uk.co.real_logic.sbe.util.ValidationUtil;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -76,24 +78,41 @@ public class JavaUtil
     }
 
     /**
-     * Format a String as a property name.
+     * Format a property name for generated code.
      *
-     * @param s to be formatted.
+     * If the formatted property name is a keyword then {@link SbeTool#KEYWORD_APPEND_TOKEN} is appended if set.
+     *
+     * @param value to be formatted.
      * @return the string formatted as a property name.
+     * @throws IllegalStateException if a keyword and {@link SbeTool#KEYWORD_APPEND_TOKEN} is not set.
      */
-    public static String formatPropertyName(final String s)
+    public static String formatPropertyName(final String value)
     {
-        return toLowerFirstChar(s);
+        String formattedValue = toLowerFirstChar(value);
+
+        if (ValidationUtil.isJavaKeyword(formattedValue))
+        {
+            final String keywordAppendToken = System.getProperty(SbeTool.KEYWORD_APPEND_TOKEN);
+            if (null == keywordAppendToken)
+            {
+                throw new IllegalStateException(
+                    "Invalid property name=" + formattedValue + " consider setting " + SbeTool.KEYWORD_APPEND_TOKEN);
+            }
+
+            formattedValue += keywordAppendToken;
+        }
+
+        return formattedValue;
     }
 
     /**
-     * Format a String as a class name.
+     * Format a class name for the generated code.
      *
-     * @param s to be formatted.
+     * @param value to be formatted.
      * @return the string formatted as a class name.
      */
-    public static String formatClassName(final String s)
+    public static String formatClassName(final String value)
     {
-        return toUpperFirstChar(s);
+        return toUpperFirstChar(value);
     }
 }

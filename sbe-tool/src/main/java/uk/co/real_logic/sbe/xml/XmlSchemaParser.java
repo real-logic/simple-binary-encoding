@@ -39,11 +39,13 @@ import static uk.co.real_logic.sbe.xml.Presence.REQUIRED;
 
 /**
  * Encapsulate the XML Schema parsing for SBE so that other representations may be
- * used to generate independent representation.
+ * used to generate independent representations.
  */
 public class XmlSchemaParser
 {
-    /** Key for storing {@link ErrorHandler} as user data in XML document */
+    /**
+     * Key for storing {@link ErrorHandler} as user data in XML document
+     */
     public static final String ERROR_HANDLER_KEY = "SbeErrorHandler";
 
     public static final String TYPE_XPATH_EXPR = "/messageSchema/types/" + EncodedDataType.ENCODED_DATA_TYPE;
@@ -51,14 +53,13 @@ public class XmlSchemaParser
     public static final String ENUM_XPATH_EXPR = "/messageSchema/types/" + EnumType.ENUM_TYPE;
     public static final String SET_XPATH_EXPR = "/messageSchema/types/" + SetType.SET_TYPE;
     public static final String MESSAGE_SCHEMA_XPATH_EXPR = "/messageSchema";
-
     public static final String MESSAGE_XPATH_EXPR = "/messageSchema/message";
 
     /**
      * Validate the document against a given schema. Error will be written to {@link java.lang.System#err}
      *
      * @param xsdFilename schema to validate against.
-     * @param in document to be validated.
+     * @param in          document to be validated.
      * @throws Exception if an error occurs when parsing the document or schema.
      */
     public static void validate(final String xsdFilename, final BufferedInputStream in) throws Exception
@@ -77,7 +78,7 @@ public class XmlSchemaParser
      * Input could be from {@link java.io.FileInputStream}, {@link java.io.ByteArrayInputStream}, etc.
      * Exceptions are passed back up for any problems.
      *
-     * @param in stream from which schema is read.
+     * @param in      stream from which schema is read.
      * @param options to be applied during parsing.
      * @return {@link MessageSchema} encoding for the schema.
      * @throws Exception on parsing error.
@@ -120,7 +121,6 @@ public class XmlSchemaParser
     {
         final Map<String, Type> typeByNameMap = new HashMap<>();
 
-        // Add primitiveTypes to typeByNameMap - these could be in a static XInclude that is always brought in...
         typeByNameMap.put("char", new EncodedDataType("char", REQUIRED, null, null, CHAR, 1, false));
         typeByNameMap.put("int8", new EncodedDataType("int8", REQUIRED, null, null, INT8, 1, false));
         typeByNameMap.put("int16", new EncodedDataType("int16", REQUIRED, null, null, INT16, 1, false));
@@ -172,7 +172,7 @@ public class XmlSchemaParser
      * Handle an error condition as consequence of parsing.
      *
      * @param node that is the context of the warning.
-     * @param msg associated with the error.
+     * @param msg  associated with the error.
      */
     public static void handleError(final Node node, final String msg)
     {
@@ -192,7 +192,7 @@ public class XmlSchemaParser
      * Handle a warning condition as a consequence of parsing.
      *
      * @param node as the context for the warning.
-     * @param msg associated with the warning.
+     * @param msg  associated with the warning.
      */
     public static void handleWarning(final Node node, final String msg)
     {
@@ -343,12 +343,12 @@ public class XmlSchemaParser
 
         return
             "at " +
-            "<" + parentNode.getNodeName() +
-            (getAttributeValueOrNull(parentNode, "name") == null ?
-                ">" : (" name=\"" + getAttributeValueOrNull(parentNode, "name") + "\"> ")) +
-            "<" + node.getNodeName() +
-            (getAttributeValueOrNull(node, "name") == null ?
-                ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
+                "<" + parentNode.getNodeName() +
+                (getAttributeValueOrNull(parentNode, "name") == null ?
+                    ">" : (" name=\"" + getAttributeValueOrNull(parentNode, "name") + "\"> ")) +
+                "<" + node.getNodeName() +
+                (getAttributeValueOrNull(node, "name") == null ?
+                    ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
     }
 
     interface NodeFunction
@@ -356,7 +356,8 @@ public class XmlSchemaParser
         void execute(Node node) throws XPathExpressionException;
     }
 
-    private static void forEach(final NodeList nodeList, final NodeFunction func) throws Exception
+    private static void forEach(final NodeList nodeList, final NodeFunction func)
+        throws XPathExpressionException
     {
         for (int i = 0, size = nodeList.getLength(); i < size; i++)
         {
