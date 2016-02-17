@@ -508,7 +508,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return \"%2$s\";\n" +
             indent + "    }\n\n",
-            formatPropertyName(propertyName),
+            toLowerFirstChar(propertyName),
             characterEncoding
         ));
 
@@ -525,7 +525,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return %3$d;\n" +
             indent + "    }\n\n",
-            formatPropertyName(propertyName),
+            toLowerFirstChar(propertyName),
             (long)token.version(),
             token.id()
         ));
@@ -547,7 +547,7 @@ public class CppGenerator implements CodeGenerator
                 "%2$s" +
             indent + "        return %3$s(*((%4$s *)(m_buffer + position())));\n" +
             indent + "    }\n\n",
-            formatPropertyName(propertyName),
+            toLowerFirstChar(propertyName),
             generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
             formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
             lengthCppType

@@ -16,6 +16,8 @@
 package uk.co.real_logic.sbe.generation.cpp;
 
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.SbeTool;
+import uk.co.real_logic.sbe.util.ValidationUtil;
 
 import java.nio.ByteOrder;
 import java.util.EnumMap;
@@ -79,23 +81,37 @@ public class CppUtil
     /**
      * Format a String as a property name.
      *
-     * @param str to be formatted.
+     * @param value to be formatted.
      * @return the string formatted as a property name.
      */
-    public static String formatPropertyName(final String str)
+    public static String formatPropertyName(final String value)
     {
-        return toLowerFirstChar(str);
+        String formattedValue = toLowerFirstChar(value);
+
+        if (ValidationUtil.isCppKeyword(formattedValue))
+        {
+            final String keywordAppendToken = System.getProperty(SbeTool.KEYWORD_APPEND_TOKEN);
+            if (null == keywordAppendToken)
+            {
+                throw new IllegalStateException(
+                    "Invalid property name=" + formattedValue + " consider setting " + SbeTool.KEYWORD_APPEND_TOKEN);
+            }
+
+            formattedValue += keywordAppendToken;
+        }
+
+        return formattedValue;
     }
 
     /**
      * Format a String as a class name.
      *
-     * @param str to be formatted.
+     * @param value to be formatted.
      * @return the string formatted as a class name.
      */
-    public static String formatClassName(final String str)
+    public static String formatClassName(final String value)
     {
-        return toUpperFirstChar(str);
+        return toUpperFirstChar(value);
     }
 
     /**

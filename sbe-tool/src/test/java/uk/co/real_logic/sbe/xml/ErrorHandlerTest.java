@@ -173,7 +173,7 @@ public class ErrorHandlerTest
         throws Exception
     {
         exceptionRule.expect(IllegalStateException.class);
-        exceptionRule.expectMessage("had 4 errors");
+        exceptionRule.expectMessage("had 8 errors");
 
         final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 

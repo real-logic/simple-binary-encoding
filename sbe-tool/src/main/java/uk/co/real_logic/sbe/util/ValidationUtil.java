@@ -27,16 +27,6 @@ public class ValidationUtil
 {
     private static final Pattern PATTERN = Pattern.compile("\\.");
 
-    private static boolean isSbeCppIdentifierStart(final char c)
-    {
-        return Character.isLetter(c) || c == '_';
-    }
-
-    private static boolean isSbeCppIdentifierPart(final char c)
-    {
-        return Character.isLetterOrDigit(c) || c == '_';
-    }
-
     private static final Set<String> CPP_KEYWORDS = new HashSet<>(
         Arrays.asList(new String[]
         {
@@ -76,7 +66,7 @@ public class ValidationUtil
     {
         if (possibleCppKeyword(value))
         {
-            if (CPP_KEYWORDS.contains(value))
+            if (isCppKeyword(value))
             {
                 return false;
             }
@@ -87,6 +77,11 @@ public class ValidationUtil
         }
 
         return true;
+    }
+
+    public static boolean isCppKeyword(final String token)
+    {
+        return CPP_KEYWORDS.contains(token);
     }
 
     private static boolean possibleCppKeyword(final String value)
@@ -109,6 +104,16 @@ public class ValidationUtil
         }
 
         return true;
+    }
+
+    private static boolean isSbeCppIdentifierStart(final char c)
+    {
+        return Character.isLetter(c) || c == '_';
+    }
+
+    private static boolean isSbeCppIdentifierPart(final char c)
+    {
+        return Character.isLetterOrDigit(c) || c == '_';
     }
 
     private static final Set<String> JAVA_KEYWORDS = new HashSet<>(
@@ -140,7 +145,14 @@ public class ValidationUtil
     {
         for (final String token : PATTERN.split(value, -1))
         {
-            if (isJavaKeyword(token))
+            if (isJavaIdentifier(token))
+            {
+                if (isJavaKeyword(token))
+                {
+                    return false;
+                }
+            }
+            else
             {
                 return false;
             }
@@ -157,10 +169,10 @@ public class ValidationUtil
      */
     public static boolean isJavaKeyword(final String token)
     {
-        return possibleJavaKeyword(token) && JAVA_KEYWORDS.contains(token);
+        return JAVA_KEYWORDS.contains(token);
     }
 
-    private static boolean possibleJavaKeyword(final String token)
+    private static boolean isJavaIdentifier(final String token)
     {
         if (token.length() == 0)
         {
