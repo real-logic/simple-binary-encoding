@@ -366,27 +366,27 @@ public:
 
     static const std::uint64_t packageNameHeaderLength()
     {
-        return 1;
+        return 2;
     }
 
-    std::uint8_t packageNameLength(void) const
+    std::uint16_t packageNameLength(void) const
     {
-        return (*((std::uint8_t *)(m_buffer + position())));
+        return SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + position())));
     }
 
     const char *packageName(void)
     {
-         const char *fieldPtr = (m_buffer + position() + 1);
-         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
+         const char *fieldPtr = (m_buffer + position() + 2);
+         position(position() + 2 + *((std::uint16_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
     std::uint64_t getPackageName(char *dst, const std::uint64_t length)
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t dataLength = SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + lengthPosition)));
         std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
         std::uint64_t pos = position();
         position(position() + dataLength);
@@ -396,10 +396,10 @@ public:
 
     FrameCodec &putPackageName(const char *src, const std::uint64_t length)
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -408,10 +408,10 @@ public:
 
     const std::string getPackageNameAsString()
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t dataLength = SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + lengthPosition)));
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
@@ -420,10 +420,10 @@ public:
 
     FrameCodec &putPackageName(const std::string& str)
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)str.length());
         std::uint64_t pos = position();
         position(position() + str.length());
         std::memcpy(m_buffer + pos, str.c_str(), str.length());
@@ -465,27 +465,27 @@ public:
 
     static const std::uint64_t namespaceNameHeaderLength()
     {
-        return 1;
+        return 2;
     }
 
-    std::uint8_t namespaceNameLength(void) const
+    std::uint16_t namespaceNameLength(void) const
     {
-        return (*((std::uint8_t *)(m_buffer + position())));
+        return SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + position())));
     }
 
     const char *namespaceName(void)
     {
-         const char *fieldPtr = (m_buffer + position() + 1);
-         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
+         const char *fieldPtr = (m_buffer + position() + 2);
+         position(position() + 2 + *((std::uint16_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
     std::uint64_t getNamespaceName(char *dst, const std::uint64_t length)
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t dataLength = SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + lengthPosition)));
         std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
         std::uint64_t pos = position();
         position(position() + dataLength);
@@ -495,10 +495,10 @@ public:
 
     FrameCodec &putNamespaceName(const char *src, const std::uint64_t length)
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -507,10 +507,10 @@ public:
 
     const std::string getNamespaceNameAsString()
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t dataLength = SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + lengthPosition)));
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
@@ -519,10 +519,10 @@ public:
 
     FrameCodec &putNamespaceName(const std::string& str)
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)str.length());
         std::uint64_t pos = position();
         position(position() + str.length());
         std::memcpy(m_buffer + pos, str.c_str(), str.length());
@@ -564,27 +564,27 @@ public:
 
     static const std::uint64_t semanticVersionHeaderLength()
     {
-        return 1;
+        return 2;
     }
 
-    std::uint8_t semanticVersionLength(void) const
+    std::uint16_t semanticVersionLength(void) const
     {
-        return (*((std::uint8_t *)(m_buffer + position())));
+        return SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + position())));
     }
 
     const char *semanticVersion(void)
     {
-         const char *fieldPtr = (m_buffer + position() + 1);
-         position(position() + 1 + *((std::uint8_t *)(m_buffer + position())));
+         const char *fieldPtr = (m_buffer + position() + 2);
+         position(position() + 2 + *((std::uint16_t *)(m_buffer + position())));
          return fieldPtr;
     }
 
     std::uint64_t getSemanticVersion(char *dst, const std::uint64_t length)
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t dataLength = SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + lengthPosition)));
         std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;
         std::uint64_t pos = position();
         position(position() + dataLength);
@@ -594,10 +594,10 @@ public:
 
     FrameCodec &putSemanticVersion(const char *src, const std::uint64_t length)
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -606,10 +606,10 @@ public:
 
     const std::string getSemanticVersionAsString()
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        std::uint64_t dataLength = (*((std::uint8_t *)(m_buffer + lengthPosition)));
+        std::uint64_t dataLength = SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + lengthPosition)));
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
@@ -618,10 +618,10 @@ public:
 
     FrameCodec &putSemanticVersion(const std::string& str)
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint8_t *)(m_buffer + lengthPosition)) = ((std::uint8_t)str.length());
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)str.length());
         std::uint64_t pos = position();
         position(position() + str.length());
         std::memcpy(m_buffer + pos, str.c_str(), str.length());

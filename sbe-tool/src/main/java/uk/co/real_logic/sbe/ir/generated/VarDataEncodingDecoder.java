@@ -23,25 +23,25 @@ public class VarDataEncodingDecoder
         return ENCODED_LENGTH;
     }
 
-    public static short lengthNullValue()
+    public static int lengthNullValue()
     {
-        return (short)255;
+        return 65535;
     }
 
-    public static short lengthMinValue()
+    public static int lengthMinValue()
     {
-        return (short)0;
+        return 0;
     }
 
-    public static short lengthMaxValue()
+    public static int lengthMaxValue()
     {
-        return (short)254;
+        return 65534;
     }
 
 
-    public short length()
+    public int length()
     {
-        return (short)(buffer.getByte(offset + 0) & 0xFF);
+        return (buffer.getShort(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
 

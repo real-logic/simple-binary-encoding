@@ -217,21 +217,21 @@ public class FrameCodecDecoder
 
     public static int packageNameHeaderLength()
     {
-        return 1;
+        return 2;
     }
 
     public int packageNameLength()
     {
         final int limit = parentMessage.limit();
-        return (short)(buffer.getByte(limit) & 0xFF);
+        return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int getPackageName(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -242,9 +242,9 @@ public class FrameCodecDecoder
     public int getPackageName(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -254,9 +254,9 @@ public class FrameCodecDecoder
 
     public String packageName()
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
@@ -298,21 +298,21 @@ public class FrameCodecDecoder
 
     public static int namespaceNameHeaderLength()
     {
-        return 1;
+        return 2;
     }
 
     public int namespaceNameLength()
     {
         final int limit = parentMessage.limit();
-        return (short)(buffer.getByte(limit) & 0xFF);
+        return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int getNamespaceName(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -323,9 +323,9 @@ public class FrameCodecDecoder
     public int getNamespaceName(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -335,9 +335,9 @@ public class FrameCodecDecoder
 
     public String namespaceName()
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
@@ -379,21 +379,21 @@ public class FrameCodecDecoder
 
     public static int semanticVersionHeaderLength()
     {
-        return 1;
+        return 2;
     }
 
     public int semanticVersionLength()
     {
         final int limit = parentMessage.limit();
-        return (short)(buffer.getByte(limit) & 0xFF);
+        return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int getSemanticVersion(
         final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -404,9 +404,9 @@ public class FrameCodecDecoder
     public int getSemanticVersion(
         final byte[] dst, final int dstOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -416,9 +416,9 @@ public class FrameCodecDecoder
 
     public String semanticVersion()
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (short)(buffer.getByte(limit) & 0xFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         parentMessage.limit(limit + headerLength + dataLength);
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);

@@ -95,29 +95,29 @@ public:
     }
 
 
-    static const std::uint8_t lengthNullValue()
+    static const std::uint16_t lengthNullValue()
     {
-        return SBE_NULLVALUE_UINT8;
+        return SBE_NULLVALUE_UINT16;
     }
 
-    static const std::uint8_t lengthMinValue()
+    static const std::uint16_t lengthMinValue()
     {
-        return (std::uint8_t)0;
+        return (std::uint16_t)0;
     }
 
-    static const std::uint8_t lengthMaxValue()
+    static const std::uint16_t lengthMaxValue()
     {
-        return (std::uint8_t)254;
+        return (std::uint16_t)65534;
     }
 
-    std::uint8_t length(void) const
+    std::uint16_t length(void) const
     {
-        return (*((std::uint8_t *)(m_buffer + m_offset + 0)));
+        return SBE_LITTLE_ENDIAN_ENCODE_16(*((std::uint16_t *)(m_buffer + m_offset + 0)));
     }
 
-    VarDataEncoding &length(const std::uint8_t value)
+    VarDataEncoding &length(const std::uint16_t value)
     {
-        *((std::uint8_t *)(m_buffer + m_offset + 0)) = (value);
+        *((std::uint16_t *)(m_buffer + m_offset + 0)) = SBE_LITTLE_ENDIAN_ENCODE_16(value);
         return *this;
     }
 

@@ -162,17 +162,17 @@ public class FrameCodecEncoder
 
     public static int packageNameHeaderLength()
     {
-        return 1;
+        return 2;
     }
 
     public FrameCodecEncoder putPackageName(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
+        final int l = (int)length;
+        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -181,11 +181,11 @@ public class FrameCodecEncoder
     public FrameCodecEncoder putPackageName(
         final byte[] src, final int srcOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
+        final int l = (int)length;
+        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -204,11 +204,11 @@ public class FrameCodecEncoder
         }
 
         final int length = bytes.length;
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
+        final int l = (int)length;
+        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -238,17 +238,17 @@ public class FrameCodecEncoder
 
     public static int namespaceNameHeaderLength()
     {
-        return 1;
+        return 2;
     }
 
     public FrameCodecEncoder putNamespaceName(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
+        final int l = (int)length;
+        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -257,11 +257,11 @@ public class FrameCodecEncoder
     public FrameCodecEncoder putNamespaceName(
         final byte[] src, final int srcOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
+        final int l = (int)length;
+        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -280,11 +280,11 @@ public class FrameCodecEncoder
         }
 
         final int length = bytes.length;
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
+        final int l = (int)length;
+        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -314,17 +314,17 @@ public class FrameCodecEncoder
 
     public static int semanticVersionHeaderLength()
     {
-        return 1;
+        return 2;
     }
 
     public FrameCodecEncoder putSemanticVersion(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
+        final int l = (int)length;
+        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -333,11 +333,11 @@ public class FrameCodecEncoder
     public FrameCodecEncoder putSemanticVersion(
         final byte[] src, final int srcOffset, final int length)
     {
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
+        final int l = (int)length;
+        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -356,11 +356,11 @@ public class FrameCodecEncoder
         }
 
         final int length = bytes.length;
-        final int headerLength = 1;
+        final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final short l = (short)length;
-        buffer.putByte(limit, (byte)l);
+        final int l = (int)length;
+        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
