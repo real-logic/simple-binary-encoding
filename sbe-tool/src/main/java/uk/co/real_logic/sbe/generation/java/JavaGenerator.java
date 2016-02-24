@@ -677,7 +677,7 @@ public class JavaGenerator implements CodeGenerator
             final Token lengthToken = tokens.get(i + 2);
             final int sizeOfLengthField = lengthToken.encodedLength();
             final Encoding lengthEncoding = lengthToken.encoding();
-            final String lengthJavaType = javaTypeName(lengthEncoding.primitiveType());
+            final int maxLengthValue = (int)lengthEncoding.applicableMaxValue().longValue();
             final String byteOrderStr = byteOrderString(lengthEncoding);
 
             sb.append(String.format(
@@ -694,8 +694,8 @@ public class JavaGenerator implements CodeGenerator
                 sb,
                 propertyName,
                 sizeOfLengthField,
+                maxLengthValue,
                 lengthEncoding.primitiveType(),
-                lengthJavaType,
                 byteOrderStr,
                 characterEncoding,
                 className,
@@ -771,8 +771,8 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb,
         final String propertyName,
         final int sizeOfLengthField,
+        final int maxLengthValue,
         final PrimitiveType lengthType,
-        final String lengthJavaType,
         final String byteOrderStr,
         final String characterEncoding,
         final String className,
@@ -783,8 +783,8 @@ public class JavaGenerator implements CodeGenerator
             className,
             propertyName,
             sizeOfLengthField,
+            maxLengthValue,
             fullReadOnlyBuffer,
-            lengthJavaType,
             lengthType,
             byteOrderStr,
             indent);
@@ -794,8 +794,8 @@ public class JavaGenerator implements CodeGenerator
             className,
             propertyName,
             sizeOfLengthField,
+            maxLengthValue,
             "byte[]",
-            lengthJavaType,
             lengthType,
             byteOrderStr,
             indent);
@@ -814,10 +814,13 @@ public class JavaGenerator implements CodeGenerator
             indent + "            throw new RuntimeException(ex);\n" +
             indent + "        }\n\n" +
             indent + "        final int length = bytes.length;\n" +
-            indent + "        final int headerLength = %4$d;\n" +
+            indent + "        if (length > %4$d)\n" +
+            indent + "        {\n" +
+            indent + "            throw new IllegalArgumentException(\"length > max value for type: \" + length);\n" +
+            indent + "        }\n\n" +
+            indent + "        final int headerLength = %5$d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        parentMessage.limit(limit + headerLength + length);\n" +
-            indent + "        final %5$s l = (%5$s)length;\n" +
             indent + "        %6$s;\n" +
             indent + "        buffer.putBytes(limit + headerLength, bytes, 0, length);\n\n" +
             indent + "        return this;\n" +
@@ -825,9 +828,9 @@ public class JavaGenerator implements CodeGenerator
             className,
             formatPropertyName(propertyName),
             characterEncoding,
+            maxLengthValue,
             sizeOfLengthField,
-            lengthJavaType,
-            generatePut(lengthType, "limit", "l", byteOrderStr)
+            generatePut(lengthType, "limit", "length", byteOrderStr)
         ));
     }
 
@@ -868,8 +871,8 @@ public class JavaGenerator implements CodeGenerator
         final String className,
         final String propertyName,
         final int sizeOfLengthField,
+        final int maxLengthValue,
         final String exchangeType,
-        final String lengthJavaType,
         final PrimitiveType lengthType,
         final String byteOrderStr,
         final String indent)
@@ -879,10 +882,13 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public %1$s put%2$s(\n" +
             indent + "        final %3$s src, final int srcOffset, final int length)\n" +
             indent + "    {\n" +
-            indent + "        final int headerLength = %4$d;\n" +
+            indent + "        if (length > %4$d)\n" +
+            indent + "        {\n" +
+            indent + "            throw new IllegalArgumentException(\"length > max value for type: \" + length);\n" +
+            indent + "        }\n\n" +
+            indent + "        final int headerLength = %5$d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        parentMessage.limit(limit + headerLength + length);\n" +
-            indent + "        final %5$s l = (%5$s)length;\n" +
             indent + "        %6$s;\n" +
             indent + "        buffer.putBytes(limit + headerLength, src, srcOffset, length);\n\n" +
             indent + "        return this;\n" +
@@ -890,9 +896,9 @@ public class JavaGenerator implements CodeGenerator
             className,
             propertyName,
             exchangeType,
+            maxLengthValue,
             sizeOfLengthField,
-            lengthJavaType,
-            generatePut(lengthType, "limit", "l", byteOrderStr)
+            generatePut(lengthType, "limit", "length", byteOrderStr)
         ));
     }
 

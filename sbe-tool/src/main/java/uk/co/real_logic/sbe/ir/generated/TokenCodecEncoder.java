@@ -232,11 +232,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putName(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -245,11 +249,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putName(
         final byte[] src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -268,11 +276,15 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -308,11 +320,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putConstValue(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -321,11 +337,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putConstValue(
         final byte[] src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -344,11 +364,15 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -384,11 +408,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putMinValue(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -397,11 +425,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putMinValue(
         final byte[] src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -420,11 +452,15 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -460,11 +496,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putMaxValue(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -473,11 +513,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putMaxValue(
         final byte[] src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -496,11 +540,15 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -536,11 +584,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putNullValue(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -549,11 +601,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putNullValue(
         final byte[] src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -572,11 +628,15 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -612,11 +672,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putCharacterEncoding(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -625,11 +689,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putCharacterEncoding(
         final byte[] src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -648,11 +716,15 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -688,11 +760,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putEpoch(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -701,11 +777,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putEpoch(
         final byte[] src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -724,11 +804,15 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -764,11 +848,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putTimeUnit(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -777,11 +865,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putTimeUnit(
         final byte[] src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -800,11 +892,15 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -840,11 +936,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putSemanticType(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -853,11 +953,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putSemanticType(
         final byte[] src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -876,11 +980,15 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -916,11 +1024,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putDescription(
         final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -929,11 +1041,15 @@ public class TokenCodecEncoder
     public TokenCodecEncoder putDescription(
         final byte[] src, final int srcOffset, final int length)
     {
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -952,11 +1068,15 @@ public class TokenCodecEncoder
         }
 
         final int length = bytes.length;
+        if (length > 65534)
+        {
+            throw new IllegalArgumentException("length > max value for type: " + length);
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        final int l = (int)length;
-        buffer.putShort(limit, (short)l, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
