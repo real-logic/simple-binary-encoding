@@ -658,12 +658,12 @@ public:
         return bytesToCopy;
     }
 
-    TokenCodec &putName(const char *src, const std::uint64_t length)
+    TokenCodec &putName(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -757,12 +757,12 @@ public:
         return bytesToCopy;
     }
 
-    TokenCodec &putConstValue(const char *src, const std::uint64_t length)
+    TokenCodec &putConstValue(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -856,12 +856,12 @@ public:
         return bytesToCopy;
     }
 
-    TokenCodec &putMinValue(const char *src, const std::uint64_t length)
+    TokenCodec &putMinValue(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -955,12 +955,12 @@ public:
         return bytesToCopy;
     }
 
-    TokenCodec &putMaxValue(const char *src, const std::uint64_t length)
+    TokenCodec &putMaxValue(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -1054,12 +1054,12 @@ public:
         return bytesToCopy;
     }
 
-    TokenCodec &putNullValue(const char *src, const std::uint64_t length)
+    TokenCodec &putNullValue(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -1153,12 +1153,12 @@ public:
         return bytesToCopy;
     }
 
-    TokenCodec &putCharacterEncoding(const char *src, const std::uint64_t length)
+    TokenCodec &putCharacterEncoding(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -1252,12 +1252,12 @@ public:
         return bytesToCopy;
     }
 
-    TokenCodec &putEpoch(const char *src, const std::uint64_t length)
+    TokenCodec &putEpoch(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -1351,12 +1351,12 @@ public:
         return bytesToCopy;
     }
 
-    TokenCodec &putTimeUnit(const char *src, const std::uint64_t length)
+    TokenCodec &putTimeUnit(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -1450,12 +1450,12 @@ public:
         return bytesToCopy;
     }
 
-    TokenCodec &putSemanticType(const char *src, const std::uint64_t length)
+    TokenCodec &putSemanticType(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -1549,12 +1549,12 @@ public:
         return bytesToCopy;
     }
 
-    TokenCodec &putDescription(const char *src, const std::uint64_t length)
+    TokenCodec &putDescription(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);

@@ -394,12 +394,12 @@ public:
         return bytesToCopy;
     }
 
-    FrameCodec &putPackageName(const char *src, const std::uint64_t length)
+    FrameCodec &putPackageName(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -493,12 +493,12 @@ public:
         return bytesToCopy;
     }
 
-    FrameCodec &putNamespaceName(const char *src, const std::uint64_t length)
+    FrameCodec &putNamespaceName(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
@@ -592,12 +592,12 @@ public:
         return bytesToCopy;
     }
 
-    FrameCodec &putSemanticVersion(const char *src, const std::uint64_t length)
+    FrameCodec &putSemanticVersion(const char *src, const std::uint16_t length)
     {
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
-        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16((std::uint16_t)length);
+        *((std::uint16_t *)(m_buffer + lengthPosition)) = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         std::uint64_t pos = position();
         position(position() + length);
         std::memcpy(m_buffer + pos, src, length);
