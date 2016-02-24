@@ -429,12 +429,12 @@ public class CppGenerator implements CodeGenerator
             ));
 
             sb.append(String.format(
-                indent + "    %5$s &put%1$s(const char *src, const std::uint64_t length)\n" +
+                indent + "    %5$s &put%1$s(const char *src, const %3$s length)\n" +
                 indent + "    {\n" +
                 indent + "        std::uint64_t lengthOfLengthField = %2$d;\n" +
                 indent + "        std::uint64_t lengthPosition = position();\n" +
                 indent + "        position(lengthPosition + lengthOfLengthField);\n" +
-                indent + "        *((%3$s *)(m_buffer + lengthPosition)) = %4$s((%3$s)length);\n" +
+                indent + "        *((%3$s *)(m_buffer + lengthPosition)) = %4$s(length);\n" +
                 indent + "        std::uint64_t pos = position();\n" +
                 indent + "        position(position() + length);\n" +
                 indent + "        std::memcpy(m_buffer + pos, src, length);\n" +
