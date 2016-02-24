@@ -23,7 +23,7 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class ExampleUsingGeneratedStub
 {
@@ -155,7 +155,9 @@ public class ExampleUsingGeneratedStub
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-        car.make(new String(MAKE, Charset.forName("UTF-8")))
+        // An exception will be raised if the string length is larger than can be encoded in the varDataEncoding length field
+        // Please use a suitable schema type for varDataEncoding.length: uint8 <= 254, uint16 <= 65534
+        car.make(new String(MAKE, StandardCharsets.UTF_8))
             .putModel(MODEL, srcOffset, MODEL.length)
             .putActivationCode(ACTIVATION_CODE, 0, ACTIVATION_CODE.capacity());
 
