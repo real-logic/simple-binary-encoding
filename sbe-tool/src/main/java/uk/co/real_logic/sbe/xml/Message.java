@@ -147,9 +147,9 @@ public class Message
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
-            Field field;
-
+            final Field field;
             final String nodeName = list.item(i).getNodeName();
+
             switch (nodeName)
             {
                 case "group":
