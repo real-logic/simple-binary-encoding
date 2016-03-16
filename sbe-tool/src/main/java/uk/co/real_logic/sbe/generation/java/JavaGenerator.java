@@ -105,7 +105,7 @@ public class JavaGenerator implements CodeGenerator
 
     public void generateInterfaces() throws IOException
     {
-        final String encoderInterface = "Encoder";
+        final String encoderInterface = "MessageEncoder";
         try (final Writer out = outputManager.createOutput(encoderInterface))
         {
             out.append(generateFileHeader(encoderInterface, ir.applicableNamespace(), fullMutableBuffer))
@@ -116,12 +116,12 @@ public class JavaGenerator implements CodeGenerator
                 .append(INDENT).append("int sbeSchemaVersion();\n\n")
                 .append(INDENT).append("String sbeSemanticType();\n\n")
                 .append(INDENT).append("int offset();\n\n")
-                .append(INDENT).append("Encoder wrap(").append(mutableBuffer).append(" buffer, int offset);\n\n")
+                .append(INDENT).append("MessageEncoder wrap(").append(mutableBuffer).append(" buffer, int offset);\n\n")
                 .append(INDENT).append("int encodedLength();\n")
                 .append("}\n");
         }
 
-        final String decoderInterface = "Decoder";
+        final String decoderInterface = "MessageDecoder";
         try (final Writer out = outputManager.createOutput(decoderInterface))
         {
             out.append(generateFileHeader(decoderInterface, ir.applicableNamespace(), fullReadOnlyBuffer))
@@ -132,7 +132,7 @@ public class JavaGenerator implements CodeGenerator
                 .append(INDENT).append("int sbeSchemaVersion();\n\n")
                 .append(INDENT).append("String sbeSemanticType();\n\n")
                 .append(INDENT).append("int offset();\n\n")
-                .append(INDENT).append("Decoder wrap(").append(readOnlyBuffer)
+                .append(INDENT).append("MessageDecoder wrap(").append(readOnlyBuffer)
                 .append(" buffer, int offset, int actingBlockLength, int actingVersion);\n\n")
                 .append(INDENT).append("int encodedLength();\n")
                 .append("}\n");
@@ -223,7 +223,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateFileHeader(className, ir.applicableNamespace(), fullMutableBuffer));
 
             generateAnnotations(indent, className, groups, out, 0, this::encoderName);
-            out.append(generateDeclaration("class", className, " implements Encoder"));
+            out.append(generateDeclaration("class", className, " implements MessageEncoder"));
             out.append(generateEncoderFlyweightCode(className, msgToken));
             out.append(generateEncoderFields(className, fields, indent));
 
@@ -250,7 +250,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateFileHeader(className, ir.applicableNamespace(), fullReadOnlyBuffer));
 
             generateAnnotations(indent, className, groups, out, 0, this::decoderName);
-            out.append(generateDeclaration("class", className, " implements Decoder"));
+            out.append(generateDeclaration("class", className, " implements MessageDecoder"));
             out.append(generateDecoderFlyweightCode(className, msgToken));
             out.append(generateDecoderFields(fields, BASE_INDENT));
 
