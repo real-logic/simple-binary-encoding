@@ -103,6 +103,42 @@ public class JavaGenerator implements CodeGenerator
         return className + "Decoder";
     }
 
+    public void generateInterfaces() throws IOException
+    {
+        final String encoderInterface = "Encoder";
+        try (final Writer out = outputManager.createOutput(encoderInterface))
+        {
+            out.append(generateFileHeader(encoderInterface, ir.applicableNamespace(), fullMutableBuffer))
+                .append(generateDeclaration("interface", encoderInterface, ""))
+                .append(INDENT).append("int sbeBlockLength();\n\n")
+                .append(INDENT).append("int sbeTemplateId();\n\n")
+                .append(INDENT).append("int sbeSchemaId();\n\n")
+                .append(INDENT).append("int sbeSchemaVersion();\n\n")
+                .append(INDENT).append("String sbeSemanticType();\n\n")
+                .append(INDENT).append("int offset();\n\n")
+                .append(INDENT).append("Encoder wrap(").append(mutableBuffer).append(" buffer, int offset);\n\n")
+                .append(INDENT).append("int encodedLength();\n")
+                .append("}\n");
+        }
+
+        final String decoderInterface = "Decoder";
+        try (final Writer out = outputManager.createOutput(decoderInterface))
+        {
+            out.append(generateFileHeader(decoderInterface, ir.applicableNamespace(), fullReadOnlyBuffer))
+                .append(generateDeclaration("interface", decoderInterface, ""))
+                .append(INDENT).append("int sbeBlockLength();\n\n")
+                .append(INDENT).append("int sbeTemplateId();\n\n")
+                .append(INDENT).append("int sbeSchemaId();\n\n")
+                .append(INDENT).append("int sbeSchemaVersion();\n\n")
+                .append(INDENT).append("String sbeSemanticType();\n\n")
+                .append(INDENT).append("int offset();\n\n")
+                .append(INDENT).append("Decoder wrap(").append(readOnlyBuffer)
+                .append(" buffer, int offset, int actingBlockLength, int actingVersion);\n\n")
+                .append(INDENT).append("int encodedLength();\n")
+                .append("}\n");
+        }
+    }
+
     public void generateMessageHeaderStub() throws IOException
     {
         final List<Token> tokens = ir.headerStructure().tokens();
@@ -149,6 +185,7 @@ public class JavaGenerator implements CodeGenerator
 
     public void generate() throws IOException
     {
+        generateInterfaces();
         generateMessageHeaderStub();
         generateTypeStubs();
 
@@ -186,7 +223,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateFileHeader(className, ir.applicableNamespace(), fullMutableBuffer));
 
             generateAnnotations(indent, className, groups, out, 0, this::encoderName);
-            out.append(generateClassDeclaration(className));
+            out.append(generateDeclaration("class", className, " implements Encoder"));
             out.append(generateEncoderFlyweightCode(className, msgToken));
             out.append(generateEncoderFields(className, fields, indent));
 
@@ -213,7 +250,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateFileHeader(className, ir.applicableNamespace(), fullReadOnlyBuffer));
 
             generateAnnotations(indent, className, groups, out, 0, this::decoderName);
-            out.append(generateClassDeclaration(className));
+            out.append(generateDeclaration("class", className, " implements Decoder"));
             out.append(generateDecoderFlyweightCode(className, msgToken));
             out.append(generateDecoderFields(fields, BASE_INDENT));
 
@@ -932,7 +969,7 @@ public class JavaGenerator implements CodeGenerator
         throws IOException
     {
         out.append(generateFileHeader(encoderName, ir.applicableNamespace(), fullBuffer));
-        out.append(generateClassDeclaration(encoderName));
+        out.append(generateDeclaration("class", encoderName, ""));
         out.append(generateFixedFlyweightCode(encoderName, token.encodedLength(), false, buffer));
     }
 
@@ -1253,13 +1290,16 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private static CharSequence generateClassDeclaration(final String className)
+    private static CharSequence generateDeclaration(
+        final String classType, final String className, final String implementsString)
     {
         return String.format(
             "@SuppressWarnings(\"all\")\n" +
-            "public class %s\n" +
+            "public %s %s%s\n" +
             "{\n",
-            className
+            classType,
+            className,
+            implementsString
         );
     }
 
