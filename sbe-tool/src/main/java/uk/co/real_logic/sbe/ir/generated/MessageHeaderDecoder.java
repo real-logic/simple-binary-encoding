@@ -1,7 +1,7 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.agrona.DirectBuffer;
+import org.agrona.DirectBuffer;
 
 @javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.MessageHeaderDecoder"})
 @SuppressWarnings("all")

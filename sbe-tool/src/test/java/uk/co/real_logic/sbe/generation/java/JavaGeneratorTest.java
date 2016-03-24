@@ -17,11 +17,11 @@ package uk.co.real_logic.sbe.generation.java;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.co.real_logic.agrona.DirectBuffer;
-import uk.co.real_logic.agrona.MutableDirectBuffer;
-import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
-import uk.co.real_logic.agrona.generation.CompilerUtil;
-import uk.co.real_logic.agrona.generation.StringWriterOutputManager;
+import org.agrona.DirectBuffer;
+import org.agrona.MutableDirectBuffer;
+import org.agrona.concurrent.UnsafeBuffer;
+import org.agrona.generation.CompilerUtil;
+import org.agrona.generation.StringWriterOutputManager;
 import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;

@@ -15,14 +15,14 @@
  */
 package uk.co.real_logic.sbe.ir;
 
-import uk.co.real_logic.agrona.CloseHelper;
-import uk.co.real_logic.agrona.LangUtil;
-import uk.co.real_logic.agrona.MutableDirectBuffer;
-import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
+import org.agrona.CloseHelper;
+import org.agrona.LangUtil;
+import org.agrona.MutableDirectBuffer;
+import org.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder;
 import uk.co.real_logic.sbe.ir.generated.TokenCodecEncoder;
-import uk.co.real_logic.agrona.Verify;
+import org.agrona.Verify;
 
 import java.io.*;
 import java.nio.ByteBuffer;

@@ -15,9 +15,9 @@
  */
 package uk.co.real_logic.sbe.ir;
 
-import uk.co.real_logic.agrona.CloseHelper;
-import uk.co.real_logic.agrona.MutableDirectBuffer;
-import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
+import org.agrona.CloseHelper;
+import org.agrona.MutableDirectBuffer;
+import org.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.ir.generated.FrameCodecDecoder;
 import uk.co.real_logic.sbe.ir.generated.TokenCodecDecoder;

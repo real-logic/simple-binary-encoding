@@ -17,9 +17,9 @@ package uk.co.real_logic.sbe.generation.cpp;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
-import uk.co.real_logic.agrona.generation.OutputManager;
+import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.ir.*;
-import uk.co.real_logic.agrona.Verify;
+import org.agrona.Verify;
 
 import java.io.IOException;
 import java.io.Writer;

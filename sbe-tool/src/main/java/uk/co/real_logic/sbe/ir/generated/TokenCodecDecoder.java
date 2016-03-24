@@ -1,11 +1,11 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.agrona.DirectBuffer;
+import org.agrona.DirectBuffer;
 
 @javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.TokenCodecDecoder"})
 @SuppressWarnings("all")
-public class TokenCodecDecoder
+public class TokenCodecDecoder implements MessageDecoder
 {
     public static final int BLOCK_LENGTH = 24;
     public static final int TEMPLATE_ID = 2;
@@ -397,7 +397,7 @@ public class TokenCodecDecoder
     }
 
     public int getName(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -478,7 +478,7 @@ public class TokenCodecDecoder
     }
 
     public int getConstValue(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -559,7 +559,7 @@ public class TokenCodecDecoder
     }
 
     public int getMinValue(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -640,7 +640,7 @@ public class TokenCodecDecoder
     }
 
     public int getMaxValue(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -721,7 +721,7 @@ public class TokenCodecDecoder
     }
 
     public int getNullValue(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -802,7 +802,7 @@ public class TokenCodecDecoder
     }
 
     public int getCharacterEncoding(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -883,7 +883,7 @@ public class TokenCodecDecoder
     }
 
     public int getEpoch(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -964,7 +964,7 @@ public class TokenCodecDecoder
     }
 
     public int getTimeUnit(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -1045,7 +1045,7 @@ public class TokenCodecDecoder
     }
 
     public int getSemanticType(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -1126,7 +1126,7 @@ public class TokenCodecDecoder
     }
 
     public int getDescription(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();

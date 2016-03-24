@@ -1,11 +1,11 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.agrona.MutableDirectBuffer;
+import org.agrona.MutableDirectBuffer;
 
 @javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder"})
 @SuppressWarnings("all")
-public class FrameCodecEncoder
+public class FrameCodecEncoder implements MessageEncoder
 {
     public static final int BLOCK_LENGTH = 12;
     public static final int TEMPLATE_ID = 1;
@@ -166,7 +166,7 @@ public class FrameCodecEncoder
     }
 
     public FrameCodecEncoder putPackageName(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -254,7 +254,7 @@ public class FrameCodecEncoder
     }
 
     public FrameCodecEncoder putNamespaceName(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -342,7 +342,7 @@ public class FrameCodecEncoder
     }
 
     public FrameCodecEncoder putSemanticVersion(
-        final uk.co.real_logic.agrona.DirectBuffer src, final int srcOffset, final int length)
+        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {

@@ -15,8 +15,8 @@
  */
 package uk.co.real_logic.sbe.generation.cpp;
 
-import uk.co.real_logic.agrona.generation.OutputManager;
-import uk.co.real_logic.agrona.Verify;
+import org.agrona.generation.OutputManager;
+import org.agrona.Verify;
 
 import java.io.*;
 

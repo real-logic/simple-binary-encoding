@@ -18,7 +18,7 @@ package uk.co.real_logic.sbe.json;
 import baseline.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
+import org.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.IrDecoder;
 import uk.co.real_logic.sbe.ir.IrEncoder;

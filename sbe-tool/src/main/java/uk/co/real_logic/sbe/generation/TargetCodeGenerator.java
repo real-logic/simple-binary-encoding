@@ -15,7 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation;
 
-import uk.co.real_logic.agrona.generation.PackageOutputManager;
+import org.agrona.generation.PackageOutputManager;
 import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
 import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;

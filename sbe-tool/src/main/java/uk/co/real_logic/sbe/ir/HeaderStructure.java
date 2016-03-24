@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.ir;
 
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.agrona.Verify;
+import org.agrona.Verify;
 
 import java.util.List;
 

@@ -171,7 +171,7 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
-        compile 'uk.co.real-logic:Agrona:0.4.12'
+        compile 'uk.co.real-logic:Agrona:0.4.13-SNAPSHOT'
 
         testCompile files('build/classes/generated')
     }
@@ -413,8 +413,8 @@ project(':sbe-benchmarks') {
             'sbe.target.language': 'Java',
             'sbe.validation.stop.on.error': 'true',
             'sbe.validation.xsd': validationXsdPath,
-            'sbe.java.encoding.buffer.type': 'uk.co.real_logic.agrona.concurrent.UnsafeBuffer',
-            'sbe.java.decoding.buffer.type': 'uk.co.real_logic.agrona.concurrent.UnsafeBuffer')
+            'sbe.java.encoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer',
+            'sbe.java.decoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer')
         args = ['src/main/resources/car.xml', 'src/main/resources/fix-message-samples.xml']
     }
 
@@ -491,5 +491,6 @@ task runBenchmarks(type: Exec) {
 }
 
 task uploadToMavenCentral {
-    dependsOn 'sbe-tool:uploadArchives', 'sbe-samples:uploadArchives', 'sbe-benchmarks:uploadArchives', 'sbe-all:uploadArchives', 'sbe-all:uploadShadow'
+    dependsOn 'sbe-tool:uploadArchives', 'sbe-samples:uploadArchives', 'sbe-benchmarks:uploadArchives',
+            'sbe-all:uploadArchives', 'sbe-all:uploadShadow'
 }

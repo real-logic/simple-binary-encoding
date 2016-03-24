@@ -16,8 +16,8 @@
 package uk.co.real_logic.sbe.codec.java;
 
 import org.junit.Test;
-import uk.co.real_logic.agrona.MutableDirectBuffer;
-import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
+import org.agrona.MutableDirectBuffer;
+import org.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteOrder;
 

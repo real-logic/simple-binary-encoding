@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.w3c.dom.Node;
-import uk.co.real_logic.agrona.Verify;
+import org.agrona.Verify;
 
 import java.nio.ByteOrder;
 import java.util.Collection;

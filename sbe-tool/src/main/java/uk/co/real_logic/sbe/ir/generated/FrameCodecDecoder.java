@@ -1,11 +1,11 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-import uk.co.real_logic.agrona.DirectBuffer;
+import org.agrona.DirectBuffer;
 
 @javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.FrameCodecDecoder"})
 @SuppressWarnings("all")
-public class FrameCodecDecoder
+public class FrameCodecDecoder implements MessageDecoder
 {
     public static final int BLOCK_LENGTH = 12;
     public static final int TEMPLATE_ID = 1;
@@ -227,7 +227,7 @@ public class FrameCodecDecoder
     }
 
     public int getPackageName(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -308,7 +308,7 @@ public class FrameCodecDecoder
     }
 
     public int getNamespaceName(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -389,7 +389,7 @@ public class FrameCodecDecoder
     }
 
     public int getSemanticVersion(
-        final uk.co.real_logic.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
