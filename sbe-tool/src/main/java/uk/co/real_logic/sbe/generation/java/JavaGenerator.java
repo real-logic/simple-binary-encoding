@@ -2219,7 +2219,7 @@ public class JavaGenerator implements CodeGenerator
                 return "buffer.getInt(" + index + byteOrder + ")";
 
             case UINT32:
-                return "(buffer.getInt(" + index + byteOrder + ") & 0xFFFF_FFFF)";
+                return "(buffer.getInt(" + index + byteOrder + ") & 0xFFFF_FFFFL)";
 
             case FLOAT:
                 return "buffer.getFloat(" + index + byteOrder + ")";
