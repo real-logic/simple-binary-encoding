@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.xml;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.ir.Token;
 
 import javax.xml.xpath.XPath;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static javax.xml.xpath.XPathConstants.NODESET;
-import static uk.co.real_logic.sbe.PrimitiveType.isUnsigned;
+import static uk.co.real_logic.sbe.PrimitiveType.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
 /**
@@ -168,7 +169,7 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "\"numInGroup\" must be unsigned type");
         }
-        else if (numInGroupType.primitiveType() != PrimitiveType.UINT8 && numInGroupType.primitiveType() != PrimitiveType.UINT16)
+        else if (numInGroupType.primitiveType() != UINT8 && numInGroupType.primitiveType() != UINT16)
         {
             XmlSchemaParser.handleWarning(node, "\"numInGroup\" should be UINT8 or UINT16");
         }
@@ -188,13 +189,19 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "composite for variable length data encoding must have \"length\"");
         }
-        else if (!isUnsigned(lengthType.primitiveType()))
+        else
         {
-            XmlSchemaParser.handleError(node, "\"length\" must be unsigned type");
-        }
-        else if (lengthType.primitiveType() != PrimitiveType.UINT8 && lengthType.primitiveType() != PrimitiveType.UINT16)
-        {
-            XmlSchemaParser.handleWarning(node, "\"length\" should be UINT8 or UINT16");
+            final PrimitiveType primitiveType = lengthType.primitiveType();
+            if (!isUnsigned(primitiveType))
+            {
+                XmlSchemaParser.handleError(node, "\"length\" must be unsigned type");
+            }
+            else if (primitiveType != UINT8 && primitiveType != UINT16 && primitiveType != UINT32)
+            {
+                XmlSchemaParser.handleWarning(node, "\"length\" should be UINT8, UINT16, or UINT32");
+            }
+
+            validateMaxValue(node, primitiveType, lengthType.maxValue());
         }
 
         if ("optional".equals(getAttributeValueOrNull(node, "presence")))
@@ -205,6 +212,33 @@ public class CompositeType extends Type
         if (containedTypeByNameMap.get("varData") == null)
         {
             XmlSchemaParser.handleError(node, "composite for variable length data encoding must have \"varData\"");
+        }
+    }
+
+    private static void validateMaxValue(final Node node, final PrimitiveType primitiveType, final PrimitiveValue value)
+    {
+        if (null != value)
+        {
+            final long longValue = value.longValue();
+            final long allowedValue = primitiveType.maxValue().longValue();
+            if (longValue > allowedValue)
+            {
+                XmlSchemaParser.handleError(node, String.format(
+                    "maxValue greater than allowed for type: maxValue=%d allowed=%d", longValue, allowedValue));
+            }
+
+            final long maxInt = INT32.maxValue().longValue();
+            if (primitiveType == UINT32 && longValue > maxInt)
+            {
+                XmlSchemaParser.handleError(node, String.format(
+                    "maxValue greater than allowed for type: maxValue=%d allowed=%d", longValue, maxInt));
+            }
+        }
+        else if (primitiveType == UINT32)
+        {
+            final long maxInt = INT32.maxValue().longValue();
+            XmlSchemaParser.handleError(node, String.format(
+                "maxValue must be set for varData UINT32 type: max value allowed=%d", maxInt));
         }
     }
 
@@ -229,7 +263,7 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "\"blockLength\" must be unsigned");
         }
-        else if (blockLengthType.primitiveType() != PrimitiveType.UINT16)
+        else if (blockLengthType.primitiveType() != UINT16)
         {
             XmlSchemaParser.handleWarning(node, "\"blockLength\" should be UINT16");
         }
@@ -238,7 +272,7 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"templateId\"");
         }
-        else if (templateIdType.primitiveType() != PrimitiveType.UINT16)
+        else if (templateIdType.primitiveType() != UINT16)
         {
             XmlSchemaParser.handleError(node, "\"templateId\" must be UINT16");
         }
@@ -247,7 +281,7 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"schemaId\"");
         }
-        else if (schemaIdType.primitiveType() != PrimitiveType.UINT16)
+        else if (schemaIdType.primitiveType() != UINT16)
         {
             XmlSchemaParser.handleError(node, "\"schemaId\" must be UINT16");
         }
@@ -256,7 +290,7 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "composite for message header must have \"version\"");
         }
-        else if (versionType.primitiveType() != PrimitiveType.UINT16)
+        else if (versionType.primitiveType() != UINT16)
         {
             XmlSchemaParser.handleError(node, "\"version\" must be UINT16");
         }

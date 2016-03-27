@@ -677,7 +677,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    {\n" +
                          "%s" +
                 indent + "        final int limit = parentMessage.limit();\n" +
-                indent + "        return %s;\n" +
+                indent + "        return (int)%s;\n" +
                 indent + "    }\n",
                 toLowerFirstChar(propertyName),
                 generateArrayFieldNotPresentCondition(token.version(), indent),
@@ -781,7 +781,7 @@ public class JavaGenerator implements CodeGenerator
                      "%2$s" +
             indent + "        final int headerLength = %3$d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
-            indent + "        final int dataLength = %4$s;\n" +
+            indent + "        final int dataLength = (int)%4$s;\n" +
             indent + "        parentMessage.limit(limit + headerLength + dataLength);\n" +
             indent + "        final byte[] tmp = new byte[dataLength];\n" +
             indent + "        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);\n\n" +
@@ -889,7 +889,7 @@ public class JavaGenerator implements CodeGenerator
                      "%s" +
             indent + "        final int headerLength = %d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
-            indent + "        final int dataLength = %s;\n" +
+            indent + "        final int dataLength = (int)%s;\n" +
             indent + "        final int bytesCopied = Math.min(length, dataLength);\n" +
             indent + "        parentMessage.limit(limit + headerLength + dataLength);\n" +
             indent + "        buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);\n\n" +
@@ -2207,7 +2207,7 @@ public class JavaGenerator implements CodeGenerator
                 return "buffer.getByte(" + index + ")";
 
             case UINT8:
-                return "(short)(buffer.getByte(" + index + ") & 0xFF)";
+                return "((short)(buffer.getByte(" + index + ") & 0xFF))";
 
             case INT16:
                 return "buffer.getShort(" + index + byteOrder + ")";

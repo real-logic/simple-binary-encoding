@@ -268,8 +268,8 @@
         <field name="MainFraction" id="37702" type="uInt8NULL" description="Price Denominator of Main Fraction" offset="107" semanticType="int"/>
         <field name="SubFraction" id="37703" type="uInt8NULL" description="Price Denominator of Sub Fraction" offset="108" semanticType="int"/>
         <field name="PriceDisplayFormat" id="9800" type="uInt8NULL" description="Number of decimals in fractional display price" offset="109" semanticType="int"/>
-        <field name="UnitOfMeasure" id="996" type="UnitOfMeasure" description="Unit of measure for the products' original contract size. This will be populated for all products listed on CME Globex" offset="110" semanticType="String"/>
-        <field name="UnitOfMeasureQty" id="1147" type="PRICENULL" description="This field contains the contract size for each instrument. Used in combination with tag 996-UnitofMeasure" offset="140" semanticType="Qty"/>
+        <field name="UnitOfMeasure" id="996" type="UnitOfMeasure" description="Unit of measure for the products' original contract encodedLength. This will be populated for all products listed on CME Globex" offset="110" semanticType="String"/>
+        <field name="UnitOfMeasureQty" id="1147" type="PRICENULL" description="This field contains the contract encodedLength for each instrument. Used in combination with tag 996-UnitofMeasure" offset="140" semanticType="Qty"/>
         <field name="TradingReferencePrice" id="1150" type="PRICENULL" description="Reference price for prelisted instruments or the last calculated Settlement whether it be Theoretical, Preliminary or a Final Settle of the session." offset="148" semanticType="Price"/>
         <field name="SettlPriceType" id="731" type="SettlPriceType" description="Bitmap field of eight Boolean type indicators representing settlement price type" offset="156" semanticType="MultipleCharValue"/>
         <field name="OpenInterestQty" id="5792" type="Int32NULL" description="The total open interest for the market at the close of the prior trading session." offset="157" semanticType="int"/>
@@ -332,7 +332,7 @@
         <field name="PriceDisplayFormat" id="9800" type="uInt8NULL" description="Number of decimals in fractional display price" offset="110" semanticType="int"/>
         <field name="PriceRatio" id="5770" type="PRICENULL" description="Used for price calculation in spread and leg pricing" offset="111" semanticType="Price"/>
         <field name="TickRule" id="6350" type="Int8NULL" description="Tick Rule " offset="119" semanticType="int"/>
-        <field name="UnitOfMeasure" id="996" type="UnitOfMeasure" description="Unit of measure for the products' original contract size" offset="120" semanticType="String"/>
+        <field name="UnitOfMeasure" id="996" type="UnitOfMeasure" description="Unit of measure for the products' original contract encodedLength" offset="120" semanticType="String"/>
         <field name="TradingReferencePrice" id="1150" type="PRICENULL" description="Reference price - the most recently available Settlement whether it be Theoretical, Preliminary or a Final Settle of the session" offset="150" semanticType="Price"/>
         <field name="SettlPriceType" id="731" type="SettlPriceType" description="Bitmap field of eight Boolean type indicators representing settlement price type" offset="158" semanticType="MultipleCharValue"/>
         <field name="OpenInterestQty" id="5792" type="Int32NULL" description="The total open interest for the market at the close of the prior trading session" offset="159" semanticType="Qty"/>
@@ -384,7 +384,7 @@
         <field name="MatchEventIndicator" id="5799" type="MatchEventIndicator" description="Bitmap field of eight Boolean type indicators reflecting the end of updates for a given Globex event" offset="8" semanticType="MultipleCharValue"/>
         <group name="NoMDEntries" id="268" description="Number of entries in Market Data message" blockLength="32" dimensionType="groupSize">
             <field name="MDEntryPx" id="270" type="PRICENULL" description="Market Data entry price" offset="0" semanticType="Price"/>
-            <field name="MDEntrySize" id="271" type="Int32NULL" description="Market Data entry size" offset="8" semanticType="Qty"/>
+            <field name="MDEntrySize" id="271" type="Int32NULL" description="Market Data entry encodedLength" offset="8" semanticType="Qty"/>
             <field name="SecurityID" id="48" type="Int32" description="Security ID" offset="12" semanticType="int"/>
             <field name="RptSeq" id="83" type="uInt32" description="Market Data entry sequence number per instrument update" offset="16" semanticType="int"/>
             <field name="NumberOfOrders" id="346" type="Int32NULL" description="In Book entry - aggregate number of orders at given price level" offset="20" semanticType="int"/>
@@ -398,7 +398,7 @@
         <field name="MatchEventIndicator" id="5799" type="MatchEventIndicator" description="Bitmap field of eight Boolean type indicators reflecting the end of updates for a given Globex event" offset="8" semanticType="MultipleCharValue"/>
         <group name="NoMDEntries" id="268" description="Number of entries in Market Data message" blockLength="32" dimensionType="groupSize">
             <field name="MDEntryPx" id="270" type="PRICENULL" description="Market Data entry price" offset="0" semanticType="Price"/>
-            <field name="MDEntrySize" id="271" type="Int32NULL" description="Market Data entry size" offset="8" semanticType="Qty"/>
+            <field name="MDEntrySize" id="271" type="Int32NULL" description="Market Data entry encodedLength" offset="8" semanticType="Qty"/>
             <field name="SecurityID" id="48" type="Int32" description="Security ID " offset="12" semanticType="int"/>
             <field name="RptSeq" id="83" type="uInt32" description="Market Data entry sequence number per instrument update" offset="16" semanticType="int"/>
             <field name="TradingReferenceDate" id="5796" type="LocalMktDate" description="Indicates trade session date corresponding to a statistic entry" offset="20" semanticType="LocalMktDate"/>
@@ -527,8 +527,8 @@
         <field name="MainFraction" id="37702" type="uInt8NULL" description="Price Denominator of Main Fraction" offset="136" semanticType="int"/>
         <field name="SubFraction" id="37703" type="uInt8NULL" description="Price Denominator of Sub Fraction" offset="137" semanticType="int"/>
         <field name="PriceDisplayFormat" id="9800" type="uInt8NULL" description="Number of decimals in fractional display price" offset="138" semanticType="int"/>
-        <field name="UnitOfMeasure" id="996" type="UnitOfMeasure" description="Unit of measure for the products' original contract size. This will be populated for all products listed on CME Globex" offset="139" semanticType="String"/>
-        <field name="UnitOfMeasureQty" id="1147" type="PRICENULL" description="This field contains the contract size for each instrument. Used in combination with tag 996-UnitofMeasure" offset="169" semanticType="Qty"/>
+        <field name="UnitOfMeasure" id="996" type="UnitOfMeasure" description="Unit of measure for the products' original contract encodedLength. This will be populated for all products listed on CME Globex" offset="139" semanticType="String"/>
+        <field name="UnitOfMeasureQty" id="1147" type="PRICENULL" description="This field contains the contract encodedLength for each instrument. Used in combination with tag 996-UnitofMeasure" offset="169" semanticType="Qty"/>
         <field name="TradingReferencePrice" id="1150" type="PRICENULL" description="Reference price - the most recently available Settlement whether it be Theoretical, Preliminary or a Final Settle of the session" offset="177" semanticType="Price"/>
         <field name="SettlPriceType" id="731" type="SettlPriceType" description="Bitmap field of eight Boolean type indicators representing settlement price type" offset="185" semanticType="MultipleCharValue"/>
         <field name="ClearedVolume" id="5791" type="Int32NULL" description="The total cleared volume of instrument traded during the prior trading session" offset="186" semanticType="Qty"/>

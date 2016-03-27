@@ -18,14 +18,14 @@
             <type name="numInGroup" primitiveType="uint8"/>
         </composite>
         <composite name="varDataEncoding">
-            <type name="length" primitiveType="uint16"/>
+            <type name="length" primitiveType="uint32" maxValue="2147483647"/>
             <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
         </composite>
     </types>
     <types>
         <type name="ModelYear" primitiveType="uint16"/>
         <type name="VehicleCode" primitiveType="char" length="6" characterEncoding="ASCII"/>
-        <type name="someNumbers" primitiveType="int32" length="5"/>
+        <type name="someNumbers" primitiveType="uint32" length="5"/>
         <type name="Ron" primitiveType="uint8" minValue="90" maxValue="110"/>
         <composite name="Engine">
             <type name="capacity" primitiveType="uint16"/>
@@ -50,7 +50,7 @@
         </set>
     </types>
     <sbe:message name="Car" id="1" description="Description of a basic Car">
-        <field name="serialNumber" id="1" type="uint64"/>
+        <field name="serialNumber" id="1" type="uint32"/>
         <field name="modelYear" id="2" type="ModelYear"/>
         <field name="available" id="3" type="BooleanType"/>
         <field name="code" id="4" type="Model"/>
