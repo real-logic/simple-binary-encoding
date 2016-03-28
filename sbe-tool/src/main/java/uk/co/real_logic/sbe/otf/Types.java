@@ -54,6 +54,14 @@ public class Types
             case INT32:
                 return buffer.getInt(index, byteOrder);
 
+            case UINT32:
+                final int value = buffer.getInt(index, byteOrder);
+                if (value < 0)
+                {
+                    throw new IllegalStateException("UINT32 type should not be greater than Integer.MAX_VALUE: value=" + value);
+                }
+                return value;
+
             default:
                 throw new IllegalArgumentException("Unsupported type: " + type);
         }
