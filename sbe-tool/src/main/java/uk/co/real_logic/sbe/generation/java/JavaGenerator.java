@@ -444,29 +444,35 @@ public class JavaGenerator implements CodeGenerator
 
         final int blockLength = tokens.get(index).encodedLength();
         final String javaTypeForBlockLength = primitiveTypeName(tokens.get(index + 2));
-        final String javaTypeForNumInGroup = primitiveTypeName(tokens.get(index + 3));
+        final Token numInGroupToken = tokens.get(index + 3);
+        final String javaTypeForNumInGroup = primitiveTypeName(numInGroupToken);
 
         sb.append(String.format(
             indent + "    public void wrap(\n" +
-            indent + "        final %1$s parentMessage, final %5$s buffer, final int count)\n" +
+            indent + "        final %1$s parentMessage, final %2$s buffer, final int count)\n" +
             indent + "    {\n" +
+            indent + "        if (count > %3$d)\n" +
+            indent + "        {\n" +
+            indent + "            throw new IllegalArgumentException(\"count > max value for type: count=\" + count);\n" +
+            indent + "        }\n\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
             indent + "        actingVersion = SCHEMA_VERSION;\n" +
             indent + "        dimensions.wrap(buffer, parentMessage.limit());\n" +
-            indent + "        dimensions.blockLength((%2$s)%3$d);\n" +
-            indent + "        dimensions.numInGroup((%4$s)count);\n" +
+            indent + "        dimensions.blockLength((%4$s)%5$d);\n" +
+            indent + "        dimensions.numInGroup((%6$s)count);\n" +
             indent + "        index = -1;\n" +
             indent + "        this.count = count;\n" +
-            indent + "        blockLength = %3$d;\n" +
+            indent + "        blockLength = %5$d;\n" +
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
+            mutableBuffer,
+            numInGroupToken.encoding().applicableMaxValue().longValue(),
             javaTypeForBlockLength,
             blockLength,
-            javaTypeForNumInGroup,
-            mutableBuffer
-        ));
+            javaTypeForNumInGroup
+            ));
 
         sb.append(indent).append("    public static int sbeHeaderSize()\n")
           .append(indent).append("    {\n")
