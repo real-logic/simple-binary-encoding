@@ -46,7 +46,7 @@
         </composite>
         <composite name="groupSizeEncoding" semanticType="NumInGroup">
             <type name="blockLength" primitiveType="uint16"/>
-            <type name="numInGroup" primitiveType="uint8"/>
+            <type name="numInGroup" primitiveType="uint16"/>
         </composite>
         <enum name="HandInst" encodingType="char">
             <validValue name="AUTOMATED_EXECUTION">1</validValue>
