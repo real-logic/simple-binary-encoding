@@ -102,7 +102,7 @@ static const sbe_float_t perf2cSeconds = 11.8f;
 static const sbe_uint16_t engineCapacity = 2000;
 static const sbe_uint8_t engineNumCylinders = 4;
 
-static const std::uint64_t encodedCarAndHdrLength = 179 + 8;
+static const std::uint64_t encodedCarAndHdrLength = 189 + 8;
 
 // This enum represents the expected events that
 // will be received during the decoding process.

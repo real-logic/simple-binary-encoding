@@ -39,7 +39,7 @@ static const char *MODEL = "Civic VTi";
 static const char *ACTIVATION_CODE = "deadbeef";
 
 static const std::uint64_t encodedHdrSz = 8;
-static const std::uint64_t encodedCarSz = 179;
+static const std::uint64_t encodedCarSz = 189;
 
 class BoundsCheckTest : public testing::Test
 {
@@ -336,7 +336,7 @@ TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodeOfMessa
 TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfMessage)
 {
     const int length = GetParam();
-    char encodeBuffer[179];
+    char encodeBuffer[189];
     std::unique_ptr<char[]> buffer(new char[length]);
 
     encodeCarRoot(encodeBuffer, 0, sizeof(encodeBuffer));
