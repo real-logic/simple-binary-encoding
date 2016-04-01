@@ -458,7 +458,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        std::uint64_t pos = position();\n" +
                 indent + "        const std::string result(m_buffer + pos, dataLength);\n" +
                 indent + "        position(position() + dataLength);\n" +
-                indent + "        return std::move(result);\n" +
+                indent + "        return result;\n" +
                 indent + "    }\n\n",
                 propertyName,
                 generateStringNotPresentCondition(token.version(), BASE_INDENT),
@@ -470,6 +470,10 @@ public class CppGenerator implements CodeGenerator
             sb.append(String.format(
                 indent + "    %1$s &put%2$s(const std::string& str)\n" +
                 indent + "    {\n" +
+                indent + "        if (str.length() > %6$d)\n" +
+                indent + "        {\n" +
+                indent + "             throw std::runtime_error(\"std::string length too long for length type [E109]\");\n" +
+                indent + "        }\n" +
                 indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
                 indent + "        std::uint64_t lengthPosition = position();\n" +
                 indent + "        position(lengthPosition + lengthOfLengthField);\n" +
@@ -483,7 +487,8 @@ public class CppGenerator implements CodeGenerator
                 propertyName,
                 lengthOfLengthField,
                 lengthCppType,
-                formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType())
+                formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
+                lengthToken.encoding().applicableMaxValue().longValue()
             ));
 
             i += token.componentTokenCount();
@@ -1130,7 +1135,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "    std::string get%1$sAsString() const\n" +
                 indent + "    {\n" +
                 indent + "        std::string result(m_buffer + m_offset + %2$d, %3$d);\n" +
-                indent + "        return std::move(result);\n" +
+                indent + "        return result;\n" +
                 indent + "    }\n\n",
                 toUpperFirstChar(propertyName),
                 offset,

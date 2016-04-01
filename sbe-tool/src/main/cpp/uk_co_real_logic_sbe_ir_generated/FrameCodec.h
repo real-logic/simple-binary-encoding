@@ -415,11 +415,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     FrameCodec &putPackageName(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
@@ -514,11 +518,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     FrameCodec &putNamespaceName(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
@@ -613,11 +621,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     FrameCodec &putSemanticVersion(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);

@@ -679,11 +679,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     TokenCodec &putName(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
@@ -778,11 +782,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     TokenCodec &putConstValue(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
@@ -877,11 +885,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     TokenCodec &putMinValue(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
@@ -976,11 +988,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     TokenCodec &putMaxValue(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
@@ -1075,11 +1091,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     TokenCodec &putNullValue(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
@@ -1174,11 +1194,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     TokenCodec &putCharacterEncoding(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
@@ -1273,11 +1297,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     TokenCodec &putEpoch(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
@@ -1372,11 +1400,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     TokenCodec &putTimeUnit(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
@@ -1471,11 +1503,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     TokenCodec &putSemanticType(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
@@ -1570,11 +1606,15 @@ public:
         std::uint64_t pos = position();
         const std::string result(m_buffer + pos, dataLength);
         position(position() + dataLength);
-        return std::move(result);
+        return result;
     }
 
     TokenCodec &putDescription(const std::string& str)
     {
+        if (str.length() > 65534)
+        {
+             throw std::runtime_error("std::string length too long for length type [E109]");
+        }
         std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = position();
         position(lengthPosition + lengthOfLengthField);
