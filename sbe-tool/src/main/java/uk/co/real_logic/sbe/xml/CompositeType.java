@@ -175,7 +175,21 @@ public class CompositeType extends Type
         }
         else
         {
-            validateMaxValue(node, numInGroupType.primitiveType(), numInGroupType.maxValue());
+            final PrimitiveValue maxValue = numInGroupType.maxValue();
+            validateMaxValue(node, numInGroupType.primitiveType(), maxValue);
+
+            final PrimitiveValue minValue = numInGroupType.minValue();
+            if (null != minValue)
+            {
+                final long max = maxValue != null ?
+                    maxValue.longValue() : numInGroupType.primitiveType().maxValue().longValue();
+
+                if (minValue.longValue() > max)
+                {
+                    XmlSchemaParser.handleError(node, String.format(
+                        "\"numInGroup\" minValue=%s greater than maxValue=%d", minValue, max));
+                }
+            }
         }
     }
 
