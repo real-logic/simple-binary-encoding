@@ -451,23 +451,24 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public void wrap(\n" +
             indent + "        final %1$s parentMessage, final %2$s buffer, final int count)\n" +
             indent + "    {\n" +
-            indent + "        if (count > %3$d)\n" +
+            indent + "        if (count < %3$d || count > %4$d)\n" +
             indent + "        {\n" +
-            indent + "            throw new IllegalArgumentException(\"count > max value for type: count=\" + count);\n" +
+            indent + "            throw new IllegalArgumentException(\"count outside allowed range: count=\" + count);\n" +
             indent + "        }\n\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
             indent + "        actingVersion = SCHEMA_VERSION;\n" +
             indent + "        dimensions.wrap(buffer, parentMessage.limit());\n" +
-            indent + "        dimensions.blockLength((%4$s)%5$d);\n" +
-            indent + "        dimensions.numInGroup((%6$s)count);\n" +
+            indent + "        dimensions.blockLength((%5$s)%6$d);\n" +
+            indent + "        dimensions.numInGroup((%7$s)count);\n" +
             indent + "        index = -1;\n" +
             indent + "        this.count = count;\n" +
-            indent + "        blockLength = %5$d;\n" +
+            indent + "        blockLength = %6$d;\n" +
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
             mutableBuffer,
+            numInGroupToken.encoding().applicableMinValue().longValue(),
             numInGroupToken.encoding().applicableMaxValue().longValue(),
             javaTypeForBlockLength,
             blockLength,
