@@ -109,7 +109,6 @@ public class FrameCodecDecoder implements MessageDecoder
         return 2147483647;
     }
 
-
     public int irId()
     {
         return buffer.getInt(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -148,7 +147,6 @@ public class FrameCodecDecoder implements MessageDecoder
         return 2147483647;
     }
 
-
     public int irVersion()
     {
         return buffer.getInt(offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -186,7 +184,6 @@ public class FrameCodecDecoder implements MessageDecoder
     {
         return 2147483647;
     }
-
 
     public int schemaVersion()
     {

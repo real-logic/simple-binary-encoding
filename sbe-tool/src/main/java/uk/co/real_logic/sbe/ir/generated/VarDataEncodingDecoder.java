@@ -38,7 +38,6 @@ public class VarDataEncodingDecoder
         return 65534;
     }
 
-
     public int length()
     {
         return (buffer.getShort(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -59,5 +58,4 @@ public class VarDataEncodingDecoder
     {
         return (short)254;
     }
-
 }

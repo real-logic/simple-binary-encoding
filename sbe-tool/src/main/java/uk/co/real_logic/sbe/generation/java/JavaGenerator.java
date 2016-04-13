@@ -1454,7 +1454,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public static %s %sMaxValue()\n" +
             indent + "    {\n" +
             indent + "        return %s;\n" +
-            indent + "    }\n\n",
+            indent + "    }\n",
             javaTypeName,
             propertyName,
             generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())
@@ -1495,6 +1495,7 @@ public class JavaGenerator implements CodeGenerator
         final String byteOrderStr = byteOrderString(encoding);
 
         return String.format(
+            "\n" +
             indent + "    public %s %s(final %s value)\n" +
             indent + "    {\n" +
             indent + "        %s;\n" +

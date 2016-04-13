@@ -109,7 +109,6 @@ public class TokenCodecDecoder implements MessageDecoder
         return 2147483647;
     }
 
-
     public int tokenOffset()
     {
         return buffer.getInt(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -147,7 +146,6 @@ public class TokenCodecDecoder implements MessageDecoder
     {
         return 2147483647;
     }
-
 
     public int tokenSize()
     {
@@ -187,7 +185,6 @@ public class TokenCodecDecoder implements MessageDecoder
         return 2147483647;
     }
 
-
     public int fieldId()
     {
         return buffer.getInt(offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -226,7 +223,6 @@ public class TokenCodecDecoder implements MessageDecoder
         return 2147483647;
     }
 
-
     public int tokenVersion()
     {
         return buffer.getInt(offset + 12, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -264,7 +260,6 @@ public class TokenCodecDecoder implements MessageDecoder
     {
         return 2147483647;
     }
-
 
     public int componentTokenCount()
     {
