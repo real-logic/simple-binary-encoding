@@ -173,6 +173,10 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleWarning(node, "\"numInGroup\" should be UINT8 or UINT16");
         }
+        else
+        {
+            validateMaxValue(node, numInGroupType.primitiveType(), numInGroupType.maxValue());
+        }
     }
 
     /**
