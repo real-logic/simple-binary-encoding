@@ -1,6 +1,7 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
+import org.agrona.MutableDirectBuffer;
 import org.agrona.DirectBuffer;
 
 @javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.TokenCodecDecoder"})
@@ -396,8 +397,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getName(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -409,8 +409,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getName(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getName(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -477,8 +476,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getConstValue(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getConstValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -490,8 +488,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getConstValue(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getConstValue(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -558,8 +555,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getMinValue(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getMinValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -571,8 +567,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getMinValue(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getMinValue(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -639,8 +634,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getMaxValue(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getMaxValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -652,8 +646,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getMaxValue(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getMaxValue(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -720,8 +713,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getNullValue(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getNullValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -733,8 +725,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getNullValue(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getNullValue(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -801,8 +792,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getCharacterEncoding(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getCharacterEncoding(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -814,8 +804,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getCharacterEncoding(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getCharacterEncoding(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -882,8 +871,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getEpoch(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getEpoch(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -895,8 +883,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getEpoch(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getEpoch(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -963,8 +950,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getTimeUnit(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getTimeUnit(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -976,8 +962,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getTimeUnit(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getTimeUnit(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -1044,8 +1029,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getSemanticType(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getSemanticType(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -1057,8 +1041,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getSemanticType(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getSemanticType(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -1125,8 +1108,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getDescription(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getDescription(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -1138,8 +1120,7 @@ public class TokenCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getDescription(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getDescription(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();

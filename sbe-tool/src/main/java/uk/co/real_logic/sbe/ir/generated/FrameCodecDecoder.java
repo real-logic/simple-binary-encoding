@@ -1,6 +1,7 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
+import org.agrona.MutableDirectBuffer;
 import org.agrona.DirectBuffer;
 
 @javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.FrameCodecDecoder"})
@@ -226,8 +227,7 @@ public class FrameCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getPackageName(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getPackageName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -239,8 +239,7 @@ public class FrameCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getPackageName(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getPackageName(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -307,8 +306,7 @@ public class FrameCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getNamespaceName(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getNamespaceName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -320,8 +318,7 @@ public class FrameCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getNamespaceName(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getNamespaceName(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -388,8 +385,7 @@ public class FrameCodecDecoder implements MessageDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
-    public int getSemanticVersion(
-        final org.agrona.MutableDirectBuffer dst, final int dstOffset, final int length)
+    public int getSemanticVersion(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
@@ -401,8 +397,7 @@ public class FrameCodecDecoder implements MessageDecoder
         return bytesCopied;
     }
 
-    public int getSemanticVersion(
-        final byte[] dst, final int dstOffset, final int length)
+    public int getSemanticVersion(final byte[] dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();

@@ -2,6 +2,7 @@
 package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.MutableDirectBuffer;
+import org.agrona.DirectBuffer;
 
 @javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.TokenCodecEncoder"})
 @SuppressWarnings("all")
@@ -229,8 +230,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public TokenCodecEncoder putName(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public TokenCodecEncoder putName(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -246,8 +246,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public TokenCodecEncoder putName(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putName(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -317,8 +316,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public TokenCodecEncoder putConstValue(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public TokenCodecEncoder putConstValue(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -334,8 +332,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public TokenCodecEncoder putConstValue(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putConstValue(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -405,8 +402,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public TokenCodecEncoder putMinValue(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public TokenCodecEncoder putMinValue(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -422,8 +418,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public TokenCodecEncoder putMinValue(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putMinValue(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -493,8 +488,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public TokenCodecEncoder putMaxValue(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public TokenCodecEncoder putMaxValue(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -510,8 +504,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public TokenCodecEncoder putMaxValue(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putMaxValue(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -581,8 +574,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public TokenCodecEncoder putNullValue(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public TokenCodecEncoder putNullValue(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -598,8 +590,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public TokenCodecEncoder putNullValue(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putNullValue(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -669,8 +660,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public TokenCodecEncoder putCharacterEncoding(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public TokenCodecEncoder putCharacterEncoding(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -686,8 +676,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public TokenCodecEncoder putCharacterEncoding(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putCharacterEncoding(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -757,8 +746,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public TokenCodecEncoder putEpoch(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public TokenCodecEncoder putEpoch(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -774,8 +762,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public TokenCodecEncoder putEpoch(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putEpoch(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -845,8 +832,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public TokenCodecEncoder putTimeUnit(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public TokenCodecEncoder putTimeUnit(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -862,8 +848,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public TokenCodecEncoder putTimeUnit(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putTimeUnit(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -933,8 +918,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public TokenCodecEncoder putSemanticType(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public TokenCodecEncoder putSemanticType(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -950,8 +934,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public TokenCodecEncoder putSemanticType(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putSemanticType(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -1021,8 +1004,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public TokenCodecEncoder putDescription(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public TokenCodecEncoder putDescription(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -1038,8 +1020,7 @@ public class TokenCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public TokenCodecEncoder putDescription(
-        final byte[] src, final int srcOffset, final int length)
+    public TokenCodecEncoder putDescription(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {

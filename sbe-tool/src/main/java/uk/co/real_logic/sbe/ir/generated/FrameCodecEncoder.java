@@ -2,6 +2,7 @@
 package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.MutableDirectBuffer;
+import org.agrona.DirectBuffer;
 
 @javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder"})
 @SuppressWarnings("all")
@@ -165,8 +166,7 @@ public class FrameCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public FrameCodecEncoder putPackageName(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public FrameCodecEncoder putPackageName(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -182,8 +182,7 @@ public class FrameCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public FrameCodecEncoder putPackageName(
-        final byte[] src, final int srcOffset, final int length)
+    public FrameCodecEncoder putPackageName(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -253,8 +252,7 @@ public class FrameCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public FrameCodecEncoder putNamespaceName(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public FrameCodecEncoder putNamespaceName(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -270,8 +268,7 @@ public class FrameCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public FrameCodecEncoder putNamespaceName(
-        final byte[] src, final int srcOffset, final int length)
+    public FrameCodecEncoder putNamespaceName(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -341,8 +338,7 @@ public class FrameCodecEncoder implements MessageEncoder
         return 2;
     }
 
-    public FrameCodecEncoder putSemanticVersion(
-        final org.agrona.DirectBuffer src, final int srcOffset, final int length)
+    public FrameCodecEncoder putSemanticVersion(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
@@ -358,8 +354,7 @@ public class FrameCodecEncoder implements MessageEncoder
         return this;
     }
 
-    public FrameCodecEncoder putSemanticVersion(
-        final byte[] src, final int srcOffset, final int length)
+    public FrameCodecEncoder putSemanticVersion(final byte[] src, final int srcOffset, final int length)
     {
         if (length > 65534)
         {
