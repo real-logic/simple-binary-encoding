@@ -194,8 +194,9 @@ public class CppGenerator implements CodeGenerator
         final int dimensionHeaderLength = tokens.get(index + 1).encodedLength();
 
         final int blockLength = tokens.get(index).encodedLength();
+        final Token numInGroupToken = tokens.get(index + 3);
         final String cppTypeForBlockLength = cppTypeName(tokens.get(index + 2).encoding().primitiveType());
-        final String cppTypeForNumInGroup = cppTypeName(tokens.get(index + 3).encoding().primitiveType());
+        final String cppTypeForNumInGroup = cppTypeName(numInGroupToken.encoding().primitiveType());
 
         sb.append(String.format(
             "\n" +
@@ -212,9 +213,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    std::uint64_t m_actingVersion;\n" +
             indent + "    %2$s m_dimensions;\n\n" +
             indent + "public:\n\n",
-            formatClassName(groupName),
-            dimensionsClassName
-        ));
+            formatClassName(groupName), dimensionsClassName));
 
         sb.append(String.format(
             indent + "    inline void wrapForDecode(char *buffer, std::uint64_t *pos, const std::uint64_t actingVersion," +
@@ -230,13 +229,16 @@ public class CppGenerator implements CodeGenerator
             indent + "        m_positionPtr = pos;\n" +
             indent + "        *m_positionPtr = *m_positionPtr + %1$d;\n" +
             indent + "    }\n\n",
-            dimensionHeaderLength
-        ));
+            dimensionHeaderLength));
 
         sb.append(String.format(
             indent + "    inline void wrapForEncode(char *buffer, const %3$s count," +
                 " std::uint64_t *pos, const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
             indent + "    {\n" +
+            indent + "        if (count < %5$d || count > %6$d)\n" +
+            indent + "        {\n" +
+            indent + "            throw std::runtime_error(\"count outside of allowed range [E110]\");\n" +
+            indent + "        }\n" +
             indent + "        m_buffer = buffer;\n" +
             indent + "        m_bufferLength = bufferLength;\n" +
             indent + "        m_dimensions.wrap(m_buffer, *pos, actingVersion, bufferLength);\n" +
@@ -249,8 +251,9 @@ public class CppGenerator implements CodeGenerator
             indent + "        m_positionPtr = pos;\n" +
             indent + "        *m_positionPtr = *m_positionPtr + %4$d;\n" +
             indent + "    }\n\n",
-            cppTypeForBlockLength, blockLength, cppTypeForNumInGroup, dimensionHeaderLength
-        ));
+            cppTypeForBlockLength, blockLength, cppTypeForNumInGroup, dimensionHeaderLength,
+            numInGroupToken.encoding().applicableMinValue().longValue(),
+            numInGroupToken.encoding().applicableMaxValue().longValue()));
 
         sb.append(String.format(
             indent + "    static const std::uint64_t sbeHeaderSize()\n" +
@@ -292,8 +295,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        ++m_index;\n\n" +
             indent + "        return *this;\n" +
             indent + "    }\n\n",
-            dimensionHeaderLength, blockLength, formatClassName(groupName)
-        ));
+            dimensionHeaderLength, blockLength, formatClassName(groupName)));
 
         sb.append(String.format(
             indent + "#if __cplusplus < 201103L\n" +
@@ -313,8 +315,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        }\n" +
             indent + "    }\n\n" +
             indent + "#endif\n\n",
-            formatClassName(groupName)
-        ));
+            formatClassName(groupName)));
     }
 
     private static CharSequence generateGroupProperty(
