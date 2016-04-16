@@ -25,8 +25,8 @@
     <types>
         <type name="ModelYear" primitiveType="uint16"/>
         <type name="VehicleCode" primitiveType="char" length="6" characterEncoding="ASCII"/>
-        <type name="someNumbers" primitiveType="uint32" length="5"/>
         <type name="Ron" primitiveType="uint8" minValue="90" maxValue="110"/>
+        <type name="someNumbers" primitiveType="uint32" length="5"/>
         <composite name="Engine">
             <type name="capacity" primitiveType="uint16"/>
             <type name="numCylinders" primitiveType="uint8"/>
@@ -50,7 +50,7 @@
         </set>
     </types>
     <sbe:message name="Car" id="1" description="Description of a basic Car">
-        <field name="serialNumber" id="1" type="uint32"/>
+        <field name="serialNumber" id="1" type="uint64"/>
         <field name="modelYear" id="2" type="ModelYear"/>
         <field name="available" id="3" type="BooleanType"/>
         <field name="code" id="4" type="Model"/>
