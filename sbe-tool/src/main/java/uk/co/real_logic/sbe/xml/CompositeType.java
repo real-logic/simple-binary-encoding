@@ -32,6 +32,7 @@ import java.util.Map;
 
 import static javax.xml.xpath.XPathConstants.NODESET;
 import static uk.co.real_logic.sbe.PrimitiveType.*;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
 /**
@@ -42,24 +43,30 @@ public class CompositeType extends Type
     public static final String COMPOSITE_TYPE = "composite";
     public static final String SUB_TYPES_EXP = "type|enum|set|composite|ref";
 
+    private final List<String> compositesPath = new ArrayList<>();
     private final Map<String, Type> containedTypeByNameMap = new LinkedHashMap<>();
     private final int sinceVersion;
 
     public CompositeType(final Node node) throws XPathExpressionException
     {
-        this(node, null);
+        this(node, null, new ArrayList<>());
     }
 
     /**
      * Construct a new compositeType from XML Schema.
      *
-     * @param node      from the XML Schema Parsing
-     * @param givenName for this node.
+     * @param node           from the XML Schema Parsing
+     * @param givenName      for this node.
+     * @param compositesPath with the path of composites that represents the levels of composition.
      * @throws XPathExpressionException if the XPath is invalid.
      */
-    public CompositeType(final Node node, final String givenName) throws XPathExpressionException
+    public CompositeType(final Node node, final String givenName, final List<String> compositesPath)
+        throws XPathExpressionException
     {
         super(node, givenName);
+
+        this.compositesPath.addAll(compositesPath);
+        this.compositesPath.add(getAttributeValue(node, "name"));
 
         sinceVersion = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "sinceVersion", "0"));
         final XPath xPath = XPathFactory.newInstance().newXPath();
@@ -376,7 +383,7 @@ public class CompositeType extends Type
                 break;
 
             case "composite":
-                type = addType(subTypeNode, subTypeName, new CompositeType(subTypeNode, givenName));
+                type = addType(subTypeNode, subTypeName, new CompositeType(subTypeNode, givenName, compositesPath));
                 break;
 
             case "ref":
@@ -395,6 +402,12 @@ public class CompositeType extends Type
                 }
                 else
                 {
+                    if (compositesPath.contains(refType))
+                    {
+                        XmlSchemaParser.handleError(refTypeNode, "ref types cannot create circular dependencies.");
+                        throw new IllegalStateException("ref types cannot create circular dependencies");
+                    }
+
                     type = processType(refTypeNode, refName, refName);
 
                     if (-1 != refOffset)
