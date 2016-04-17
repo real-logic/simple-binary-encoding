@@ -15,7 +15,6 @@
  */
 package uk.co.real_logic.sbe.examples;
 
-import baseline.BoostType;
 import extension.CarDecoder.PerformanceFiguresDecoder.AccelerationDecoder;
 import org.agrona.concurrent.UnsafeBuffer;
 
@@ -135,8 +134,8 @@ public class ExampleUsingGeneratedStubExtension
         car.engine()
             .capacity(2000)
             .numCylinders((short)4)
-            .putManufacturerCode(MANUFACTURER_CODE, srcOffset)
-            .booster().boostType(BoostType.NITROUS).horsePower((short)200);
+            .putManufacturerCode(MANUFACTURER_CODE, srcOffset);
+            //.booster().boostType(BoostType.NITROUS).horsePower((short)200);
 
         car.fuelFiguresCount(3)
             .next().speed(30).mpg(35.9f).usageDescription("Urban Cycle")
@@ -214,8 +213,8 @@ public class ExampleUsingGeneratedStubExtension
         {
             sb.append((char)engine.manufacturerCode(i));
         }
-        sb.append("\ncar.engine.booster.boostType=").append(engine.booster().boostType());
-        sb.append("\ncar.engine.booster.horsePower=").append(engine.booster().horsePower());
+        //sb.append("\ncar.engine.booster.boostType=").append(engine.booster().boostType());
+        //sb.append("\ncar.engine.booster.horsePower=").append(engine.booster().horsePower());
 
         sb.append("\ncar.engine.fuel=").append(new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
 
