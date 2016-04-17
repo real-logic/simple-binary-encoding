@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/RC3"
-               package="composite.elements"
-               id="3"
-               version="0"
-               semanticVersion="5.2"
-               description="Unit Test"
-               byteOrder="littleEndian">
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/sbe/rc4"
+                   package="composite.elements"
+                   id="3"
+                   version="0"
+                   semanticVersion="5.2"
+                   description="Unit Test"
+                   byteOrder="littleEndian">
     <types>
         <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>

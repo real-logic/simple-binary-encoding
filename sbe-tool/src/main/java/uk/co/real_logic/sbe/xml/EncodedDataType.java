@@ -51,7 +51,18 @@ public class EncodedDataType extends Type
      */
     public EncodedDataType(final Node node)
     {
-        super(node);
+        this(node, null);
+    }
+
+    /**
+     * Construct a new encodedDataType from XML Schema.
+     *
+     * @param node      from the XML Schema Parsing
+     * @param givenName for this node.
+     */
+    public EncodedDataType(final Node node, final String givenName)
+    {
+        super(node, givenName);
 
         primitiveType = PrimitiveType.get(getAttributeValue(node, "primitiveType"));
         length = Integer.parseInt(getAttributeValue(node, "length", "1"));

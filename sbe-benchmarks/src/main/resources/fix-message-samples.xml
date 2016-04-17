@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/RC3"
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/sbe/rc4"
                    package="uk.co.real_logic.sbe.benchmarks.fix"
                    id="1"
                    version="1"

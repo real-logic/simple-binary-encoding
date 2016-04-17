@@ -41,16 +41,24 @@ public class SetType extends Type
     private final Map<PrimitiveValue, Choice> choiceByPrimitiveValueMap = new LinkedHashMap<>();
     private final Map<String, Choice> choiceByNameMap = new LinkedHashMap<>();
 
+    public SetType(final Node node)
+        throws XPathExpressionException, IllegalArgumentException
+    {
+        this(node, null);
+    }
+
     /**
      * Construct a new SetType from XML Schema.
      *
-     * @param node from the XML Schema Parsing
+     * @param node      from the XML Schema Parsing
+     * @param givenName for the node.
      * @throws XPathExpressionException on invalid XPath.
      * @throws IllegalArgumentException on illegal encoding type.
      */
-    public SetType(final Node node) throws XPathExpressionException, IllegalArgumentException
+    public SetType(final Node node, final String givenName)
+        throws XPathExpressionException, IllegalArgumentException
     {
-        super(node);
+        super(node, givenName);
 
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final String encodingTypeStr = getAttributeValue(node, "encodingType");
@@ -168,7 +176,9 @@ public class SetType extends Type
         return false;
     }
 
-    /** Holder for valid values for EnumType */
+    /**
+     * Holder for valid values for EnumType
+     */
     public static class Choice
     {
         private final String name;

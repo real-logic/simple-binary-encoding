@@ -45,15 +45,21 @@ public class CompositeType extends Type
     private final Map<String, Type> containedTypeByNameMap = new LinkedHashMap<>();
     private final int sinceVersion;
 
+    public CompositeType(final Node node) throws XPathExpressionException
+    {
+        this(node, null);
+    }
+
     /**
      * Construct a new compositeType from XML Schema.
      *
-     * @param node from the XML Schema Parsing
+     * @param node      from the XML Schema Parsing
+     * @param givenName for this node.
      * @throws XPathExpressionException if the XPath is invalid.
      */
-    public CompositeType(final Node node) throws XPathExpressionException
+    public CompositeType(final Node node, final String givenName) throws XPathExpressionException
     {
-        super(node);
+        super(node, givenName);
 
         sinceVersion = Integer.parseInt(XmlSchemaParser.getAttributeValue(node, "sinceVersion", "0"));
         final XPath xPath = XPathFactory.newInstance().newXPath();
@@ -64,7 +70,7 @@ public class CompositeType extends Type
             final Node subTypeNode = list.item(i);
             final String subTypeName = XmlSchemaParser.getAttributeValue(subTypeNode, "name");
 
-            addType(subTypeNode, subTypeName);
+            processType(subTypeNode, subTypeName, null);
         }
 
         checkForValidOffsets(node);
@@ -125,6 +131,7 @@ public class CompositeType extends Type
      */
     public List<Type> getTypeList()
     {
+
         return new ArrayList<>(containedTypeByNameMap.values());
     }
 
@@ -348,7 +355,8 @@ public class CompositeType extends Type
         return false;
     }
 
-    private Type addType(final Node subTypeNode, final String subTypeName) throws XPathExpressionException
+    private Type processType(final Node subTypeNode, final String subTypeName, final String givenName)
+        throws XPathExpressionException
     {
         final String nodeName = subTypeNode.getNodeName();
         Type type = null;
@@ -356,29 +364,29 @@ public class CompositeType extends Type
         switch (nodeName)
         {
             case "type":
-                type = addType(subTypeNode, subTypeName, new EncodedDataType(subTypeNode));
+                type = addType(subTypeNode, subTypeName, new EncodedDataType(subTypeNode, givenName));
                 break;
 
             case "enum":
-                type = addType(subTypeNode, subTypeName, new EnumType(subTypeNode));
+                type = addType(subTypeNode, subTypeName, new EnumType(subTypeNode, givenName));
                 break;
 
             case "set":
-                type = addType(subTypeNode, subTypeName, new SetType(subTypeNode));
+                type = addType(subTypeNode, subTypeName, new SetType(subTypeNode, givenName));
                 break;
 
             case "composite":
-                type = addType(subTypeNode, subTypeName, new CompositeType(subTypeNode));
+                type = addType(subTypeNode, subTypeName, new CompositeType(subTypeNode, givenName));
                 break;
 
             case "ref":
+            {
                 final XPath xPath = XPathFactory.newInstance().newXPath();
 
                 final String refName = XmlSchemaParser.getAttributeValue(subTypeNode, "name");
                 final String refType = XmlSchemaParser.getAttributeValue(subTypeNode, "type");
                 final int refOffset = Integer.parseInt(XmlSchemaParser.getAttributeValue(subTypeNode, "offset", "-1"));
-                final Node refTypeNode = (Node)xPath.compile(
-                    String.format("/messageSchema/types/*[@name=\'%s\']", refType))
+                final Node refTypeNode = (Node)xPath.compile("/messageSchema/types/*[@name='" + refType + "']")
                     .evaluate(subTypeNode.getOwnerDocument(), XPathConstants.NODE);
 
                 if (refTypeNode == null)
@@ -387,17 +395,19 @@ public class CompositeType extends Type
                 }
                 else
                 {
-                    type = addType(refTypeNode, refName);
+                    type = processType(refTypeNode, refName, refName);
 
                     if (-1 != refOffset)
                     {
                         type.offsetAttribute(refOffset);
                     }
                 }
+
                 break;
+            }
 
             default:
-                throw new IllegalStateException("Unknown node name: " + nodeName);
+                throw new IllegalStateException("Unknown node type: name=" + nodeName);
         }
 
         return type;
@@ -407,7 +417,7 @@ public class CompositeType extends Type
     {
         if (containedTypeByNameMap.put(name, type) != null)
         {
-            XmlSchemaParser.handleError(subTypeNode, "composite already contains type named: " + name);
+            XmlSchemaParser.handleError(subTypeNode, "composite already contains a type named: " + name);
         }
 
         return type;

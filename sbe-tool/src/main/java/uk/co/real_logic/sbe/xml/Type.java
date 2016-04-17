@@ -35,11 +35,19 @@ public abstract class Type
     /**
      * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
      *
-     * @param node from the XML Schema Parsing
+     * @param node      from the XML Schema Parsing
+     * @param givenName of this node, if null then the attributed name will be used.
      */
-    public Type(final Node node)
+    public Type(final Node node, final String givenName)
     {
-        name = getAttributeValue(node, "name");
+        if (null == givenName)
+        {
+            name = getAttributeValue(node, "name");
+        }
+        else
+        {
+            name = givenName;
+        }
         presence = Presence.get(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
         semanticType = getAttributeValueOrNull(node, "semanticType");
@@ -49,9 +57,9 @@ public abstract class Type
     /**
      * Construct a new Type from direct values.
      *
-     * @param name of the type
-     * @param presence of the type
-     * @param description of the type or null
+     * @param name         of the type
+     * @param presence     of the type
+     * @param description  of the type or null
      * @param semanticType of the type or null
      */
     public Type(final String name, final Presence presence, final String description, final String semanticType)
@@ -85,7 +93,7 @@ public abstract class Type
 
     /**
      * The encodedLength (in octets) of the Type.
-     *
+     * <p>
      * Overridden by subtypes. This returns 0 by default.
      *
      * @return encodedLength of the type in octets

@@ -47,15 +47,21 @@ public class EnumType extends Type
     private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new LinkedHashMap<>();
     private final Map<String, ValidValue> validValueByNameMap = new LinkedHashMap<>();
 
+    public EnumType(final Node node) throws XPathExpressionException
+    {
+        this(node, null);
+    }
+
     /**
      * Construct a new enumType from XML Schema.
      *
-     * @param node from the XML Schema Parsing
+     * @param node      from the XML Schema Parsing
+     * @param givenName for the node.
      * @throws XPathExpressionException if the XPath is invalid
      */
-    public EnumType(final Node node) throws XPathExpressionException
+    public EnumType(final Node node, final String givenName) throws XPathExpressionException
     {
-        super(node);
+        super(node, givenName);
 
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final String encodingTypeStr = getAttributeValue(node, "encodingType");

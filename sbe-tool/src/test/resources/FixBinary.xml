@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:messageSchema xmlns:ns2="http://www.fixprotocol.org/ns/simple/RC3"
+<ns2:messageSchema xmlns:ns2="http://fixprotocol.io/sbe/rc4"
                    package="mktdata"
                    id="1"
                    version="6"

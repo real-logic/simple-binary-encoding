@@ -31,6 +31,7 @@ import java.util.List;
 
 public class ExampleTokenListener implements TokenListener
 {
+    private int compositeLevel = 0;
     private final PrintWriter out;
     private final Deque<String> namedScope = new ArrayDeque<>();
     private final byte[] tempBuffer = new byte[1024];
@@ -60,7 +61,7 @@ public class ExampleTokenListener implements TokenListener
         final CharSequence value = readEncodingAsString(buffer, index, typeToken, actingVersion);
 
         printScope();
-        out.append(fieldToken.name())
+        out.append(compositeLevel > 0 ? typeToken.name() : fieldToken.name())
             .append('=')
             .append(value)
             .println();
@@ -89,7 +90,7 @@ public class ExampleTokenListener implements TokenListener
         }
 
         printScope();
-        out.append(fieldToken.name())
+        out.append(determineName(0, fieldToken, tokens, beginIndex))
             .append('=')
             .append(value)
             .println();
@@ -108,7 +109,7 @@ public class ExampleTokenListener implements TokenListener
         final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, actingVersion);
 
         printScope();
-        out.append(fieldToken.name()).append(':');
+        out.append(determineName(0, fieldToken, tokens, beginIndex)).append(':');
 
         for (int i = beginIndex + 1; i < endIndex; i++)
         {
@@ -125,11 +126,15 @@ public class ExampleTokenListener implements TokenListener
 
     public void onBeginComposite(final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
-        namedScope.push(fieldToken.name() + ".");
+        ++compositeLevel;
+
+        namedScope.push(determineName(1, fieldToken, tokens, fromIndex) + ".");
     }
 
     public void onEndComposite(final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
+        --compositeLevel;
+
         namedScope.pop();
     }
 
@@ -172,6 +177,19 @@ public class ExampleTokenListener implements TokenListener
             .append('=')
             .append(value)
             .println();
+    }
+
+    private String determineName(
+        final int thresholdLevel, final Token fieldToken, final List<Token> tokens, final int fromIndex)
+    {
+        if (compositeLevel > thresholdLevel)
+        {
+            return tokens.get(fromIndex).name();
+        }
+        else
+        {
+            return fieldToken.name();
+        }
     }
 
     private static CharSequence readEncodingAsString(
