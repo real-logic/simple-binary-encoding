@@ -31,6 +31,8 @@ static const Model::Value CODE = Model::A;
 static const bool CRUISE_CONTROL = true;
 static const bool SPORTS_PACK = true;
 static const bool SUNROOF = false;
+static const BoostType::Value BOOST_TYPE = BoostType::NITROUS;
+static const std::uint8_t BOOSTER_HORSEPOWER = 200;
 
 static char VEHICLE_CODE[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
 static char MANUFACTURER_CODE[] = { '1', '2', '3' };
@@ -54,7 +56,7 @@ static const std::uint8_t FUEL_FIGURES_COUNT = 3;
 static const std::uint8_t ACCELERATION_COUNT = 3;
 
 static const std::uint64_t expectedHeaderSize = 8;
-static const std::uint64_t expectedCarSize = 189;
+static const std::uint64_t expectedCarSize = 191;
 
 static const sbe_uint16_t fuel1Speed = 30;
 static const sbe_float_t fuel1Mpg = 35.9f;
@@ -117,7 +119,8 @@ public:
         car.engine()
             .capacity(engineCapacity)
             .numCylinders(engineNumCylinders)
-            .putManufacturerCode(MANUFACTURER_CODE);
+            .putManufacturerCode(MANUFACTURER_CODE)
+            .booster().boostType(BOOST_TYPE).horsePower(BOOSTER_HORSEPOWER);
 
         Car::FuelFigures& fuelFigures = car.fuelFiguresCount(FUEL_FIGURES_COUNT);
 
@@ -188,7 +191,7 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForMessageHeaderStaticFields)
 
 TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarStaticFields)
 {
-    EXPECT_EQ(Car::sbeBlockLength(), 45u);
+    EXPECT_EQ(Car::sbeBlockLength(), 47u);
     EXPECT_EQ(Car::sbeTemplateId(), 1u);
     EXPECT_EQ(Car::sbeSchemaId(), 6u);
     EXPECT_EQ(Car::sbeSchemaVersion(), 0u);
@@ -310,6 +313,10 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
     offset += sizeof(std::uint8_t);
     EXPECT_EQ(std::string(bp + offset, MANUFACTURER_CODE_LENGTH), std::string(MANUFACTURER_CODE, MANUFACTURER_CODE_LENGTH));
     offset += MANUFACTURER_CODE_LENGTH;
+    EXPECT_EQ(*(bp + offset), 'N');
+    offset += sizeof(char);
+    EXPECT_EQ(*(std::uint8_t *)(bp + offset), BOOSTER_HORSEPOWER);
+    offset += sizeof(std::uint8_t);
 
     // fuel figures
     EXPECT_EQ(*(std::uint16_t *)(bp + offset), 6);
@@ -657,17 +664,17 @@ TEST_F(CodeGenTest, shouldbeAbleUseOnStackCodecsAndGroupForEach)
 }
 
 static const std::size_t offsetVehicleCode = 32;
-static const std::size_t offsetUsageDesc1Length = 55;
+static const std::size_t offsetUsageDesc1Length = 57;
 static const std::size_t offsetUsageDesc1Data = offsetUsageDesc1Length + sizeof(std::uint16_t);
-static const std::size_t offsetUsageDesc2Length = 74;
+static const std::size_t offsetUsageDesc2Length = 76;
 static const std::size_t offsetUsageDesc2Data = offsetUsageDesc2Length + sizeof(std::uint16_t);
-static const std::size_t offsetUsageDesc3Length = 96;
+static const std::size_t offsetUsageDesc3Length = 98;
 static const std::size_t offsetUsageDesc3Data = offsetUsageDesc3Length + sizeof(std::uint16_t);
-static const std::size_t offsetMakeLength = 161;
+static const std::size_t offsetMakeLength = 163;
 static const std::size_t offsetMakeData = offsetMakeLength + sizeof(std::uint16_t);
-static const std::size_t offsetModelLength = 168;
+static const std::size_t offsetModelLength = 170;
 static const std::size_t offsetModelData = offsetModelLength + sizeof(std::uint16_t);
-static const std::size_t offsetActivationCodeLength = 179;
+static const std::size_t offsetActivationCodeLength = 181;
 static const std::size_t offsetActivationCodeData = offsetActivationCodeLength + sizeof(std::uint16_t);
 
 TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)

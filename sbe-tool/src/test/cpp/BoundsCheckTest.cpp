@@ -39,7 +39,7 @@ static const char *MODEL = "Civic VTi";
 static const char *ACTIVATION_CODE = "deadbeef";
 
 static const std::uint64_t encodedHdrSz = 8;
-static const std::uint64_t encodedCarSz = 189;
+static const std::uint64_t encodedCarSz = 191;
 
 class BoundsCheckTest : public testing::Test
 {
@@ -90,7 +90,8 @@ public:
         m_car.engine()
             .capacity(2000)
             .numCylinders((short)4)
-            .putManufacturerCode(MANUFACTURER_CODE);
+            .putManufacturerCode(MANUFACTURER_CODE)
+            .booster().boostType(BoostType::NITROUS).horsePower(200);
 
         return m_car.encodedLength();
     }
@@ -172,6 +173,8 @@ public:
         EXPECT_EQ(std::string(engine.manufacturerCode(), 3), std::string(MANUFACTURER_CODE, 3));
         EXPECT_EQ(engine.fuelLength(), 6u);
         EXPECT_EQ(std::string(engine.fuel(), 6), std::string("Petrol"));
+        EXPECT_EQ(engine.booster().boostType(), BoostType::NITROUS);
+        EXPECT_EQ(engine.booster().horsePower(), 200);
 
         return m_carDecoder.encodedLength();
     }
@@ -336,7 +339,7 @@ TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodeOfMessa
 TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfMessage)
 {
     const int length = GetParam();
-    char encodeBuffer[189];
+    char encodeBuffer[191];
     std::unique_ptr<char[]> buffer(new char[length]);
 
     encodeCarRoot(encodeBuffer, 0, sizeof(encodeBuffer));

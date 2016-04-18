@@ -84,7 +84,8 @@ std::size_t encodeCar(Car &car, char *buffer, std::uint64_t offset, std::uint64_
     car.engine()
        .capacity(2000)
        .numCylinders((short)4)
-       .putManufacturerCode(MANUFACTURER_CODE);
+       .putManufacturerCode(MANUFACTURER_CODE)
+       .booster().boostType(BoostType::NITROUS).horsePower(200);
 
     Car::FuelFigures& fuelFigures = car.fuelFiguresCount(3);
 
@@ -144,6 +145,18 @@ const char *format(Model::Value value)
         case Model::B: return "B";
         case Model::C: return "C";
         case Model::NULL_VALUE: return "NULL";
+        default: return "unknown";
+    }
+}
+
+const char *format(BoostType::Value value)
+{
+    switch (value)
+    {
+        case BoostType::NITROUS: return "NITROUS";
+        case BoostType::TURBO: return "TURBO";
+        case BoostType::SUPERCHARGER: return "SUPERCHARGER";
+        case BoostType::KERS: return "KERS";
         default: return "unknown";
     }
 }
@@ -239,6 +252,8 @@ std::size_t decodeCar(
     std::uint64_t bytesCopied = engine.getFuel(tmp, sizeof(tmp));
     std::cout << "\ncar.engine.fuelLength=" << bytesCopied;
     std::cout << "\ncar.engine.fuel=" << std::string(tmp, bytesCopied);
+    std::cout << "\ncar.engine.booster.boostType=" << format(engine.booster().boostType());
+    std::cout << "\ncar.engine.booster.horsePower=" << (int)engine.booster().horsePower();
 
     Car::FuelFigures &fuelFigures = car.fuelFigures();
     while (fuelFigures.hasNext())

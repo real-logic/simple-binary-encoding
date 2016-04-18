@@ -34,6 +34,7 @@ class ExampleTokenListener
 {
 public:
     std::vector<std::string> scope;
+    int compositeLevel = 0;
 
     void printScope() const
     {
@@ -42,6 +43,14 @@ public:
             {
                 std::cout << scope;
             });
+    }
+
+    virtual std::string determineName(
+        Token& fieldToken,
+        std::vector<Token>& tokens,
+        std::size_t fromIndex)
+    {
+        return (compositeLevel > 1) ? tokens.at(fromIndex).name() : fieldToken.name();
     }
 
     virtual void onBeginMessage(Token& token)
@@ -153,7 +162,9 @@ public:
         std::uint64_t actingVersion)
     {
         printScope();
-        std::cout << fieldToken.name() << "=" << asString(typeToken, buffer) << "\n";
+        std::string name = (compositeLevel > 1) ? typeToken.name() : fieldToken.name();
+
+        std::cout << name << "=" << asString(typeToken, buffer) << "\n";
     }
 
     virtual void onEnum(
@@ -242,7 +253,8 @@ public:
         std::size_t fromIndex,
         std::size_t toIndex)
     {
-        scope.push_back(fieldToken.name() + ".");
+        compositeLevel++;
+        scope.push_back(determineName(fieldToken, tokens, fromIndex) + ".");
     }
 
     virtual void onEndComposite(
@@ -251,6 +263,7 @@ public:
         std::size_t fromIndex,
         std::size_t toIndex)
     {
+        compositeLevel--;
         scope.pop_back();
     }
 
@@ -367,7 +380,8 @@ std::uint64_t encodeHdrAndCar(char *buffer, std::uint64_t length)
     car.engine()
         .capacity(engineCapacity)
         .numCylinders(engineNumCylinders)
-        .putManufacturerCode(MANUFACTURER_CODE);
+        .putManufacturerCode(MANUFACTURER_CODE)
+        .booster().boostType(BoostType::NITROUS).horsePower(200);
 
     Car::FuelFigures& fuelFigures = car.fuelFiguresCount(FUEL_FIGURES_COUNT);
 

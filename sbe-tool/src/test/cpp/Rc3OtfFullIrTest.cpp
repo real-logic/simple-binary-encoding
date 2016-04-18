@@ -102,7 +102,7 @@ static const sbe_float_t perf2cSeconds = 11.8f;
 static const sbe_uint16_t engineCapacity = 2000;
 static const sbe_uint8_t engineNumCylinders = 4;
 
-static const std::uint64_t encodedCarAndHdrLength = 189 + 8;
+static const std::uint64_t encodedCarAndHdrLength = 191 + 8;
 
 // This enum represents the expected events that
 // will be received during the decoding process.
@@ -124,6 +124,10 @@ enum EventNumber
     EN_engine_maxRpms,
     EN_engine_manufacturerCode,
     EN_engine_fuel,
+    EN_beginBooster,
+    EN_engine_booster_boostType,
+    EN_engine_booster_horsePower,
+    EN_endBooster,
     EN_endEngine,
     EN_groupFuelFigures,
     EN_beginFuelFigures1,
@@ -186,10 +190,20 @@ public:
     char m_buffer[2048];
     IrDecoder m_irDecoder;
     int m_eventNumber;
+    int m_compositeLevel;
 
     virtual void SetUp()
     {
         m_eventNumber = 0;
+        m_compositeLevel = 0;
+    }
+
+    virtual std::string determineName(
+        Token& fieldToken,
+        std::vector<Token>& tokens,
+        std::size_t fromIndex)
+    {
+        return (m_compositeLevel > 1) ? tokens.at(fromIndex).name() : fieldToken.name();
     }
 
     virtual std::uint64_t encodeHdrAndCar()
@@ -223,7 +237,8 @@ public:
         car.engine()
             .capacity(engineCapacity)
             .numCylinders(engineNumCylinders)
-            .putManufacturerCode(MANUFACTURER_CODE);
+            .putManufacturerCode(MANUFACTURER_CODE)
+            .booster().boostType(BoostType::NITROUS).horsePower(200);
 
         Car::FuelFigures& fuelFigures = car.fuelFiguresCount(FUEL_FIGURES_COUNT);
 
@@ -290,7 +305,8 @@ public:
         Token& typeToken,
         std::uint64_t actingVersion)
     {
-        cout << m_eventNumber << ": Encoding " << fieldToken.name() << " offset " << typeToken.offset() << "\n";
+        std::string name = (m_compositeLevel > 1) ? typeToken.name() : fieldToken.name();
+        cout << m_eventNumber << ": Encoding " <<  name << " offset " << typeToken.offset() << "\n";
 
         const Encoding& encoding = typeToken.encoding();
 
@@ -364,6 +380,12 @@ public:
                 const PrimitiveValue& value = encoding.constValue();
                 EXPECT_EQ(value.size(), static_cast<std::size_t>(6));
                 EXPECT_EQ(std::string(value.getArray(), value.size()), std::string("Petrol"));
+                break;
+            }
+            case EN_engine_booster_horsePower:
+            {
+                EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT8);
+                EXPECT_EQ(encoding.getAsUInt(buffer), static_cast<std::uint64_t>(200));
                 break;
             }
             case EN_fuelFigures1_speed:
@@ -521,7 +543,7 @@ public:
         std::size_t toIndex,
         std::uint64_t actingVersion)
     {
-        cout << m_eventNumber << ": Enum " << fieldToken.name() << "\n";
+        cout << m_eventNumber << ": Enum " << determineName(fieldToken, tokens, fromIndex) << "\n";
 
         const Token& typeToken = tokens.at(fromIndex + 1);
         const Encoding& encoding = typeToken.encoding();
@@ -606,6 +628,30 @@ public:
                 EXPECT_TRUE(found);
                 break;
             }
+            case EN_engine_booster_boostType:
+            {
+                EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
+
+                const std::int64_t value = encoding.getAsInt(buffer);
+                EXPECT_EQ(value, static_cast<std::int64_t>('N'));
+
+                bool found = false;
+                for (size_t i = fromIndex + 1; i < toIndex; i++)
+                {
+                    const Token& token = tokens.at(i);
+                    const std::int64_t constValue = token.encoding().constValue().getAsUInt();
+
+                    cout << "    " << token.name() << " = " << constValue << "\n";
+
+                    if (constValue == value)
+                    {
+                        EXPECT_EQ(token.name(), std::string("NITROUS"));
+                        found = true;
+                    }
+                }
+                EXPECT_TRUE(found);
+                break;
+            }
             default:
                 FAIL() << "unknown Enum event number " << m_eventNumber;
         }
@@ -670,13 +716,21 @@ public:
         std::size_t fromIndex,
         std::size_t toIndex)
     {
-        cout << m_eventNumber << ": Begin Composite " << fieldToken.name() << "\n";
+        m_compositeLevel++;
+        std::string name = determineName(fieldToken, tokens, fromIndex);
+
+        cout << m_eventNumber << ": Begin Composite " << name << "\n";
 
         switch (EventNumber(m_eventNumber))
         {
             case EN_beginEngine:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdEngine);
+                break;
+            }
+            case EN_beginBooster:
+            {
+                EXPECT_EQ(tokens.at(fromIndex).name(), "booster");
                 break;
             }
             default:
@@ -692,13 +746,21 @@ public:
         std::size_t fromIndex,
         std::size_t toIndex)
     {
-        cout << m_eventNumber << ": End Composite " << fieldToken.name() << "\n";
+        std::string name = determineName(fieldToken, tokens, fromIndex);
+        m_compositeLevel--;
+
+        cout << m_eventNumber << ": End Composite " << name << "\n";
 
         switch (EventNumber(m_eventNumber))
         {
             case EN_endEngine:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdEngine);
+                break;
+            }
+            case EN_endBooster:
+            {
+                EXPECT_EQ(tokens.at(fromIndex).name(), "booster");
                 break;
             }
             default:
