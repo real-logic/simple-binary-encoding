@@ -42,7 +42,7 @@
             <type name="maxRpm" primitiveType="uint16" presence="constant">9000</type>
             <type name="manufacturerCode" primitiveType="char" length="3"/>
             <type name="fuel" primitiveType="char" presence="constant">Petrol</type>
-            <!--ref name="booster" type="Booster"/-->
+            <ref name="booster" type="Booster"/>
         </composite>
         <enum name="BooleanType" encodingType="uint8">
             <validValue name="F">0</validValue>
