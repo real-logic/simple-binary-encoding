@@ -60,13 +60,16 @@ Unit tests
 
     sbe-tool/src/test
 
-Examples of usage
+Samples of usage
 
     sbe-samples/src/main
 
 
 Build
 -----
+
+The project is built with [Gradle](http://gradle.org/) using this [build.gradle](https://github.com/real-logic/simple-binary-encoding/blob/master/build.gradle) file.
+
 Full clean build:
 
     $ ./gradlew
