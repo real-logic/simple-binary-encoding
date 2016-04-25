@@ -14,8 +14,8 @@ An XSD for SBE specs can be found
 For the latest version information and changes see the [Change Log](https://github.com/real-logic/simple-binary-encoding/wiki/Change-Log). 
 
 This SBE implementation is designed with work very efficiently with the [Aeron](https://github.com/real-logic/Aeron) 
-messaging system for low-latency and high-throughput communications. The generated codec stubs can wrap the Agrona/Aeron buffers
-directly for zero copy semantics. 
+messaging system for low-latency and high-throughput communications. SBE has a dependency on [Agrona](https://github.com/real-logic/Agrona) 
+for its buffer implementations.
 
 License (See LICENSE file for full license)
 -------------------------------------------
