@@ -11,7 +11,7 @@ Further details on the background and usage of SBE can be found on the
 An XSD for SBE specs can be found
 [here](https://github.com/real-logic/simple-binary-encoding/blob/master/sbe-tool/src/main/resources/fpl/SimpleBinary1-0.xsd)
 
-For the latest version information and changes see the [Change Log](https://github.com/real-logic/simple-binary-encoding/wiki/Change-Log). 
+For the latest version information and changes see the [Change Log](https://github.com/real-logic/simple-binary-encoding/wiki/Change-Log) with **downloads** at [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Csbe). 
 
 This SBE implementation is designed with work very efficiently with the [Aeron](https://github.com/real-logic/Aeron) 
 messaging system for low-latency and high-throughput communications. SBE has a dependency on [Agrona](https://github.com/real-logic/Agrona) 
