@@ -45,7 +45,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.4.0-RC4</version>
+    <version>1.4.1-RC4</version>
 </dependency>
 ```
 
@@ -107,6 +107,3 @@ If you are comfortable with using CMake, then a full clean, build, and test look
     $ cmake ../..
     $ cmake --build . --clean-first
     $ ctest
-
-
-
