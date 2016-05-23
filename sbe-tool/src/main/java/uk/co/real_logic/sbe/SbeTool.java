@@ -49,6 +49,7 @@ import java.io.FileInputStream;
  * <li><code>sbe.validation.suppress.output</code>: Should the parser suppress output during validation? Defaults to false.</li>
  * <li><code>sbe.generate.stubs</code>: Generate stubs or not. Defaults to true.</li>
  * <li><code>sbe.generate.ir</code>: Generate IR or not. Defaults to false.</li>
+ * <li><code>sbe.java.generate.interfaces</code>: Generate interface hierarchy or not. Defaults to false.</li>
  * <li><code>sbe.target.language</code>: Target language for code generation, defaults to Java.</li>
  * <li><code>sbe.output.dir</code>: Target directory for code generation, defaults to current directory.</li>
  * </ul>
@@ -115,6 +116,15 @@ public class SbeTool
      */
     public static final String JAVA_GROUP_ORDER_ANNOTATION = "sbe.java.generate.group-order.annotation";
 
+    /**
+     * Boolean system property to turn on or off generation of the interface hierarchy. Defaults to false.
+     */
+    public static final String JAVA_GENERATE_INTERFACES = "sbe.java.generate.interfaces";
+
+    /**
+     * Package in which the generated Java interfaces will be placed.
+     */
+    public static final String JAVA_INTERFACE_PACKAGE = "org.agrona.sbe";
     /**
      * Default class to use as the buffer mutable implementation in generated code.
      */

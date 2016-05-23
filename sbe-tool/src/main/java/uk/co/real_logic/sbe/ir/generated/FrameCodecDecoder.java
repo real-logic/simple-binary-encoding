@@ -6,7 +6,7 @@ import org.agrona.DirectBuffer;
 
 @javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.FrameCodecDecoder"})
 @SuppressWarnings("all")
-public class FrameCodecDecoder implements MessageDecoder
+public class FrameCodecDecoder
 {
     public static final int BLOCK_LENGTH = 12;
     public static final int TEMPLATE_ID = 1;

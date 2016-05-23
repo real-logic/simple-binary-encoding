@@ -6,7 +6,7 @@ import org.agrona.DirectBuffer;
 
 @javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.TokenCodecDecoder"})
 @SuppressWarnings("all")
-public class TokenCodecDecoder implements MessageDecoder
+public class TokenCodecDecoder
 {
     public static final int BLOCK_LENGTH = 24;
     public static final int TEMPLATE_ID = 2;
