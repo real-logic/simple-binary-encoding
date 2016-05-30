@@ -125,6 +125,7 @@ public class SbeTool
      * Package in which the generated Java interfaces will be placed.
      */
     public static final String JAVA_INTERFACE_PACKAGE = "org.agrona.sbe";
+
     /**
      * Default class to use as the buffer mutable implementation in generated code.
      */
@@ -153,7 +154,7 @@ public class SbeTool
     {
         if (args.length == 0)
         {
-            System.err.format("Usage: %s <filenames>...\n", SbeTool.class.getName());
+            System.err.format("Usage: %s <filenames>...%n", SbeTool.class.getName());
             System.exit(-1);
         }
 

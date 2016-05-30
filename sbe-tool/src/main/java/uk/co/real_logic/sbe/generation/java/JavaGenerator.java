@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
 
+import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
@@ -137,8 +137,8 @@ public class JavaGenerator implements CodeGenerator
         final Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
         try (final Writer out = interfaceOutputManager.createOutput(simpleInterfaceName))
         {
-            int bytes = 0;
-            final char[] buffer = new char[512];
+            int bytes;
+            final char[] buffer = new char[4096];
             while (-1 != (bytes = reader.read(buffer)))
             {
                 out.write(buffer, 0, bytes);
@@ -148,31 +148,30 @@ public class JavaGenerator implements CodeGenerator
 
     public void generateInterfaces() throws IOException
     {
-        if (!generateInterfaces)
+        if (generateInterfaces)
         {
-            return;
+            copyInterface(GEN_COMPOSITE_DECODER_FLYWEIGHT);
+            copyInterface(GEN_COMPOSITE_ENCODER_FLYWEIGHT);
+            copyInterface(GEN_COMPOSITE_STRUCTURE);
+            copyInterface(GEN_DECODER_FLYWEIGHT);
+            copyInterface(GEN_ENCODER_FLYWEIGHT);
+            copyInterface(GEN_FLYWEIGHT);
+            copyInterface(GEN_MESSAGE_DECODER_FLYWEIGHT);
+            copyInterface(GEN_MESSAGE_ENCODER_FLYWEIGHT);
+            copyInterface(GEN_MESSAGE_FLYWEIGHT);
+            copyInterface(GEN_MESSAGE_STRUCTURE);
+            copyInterface(GEN_STRUCTURE);
         }
-        copyInterface(GEN_COMPOSITE_DECODER_FLYWEIGHT);
-        copyInterface(GEN_COMPOSITE_ENCODER_FLYWEIGHT);
-        copyInterface(GEN_COMPOSITE_STRUCTURE);
-        copyInterface(GEN_DECODER_FLYWEIGHT);
-        copyInterface(GEN_ENCODER_FLYWEIGHT);
-        copyInterface(GEN_FLYWEIGHT);
-        copyInterface(GEN_MESSAGE_DECODER_FLYWEIGHT);
-        copyInterface(GEN_MESSAGE_ENCODER_FLYWEIGHT);
-        copyInterface(GEN_MESSAGE_FLYWEIGHT);
-        copyInterface(GEN_MESSAGE_STRUCTURE);
-        copyInterface(GEN_STRUCTURE);
     }
 
-    private String implementsInterface(String tokenName, String interfaceName)
+    private String implementsInterface(final String tokenName, final String interfaceName)
     {
         if (!generateInterfaces)
         {
             return "";
         }
-        final String structName = formatClassName(structureName(tokenName));
-        return String.format(" implements %s<%s>", interfaceName, structName);
+
+        return String.format(" implements %s<%s>", interfaceName, formatClassName(structureName(tokenName)));
     }
 
     public void generateMessageHeaderStub() throws IOException
@@ -201,6 +200,7 @@ public class JavaGenerator implements CodeGenerator
         {
             return;
         }
+
         final String structName = formatClassName(structureName(msgToken.name()));
         try (final Writer out = outputManager.createOutput(structName))
         {
@@ -1011,7 +1011,6 @@ public class JavaGenerator implements CodeGenerator
         {
             generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, "");
             out.append(generateChoiceDecoders(messageBody));
-
             out.append("}\n");
         }
 
@@ -1025,7 +1024,11 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private void generateFixedFlyweightHeader(
-        final Token token, final String encoderName, final Writer out, final String buffer, final String fqBuffer,
+        final Token token,
+        final String encoderName,
+        final Writer out,
+        final String buffer,
+        final String fqBuffer,
         final String implementsString) throws IOException
     {
         out.append(generateFileHeader(encoderName, ir.applicableNamespace(), fqBuffer));
@@ -1295,6 +1298,7 @@ public class JavaGenerator implements CodeGenerator
         {
             return "\n";
         }
+
         return String.format("import %s.*;\n\n", JAVA_INTERFACE_PACKAGE);
     }
 
@@ -2224,8 +2228,8 @@ public class JavaGenerator implements CodeGenerator
             formatClassName(containingClassName),
             propertyName,
             enumName,
-            generatePut(encoding.primitiveType(), "offset + " + offset, "value.value()", byteOrderString(encoding))
-        );
+            generatePut(encoding.primitiveType(), "offset + " + offset, "value.value()", byteOrderString(encoding)
+        ));
     }
 
     private CharSequence generateBitSetProperty(
