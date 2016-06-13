@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.ir;
 import org.agrona.Verify;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Intermediate representation of SBE messages to be used for the generation of encoders and decoders
@@ -34,6 +35,8 @@ public class Ir
     private final HeaderStructure headerStructure;
     private final Map<Long, List<Token>> messagesByIdMap = new HashMap<>();
     private final Map<String, List<Token>> typesByNameMap = new HashMap<>();
+
+    private final String[] namespaces;
 
     /**
      * Create a new IR container taking a defensive copy of the headerStructure {@link Token}s passed.
@@ -62,6 +65,8 @@ public class Ir
         this.version = version;
         this.semanticVersion = semanticVersion;
         this.headerStructure = new HeaderStructure(new ArrayList<>(headerTokens));
+
+        this.namespaces = Pattern.compile("\\.").split(namespaceName == null ? packageName : namespaceName);
     }
 
     /**
@@ -151,6 +156,16 @@ public class Ir
     public String namespaceName()
     {
         return namespaceName;
+    }
+
+    /**
+     * Get the namespaces array to be used for generated code.
+     *
+     * @return the namespaces array to be used for generated code.
+     */
+    public String[] namespaces()
+    {
+        return namespaces;
     }
 
     /**
