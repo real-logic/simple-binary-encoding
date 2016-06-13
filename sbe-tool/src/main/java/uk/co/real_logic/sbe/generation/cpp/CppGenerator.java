@@ -56,13 +56,13 @@ public class CppGenerator implements CodeGenerator
         try (final Writer out = outputManager.createOutput(messageHeader))
         {
             final List<Token> tokens = ir.headerStructure().tokens();
-            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), messageHeader, null));
+            out.append(generateFileHeader(ir.namespaces(), messageHeader, null));
             out.append(generateClassDeclaration(messageHeader));
             out.append(generateFixedFlyweightCode(messageHeader, tokens.get(0).encodedLength()));
             out.append(generateCompositePropertyElements(
                 messageHeader, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
-            out.append("};\n}\n#endif\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length) + "}\n#endif\n");
         }
     }
 
@@ -124,7 +124,7 @@ public class CppGenerator implements CodeGenerator
 
             try (final Writer out = outputManager.createOutput(className))
             {
-                out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), className, typesToInclude));
+                out.append(generateFileHeader(ir.namespaces(), className, typesToInclude));
                 out.append(generateClassDeclaration(className));
                 out.append(generateMessageFlyweightCode(className, msgToken));
 
@@ -146,7 +146,7 @@ public class CppGenerator implements CodeGenerator
                 out.append(sb);
                 out.append(generateVarData(className, varData, BASE_INDENT));
 
-                out.append("};\n}\n#endif\n");
+                out.append(CppUtil.closingBraces(ir.namespaces().length) + "}\n#endif\n");
             }
         }
     }
@@ -566,7 +566,7 @@ public class CppGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(bitSetName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), bitSetName, null));
+            out.append(generateFileHeader(ir.namespaces(), bitSetName, null));
             out.append(generateClassDeclaration(bitSetName));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).encodedLength()));
 
@@ -583,7 +583,7 @@ public class CppGenerator implements CodeGenerator
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
-            out.append("};\n}\n#endif\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length) + "}\n#endif\n");
         }
     }
 
@@ -594,14 +594,14 @@ public class CppGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), enumName, null));
+            out.append(generateFileHeader(ir.namespaces(), enumName, null));
             out.append(generateEnumDeclaration(enumName));
 
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumToken));
 
             out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
 
-            out.append("};\n}\n#endif\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length) + "}\n#endif\n");
         }
     }
 
@@ -611,14 +611,14 @@ public class CppGenerator implements CodeGenerator
 
         try (final Writer out = outputManager.createOutput(compositeName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), compositeName,
+            out.append(generateFileHeader(ir.namespaces(), compositeName,
                 generateTypesToIncludes(tokens.subList(1, tokens.size() - 1))));
             out.append(generateClassDeclaration(compositeName));
             out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).encodedLength()));
 
             out.append(generateCompositePropertyElements(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
-            out.append("};\n}\n#endif\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length) + "}\n#endif\n");
         }
     }
 
@@ -815,7 +815,7 @@ public class CppGenerator implements CodeGenerator
     }
 
     private static CharSequence generateFileHeader(
-        final String namespaceName,
+        final String[] namespaces,
         final String className,
         final List<String> typesToInclude)
     {
@@ -844,7 +844,7 @@ public class CppGenerator implements CodeGenerator
             "#  include <cstring>\n" +
             "#endif\n\n" +
             "#include <sbe/sbe.h>\n\n",
-            namespaceName.toUpperCase(),
+            String.join("_", namespaces).toUpperCase(),
             className.toUpperCase()
         ));
 
@@ -860,11 +860,12 @@ public class CppGenerator implements CodeGenerator
             sb.append("\n");
         }
 
-        sb.append(String.format(
+        sb.append(
             "using namespace sbe;\n\n" +
-            "namespace %1$s {\n\n",
-            namespaceName
-        ));
+            "namespace " +
+            String.join(" {\nnamespace ", namespaces) +
+            " {\n\n"
+        );
 
         return sb;
     }
