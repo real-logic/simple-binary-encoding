@@ -19,7 +19,7 @@
 #include "CodecBench.h"
 #include "uk_co_real_logic_sbe_benchmarks/Car.h"
 
-using namespace uk_co_real_logic_sbe_benchmarks;
+using namespace uk::co::real_logic::sbe::benchmarks;
 
 char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
 uint32_t SOMENUMBERS[] = { 1, 2, 3, 4, 5 };

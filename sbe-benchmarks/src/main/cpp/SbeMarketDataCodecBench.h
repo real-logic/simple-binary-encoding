@@ -20,7 +20,7 @@
 #include "uk_co_real_logic_sbe_benchmarks_fix/MessageHeader.h"
 #include "uk_co_real_logic_sbe_benchmarks_fix/MarketDataIncrementalRefreshTrades.h"
 
-using namespace uk_co_real_logic_sbe_benchmarks_fix;
+using namespace uk::co::real_logic::sbe::benchmarks::fix;
 
 class SbeMarketDataCodecBench : public CodecBench<SbeMarketDataCodecBench>
 {

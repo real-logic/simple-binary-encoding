@@ -24,7 +24,7 @@
 #include "otf/OtfMessageDecoder.h"
 
 using namespace std;
-using namespace code_generation_test;
+using namespace code::generation::test;
 
 static const char *SCHEMA_FILENAME = "code-generation-schema.sbeir";
 

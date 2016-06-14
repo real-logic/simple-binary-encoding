@@ -23,7 +23,7 @@
 #include "otf/IrDecoder.h"
 
 using namespace std;
-using namespace composite_offsets_test;
+using namespace composite::offsets::test;
 using namespace sbe::otf;
 
 static const char *SCHEMA_FILENAME = "composite-offsets-schema.sbeir";

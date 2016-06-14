@@ -22,7 +22,7 @@
 #include "group_with_data/TestMessage4.h"
 
 using namespace std;
-using namespace group_with_data;
+using namespace group::with::data;
 
 static const sbe_uint32_t TAG_1 = 32;
 static const std::uint64_t ENTRIES_COUNT = 2;

@@ -22,7 +22,7 @@
 #include "code_generation_test/Car.h"
 
 using namespace std;
-using namespace code_generation_test;
+using namespace code::generation::test;
 
 #define SERIAL_NUMBER 1234u
 #define MODEL_YEAR 2013

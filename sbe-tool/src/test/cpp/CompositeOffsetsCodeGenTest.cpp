@@ -20,7 +20,7 @@
 #include "composite_offsets_test/TestMessage1.h"
 
 using namespace std;
-using namespace composite_offsets_test;
+using namespace composite::offsets::test;
 
 class CompositeOffsetsCodeGenTest : public testing::Test
 {
