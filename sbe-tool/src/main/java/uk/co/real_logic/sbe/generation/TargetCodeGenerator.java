@@ -22,7 +22,6 @@ import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
 import java.io.IOException;
-import org.agrona.generation.OutputManager;
 
 import static uk.co.real_logic.sbe.SbeTool.*;
 
@@ -35,21 +34,13 @@ public enum TargetCodeGenerator
     {
         public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
         {
-            final OutputManager interfaceOutputManager;
-            if (Boolean.getBoolean(JAVA_GENERATE_INTERFACES))
-            {
-                interfaceOutputManager = new PackageOutputManager(outputDir, JAVA_INTERFACE_PACKAGE);
-            }
-            else
-            {
-                interfaceOutputManager = null;
-            }
             return new JavaGenerator(
                 ir,
                 System.getProperty(JAVA_ENCODING_BUFFER_TYPE, JAVA_DEFAULT_ENCODING_BUFFER_TYPE),
                 System.getProperty(JAVA_DECODING_BUFFER_TYPE, JAVA_DEFAULT_DECODING_BUFFER_TYPE),
                 Boolean.getBoolean(JAVA_GROUP_ORDER_ANNOTATION),
-                new PackageOutputManager(outputDir, ir.applicableNamespace()), interfaceOutputManager);
+                Boolean.getBoolean(JAVA_GENERATE_INTERFACES),
+                new PackageOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 

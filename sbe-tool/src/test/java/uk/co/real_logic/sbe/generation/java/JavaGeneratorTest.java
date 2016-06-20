@@ -38,7 +38,6 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
 import static uk.co.real_logic.sbe.generation.CodeGenerator.MESSAGE_HEADER_DECODER_TYPE;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_ENCODER_TYPE;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
@@ -53,7 +52,6 @@ public class JavaGeneratorTest
     private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
 
     private final StringWriterOutputManager outputManager = new StringWriterOutputManager();
-    private final StringWriterOutputManager interfaceOutputManager = new StringWriterOutputManager();
     private final MutableDirectBuffer mockBuffer = mock(MutableDirectBuffer.class);
 
     private Ir ir;
@@ -68,8 +66,6 @@ public class JavaGeneratorTest
 
         outputManager.clear();
         outputManager.setPackageName(ir.applicableNamespace());
-        interfaceOutputManager.clear();
-        interfaceOutputManager.setPackageName(JAVA_INTERFACE_PACKAGE);
     }
 
     @Test
@@ -84,7 +80,6 @@ public class JavaGeneratorTest
         when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
 
         final JavaGenerator generator = generator();
-        generator.generateInterfaces();
         generator.generateMessageHeaderStub();
 
         final Class<?> clazz = compile(fqClassName);
@@ -110,7 +105,6 @@ public class JavaGeneratorTest
         when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
 
         final JavaGenerator generator = generator();
-        generator.generateInterfaces();
         generator.generateMessageHeaderStub();
 
         final Class<?> clazz = compile(fqClassName);
@@ -393,25 +387,25 @@ public class JavaGeneratorTest
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateMissingMutableBufferClass() throws IOException
     {
-        new JavaGenerator(ir, "dasdsads", BUFFER_NAME, false, outputManager, interfaceOutputManager);
+        new JavaGenerator(ir, "dasdsads", BUFFER_NAME, false, false, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateNotImplementedMutableBufferClass() throws IOException
     {
-        new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, false, outputManager, interfaceOutputManager);
+        new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, false, false, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateMissingReadOnlyBufferClass() throws IOException
     {
-        new JavaGenerator(ir, BUFFER_NAME, "dasdsads", false, outputManager, interfaceOutputManager);
+        new JavaGenerator(ir, BUFFER_NAME, "dasdsads", false, false, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateNotImplementedReadOnlyBufferClass() throws IOException
     {
-        new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", false, outputManager, interfaceOutputManager);
+        new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", false, false, outputManager);
     }
 
     private Class<?> compileCarEncoder() throws Exception
@@ -449,20 +443,18 @@ public class JavaGeneratorTest
 
     private JavaGenerator generator() throws IOException
     {
-        return new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, outputManager, interfaceOutputManager);
+        return new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, outputManager);
     }
 
     private void generateTypeStubs() throws IOException
     {
         final JavaGenerator javaGenerator = generator();
-        javaGenerator.generateInterfaces();
         javaGenerator.generateTypeStubs();
     }
 
     private Class<?> compile(final String fqClassName) throws Exception
     {
         final Map<String, CharSequence> sources = outputManager.getSources();
-        sources.putAll(interfaceOutputManager.getSources());
         final Class<?> aClass = CompilerUtil.compileInMemory(fqClassName, sources);
         if (aClass == null)
         {
