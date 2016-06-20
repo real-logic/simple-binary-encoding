@@ -18,7 +18,7 @@ package org.agrona.sbe;
 /**
  * Methods common to both <code>sbe:message</code> encoder and decoder flyweights.
  */
-public interface MessageFlyweight<T extends MessageStructure> extends Flyweight<T>
+public interface MessageFlyweight extends Flyweight
 {
     int sbeBlockLength();
 

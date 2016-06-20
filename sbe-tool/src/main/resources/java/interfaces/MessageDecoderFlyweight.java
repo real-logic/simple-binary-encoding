@@ -20,7 +20,7 @@ import org.agrona.DirectBuffer;
 /**
  * An <code>sbe:message</code> decoder flyweight.
  */
-public interface MessageDecoderFlyweight<T extends MessageStructure> extends MessageFlyweight<T>, DecoderFlyweight<T>
+public interface MessageDecoderFlyweight extends MessageFlyweight, DecoderFlyweight
 {
-    MessageDecoderFlyweight<T> wrap(DirectBuffer buffer, int offset, int actingBlockLength, int actingVersion);
+    MessageDecoderFlyweight wrap(DirectBuffer buffer, int offset, int actingBlockLength, int actingVersion);
 }

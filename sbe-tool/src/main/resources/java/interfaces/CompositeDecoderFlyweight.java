@@ -20,7 +20,7 @@ import org.agrona.DirectBuffer;
 /**
  * A <code>sbe:composite</code> decoder flyweight.
  */
-public interface CompositeDecoderFlyweight<T extends CompositeStructure> extends DecoderFlyweight<T>
+public interface CompositeDecoderFlyweight extends DecoderFlyweight
 {
-    CompositeDecoderFlyweight<T> wrap(DirectBuffer buffer, int offset);
+    CompositeDecoderFlyweight wrap(DirectBuffer buffer, int offset);
 }
