@@ -20,7 +20,7 @@ import org.agrona.MutableDirectBuffer;
 /**
  * An encoder flyweight.
  */
-public interface EncoderFlyweight<T extends Structure> extends Flyweight<T>
+public interface EncoderFlyweight extends Flyweight
 {
-    EncoderFlyweight<T> wrap(MutableDirectBuffer buffer, int offset);
+    EncoderFlyweight wrap(MutableDirectBuffer buffer, int offset);
 }

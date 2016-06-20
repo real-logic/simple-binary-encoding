@@ -45,15 +45,12 @@ public class JavaGenerator implements CodeGenerator
     private static final String INDENT = "    ";
     private static final String GEN_COMPOSITE_DECODER_FLYWEIGHT = "CompositeDecoderFlyweight";
     private static final String GEN_COMPOSITE_ENCODER_FLYWEIGHT = "CompositeEncoderFlyweight";
-    private static final String GEN_COMPOSITE_STRUCTURE = "CompositeStructure";
     private static final String GEN_DECODER_FLYWEIGHT = "DecoderFlyweight";
     private static final String GEN_ENCODER_FLYWEIGHT = "EncoderFlyweight";
     private static final String GEN_FLYWEIGHT = "Flyweight";
     private static final String GEN_MESSAGE_DECODER_FLYWEIGHT = "MessageDecoderFlyweight";
     private static final String GEN_MESSAGE_ENCODER_FLYWEIGHT = "MessageEncoderFlyweight";
     private static final String GEN_MESSAGE_FLYWEIGHT = "MessageFlyweight";
-    private static final String GEN_MESSAGE_STRUCTURE = "MessageStructure";
-    private static final String GEN_STRUCTURE = "Structure";
 
     private final Ir ir;
     private final OutputManager outputManager;
@@ -124,11 +121,6 @@ public class JavaGenerator implements CodeGenerator
         return className + "Decoder";
     }
 
-    private String structureName(final String className)
-    {
-        return className + "Structure";
-    }
-
     private void copyInterface(String simpleInterfaceName) throws IOException
     {
         final String resource = String.format("/java/interfaces/%s.java", simpleInterfaceName);
@@ -152,15 +144,12 @@ public class JavaGenerator implements CodeGenerator
         {
             copyInterface(GEN_COMPOSITE_DECODER_FLYWEIGHT);
             copyInterface(GEN_COMPOSITE_ENCODER_FLYWEIGHT);
-            copyInterface(GEN_COMPOSITE_STRUCTURE);
             copyInterface(GEN_DECODER_FLYWEIGHT);
             copyInterface(GEN_ENCODER_FLYWEIGHT);
             copyInterface(GEN_FLYWEIGHT);
             copyInterface(GEN_MESSAGE_DECODER_FLYWEIGHT);
             copyInterface(GEN_MESSAGE_ENCODER_FLYWEIGHT);
             copyInterface(GEN_MESSAGE_FLYWEIGHT);
-            copyInterface(GEN_MESSAGE_STRUCTURE);
-            copyInterface(GEN_STRUCTURE);
         }
     }
 
@@ -171,7 +160,7 @@ public class JavaGenerator implements CodeGenerator
             return "";
         }
 
-        return String.format(" implements %s<%s>", interfaceName, formatClassName(structureName(tokenName)));
+        return String.format(" implements %s", interfaceName);
     }
 
     public void generateMessageHeaderStub() throws IOException
@@ -190,22 +179,6 @@ public class JavaGenerator implements CodeGenerator
         {
             generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_DECODER_TYPE, out, readOnlyBuffer, fqReadOnlyBuffer, "");
             out.append(concatEncodingTokens(tokens, (token) -> generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
-            out.append("}\n");
-        }
-    }
-
-    private void generateMessageStructure(final Token msgToken) throws IOException
-    {
-        if (!generateInterfaces)
-        {
-            return;
-        }
-
-        final String structName = formatClassName(structureName(msgToken.name()));
-        try (final Writer out = outputManager.createOutput(structName))
-        {
-            out.append(generateStructureFileHeader(structName, ir.applicableNamespace(), GEN_MESSAGE_STRUCTURE));
-            out.append(generateDeclaration("class", structName, " implements " + GEN_MESSAGE_STRUCTURE));
             out.append("}\n");
         }
     }
@@ -254,7 +227,6 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> varData = new ArrayList<>();
             collectVarData(messageBody, i, varData);
 
-            generateMessageStructure(msgToken);
             generateDecoder(BASE_INDENT, fields, groups, varData, msgToken);
             generateEncoder(BASE_INDENT, fields, groups, varData, msgToken);
         }
@@ -1061,17 +1033,6 @@ public class JavaGenerator implements CodeGenerator
         final String decoderName = decoderName(compositeName);
         final String encoderName = encoderName(compositeName);
 
-        if (generateInterfaces)
-        {
-            final String structureName = structureName(compositeName);
-            try (final Writer out = outputManager.createOutput(structureName))
-            {
-                out.append(generateStructureFileHeader(structureName, ir.applicableNamespace(), GEN_COMPOSITE_STRUCTURE));
-                out.append(generateDeclaration("class", structureName, " implements " + GEN_COMPOSITE_STRUCTURE));
-                out.append("}\n");
-            }
-        }
-
         try (final Writer out = outputManager.createOutput(decoderName))
         {
             final String implementsString = implementsInterface(token.name(), GEN_COMPOSITE_DECODER_FLYWEIGHT);
@@ -1361,22 +1322,6 @@ public class JavaGenerator implements CodeGenerator
             "package %s;\n\n" +
             "@javax.annotation.Generated(value = {\"%s.%s\"})\n",
             packageName,
-            packageName,
-            className
-        );
-    }
-
-    private static CharSequence generateStructureFileHeader(final String className, final String packageName,
-        String structureInterface)
-    {
-        return String.format(
-            "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
-            "package %s;\n\n" +
-            "import %s.%s;\n\n" +
-            "@javax.annotation.Generated(value = {\"%s.%s\"})\n",
-            packageName,
-            JAVA_INTERFACE_PACKAGE,
-            structureInterface,
             packageName,
             className
         );
