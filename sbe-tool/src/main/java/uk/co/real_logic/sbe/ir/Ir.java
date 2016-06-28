@@ -17,6 +17,8 @@ package uk.co.real_logic.sbe.ir;
 
 import org.agrona.Verify;
 
+import uk.co.real_logic.sbe.SbeTool;
+
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -66,7 +68,14 @@ public class Ir
         this.semanticVersion = semanticVersion;
         this.headerStructure = new HeaderStructure(new ArrayList<>(headerTokens));
 
-        this.namespaces = Pattern.compile("\\.").split(namespaceName == null ? packageName : namespaceName);
+        if (Boolean.getBoolean(SbeTool.CPP_NAMESPACES_COLLAPSE))
+        {
+            this.namespaces = new String[]{ (namespaceName == null ? packageName : namespaceName).replace(".", "_") };
+        }
+        else
+        {
+            this.namespaces = Pattern.compile("\\.").split(namespaceName == null ? packageName : namespaceName);
+        }
     }
 
     /**

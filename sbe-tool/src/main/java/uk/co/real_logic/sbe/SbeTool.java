@@ -122,6 +122,11 @@ public class SbeTool
     public static final String JAVA_GENERATE_INTERFACES = "sbe.java.generate.interfaces";
 
     /**
+     * Boolean system property to turn on or off collapsing of nested namespaces in generated C++ stubs. Defaults to false.
+     */
+    public static final String CPP_NAMESPACES_COLLAPSE = "sbe.cpp.namespaces.collapse";
+
+    /**
      * Package in which the generated Java interfaces will be placed.
      */
     public static final String JAVA_INTERFACE_PACKAGE = "org.agrona.sbe";
