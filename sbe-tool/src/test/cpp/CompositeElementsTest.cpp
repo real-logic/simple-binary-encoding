@@ -23,7 +23,7 @@
 #include "otf/OtfMessageDecoder.h"
 
 using namespace std;
-using namespace composite_elements;
+using namespace composite::elements;
 using namespace sbe::otf;
 
 enum EventNumber

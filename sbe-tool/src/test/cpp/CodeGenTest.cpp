@@ -20,7 +20,7 @@
 #include "code_generation_test/Car.h"
 
 using namespace std;
-using namespace code_generation_test;
+using namespace code::generation::test;
 
 static const std::size_t BUFFER_LEN = 2048;
 

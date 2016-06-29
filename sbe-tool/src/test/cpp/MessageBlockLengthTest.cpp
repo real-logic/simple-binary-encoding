@@ -23,7 +23,7 @@
 #include "otf/OtfMessageDecoder.h"
 
 using namespace std;
-using namespace message_block_length_test;
+using namespace message::block::length::test;
 using namespace sbe::otf;
 
 class MessageBlockLengthIrTest : public testing::Test, public OtfMessageDecoder::BasicTokenListener
