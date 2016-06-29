@@ -36,6 +36,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasToString;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.co.real_logic.sbe.generation.CodeGenerator.MESSAGE_HEADER_DECODER_TYPE;
@@ -242,6 +243,8 @@ public class JavaGeneratorTest
         final Object groupFlyweight = fuelFiguresCount(msgFlyweight, 0);
 
         assertNotNull(groupFlyweight);
+
+        assertThat(msgFlyweight.toString(), startsWith("[Car]"));
     }
 
     @Test

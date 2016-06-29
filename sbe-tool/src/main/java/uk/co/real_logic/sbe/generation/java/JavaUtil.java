@@ -116,4 +116,17 @@ public class JavaUtil
     {
         return toUpperFirstChar(value);
     }
+
+
+    /**
+     * Shortcut to add a line of generated code
+     *
+     * @param builder string builder to which to add the line
+     * @param indent current text indentation
+     * @param line line to be added
+     */
+    public static  void addLine(StringBuilder builder, String indent, String line)
+    {
+        builder.append(indent + line + "\n");
+    }
 }
