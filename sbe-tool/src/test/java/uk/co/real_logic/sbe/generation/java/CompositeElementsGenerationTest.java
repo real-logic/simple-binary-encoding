@@ -42,6 +42,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -119,6 +121,19 @@ public class CompositeElementsGenerationTest
         assertThat(msgDecoder.structure().inner().second(), is(202L));
 
         assertThat(msgDecoder.encodedLength(), is(22));
+    }
+
+    @Test
+    public void shouldDisplayCorrectly()
+    {
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
+        encodeTestMessage(encodedMsgBuffer);
+
+        final String compositeString = MSG_ENCODER.structure().toString();
+        assertThat(compositeString, containsString("enumOne="));
+        assertThat(compositeString, not(containsString("enumOne=|")));
+        assertThat(compositeString, containsString("setOne="));
+        assertThat(compositeString, not(containsString("setOne=|")));
     }
 
     @Test

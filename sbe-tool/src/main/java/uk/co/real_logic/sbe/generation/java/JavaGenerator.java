@@ -2381,15 +2381,12 @@ public class JavaGenerator implements CodeGenerator
         append(sb, indent, "{");
         append(sb, indent, "    builder.append(\"[\");");
 
-        for (int i = 1, end = tokens.size() - 1; i < end; i++)
+        for (int i = 1, end = tokens.size() - 1; i < end; )
         {
             final Token encodingToken = tokens.get(i);
             final String propertyName = formatPropertyName(encodingToken.name());
             writeTokenDisplay(propertyName, encodingToken, sb, indent + INDENT);
-            if (encodingToken.signal() == Signal.BEGIN_COMPOSITE)
-            {
-                i += encodingToken.componentTokenCount();
-            }
+            i += encodingToken.componentTokenCount();
         }
 
         append(sb, indent, "    builder.setLength(builder.length() - 1);");
