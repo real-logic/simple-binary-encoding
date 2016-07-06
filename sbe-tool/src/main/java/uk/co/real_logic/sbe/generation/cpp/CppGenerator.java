@@ -145,8 +145,9 @@ public class CppGenerator implements CodeGenerator
                 generateGroups(sb, groups, BASE_INDENT);
                 out.append(sb);
                 out.append(generateVarData(className, varData, BASE_INDENT));
-
-                out.append(CppUtil.closingBraces(ir.namespaces().length) + "}\n#endif\n");
+                out.append("};\n");
+                out.append(generateStaticDefinitions(className));
+                out.append(CppUtil.closingBraces(ir.namespaces().length) + "#endif\n");
             }
         }
     }
@@ -843,6 +844,11 @@ public class CppGenerator implements CodeGenerator
             "#  include <string>\n" +
             "#  include <cstring>\n" +
             "#endif\n\n" +
+            "#if __cplusplus >= 201103L\n" +
+            "#  define SBE_CONST_KIND constexpr\n" +
+            "#else\n" +
+            "#  define SBE_CONST_KIND const\n" +
+            "#endif\n\n" +
             "#include <sbe/sbe.h>\n\n",
             String.join("_", namespaces).toUpperCase(),
             className.toUpperCase()
@@ -876,6 +882,32 @@ public class CppGenerator implements CodeGenerator
             "class %s\n" +
             "{\n",
             className
+        );
+    }
+
+    private String generateStaticDefinitions(final String className)
+    {
+        return
+            generateStaticDefinition(
+                className, "SbeBlockLength", cppTypeName(ir.headerStructure().blockLengthType()), false) +
+            generateStaticDefinition(
+                className, "SbeTemplateId", cppTypeName(ir.headerStructure().templateIdType()), false) +
+            generateStaticDefinition(
+                className, "SbeSchemaId", cppTypeName(ir.headerStructure().schemaIdType()), false) +
+            generateStaticDefinition(
+                className, "SbeSchemaVersion", cppTypeName(ir.headerStructure().schemaVersionType()), false) +
+            generateStaticDefinition(className, "SbeSemanticType", "char", true);
+    }
+
+    private static String generateStaticDefinition(
+        final String className, final String memberName, final String memberType, boolean isArray)
+    {
+        return String.format(
+            "SBE_CONST_KIND %3$s %1$s::%2$s%4$s;\n",
+            className,
+            memberName,
+            memberType,
+            (isArray ? "[]" : "")
         );
     }
 
@@ -1373,25 +1405,30 @@ public class CppGenerator implements CodeGenerator
             "    }\n\n" +
             "public:\n\n" +
             "%11$s" +
+            "    static SBE_CONST_KIND %1$s SbeBlockLength{%2$s};\n" +
             "    static const %1$s sbeBlockLength(void)\n" +
             "    {\n" +
-            "        return %2$s;\n" +
+            "        return SbeBlockLength;\n" +
             "    }\n\n" +
+            "    static SBE_CONST_KIND %3$s SbeTemplateId{%4$s};\n" +
             "    static const %3$s sbeTemplateId(void)\n" +
             "    {\n" +
-            "        return %4$s;\n" +
+            "        return SbeTemplateId;\n" +
             "    }\n\n" +
+            "    static SBE_CONST_KIND %5$s SbeSchemaId{%6$s};\n" +
             "    static const %5$s sbeSchemaId(void)\n" +
             "    {\n" +
-            "        return %6$s;\n" +
+            "        return SbeSchemaId;\n" +
             "    }\n\n" +
+            "    static SBE_CONST_KIND %7$s SbeSchemaVersion{%8$s};\n" +
             "    static const %7$s sbeSchemaVersion(void)\n" +
             "    {\n" +
-            "        return %8$s;\n" +
+            "        return SbeSchemaVersion;\n" +
             "    }\n\n" +
+            "    static SBE_CONST_KIND char SbeSemanticType[] = \"%9$s\";\n" +
             "    static const char *sbeSemanticType(void)\n" +
             "    {\n" +
-            "        return \"%9$s\";\n" +
+            "        return SbeSemanticType;\n" +
             "    }\n\n" +
             "    std::uint64_t offset(void) const\n" +
             "    {\n" +
