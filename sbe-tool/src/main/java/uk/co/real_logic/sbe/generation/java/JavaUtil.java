@@ -43,7 +43,7 @@ public class JavaUtil
 
         public final char symbol;
 
-        Separators(char symbol)
+        Separators(final char symbol)
         {
             this.symbol = symbol;
         }
@@ -55,7 +55,7 @@ public class JavaUtil
          * @param indent           the current generated code indentation
          * @param generatedBuilder the name of the generated StringBuilder to which separator should be added
          */
-        public void appendToGeneratedBuilder(StringBuilder builder, String indent, String generatedBuilder)
+        public void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String generatedBuilder)
         {
             append(builder, indent, generatedBuilder + ".append('" + symbol + "');");
         }
