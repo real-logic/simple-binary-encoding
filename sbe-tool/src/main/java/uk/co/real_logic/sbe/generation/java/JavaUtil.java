@@ -119,14 +119,14 @@ public class JavaUtil
 
 
     /**
-     * Shortcut to add a line of generated code
+     * Shortcut to append a line of generated code
      *
-     * @param builder string builder to which to add the line
-     * @param indent current text indentation
-     * @param line line to be added
+     * @param builder string builder to which to append the line
+     * @param indent  current text indentation
+     * @param line    line to be appended
      */
-    public static  void addLine(StringBuilder builder, String indent, String line)
+    public static void append(final StringBuilder builder, final String indent, final String line)
     {
-        builder.append(indent + line + "\n");
+        builder.append(indent).append(line).append('\n');
     }
 }

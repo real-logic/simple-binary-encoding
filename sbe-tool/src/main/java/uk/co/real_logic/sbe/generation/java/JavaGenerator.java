@@ -237,15 +237,15 @@ public class JavaGenerator implements CodeGenerator
             generateAnnotations(indent, className, groups, out, 0, this::decoderName);
             out.append(generateDeclaration("class", className, implementsString));
             out.append(generateDecoderFlyweightCode(className, msgToken));
-            out.append(generateDecoderFields(fields, BASE_INDENT));
+            out.append(generateDecoderFields(fields, indent));
 
             final StringBuilder sb = new StringBuilder();
-            generateDecoderGroups(sb, className, groups, BASE_INDENT);
+            generateDecoderGroups(sb, className, groups, indent);
             out.append(sb);
 
-            out.append(generateDecoderVarData(varData, BASE_INDENT));
+            out.append(generateDecoderVarData(varData, indent));
 
-            out.append(generateDecoderDisplay(msgToken.name(), fields, groups, varData, BASE_INDENT));
+            out.append(generateDecoderDisplay(msgToken.name(), fields, groups, varData, indent));
 
             out.append("}\n");
         }
@@ -865,8 +865,7 @@ public class JavaGenerator implements CodeGenerator
             characterEncoding,
             maxLengthValue,
             sizeOfLengthField,
-            generatePut(lengthType, "limit", "length", byteOrderStr)
-        ));
+            generatePut(lengthType, "limit", "length", byteOrderStr)));
     }
 
     private void generateDataTypedDecoder(
@@ -896,8 +895,7 @@ public class JavaGenerator implements CodeGenerator
             exchangeType,
             generateArrayFieldNotPresentCondition(token.version(), indent),
             sizeOfLengthField,
-            generateGet(lengthType, "limit", byteOrderStr)
-        ));
+            generateGet(lengthType, "limit", byteOrderStr)));
     }
 
     private void generateDataTypedEncoder(
@@ -931,8 +929,7 @@ public class JavaGenerator implements CodeGenerator
             exchangeType,
             maxLengthValue,
             sizeOfLengthField,
-            generatePut(lengthType, "limit", "length", byteOrderStr)
-        ));
+            generatePut(lengthType, "limit", "length", byteOrderStr)));
     }
 
     private void generateBitSet(final List<Token> tokens) throws IOException
@@ -1089,8 +1086,7 @@ public class JavaGenerator implements CodeGenerator
             "        return this;\n" +
             "    }\n",
             bitSetClassName,
-            generatePut(encoding.primitiveType(), "offset", literalValue, byteOrderStr)
-        ));
+            generatePut(encoding.primitiveType(), "offset", literalValue, byteOrderStr)));
 
         return sb;
     }
@@ -1181,8 +1177,7 @@ public class JavaGenerator implements CodeGenerator
             "        return value;\n" +
             "    }\n\n",
             javaEncodingType,
-            enumName
-        );
+            enumName);
     }
 
     private CharSequence generateEnumLookupMethod(final List<Token> tokens, final String enumName)
@@ -1196,16 +1191,14 @@ public class JavaGenerator implements CodeGenerator
             "        switch (value)\n" +
             "        {\n",
             enumName,
-            javaTypeName(primitiveType)
-        ));
+            javaTypeName(primitiveType)));
 
         for (final Token token : tokens)
         {
             sb.append(String.format(
                 "            case %s: return %s;\n",
                 token.encoding().constValue().toString(),
-                token.name())
-            );
+                token.name()));
         }
 
         sb.append(String.format(
@@ -1216,8 +1209,7 @@ public class JavaGenerator implements CodeGenerator
             "        }\n\n" +
             "        throw new IllegalArgumentException(\"Unknown value: \" + value);\n" +
             "    }\n",
-            generateLiteral(primitiveType, tokens.get(0).encoding().applicableNullValue().toString())
-        ));
+            generateLiteral(primitiveType, tokens.get(0).encoding().applicableNullValue().toString())));
 
         return sb;
     }
@@ -1244,8 +1236,7 @@ public class JavaGenerator implements CodeGenerator
             fqBuffer,
             interfaceImportLine(),
             packageName,
-            className
-        );
+            className);
     }
 
     private CharSequence generateMainHeader(final String className, final String packageName)
@@ -1262,8 +1253,7 @@ public class JavaGenerator implements CodeGenerator
                 fqMutableBuffer,
                 interfaceImportLine(),
                 packageName,
-                className
-            );
+                className);
         }
         else
         {
@@ -1279,8 +1269,7 @@ public class JavaGenerator implements CodeGenerator
                 fqReadOnlyBuffer,
                 interfaceImportLine(),
                 packageName,
-                className
-            );
+                className);
         }
     }
 
@@ -1292,8 +1281,7 @@ public class JavaGenerator implements CodeGenerator
             "@javax.annotation.Generated(value = {\"%s.%s\"})\n",
             packageName,
             packageName,
-            className
-        );
+            className);
     }
 
     private void generateAnnotations(
@@ -1353,8 +1341,7 @@ public class JavaGenerator implements CodeGenerator
             "{\n",
             classType,
             className,
-            implementsString
-        );
+            implementsString);
     }
 
     private void generateMetaAttributeEnum() throws IOException
@@ -1372,8 +1359,7 @@ public class JavaGenerator implements CodeGenerator
                 "    SEMANTIC_TYPE\n" +
                 "}\n",
                 ir.applicableNamespace(),
-                ir.applicableNamespace()
-            ));
+                ir.applicableNamespace()));
         }
     }
 
@@ -1451,8 +1437,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             javaTypeName,
             propertyName,
-            generateLiteral(primitiveType, token.encoding().applicableNullValue().toString())
-        ));
+            generateLiteral(primitiveType, token.encoding().applicableNullValue().toString())));
 
         sb.append(String.format(
             "\n" +
@@ -1462,8 +1447,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             javaTypeName,
             propertyName,
-            generateLiteral(primitiveType, token.encoding().applicableMinValue().toString())
-        ));
+            generateLiteral(primitiveType, token.encoding().applicableMinValue().toString())));
 
         sb.append(String.format(
             "\n" +
@@ -1473,8 +1457,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             javaTypeName,
             propertyName,
-            generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())
-        ));
+            generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())));
 
         return sb;
     }
@@ -1498,8 +1481,7 @@ public class JavaGenerator implements CodeGenerator
             javaTypeName,
             propertyName,
             generateFieldNotPresentCondition(token.version(), encoding, indent),
-            generateGet(encoding.primitiveType(), "offset + " + offset, byteOrderStr)
-        );
+            generateGet(encoding.primitiveType(), "offset + " + offset, byteOrderStr));
     }
 
     private CharSequence generatePrimitivePropertyEncode(
@@ -1520,8 +1502,7 @@ public class JavaGenerator implements CodeGenerator
             formatClassName(containingClassName),
             propertyName,
             javaTypeName,
-            generatePut(encoding.primitiveType(), "offset + " + offset, "value", byteOrderStr)
-        );
+            generatePut(encoding.primitiveType(), "offset + " + offset, "value", byteOrderStr));
     }
 
     private CharSequence generateFieldNotPresentCondition(final int sinceVersion, final Encoding encoding, final String indent)
@@ -1537,8 +1518,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            return %s;\n" +
             indent + "        }\n\n",
             sinceVersion,
-            generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString())
-        );
+            generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString()));
     }
 
     private static CharSequence generateArrayFieldNotPresentCondition(final int sinceVersion, final String indent)
@@ -1553,8 +1533,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            return 0;\n" +
             indent + "        }\n\n",
-            sinceVersion
-        );
+            sinceVersion);
     }
 
     private static CharSequence generateStringNotPresentCondition(final int sinceVersion, final String indent)
@@ -1569,8 +1548,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            return \"\";\n" +
             indent + "        }\n\n",
-            sinceVersion
-        );
+            sinceVersion);
     }
 
     private static CharSequence generateTypeFieldNotPresentCondition(final int sinceVersion, final String indent)
@@ -1585,8 +1563,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            return null;\n" +
             indent + "        }\n\n",
-            sinceVersion
-        );
+            sinceVersion);
     }
 
     private CharSequence generatePrimitiveArrayPropertyDecode(final String propertyName, final Token token, final String indent)
@@ -1610,7 +1587,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
             "%s" +
-            indent + "        final int pos = this.offset + %d + (index * %d);\n" +
+            indent + "        final int pos = this.offset + %d + (index * %d);\n\n" +
             indent + "        return %s;\n" +
             indent + "    }\n\n",
             javaTypeName,
@@ -1619,8 +1596,7 @@ public class JavaGenerator implements CodeGenerator
             generateFieldNotPresentCondition(token.version(), encoding, indent),
             offset,
             typeSize,
-            generateGet(encoding.primitiveType(), "pos", byteOrderStr)
-        ));
+            generateGet(encoding.primitiveType(), "pos", byteOrderStr)));
 
         if (encoding.primitiveType() == PrimitiveType.CHAR)
         {
@@ -1643,8 +1619,7 @@ public class JavaGenerator implements CodeGenerator
                 toUpperFirstChar(propertyName),
                 fieldLength,
                 generateArrayFieldNotPresentCondition(token.version(), indent),
-                offset
-            ));
+                offset));
         }
 
         return sb;
@@ -1660,8 +1635,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return %d;\n" +
             indent + "    }\n\n",
             propertyName,
-            fieldLength
-        ));
+            fieldLength));
     }
 
     private String byteOrderString(final Encoding encoding)
@@ -1698,8 +1672,7 @@ public class JavaGenerator implements CodeGenerator
             fieldLength,
             offset,
             typeSize,
-            generatePut(encoding.primitiveType(), "pos", "value", byteOrderStr)
-        ));
+            generatePut(encoding.primitiveType(), "pos", "value", byteOrderStr)));
 
         if (encoding.primitiveType() == PrimitiveType.CHAR)
         {
@@ -1720,8 +1693,7 @@ public class JavaGenerator implements CodeGenerator
                 formatClassName(containingClassName),
                 toUpperFirstChar(propertyName),
                 fieldLength,
-                offset
-            ));
+                offset));
         }
 
         return sb;
@@ -1742,8 +1714,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return \"%s\";\n" +
             indent + "    }\n",
             formatPropertyName(propertyName),
-            encoding
-        ));
+            encoding));
     }
 
     private CharSequence generateConstPropertyMethods(final String propertyName, final Token token, final String indent)
@@ -1759,8 +1730,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n",
                 javaTypeName(encoding.primitiveType()),
                 propertyName,
-                generateLiteral(encoding.primitiveType(), encoding.constValue().toString())
-            );
+                generateLiteral(encoding.primitiveType(), encoding.constValue().toString()));
         }
 
         final StringBuilder sb = new StringBuilder();
@@ -1773,8 +1743,7 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    private static final byte[] %s_VALUE = {%s};\n",
             propertyName.toUpperCase(),
-            values
-        ));
+            values));
 
         generateArrayLengthMethod(propertyName, indent, constantValue.length, sb);
 
@@ -1785,20 +1754,18 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n\n",
             javaTypeName,
             propertyName,
-            propertyName.toUpperCase()
-        ));
+            propertyName.toUpperCase()));
 
         sb.append(String.format(
             indent + "    public int get%s(final byte[] dst, final int offset, final int length)\n" +
             indent + "    {\n" +
             indent + "        final int bytesCopied = Math.min(length, %d);\n" +
-            indent + "        System.arraycopy(%s_VALUE, 0, dst, offset, bytesCopied);\n" +
+            indent + "        System.arraycopy(%s_VALUE, 0, dst, offset, bytesCopied);\n\n" +
             indent + "        return bytesCopied;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
             constantValue.length,
-            propertyName.toUpperCase()
-        ));
+            propertyName.toUpperCase()));
 
         return sb;
     }
@@ -1833,7 +1800,7 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "%4$s" +
-            "        this.offset = offset;\n" +
+            "        this.offset = offset;\n\n" +
             "        return this;\n" +
             "    }\n\n" +
             "    public int encodedLength()\n" +
@@ -1843,8 +1810,7 @@ public class JavaGenerator implements CodeGenerator
             className,
             size,
             bufferImplementation,
-            body
-        );
+            body);
     }
 
     private CharSequence generateDecoderFlyweightCode(final String className, final Token token)
@@ -1936,8 +1902,7 @@ public class JavaGenerator implements CodeGenerator
             className,
             semanticType,
             bufferImplementation,
-            wrapMethod
-        );
+            wrapMethod);
     }
 
     private CharSequence generateEncoderFlyweightCode(final String className, final Token token)
@@ -1947,7 +1912,7 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        this.buffer = buffer;\n" +
             "        this.offset = offset;\n" +
-            "        limit(offset + BLOCK_LENGTH);\n" +
+            "        limit(offset + BLOCK_LENGTH);\n\n" +
             "        return this;\n" +
             "    }\n\n",
             className,
@@ -2054,8 +2019,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return %d;\n" +
             indent + "    }\n",
             formatPropertyName(token.name()),
-            token.id()
-        ));
+            token.id()));
     }
 
     private static void generateFieldMetaAttributeMethod(final StringBuilder sb, final Token token, final String indent)
@@ -2080,8 +2044,7 @@ public class JavaGenerator implements CodeGenerator
             formatPropertyName(token.name()),
             epoch,
             timeUnit,
-            semanticType
-        ));
+            semanticType));
     }
 
     private CharSequence generateEnumDecoder(
@@ -2100,8 +2063,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n\n",
                 enumName,
                 propertyName,
-                signalToken.encoding().constValue().toString()
-            );
+                signalToken.encoding().constValue().toString());
         }
         else
         {
@@ -2116,8 +2078,7 @@ public class JavaGenerator implements CodeGenerator
                 propertyName,
                 generateTypeFieldNotPresentCondition(token.version(), indent),
                 enumName,
-                generateGet(encoding.primitiveType(), "offset + " + token.offset(), byteOrderString(encoding))
-            );
+                generateGet(encoding.primitiveType(), "offset + " + token.offset(), byteOrderString(encoding)));
         }
     }
 
@@ -2142,8 +2103,7 @@ public class JavaGenerator implements CodeGenerator
             formatClassName(containingClassName),
             propertyName,
             enumName,
-            generatePut(encoding.primitiveType(), "offset + " + offset, "value.value()", byteOrderString(encoding)
-        ));
+            generatePut(encoding.primitiveType(), "offset + " + offset, "value.value()", byteOrderString(encoding)));
     }
 
     private CharSequence generateBitSetProperty(
@@ -2156,8 +2116,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    private final %s %s = new %s();\n",
             bitSetName,
             propertyName,
-            bitSetName
-        ));
+            bitSetName));
 
         sb.append(String.format(
             "\n" +
@@ -2172,8 +2131,7 @@ public class JavaGenerator implements CodeGenerator
             generateTypeFieldNotPresentCondition(token.version(), indent),
             propertyName,
             token.offset(),
-            propertyName
-        ));
+            propertyName));
 
         return sb;
     }
@@ -2188,8 +2146,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    private final %s %s = new %s();\n",
             compositeName,
             propertyName,
-            compositeName
-        ));
+            compositeName));
 
         sb.append(String.format(
             "\n" +
@@ -2204,8 +2161,7 @@ public class JavaGenerator implements CodeGenerator
             generateTypeFieldNotPresentCondition(token.version(), indent),
             propertyName,
             token.offset(),
-            propertyName
-        ));
+            propertyName));
 
         return sb;
     }
@@ -2380,72 +2336,83 @@ public class JavaGenerator implements CodeGenerator
         throw new IllegalArgumentException("primitive type not supported: " + type);
     }
 
-    private CharSequence generateEncoderDisplay(String decoderName, String baseIndent)
+    private CharSequence generateEncoderDisplay(final String decoderName, final String baseIndent)
     {
-        final String indent = baseIndent + "    ";
+        final String indent = baseIndent + INDENT;
         final StringBuilder sb = new StringBuilder();
         appendToString(sb, indent);
         sb.append("\n");
-        addLine(sb, indent, "public StringBuilder appendTo(StringBuilder builder)");
-        addLine(sb, indent, "{");
-        addLine(sb, indent, "    " + decoderName + " writer = new " + decoderName + "();");
-        addLine(sb, indent, "    writer.wrap(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);");
-        addLine(sb, indent, "    return writer.appendTo(builder);");
-        addLine(sb, indent, "}");
+        append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
+        append(sb, indent, "{");
+        append(sb, indent, "    " + decoderName + " writer = new " + decoderName + "();");
+        append(sb, indent, "    writer.wrap(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);");
+        sb.append('\n');
+        append(sb, indent, "    return writer.appendTo(builder);");
+        append(sb, indent, "}");
+
         return sb.toString();
     }
 
-    private CharSequence generateCompositeEncoderDisplay(String decoderName, String baseIndent)
+    private CharSequence generateCompositeEncoderDisplay(final String decoderName, final String baseIndent)
     {
-        final String indent = baseIndent + "    ";
+        final String indent = baseIndent + INDENT;
         final StringBuilder sb = new StringBuilder();
         appendToString(sb, indent);
-        sb.append("\n");
-        addLine(sb, indent, "public StringBuilder appendTo(StringBuilder builder)");
-        addLine(sb, indent, "{");
-        addLine(sb, indent, "    " + decoderName + " writer = new " + decoderName + "();");
-        addLine(sb, indent, "    writer.wrap(buffer, offset);");
-        addLine(sb, indent, "    return writer.appendTo(builder);");
-        addLine(sb, indent, "}");
+        sb.append('\n');
+        append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
+        append(sb, indent, "{");
+        append(sb, indent, "    " + decoderName + " writer = new " + decoderName + "();");
+        append(sb, indent, "    writer.wrap(buffer, offset);");
+        sb.append('\n');
+        append(sb, indent, "    return writer.appendTo(builder);");
+        append(sb, indent, "}");
+
         return sb.toString();
     }
 
-    private CharSequence generateCompositeDecoderDisplay(List<Token> tokens, String baseIndent)
+    private CharSequence generateCompositeDecoderDisplay(final List<Token> tokens, final String baseIndent)
     {
-        final String indent = baseIndent + "    ";
+        final String indent = baseIndent + INDENT;
         final StringBuilder sb = new StringBuilder();
+
         appendToString(sb, indent);
-        sb.append("\n");
-        addLine(sb, indent, "public StringBuilder appendTo(StringBuilder builder)");
-        addLine(sb, indent, "{");
-        addLine(sb, indent, "    builder.append(\"[\");");
+        sb.append('\n');
+        append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
+        append(sb, indent, "{");
+        append(sb, indent, "    builder.append(\"[\");");
+
         for (int i = 1, end = tokens.size() - 1; i < end; i++)
         {
             final Token encodingToken = tokens.get(i);
             final String propertyName = formatPropertyName(encodingToken.name());
-            writeTokenDisplay(propertyName, encodingToken, sb, indent + "    ");
+            writeTokenDisplay(propertyName, encodingToken, sb, indent + INDENT);
             if (encodingToken.signal() == Signal.BEGIN_COMPOSITE)
             {
                 i = findEndSignal(tokens, i, Signal.END_COMPOSITE, encodingToken.name());
             }
         }
-        addLine(sb, indent, "    builder.setLength(builder.length()-1);");
-        addLine(sb, indent, "    builder.append(\"]\");");
-        addLine(sb, indent, "    return builder;");
-        addLine(sb, indent, "}");
+
+        append(sb, indent, "    builder.setLength(builder.length() - 1);");
+        append(sb, indent, "    builder.append(\"]\");");
+        sb.append('\n');
+        append(sb, indent, "    return builder;");
+        append(sb, indent, "}");
+
         return sb.toString();
     }
 
-    private CharSequence generateChoiceDisplay(List<Token> tokens)
+    private CharSequence generateChoiceDisplay(final List<Token> tokens)
     {
-        final String indent = "    ";
+        final String indent = INDENT;
         final StringBuilder sb = new StringBuilder();
+
         appendToString(sb, indent);
-        sb.append("\n");
-        addLine(sb, indent, "public StringBuilder appendTo(StringBuilder builder)");
-        addLine(sb, indent, "{");
-        addLine(sb, indent, "    builder.append('{');");
-        addLine(sb, indent, "    boolean atLeastOne = false;");
+        sb.append('\n');
+        append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
+        append(sb, indent, "{");
+        append(sb, indent, "    builder.append('{');");
+        append(sb, indent, "    boolean atLeastOne = false;");
+
         tokens
             .stream()
             .filter((token) -> token.signal() == Signal.CHOICE)
@@ -2453,99 +2420,111 @@ public class JavaGenerator implements CodeGenerator
                 (token) ->
                 {
                     final String choiceName = formatPropertyName(token.name());
-                    addLine(sb, indent, "    if(" + choiceName + "())");
-                    addLine(sb, indent, "    {");
-                    addLine(sb, indent, "        if(atLeastOne)");
-                    addLine(sb, indent, "        {");
-                    addLine(sb, indent, "            builder.append(',');");
-                    addLine(sb, indent, "        }");
-                    addLine(sb, indent, "        builder.append(\"" + choiceName + "\");");
-                    addLine(sb, indent, "        atLeastOne = true;");
-                    addLine(sb, indent, "    }");
+                    append(sb, indent, "    if (" + choiceName + "())");
+                    append(sb, indent, "    {");
+                    append(sb, indent, "        if (atLeastOne)");
+                    append(sb, indent, "        {");
+                    append(sb, indent, "            builder.append(',');");
+                    append(sb, indent, "        }");
+                    append(sb, indent, "        builder.append(\"" + choiceName + "\");");
+                    append(sb, indent, "        atLeastOne = true;");
+                    append(sb, indent, "    }");
                 }
             );
-        addLine(sb, indent, "    builder.append('}');");
-        addLine(sb, indent, "    return builder;");
-        addLine(sb, indent, "}");
+
+        append(sb, indent, "    builder.append('}');");
+        sb.append('\n');
+        append(sb, indent, "    return builder;");
+        append(sb, indent, "}");
+
         return sb.toString();
     }
 
     private CharSequence generateDecoderDisplay(
-            final String name,
-            final List<Token> tokens,
-            final List<Token> groups,
-            final List<Token> varLens,
-            final String indent) throws IOException
+        final String name,
+        final List<Token> tokens,
+        final List<Token> groups,
+        final List<Token> varLens,
+        final String baseIndent) throws IOException
     {
+        final String indent = baseIndent + INDENT;
         final StringBuilder sb = new StringBuilder();
-        sb.append("\n");
+
+        sb.append('\n');
         appendToString(sb, indent);
-        sb.append("\n");
-        addLine(sb, indent, "public StringBuilder appendTo(StringBuilder builder)");
-        addLine(sb, indent, "{");
-        addLine(sb, indent, "    int realLimit = limit();");
-        addLine(sb, indent, "    limit(offset + actingBlockLength);");
-        addLine(sb, indent, "    builder.append(\"[" + name + "](sbeTemplateId=\");");
-        addLine(sb, indent, "    builder.append(TEMPLATE_ID);");
-        addLine(sb, indent, "    builder.append(\"|sbeSchemaId=\");");
-        addLine(sb, indent, "    builder.append(SCHEMA_ID);");
-        addLine(sb, indent, "    builder.append(\"|sbeSchemaVersion=\");");
-        addLine(sb, indent, "    if (actingVersion != SCHEMA_VERSION)");
-        addLine(sb, indent, "    {");
-        addLine(sb, indent, "        builder.append(actingVersion);");
-        addLine(sb, indent, "        builder.append('/');");
-        addLine(sb, indent, "    }");
-        addLine(sb, indent, "    builder.append(SCHEMA_VERSION);");
-        addLine(sb, indent, "    builder.append(\"|sbeBlockLength=\");");
-        addLine(sb, indent, "    if (actingBlockLength != BLOCK_LENGTH)");
-        addLine(sb, indent, "    {");
-        addLine(sb, indent, "        builder.append(actingBlockLength);");
-        addLine(sb, indent, "        builder.append('/');");
-        addLine(sb, indent, "    }");
-        addLine(sb, indent, "    builder.append(BLOCK_LENGTH);");
-        addLine(sb, indent, "    builder.append(\"):\");");
-        appendDecoderDisplay(sb, tokens, groups, varLens, indent + "    ");
-        addLine(sb, indent, "    limit(realLimit);");
-        addLine(sb, indent, "    return builder;");
-        addLine(sb, indent, "}");
+        sb.append('\n');
+        append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
+        append(sb, indent, "{");
+        append(sb, indent, "    final int originalLimit = limit();");
+        append(sb, indent, "    limit(offset + actingBlockLength);");
+        append(sb, indent, "    builder.append(\"[" + name + "](sbeTemplateId=\");");
+        append(sb, indent, "    builder.append(TEMPLATE_ID);");
+        append(sb, indent, "    builder.append(\"|sbeSchemaId=\");");
+        append(sb, indent, "    builder.append(SCHEMA_ID);");
+        append(sb, indent, "    builder.append(\"|sbeSchemaVersion=\");");
+        append(sb, indent, "    if (actingVersion != SCHEMA_VERSION)");
+        append(sb, indent, "    {");
+        append(sb, indent, "        builder.append(actingVersion);");
+        append(sb, indent, "        builder.append('/');");
+        append(sb, indent, "    }");
+        append(sb, indent, "    builder.append(SCHEMA_VERSION);");
+        append(sb, indent, "    builder.append(\"|sbeBlockLength=\");");
+        append(sb, indent, "    if (actingBlockLength != BLOCK_LENGTH)");
+        append(sb, indent, "    {");
+        append(sb, indent, "        builder.append(actingBlockLength);");
+        append(sb, indent, "        builder.append('/');");
+        append(sb, indent, "    }");
+        append(sb, indent, "    builder.append(BLOCK_LENGTH);");
+        append(sb, indent, "    builder.append(\"):\");");
+        appendDecoderDisplay(sb, tokens, groups, varLens, indent + INDENT);
+        sb.append('\n');
+        append(sb, indent, "    limit(originalLimit);");
+        sb.append('\n');
+        append(sb, indent, "    return builder;");
+        append(sb, indent, "}");
+
         return sb.toString();
     }
 
     private StringBuilder appendGroupInstanceDecoderDisplay(
-            final StringBuilder sb,
-            final List<Token> tokens,
-            final List<Token> groups,
-            final List<Token> varLens,
-            final String indent)
+        final StringBuilder sb,
+        final List<Token> tokens,
+        final List<Token> groups,
+        final List<Token> varLens,
+        final String baseIndent)
     {
-        sb.append("\n");
+        final String indent = baseIndent + INDENT;
+
+        sb.append('\n');
         appendToString(sb, indent);
-        sb.append("\n");
-        addLine(sb, indent, "public StringBuilder appendTo(StringBuilder builder)");
-        addLine(sb, indent, "{");
-        appendDecoderDisplay(sb, tokens, groups, varLens, indent + "    ");
-        addLine(sb, indent, "    return builder;");
-        addLine(sb, indent, "}");
+        sb.append('\n');
+        append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
+        append(sb, indent, "{");
+        appendDecoderDisplay(sb, tokens, groups, varLens, indent + INDENT);
+        sb.append('\n');
+        append(sb, indent, "    return builder;");
+        append(sb, indent, "}");
+
         return sb;
     }
 
     private StringBuilder appendDecoderDisplay(
-            final StringBuilder sb,
-            final List<Token> tokens,
-            final List<Token> groups,
-            final List<Token> varLens,
-            final String indent)
+        final StringBuilder sb,
+        final List<Token> tokens,
+        final List<Token> groups,
+        final List<Token> varLens,
+        final String indent)
     {
         eachField(
             tokens,
             (fieldToken, typeToken) ->
             {
                 final String fieldName = formatPropertyName(fieldToken.name());
-                addLine(sb, indent, "//" + fieldToken);
+                append(sb, indent, "//" + fieldToken);
                 writeTokenDisplay(fieldName, typeToken, sb, indent);
             }
         );
-        //groups
+
         for (int i = 0, size = groups.size(); i < size; i++)
         {
             final Token groupToken = groups.get(i);
@@ -2553,22 +2532,26 @@ public class JavaGenerator implements CodeGenerator
             {
                 throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
             }
-            addLine(sb, indent, "//" + groupToken);
+
+            append(sb, indent, "//" + groupToken);
+
             final String groupName = formatPropertyName(groupToken.name());
             final String groupDecoderName = decoderName(formatClassName(groupToken.name()));
-            addLine(sb, indent, "builder.append(\"" + groupName + "={\");");
-            addLine(sb, indent, groupDecoderName + " " + groupName + " = " + groupName + "();");
-            addLine(sb, indent, "while (" + groupName + ".hasNext())");
-            addLine(sb, indent, "{");
-            addLine(sb, indent, "    builder.append('[');");
-            addLine(sb, indent, "    " + groupName + ".next().appendTo(builder);");
-            addLine(sb, indent, "    builder.setLength(builder.length()-1);");
-            addLine(sb, indent, "    builder.append(']');");
-            addLine(sb, indent, "}");
-            addLine(sb, indent, "builder.append(\"}|\");");
+
+            append(sb, indent, "builder.append(\"" + groupName + "={\");");
+            append(sb, indent, groupDecoderName + " " + groupName + " = " + groupName + "();");
+            append(sb, indent, "while (" + groupName + ".hasNext())");
+            append(sb, indent, "{");
+            append(sb, indent, "    builder.append('[');");
+            append(sb, indent, "    " + groupName + ".next().appendTo(builder);");
+            append(sb, indent, "    builder.setLength(builder.length() - 1);");
+            append(sb, indent, "    builder.append(']');");
+            append(sb, indent, "}");
+            append(sb, indent, "builder.append(\"}|\");");
+
             i = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
         }
-        //varLength
+
         for (int i = 0, size = varLens.size(); i < size;)
         {
             final Token varLenToken = varLens.get(i);
@@ -2576,28 +2559,35 @@ public class JavaGenerator implements CodeGenerator
             {
                 throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varLenToken);
             }
-            addLine(sb, indent, "//" + varLenToken);
+
+            append(sb, indent, "//" + varLenToken);
+
             final String varLenName = formatPropertyName(varLenToken.name());
-            addLine(sb, indent, "builder.append(\"" + varLenName + "=\");");
-            addLine(sb, indent, "builder.append(" + varLenName + "());");
-            addLine(sb, indent, "builder.append('|');");
+            append(sb, indent, "builder.append(\"" + varLenName + "=\");");
+            append(sb, indent, "builder.append(" + varLenName + "());");
+            append(sb, indent, "builder.append('|');");
+
             i += varLenToken.componentTokenCount();
         }
+
         return sb;
     }
 
-    private void writeTokenDisplay(final String fieldName,
-                                   final Token typeToken,
-                                   final StringBuilder sb,
-                                   final String indent)
+    private void writeTokenDisplay(
+        final String fieldName,
+        final Token typeToken,
+        final StringBuilder sb,
+        final String indent)
     {
-        addLine(sb, indent, "//" + typeToken);
-        // not interested in anything not "binarily" present
+        append(sb, indent, "//" + typeToken);
+
         if (typeToken.encodedLength() <= 0 || typeToken.isConstantEncoding())
         {
             return;
         }
-        addLine(sb, indent, "builder.append(\"" + fieldName + "=\");");
+
+        append(sb, indent, "builder.append(\"" + fieldName + "=\");");
+
         switch (typeToken.signal())
         {
             case ENCODING:
@@ -2605,49 +2595,50 @@ public class JavaGenerator implements CodeGenerator
                 {
                     if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
                     {
-                        addLine(sb, indent, "for(int i = 0; i < " + fieldName + "Length() && " +
-                                fieldName + "(i)>0; i++)");
-                        addLine(sb, indent, "{");
-                        addLine(sb, indent, "    builder.append((char)" + fieldName + "(i));");
-                        addLine(sb, indent, "}");
+                        append(sb, indent, "for (int i = 0; i < " + fieldName + "Length() && " + fieldName + "(i) > 0; i++)");
+                        append(sb, indent, "{");
+                        append(sb, indent, "    builder.append((char)" + fieldName + "(i));");
+                        append(sb, indent, "}");
                     }
                     else
                     {
-                        addLine(sb, indent, "builder.append('[');");
-                        addLine(sb, indent, "if (" +  fieldName + "Length() > 0)");
-                        addLine(sb, indent, "{");
-                        addLine(sb, indent, "    for(int i = 0; i < " + fieldName + "Length(); i++)");
-                        addLine(sb, indent, "    {");
-                        addLine(sb, indent, "        builder.append(" + fieldName + "(i)).append(',');");
-                        addLine(sb, indent, "    }");
-                        addLine(sb, indent, "    builder.setLength(builder.length()-1);");
-                        addLine(sb, indent, "}");
-                        addLine(sb, indent, "builder.append(']');");
+                        append(sb, indent, "builder.append('[');");
+                        append(sb, indent, "if (" +  fieldName + "Length() > 0)");
+                        append(sb, indent, "{");
+                        append(sb, indent, "    for (int i = 0; i < " + fieldName + "Length(); i++)");
+                        append(sb, indent, "    {");
+                        append(sb, indent, "        builder.append(" + fieldName + "(i)).append(',');");
+                        append(sb, indent, "    }");
+                        append(sb, indent, "    builder.setLength(builder.length()-1);");
+                        append(sb, indent, "}");
+                        append(sb, indent, "builder.append(']');");
                     }
                 }
                 else
                 {
                     // have to duplicate because of checkstyle :/
-                    addLine(sb, indent, "builder.append(" + fieldName + "());");
+                    append(sb, indent, "builder.append(" + fieldName + "());");
                 }
                 break;
+
             case BEGIN_ENUM:
             case BEGIN_SET:
-                addLine(sb, indent, "builder.append(" + fieldName + "());");
+                append(sb, indent, "builder.append(" + fieldName + "());");
                 break;
+
             case BEGIN_COMPOSITE:
-                addLine(sb, indent, fieldName + "().appendTo(builder);");
+                append(sb, indent, fieldName + "().appendTo(builder);");
                 break;
         }
-        addLine(sb, indent, "builder.append('|');");
+
+        append(sb, indent, "builder.append('|');");
     }
 
     private void appendToString(final StringBuilder sb, final String indent)
     {
-        sb.append("\n");
-        addLine(sb, indent, "public String toString()");
-        addLine(sb, indent, "{");
-        addLine(sb, indent, "    return appendTo(new StringBuilder(100)).toString();");
-        addLine(sb, indent, "}");
+        append(sb, indent, "public String toString()");
+        append(sb, indent, "{");
+        append(sb, indent, "    return appendTo(new StringBuilder(100)).toString();");
+        append(sb, indent, "}");
     }
 }
