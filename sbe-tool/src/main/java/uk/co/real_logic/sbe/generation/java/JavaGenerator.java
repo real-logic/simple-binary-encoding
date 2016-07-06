@@ -1022,7 +1022,7 @@ public class JavaGenerator implements CodeGenerator
 
                     case BEGIN_COMPOSITE:
                         out.append(generateCompositeProperty(propertyName, encodingToken, BASE_INDENT, typeName));
-                        i = findEndSignal(tokens, i, Signal.END_COMPOSITE, encodingToken.name());
+                        i += encodingToken.componentTokenCount();
                         break;
                 }
             }
@@ -1059,7 +1059,7 @@ public class JavaGenerator implements CodeGenerator
 
                     case BEGIN_COMPOSITE:
                         out.append(generateCompositeProperty(propertyName, encodingToken, BASE_INDENT, typeName));
-                        i = findEndSignal(tokens, i, Signal.END_COMPOSITE, encodingToken.name());
+                        i += encodingToken.componentTokenCount();
                         break;
                 }
             }
@@ -2388,7 +2388,7 @@ public class JavaGenerator implements CodeGenerator
             writeTokenDisplay(propertyName, encodingToken, sb, indent + INDENT);
             if (encodingToken.signal() == Signal.BEGIN_COMPOSITE)
             {
-                i = findEndSignal(tokens, i, Signal.END_COMPOSITE, encodingToken.name());
+                i += encodingToken.componentTokenCount();
             }
         }
 
