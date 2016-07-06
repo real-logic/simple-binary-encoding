@@ -46,11 +46,11 @@ public class ToStringTest extends EncodedCarTestBase
 
         final String result = CAR.toString();
         assertEquals(
-                "[Car]" +
-                "(sbeTemplateId=1|sbeSchemaId=1|sbeSchemaVersion=0|sbeBlockLength=45):" +
-                "serialNumber=0|modelYear=0|available=F|code=NULL_VAL|someNumbers=[0,0,0,0,0]|vehicleCode=|extras={}|" +
-                "engine=(capacity=0|numCylinders=0|manufacturerCode=|)|" +
-                "fuelFigures=[]|performanceFigures=[]|make=|model=|activationCode=|",
-                result);
+            "[Car]" +
+            "(sbeTemplateId=1|sbeSchemaId=1|sbeSchemaVersion=0|sbeBlockLength=45):" +
+            "serialNumber=0|modelYear=0|available=F|code=NULL_VAL|someNumbers=[0,0,0,0,0]|vehicleCode=|extras={}|" +
+            "engine=(capacity=0|numCylinders=0|manufacturerCode=|)|" +
+            "fuelFigures=[]|performanceFigures=[]|make=|model=|activationCode=|",
+            result);
     }
 }
