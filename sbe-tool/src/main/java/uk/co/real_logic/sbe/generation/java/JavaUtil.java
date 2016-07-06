@@ -27,6 +27,46 @@ import java.util.Map;
  */
 public class JavaUtil
 {
+    public enum Separators
+    {
+        BEGIN_GROUP('['),
+        END_GROUP(']'),
+        BEGIN_COMPOSITE('('),
+        END_COMPOSITE(')'),
+        BEGIN_SET('{'),
+        END_SET('}'),
+        BEGIN_ARRAY('['),
+        END_ARRAY(']'),
+        FIELD('|'),
+        KEY_VALUE('='),
+        ENTRY(',');
+
+        public final char symbol;
+
+        Separators(char symbol)
+        {
+            this.symbol = symbol;
+        }
+
+        /**
+         * Add separator to a generated StringBuilder
+         *
+         * @param builder          the code generation builder to which information should be added
+         * @param indent           the current generated code indentation
+         * @param generatedBuilder the name of the generated StringBuilder to which separator should be added
+         */
+        public void appendToGeneratedBuilder(StringBuilder builder, String indent, String generatedBuilder)
+        {
+            append(builder, indent, generatedBuilder + ".append('" + symbol + "');");
+        }
+
+        @Override
+        public String toString()
+        {
+            return String.valueOf(symbol);
+        }
+    }
+
     private static final Map<PrimitiveType, String> TYPE_NAME_BY_PRIMITIVE_TYPE_MAP = new EnumMap<>(PrimitiveType.class);
 
     static
