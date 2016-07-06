@@ -2379,8 +2379,7 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
-        append(sb, indent, "    builder.append(\"[\");");
-
+        Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
         for (int i = 1, end = tokens.size() - 1; i < end; )
         {
             final Token encodingToken = tokens.get(i);
@@ -2389,8 +2388,7 @@ public class JavaGenerator implements CodeGenerator
             i += encodingToken.componentTokenCount();
         }
 
-        append(sb, indent, "    builder.setLength(builder.length() - 1);");
-        append(sb, indent, "    builder.append(\"]\");");
+        Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
         sb.append('\n');
         append(sb, indent, "    return builder;");
         append(sb, indent, "}");
@@ -2407,7 +2405,7 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
-        append(sb, indent, "    builder.append('{');");
+        Separators.BEGIN_SET.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
         append(sb, indent, "    boolean atLeastOne = false;");
 
         tokens
@@ -2421,7 +2419,7 @@ public class JavaGenerator implements CodeGenerator
                     append(sb, indent, "    {");
                     append(sb, indent, "        if (atLeastOne)");
                     append(sb, indent, "        {");
-                    append(sb, indent, "            builder.append(',');");
+                    Separators.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT + INDENT + INDENT, "builder");
                     append(sb, indent, "        }");
                     append(sb, indent, "        builder.append(\"" + choiceName + "\");");
                     append(sb, indent, "        atLeastOne = true;");
@@ -2429,7 +2427,7 @@ public class JavaGenerator implements CodeGenerator
                 }
             );
 
-        append(sb, indent, "    builder.append('}');");
+        Separators.END_SET.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
         sb.append('\n');
         append(sb, indent, "    return builder;");
         append(sb, indent, "}");
@@ -2497,8 +2495,9 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
+        Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
         appendDecoderDisplay(sb, fields, groups, varData, indent + INDENT);
-        sb.append('\n');
+        Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
         append(sb, indent, "    return builder;");
         append(sb, indent, "}");
 
@@ -2534,16 +2533,15 @@ public class JavaGenerator implements CodeGenerator
             final String groupName = formatPropertyName(groupToken.name());
             final String groupDecoderName = decoderName(formatClassName(groupToken.name()));
 
-            append(sb, indent, "builder.append(\"" + groupName + "={\");");
+            append(sb, indent, "builder.append(\"" + groupName + Separators.KEY_VALUE + Separators.BEGIN_GROUP + "\");");
             append(sb, indent, groupDecoderName + " " + groupName + " = " + groupName + "();");
             append(sb, indent, "while (" + groupName + ".hasNext())");
             append(sb, indent, "{");
-            append(sb, indent, "    builder.append('[');");
             append(sb, indent, "    " + groupName + ".next().appendTo(builder);");
-            append(sb, indent, "    builder.setLength(builder.length() - 1);");
-            append(sb, indent, "    builder.append(']');");
+            Separators.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
             append(sb, indent, "}");
-            append(sb, indent, "builder.append(\"}|\");");
+            append(sb, indent, "builder.setLength(builder.length() - 1);");
+            append(sb, indent, "builder.append(\"" + Separators.END_GROUP + Separators.FIELD + "\");");
 
             i = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
         }
@@ -2559,9 +2557,9 @@ public class JavaGenerator implements CodeGenerator
             append(sb, indent, "//" + varDataToken);
 
             final String varDataName = formatPropertyName(varDataToken.name());
-            append(sb, indent, "builder.append(\"" + varDataName + "=\");");
+            append(sb, indent, "builder.append(\"" + varDataName + Separators.KEY_VALUE + "\");");
             append(sb, indent, "builder.append(" + varDataName + "());");
-            append(sb, indent, "builder.append('|');");
+            Separators.FIELD.appendToGeneratedBuilder(sb, indent, "builder");
 
             i += varDataToken.componentTokenCount();
         }
@@ -2582,7 +2580,7 @@ public class JavaGenerator implements CodeGenerator
             return;
         }
 
-        append(sb, indent, "builder.append(\"" + fieldName + "=\");");
+        append(sb, indent, "builder.append(\"" + fieldName + Separators.KEY_VALUE + "\");");
 
         switch (typeToken.signal())
         {
@@ -2598,16 +2596,17 @@ public class JavaGenerator implements CodeGenerator
                     }
                     else
                     {
-                        append(sb, indent, "builder.append('[');");
+                        Separators.BEGIN_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
                         append(sb, indent, "if (" +  fieldName + "Length() > 0)");
                         append(sb, indent, "{");
                         append(sb, indent, "    for (int i = 0; i < " + fieldName + "Length(); i++)");
                         append(sb, indent, "    {");
-                        append(sb, indent, "        builder.append(" + fieldName + "(i)).append(',');");
+                        append(sb, indent, "        builder.append(" + fieldName + "(i));");
+                        Separators.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT + INDENT, "builder");
                         append(sb, indent, "    }");
                         append(sb, indent, "    builder.setLength(builder.length()-1);");
                         append(sb, indent, "}");
-                        append(sb, indent, "builder.append(']');");
+                        Separators.END_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
                     }
                 }
                 else
@@ -2627,7 +2626,7 @@ public class JavaGenerator implements CodeGenerator
                 break;
         }
 
-        append(sb, indent, "builder.append('|');");
+        Separators.FIELD.appendToGeneratedBuilder(sb, indent, "builder");
     }
 
     private void appendToString(final StringBuilder sb, final String indent)
