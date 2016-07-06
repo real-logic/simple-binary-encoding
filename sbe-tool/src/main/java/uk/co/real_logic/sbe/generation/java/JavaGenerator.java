@@ -2444,7 +2444,7 @@ public class JavaGenerator implements CodeGenerator
         final String name,
         final List<Token> tokens,
         final List<Token> groups,
-        final List<Token> varLens,
+        final List<Token> varData,
         final String baseIndent) throws IOException
     {
         final String indent = baseIndent + INDENT;
@@ -2476,7 +2476,7 @@ public class JavaGenerator implements CodeGenerator
         append(sb, indent, "    }");
         append(sb, indent, "    builder.append(BLOCK_LENGTH);");
         append(sb, indent, "    builder.append(\"):\");");
-        appendDecoderDisplay(sb, tokens, groups, varLens, indent + INDENT);
+        appendDecoderDisplay(sb, tokens, groups, varData, indent + INDENT);
         sb.append('\n');
         append(sb, indent, "    limit(originalLimit);");
         sb.append('\n');
@@ -2488,9 +2488,9 @@ public class JavaGenerator implements CodeGenerator
 
     private StringBuilder appendGroupInstanceDecoderDisplay(
         final StringBuilder sb,
-        final List<Token> tokens,
+        final List<Token> fields,
         final List<Token> groups,
-        final List<Token> varLens,
+        final List<Token> varData,
         final String baseIndent)
     {
         final String indent = baseIndent + INDENT;
@@ -2500,7 +2500,7 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
-        appendDecoderDisplay(sb, tokens, groups, varLens, indent + INDENT);
+        appendDecoderDisplay(sb, fields, groups, varData, indent + INDENT);
         sb.append('\n');
         append(sb, indent, "    return builder;");
         append(sb, indent, "}");
@@ -2510,20 +2510,19 @@ public class JavaGenerator implements CodeGenerator
 
     private StringBuilder appendDecoderDisplay(
         final StringBuilder sb,
-        final List<Token> tokens,
+        final List<Token> fields,
         final List<Token> groups,
-        final List<Token> varLens,
+        final List<Token> varData,
         final String indent)
     {
         eachField(
-            tokens,
+            fields,
             (fieldToken, typeToken) ->
             {
                 final String fieldName = formatPropertyName(fieldToken.name());
                 append(sb, indent, "//" + fieldToken);
                 writeTokenDisplay(fieldName, typeToken, sb, indent);
-            }
-        );
+            });
 
         for (int i = 0, size = groups.size(); i < size; i++)
         {
@@ -2552,22 +2551,22 @@ public class JavaGenerator implements CodeGenerator
             i = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
         }
 
-        for (int i = 0, size = varLens.size(); i < size;)
+        for (int i = 0, size = varData.size(); i < size;)
         {
-            final Token varLenToken = varLens.get(i);
-            if (varLenToken.signal() != Signal.BEGIN_VAR_DATA)
+            final Token varDataToken = varData.get(i);
+            if (varDataToken.signal() != Signal.BEGIN_VAR_DATA)
             {
-                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varLenToken);
+                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
             }
 
-            append(sb, indent, "//" + varLenToken);
+            append(sb, indent, "//" + varDataToken);
 
-            final String varLenName = formatPropertyName(varLenToken.name());
-            append(sb, indent, "builder.append(\"" + varLenName + "=\");");
-            append(sb, indent, "builder.append(" + varLenName + "());");
+            final String varDataName = formatPropertyName(varDataToken.name());
+            append(sb, indent, "builder.append(\"" + varDataName + "=\");");
+            append(sb, indent, "builder.append(" + varDataName + "());");
             append(sb, indent, "builder.append('|');");
 
-            i += varLenToken.componentTokenCount();
+            i += varDataToken.componentTokenCount();
         }
 
         return sb;
