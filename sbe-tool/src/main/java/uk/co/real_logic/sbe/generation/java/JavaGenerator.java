@@ -2516,12 +2516,15 @@ public class JavaGenerator implements CodeGenerator
 
             append(sb, indent, "builder.append(\"" + groupName + Separators.KEY_VALUE + Separators.BEGIN_GROUP + "\");");
             append(sb, indent, groupDecoderName + " " + groupName + " = " + groupName + "();");
-            append(sb, indent, "while (" + groupName + ".hasNext())");
+            append(sb, indent, "if (" + groupName + ".count() > 0)");
             append(sb, indent, "{");
-            append(sb, indent, "    " + groupName + ".next().appendTo(builder);");
-            Separators.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+            append(sb, indent, "    while (" + groupName + ".hasNext())");
+            append(sb, indent, "    {");
+            append(sb, indent, "        " + groupName + ".next().appendTo(builder);");
+            Separators.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT + INDENT, "builder");
+            append(sb, indent, "    }");
+            append(sb, indent, "    builder.setLength(builder.length() - 1);");
             append(sb, indent, "}");
-            append(sb, indent, "builder.setLength(builder.length() - 1);");
             append(sb, indent, "builder.append(\"" + Separators.END_GROUP + Separators.FIELD + "\");");
 
             i = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
