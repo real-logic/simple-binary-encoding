@@ -21,11 +21,22 @@
 #  include <cstring>
 #endif
 
+#if __cplusplus >= 201103L
+#  define SBE_CONST_KIND constexpr
+#else
+#  define SBE_CONST_KIND const
+#endif
+
 #include <sbe/sbe.h>
 
 using namespace sbe;
 
-namespace uk_co_real_logic_sbe_ir_generated {
+namespace uk {
+namespace co {
+namespace real_logic {
+namespace sbe {
+namespace ir {
+namespace generated {
 
 class SignalCodec
 {
@@ -79,6 +90,11 @@ public:
 
         throw std::runtime_error("unknown value for enum SignalCodec [E103]");
     }
+};
+};
+};
+};
+};
 };
 }
 #endif

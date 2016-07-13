@@ -21,12 +21,23 @@
 #  include <cstring>
 #endif
 
+#if __cplusplus >= 201103L
+#  define SBE_CONST_KIND constexpr
+#else
+#  define SBE_CONST_KIND const
+#endif
+
 #include <sbe/sbe.h>
 
 
 using namespace sbe;
 
-namespace uk_co_real_logic_sbe_ir_generated {
+namespace uk {
+namespace co {
+namespace real_logic {
+namespace sbe {
+namespace ir {
+namespace generated {
 
 class VarDataEncoding
 {
@@ -135,6 +146,11 @@ public:
     {
         return (std::uint8_t)254;
     }
+};
+};
+};
+};
+};
 };
 }
 #endif
