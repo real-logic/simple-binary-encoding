@@ -15,6 +15,7 @@ public class MessageHeaderDecoder
     {
         this.buffer = buffer;
         this.offset = offset;
+
         return this;
     }
 

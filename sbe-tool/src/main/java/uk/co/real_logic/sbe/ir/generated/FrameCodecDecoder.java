@@ -427,4 +427,64 @@ public class FrameCodecDecoder
 
         return value;
     }
+
+    public String toString()
+    {
+        return appendTo(new StringBuilder(100)).toString();
+    }
+
+    public StringBuilder appendTo(final StringBuilder builder)
+    {
+        final int originalLimit = limit();
+        limit(offset + actingBlockLength);
+        builder.append("[FrameCodec](sbeTemplateId=");
+        builder.append(TEMPLATE_ID);
+        builder.append("|sbeSchemaId=");
+        builder.append(SCHEMA_ID);
+        builder.append("|sbeSchemaVersion=");
+        if (actingVersion != SCHEMA_VERSION)
+        {
+            builder.append(actingVersion);
+            builder.append('/');
+        }
+        builder.append(SCHEMA_VERSION);
+        builder.append("|sbeBlockLength=");
+        if (actingBlockLength != BLOCK_LENGTH)
+        {
+            builder.append(actingBlockLength);
+            builder.append('/');
+        }
+        builder.append(BLOCK_LENGTH);
+        builder.append("):");
+        //Token{signal=BEGIN_FIELD, name='irId', description='null', id=1, version=0, encodedLength=0, offset=0, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=ENCODING, name='int32', description='null', id=-1, version=0, encodedLength=4, offset=0, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        builder.append("irId=");
+        builder.append(irId());
+        builder.append('|');
+        //Token{signal=BEGIN_FIELD, name='irVersion', description='null', id=2, version=0, encodedLength=0, offset=4, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=ENCODING, name='int32', description='null', id=-1, version=0, encodedLength=4, offset=4, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        builder.append("irVersion=");
+        builder.append(irVersion());
+        builder.append('|');
+        //Token{signal=BEGIN_FIELD, name='schemaVersion', description='null', id=3, version=0, encodedLength=0, offset=8, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=ENCODING, name='int32', description='null', id=-1, version=0, encodedLength=4, offset=8, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        builder.append("schemaVersion=");
+        builder.append(schemaVersion());
+        builder.append('|');
+        //Token{signal=BEGIN_VAR_DATA, name='packageName', description='null', id=4, version=0, encodedLength=0, offset=12, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        builder.append("packageName=");
+        builder.append(packageName());
+        builder.append('|');
+        //Token{signal=BEGIN_VAR_DATA, name='namespaceName', description='null', id=5, version=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        builder.append("namespaceName=");
+        builder.append(namespaceName());
+        builder.append('|');
+        //Token{signal=BEGIN_VAR_DATA, name='semanticVersion', description='null', id=6, version=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        builder.append("semanticVersion=");
+        builder.append(semanticVersion());
+
+        limit(originalLimit);
+
+        return builder;
+    }
 }

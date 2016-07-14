@@ -21,6 +21,12 @@
 #  include <cstring>
 #endif
 
+#if __cplusplus >= 201103L
+#  define SBE_CONST_KIND constexpr
+#else
+#  define SBE_CONST_KIND const
+#endif
+
 #include <sbe/sbe.h>
 
 #include "ByteOrderCodec.h"
@@ -31,7 +37,12 @@
 
 using namespace sbe;
 
-namespace uk_co_real_logic_sbe_ir_generated {
+namespace uk {
+namespace co {
+namespace real_logic {
+namespace sbe {
+namespace ir {
+namespace generated {
 
 class TokenCodec
 {
@@ -96,29 +107,34 @@ public:
         return *this;
     }
 
+    static SBE_CONST_KIND std::uint16_t SbeBlockLength{(std::uint16_t)24};
     static const std::uint16_t sbeBlockLength(void)
     {
-        return (std::uint16_t)24;
+        return SbeBlockLength;
     }
 
+    static SBE_CONST_KIND std::uint16_t SbeTemplateId{(std::uint16_t)2};
     static const std::uint16_t sbeTemplateId(void)
     {
-        return (std::uint16_t)2;
+        return SbeTemplateId;
     }
 
+    static SBE_CONST_KIND std::uint16_t SbeSchemaId{(std::uint16_t)1};
     static const std::uint16_t sbeSchemaId(void)
     {
-        return (std::uint16_t)1;
+        return SbeSchemaId;
     }
 
+    static SBE_CONST_KIND std::uint16_t SbeSchemaVersion{(std::uint16_t)0};
     static const std::uint16_t sbeSchemaVersion(void)
     {
-        return (std::uint16_t)0;
+        return SbeSchemaVersion;
     }
 
+    static SBE_CONST_KIND char SbeSemanticType[] = "";
     static const char *sbeSemanticType(void)
     {
-        return "";
+        return SbeSemanticType;
     }
 
     std::uint64_t offset(void) const
@@ -1625,5 +1641,15 @@ public:
         return *this;
     }
 };
-}
+SBE_CONST_KIND std::uint16_t TokenCodec::SbeBlockLength;
+SBE_CONST_KIND std::uint16_t TokenCodec::SbeTemplateId;
+SBE_CONST_KIND std::uint16_t TokenCodec::SbeSchemaId;
+SBE_CONST_KIND std::uint16_t TokenCodec::SbeSchemaVersion;
+SBE_CONST_KIND char TokenCodec::SbeSemanticType[];
+};
+};
+};
+};
+};
+};
 #endif

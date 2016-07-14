@@ -55,6 +55,7 @@ public class FrameCodecEncoder
         this.buffer = buffer;
         this.offset = offset;
         limit(offset + BLOCK_LENGTH);
+
         return this;
     }
 
@@ -395,5 +396,17 @@ public class FrameCodecEncoder
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
+    }
+    public String toString()
+    {
+        return appendTo(new StringBuilder(100)).toString();
+    }
+
+    public StringBuilder appendTo(final StringBuilder builder)
+    {
+        FrameCodecDecoder writer = new FrameCodecDecoder();
+        writer.wrap(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);
+
+        return writer.appendTo(builder);
     }
 }

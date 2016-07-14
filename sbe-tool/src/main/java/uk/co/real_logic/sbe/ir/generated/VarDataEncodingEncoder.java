@@ -15,6 +15,7 @@ public class VarDataEncodingEncoder
     {
         this.buffer = buffer;
         this.offset = offset;
+
         return this;
     }
 
@@ -58,5 +59,17 @@ public class VarDataEncodingEncoder
     public static short varDataMaxValue()
     {
         return (short)254;
+    }
+    public String toString()
+    {
+        return appendTo(new StringBuilder(100)).toString();
+    }
+
+    public StringBuilder appendTo(final StringBuilder builder)
+    {
+        VarDataEncodingDecoder writer = new VarDataEncodingDecoder();
+        writer.wrap(buffer, offset);
+
+        return writer.appendTo(builder);
     }
 }
