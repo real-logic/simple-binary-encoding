@@ -168,7 +168,7 @@ subprojects {
     }
 }
 
-def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/resources/fpl/SimpleBinary1-0.xsd'
+def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/resources/fpl/sbe.xsd'
 
 project(':sbe-tool') {
     dependencies {
