@@ -42,7 +42,7 @@
 #include "Token.h"
 
 using namespace sbe::otf;
-using namespace uk_co_real_logic_sbe_ir_generated;
+using namespace uk::co::real_logic::sbe::ir::generated;
 
 namespace sbe {
 namespace otf {
