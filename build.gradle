@@ -21,7 +21,7 @@ plugins {
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
 def sbeGroup = 'uk.co.real-logic'
-def sbeVersion = '1.5.0'
+def sbeVersion = '1.5.1-SNAPSHOT'
 
 group = sbeGroup
 version = sbeVersion
