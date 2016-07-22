@@ -21,7 +21,7 @@ plugins {
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
 def sbeGroup = 'uk.co.real-logic'
-def sbeVersion = '1.5.0-SNAPSHOT'
+def sbeVersion = '1.5.0'
 
 group = sbeGroup
 version = sbeVersion
@@ -172,7 +172,7 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
-        compile 'org.agrona:Agrona:0.5.3-SNAPSHOT'
+        compile 'org.agrona:Agrona:0.5.3'
 
         testCompile files('build/classes/generated')
     }
