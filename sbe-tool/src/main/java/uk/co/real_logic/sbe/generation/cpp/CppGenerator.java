@@ -257,11 +257,11 @@ public class CppGenerator implements CodeGenerator
             numInGroupToken.encoding().applicableMaxValue().longValue()));
 
         sb.append(String.format(
-            indent + "    static const std::uint64_t sbeHeaderSize()\n" +
+            indent + "    static SBE_CONST_KIND std::uint64_t sbeHeaderSize()\n" +
             indent + "    {\n" +
             indent + "        return %1$d;\n" +
             indent + "    }\n\n" +
-            indent + "    static const std::uint64_t sbeBlockLength()\n" +
+            indent + "    static SBE_CONST_KIND std::uint64_t sbeBlockLength()\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n" +
@@ -338,7 +338,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static const std::uint16_t %1$sId(void)\n" +
+            indent + "    static SBE_CONST_KIND std::uint16_t %1$sId(void)\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n",
@@ -520,7 +520,7 @@ public class CppGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    static const std::uint64_t %1$sSinceVersion(void)\n" +
+            indent + "    static SBE_CONST_KIND std::uint64_t %1$sSinceVersion(void)\n" +
             indent + "    {\n" +
             indent + "         return %2$d;\n" +
             indent + "    }\n\n" +
@@ -528,7 +528,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return (m_actingVersion >= %1$sSinceVersion()) ? true : false;\n" +
             indent + "    }\n\n" +
-            indent + "    static const std::uint16_t %1$sId(void)\n" +
+            indent + "    static SBE_CONST_KIND std::uint16_t %1$sId(void)\n" +
             indent + "    {\n" +
             indent + "        return %3$d;\n" +
             indent + "    }\n\n",
@@ -539,7 +539,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static const std::uint64_t %sHeaderLength()\n" +
+            indent + "    static SBE_CONST_KIND std::uint64_t %sHeaderLength()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n",
@@ -998,7 +998,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static const %1$s %2$sNullValue()\n" +
+            indent + "    static SBE_CONST_KIND %1$s %2$sNullValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",
@@ -1009,7 +1009,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static const %1$s %2$sMinValue()\n" +
+            indent + "    static SBE_CONST_KIND %1$s %2$sMinValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",
@@ -1020,7 +1020,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static const %1$s %2$sMaxValue()\n" +
+            indent + "    static SBE_CONST_KIND %1$s %2$sMaxValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",
@@ -1079,7 +1079,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static const std::uint64_t %1$sLength(void)\n" +
+            indent + "    static SBE_CONST_KIND std::uint64_t %1$sLength(void)\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n",
@@ -1225,7 +1225,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static const std::uint64_t %1$sLength(void)\n" +
+            indent + "    static SBE_CONST_KIND std::uint64_t %1$sLength(void)\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n",
@@ -1324,7 +1324,7 @@ public class CppGenerator implements CodeGenerator
             "        reset(buffer, offset, bufferLength, actingVersion);\n" +
             "        return *this;\n" +
             "    }\n\n" +
-            "    static const std::uint64_t encodedLength(void)\n" +
+            "    static SBE_CONST_KIND std::uint64_t encodedLength(void)\n" +
             "    {\n" +
             "        return %2$s;\n" +
             "    }\n\n",
@@ -1498,7 +1498,7 @@ public class CppGenerator implements CodeGenerator
 
                 sb.append(String.format(
                     "\n" +
-                    indent + "    static const std::uint16_t %1$sId(void)\n" +
+                    indent + "    static SBE_CONST_KIND std::uint16_t %1$sId(void)\n" +
                     indent + "    {\n" +
                     indent + "        return %2$d;\n" +
                     indent + "    }\n\n",
@@ -1507,7 +1507,7 @@ public class CppGenerator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    indent + "    static const std::uint64_t %1$sSinceVersion(void)\n" +
+                    indent + "    static SBE_CONST_KIND std::uint64_t %1$sSinceVersion(void)\n" +
                     indent + "    {\n" +
                     indent + "         return %2$d;\n" +
                     indent + "    }\n\n" +
