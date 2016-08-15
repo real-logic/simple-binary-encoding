@@ -1779,6 +1779,10 @@ public class CppGenerator implements CodeGenerator
 
             case INT64:
                 literal = value + "L";
+                if (value.equals("-9223372036854775808"))
+                {
+                    literal = "INT64_MIN";
+                }
                 break;
 
             case UINT64:
