@@ -22,9 +22,9 @@
 #endif
 
 #if __cplusplus >= 201103L
-#  define SBE_CONST_KIND constexpr
+#  define SBE_CONSTEXPR constexpr
 #else
-#  define SBE_CONST_KIND const
+#  define SBE_CONSTEXPR
 #endif
 
 #include <sbe/sbe.h>
@@ -99,23 +99,23 @@ public:
         return *this;
     }
 
-    static const std::uint64_t encodedLength(void)
+    static SBE_CONSTEXPR const std::uint64_t encodedLength(void)
     {
         return 8;
     }
 
 
-    static const std::uint16_t blockLengthNullValue()
+    static SBE_CONSTEXPR const std::uint16_t blockLengthNullValue()
     {
         return SBE_NULLVALUE_UINT16;
     }
 
-    static const std::uint16_t blockLengthMinValue()
+    static SBE_CONSTEXPR const std::uint16_t blockLengthMinValue()
     {
         return (std::uint16_t)0;
     }
 
-    static const std::uint16_t blockLengthMaxValue()
+    static SBE_CONSTEXPR const std::uint16_t blockLengthMaxValue()
     {
         return (std::uint16_t)65534;
     }
@@ -131,17 +131,17 @@ public:
         return *this;
     }
 
-    static const std::uint16_t templateIdNullValue()
+    static SBE_CONSTEXPR const std::uint16_t templateIdNullValue()
     {
         return SBE_NULLVALUE_UINT16;
     }
 
-    static const std::uint16_t templateIdMinValue()
+    static SBE_CONSTEXPR const std::uint16_t templateIdMinValue()
     {
         return (std::uint16_t)0;
     }
 
-    static const std::uint16_t templateIdMaxValue()
+    static SBE_CONSTEXPR const std::uint16_t templateIdMaxValue()
     {
         return (std::uint16_t)65534;
     }
@@ -157,17 +157,17 @@ public:
         return *this;
     }
 
-    static const std::uint16_t schemaIdNullValue()
+    static SBE_CONSTEXPR const std::uint16_t schemaIdNullValue()
     {
         return SBE_NULLVALUE_UINT16;
     }
 
-    static const std::uint16_t schemaIdMinValue()
+    static SBE_CONSTEXPR const std::uint16_t schemaIdMinValue()
     {
         return (std::uint16_t)0;
     }
 
-    static const std::uint16_t schemaIdMaxValue()
+    static SBE_CONSTEXPR const std::uint16_t schemaIdMaxValue()
     {
         return (std::uint16_t)65534;
     }
@@ -183,17 +183,17 @@ public:
         return *this;
     }
 
-    static const std::uint16_t versionNullValue()
+    static SBE_CONSTEXPR const std::uint16_t versionNullValue()
     {
         return SBE_NULLVALUE_UINT16;
     }
 
-    static const std::uint16_t versionMinValue()
+    static SBE_CONSTEXPR const std::uint16_t versionMinValue()
     {
         return (std::uint16_t)0;
     }
 
-    static const std::uint16_t versionMaxValue()
+    static SBE_CONSTEXPR const std::uint16_t versionMaxValue()
     {
         return (std::uint16_t)65534;
     }

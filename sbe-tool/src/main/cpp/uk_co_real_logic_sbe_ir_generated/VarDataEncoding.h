@@ -22,9 +22,9 @@
 #endif
 
 #if __cplusplus >= 201103L
-#  define SBE_CONST_KIND constexpr
+#  define SBE_CONSTEXPR constexpr
 #else
-#  define SBE_CONST_KIND const
+#  define SBE_CONSTEXPR
 #endif
 
 #include <sbe/sbe.h>
@@ -100,23 +100,23 @@ public:
         return *this;
     }
 
-    static const std::uint64_t encodedLength(void)
+    static SBE_CONSTEXPR const std::uint64_t encodedLength(void)
     {
         return -1;
     }
 
 
-    static const std::uint16_t lengthNullValue()
+    static SBE_CONSTEXPR const std::uint16_t lengthNullValue()
     {
         return SBE_NULLVALUE_UINT16;
     }
 
-    static const std::uint16_t lengthMinValue()
+    static SBE_CONSTEXPR const std::uint16_t lengthMinValue()
     {
         return (std::uint16_t)0;
     }
 
-    static const std::uint16_t lengthMaxValue()
+    static SBE_CONSTEXPR const std::uint16_t lengthMaxValue()
     {
         return (std::uint16_t)65534;
     }
@@ -132,17 +132,17 @@ public:
         return *this;
     }
 
-    static const std::uint8_t varDataNullValue()
+    static SBE_CONSTEXPR const std::uint8_t varDataNullValue()
     {
         return SBE_NULLVALUE_UINT8;
     }
 
-    static const std::uint8_t varDataMinValue()
+    static SBE_CONSTEXPR const std::uint8_t varDataMinValue()
     {
         return (std::uint8_t)0;
     }
 
-    static const std::uint8_t varDataMaxValue()
+    static SBE_CONSTEXPR const std::uint8_t varDataMaxValue()
     {
         return (std::uint8_t)254;
     }

@@ -22,9 +22,9 @@
 #endif
 
 #if __cplusplus >= 201103L
-#  define SBE_CONST_KIND constexpr
+#  define SBE_CONSTEXPR constexpr
 #else
-#  define SBE_CONST_KIND const
+#  define SBE_CONSTEXPR
 #endif
 
 #include <sbe/sbe.h>
@@ -107,34 +107,29 @@ public:
         return *this;
     }
 
-    static SBE_CONST_KIND std::uint16_t SbeBlockLength{(std::uint16_t)12};
-    static const std::uint16_t sbeBlockLength(void)
+    static SBE_CONSTEXPR const std::uint16_t sbeBlockLength(void)
     {
-        return SbeBlockLength;
+        return (std::uint16_t)12;
     }
 
-    static SBE_CONST_KIND std::uint16_t SbeTemplateId{(std::uint16_t)1};
-    static const std::uint16_t sbeTemplateId(void)
+    static SBE_CONSTEXPR const std::uint16_t sbeTemplateId(void)
     {
-        return SbeTemplateId;
+        return (std::uint16_t)1;
     }
 
-    static SBE_CONST_KIND std::uint16_t SbeSchemaId{(std::uint16_t)1};
-    static const std::uint16_t sbeSchemaId(void)
+    static SBE_CONSTEXPR const std::uint16_t sbeSchemaId(void)
     {
-        return SbeSchemaId;
+        return (std::uint16_t)1;
     }
 
-    static SBE_CONST_KIND std::uint16_t SbeSchemaVersion{(std::uint16_t)0};
-    static const std::uint16_t sbeSchemaVersion(void)
+    static SBE_CONSTEXPR const std::uint16_t sbeSchemaVersion(void)
     {
-        return SbeSchemaVersion;
+        return (std::uint16_t)0;
     }
 
-    static SBE_CONST_KIND char SbeSemanticType[] = "";
-    static const char *sbeSemanticType(void)
+    static SBE_CONSTEXPR const char * sbeSemanticType(void)
     {
-        return SbeSemanticType;
+        return "";
     }
 
     std::uint64_t offset(void) const
@@ -185,12 +180,12 @@ public:
         return m_actingVersion;
     }
 
-    static const std::uint16_t irIdId(void)
+    static SBE_CONSTEXPR const std::uint16_t irIdId(void)
     {
         return 1;
     }
 
-    static const std::uint64_t irIdSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t irIdSinceVersion(void)
     {
          return 0;
     }
@@ -213,17 +208,17 @@ public:
         return "";
     }
 
-    static const std::int32_t irIdNullValue()
+    static SBE_CONSTEXPR const std::int32_t irIdNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const std::int32_t irIdMinValue()
+    static SBE_CONSTEXPR const std::int32_t irIdMinValue()
     {
         return -2147483647;
     }
 
-    static const std::int32_t irIdMaxValue()
+    static SBE_CONSTEXPR const std::int32_t irIdMaxValue()
     {
         return 2147483647;
     }
@@ -239,12 +234,12 @@ public:
         return *this;
     }
 
-    static const std::uint16_t irVersionId(void)
+    static SBE_CONSTEXPR const std::uint16_t irVersionId(void)
     {
         return 2;
     }
 
-    static const std::uint64_t irVersionSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t irVersionSinceVersion(void)
     {
          return 0;
     }
@@ -267,17 +262,17 @@ public:
         return "";
     }
 
-    static const std::int32_t irVersionNullValue()
+    static SBE_CONSTEXPR const std::int32_t irVersionNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const std::int32_t irVersionMinValue()
+    static SBE_CONSTEXPR const std::int32_t irVersionMinValue()
     {
         return -2147483647;
     }
 
-    static const std::int32_t irVersionMaxValue()
+    static SBE_CONSTEXPR const std::int32_t irVersionMaxValue()
     {
         return 2147483647;
     }
@@ -293,12 +288,12 @@ public:
         return *this;
     }
 
-    static const std::uint16_t schemaVersionId(void)
+    static SBE_CONSTEXPR const std::uint16_t schemaVersionId(void)
     {
         return 3;
     }
 
-    static const std::uint64_t schemaVersionSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t schemaVersionSinceVersion(void)
     {
          return 0;
     }
@@ -321,17 +316,17 @@ public:
         return "";
     }
 
-    static const std::int32_t schemaVersionNullValue()
+    static SBE_CONSTEXPR const std::int32_t schemaVersionNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const std::int32_t schemaVersionMinValue()
+    static SBE_CONSTEXPR const std::int32_t schemaVersionMinValue()
     {
         return -2147483647;
     }
 
-    static const std::int32_t schemaVersionMaxValue()
+    static SBE_CONSTEXPR const std::int32_t schemaVersionMaxValue()
     {
         return 2147483647;
     }
@@ -364,7 +359,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t packageNameSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t packageNameSinceVersion(void)
     {
          return 0;
     }
@@ -374,13 +369,13 @@ public:
         return (m_actingVersion >= packageNameSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t packageNameId(void)
+    static SBE_CONSTEXPR const std::uint16_t packageNameId(void)
     {
         return 4;
     }
 
 
-    static const std::uint64_t packageNameHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t packageNameHeaderLength()
     {
         return 2;
     }
@@ -467,7 +462,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t namespaceNameSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t namespaceNameSinceVersion(void)
     {
          return 0;
     }
@@ -477,13 +472,13 @@ public:
         return (m_actingVersion >= namespaceNameSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t namespaceNameId(void)
+    static SBE_CONSTEXPR const std::uint16_t namespaceNameId(void)
     {
         return 5;
     }
 
 
-    static const std::uint64_t namespaceNameHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t namespaceNameHeaderLength()
     {
         return 2;
     }
@@ -570,7 +565,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t semanticVersionSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t semanticVersionSinceVersion(void)
     {
          return 0;
     }
@@ -580,13 +575,13 @@ public:
         return (m_actingVersion >= semanticVersionSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t semanticVersionId(void)
+    static SBE_CONSTEXPR const std::uint16_t semanticVersionId(void)
     {
         return 6;
     }
 
 
-    static const std::uint64_t semanticVersionHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t semanticVersionHeaderLength()
     {
         return 2;
     }
@@ -656,11 +651,6 @@ public:
         return *this;
     }
 };
-SBE_CONST_KIND std::uint16_t FrameCodec::SbeBlockLength;
-SBE_CONST_KIND std::uint16_t FrameCodec::SbeTemplateId;
-SBE_CONST_KIND std::uint16_t FrameCodec::SbeSchemaId;
-SBE_CONST_KIND std::uint16_t FrameCodec::SbeSchemaVersion;
-SBE_CONST_KIND char FrameCodec::SbeSemanticType[];
 };
 };
 };
