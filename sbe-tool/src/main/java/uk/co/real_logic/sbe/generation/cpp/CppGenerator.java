@@ -146,7 +146,6 @@ public class CppGenerator implements CodeGenerator
                 out.append(sb);
                 out.append(generateVarData(className, varData, BASE_INDENT));
                 out.append("};\n");
-                out.append(generateStaticDefinitions(className));
                 out.append(CppUtil.closingBraces(ir.namespaces().length) + "#endif\n");
             }
         }
@@ -257,11 +256,11 @@ public class CppGenerator implements CodeGenerator
             numInGroupToken.encoding().applicableMaxValue().longValue()));
 
         sb.append(String.format(
-            indent + "    static SBE_CONST_KIND std::uint64_t sbeHeaderSize()\n" +
+            indent + "    static SBE_CONSTEXPR const std::uint64_t sbeHeaderSize()\n" +
             indent + "    {\n" +
             indent + "        return %1$d;\n" +
             indent + "    }\n\n" +
-            indent + "    static SBE_CONST_KIND std::uint64_t sbeBlockLength()\n" +
+            indent + "    static SBE_CONSTEXPR const std::uint64_t sbeBlockLength()\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n" +
@@ -338,7 +337,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static SBE_CONST_KIND std::uint16_t %1$sId(void)\n" +
+            indent + "    static SBE_CONSTEXPR const std::uint16_t %1$sId(void)\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n",
@@ -520,7 +519,7 @@ public class CppGenerator implements CodeGenerator
         ));
 
         sb.append(String.format(
-            indent + "    static SBE_CONST_KIND std::uint64_t %1$sSinceVersion(void)\n" +
+            indent + "    static SBE_CONSTEXPR const std::uint64_t %1$sSinceVersion(void)\n" +
             indent + "    {\n" +
             indent + "         return %2$d;\n" +
             indent + "    }\n\n" +
@@ -528,7 +527,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return (m_actingVersion >= %1$sSinceVersion()) ? true : false;\n" +
             indent + "    }\n\n" +
-            indent + "    static SBE_CONST_KIND std::uint16_t %1$sId(void)\n" +
+            indent + "    static SBE_CONSTEXPR const std::uint16_t %1$sId(void)\n" +
             indent + "    {\n" +
             indent + "        return %3$d;\n" +
             indent + "    }\n\n",
@@ -539,7 +538,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static SBE_CONST_KIND std::uint64_t %sHeaderLength()\n" +
+            indent + "    static SBE_CONSTEXPR const std::uint64_t %sHeaderLength()\n" +
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n",
@@ -845,9 +844,9 @@ public class CppGenerator implements CodeGenerator
             "#  include <cstring>\n" +
             "#endif\n\n" +
             "#if __cplusplus >= 201103L\n" +
-            "#  define SBE_CONST_KIND constexpr\n" +
+            "#  define SBE_CONSTEXPR constexpr\n" +
             "#else\n" +
-            "#  define SBE_CONST_KIND const\n" +
+            "#  define SBE_CONSTEXPR\n" +
             "#endif\n\n" +
             "#include <sbe/sbe.h>\n\n",
             String.join("_", namespaces).toUpperCase(),
@@ -882,32 +881,6 @@ public class CppGenerator implements CodeGenerator
             "class %s\n" +
             "{\n",
             className
-        );
-    }
-
-    private String generateStaticDefinitions(final String className)
-    {
-        return
-            generateStaticDefinition(
-                className, "SbeBlockLength", cppTypeName(ir.headerStructure().blockLengthType()), false) +
-            generateStaticDefinition(
-                className, "SbeTemplateId", cppTypeName(ir.headerStructure().templateIdType()), false) +
-            generateStaticDefinition(
-                className, "SbeSchemaId", cppTypeName(ir.headerStructure().schemaIdType()), false) +
-            generateStaticDefinition(
-                className, "SbeSchemaVersion", cppTypeName(ir.headerStructure().schemaVersionType()), false) +
-            generateStaticDefinition(className, "SbeSemanticType", "char", true);
-    }
-
-    private static String generateStaticDefinition(
-        final String className, final String memberName, final String memberType, boolean isArray)
-    {
-        return String.format(
-            "SBE_CONST_KIND %3$s %1$s::%2$s%4$s;\n",
-            className,
-            memberName,
-            memberType,
-            (isArray ? "[]" : "")
         );
     }
 
@@ -998,7 +971,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static SBE_CONST_KIND %1$s %2$sNullValue()\n" +
+            indent + "    static SBE_CONSTEXPR const %1$s %2$sNullValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",
@@ -1009,7 +982,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static SBE_CONST_KIND %1$s %2$sMinValue()\n" +
+            indent + "    static SBE_CONSTEXPR const %1$s %2$sMinValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",
@@ -1020,7 +993,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static SBE_CONST_KIND %1$s %2$sMaxValue()\n" +
+            indent + "    static SBE_CONSTEXPR const %1$s %2$sMaxValue()\n" +
             indent + "    {\n" +
             indent + "        return %3$s;\n" +
             indent + "    }\n",
@@ -1079,7 +1052,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static SBE_CONST_KIND std::uint64_t %1$sLength(void)\n" +
+            indent + "    static SBE_CONSTEXPR const std::uint64_t %1$sLength(void)\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n",
@@ -1225,7 +1198,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    static SBE_CONST_KIND std::uint64_t %1$sLength(void)\n" +
+            indent + "    static SBE_CONSTEXPR const std::uint64_t %1$sLength(void)\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n",
@@ -1324,7 +1297,7 @@ public class CppGenerator implements CodeGenerator
             "        reset(buffer, offset, bufferLength, actingVersion);\n" +
             "        return *this;\n" +
             "    }\n\n" +
-            "    static SBE_CONST_KIND std::uint64_t encodedLength(void)\n" +
+            "    static SBE_CONSTEXPR const std::uint64_t encodedLength(void)\n" +
             "    {\n" +
             "        return %2$s;\n" +
             "    }\n\n",
@@ -1405,30 +1378,25 @@ public class CppGenerator implements CodeGenerator
             "    }\n\n" +
             "public:\n\n" +
             "%11$s" +
-            "    static SBE_CONST_KIND %1$s SbeBlockLength{%2$s};\n" +
-            "    static const %1$s sbeBlockLength(void)\n" +
+            "    static SBE_CONSTEXPR const %1$s sbeBlockLength(void)\n" +
             "    {\n" +
-            "        return SbeBlockLength;\n" +
+            "        return %2$s;\n" +
             "    }\n\n" +
-            "    static SBE_CONST_KIND %3$s SbeTemplateId{%4$s};\n" +
-            "    static const %3$s sbeTemplateId(void)\n" +
+            "    static SBE_CONSTEXPR const %3$s sbeTemplateId(void)\n" +
             "    {\n" +
-            "        return SbeTemplateId;\n" +
+            "        return %4$s;\n" +
             "    }\n\n" +
-            "    static SBE_CONST_KIND %5$s SbeSchemaId{%6$s};\n" +
-            "    static const %5$s sbeSchemaId(void)\n" +
+            "    static SBE_CONSTEXPR const %5$s sbeSchemaId(void)\n" +
             "    {\n" +
-            "        return SbeSchemaId;\n" +
+            "        return %6$s;\n" +
             "    }\n\n" +
-            "    static SBE_CONST_KIND %7$s SbeSchemaVersion{%8$s};\n" +
-            "    static const %7$s sbeSchemaVersion(void)\n" +
+            "    static SBE_CONSTEXPR const %7$s sbeSchemaVersion(void)\n" +
             "    {\n" +
-            "        return SbeSchemaVersion;\n" +
+            "        return %8$s;\n" +
             "    }\n\n" +
-            "    static SBE_CONST_KIND char SbeSemanticType[] = \"%9$s\";\n" +
-            "    static const char *sbeSemanticType(void)\n" +
+            "    static SBE_CONSTEXPR const char * sbeSemanticType(void)\n" +
             "    {\n" +
-            "        return SbeSemanticType;\n" +
+            "        return \"%9$s\";\n" +
             "    }\n\n" +
             "    std::uint64_t offset(void) const\n" +
             "    {\n" +
@@ -1498,7 +1466,7 @@ public class CppGenerator implements CodeGenerator
 
                 sb.append(String.format(
                     "\n" +
-                    indent + "    static SBE_CONST_KIND std::uint16_t %1$sId(void)\n" +
+                    indent + "    static SBE_CONSTEXPR const std::uint16_t %1$sId(void)\n" +
                     indent + "    {\n" +
                     indent + "        return %2$d;\n" +
                     indent + "    }\n\n",
@@ -1507,7 +1475,7 @@ public class CppGenerator implements CodeGenerator
                 ));
 
                 sb.append(String.format(
-                    indent + "    static SBE_CONST_KIND std::uint64_t %1$sSinceVersion(void)\n" +
+                    indent + "    static SBE_CONSTEXPR const std::uint64_t %1$sSinceVersion(void)\n" +
                     indent + "    {\n" +
                     indent + "         return %2$d;\n" +
                     indent + "    }\n\n" +
