@@ -22,9 +22,9 @@
 #endif
 
 #if __cplusplus >= 201103L
-#  define SBE_CONST_KIND constexpr
+#  define SBE_CONSTEXPR constexpr
 #else
-#  define SBE_CONST_KIND const
+#  define SBE_CONSTEXPR
 #endif
 
 #include <sbe/sbe.h>
@@ -107,34 +107,29 @@ public:
         return *this;
     }
 
-    static SBE_CONST_KIND std::uint16_t SbeBlockLength{(std::uint16_t)24};
-    static const std::uint16_t sbeBlockLength(void)
+    static SBE_CONSTEXPR const std::uint16_t sbeBlockLength(void)
     {
-        return SbeBlockLength;
+        return (std::uint16_t)24;
     }
 
-    static SBE_CONST_KIND std::uint16_t SbeTemplateId{(std::uint16_t)2};
-    static const std::uint16_t sbeTemplateId(void)
+    static SBE_CONSTEXPR const std::uint16_t sbeTemplateId(void)
     {
-        return SbeTemplateId;
+        return (std::uint16_t)2;
     }
 
-    static SBE_CONST_KIND std::uint16_t SbeSchemaId{(std::uint16_t)1};
-    static const std::uint16_t sbeSchemaId(void)
+    static SBE_CONSTEXPR const std::uint16_t sbeSchemaId(void)
     {
-        return SbeSchemaId;
+        return (std::uint16_t)1;
     }
 
-    static SBE_CONST_KIND std::uint16_t SbeSchemaVersion{(std::uint16_t)0};
-    static const std::uint16_t sbeSchemaVersion(void)
+    static SBE_CONSTEXPR const std::uint16_t sbeSchemaVersion(void)
     {
-        return SbeSchemaVersion;
+        return (std::uint16_t)0;
     }
 
-    static SBE_CONST_KIND char SbeSemanticType[] = "";
-    static const char *sbeSemanticType(void)
+    static SBE_CONSTEXPR const char * sbeSemanticType(void)
     {
-        return SbeSemanticType;
+        return "";
     }
 
     std::uint64_t offset(void) const
@@ -185,12 +180,12 @@ public:
         return m_actingVersion;
     }
 
-    static const std::uint16_t tokenOffsetId(void)
+    static SBE_CONSTEXPR const std::uint16_t tokenOffsetId(void)
     {
         return 11;
     }
 
-    static const std::uint64_t tokenOffsetSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t tokenOffsetSinceVersion(void)
     {
          return 0;
     }
@@ -213,17 +208,17 @@ public:
         return "";
     }
 
-    static const std::int32_t tokenOffsetNullValue()
+    static SBE_CONSTEXPR const std::int32_t tokenOffsetNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const std::int32_t tokenOffsetMinValue()
+    static SBE_CONSTEXPR const std::int32_t tokenOffsetMinValue()
     {
         return -2147483647;
     }
 
-    static const std::int32_t tokenOffsetMaxValue()
+    static SBE_CONSTEXPR const std::int32_t tokenOffsetMaxValue()
     {
         return 2147483647;
     }
@@ -239,12 +234,12 @@ public:
         return *this;
     }
 
-    static const std::uint16_t tokenSizeId(void)
+    static SBE_CONSTEXPR const std::uint16_t tokenSizeId(void)
     {
         return 12;
     }
 
-    static const std::uint64_t tokenSizeSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t tokenSizeSinceVersion(void)
     {
          return 0;
     }
@@ -267,17 +262,17 @@ public:
         return "";
     }
 
-    static const std::int32_t tokenSizeNullValue()
+    static SBE_CONSTEXPR const std::int32_t tokenSizeNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const std::int32_t tokenSizeMinValue()
+    static SBE_CONSTEXPR const std::int32_t tokenSizeMinValue()
     {
         return -2147483647;
     }
 
-    static const std::int32_t tokenSizeMaxValue()
+    static SBE_CONSTEXPR const std::int32_t tokenSizeMaxValue()
     {
         return 2147483647;
     }
@@ -293,12 +288,12 @@ public:
         return *this;
     }
 
-    static const std::uint16_t fieldIdId(void)
+    static SBE_CONSTEXPR const std::uint16_t fieldIdId(void)
     {
         return 13;
     }
 
-    static const std::uint64_t fieldIdSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t fieldIdSinceVersion(void)
     {
          return 0;
     }
@@ -321,17 +316,17 @@ public:
         return "";
     }
 
-    static const std::int32_t fieldIdNullValue()
+    static SBE_CONSTEXPR const std::int32_t fieldIdNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const std::int32_t fieldIdMinValue()
+    static SBE_CONSTEXPR const std::int32_t fieldIdMinValue()
     {
         return -2147483647;
     }
 
-    static const std::int32_t fieldIdMaxValue()
+    static SBE_CONSTEXPR const std::int32_t fieldIdMaxValue()
     {
         return 2147483647;
     }
@@ -347,12 +342,12 @@ public:
         return *this;
     }
 
-    static const std::uint16_t tokenVersionId(void)
+    static SBE_CONSTEXPR const std::uint16_t tokenVersionId(void)
     {
         return 14;
     }
 
-    static const std::uint64_t tokenVersionSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t tokenVersionSinceVersion(void)
     {
          return 0;
     }
@@ -375,17 +370,17 @@ public:
         return "";
     }
 
-    static const std::int32_t tokenVersionNullValue()
+    static SBE_CONSTEXPR const std::int32_t tokenVersionNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const std::int32_t tokenVersionMinValue()
+    static SBE_CONSTEXPR const std::int32_t tokenVersionMinValue()
     {
         return -2147483647;
     }
 
-    static const std::int32_t tokenVersionMaxValue()
+    static SBE_CONSTEXPR const std::int32_t tokenVersionMaxValue()
     {
         return 2147483647;
     }
@@ -401,12 +396,12 @@ public:
         return *this;
     }
 
-    static const std::uint16_t componentTokenCountId(void)
+    static SBE_CONSTEXPR const std::uint16_t componentTokenCountId(void)
     {
         return 15;
     }
 
-    static const std::uint64_t componentTokenCountSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t componentTokenCountSinceVersion(void)
     {
          return 0;
     }
@@ -429,17 +424,17 @@ public:
         return "";
     }
 
-    static const std::int32_t componentTokenCountNullValue()
+    static SBE_CONSTEXPR const std::int32_t componentTokenCountNullValue()
     {
         return SBE_NULLVALUE_INT32;
     }
 
-    static const std::int32_t componentTokenCountMinValue()
+    static SBE_CONSTEXPR const std::int32_t componentTokenCountMinValue()
     {
         return -2147483647;
     }
 
-    static const std::int32_t componentTokenCountMaxValue()
+    static SBE_CONSTEXPR const std::int32_t componentTokenCountMaxValue()
     {
         return 2147483647;
     }
@@ -455,12 +450,12 @@ public:
         return *this;
     }
 
-    static const std::uint16_t signalId(void)
+    static SBE_CONSTEXPR const std::uint16_t signalId(void)
     {
         return 16;
     }
 
-    static const std::uint64_t signalSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t signalSinceVersion(void)
     {
          return 0;
     }
@@ -494,12 +489,12 @@ public:
         return *this;
     }
 
-    static const std::uint16_t primitiveTypeId(void)
+    static SBE_CONSTEXPR const std::uint16_t primitiveTypeId(void)
     {
         return 17;
     }
 
-    static const std::uint64_t primitiveTypeSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t primitiveTypeSinceVersion(void)
     {
          return 0;
     }
@@ -533,12 +528,12 @@ public:
         return *this;
     }
 
-    static const std::uint16_t byteOrderId(void)
+    static SBE_CONSTEXPR const std::uint16_t byteOrderId(void)
     {
         return 18;
     }
 
-    static const std::uint64_t byteOrderSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t byteOrderSinceVersion(void)
     {
          return 0;
     }
@@ -572,12 +567,12 @@ public:
         return *this;
     }
 
-    static const std::uint16_t presenceId(void)
+    static SBE_CONSTEXPR const std::uint16_t presenceId(void)
     {
         return 19;
     }
 
-    static const std::uint64_t presenceSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t presenceSinceVersion(void)
     {
          return 0;
     }
@@ -628,7 +623,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t nameSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t nameSinceVersion(void)
     {
          return 0;
     }
@@ -638,13 +633,13 @@ public:
         return (m_actingVersion >= nameSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t nameId(void)
+    static SBE_CONSTEXPR const std::uint16_t nameId(void)
     {
         return 20;
     }
 
 
-    static const std::uint64_t nameHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t nameHeaderLength()
     {
         return 2;
     }
@@ -731,7 +726,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t constValueSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t constValueSinceVersion(void)
     {
          return 0;
     }
@@ -741,13 +736,13 @@ public:
         return (m_actingVersion >= constValueSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t constValueId(void)
+    static SBE_CONSTEXPR const std::uint16_t constValueId(void)
     {
         return 21;
     }
 
 
-    static const std::uint64_t constValueHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t constValueHeaderLength()
     {
         return 2;
     }
@@ -834,7 +829,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t minValueSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t minValueSinceVersion(void)
     {
          return 0;
     }
@@ -844,13 +839,13 @@ public:
         return (m_actingVersion >= minValueSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t minValueId(void)
+    static SBE_CONSTEXPR const std::uint16_t minValueId(void)
     {
         return 22;
     }
 
 
-    static const std::uint64_t minValueHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t minValueHeaderLength()
     {
         return 2;
     }
@@ -937,7 +932,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t maxValueSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t maxValueSinceVersion(void)
     {
          return 0;
     }
@@ -947,13 +942,13 @@ public:
         return (m_actingVersion >= maxValueSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t maxValueId(void)
+    static SBE_CONSTEXPR const std::uint16_t maxValueId(void)
     {
         return 23;
     }
 
 
-    static const std::uint64_t maxValueHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t maxValueHeaderLength()
     {
         return 2;
     }
@@ -1040,7 +1035,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t nullValueSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t nullValueSinceVersion(void)
     {
          return 0;
     }
@@ -1050,13 +1045,13 @@ public:
         return (m_actingVersion >= nullValueSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t nullValueId(void)
+    static SBE_CONSTEXPR const std::uint16_t nullValueId(void)
     {
         return 24;
     }
 
 
-    static const std::uint64_t nullValueHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t nullValueHeaderLength()
     {
         return 2;
     }
@@ -1143,7 +1138,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t characterEncodingSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t characterEncodingSinceVersion(void)
     {
          return 0;
     }
@@ -1153,13 +1148,13 @@ public:
         return (m_actingVersion >= characterEncodingSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t characterEncodingId(void)
+    static SBE_CONSTEXPR const std::uint16_t characterEncodingId(void)
     {
         return 25;
     }
 
 
-    static const std::uint64_t characterEncodingHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t characterEncodingHeaderLength()
     {
         return 2;
     }
@@ -1246,7 +1241,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t epochSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t epochSinceVersion(void)
     {
          return 0;
     }
@@ -1256,13 +1251,13 @@ public:
         return (m_actingVersion >= epochSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t epochId(void)
+    static SBE_CONSTEXPR const std::uint16_t epochId(void)
     {
         return 26;
     }
 
 
-    static const std::uint64_t epochHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t epochHeaderLength()
     {
         return 2;
     }
@@ -1349,7 +1344,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t timeUnitSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t timeUnitSinceVersion(void)
     {
          return 0;
     }
@@ -1359,13 +1354,13 @@ public:
         return (m_actingVersion >= timeUnitSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t timeUnitId(void)
+    static SBE_CONSTEXPR const std::uint16_t timeUnitId(void)
     {
         return 27;
     }
 
 
-    static const std::uint64_t timeUnitHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t timeUnitHeaderLength()
     {
         return 2;
     }
@@ -1452,7 +1447,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t semanticTypeSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t semanticTypeSinceVersion(void)
     {
          return 0;
     }
@@ -1462,13 +1457,13 @@ public:
         return (m_actingVersion >= semanticTypeSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t semanticTypeId(void)
+    static SBE_CONSTEXPR const std::uint16_t semanticTypeId(void)
     {
         return 28;
     }
 
 
-    static const std::uint64_t semanticTypeHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t semanticTypeHeaderLength()
     {
         return 2;
     }
@@ -1555,7 +1550,7 @@ public:
         return "UTF-8";
     }
 
-    static const std::uint64_t descriptionSinceVersion(void)
+    static SBE_CONSTEXPR const std::uint64_t descriptionSinceVersion(void)
     {
          return 0;
     }
@@ -1565,13 +1560,13 @@ public:
         return (m_actingVersion >= descriptionSinceVersion()) ? true : false;
     }
 
-    static const std::uint16_t descriptionId(void)
+    static SBE_CONSTEXPR const std::uint16_t descriptionId(void)
     {
         return 29;
     }
 
 
-    static const std::uint64_t descriptionHeaderLength()
+    static SBE_CONSTEXPR const std::uint64_t descriptionHeaderLength()
     {
         return 2;
     }
@@ -1641,11 +1636,6 @@ public:
         return *this;
     }
 };
-SBE_CONST_KIND std::uint16_t TokenCodec::SbeBlockLength;
-SBE_CONST_KIND std::uint16_t TokenCodec::SbeTemplateId;
-SBE_CONST_KIND std::uint16_t TokenCodec::SbeSchemaId;
-SBE_CONST_KIND std::uint16_t TokenCodec::SbeSchemaVersion;
-SBE_CONST_KIND char TokenCodec::SbeSemanticType[];
 };
 };
 };

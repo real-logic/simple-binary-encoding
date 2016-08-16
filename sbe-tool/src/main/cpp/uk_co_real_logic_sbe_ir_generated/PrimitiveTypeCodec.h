@@ -22,9 +22,9 @@
 #endif
 
 #if __cplusplus >= 201103L
-#  define SBE_CONST_KIND constexpr
+#  define SBE_CONSTEXPR constexpr
 #else
-#  define SBE_CONST_KIND const
+#  define SBE_CONSTEXPR
 #endif
 
 #include <sbe/sbe.h>
