@@ -307,7 +307,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        }\n" +
             indent + "    }\n\n" +
             indent + "#else\n" +
-            indent + "    inline void forEach(std::function<void(%1$s&)> func)\n" +
+            indent + "    template<class Func> inline void forEach(Func&& func)\n" +
             indent + "    {\n" +
             indent + "        while(hasNext())\n" +
             indent + "        {\n" +
@@ -839,7 +839,6 @@ public class CppGenerator implements CodeGenerator
             "#endif\n\n" +
             "#if __cplusplus >= 201103L\n" +
             "#  include <cstdint>\n" +
-            "#  include <functional>\n" +
             "#  include <string>\n" +
             "#  include <cstring>\n" +
             "#endif\n\n" +
