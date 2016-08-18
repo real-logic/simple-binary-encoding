@@ -13,7 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
+
+cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
+cmake_policy(VERSION 3.0.2)
+
+file(STRINGS version.txt SBE_VERSION_TXT LIMIT_COUNT 1 REGEX "^[0-9]+(\\.[0-9])+")
+string(REGEX REPLACE "^([0-9]+(\\.[0-9])+).*$" "\\1" SBE_VERSION_NUMERIC "${SBE_VERSION_TXT}")
+
+project("sbe" VERSION "${SBE_VERSION_NUMERIC}")
 
 include(ExternalProject)
 include(CheckLibraryExists)
