@@ -14,6 +14,17 @@
 # limitations under the License.
 #
 
+add_custom_target(
+        ir_codecs
+        java
+        "-Dsbe.output.dir=${CMAKE_CURRENT_SOURCE_DIR}"
+        "-Dsbe.target.language=CPP"
+        "-jar" "${CMAKE_SOURCE_DIR}/sbe-all/build/libs/sbe-all-${SBE_VERSION_TXT}.jar"
+        "../resources/sbe-ir.xml"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        COMMENT "Generate IR codecs"
+)
+
 set(HEADERS
         sbe/sbe.h
     otf/IrDecoder.h
