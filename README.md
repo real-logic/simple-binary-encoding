@@ -37,7 +37,7 @@ limitations under the License.
 Binaries
 --------
 Binaries and dependency information for Maven, Ivy, Gradle, and others can be found at 
-[http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22uk.co.real-logic%22%20AND%20a%3A%22sbe%22).
+[http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Csbe).
 
 Example for Maven:
 
