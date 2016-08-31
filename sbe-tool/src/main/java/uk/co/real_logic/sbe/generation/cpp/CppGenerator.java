@@ -1172,7 +1172,7 @@ public class CppGenerator implements CodeGenerator
         {
             return String.format(
                 "\n" +
-                indent + "    %1$s %2$s(void) const\n" +
+                indent + "    static SBE_CONSTEXPR const %1$s %2$s(void)\n" +
                 indent + "    {\n" +
                 indent + "        return %3$s;\n" +
                 indent + "    }\n",
