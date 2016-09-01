@@ -351,7 +351,7 @@ std::pair<size_t, size_t> decodeGroups(
     }
 
     return std::pair<size_t, size_t>(bufferIndex, tokenIndex);
-};
+}
 
 /**
  * Entry point for decoder.
