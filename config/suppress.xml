@@ -4,4 +4,5 @@
         "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 <suppressions>
     <suppress files=".*generated.*" checks="."/>
+    <suppress files="CppGenerator.java" checks="MethodLength"/>
 </suppressions>
