@@ -19,7 +19,7 @@ add_custom_target(
         java
         "-Dsbe.output.dir=${CMAKE_CURRENT_SOURCE_DIR}"
         "-Dsbe.target.language=CPP"
-        "-jar" "${CMAKE_SOURCE_DIR}/sbe-all/build/libs/sbe-all-${SBE_VERSION_TXT}.jar"
+        "-jar" "${SBE_JAR}"
         "../resources/sbe-ir.xml"
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         COMMENT "Generate IR codecs"
