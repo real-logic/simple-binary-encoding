@@ -1299,6 +1299,14 @@ public class CppGenerator implements CodeGenerator
             "    static SBE_CONSTEXPR const std::uint64_t encodedLength(void)\n" +
             "    {\n" +
             "        return %2$s;\n" +
+            "    }\n\n" +
+            "    std::uint64_t offset(void) const\n" +
+            "    {\n" +
+            "        return m_offset;\n" +
+            "    }\n\n" +
+            "    char *buffer(void)\n" +
+            "    {\n" +
+            "        return m_buffer;\n" +
             "    }\n\n",
             className,
             size
