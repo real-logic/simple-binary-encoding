@@ -61,8 +61,8 @@ public class CppGenerator implements CodeGenerator
             out.append(generateFixedFlyweightCode(messageHeader, tokens.get(0).encodedLength()));
             out.append(generateCompositePropertyElements(
                 messageHeader, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
-
-            out.append(CppUtil.closingBraces(ir.namespaces().length) + "}\n#endif\n");
+            out.append("};\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length) + "#endif\n");
         }
     }
 
@@ -582,8 +582,8 @@ public class CppGenerator implements CodeGenerator
             ));
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
-
-            out.append(CppUtil.closingBraces(ir.namespaces().length) + "}\n#endif\n");
+            out.append("};\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length) + "#endif\n");
         }
     }
 
@@ -601,7 +601,8 @@ public class CppGenerator implements CodeGenerator
 
             out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
 
-            out.append(CppUtil.closingBraces(ir.namespaces().length) + "}\n#endif\n");
+            out.append("};\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length) + "#endif\n");
         }
     }
 
@@ -618,7 +619,8 @@ public class CppGenerator implements CodeGenerator
 
             out.append(generateCompositePropertyElements(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
-            out.append(CppUtil.closingBraces(ir.namespaces().length) + "}\n#endif\n");
+            out.append("};\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length) + "#endif\n");
         }
     }
 
