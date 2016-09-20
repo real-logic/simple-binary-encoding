@@ -1270,28 +1270,6 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        reset(buffer, 0, bufferLength, actingVersion);\n" +
             "    }\n\n" +
-            "    %1$s(const %1$s& codec) :\n" +
-            "        m_buffer(codec.m_buffer), m_offset(codec.m_offset), m_actingVersion(codec.m_actingVersion) {}\n\n" +
-            "#if __cplusplus >= 201103L\n" +
-            "    %1$s(%1$s&& codec) :\n" +
-            "        m_buffer(codec.m_buffer), m_offset(codec.m_offset), m_actingVersion(codec.m_actingVersion) {}\n\n" +
-            "    %1$s& operator=(%1$s&& codec)\n" +
-            "    {\n" +
-            "        m_buffer = codec.m_buffer;\n" +
-            "        m_bufferLength = codec.m_bufferLength;\n" +
-            "        m_offset = codec.m_offset;\n" +
-            "        m_actingVersion = codec.m_actingVersion;\n" +
-            "        return *this;\n" +
-            "    }\n\n" +
-            "#endif\n\n" +
-            "    %1$s& operator=(const %1$s& codec)\n" +
-            "    {\n" +
-            "        m_buffer = codec.m_buffer;\n" +
-            "        m_bufferLength = codec.m_bufferLength;\n" +
-            "        m_offset = codec.m_offset;\n" +
-            "        m_actingVersion = codec.m_actingVersion;\n" +
-            "        return *this;\n" +
-            "    }\n\n" +
             "    %1$s &wrap(char *buffer, const std::uint64_t offset, const std::uint64_t actingVersion," +
             " const std::uint64_t bufferLength)\n" +
             "    {\n" +
@@ -1327,30 +1305,6 @@ public class CppGenerator implements CodeGenerator
             " const std::uint64_t actingVersion)\n" +
             "    {\n" +
             "        reset(buffer, 0, bufferLength, actingBlockLength, actingVersion);\n" +
-            "    }\n\n" +
-            "    %1$s(const %1$s& codec)\n" +
-            "    {\n" +
-            "        reset(codec.m_buffer, codec.m_offset, codec.m_bufferLength, codec.m_actingBlockLength," +
-            " codec.m_actingVersion);\n" +
-            "    }\n\n" +
-            "#if __cplusplus >= 201103L\n" +
-            "    %1$s(%1$s&& codec)\n" +
-            "    {\n" +
-            "        reset(codec.m_buffer, codec.m_offset, codec.m_bufferLength, codec.m_actingBlockLength," +
-            " codec.m_actingVersion);\n" +
-            "    }\n\n" +
-            "    %1$s& operator=(%1$s&& codec)\n" +
-            "    {\n" +
-            "        reset(codec.m_buffer, codec.m_offset, codec.m_bufferLength, codec.m_actingBlockLength," +
-            " codec.m_actingVersion);\n" +
-            "        return *this;\n" +
-            "    }\n\n" +
-            "#endif\n\n" +
-            "    %1$s& operator=(const %1$s& codec)\n" +
-            "    {\n" +
-            "        reset(codec.m_buffer, codec.m_offset, codec.m_bufferLength, codec.m_actingBlockLength," +
-            " codec.m_actingVersion);\n" +
-            "        return *this;\n" +
             "    }\n\n",
             className
         );
