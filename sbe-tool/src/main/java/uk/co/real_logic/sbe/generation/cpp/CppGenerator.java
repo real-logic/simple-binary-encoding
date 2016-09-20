@@ -525,7 +525,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n\n" +
             indent + "    bool %1$sInActingVersion(void)\n" +
             indent + "    {\n" +
-            indent + "        return (m_actingVersion >= %1$sSinceVersion()) ? true : false;\n" +
+            indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
             indent + "    }\n\n" +
             indent + "    static SBE_CONSTEXPR const std::uint16_t %1$sId(void)\n" +
             indent + "    {\n" +
@@ -661,7 +661,7 @@ public class CppGenerator implements CodeGenerator
                         "    bool %1$s(void) const\n" +
                         "    {\n" +
                         "%2$s" +
-                        "        return (%3$s(*((%4$s *)(m_buffer + m_offset))) & (0x1L << %5$s)) ? true : false;\n" +
+                        "        return %3$s(*((%4$s *)(m_buffer + m_offset))) & (0x1L << %5$s);\n" +
                         "    }\n\n",
                         choiceName,
                         generateChoiceNotPresentCondition(token.version(), BASE_INDENT),
@@ -1490,7 +1490,7 @@ public class CppGenerator implements CodeGenerator
                     indent + "    }\n\n" +
                     indent + "    bool %1$sInActingVersion(void)\n" +
                     indent + "    {\n" +
-                    indent + "        return (m_actingVersion >= %1$sSinceVersion()) ? true : false;\n" +
+                    indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
                     indent + "    }\n\n",
                     propertyName,
                     (long)signalToken.version()
