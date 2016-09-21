@@ -389,8 +389,8 @@ project(':sbe-benchmarks') {
 
     dependencies {
         compile project(':sbe-tool')
-        compile 'org.openjdk.jmh:jmh-core:1.14'
-        compile 'org.openjdk.jmh:jmh-generator-annprocess:1.14'
+        compile 'org.openjdk.jmh:jmh-core:1.14.1'
+        compile 'org.openjdk.jmh:jmh-generator-annprocess:1.14.1'
         compile files('build/classes/generated')
     }
 
