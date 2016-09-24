@@ -209,11 +209,12 @@ public class CompositeElementsGenerationTest
 
     private static void encodeSchema(final ByteBuffer buffer) throws Exception
     {
-        try (final InputStream in = new FileInputStream("src/test/resources/composite-elements-schema.xml"))
+        try (InputStream in = new FileInputStream("src/test/resources/composite-elements-schema.xml"))
         {
             final MessageSchema schema = XmlSchemaParser.parse(in, ParserOptions.DEFAULT);
             final Ir ir = new IrGenerator().generate(schema);
-            try (final IrEncoder irEncoder = new IrEncoder(buffer, ir))
+
+            try (IrEncoder irEncoder = new IrEncoder(buffer, ir))
             {
                 irEncoder.encode();
             }
@@ -222,7 +223,7 @@ public class CompositeElementsGenerationTest
 
     private static Ir decodeIr(final ByteBuffer buffer) throws IOException
     {
-        try (final IrDecoder irDecoder = new IrDecoder(buffer))
+        try (IrDecoder irDecoder = new IrDecoder(buffer))
         {
             return irDecoder.decode();
         }
