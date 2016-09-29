@@ -60,7 +60,7 @@ public class CompositeElementsGenerationTest
     @Test
     public void shouldEncodeCorrectly()
     {
-        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
         final DirectBuffer decodeBuffer = new UnsafeBuffer(encodedMsgBuffer);
@@ -96,7 +96,7 @@ public class CompositeElementsGenerationTest
     @Test
     public void shouldDecodeCorrectly()
     {
-        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
         final DirectBuffer decodeBuffer = new UnsafeBuffer(encodedMsgBuffer);
@@ -126,7 +126,7 @@ public class CompositeElementsGenerationTest
     @Test
     public void shouldDisplayCorrectly()
     {
-        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
         final String compositeString = MSG_ENCODER.structure().toString();
@@ -139,10 +139,10 @@ public class CompositeElementsGenerationTest
     @Test
     public void shouldOtfDecodeCorrectly() throws Exception
     {
-        final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocateDirect(SCHEMA_BUFFER_CAPACITY);
+        final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocate(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);
 
-        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
 
