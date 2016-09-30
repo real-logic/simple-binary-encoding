@@ -125,7 +125,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final List<Token> tokens = ir.headerStructure().tokens();
         final Token firstToken = tokens.get(0);
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_ENCODER_TYPE))
+        try (Writer out = outputManager.createOutput(MESSAGE_HEADER_ENCODER_TYPE))
         {
             generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_ENCODER_TYPE, out, mutableBuffer, fqMutableBuffer, "");
             out.append(concatEncodingTokens(
@@ -133,7 +133,7 @@ public class JavaGenerator implements CodeGenerator
             out.append("}\n");
         }
 
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_DECODER_TYPE))
+        try (Writer out = outputManager.createOutput(MESSAGE_HEADER_DECODER_TYPE))
         {
             generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_DECODER_TYPE, out, readOnlyBuffer, fqReadOnlyBuffer, "");
             out.append(concatEncodingTokens(tokens, (token) -> generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
@@ -199,7 +199,7 @@ public class JavaGenerator implements CodeGenerator
         final String className = formatClassName(encoderName(msgToken.name()));
         final String implementsString = implementsInterface(GEN_MESSAGE_ENCODER_FLYWEIGHT);
 
-        try (final Writer out = outputManager.createOutput(className))
+        try (Writer out = outputManager.createOutput(className))
         {
             out.append(generateMainHeader(className, ir.applicableNamespace()));
 
@@ -230,7 +230,7 @@ public class JavaGenerator implements CodeGenerator
         final String className = formatClassName(decoderName(msgToken.name()));
         final String implementsString = implementsInterface(GEN_MESSAGE_DECODER_FLYWEIGHT);
 
-        try (final Writer out = outputManager.createOutput(className))
+        try (Writer out = outputManager.createOutput(className))
         {
             out.append(generateMainHeader(className, ir.applicableNamespace()));
 
@@ -375,8 +375,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n\n",
-            blockLength
-        ));
+            blockLength));
 
         sb.append(String.format(
             indent + "    public int actingBlockLength()\n" +
@@ -922,7 +921,7 @@ public class JavaGenerator implements CodeGenerator
         final String encoderName = encoderName(bitSetName);
         final List<Token> messageBody = getMessageBody(tokens);
 
-        try (final Writer out = outputManager.createOutput(decoderName))
+        try (Writer out = outputManager.createOutput(decoderName))
         {
             generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, "");
             out.append(generateChoiceDecoders(messageBody));
@@ -930,7 +929,7 @@ public class JavaGenerator implements CodeGenerator
             out.append("}\n");
         }
 
-        try (final Writer out = outputManager.createOutput(encoderName))
+        try (Writer out = outputManager.createOutput(encoderName))
         {
             generateFixedFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer, "");
             out.append(generateChoiceClear(encoderName, token));
@@ -956,7 +955,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final String enumName = formatClassName(tokens.get(0).name());
 
-        try (final Writer out = outputManager.createOutput(enumName))
+        try (Writer out = outputManager.createOutput(enumName))
         {
             out.append(generateEnumFileHeader(enumName, ir.applicableNamespace()));
             out.append(generateEnumDeclaration(enumName));
@@ -977,7 +976,7 @@ public class JavaGenerator implements CodeGenerator
         final String decoderName = decoderName(compositeName);
         final String encoderName = encoderName(compositeName);
 
-        try (final Writer out = outputManager.createOutput(decoderName))
+        try (Writer out = outputManager.createOutput(decoderName))
         {
             final String implementsString = implementsInterface(GEN_COMPOSITE_DECODER_FLYWEIGHT);
             generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, implementsString);
@@ -1014,7 +1013,7 @@ public class JavaGenerator implements CodeGenerator
             out.append("}\n");
         }
 
-        try (final Writer out = outputManager.createOutput(encoderName))
+        try (Writer out = outputManager.createOutput(encoderName))
         {
             final String implementsString = implementsInterface(GEN_COMPOSITE_ENCODER_FLYWEIGHT);
             generateFixedFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer, implementsString);
@@ -1327,7 +1326,7 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateMetaAttributeEnum() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(META_ATTRIBUTE_ENUM))
+        try (Writer out = outputManager.createOutput(META_ATTRIBUTE_ENUM))
         {
             out.append(String.format(
                 "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
@@ -1349,8 +1348,7 @@ public class JavaGenerator implements CodeGenerator
         return "public enum " + name + "\n{\n";
     }
 
-    private CharSequence generatePrimitiveDecoder(
-        final String propertyName, final Token token, final String indent)
+    private CharSequence generatePrimitiveDecoder(final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 

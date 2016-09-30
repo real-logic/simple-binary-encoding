@@ -93,11 +93,11 @@ public class OtfExample
 
     private static void encodeSchema(final ByteBuffer byteBuffer) throws Exception
     {
-        try (final InputStream in = new FileInputStream("src/main/resources/example-schema.xml"))
+        try (InputStream in = new FileInputStream("src/main/resources/example-schema.xml"))
         {
             final MessageSchema schema = XmlSchemaParser.parse(in, ParserOptions.DEFAULT);
             final Ir ir = new IrGenerator().generate(schema);
-            try (final IrEncoder irEncoder = new IrEncoder(byteBuffer, ir))
+            try (IrEncoder irEncoder = new IrEncoder(byteBuffer, ir))
             {
                 irEncoder.encode();
             }
@@ -125,7 +125,7 @@ public class OtfExample
 
     private static Ir decodeIr(final ByteBuffer buffer) throws IOException
     {
-        try (final IrDecoder irDecoder = new IrDecoder(buffer))
+        try (IrDecoder irDecoder = new IrDecoder(buffer))
         {
             return irDecoder.decode();
         }

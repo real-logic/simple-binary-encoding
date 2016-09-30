@@ -15,7 +15,7 @@ public class ToStringTest extends EncodedCarTestBase
     @Test
     public void exampleMessagePrinted() throws Exception
     {
-        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
         final String result = CAR.toString();
@@ -41,7 +41,7 @@ public class ToStringTest extends EncodedCarTestBase
     @Test
     public void emptyMessagePrinted() throws Exception
     {
-        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         CAR.wrap(new UnsafeBuffer(encodedMsgBuffer), 0);
 
         final String result = CAR.toString();

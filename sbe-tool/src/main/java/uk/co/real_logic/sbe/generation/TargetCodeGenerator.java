@@ -61,7 +61,7 @@ public enum TargetCodeGenerator
      * @return a new instance of a {@link CodeGenerator} for the given target language.
      * @throws IOException if an error occurs when dealing with the output directory.
      */
-    public abstract CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException;
+    public abstract CodeGenerator newInstance(Ir ir, String outputDir) throws IOException;
 
     /**
      * Do a case insensitive lookup of a target language for code generation.
