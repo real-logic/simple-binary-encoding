@@ -574,6 +574,15 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
+            indent + "    public static int %sSinceVersion()\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n",
+            formatPropertyName(groupName),
+            token.version()));
+
+        sb.append(String.format(
+            "\n" +
             indent + "    public %1$s %2$s()\n" +
             indent + "    {\n" +
             indent + "        %2$s.wrap(parentMessage, buffer);\n" +
@@ -633,6 +642,8 @@ public class JavaGenerator implements CodeGenerator
             }
 
             generateFieldIdMethod(sb, token, indent);
+            generateFieldSinceVersionMethod(sb, token, indent);
+
             final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
             generateCharacterEncodingMethod(sb, token.name(), characterEncoding, indent);
             generateFieldMetaAttributeMethod(sb, token, indent);
@@ -1946,6 +1957,7 @@ public class JavaGenerator implements CodeGenerator
                 final String typeName = decoderName(formatClassName(typeToken.name()));
 
                 generateFieldIdMethod(sb, fieldToken, indent);
+                generateFieldSinceVersionMethod(sb, fieldToken, indent);
                 generateFieldMetaAttributeMethod(sb, fieldToken, indent);
 
                 switch (typeToken.signal())
@@ -1999,6 +2011,18 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             formatPropertyName(token.name()),
             token.id()));
+    }
+
+    private static void generateFieldSinceVersionMethod(final StringBuilder sb, final Token token, final String indent)
+    {
+        sb.append(String.format(
+            "\n" +
+                indent + "    public static int %sSinceVersion()\n" +
+                indent + "    {\n" +
+                indent + "        return %d;\n" +
+                indent + "    }\n",
+            formatPropertyName(token.name()),
+            token.version()));
     }
 
     private static void generateFieldMetaAttributeMethod(final StringBuilder sb, final Token token, final String indent)
