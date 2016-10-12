@@ -581,15 +581,26 @@ public class JavaGenerator implements CodeGenerator
             formatPropertyName(groupName),
             token.version()));
 
+        final String actingVersionGuard = token.version() == 0 ?
+            "" :
+            indent + "        if (actingVersion < " + token.version() + ")\n" +
+            indent + "        {\n" +
+            indent + "            " + propertyName + ".count = 0;\n" +
+            indent + "            " + propertyName + ".index = -1;\n" +
+            indent + "            return " + propertyName + ";\n" +
+            indent + "        }\n\n";
+
         sb.append(String.format(
             "\n" +
             indent + "    public %1$s %2$s()\n" +
             indent + "    {\n" +
+                "%3$s" +
             indent + "        %2$s.wrap(parentMessage, buffer);\n" +
             indent + "        return %2$s;\n" +
             indent + "    }\n",
             className,
-            propertyName));
+            propertyName,
+            actingVersionGuard));
 
         return sb;
     }
