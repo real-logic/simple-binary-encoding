@@ -375,9 +375,11 @@ public class IrGenerator
             .signal(Signal.ENCODING)
             .name(type.name())
             .size(type.encodedLength())
+            .description(type.description())
+            .version(type.sinceVersion())
             .offset(offset);
 
-        if (field != null)
+        if (field != null && !(field.type() instanceof CompositeType))
         {
             tokenBuilder.version(field.sinceVersion());
             tokenBuilder.description(field.description());
