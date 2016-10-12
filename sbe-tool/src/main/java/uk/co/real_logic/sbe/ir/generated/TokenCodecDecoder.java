@@ -82,6 +82,11 @@ public class TokenCodecDecoder
         return 11;
     }
 
+    public static int tokenOffsetSinceVersion()
+    {
+        return 0;
+    }
+
     public static String tokenOffsetMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -118,6 +123,11 @@ public class TokenCodecDecoder
     public static int tokenSizeId()
     {
         return 12;
+    }
+
+    public static int tokenSizeSinceVersion()
+    {
+        return 0;
     }
 
     public static String tokenSizeMetaAttribute(final MetaAttribute metaAttribute)
@@ -158,6 +168,11 @@ public class TokenCodecDecoder
         return 13;
     }
 
+    public static int fieldIdSinceVersion()
+    {
+        return 0;
+    }
+
     public static String fieldIdMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -194,6 +209,11 @@ public class TokenCodecDecoder
     public static int tokenVersionId()
     {
         return 14;
+    }
+
+    public static int tokenVersionSinceVersion()
+    {
+        return 0;
     }
 
     public static String tokenVersionMetaAttribute(final MetaAttribute metaAttribute)
@@ -234,6 +254,11 @@ public class TokenCodecDecoder
         return 15;
     }
 
+    public static int componentTokenCountSinceVersion()
+    {
+        return 0;
+    }
+
     public static String componentTokenCountMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -272,6 +297,11 @@ public class TokenCodecDecoder
         return 16;
     }
 
+    public static int signalSinceVersion()
+    {
+        return 0;
+    }
+
     public static String signalMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -293,6 +323,11 @@ public class TokenCodecDecoder
     public static int primitiveTypeId()
     {
         return 17;
+    }
+
+    public static int primitiveTypeSinceVersion()
+    {
+        return 0;
     }
 
     public static String primitiveTypeMetaAttribute(final MetaAttribute metaAttribute)
@@ -318,6 +353,11 @@ public class TokenCodecDecoder
         return 18;
     }
 
+    public static int byteOrderSinceVersion()
+    {
+        return 0;
+    }
+
     public static String byteOrderMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -341,6 +381,11 @@ public class TokenCodecDecoder
         return 19;
     }
 
+    public static int presenceSinceVersion()
+    {
+        return 0;
+    }
+
     public static String presenceMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -362,6 +407,11 @@ public class TokenCodecDecoder
     public static int nameId()
     {
         return 20;
+    }
+
+    public static int nameSinceVersion()
+    {
+        return 0;
     }
 
     public static String nameCharacterEncoding()
@@ -443,6 +493,11 @@ public class TokenCodecDecoder
         return 21;
     }
 
+    public static int constValueSinceVersion()
+    {
+        return 0;
+    }
+
     public static String constValueCharacterEncoding()
     {
         return "UTF-8";
@@ -520,6 +575,11 @@ public class TokenCodecDecoder
     public static int minValueId()
     {
         return 22;
+    }
+
+    public static int minValueSinceVersion()
+    {
+        return 0;
     }
 
     public static String minValueCharacterEncoding()
@@ -601,6 +661,11 @@ public class TokenCodecDecoder
         return 23;
     }
 
+    public static int maxValueSinceVersion()
+    {
+        return 0;
+    }
+
     public static String maxValueCharacterEncoding()
     {
         return "UTF-8";
@@ -678,6 +743,11 @@ public class TokenCodecDecoder
     public static int nullValueId()
     {
         return 24;
+    }
+
+    public static int nullValueSinceVersion()
+    {
+        return 0;
     }
 
     public static String nullValueCharacterEncoding()
@@ -759,6 +829,11 @@ public class TokenCodecDecoder
         return 25;
     }
 
+    public static int characterEncodingSinceVersion()
+    {
+        return 0;
+    }
+
     public static String characterEncodingCharacterEncoding()
     {
         return "UTF-8";
@@ -836,6 +911,11 @@ public class TokenCodecDecoder
     public static int epochId()
     {
         return 26;
+    }
+
+    public static int epochSinceVersion()
+    {
+        return 0;
     }
 
     public static String epochCharacterEncoding()
@@ -917,6 +997,11 @@ public class TokenCodecDecoder
         return 27;
     }
 
+    public static int timeUnitSinceVersion()
+    {
+        return 0;
+    }
+
     public static String timeUnitCharacterEncoding()
     {
         return "UTF-8";
@@ -996,6 +1081,11 @@ public class TokenCodecDecoder
         return 28;
     }
 
+    public static int semanticTypeSinceVersion()
+    {
+        return 0;
+    }
+
     public static String semanticTypeCharacterEncoding()
     {
         return "UTF-8";
@@ -1073,6 +1163,11 @@ public class TokenCodecDecoder
     public static int descriptionId()
     {
         return 29;
+    }
+
+    public static int descriptionSinceVersion()
+    {
+        return 0;
     }
 
     public static String descriptionCharacterEncoding()

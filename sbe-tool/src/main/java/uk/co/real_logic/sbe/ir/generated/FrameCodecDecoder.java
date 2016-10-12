@@ -82,6 +82,11 @@ public class FrameCodecDecoder
         return 1;
     }
 
+    public static int irIdSinceVersion()
+    {
+        return 0;
+    }
+
     public static String irIdMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -118,6 +123,11 @@ public class FrameCodecDecoder
     public static int irVersionId()
     {
         return 2;
+    }
+
+    public static int irVersionSinceVersion()
+    {
+        return 0;
     }
 
     public static String irVersionMetaAttribute(final MetaAttribute metaAttribute)
@@ -158,6 +168,11 @@ public class FrameCodecDecoder
         return 3;
     }
 
+    public static int schemaVersionSinceVersion()
+    {
+        return 0;
+    }
+
     public static String schemaVersionMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -194,6 +209,11 @@ public class FrameCodecDecoder
     public static int packageNameId()
     {
         return 4;
+    }
+
+    public static int packageNameSinceVersion()
+    {
+        return 0;
     }
 
     public static String packageNameCharacterEncoding()
@@ -275,6 +295,11 @@ public class FrameCodecDecoder
         return 5;
     }
 
+    public static int namespaceNameSinceVersion()
+    {
+        return 0;
+    }
+
     public static String namespaceNameCharacterEncoding()
     {
         return "UTF-8";
@@ -352,6 +377,11 @@ public class FrameCodecDecoder
     public static int semanticVersionId()
     {
         return 6;
+    }
+
+    public static int semanticVersionSinceVersion()
+    {
+        return 0;
     }
 
     public static String semanticVersionCharacterEncoding()
