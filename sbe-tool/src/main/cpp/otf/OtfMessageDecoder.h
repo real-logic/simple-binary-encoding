@@ -250,6 +250,7 @@ std::size_t decodeData(
     std::shared_ptr<std::vector<Token>> tokens,
     std::size_t tokenIndex,
     const std::size_t numTokens,
+    std::uint64_t actingVersion,
     TokenListener& listener)
 {
     while (tokenIndex < numTokens)
@@ -260,6 +261,8 @@ std::size_t decodeData(
             break;
         }
 
+        const bool isPresent = token.tokenVersion() <= static_cast<std::int32_t>(actingVersion);
+
         Token& lengthToken = tokens->at(tokenIndex + 2);
         Token& dataToken = tokens->at(tokenIndex + 3);
 
@@ -269,9 +272,14 @@ std::size_t decodeData(
         }
 
         // TODO: is length always unsigned according to spec?
-        std::uint64_t dataLength = lengthToken.encoding().getAsUInt(buffer + bufferIndex + lengthToken.offset());
+        std::uint64_t dataLength = isPresent ?
+            lengthToken.encoding().getAsUInt(buffer + bufferIndex + lengthToken.offset())
+            : 0;
 
-        bufferIndex += dataToken.offset();
+        if (isPresent)
+        {
+            bufferIndex += dataToken.offset();
+        }
 
         if ((bufferIndex + dataLength) > length)
         {
@@ -306,6 +314,8 @@ std::pair<size_t, size_t> decodeGroups(
             break;
         }
 
+        const bool isPresent = token.tokenVersion() <= static_cast<std::int32_t>(actingVersion);
+
         Token& dimensionsTypeComposite = tokens->at(tokenIndex + 1);
         std::size_t dimensionsLength = static_cast<std::size_t>(dimensionsTypeComposite.encodedLength());
 
@@ -317,10 +327,17 @@ std::pair<size_t, size_t> decodeGroups(
         Token& blockLengthToken = tokens->at(tokenIndex + 2);
         Token& numInGroupToken = tokens->at(tokenIndex + 3);
 
-        std::uint64_t blockLength = blockLengthToken.encoding().getAsUInt(buffer + bufferIndex + blockLengthToken.offset());
-        std::uint64_t numInGroup = numInGroupToken.encoding().getAsUInt(buffer + bufferIndex + numInGroupToken.offset());
+        std::uint64_t blockLength = isPresent ?
+            blockLengthToken.encoding().getAsUInt(buffer + bufferIndex + blockLengthToken.offset())
+            : 0;
+        std::uint64_t numInGroup = isPresent ?
+            numInGroupToken.encoding().getAsUInt(buffer + bufferIndex + numInGroupToken.offset())
+            : 0;
 
-        bufferIndex += dimensionsLength;
+        if (isPresent)
+        {
+            bufferIndex += dimensionsLength;
+        }
 
         size_t beginFieldsIndex = tokenIndex + dimensionsTypeComposite.componentTokenCount() + 1;
 
@@ -342,7 +359,8 @@ std::pair<size_t, size_t> decodeGroups(
             std::pair<size_t, size_t> groupsResult =
                 decodeGroups(buffer, bufferIndex, length, actingVersion, tokens, afterFieldsIndex, numTokens, listener);
 
-            bufferIndex = decodeData(buffer, groupsResult.first, length, tokens, groupsResult.second, numTokens, listener);
+            bufferIndex =
+                decodeData(buffer, groupsResult.first, length, tokens, groupsResult.second, numTokens, actingVersion, listener);
 
             listener.onEndGroup(token, i, numInGroup);
         }
@@ -381,7 +399,7 @@ std::size_t decode(
         decodeGroups(buffer, bufferIndex, length, actingVersion, msgTokens, tokenIndex, numTokens, listener);
 
     bufferIndex =
-        decodeData(buffer, groupResult.first, length, msgTokens, groupResult.second, numTokens, listener);
+        decodeData(buffer, groupResult.first, length, msgTokens, groupResult.second, numTokens, actingVersion, listener);
 
     listener.onEndMessage(msgTokens->at(numTokens - 1));
 
