@@ -362,11 +362,23 @@ public class CppGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        m_%2$s.wrapForEncode(m_buffer, count, m_positionPtr, m_actingVersion, m_bufferLength);\n" +
             indent + "        return m_%2$s;\n" +
-            indent + "    }\n",
+            indent + "    }\n\n",
             className,
             propertyName,
             cppTypeForNumInGroup
         ));
+
+        sb.append(String.format(
+            indent + "    static SBE_CONSTEXPR const std::uint64_t %1$sSinceVersion(void)\n" +
+            indent + "    {\n" +
+            indent + "         return %2$d;\n" +
+            indent + "    }\n\n" +
+            indent + "    bool %1$sInActingVersion(void)\n" +
+            indent + "    {\n" +
+            indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
+            indent + "    }\n",
+            propertyName,
+            (long)token.version()));
 
         return sb;
     }
