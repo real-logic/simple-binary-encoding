@@ -375,7 +375,10 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n\n" +
             indent + "    bool %1$sInActingVersion(void)\n" +
             indent + "    {\n" +
+            indent + "#pragma GCC diagnostic push\n" +
+            indent + "#pragma GCC diagnostic ignored \"-Wtautological-compare\"\n" +
             indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
+            indent + "#pragma GCC diagnostic pop\n" +
             indent + "    }\n",
             propertyName,
             (long)token.version()));
@@ -537,7 +540,10 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n\n" +
             indent + "    bool %1$sInActingVersion(void)\n" +
             indent + "    {\n" +
+            indent + "#pragma GCC diagnostic push\n" +
+            indent + "#pragma GCC diagnostic ignored \"-Wtautological-compare\"\n" +
             indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
+            indent + "#pragma GCC diagnostic pop\n" +
             indent + "    }\n\n" +
             indent + "    static SBE_CONSTEXPR const std::uint16_t %1$sId(void)\n" +
             indent + "    {\n" +
@@ -1473,7 +1479,10 @@ public class CppGenerator implements CodeGenerator
                     indent + "    }\n\n" +
                     indent + "    bool %1$sInActingVersion(void)\n" +
                     indent + "    {\n" +
+                    indent + "#pragma GCC diagnostic push\n" +
+                    indent + "#pragma GCC diagnostic ignored \"-Wtautological-compare\"\n" +
                     indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
+                    indent + "#pragma GCC diagnostic pop\n" +
                     indent + "    }\n\n",
                     propertyName,
                     (long)signalToken.version()));
