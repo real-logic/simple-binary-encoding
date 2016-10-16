@@ -1621,6 +1621,23 @@ public class JavaGenerator implements CodeGenerator
                 fieldLength,
                 generateArrayFieldNotPresentCondition(token.version(), indent),
                 offset));
+
+            sb.append(String.format(
+                "\n" +
+                indent + "    public String %s()\n" +
+                indent + "    {\n" +
+                "%s" +
+                indent + "        final byte[] dst = new byte[%d];\n" +
+                indent + "        buffer.getBytes(this.offset + %d, dst, 0, %d);\n\n" +
+                indent + "        int end = 0;\n" +
+                indent + "        for (; end < %d && dst[end] != 0; ++end);\n\n" +
+                indent + "        return new String(dst, 0, end, %s);\n" +
+                indent + "    }\n\n",
+                formatPropertyName(propertyName),
+                generateStringNotPresentCondition(token.version(), indent),
+                fieldLength, offset,
+                fieldLength, fieldLength,
+                charset(encoding.characterEncoding())));
         }
 
         return sb;
@@ -1694,6 +1711,30 @@ public class JavaGenerator implements CodeGenerator
                 formatClassName(containingClassName),
                 toUpperFirstChar(propertyName),
                 fieldLength,
+                offset));
+
+            sb.append(String.format(
+                indent + "    public %s put%s(final String src)\n" +
+                indent + "    {\n" +
+                indent + "        final int length = %d;\n" +
+                indent + "        final byte[] bytes = src.getBytes(%s);\n" +
+                indent + "        if (bytes.length > length)\n" +
+                indent + "        {\n" +
+                indent + "            throw new IndexOutOfBoundsException(" +
+                                          "\"string too large for copy: byte length=\" + bytes.length);\n" +
+                indent + "        }\n\n" +
+                indent + "        buffer.putBytes(this.offset + %d, bytes, 0, bytes.length);\n\n" +
+                indent + "        for (int start = bytes.length; start < length; ++start)\n" +
+                indent + "        {\n" +
+                indent + "            buffer.putByte(this.offset + %d + start, (byte) 0);\n" +
+                indent + "        }\n\n" +
+                indent + "        return this;\n" +
+                indent + "    }\n",
+                formatClassName(containingClassName),
+                toUpperFirstChar(propertyName),
+                fieldLength,
+                charset(encoding.characterEncoding()),
+                offset,
                 offset));
         }
 

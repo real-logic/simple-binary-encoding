@@ -15,6 +15,8 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import static uk.co.real_logic.sbe.generation.java.JavaUtil.toUpperFirstChar;
+
 public final class ReflectionUtil
 {
     static int getSbeSchemaVersion(final Object encoder) throws Exception
@@ -121,5 +123,10 @@ public final class ReflectionUtil
     static int getCount(Object groupFlyweight) throws Exception
     {
         return getInt(groupFlyweight, "count");
+    }
+
+    static void putString(Object object, String name, String value) throws Exception
+    {
+        object.getClass().getMethod("put" + toUpperFirstChar(name), String.class).invoke(object, value);
     }
 }
