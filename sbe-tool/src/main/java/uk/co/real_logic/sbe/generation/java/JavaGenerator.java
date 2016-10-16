@@ -1714,7 +1714,7 @@ public class JavaGenerator implements CodeGenerator
                 offset));
 
             sb.append(String.format(
-                indent + "    public %s put%s(final String src)\n" +
+                indent + "    public %s %s(final String src)\n" +
                 indent + "    {\n" +
                 indent + "        final int length = %d;\n" +
                 indent + "        final byte[] bytes = src.getBytes(%s);\n" +
@@ -1731,7 +1731,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        return this;\n" +
                 indent + "    }\n",
                 formatClassName(containingClassName),
-                toUpperFirstChar(propertyName),
+                propertyName,
                 fieldLength,
                 charset(encoding.characterEncoding()),
                 offset,
