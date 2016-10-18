@@ -19,7 +19,12 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.util.ValidationUtil;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -81,6 +86,30 @@ public class JavaUtil
         TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.UINT64, "long");
         TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.FLOAT, "float");
         TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.DOUBLE, "double");
+    }
+
+    /** Indexes known charset aliases to the name of the instance in {@link StandardCharsets}. */
+    private static final Map<String, String> STD_CHARSETS = new HashMap<>();
+
+    static
+    {
+        try
+        {
+            for (Field f : StandardCharsets.class.getDeclaredFields())
+            {
+                if (Charset.class.isAssignableFrom(f.getType())
+                        && ((f.getModifiers() & Modifier.STATIC) == Modifier.STATIC))
+                {
+                    final Charset c = (Charset) f.get(null);
+                    STD_CHARSETS.put(c.name(), f.getName());
+                    c.aliases().forEach(alias -> STD_CHARSETS.put(alias, f.getName()));
+                }
+            }
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -167,5 +196,23 @@ public class JavaUtil
     public static void append(final StringBuilder builder, final String indent, final String line)
     {
         builder.append(indent).append(line).append('\n');
+    }
+
+    /**
+     * Return java code to fetch an instance of {@link java.nio.charset.Charset} corresponding to the given encoding.
+     * @param encoding the encoding (eg. UTF-8).
+     * @return the code to fetch the assiciated charset.
+     */
+    public static String charset(String encoding)
+    {
+        final String charset = STD_CHARSETS.get(encoding);
+        if (charset != null)
+        {
+            return "java.nio.charset.StandardCharsets." + charset;
+        }
+        else
+        {
+            return "java.nio.charset.Charset.forName(\"" + encoding + "\")";
+        }
     }
 }
