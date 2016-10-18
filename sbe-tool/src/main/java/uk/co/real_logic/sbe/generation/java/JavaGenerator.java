@@ -1616,7 +1616,7 @@ public class JavaGenerator implements CodeGenerator
                 "%s" +
                 indent + "        buffer.getBytes(this.offset + %d, dst, dstOffset, length);\n\n" +
                 indent + "        return length;\n" +
-                indent + "    }\n\n",
+                indent + "    }\n",
                 toUpperFirstChar(propertyName),
                 fieldLength,
                 generateArrayFieldNotPresentCondition(token.version(), indent),
@@ -1697,6 +1697,7 @@ public class JavaGenerator implements CodeGenerator
             generateCharacterEncodingMethod(sb, propertyName, encoding.characterEncoding(), indent);
 
             sb.append(String.format(
+                "\n" +
                 indent + "    public %s put%s(final byte[] src, final int srcOffset)\n" +
                 indent + "    {\n" +
                 indent + "        final int length = %d;\n" +
@@ -1714,6 +1715,7 @@ public class JavaGenerator implements CodeGenerator
                 offset));
 
             sb.append(String.format(
+                "\n" +
                 indent + "    public %s %s(final String src)\n" +
                 indent + "    {\n" +
                 indent + "        final int length = %d;\n" +
@@ -1721,12 +1723,12 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        if (bytes.length > length)\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
-                                          "\"string too large for copy: byte length=\" + bytes.length);\n" +
+                                          "\"String too large for copy: byte length=\" + bytes.length);\n" +
                 indent + "        }\n\n" +
                 indent + "        buffer.putBytes(this.offset + %d, bytes, 0, bytes.length);\n\n" +
                 indent + "        for (int start = bytes.length; start < length; ++start)\n" +
                 indent + "        {\n" +
-                indent + "            buffer.putByte(this.offset + %d + start, (byte) 0);\n" +
+                indent + "            buffer.putByte(this.offset + %d + start, (byte)0);\n" +
                 indent + "        }\n\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
