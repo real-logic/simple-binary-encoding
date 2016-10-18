@@ -20,12 +20,13 @@ import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.util.ValidationUtil;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.lang.reflect.Modifier.STATIC;
 
 /**
  * Utilities for mapping between IR and the Java language.
@@ -88,27 +89,28 @@ public class JavaUtil
         TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.DOUBLE, "double");
     }
 
-    /** Indexes known charset aliases to the name of the instance in {@link StandardCharsets}. */
+    /**
+     * Indexes known charset aliases to the name of the instance in {@link StandardCharsets}.
+     */
     private static final Map<String, String> STD_CHARSETS = new HashMap<>();
 
     static
     {
         try
         {
-            for (Field f : StandardCharsets.class.getDeclaredFields())
+            for (final Field field : StandardCharsets.class.getDeclaredFields())
             {
-                if (Charset.class.isAssignableFrom(f.getType())
-                        && ((f.getModifiers() & Modifier.STATIC) == Modifier.STATIC))
+                if (Charset.class.isAssignableFrom(field.getType()) && ((field.getModifiers() & STATIC) == STATIC))
                 {
-                    final Charset c = (Charset) f.get(null);
-                    STD_CHARSETS.put(c.name(), f.getName());
-                    c.aliases().forEach(alias -> STD_CHARSETS.put(alias, f.getName()));
+                    final Charset charset = (Charset)field.get(null);
+                    STD_CHARSETS.put(charset.name(), field.getName());
+                    charset.aliases().forEach((alias) -> STD_CHARSETS.put(alias, field.getName()));
                 }
             }
         }
-        catch (IllegalAccessException e)
+        catch (final IllegalAccessException ex)
         {
-            throw new RuntimeException(e);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -199,16 +201,17 @@ public class JavaUtil
     }
 
     /**
-     * Return java code to fetch an instance of {@link java.nio.charset.Charset} corresponding to the given encoding.
-     * @param encoding the encoding (eg. UTF-8).
-     * @return the code to fetch the assiciated charset.
+     * Code to fetch an instance of {@link java.nio.charset.Charset} corresponding to the given encoding.
+     *
+     * @param encoding as a string name (eg. UTF-8).
+     * @return the code to fetch the associated Charset.
      */
-    public static String charset(String encoding)
+    public static String charset(final String encoding)
     {
-        final String charset = STD_CHARSETS.get(encoding);
-        if (charset != null)
+        final String charsetName = STD_CHARSETS.get(encoding);
+        if (charsetName != null)
         {
-            return "java.nio.charset.StandardCharsets." + charset;
+            return "java.nio.charset.StandardCharsets." + charsetName;
         }
         else
         {
