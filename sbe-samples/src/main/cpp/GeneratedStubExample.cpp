@@ -32,7 +32,7 @@ using namespace baseline;
 
 char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
 char MANUFACTURER_CODE[] = {'1', '2', '3'};
-const char *MAKE = "Honda";
+const char *BRAND = "Honda";
 const char *MODEL = "Civic VTi";
 const int messageHeaderVersion = 0;
 
@@ -117,7 +117,7 @@ std::size_t encodeCar(Car &car, char *buffer, std::uint64_t offset, std::uint64_
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-    car.putMake(MAKE, 5)
+    car.putBrand(BRAND, 5)
         .putModel(MODEL, 9)
         .putActivationCode("deadbeef", 8);
 
@@ -198,8 +198,8 @@ std::size_t decodeCar(
     std::cout << "\ncar.performanceFigures.accelerationId=" << Car::PerformanceFigures::accelerationId();
     std::cout << "\ncar.performanceFigures.acceleration.mphId=" << Car::PerformanceFigures::Acceleration::mphId();
     std::cout << "\ncar.performanceFigures.acceleration.secondsId=" << Car::PerformanceFigures::Acceleration::secondsId();
-    std::cout << "\ncar.makeId=" << Car::makeId();
-    std::cout << "\ncar.makeCharacterEncoding=" << Car::makeCharacterEncoding();
+    std::cout << "\ncar.brandId=" << Car::brandId();
+    std::cout << "\ncar.brandCharacterEncoding=" << Car::brandCharacterEncoding();
     std::cout << "\ncar.modelId=" << Car::modelId();
     std::cout << "\ncar.modelCharacterEncoding=" << Car::modelCharacterEncoding();
     std::cout << "\ncar.activationCodeId=" << Car::activationCodeId();
@@ -282,9 +282,9 @@ std::size_t decodeCar(
         }
     }
 
-    bytesCopied = car.getMake(tmp, sizeof(tmp));
-    std::cout << "\ncar.makeLength=" << bytesCopied;
-    std::cout << "\ncar.make=" << std::string(tmp, bytesCopied);
+    bytesCopied = car.getBrand(tmp, sizeof(tmp));
+    std::cout << "\ncar.brandLength=" << bytesCopied;
+    std::cout << "\ncar.brand=" << std::string(tmp, bytesCopied);
 
     bytesCopied = car.getModel(tmp, sizeof(tmp));
     std::cout << "\ncar.modelLength=" << bytesCopied;

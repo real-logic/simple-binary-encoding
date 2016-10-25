@@ -310,6 +310,11 @@ public class XmlSchemaParser
         {
             handleError(node, "name is not valid for Java: " + name);
         }
+
+        if (!ValidationUtil.isSbeGolangName(name))
+        {
+            handleError(node, "name is not valid for Golang: " + name);
+        }
     }
 
     private static void addTypeWithNameCheck(final Map<String, Type> typeByNameMap, final Type type, final Node node)

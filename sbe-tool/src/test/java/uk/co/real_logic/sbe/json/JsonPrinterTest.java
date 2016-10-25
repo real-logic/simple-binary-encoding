@@ -108,7 +108,7 @@ public class JsonPrinterTest extends EncodedCarTestBase
             "            \"seconds\": 11.8\n" +
             "        }]\n" +
             "    }],\n" +
-            "    \"make\": \"Honda\",\n" +
+            "    \"brand\": \"Honda\",\n" +
             "    \"model\": \"Civic VTi\",\n" +
             "    \"activationCode\": \"\"\n" +
             "}",

@@ -198,4 +198,97 @@ public class ValidationUtil
 
         return true;
     }
+
+    private static final Set<String> GOLANG_KEYWORDS = new HashSet<>(
+        Arrays.asList(new String[]
+        {
+            /* https://golang.org/ref/spec#Keywords */
+            "break",    "default",     "func",   "interface", "select",
+            "case",     "defer",       "go",     "map",       "struct",
+            "chan",     "else",        "goto",   "package",   "switch",
+            "const",    "fallthrough", "if",     "range",     "type",
+            "continue", "for",         "import", "return",    "var",
+
+            /* https://golang.org/ref/spec#Predeclared_identifiers */
+            /* types */
+            "bool", "byte",  "complex64", "complex128", "error",  "float32", "float64",
+            "int",  "int8",  "int16",     "int32",      "int64",  "rune",    "string",
+            "uint", "uint8", "uint16",    "uint32",     "uint64", "uintptr",
+            /* constants */
+            "true", "false", "iota",
+            /* zero value */
+            "nil",
+            /* functions */
+            "append", "cap", "close", "complex", "copy",    "delete", "imag", "len",
+            "make",   "new", "panic", "print",   "println", "real",   "recover"
+        }));
+
+    /**
+     * "Check" value for validity of usage as a golang identifier. From:
+     * https://golang.org/ref/spec#Identifiers
+     *
+     * identifier = letter { letter | unicode_digit }
+     * letter        = unicode_letter | "_" .
+     *
+     * unicode_letter and unicode_digit are defined in section 4.5 of the the unicode
+     * standard at http://www.unicode.org/versions/Unicode8.0.0/ and
+     * the Java Character and Digit functions are unicode friendly
+     *
+     * @param value to check
+     * @return true for validity as a golang name. false if not.
+     */
+    public static boolean isSbeGolangName(final String value)
+    {
+        if (possibleGolangKeyword(value))
+        {
+            if (isGolangKeyword(value))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isGolangKeyword(final String token)
+    {
+        return GOLANG_KEYWORDS.contains(token);
+    }
+
+    private static boolean possibleGolangKeyword(final String value)
+    {
+        for (int i = 0, size = value.length(); i < size; i++)
+        {
+            final char c = value.charAt(i);
+
+            if (i == 0 && isSbeGolangIdentifierStart(c))
+            {
+                continue;
+            }
+
+            if (isSbeGolangIdentifierPart(c))
+            {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean isSbeGolangIdentifierStart(final char c)
+    {
+        return Character.isLetter(c) || c == '_';
+    }
+
+    private static boolean isSbeGolangIdentifierPart(final char c)
+    {
+        return Character.isLetterOrDigit(c) || c == '_';
+    }
+
 }

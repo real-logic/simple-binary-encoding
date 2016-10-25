@@ -81,7 +81,7 @@
                 <field name="seconds" id="17" type="float"/>
             </group>
         </group>
-        <data name="make" id="18" type="varDataEncoding"/>
+        <data name="brand" id="18" type="varDataEncoding"/>
         <data name="model" id="19" type="varDataEncoding"/>
         <data name="activationCode" id="20" type="varDataEncoding"/>
     </sbe:message>

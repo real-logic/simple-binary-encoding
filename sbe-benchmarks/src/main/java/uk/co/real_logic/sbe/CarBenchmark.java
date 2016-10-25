@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 
 public class CarBenchmark
 {
-    private static final byte[] MAKE;
+    private static final byte[] BRAND;
     private static final byte[] MODEL;
     private static final byte[] ENG_MAN_CODE;
     private static final byte[] VEHICLE_CODE;
@@ -33,7 +33,7 @@ public class CarBenchmark
     {
         try
         {
-            MAKE = "MAKE".getBytes(CarEncoder.makeCharacterEncoding());
+            BRAND = "BRAND".getBytes(CarEncoder.brandCharacterEncoding());
             MODEL = "MODEL".getBytes(CarEncoder.modelCharacterEncoding());
             ENG_MAN_CODE = "abc".getBytes(EngineEncoder.manufacturerCodeCharacterEncoding());
             VEHICLE_CODE = "abcdef".getBytes(CarEncoder.vehicleCodeCharacterEncoding());
@@ -141,7 +141,7 @@ public class CarBenchmark
                    .next().mph(60).seconds(7.1f)
                    .next().mph(100).seconds(11.8f);
 
-        car.putMake(MAKE, 0, MAKE.length);
+        car.putBrand(BRAND, 0, BRAND.length);
         car.putModel(MODEL, 0, MODEL.length);
     }
 
@@ -207,7 +207,7 @@ public class CarBenchmark
             }
         }
 
-        car.getMake(tempBuffer, 0, tempBuffer.length);
+        car.getBrand(tempBuffer, 0, tempBuffer.length);
         car.getModel(tempBuffer, 0, tempBuffer.length);
     }
 

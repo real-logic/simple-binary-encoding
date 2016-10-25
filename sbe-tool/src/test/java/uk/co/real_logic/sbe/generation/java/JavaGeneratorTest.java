@@ -283,7 +283,7 @@ public class JavaGeneratorTest
     @Test
     public void shouldGenerateVarDataCodecs() throws Exception
     {
-        final String expectedMake = "Ford";
+        final String expectedBrand = "Ford";
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
 
         generator().generate();
@@ -291,11 +291,11 @@ public class JavaGeneratorTest
         final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
-        setMake(encoder, expectedMake);
+        setBrand(encoder, expectedBrand);
 
-        final String make = getMake(decoder);
+        final String brand = getBrand(decoder);
 
-        assertEquals(expectedMake, make);
+        assertEquals(expectedBrand, brand);
     }
 
     @Test

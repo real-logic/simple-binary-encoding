@@ -39,7 +39,7 @@ static char MANUFACTURER_CODE[] = { '1', '2', '3' };
 static const char *FUEL_FIGURES_1_USAGE_DESCRIPTION = "Urban Cycle";
 static const char *FUEL_FIGURES_2_USAGE_DESCRIPTION = "Combined Cycle";
 static const char *FUEL_FIGURES_3_USAGE_DESCRIPTION = "Highway Cycle";
-static const char *MAKE = "Honda";
+static const char *BRAND = "Honda";
 static const char *MODEL = "Civic VTi";
 static const char *ACTIVATION_CODE = "deadbeef";
 
@@ -48,7 +48,7 @@ static const std::uint64_t MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
 static const std::uint64_t FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH = 11;
 static const std::uint64_t FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH = 14;
 static const std::uint64_t FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH = 13;
-static const std::uint64_t MAKE_LENGTH = 5;
+static const std::uint64_t BRAND_LENGTH = 5;
 static const std::uint64_t MODEL_LENGTH = 9;
 static const std::uint64_t ACTIVATION_CODE_LENGTH = 8;
 static const std::uint8_t PERFORMANCE_FIGURES_COUNT = 2;
@@ -155,7 +155,7 @@ public:
                 .next().mph(perf2bMph).seconds(perf2bSeconds)
                 .next().mph(perf2cMph).seconds(perf2cSeconds);
 
-        car.putMake(MAKE, static_cast<int>(strlen(MAKE)))
+        car.putBrand(BRAND, static_cast<int>(strlen(BRAND)))
             .putModel(MODEL, static_cast<int>(strlen(MODEL)))
             .putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
 
@@ -243,7 +243,7 @@ static const uint8_t fieldIdPerfOctaneRating = 14;
 static const uint8_t fieldIdPerfAcceleration = 15;
 static const uint8_t fieldIdPerfAccMph = 16;
 static const uint8_t fieldIdPerfAccSeconds = 17;
-static const uint8_t fieldIdMake = 18;
+static const uint8_t fieldIdBrand = 18;
 static const uint8_t fieldIdModel = 19;
 static const uint8_t fieldIdActivationCode = 20;
 
@@ -268,10 +268,10 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarFieldIdsAndCharacterEncoding)
     EXPECT_EQ(Car::PerformanceFigures::accelerationId(), fieldIdPerfAcceleration);
     EXPECT_EQ(Car::PerformanceFigures::Acceleration::mphId(), fieldIdPerfAccMph);
     EXPECT_EQ(Car::PerformanceFigures::Acceleration::secondsId(), fieldIdPerfAccSeconds);
-    EXPECT_EQ(Car::makeId(), fieldIdMake);
+    EXPECT_EQ(Car::brandId(), fieldIdBrand);
     EXPECT_EQ(Car::modelId(), fieldIdModel);
     EXPECT_EQ(Car::activationCodeId(), fieldIdActivationCode);
-    EXPECT_EQ(std::string(Car::makeCharacterEncoding()), std::string("UTF-8"));
+    EXPECT_EQ(std::string(Car::brandCharacterEncoding()), std::string("UTF-8"));
     EXPECT_EQ(std::string(Car::modelCharacterEncoding()), std::string("UTF-8"));
     EXPECT_EQ(std::string(Car::activationCodeCharacterEncoding()), std::string("UTF-8"));
 }
@@ -396,11 +396,11 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
     EXPECT_EQ(*(float *)(bp + offset), perf2cSeconds);
     offset += sizeof(float);
 
-    // make & model
-    EXPECT_EQ(*(std::uint16_t *)(bp + offset), MAKE_LENGTH);
+    // brand & model
+    EXPECT_EQ(*(std::uint16_t *)(bp + offset), BRAND_LENGTH);
     offset += sizeof(std::uint16_t);
-    EXPECT_EQ(std::string(bp + offset, MAKE_LENGTH), MAKE);
-    offset += MAKE_LENGTH;
+    EXPECT_EQ(std::string(bp + offset, BRAND_LENGTH), BRAND);
+    offset += BRAND_LENGTH;
     EXPECT_EQ(*(std::uint16_t *)(bp + offset), MODEL_LENGTH);
     offset += sizeof(std::uint16_t);
     EXPECT_EQ(std::string(bp + offset, MODEL_LENGTH), MODEL);
@@ -549,8 +549,8 @@ TEST_F(CodeGenTest, shouldbeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
     EXPECT_EQ(acceleration.mph(), perf2cMph);
     EXPECT_EQ(acceleration.seconds(), perf2cSeconds);
 
-    EXPECT_EQ(m_carDecoder.makeLength(), MAKE_LENGTH);
-    EXPECT_EQ(std::string(m_carDecoder.make(), MAKE_LENGTH), MAKE);
+    EXPECT_EQ(m_carDecoder.brandLength(), BRAND_LENGTH);
+    EXPECT_EQ(std::string(m_carDecoder.brand(), BRAND_LENGTH), BRAND);
 
     EXPECT_EQ(m_carDecoder.modelLength(), MODEL_LENGTH);
     EXPECT_EQ(std::string(m_carDecoder.model(), MODEL_LENGTH), MODEL);
@@ -651,13 +651,13 @@ TEST_F(CodeGenTest, shouldbeAbleUseOnStackCodecsAndGroupForEach)
 
     char tmp[256];
 
-    EXPECT_EQ(carDecoder.getMake(tmp, sizeof(tmp)), MAKE_LENGTH);
-    EXPECT_EQ(std::string(tmp, MAKE_LENGTH), MAKE);
+    EXPECT_EQ(carDecoder.getBrand(tmp, sizeof(tmp)), BRAND_LENGTH);
+    EXPECT_EQ(std::string(tmp, BRAND_LENGTH), BRAND);
 
     EXPECT_EQ(carDecoder.getModel(tmp, sizeof(tmp)), MODEL_LENGTH);
     EXPECT_EQ(std::string(tmp, MODEL_LENGTH), MODEL);
 
-    EXPECT_EQ(carDecoder.getMake(tmp, sizeof(tmp)), ACTIVATION_CODE_LENGTH);
+    EXPECT_EQ(carDecoder.getBrand(tmp, sizeof(tmp)), ACTIVATION_CODE_LENGTH);
     EXPECT_EQ(std::string(tmp, ACTIVATION_CODE_LENGTH), ACTIVATION_CODE);
 
     EXPECT_EQ(carDecoder.encodedLength(), expectedCarSize);
@@ -670,8 +670,8 @@ static const std::size_t offsetUsageDesc2Length = 76;
 static const std::size_t offsetUsageDesc2Data = offsetUsageDesc2Length + sizeof(std::uint16_t);
 static const std::size_t offsetUsageDesc3Length = 98;
 static const std::size_t offsetUsageDesc3Data = offsetUsageDesc3Length + sizeof(std::uint16_t);
-static const std::size_t offsetMakeLength = 163;
-static const std::size_t offsetMakeData = offsetMakeLength + sizeof(std::uint16_t);
+static const std::size_t offsetBrandLength = 163;
+static const std::size_t offsetBrandData = offsetBrandLength + sizeof(std::uint16_t);
 static const std::size_t offsetModelLength = 170;
 static const std::size_t offsetModelData = offsetModelLength + sizeof(std::uint16_t);
 static const std::size_t offsetActivationCodeLength = 181;
@@ -683,7 +683,7 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
     std::string usageDesc1(FUEL_FIGURES_1_USAGE_DESCRIPTION, FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH);
     std::string usageDesc2(FUEL_FIGURES_2_USAGE_DESCRIPTION, FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH);
     std::string usageDesc3(FUEL_FIGURES_3_USAGE_DESCRIPTION, FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH);
-    std::string make(MAKE, MAKE_LENGTH);
+    std::string brand(BRAND, BRAND_LENGTH);
     std::string model(MODEL, MODEL_LENGTH);
     std::string activationCode(ACTIVATION_CODE, ACTIVATION_CODE_LENGTH);
 
@@ -707,7 +707,7 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
     perfFigs.next()
         .accelerationCount(ACCELERATION_COUNT).next().next().next();
 
-    car.putMake(make)
+    car.putBrand(brand)
         .putModel(model)
         .putActivationCode(activationCode);
 
@@ -724,8 +724,8 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
     EXPECT_EQ(*(std::uint16_t *)(buffer + baseOffset + offsetUsageDesc3Length), FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH);
     EXPECT_EQ(std::string(buffer + baseOffset + offsetUsageDesc3Data, FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH), usageDesc3);
 
-    EXPECT_EQ(*(std::uint16_t *)(buffer + baseOffset + offsetMakeLength), MAKE_LENGTH);
-    EXPECT_EQ(std::string(buffer + baseOffset + offsetMakeData, MAKE_LENGTH), make);
+    EXPECT_EQ(*(std::uint16_t *)(buffer + baseOffset + offsetBrandLength), BRAND_LENGTH);
+    EXPECT_EQ(std::string(buffer + baseOffset + offsetBrandData, BRAND_LENGTH), brand);
 
     EXPECT_EQ(*(std::uint16_t *)(buffer + baseOffset + offsetModelLength), MODEL_LENGTH);
     EXPECT_EQ(std::string(buffer + baseOffset + offsetModelData, MODEL_LENGTH), model);
@@ -749,7 +749,7 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForDecode)
     std::string usageDesc1(FUEL_FIGURES_1_USAGE_DESCRIPTION, FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH);
     std::string usageDesc2(FUEL_FIGURES_2_USAGE_DESCRIPTION, FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH);
     std::string usageDesc3(FUEL_FIGURES_3_USAGE_DESCRIPTION, FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH);
-    std::string make(MAKE, MAKE_LENGTH);
+    std::string brand(BRAND, BRAND_LENGTH);
     std::string model(MODEL, MODEL_LENGTH);
     std::string activationCode(ACTIVATION_CODE, ACTIVATION_CODE_LENGTH);
 
@@ -777,7 +777,7 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForDecode)
     acceleration = perfFigures.acceleration();
     acceleration.next().next().next();
 
-    EXPECT_EQ(carDecoder.getMakeAsString(), make);
+    EXPECT_EQ(carDecoder.getBrandAsString(), brand);
     EXPECT_EQ(carDecoder.getModelAsString(), model);
     EXPECT_EQ(carDecoder.getActivationCodeAsString(), activationCode);
 

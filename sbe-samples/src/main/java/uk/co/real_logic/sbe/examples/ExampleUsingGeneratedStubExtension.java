@@ -31,7 +31,7 @@ public class ExampleUsingGeneratedStubExtension
     private static final String ENCODING_FILENAME = "sbe.encoding.filename";
     private static final byte[] VEHICLE_CODE;
     private static final byte[] MANUFACTURER_CODE;
-    private static final byte[] MAKE;
+    private static final byte[] BRAND;
     private static final byte[] MODEL;
     private static final UnsafeBuffer ACTIVATION_CODE;
 
@@ -46,7 +46,7 @@ public class ExampleUsingGeneratedStubExtension
         {
             VEHICLE_CODE = "abcdef".getBytes(baseline.CarEncoder.vehicleCodeCharacterEncoding());
             MANUFACTURER_CODE = "123".getBytes(baseline.EngineEncoder.manufacturerCodeCharacterEncoding());
-            MAKE = "Honda".getBytes(baseline.CarEncoder.makeCharacterEncoding());
+            BRAND = "Honda".getBytes(baseline.CarEncoder.brandCharacterEncoding());
             MODEL = "Civic VTi".getBytes(baseline.CarEncoder.modelCharacterEncoding());
             ACTIVATION_CODE = new UnsafeBuffer("abcdef".getBytes(baseline.CarEncoder.activationCodeCharacterEncoding()));
         }
@@ -157,7 +157,7 @@ public class ExampleUsingGeneratedStubExtension
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-        car.putMake(MAKE, srcOffset, MAKE.length)
+        car.putBrand(BRAND, srcOffset, BRAND.length)
             .putModel(MODEL, srcOffset, MODEL.length)
             .putActivationCode(ACTIVATION_CODE, 0, ACTIVATION_CODE.capacity());
 
@@ -240,8 +240,8 @@ public class ExampleUsingGeneratedStubExtension
             }
         }
 
-        sb.append("\ncar.make=").append(
-            new String(buffer, 0, car.getMake(buffer, 0, buffer.length), extension.CarEncoder.makeCharacterEncoding()));
+        sb.append("\ncar.brand=").append(
+            new String(buffer, 0, car.getBrand(buffer, 0, buffer.length), extension.CarEncoder.brandCharacterEncoding()));
 
         sb.append("\ncar.model=").append(
             new String(buffer, 0, car.getModel(buffer, 0, buffer.length), extension.CarEncoder.modelCharacterEncoding()));

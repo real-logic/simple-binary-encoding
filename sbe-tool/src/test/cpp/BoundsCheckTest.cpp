@@ -34,7 +34,7 @@ using namespace code::generation::test;
 
 static char VEHICLE_CODE[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
 static char MANUFACTURER_CODE[] = { '1', '2', '3' };
-static const char *MAKE = "Honda";
+static const char *BRAND = "Honda";
 static const char *MODEL = "Civic VTi";
 static const char *ACTIVATION_CODE = "deadbeef";
 
@@ -136,9 +136,9 @@ public:
         return m_car.encodedLength();
     }
 
-    virtual std::uint64_t encodeCarMakeModelAndActivationCode()
+    virtual std::uint64_t encodeCarBrandModelAndActivationCode()
     {
-        m_car.putMake(MAKE, static_cast<int>(strlen(MAKE)));
+        m_car.putBrand(BRAND, static_cast<int>(strlen(BRAND)));
         m_car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
         m_car.putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
 
@@ -259,11 +259,11 @@ public:
         return m_carDecoder.encodedLength();
     }
 
-    virtual std::uint64_t decodeCarMakeModelAndActivationCode()
+    virtual std::uint64_t decodeCarBrandModelAndActivationCode()
     {
         char tmp[256];
 
-        EXPECT_EQ(m_carDecoder.getMake(tmp, sizeof(tmp)), 5u);
+        EXPECT_EQ(m_carDecoder.getBrand(tmp, sizeof(tmp)), 5u);
         EXPECT_EQ(std::string(tmp, 5), "Honda");
 
         EXPECT_EQ(m_carDecoder.getModel(tmp, sizeof(tmp)), 9u);
@@ -332,7 +332,7 @@ TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodeOfMessa
         encodeCarRoot(buffer.get(), 0, length);
         encodeCarFuelFigures();
         encodeCarPerformanceFigures();
-        encodeCarMakeModelAndActivationCode();
+        encodeCarBrandModelAndActivationCode();
     }, std::runtime_error);
 }
 
@@ -345,7 +345,7 @@ TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfMessa
     encodeCarRoot(encodeBuffer, 0, sizeof(encodeBuffer));
     encodeCarFuelFigures();
     encodeCarPerformanceFigures();
-    encodeCarMakeModelAndActivationCode();
+    encodeCarBrandModelAndActivationCode();
 
     EXPECT_THROW(
     {
@@ -353,7 +353,7 @@ TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfMessa
         decodeCarRoot(buffer.get(), 0, length);
         decodeCarFuelFigures();
         decodeCarPerformanceFigures();
-        decodeCarMakeModelAndActivationCode();
+        decodeCarBrandModelAndActivationCode();
     }, std::runtime_error);
 }
 
