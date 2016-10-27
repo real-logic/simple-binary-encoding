@@ -1388,6 +1388,10 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
+            "    void rewind(void)\n" +
+            "    {\n" +
+            "        m_position = m_offset + m_actingBlockLength;\n" +
+            "    }\n\n" +
             "    std::uint64_t actingVersion(void) const\n" +
             "    {\n" +
             "        return m_actingVersion;\n" +
