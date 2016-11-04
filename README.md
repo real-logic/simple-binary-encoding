@@ -45,7 +45,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
 </dependency>
 ```
 
@@ -92,7 +92,7 @@ NOTE: Linux, Mac OS, and Windows only for the moment. See
 [FAQ](https://github.com/real-logic/simple-binary-encoding/wiki/Frequently-Asked-Questions).
 Windows builds have been tested with Visual Studio Express 12.
 
-First build using gradle to generate the SBE jar.
+First build using Gradle to generate the SBE jar.
 
     $ ./gradlew
 
