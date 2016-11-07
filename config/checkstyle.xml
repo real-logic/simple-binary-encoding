@@ -67,7 +67,9 @@
             <property name="tokens" value="COMMA, SEMI"/>
         </module>
 
-        <module name="WhitespaceAround"/>
+        <module name="WhitespaceAround">
+            <property name="allowEmptyLambdas" value="true"/>
+        </module>
 
         <module name="OperatorWrap">
             <property name="tokens" value="PLUS, ASSIGN"/>
