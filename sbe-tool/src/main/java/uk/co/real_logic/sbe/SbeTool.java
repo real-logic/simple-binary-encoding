@@ -144,7 +144,6 @@ public class SbeTool
      */
     public static final String JAVA_DECODING_BUFFER_TYPE = "sbe.java.decoding.buffer.type";
 
-
     /**
      * Should the {@link uk.co.real_logic.sbe.codec.java.GroupOrder} annotation be added to generated stubs.
      */
