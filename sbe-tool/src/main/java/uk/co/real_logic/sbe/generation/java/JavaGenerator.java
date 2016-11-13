@@ -52,6 +52,7 @@ public class JavaGenerator implements CodeGenerator
     private final String readOnlyBuffer;
     private final boolean shouldGenerateGroupOrderAnnotation;
     private final boolean shouldGenerateInterfaces;
+    private final boolean shouldDecodeUnknownEnumValues;
 
     public JavaGenerator(
         final Ir ir,
@@ -59,6 +60,7 @@ public class JavaGenerator implements CodeGenerator
         final String readOnlyBuffer,
         final boolean shouldGenerateGroupOrderAnnotation,
         final boolean shouldGenerateInterfaces,
+        final boolean shouldDecodeUnknownEnumValues,
         final OutputManager outputManager)
         throws IOException
     {
@@ -76,6 +78,7 @@ public class JavaGenerator implements CodeGenerator
 
         this.shouldGenerateGroupOrderAnnotation = shouldGenerateGroupOrderAnnotation;
         this.shouldGenerateInterfaces = shouldGenerateInterfaces;
+        this.shouldDecodeUnknownEnumValues = shouldDecodeUnknownEnumValues;
     }
 
     private static String validateBufferImplementation(
@@ -1151,15 +1154,19 @@ public class JavaGenerator implements CodeGenerator
         {
             final Encoding encoding = token.encoding();
             final CharSequence constVal = generateLiteral(encoding.primitiveType(), encoding.constValue().toString());
-            sb.append("    ").append(token.name()).append('(').append(constVal).append("),\n");
+            sb.append(INDENT).append(token.name()).append('(').append(constVal).append("),\n");
         }
 
         final Token token = tokens.get(0);
         final Encoding encoding = token.encoding();
         final CharSequence nullVal = generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString());
 
-        sb.append("    ").append("NULL_VAL").append('(').append(nullVal).append(')');
-        sb.append(";\n\n");
+        if (shouldDecodeUnknownEnumValues)
+        {
+            sb.append(INDENT).append("SBE_UNKNOWN").append('(').append(nullVal).append("),\n");
+        }
+
+        sb.append(INDENT).append("NULL_VAL").append('(').append(nullVal).append(");\n\n");
 
         return sb;
     }
@@ -1203,15 +1210,20 @@ public class JavaGenerator implements CodeGenerator
                 token.name()));
         }
 
+        final String handleUnknownLogic = shouldDecodeUnknownEnumValues ?
+            INDENT + INDENT + "return SBE_UNKNOWN;\n" :
+            INDENT + INDENT + "throw new IllegalArgumentException(\"Unknown value: \" + value);\n";
+
         sb.append(String.format(
             "        }\n\n" +
             "        if (%s == value)\n" +
             "        {\n" +
             "            return NULL_VAL;\n" +
             "        }\n\n" +
-            "        throw new IllegalArgumentException(\"Unknown value: \" + value);\n" +
+            "%s" +
             "    }\n",
-            generateLiteral(primitiveType, tokens.get(0).encoding().applicableNullValue().toString())));
+            generateLiteral(primitiveType, tokens.get(0).encoding().applicableNullValue().toString()),
+            handleUnknownLogic));
 
         return sb;
     }
@@ -2401,7 +2413,7 @@ public class JavaGenerator implements CodeGenerator
         sb.append("\n");
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
-        append(sb, indent, "    " + decoderName + " writer = new " + decoderName + "();");
+        append(sb, indent, INDENT + decoderName + " writer = new " + decoderName + "();");
         append(sb, indent, "    writer.wrap(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);");
         sb.append('\n');
         append(sb, indent, "    return writer.appendTo(builder);");
@@ -2418,7 +2430,7 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
-        append(sb, indent, "    " + decoderName + " writer = new " + decoderName + "();");
+        append(sb, indent, INDENT + decoderName + " writer = new " + decoderName + "();");
         append(sb, indent, "    writer.wrap(buffer, offset);");
         sb.append('\n');
         append(sb, indent, "    return writer.appendTo(builder);");

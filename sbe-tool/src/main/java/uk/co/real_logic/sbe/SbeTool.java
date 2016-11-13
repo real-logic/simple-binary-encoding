@@ -41,21 +41,44 @@ import java.io.FileInputStream;
  *     $ java -Doption=value -jar sbe.jar &lt;filename.sbeir&gt;
  * </pre>
  *
- * Properties
+ * System Properties:
  * <ul>
  * <li><code>sbe.validation.xsd</code>: Use XSD to validate or not.</li>
  * <li><code>sbe.validation.stop.on.error</code>: Should the parser stop on first error encountered? Defaults to false.</li>
  * <li><code>sbe.validation.warnings.fatal</code>: Are warnings in parsing considered fatal? Defaults to false.</li>
  * <li><code>sbe.validation.suppress.output</code>: Should the parser suppress output during validation? Defaults to false.</li>
  * <li><code>sbe.generate.stubs</code>: Generate stubs or not. Defaults to true.</li>
- * <li><code>sbe.generate.ir</code>: Generate IR or not. Defaults to false.</li>
- * <li><code>sbe.java.generate.interfaces</code>: Generate interface hierarchy or not. Defaults to false.</li>
  * <li><code>sbe.target.language</code>: Target language for code generation, defaults to Java.</li>
+ * <li><code>sbe.generate.ir</code>: Generate IR or not. Defaults to false.</li>
  * <li><code>sbe.output.dir</code>: Target directory for code generation, defaults to current directory.</li>
+ * <li><code>sbe.output.dir</code>: Target directory for code generation, defaults to current directory.</li>
+ * <li><code>sbe.java.generate.interfaces</code>: Generate interface hierarchy or not. Defaults to false.</li>
+ * <li><code>sbe.java.encoding.buffer.type</code>: Type of the Java interface for the encoding buffer to wrap.</li>
+ * <li><code>sbe.java.decoding.buffer.type</code>: Type of the Java interface for the decoding buffer to wrap.</li>
+ * <li><code>sbe.target.namespace</code>: Namespace for the generated code to override schema package.</li>
+ * <li><code>sbe.cpp.namespaces.collapse</code>: Namespace for the generated code to override schema package.</li>
+ * <li><code>sbe.java.generate.group-order.annotation</code>: Should the GroupOrder annotation be added to generated stubs.</li>
+ * <li><code>sbe.keyword.append.token</code>: Token to be appended to keywords.</li>
+ * <li><code>sbe.decode.unknown.enum.values</code>: Support unknown decoded enum values.</li>
  * </ul>
  */
 public class SbeTool
 {
+    /**
+     * Package in which the generated Java interfaces will be placed.
+     */
+    public static final String JAVA_INTERFACE_PACKAGE = "org.agrona.sbe";
+
+    /**
+     * Default class to use as the buffer mutable implementation in generated code.
+     */
+    public static final String JAVA_DEFAULT_ENCODING_BUFFER_TYPE = MutableDirectBuffer.class.getName();
+
+    /**
+     * Default class to use as the buffer read only implementation in generated code.
+     */
+    public static final String JAVA_DEFAULT_DECODING_BUFFER_TYPE = DirectBuffer.class.getName();
+
     /**
      * Boolean system property to control throwing exceptions on all errors
      */
@@ -82,14 +105,14 @@ public class SbeTool
     public static final String GENERATE_STUBS = "sbe.generate.stubs";
 
     /**
-     * Boolean system property to turn on or off generation of IR. Defaults to false.
-     */
-    public static final String GENERATE_IR = "sbe.generate.ir";
-
-    /**
      * Target language for generated code.
      */
     public static final String TARGET_LANGUAGE = "sbe.target.language";
+
+    /**
+     * Boolean system property to turn on or off generation of IR. Defaults to false.
+     */
+    public static final String GENERATE_IR = "sbe.generate.ir";
 
     /**
      * Output directory for generated code
@@ -102,6 +125,16 @@ public class SbeTool
     public static final String TARGET_NAMESPACE = "sbe.target.namespace";
 
     /**
+     * Boolean system property to turn on or off collapsing of nested namespaces in generated C++ stubs. Defaults to false.
+     */
+    public static final String CPP_NAMESPACES_COLLAPSE = "sbe.cpp.namespaces.collapse";
+
+    /**
+     * Boolean system property to turn on or off generation of the interface hierarchy. Defaults to false.
+     */
+    public static final String JAVA_GENERATE_INTERFACES = "sbe.java.generate.interfaces";
+
+    /**
      * Specifies the name of the Java mutable buffer to wrap
      */
     public static final String JAVA_ENCODING_BUFFER_TYPE = "sbe.java.encoding.buffer.type";
@@ -111,35 +144,11 @@ public class SbeTool
      */
     public static final String JAVA_DECODING_BUFFER_TYPE = "sbe.java.decoding.buffer.type";
 
+
     /**
      * Should the {@link uk.co.real_logic.sbe.codec.java.GroupOrder} annotation be added to generated stubs.
      */
     public static final String JAVA_GROUP_ORDER_ANNOTATION = "sbe.java.generate.group-order.annotation";
-
-    /**
-     * Boolean system property to turn on or off generation of the interface hierarchy. Defaults to false.
-     */
-    public static final String JAVA_GENERATE_INTERFACES = "sbe.java.generate.interfaces";
-
-    /**
-     * Boolean system property to turn on or off collapsing of nested namespaces in generated C++ stubs. Defaults to false.
-     */
-    public static final String CPP_NAMESPACES_COLLAPSE = "sbe.cpp.namespaces.collapse";
-
-    /**
-     * Package in which the generated Java interfaces will be placed.
-     */
-    public static final String JAVA_INTERFACE_PACKAGE = "org.agrona.sbe";
-
-    /**
-     * Default class to use as the buffer mutable implementation in generated code.
-     */
-    public static final String JAVA_DEFAULT_ENCODING_BUFFER_TYPE = MutableDirectBuffer.class.getName();
-
-    /**
-     * Default class to use as the buffer read only implementation in generated code.
-     */
-    public static final String JAVA_DEFAULT_DECODING_BUFFER_TYPE = DirectBuffer.class.getName();
 
     /**
      * Specifies token that should be appended to keywords to avoid compilation errors.
@@ -148,6 +157,14 @@ public class SbeTool
      * underscore character is a good example fo a token to use.
      */
     public static final String KEYWORD_APPEND_TOKEN = "sbe.keyword.append.token";
+
+    /**
+     * Should unknown enum values be decoded to support extension. Defaults to false.
+     *
+     * If an unknown enum value is decoded then a language specific SBE_UNKNOWN enum value will be returned
+     * rather than throwing an error.
+     */
+    public static final String DECODE_UNKNOWN_ENUM_VALUES = "sbe.decode.unknown.enum.values";
 
     /**
      * Main entry point for the SBE Tool.

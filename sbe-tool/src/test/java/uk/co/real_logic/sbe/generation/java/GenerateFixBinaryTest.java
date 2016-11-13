@@ -50,7 +50,8 @@ public class GenerateFixBinaryTest
         final MessageSchema schema = parse(TestUtil.getLocalResource("FixBinary.xml"), options);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
-        final JavaGenerator generator = new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, outputManager);
+        final JavaGenerator generator = new JavaGenerator(
+            ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, outputManager);
 
         outputManager.setPackageName(ir.applicableNamespace());
         generator.generateMessageHeaderStub();

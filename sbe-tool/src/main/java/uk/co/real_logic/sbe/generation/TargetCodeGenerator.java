@@ -40,6 +40,7 @@ public enum TargetCodeGenerator
                 System.getProperty(JAVA_DECODING_BUFFER_TYPE, JAVA_DEFAULT_DECODING_BUFFER_TYPE),
                 Boolean.getBoolean(JAVA_GROUP_ORDER_ANNOTATION),
                 Boolean.getBoolean(JAVA_GENERATE_INTERFACES),
+                Boolean.getBoolean(DECODE_UNKNOWN_ENUM_VALUES),
                 new PackageOutputManager(outputDir, ir.applicableNamespace()));
         }
     },

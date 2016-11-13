@@ -409,25 +409,25 @@ public class JavaGeneratorTest
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateMissingMutableBufferClass() throws IOException
     {
-        new JavaGenerator(ir, "dasdsads", BUFFER_NAME, false, false, outputManager);
+        new JavaGenerator(ir, "dasdsads", BUFFER_NAME, false, false, false, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateNotImplementedMutableBufferClass() throws IOException
     {
-        new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, false, false, outputManager);
+        new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, false, false, false, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateMissingReadOnlyBufferClass() throws IOException
     {
-        new JavaGenerator(ir, BUFFER_NAME, "dasdsads", false, false, outputManager);
+        new JavaGenerator(ir, BUFFER_NAME, "dasdsads", false, false, false, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldValidateNotImplementedReadOnlyBufferClass() throws IOException
     {
-        new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", false, false, outputManager);
+        new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", false, false, false, outputManager);
     }
 
     private Class<?> compileCarEncoder() throws Exception
@@ -465,7 +465,7 @@ public class JavaGeneratorTest
 
     private JavaGenerator generator() throws IOException
     {
-        return new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, outputManager);
+        return new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, outputManager);
     }
 
     private void generateTypeStubs() throws IOException
