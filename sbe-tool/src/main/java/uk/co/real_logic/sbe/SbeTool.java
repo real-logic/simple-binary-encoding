@@ -51,7 +51,6 @@ import java.io.FileInputStream;
  * <li><code>sbe.target.language</code>: Target language for code generation, defaults to Java.</li>
  * <li><code>sbe.generate.ir</code>: Generate IR or not. Defaults to false.</li>
  * <li><code>sbe.output.dir</code>: Target directory for code generation, defaults to current directory.</li>
- * <li><code>sbe.output.dir</code>: Target directory for code generation, defaults to current directory.</li>
  * <li><code>sbe.java.generate.interfaces</code>: Generate interface hierarchy or not. Defaults to false.</li>
  * <li><code>sbe.java.encoding.buffer.type</code>: Type of the Java interface for the encoding buffer to wrap.</li>
  * <li><code>sbe.java.decoding.buffer.type</code>: Type of the Java interface for the decoding buffer to wrap.</li>
