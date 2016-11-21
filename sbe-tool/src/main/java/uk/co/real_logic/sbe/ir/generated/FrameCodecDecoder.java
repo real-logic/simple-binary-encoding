@@ -87,6 +87,16 @@ public class FrameCodecDecoder
         return 0;
     }
 
+    public static int irIdEncodingOffset()
+    {
+        return 0;
+    }
+
+    public static int irIdEncodingLength()
+    {
+        return 4;
+    }
+
     public static String irIdMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -130,6 +140,16 @@ public class FrameCodecDecoder
         return 0;
     }
 
+    public static int irVersionEncodingOffset()
+    {
+        return 4;
+    }
+
+    public static int irVersionEncodingLength()
+    {
+        return 4;
+    }
+
     public static String irVersionMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -171,6 +191,16 @@ public class FrameCodecDecoder
     public static int schemaVersionSinceVersion()
     {
         return 0;
+    }
+
+    public static int schemaVersionEncodingOffset()
+    {
+        return 8;
+    }
+
+    public static int schemaVersionEncodingLength()
+    {
+        return 4;
     }
 
     public static String schemaVersionMetaAttribute(final MetaAttribute metaAttribute)

@@ -87,6 +87,16 @@ public class TokenCodecDecoder
         return 0;
     }
 
+    public static int tokenOffsetEncodingOffset()
+    {
+        return 0;
+    }
+
+    public static int tokenOffsetEncodingLength()
+    {
+        return 4;
+    }
+
     public static String tokenOffsetMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -128,6 +138,16 @@ public class TokenCodecDecoder
     public static int tokenSizeSinceVersion()
     {
         return 0;
+    }
+
+    public static int tokenSizeEncodingOffset()
+    {
+        return 4;
+    }
+
+    public static int tokenSizeEncodingLength()
+    {
+        return 4;
     }
 
     public static String tokenSizeMetaAttribute(final MetaAttribute metaAttribute)
@@ -173,6 +193,16 @@ public class TokenCodecDecoder
         return 0;
     }
 
+    public static int fieldIdEncodingOffset()
+    {
+        return 8;
+    }
+
+    public static int fieldIdEncodingLength()
+    {
+        return 4;
+    }
+
     public static String fieldIdMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -214,6 +244,16 @@ public class TokenCodecDecoder
     public static int tokenVersionSinceVersion()
     {
         return 0;
+    }
+
+    public static int tokenVersionEncodingOffset()
+    {
+        return 12;
+    }
+
+    public static int tokenVersionEncodingLength()
+    {
+        return 4;
     }
 
     public static String tokenVersionMetaAttribute(final MetaAttribute metaAttribute)
@@ -259,6 +299,16 @@ public class TokenCodecDecoder
         return 0;
     }
 
+    public static int componentTokenCountEncodingOffset()
+    {
+        return 16;
+    }
+
+    public static int componentTokenCountEncodingLength()
+    {
+        return 4;
+    }
+
     public static String componentTokenCountMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -302,6 +352,16 @@ public class TokenCodecDecoder
         return 0;
     }
 
+    public static int signalEncodingOffset()
+    {
+        return 20;
+    }
+
+    public static int signalEncodingLength()
+    {
+        return 1;
+    }
+
     public static String signalMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -328,6 +388,16 @@ public class TokenCodecDecoder
     public static int primitiveTypeSinceVersion()
     {
         return 0;
+    }
+
+    public static int primitiveTypeEncodingOffset()
+    {
+        return 21;
+    }
+
+    public static int primitiveTypeEncodingLength()
+    {
+        return 1;
     }
 
     public static String primitiveTypeMetaAttribute(final MetaAttribute metaAttribute)
@@ -358,6 +428,16 @@ public class TokenCodecDecoder
         return 0;
     }
 
+    public static int byteOrderEncodingOffset()
+    {
+        return 22;
+    }
+
+    public static int byteOrderEncodingLength()
+    {
+        return 1;
+    }
+
     public static String byteOrderMetaAttribute(final MetaAttribute metaAttribute)
     {
         switch (metaAttribute)
@@ -384,6 +464,16 @@ public class TokenCodecDecoder
     public static int presenceSinceVersion()
     {
         return 0;
+    }
+
+    public static int presenceEncodingOffset()
+    {
+        return 23;
+    }
+
+    public static int presenceEncodingLength()
+    {
+        return 1;
     }
 
     public static String presenceMetaAttribute(final MetaAttribute metaAttribute)

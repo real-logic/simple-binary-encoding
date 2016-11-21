@@ -74,6 +74,16 @@ public class TokenCodecEncoder
         this.limit = limit;
     }
 
+    public static int tokenOffsetEncodingOffset()
+    {
+        return 0;
+    }
+
+    public static int tokenOffsetEncodingLength()
+    {
+        return 4;
+    }
+
     public static int tokenOffsetNullValue()
     {
         return -2147483648;
@@ -95,6 +105,16 @@ public class TokenCodecEncoder
         return this;
     }
 
+
+    public static int tokenSizeEncodingOffset()
+    {
+        return 4;
+    }
+
+    public static int tokenSizeEncodingLength()
+    {
+        return 4;
+    }
 
     public static int tokenSizeNullValue()
     {
@@ -118,6 +138,16 @@ public class TokenCodecEncoder
     }
 
 
+    public static int fieldIdEncodingOffset()
+    {
+        return 8;
+    }
+
+    public static int fieldIdEncodingLength()
+    {
+        return 4;
+    }
+
     public static int fieldIdNullValue()
     {
         return -2147483648;
@@ -139,6 +169,16 @@ public class TokenCodecEncoder
         return this;
     }
 
+
+    public static int tokenVersionEncodingOffset()
+    {
+        return 12;
+    }
+
+    public static int tokenVersionEncodingLength()
+    {
+        return 4;
+    }
 
     public static int tokenVersionNullValue()
     {
@@ -162,6 +202,16 @@ public class TokenCodecEncoder
     }
 
 
+    public static int componentTokenCountEncodingOffset()
+    {
+        return 16;
+    }
+
+    public static int componentTokenCountEncodingLength()
+    {
+        return 4;
+    }
+
     public static int componentTokenCountNullValue()
     {
         return -2147483648;
@@ -183,20 +233,60 @@ public class TokenCodecEncoder
         return this;
     }
 
+
+    public static int signalEncodingOffset()
+    {
+        return 20;
+    }
+
+    public static int signalEncodingLength()
+    {
+        return 1;
+    }
     public TokenCodecEncoder signal(final SignalCodec value)
     {
         buffer.putByte(offset + 20, (byte)value.value());
         return this;
+    }
+
+    public static int primitiveTypeEncodingOffset()
+    {
+        return 21;
+    }
+
+    public static int primitiveTypeEncodingLength()
+    {
+        return 1;
     }
     public TokenCodecEncoder primitiveType(final PrimitiveTypeCodec value)
     {
         buffer.putByte(offset + 21, (byte)value.value());
         return this;
     }
+
+    public static int byteOrderEncodingOffset()
+    {
+        return 22;
+    }
+
+    public static int byteOrderEncodingLength()
+    {
+        return 1;
+    }
     public TokenCodecEncoder byteOrder(final ByteOrderCodec value)
     {
         buffer.putByte(offset + 22, (byte)value.value());
         return this;
+    }
+
+    public static int presenceEncodingOffset()
+    {
+        return 23;
+    }
+
+    public static int presenceEncodingLength()
+    {
+        return 1;
     }
     public TokenCodecEncoder presence(final PresenceCodec value)
     {

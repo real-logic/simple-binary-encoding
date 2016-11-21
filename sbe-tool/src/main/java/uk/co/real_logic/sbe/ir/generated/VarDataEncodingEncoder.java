@@ -24,6 +24,16 @@ public class VarDataEncodingEncoder
         return ENCODED_LENGTH;
     }
 
+    public static int lengthEncodingOffset()
+    {
+        return 0;
+    }
+
+    public static int lengthEncodingLength()
+    {
+        return 2;
+    }
+
     public static int lengthNullValue()
     {
         return 65535;
@@ -45,6 +55,16 @@ public class VarDataEncodingEncoder
         return this;
     }
 
+
+    public static int varDataEncodingOffset()
+    {
+        return 2;
+    }
+
+    public static int varDataEncodingLength()
+    {
+        return -1;
+    }
 
     public static short varDataNullValue()
     {

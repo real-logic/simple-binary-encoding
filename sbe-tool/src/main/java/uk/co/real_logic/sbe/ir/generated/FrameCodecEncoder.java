@@ -74,6 +74,16 @@ public class FrameCodecEncoder
         this.limit = limit;
     }
 
+    public static int irIdEncodingOffset()
+    {
+        return 0;
+    }
+
+    public static int irIdEncodingLength()
+    {
+        return 4;
+    }
+
     public static int irIdNullValue()
     {
         return -2147483648;
@@ -96,6 +106,16 @@ public class FrameCodecEncoder
     }
 
 
+    public static int irVersionEncodingOffset()
+    {
+        return 4;
+    }
+
+    public static int irVersionEncodingLength()
+    {
+        return 4;
+    }
+
     public static int irVersionNullValue()
     {
         return -2147483648;
@@ -117,6 +137,16 @@ public class FrameCodecEncoder
         return this;
     }
 
+
+    public static int schemaVersionEncodingOffset()
+    {
+        return 8;
+    }
+
+    public static int schemaVersionEncodingLength()
+    {
+        return 4;
+    }
 
     public static int schemaVersionNullValue()
     {
