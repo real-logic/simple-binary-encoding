@@ -1009,6 +1009,15 @@ public class CppGenerator implements CodeGenerator
             propertyName,
             generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())));
 
+        sb.append(String.format(
+            "\n" +
+            indent + "    static SBE_CONSTEXPR const std::size_t %1$sEncodingLength(void)\n" +
+            indent + "    {\n" +
+            indent + "        return %2$d;\n" +
+            indent + "    }\n",
+            propertyName,
+            token.encoding().primitiveType().size()));
+
         return sb;
     }
 
@@ -1441,6 +1450,14 @@ public class CppGenerator implements CodeGenerator
                     propertyName,
                     (long)signalToken.version()));
 
+                sb.append(String.format(
+                    indent + "    static SBE_CONSTEXPR const std::size_t %1$sEncodingOffset(void)\n" +
+                    indent + "    {\n" +
+                    indent + "         return %2$d;\n" +
+                    indent + "    }\n\n",
+                    propertyName,
+                    encodingToken.offset()));
+
                 generateFieldMetaAttributeMethod(sb, signalToken, indent);
 
                 switch (encodingToken.signal())
@@ -1568,6 +1585,14 @@ public class CppGenerator implements CodeGenerator
                 typeName,
                 offset,
                 formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())));
+
+            sb.append(String.format(
+                indent + "    static SBE_CONSTEXPR const std::size_t %1$sEncodingLength(void)\n" +
+                indent + "    {\n" +
+                indent + "        return %2$d;\n" +
+                indent + "    }\n",
+                propertyName,
+                token.encoding().primitiveType().size()));
         }
 
         return sb;
@@ -1594,10 +1619,19 @@ public class CppGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        m_%2$s.wrap(m_buffer, m_offset + %3$d, m_actingVersion, m_bufferLength);\n" +
             indent + "        return m_%2$s;\n" +
-            indent + "    }\n",
+            indent + "    }\n\n",
             bitsetName,
             propertyName,
             offset));
+
+        sb.append(String.format(
+            "\n" +
+            indent + "    static SBE_CONSTEXPR const std::size_t %1$sEncodingLength(void)\n" +
+            indent + "    {\n" +
+            indent + "        return %2$d;\n" +
+            indent + "    }\n",
+            propertyName,
+            token.encoding().primitiveType().size()));
 
         return sb;
     }
