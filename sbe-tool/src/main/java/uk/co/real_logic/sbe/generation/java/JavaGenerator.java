@@ -1012,21 +1012,29 @@ public class JavaGenerator implements CodeGenerator
                 final String propertyName = formatPropertyName(encodingToken.name());
                 final String typeName = formatClassName(decoderName(encodingToken.name()));
 
+                final StringBuilder sb = new StringBuilder();
+                generateEncodingOffsetMethod(sb, propertyName, encodingToken.offset(), BASE_INDENT);
+                generateEncodingLengthMethod(sb, propertyName, encodingToken.encodedLength(), BASE_INDENT);
+
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
+                        out.append(sb);
                         out.append(generatePrimitiveDecoder(encodingToken.name(), encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_ENUM:
+                        out.append(sb);
                         out.append(generateEnumDecoder(encodingToken, propertyName, encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_SET:
+                        out.append(sb);
                         out.append(generateBitSetProperty(propertyName, encodingToken, BASE_INDENT, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
+                        out.append(sb);
                         out.append(generateCompositeProperty(propertyName, encodingToken, BASE_INDENT, typeName));
                         i += encodingToken.componentTokenCount();
                         break;
@@ -1049,21 +1057,29 @@ public class JavaGenerator implements CodeGenerator
                 final String propertyName = formatPropertyName(encodingToken.name());
                 final String typeName = formatClassName(encoderName(encodingToken.name()));
 
+                final StringBuilder sb = new StringBuilder();
+                generateEncodingOffsetMethod(sb, propertyName, encodingToken.offset(), BASE_INDENT);
+                generateEncodingLengthMethod(sb, propertyName, encodingToken.encodedLength(), BASE_INDENT);
+
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
+                        out.append(sb);
                         out.append(generatePrimitiveEncoder(encoderName, encodingToken.name(), encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_ENUM:
+                        out.append(sb);
                         out.append(generateEnumEncoder(encoderName, propertyName, encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_SET:
+                        out.append(sb);
                         out.append(generateBitSetProperty(propertyName, encodingToken, BASE_INDENT, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
+                        out.append(sb);
                         out.append(generateCompositeProperty(propertyName, encodingToken, BASE_INDENT, typeName));
                         i += encodingToken.componentTokenCount();
                         break;
@@ -1988,6 +2004,9 @@ public class JavaGenerator implements CodeGenerator
                 final String propertyName = formatPropertyName(fieldToken.name());
                 final String typeName = formatClassName(encoderName(typeToken.name()));
 
+                generateEncodingOffsetMethod(sb, fieldToken.name(), fieldToken.offset(), indent);
+                generateEncodingLengthMethod(sb, fieldToken.name(), typeToken.encodedLength(), indent);
+
                 switch (typeToken.signal())
                 {
                     case ENCODING:
@@ -2024,6 +2043,8 @@ public class JavaGenerator implements CodeGenerator
 
                 generateFieldIdMethod(sb, fieldToken, indent);
                 generateFieldSinceVersionMethod(sb, fieldToken, indent);
+                generateEncodingOffsetMethod(sb, fieldToken.name(), fieldToken.offset(), indent);
+                generateEncodingLengthMethod(sb, fieldToken.name(), typeToken.encodedLength(), indent);
                 generateFieldMetaAttributeMethod(sb, fieldToken, indent);
 
                 switch (typeToken.signal())
@@ -2077,6 +2098,32 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             formatPropertyName(token.name()),
             token.id()));
+    }
+
+    private static void generateEncodingOffsetMethod(
+        final StringBuilder sb, final String name, final int offset, final String indent)
+    {
+        sb.append(String.format(
+            "\n" +
+                indent + "    public static int %sEncodingOffset()\n" +
+                indent + "    {\n" +
+                indent + "        return %d;\n" +
+                indent + "    }\n",
+            formatPropertyName(name),
+            offset));
+    }
+
+    private static void generateEncodingLengthMethod(
+        final StringBuilder sb, final String name, final int length, final String indent)
+    {
+        sb.append(String.format(
+            "\n" +
+                indent + "    public static int %sEncodingLength()\n" +
+                indent + "    {\n" +
+                indent + "        return %d;\n" +
+                indent + "    }\n",
+            formatPropertyName(name),
+            length));
     }
 
     private static void generateFieldSinceVersionMethod(final StringBuilder sb, final Token token, final String indent)
