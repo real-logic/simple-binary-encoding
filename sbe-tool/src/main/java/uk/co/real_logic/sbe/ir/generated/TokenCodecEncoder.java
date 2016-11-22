@@ -45,6 +45,11 @@ public class TokenCodecEncoder
         return "";
     }
 
+    public MutableDirectBuffer buffer()
+    {
+        return buffer;
+    }
+
     public int offset()
     {
         return offset;
@@ -1153,6 +1158,7 @@ public class TokenCodecEncoder
 
         return this;
     }
+
     public String toString()
     {
         return appendTo(new StringBuilder(100)).toString();

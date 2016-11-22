@@ -19,6 +19,16 @@ public class VarDataEncodingEncoder
         return this;
     }
 
+    public MutableDirectBuffer buffer()
+    {
+        return buffer;
+    }
+
+    public int offset()
+    {
+        return offset;
+    }
+
     public int encodedLength()
     {
         return ENCODED_LENGTH;

@@ -19,6 +19,16 @@ public class MessageHeaderDecoder
         return this;
     }
 
+    public DirectBuffer buffer()
+    {
+        return buffer;
+    }
+
+    public int offset()
+    {
+        return offset;
+    }
+
     public int encodedLength()
     {
         return ENCODED_LENGTH;

@@ -45,6 +45,11 @@ public class FrameCodecEncoder
         return "";
     }
 
+    public MutableDirectBuffer buffer()
+    {
+        return buffer;
+    }
+
     public int offset()
     {
         return offset;
@@ -427,6 +432,7 @@ public class FrameCodecEncoder
 
         return this;
     }
+
     public String toString()
     {
         return appendTo(new StringBuilder(100)).toString();

@@ -45,6 +45,11 @@ public class FrameCodecDecoder
         return "";
     }
 
+    public DirectBuffer buffer()
+    {
+        return buffer;
+    }
+
     public int offset()
     {
         return offset;
