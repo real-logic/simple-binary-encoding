@@ -1875,6 +1875,14 @@ public class JavaGenerator implements CodeGenerator
             "        this.offset = offset;\n\n" +
             "        return this;\n" +
             "    }\n\n" +
+            "    public %3$s buffer()\n" +
+            "    {\n" +
+            "        return buffer;\n" +
+            "    }\n\n" +
+            "    public int offset()\n" +
+            "    {\n" +
+            "        return offset;\n" +
+            "    }\n\n" +
             "    public int encodedLength()\n" +
             "    {\n" +
             "        return ENCODED_LENGTH;\n" +
@@ -1945,6 +1953,10 @@ public class JavaGenerator implements CodeGenerator
             "    public String sbeSemanticType()\n" +
             "    {\n" +
             "        return \"%10$s\";\n" +
+            "    }\n\n" +
+            "    public %11$s buffer()\n" +
+            "    {\n" +
+            "        return buffer;\n" +
             "    }\n\n" +
             "    public int offset()\n" +
             "    {\n" +
@@ -2456,8 +2468,10 @@ public class JavaGenerator implements CodeGenerator
     {
         final String indent = baseIndent + INDENT;
         final StringBuilder sb = new StringBuilder();
+
+        sb.append('\n');
         appendToString(sb, indent);
-        sb.append("\n");
+        sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
         append(sb, indent, INDENT + decoderName + " writer = new " + decoderName + "();");
