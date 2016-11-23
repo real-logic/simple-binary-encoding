@@ -207,7 +207,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateMainHeader(className, ir.applicableNamespace()));
 
             generateAnnotations(indent, className, groups, out, 0, this::encoderName);
-            out.append(generateDeclaration("class", className, implementsString));
+            out.append(generateDeclaration(className, implementsString));
             out.append(generateEncoderFlyweightCode(className, msgToken));
             out.append(generateEncoderFields(className, fields, indent));
 
@@ -238,7 +238,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateMainHeader(className, ir.applicableNamespace()));
 
             generateAnnotations(indent, className, groups, out, 0, this::decoderName);
-            out.append(generateDeclaration("class", className, implementsString));
+            out.append(generateDeclaration(className, implementsString));
             out.append(generateDecoderFlyweightCode(className, msgToken));
             out.append(generateDecoderFields(fields, indent));
 
@@ -972,8 +972,8 @@ public class JavaGenerator implements CodeGenerator
         final String implementsString) throws IOException
     {
         out.append(generateFileHeader(encoderName, ir.applicableNamespace(), fqBuffer));
-        out.append(generateDeclaration("class", encoderName, implementsString));
-        out.append(generateFixedFlyweightCode(encoderName, token.encodedLength(), false, buffer));
+        out.append(generateDeclaration(encoderName, implementsString));
+        out.append(generateFixedFlyweightCode(encoderName, token.encodedLength(), buffer));
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
@@ -1132,7 +1132,7 @@ public class JavaGenerator implements CodeGenerator
                     "        return %s;\n" +
                     "    }\n",
                     choiceName,
-                    generateChoiceGet(encoding.primitiveType(), "offset", choiceBitIndex, byteOrderStr)
+                    generateChoiceGet(encoding.primitiveType(), choiceBitIndex, byteOrderStr)
                 );
             });
     }
@@ -1158,7 +1158,7 @@ public class JavaGenerator implements CodeGenerator
                     "    }\n",
                     bitSetClassName,
                     choiceName,
-                    generateChoicePut(encoding.primitiveType(), "offset", choiceBitIndex, byteOrderStr));
+                    generateChoicePut(encoding.primitiveType(), choiceBitIndex, byteOrderStr));
             });
     }
 
@@ -1362,14 +1362,12 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private static CharSequence generateDeclaration(
-        final String classType, final String className, final String implementsString)
+    private static CharSequence generateDeclaration(final String className, final String implementsString)
     {
         return String.format(
             "@SuppressWarnings(\"all\")\n" +
-            "public %s %s%s\n" +
+            "public class %s%s\n" +
             "{\n",
-            classType,
             className,
             implementsString);
     }
@@ -1859,11 +1857,8 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private static CharSequence generateFixedFlyweightCode(
-        final String className, final int size, final boolean callsSuper, final String bufferImplementation)
+        final String className, final int size, final String bufferImplementation)
     {
-        final String body = callsSuper ?
-            "        super.wrap(buffer, offset);\n" : "";
-
         return String.format(
             "    public static final int ENCODED_LENGTH = %2$d;\n" +
             "    private %3$s buffer;\n" +
@@ -1871,7 +1866,6 @@ public class JavaGenerator implements CodeGenerator
             "    public %1$s wrap(final %3$s buffer, final int offset)\n" +
             "    {\n" +
             "        this.buffer = buffer;\n" +
-            "%4$s" +
             "        this.offset = offset;\n\n" +
             "        return this;\n" +
             "    }\n\n" +
@@ -1889,8 +1883,7 @@ public class JavaGenerator implements CodeGenerator
             "    }\n",
             className,
             size,
-            bufferImplementation,
-            body);
+            bufferImplementation);
     }
 
     private CharSequence generateDecoderFlyweightCode(final String className, final Token token)
@@ -2411,54 +2404,54 @@ public class JavaGenerator implements CodeGenerator
         throw new IllegalArgumentException("primitive type not supported: " + type);
     }
 
-    private String generateChoiceGet(final PrimitiveType type, final String index, final String bitIndex, final String byteOrder)
+    private String generateChoiceGet(final PrimitiveType type, final String bitIndex, final String byteOrder)
     {
         switch (type)
         {
             case UINT8:
-                return "0 != (buffer.getByte(" + index + ") & (1 << " + bitIndex + "))";
+                return "0 != (buffer.getByte(offset) & (1 << " + bitIndex + "))";
 
             case UINT16:
-                return "0 != (buffer.getShort(" + index + byteOrder + ") & (1 << " + bitIndex + "))";
+                return "0 != (buffer.getShort(offset" + byteOrder + ") & (1 << " + bitIndex + "))";
 
             case UINT32:
-                return "0 != (buffer.getInt(" + index + byteOrder + ") & (1 << " + bitIndex + "))";
+                return "0 != (buffer.getInt(offset" + byteOrder + ") & (1 << " + bitIndex + "))";
 
             case UINT64:
-                return "0 != (buffer.getLong(" + index + byteOrder + ") & (1L << " + bitIndex + "))";
+                return "0 != (buffer.getLong(offset" + byteOrder + ") & (1L << " + bitIndex + "))";
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
     }
 
     private String generateChoicePut(
-        final PrimitiveType type, final String index, final String bitIndex, final String byteOrder)
+        final PrimitiveType type, final String bitIndex, final String byteOrder)
     {
         switch (type)
         {
             case UINT8:
                 return
-                    "        byte bits = buffer.getByte(" + index + ");\n" +
+                    "        byte bits = buffer.getByte(offset);\n" +
                     "        bits = (byte)(value ? bits | (1 << " + bitIndex + ") : bits & ~(1 << " + bitIndex + "));\n" +
-                    "        buffer.putByte(" + index + ", bits);";
+                    "        buffer.putByte(offset, bits);";
 
             case UINT16:
                 return
-                    "        short bits = buffer.getShort(" + index + byteOrder + ");\n" +
+                    "        short bits = buffer.getShort(offset" + byteOrder + ");\n" +
                     "        bits = (short)(value ? bits | (1 << " + bitIndex + ") : bits & ~(1 << " + bitIndex + "));\n" +
-                    "        buffer.putShort(" + index + ", bits" + byteOrder + ");";
+                    "        buffer.putShort(offset, bits" + byteOrder + ");";
 
             case UINT32:
                 return
-                    "        int bits = buffer.getInt(" + index + byteOrder + ");\n" +
+                    "        int bits = buffer.getInt(offset" + byteOrder + ");\n" +
                     "        bits = value ? bits | (1 << " + bitIndex + ") : bits & ~(1 << " + bitIndex + ");\n" +
-                    "        buffer.putInt(" + index + ", bits" + byteOrder + ");";
+                    "        buffer.putInt(offset, bits" + byteOrder + ");";
 
             case UINT64:
                 return
-                    "        long bits = buffer.getLong(" + index + byteOrder + ");\n" +
+                    "        long bits = buffer.getLong(offset" + byteOrder + ");\n" +
                     "        bits = value ? bits | (1L << " + bitIndex + ") : bits & ~(1L << " + bitIndex + ");\n" +
-                    "        buffer.putLong(" + index + ", bits" + byteOrder + ");";
+                    "        buffer.putLong(offset, bits" + byteOrder + ");";
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
