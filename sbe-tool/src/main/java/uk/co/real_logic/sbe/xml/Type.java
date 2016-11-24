@@ -28,6 +28,7 @@ public abstract class Type
     private final String name;
     private final Presence presence;
     private final String description;
+    private final int sinceVersion;
     private final String semanticType;
 
     private int offsetAttribute;
@@ -48,8 +49,10 @@ public abstract class Type
         {
             name = givenName;
         }
+
         presence = Presence.get(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
+        sinceVersion = Integer.parseInt(getAttributeValue(node, "sinceVersion", "0"));
         semanticType = getAttributeValueOrNull(node, "semanticType");
         offsetAttribute = Integer.parseInt(getAttributeValue(node, "offset", "-1"));
     }
@@ -60,13 +63,20 @@ public abstract class Type
      * @param name         of the type
      * @param presence     of the type
      * @param description  of the type or null
+     * @param sinceVersion for the type
      * @param semanticType of the type or null
      */
-    public Type(final String name, final Presence presence, final String description, final String semanticType)
+    public Type(
+        final String name,
+        final Presence presence,
+        final String description,
+        final int sinceVersion,
+        final String semanticType)
     {
         this.name = name;
         this.presence = presence;
         this.description = description;
+        this.sinceVersion = sinceVersion;
         this.semanticType = semanticType;
         this.offsetAttribute = -1;
     }
@@ -108,6 +118,16 @@ public abstract class Type
     public String description()
     {
         return description;
+    }
+
+    /**
+     * The version since this was added to the template.
+     *
+     * @return version since this was added to the template.
+     */
+    public int sinceVersion()
+    {
+        return sinceVersion;
     }
 
     /**
