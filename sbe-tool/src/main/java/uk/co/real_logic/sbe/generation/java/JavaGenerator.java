@@ -120,8 +120,10 @@ public class JavaGenerator implements CodeGenerator
         {
             return "";
         }
-
-        return String.format(" implements %s", interfaceName);
+        else
+        {
+            return " implements " + interfaceName;
+        }
     }
 
     public void generateMessageHeaderStub() throws IOException
