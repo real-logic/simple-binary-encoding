@@ -2232,6 +2232,7 @@ public class JavaGenerator implements CodeGenerator
         final int offset = token.offset();
 
         return String.format(
+            "\n" +
             indent + "    public %s %s(final %s value)\n" +
             indent + "    {\n" +
             indent + "        %s;\n" +
