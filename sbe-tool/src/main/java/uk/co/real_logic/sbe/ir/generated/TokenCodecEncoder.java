@@ -246,6 +246,7 @@ public class TokenCodecEncoder
     {
         return 1;
     }
+
     public TokenCodecEncoder signal(final SignalCodec value)
     {
         buffer.putByte(offset + 20, (byte)value.value());
@@ -261,6 +262,7 @@ public class TokenCodecEncoder
     {
         return 1;
     }
+
     public TokenCodecEncoder primitiveType(final PrimitiveTypeCodec value)
     {
         buffer.putByte(offset + 21, (byte)value.value());
@@ -276,6 +278,7 @@ public class TokenCodecEncoder
     {
         return 1;
     }
+
     public TokenCodecEncoder byteOrder(final ByteOrderCodec value)
     {
         buffer.putByte(offset + 22, (byte)value.value());
@@ -291,6 +294,7 @@ public class TokenCodecEncoder
     {
         return 1;
     }
+
     public TokenCodecEncoder presence(final PresenceCodec value)
     {
         buffer.putByte(offset + 23, (byte)value.value());
