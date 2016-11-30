@@ -973,15 +973,15 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateFixedFlyweightHeader(
         final Token token,
-        final String encoderName,
+        final String typeName,
         final Writer out,
         final String buffer,
         final String fqBuffer,
         final String implementsString) throws IOException
     {
-        out.append(generateFileHeader(encoderName, ir.applicableNamespace(), fqBuffer));
-        out.append(generateDeclaration(encoderName, implementsString));
-        out.append(generateFixedFlyweightCode(encoderName, token.encodedLength(), buffer));
+        out.append(generateFileHeader(typeName, ir.applicableNamespace(), fqBuffer));
+        out.append(generateDeclaration(typeName, implementsString));
+        out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
