@@ -138,7 +138,7 @@ public class JavaGenerator implements CodeGenerator
         final Token firstToken = tokens.get(0);
         try (Writer out = outputManager.createOutput(MESSAGE_HEADER_ENCODER_TYPE))
         {
-            generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_ENCODER_TYPE, out, mutableBuffer, fqMutableBuffer, "");
+            generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_ENCODER_TYPE, out, mutableBuffer, fqMutableBuffer);
             out.append(concatEncodingTokens(
                 tokens, (token) -> generatePrimitiveEncoder(MESSAGE_HEADER_ENCODER_TYPE, token.name(), token, BASE_INDENT)));
             out.append("}\n");
@@ -146,7 +146,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(MESSAGE_HEADER_DECODER_TYPE))
         {
-            generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_DECODER_TYPE, out, readOnlyBuffer, fqReadOnlyBuffer, "");
+            generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_DECODER_TYPE, out, readOnlyBuffer, fqReadOnlyBuffer);
             out.append(concatEncodingTokens(tokens, (token) -> generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
             out.append("}\n");
         }
@@ -956,7 +956,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(decoderName))
         {
-            generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, "");
+            generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer);
             out.append(generateChoiceDecoders(messageBody));
             out.append(generateChoiceDisplay(messageBody));
             out.append("}\n");
@@ -964,7 +964,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(encoderName))
         {
-            generateFixedFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer, "");
+            generateFixedFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer);
             out.append(generateChoiceClear(encoderName, token));
             out.append(generateChoiceEncoders(encoderName, messageBody));
             out.append("}\n");
@@ -976,12 +976,25 @@ public class JavaGenerator implements CodeGenerator
         final String typeName,
         final Writer out,
         final String buffer,
+        final String fqBuffer) throws IOException
+    {
+        out.append(generateFileHeader(typeName, ir.applicableNamespace(), fqBuffer));
+        out.append(generateDeclaration(typeName, ""));
+        out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
+    }
+
+    private void generateCompositeFlyweightHeader(
+        final CodecType codecType,
+        final Token token,
+        final String typeName,
+        final Writer out,
+        final String buffer,
         final String fqBuffer,
         final String implementsString) throws IOException
     {
         out.append(generateFileHeader(typeName, ir.applicableNamespace(), fqBuffer));
         out.append(generateDeclaration(typeName, implementsString));
-        out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
+        out.append(generateCompositeFlyweightCode(codecType, typeName, token.encodedLength(), buffer));
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
@@ -1012,7 +1025,8 @@ public class JavaGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(decoderName))
         {
             final String implementsString = implementsInterface(GEN_COMPOSITE_DECODER_FLYWEIGHT);
-            generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, implementsString);
+            generateCompositeFlyweightHeader(
+                CodecType.DECODER, token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, implementsString);
 
             for (int i = 1, end = tokens.size() - 1; i < end; i++)
             {
@@ -1057,7 +1071,8 @@ public class JavaGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(encoderName))
         {
             final String implementsString = implementsInterface(GEN_COMPOSITE_ENCODER_FLYWEIGHT);
-            generateFixedFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer, implementsString);
+            generateCompositeFlyweightHeader(
+                CodecType.ENCODER, token, encoderName, out, mutableBuffer, fqMutableBuffer, implementsString);
 
             for (int i = 1, end = tokens.size() - 1; i < end; i++)
             {
@@ -1892,6 +1907,46 @@ public class JavaGenerator implements CodeGenerator
             className,
             size,
             bufferImplementation);
+    }
+
+    private static CharSequence generateCompositeFlyweightCode(
+        final CodecType codecType,
+        final String className,
+        final int size,
+        final String bufferImplementation)
+    {
+        final String actingFields = codecType == CodecType.ENCODER ?
+            "" :
+            "    private int actingBlockLength;\n" +
+            "    private int actingVersion;\n";
+
+        return String.format(
+            "    public static final int ENCODED_LENGTH = %2$d;\n" +
+            "%4$s" +
+            "    private int offset;\n" +
+            "    private %3$s buffer;\n\n" +
+            "    public %1$s wrap(final %3$s buffer, final int offset)\n" +
+            "    {\n" +
+            "        this.buffer = buffer;\n" +
+            "        this.offset = offset;\n\n" +
+            "        return this;\n" +
+            "    }\n\n" +
+            "    public %3$s buffer()\n" +
+            "    {\n" +
+            "        return buffer;\n" +
+            "    }\n\n" +
+            "    public int offset()\n" +
+            "    {\n" +
+            "        return offset;\n" +
+            "    }\n\n" +
+            "    public int encodedLength()\n" +
+            "    {\n" +
+            "        return ENCODED_LENGTH;\n" +
+            "    }\n",
+            className,
+            size,
+            bufferImplementation,
+            actingFields);
     }
 
     private CharSequence generateDecoderFlyweightCode(final String className, final Token token)
