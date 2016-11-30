@@ -36,6 +36,12 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
 public class JavaGenerator implements CodeGenerator
 {
+    public enum CodecType
+    {
+        DECODER,
+        ENCODER
+    }
+
     private static final String META_ATTRIBUTE_ENUM = "MetaAttribute";
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
@@ -1902,11 +1908,15 @@ public class JavaGenerator implements CodeGenerator
             className,
             readOnlyBuffer);
 
-        return generateFlyweightCode(className, token, wrapMethod, readOnlyBuffer);
+        return generateFlyweightCode(CodecType.DECODER, className, token, wrapMethod, readOnlyBuffer);
     }
 
     private CharSequence generateFlyweightCode(
-        final String className, final Token token, final String wrapMethod, final String bufferImplementation)
+        final CodecType codecType,
+        final String className,
+        final Token token,
+        final String wrapMethod,
+        final String bufferImplementation)
     {
         final HeaderStructure headerStructure = ir.headerStructure();
         final String blockLengthType = javaTypeName(headerStructure.blockLengthType());
@@ -1914,6 +1924,10 @@ public class JavaGenerator implements CodeGenerator
         final String schemaIdType = javaTypeName(headerStructure.schemaIdType());
         final String schemaVersionType = javaTypeName(headerStructure.schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
+        final String actingFields = codecType == CodecType.ENCODER ?
+            "" :
+            "    protected int actingBlockLength;\n" +
+            "    protected int actingVersion;\n";
 
         return String.format(
             "    public static final %1$s BLOCK_LENGTH = %2$s;\n" +
@@ -1924,8 +1938,7 @@ public class JavaGenerator implements CodeGenerator
             "    private %11$s buffer;\n" +
             "    protected int offset;\n" +
             "    protected int limit;\n" +
-            "    protected int actingBlockLength;\n" +
-            "    protected int actingVersion;\n" +
+                "%13$s" +
             "\n" +
             "    public %1$s sbeBlockLength()\n" +
             "    {\n" +
@@ -1979,7 +1992,8 @@ public class JavaGenerator implements CodeGenerator
             className,
             semanticType,
             bufferImplementation,
-            wrapMethod);
+            wrapMethod,
+            actingFields);
     }
 
     private CharSequence generateEncoderFlyweightCode(final String className, final Token token)
@@ -1995,7 +2009,7 @@ public class JavaGenerator implements CodeGenerator
             className,
             mutableBuffer);
 
-        return generateFlyweightCode(className, token, wrapMethod, mutableBuffer);
+        return generateFlyweightCode(CodecType.ENCODER, className, token, wrapMethod, mutableBuffer);
     }
 
     private CharSequence generateEncoderFields(final String containingClassName, final List<Token> tokens, final String indent)
