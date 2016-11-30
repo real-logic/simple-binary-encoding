@@ -1917,7 +1917,6 @@ public class JavaGenerator implements CodeGenerator
     {
         final String actingFields = codecType == CodecType.ENCODER ?
             "" :
-            "    private int actingBlockLength;\n" +
             "    private int actingVersion;\n";
 
         return String.format(
