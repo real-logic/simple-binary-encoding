@@ -460,7 +460,6 @@ public class JavaGenerator implements CodeGenerator
             indent + "        dimensions.numInGroup((%7$s)count);\n" +
             indent + "        index = -1;\n" +
             indent + "        this.count = count;\n" +
-            indent + "        blockLength = %6$d;\n" +
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
             indent + "    }\n\n",
             parentMessageClassName,
@@ -491,7 +490,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            throw new java.util.NoSuchElementException();\n" +
             indent + "        }\n\n" +
             indent + "        offset = parentMessage.limit();\n" +
-            indent + "        parentMessage.limit(offset + blockLength);\n" +
+            indent + "        parentMessage.limit(offset + sbeBlockLength());\n" +
             indent + "        ++index;\n\n" +
             indent + "        return this;\n" +
             indent + "    }\n",
@@ -548,7 +547,6 @@ public class JavaGenerator implements CodeGenerator
             indent + "    private final %3$s dimensions = new %3$s();\n" +
             indent + "    private %4$s parentMessage;\n" +
             indent + "    private %5$s buffer;\n" +
-            indent + "    private int blockLength;\n" +
             indent + "    private int count;\n" +
             indent + "    private int index;\n" +
             indent + "    private int offset;\n\n",
