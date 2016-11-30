@@ -455,7 +455,6 @@ public class JavaGenerator implements CodeGenerator
             indent + "        }\n\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
-            indent + "        actingVersion = SCHEMA_VERSION;\n" +
             indent + "        dimensions.wrap(buffer, parentMessage.limit());\n" +
             indent + "        dimensions.blockLength((%5$s)%6$d);\n" +
             indent + "        dimensions.numInGroup((%7$s)count);\n" +
@@ -550,7 +549,6 @@ public class JavaGenerator implements CodeGenerator
             indent + "    private %4$s parentMessage;\n" +
             indent + "    private %5$s buffer;\n" +
             indent + "    private int blockLength;\n" +
-            indent + "    private int actingVersion;\n" +
             indent + "    private int count;\n" +
             indent + "    private int index;\n" +
             indent + "    private int offset;\n\n",
