@@ -17,8 +17,6 @@ public class TokenCodecEncoder
     private MutableDirectBuffer buffer;
     protected int offset;
     protected int limit;
-    protected int actingBlockLength;
-    protected int actingVersion;
 
     public int sbeBlockLength()
     {
