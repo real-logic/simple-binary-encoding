@@ -351,6 +351,7 @@ public class XmlSchemaParser
                     ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
     }
 
+    @FunctionalInterface
     interface NodeFunction
     {
         void execute(Node node) throws XPathExpressionException;
