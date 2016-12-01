@@ -147,7 +147,7 @@ public class JavaGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(MESSAGE_HEADER_DECODER_TYPE))
         {
             generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_DECODER_TYPE, out, readOnlyBuffer, fqReadOnlyBuffer);
-            out.append(concatEncodingTokens(tokens, (token) -> generatePrimitiveDecoder(token.name(), token, BASE_INDENT)));
+            out.append(concatEncodingTokens(tokens, (token) -> generatePrimitiveDecoder(true, token.name(), token, BASE_INDENT)));
             out.append("}\n");
         }
     }
@@ -248,7 +248,7 @@ public class JavaGenerator implements CodeGenerator
             generateAnnotations(indent, className, groups, out, 0, this::decoderName);
             out.append(generateDeclaration(className, implementsString));
             out.append(generateDecoderFlyweightCode(className, msgToken));
-            out.append(generateDecoderFields(fields, indent));
+            out.append(generateDecoderFields(false, fields, indent));
 
             final StringBuilder sb = new StringBuilder();
             generateDecoderGroups(sb, className, groups, indent);
@@ -288,7 +288,7 @@ public class JavaGenerator implements CodeGenerator
 
             final List<Token> fields = new ArrayList<>();
             i = collectFields(tokens, i, fields);
-            sb.append(generateDecoderFields(fields, indent + INDENT));
+            sb.append(generateDecoderFields(false, fields, indent + INDENT));
 
             final List<Token> groups = new ArrayList<>();
             i = collectGroups(tokens, i, groups);
@@ -686,7 +686,7 @@ public class JavaGenerator implements CodeGenerator
                 "\n" +
                 indent + "    public int %sLength()\n" +
                 indent + "    {\n" +
-                         "%s" +
+                "%s" +
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        return (int)%s;\n" +
                 indent + "    }\n",
@@ -787,7 +787,7 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public String %1$s()\n" +
             indent + "    {\n" +
-                     "%2$s" +
+            "%2$s" +
             indent + "        final int headerLength = %3$d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        final int dataLength = (int)%4$s;\n" +
@@ -892,7 +892,7 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public int get%s(final %s dst, final int dstOffset, final int length)\n" +
             indent + "    {\n" +
-                     "%s" +
+            "%s" +
             indent + "        final int headerLength = %d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        final int dataLength = (int)%s;\n" +
@@ -980,7 +980,6 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private void generateCompositeFlyweightHeader(
-        final CodecType codecType,
         final Token token,
         final String typeName,
         final Writer out,
@@ -990,7 +989,7 @@ public class JavaGenerator implements CodeGenerator
     {
         out.append(generateFileHeader(typeName, ir.applicableNamespace(), fqBuffer));
         out.append(generateDeclaration(typeName, implementsString));
-        out.append(generateCompositeFlyweightCode(codecType, typeName, token.encodedLength(), buffer));
+        out.append(generateCompositeFlyweightCode(typeName, token.encodedLength(), buffer));
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
@@ -1021,8 +1020,7 @@ public class JavaGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(decoderName))
         {
             final String implementsString = implementsInterface(GEN_COMPOSITE_DECODER_FLYWEIGHT);
-            generateCompositeFlyweightHeader(
-                CodecType.DECODER, token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, implementsString);
+            generateCompositeFlyweightHeader(token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, implementsString);
 
             for (int i = 1, end = tokens.size() - 1; i < end; i++)
             {
@@ -1038,7 +1036,7 @@ public class JavaGenerator implements CodeGenerator
                 {
                     case ENCODING:
                         out.append(sb);
-                        out.append(generatePrimitiveDecoder(encodingToken.name(), encodingToken, BASE_INDENT));
+                        out.append(generatePrimitiveDecoder(true, encodingToken.name(), encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_ENUM:
@@ -1067,8 +1065,7 @@ public class JavaGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(encoderName))
         {
             final String implementsString = implementsInterface(GEN_COMPOSITE_ENCODER_FLYWEIGHT);
-            generateCompositeFlyweightHeader(
-                CodecType.ENCODER, token, encoderName, out, mutableBuffer, fqMutableBuffer, implementsString);
+            generateCompositeFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer, implementsString);
 
             for (int i = 1, end = tokens.size() - 1; i < end; i++)
             {
@@ -1415,7 +1412,8 @@ public class JavaGenerator implements CodeGenerator
         return "public enum " + name + "\n{\n";
     }
 
-    private CharSequence generatePrimitiveDecoder(final String propertyName, final Token token, final String indent)
+    private CharSequence generatePrimitiveDecoder(
+        final boolean inComposite, final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1427,7 +1425,7 @@ public class JavaGenerator implements CodeGenerator
         }
         else
         {
-            sb.append(generatePrimitivePropertyDecodeMethods(propertyName, token, indent));
+            sb.append(generatePrimitivePropertyDecodeMethods(inComposite, propertyName, token, indent));
         }
 
         return sb;
@@ -1453,11 +1451,11 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitivePropertyDecodeMethods(
-        final String propertyName, final Token token, final String indent)
+        final boolean inComposite, final String propertyName, final Token token, final String indent)
     {
         return token.matchOnLength(
-            () -> generatePrimitivePropertyDecode(propertyName, token, indent),
-            () -> generatePrimitiveArrayPropertyDecode(propertyName, token, indent));
+            () -> generatePrimitivePropertyDecode(inComposite, propertyName, token, indent),
+            () -> generatePrimitiveArrayPropertyDecode(inComposite, propertyName, token, indent));
     }
 
     private CharSequence generatePrimitivePropertyEncodeMethods(
@@ -1509,7 +1507,7 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitivePropertyDecode(
-        final String propertyName, final Token token, final String indent)
+        final boolean inComposite, final String propertyName, final Token token, final String indent)
     {
         final Encoding encoding = token.encoding();
         final String javaTypeName = javaTypeName(encoding.primitiveType());
@@ -1526,7 +1524,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n\n",
             javaTypeName,
             propertyName,
-            generateFieldNotPresentCondition(token.version(), encoding, indent),
+            generateFieldNotPresentCondition(inComposite, token.version(), encoding, indent),
             generateGet(encoding.primitiveType(), "offset + " + offset, byteOrderStr));
     }
 
@@ -1551,9 +1549,10 @@ public class JavaGenerator implements CodeGenerator
             generatePut(encoding.primitiveType(), "offset + " + offset, "value", byteOrderStr));
     }
 
-    private CharSequence generateFieldNotPresentCondition(final int sinceVersion, final Encoding encoding, final String indent)
+    private CharSequence generateFieldNotPresentCondition(
+        final boolean inComposite, final int sinceVersion, final Encoding encoding, final String indent)
     {
-        if (0 == sinceVersion)
+        if (inComposite || 0 == sinceVersion)
         {
             return "";
         }
@@ -1612,7 +1611,8 @@ public class JavaGenerator implements CodeGenerator
             sinceVersion);
     }
 
-    private CharSequence generatePrimitiveArrayPropertyDecode(final String propertyName, final Token token, final String indent)
+    private CharSequence generatePrimitiveArrayPropertyDecode(
+        final boolean inComposite, final String propertyName, final Token token, final String indent)
     {
         final Encoding encoding = token.encoding();
         final String javaTypeName = javaTypeName(encoding.primitiveType());
@@ -1639,7 +1639,7 @@ public class JavaGenerator implements CodeGenerator
             javaTypeName,
             propertyName,
             fieldLength,
-            generateFieldNotPresentCondition(token.version(), encoding, indent),
+            generateFieldNotPresentCondition(inComposite, token.version(), encoding, indent),
             offset,
             typeSize,
             generateGet(encoding.primitiveType(), "pos", byteOrderStr)));
@@ -1906,18 +1906,12 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private static CharSequence generateCompositeFlyweightCode(
-        final CodecType codecType,
         final String className,
         final int size,
         final String bufferImplementation)
     {
-        final String actingFields = codecType == CodecType.ENCODER ?
-            "" :
-            "    private int actingVersion;\n";
-
         return String.format(
             "    public static final int ENCODED_LENGTH = %2$d;\n" +
-            "%4$s" +
             "    private int offset;\n" +
             "    private %3$s buffer;\n\n" +
             "    public %1$s wrap(final %3$s buffer, final int offset)\n" +
@@ -1940,8 +1934,7 @@ public class JavaGenerator implements CodeGenerator
             "    }\n",
             className,
             size,
-            bufferImplementation,
-            actingFields);
+            bufferImplementation);
     }
 
     private CharSequence generateDecoderFlyweightCode(final String className, final Token token)
@@ -2101,7 +2094,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateDecoderFields(final List<Token> tokens, final String indent)
+    private CharSequence generateDecoderFields(final boolean inComposite, final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -2121,7 +2114,7 @@ public class JavaGenerator implements CodeGenerator
                 switch (typeToken.signal())
                 {
                     case ENCODING:
-                        sb.append(generatePrimitiveDecoder(propertyName, typeToken, indent));
+                        sb.append(generatePrimitiveDecoder(inComposite, propertyName, typeToken, indent));
                         break;
 
                     case BEGIN_ENUM:
