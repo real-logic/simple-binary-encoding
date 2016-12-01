@@ -8,8 +8,8 @@ import org.agrona.DirectBuffer;
 public class VarDataEncodingDecoder
 {
     public static final int ENCODED_LENGTH = -1;
-    private DirectBuffer buffer;
     private int offset;
+    private DirectBuffer buffer;
 
     public VarDataEncodingDecoder wrap(final DirectBuffer buffer, final int offset)
     {
