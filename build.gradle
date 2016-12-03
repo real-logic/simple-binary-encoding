@@ -86,7 +86,8 @@ def projectPom = {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.2'
+    gradleVersion = '3.2.1'
+    distributionType = 'ALL'
 }
 
 configurations {
