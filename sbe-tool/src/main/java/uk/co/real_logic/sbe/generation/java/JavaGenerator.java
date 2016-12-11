@@ -31,12 +31,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
+import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.DECODER;
+import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.ENCODER;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
 public class JavaGenerator implements CodeGenerator
 {
-    public enum CodecType
+    enum CodecType
     {
         DECODER,
         ENCODER
@@ -248,7 +250,7 @@ public class JavaGenerator implements CodeGenerator
             generateAnnotations(indent, className, groups, out, 0, this::decoderName);
             out.append(generateDeclaration(className, implementsString));
             out.append(generateDecoderFlyweightCode(className, msgToken));
-            out.append(generateDecoderFields(false, fields, indent));
+            out.append(generateDecoderFields(fields, indent));
 
             final StringBuilder sb = new StringBuilder();
             generateDecoderGroups(sb, className, groups, indent);
@@ -288,7 +290,7 @@ public class JavaGenerator implements CodeGenerator
 
             final List<Token> fields = new ArrayList<>();
             i = collectFields(tokens, i, fields);
-            sb.append(generateDecoderFields(false, fields, indent + INDENT));
+            sb.append(generateDecoderFields(fields, indent + INDENT));
 
             final List<Token> groups = new ArrayList<>();
             i = collectGroups(tokens, i, groups);
@@ -519,11 +521,10 @@ public class JavaGenerator implements CodeGenerator
             indent + "    private final %3$s dimensions = new %3$s();\n" +
             indent + "    private %4$s parentMessage;\n" +
             indent + "    private %5$s buffer;\n" +
-            indent + "    private int blockLength;\n" +
-            indent + "    private int actingVersion;\n" +
             indent + "    private int count;\n" +
             indent + "    private int index;\n" +
-            indent + "    private int offset;\n\n",
+            indent + "    private int offset;\n" +
+            indent + "    private int blockLength;\n\n",
             formatClassName(groupName),
             dimensionHeaderSize,
             decoderName(dimensionsClassName),
@@ -590,7 +591,7 @@ public class JavaGenerator implements CodeGenerator
 
         final String actingVersionGuard = token.version() == 0 ?
             "" :
-            indent + "        if (actingVersion < " + token.version() + ")\n" +
+            indent + "        if (parentMessage.actingVersion < " + token.version() + ")\n" +
             indent + "        {\n" +
             indent + "            " + propertyName + ".count = 0;\n" +
             indent + "            " + propertyName + ".index = -1;\n" +
@@ -1041,17 +1042,17 @@ public class JavaGenerator implements CodeGenerator
 
                     case BEGIN_ENUM:
                         out.append(sb);
-                        out.append(generateEnumDecoder(encodingToken, propertyName, encodingToken, BASE_INDENT));
+                        out.append(generateEnumDecoder(true, encodingToken, propertyName, encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_SET:
                         out.append(sb);
-                        out.append(generateBitSetProperty(propertyName, encodingToken, BASE_INDENT, typeName));
+                        out.append(generateBitSetProperty(true, DECODER, propertyName, encodingToken, BASE_INDENT, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
                         out.append(sb);
-                        out.append(generateCompositeProperty(propertyName, encodingToken, BASE_INDENT, typeName));
+                        out.append(generateCompositeProperty(true, DECODER, propertyName, encodingToken, BASE_INDENT, typeName));
                         i += encodingToken.componentTokenCount();
                         break;
                 }
@@ -1091,12 +1092,12 @@ public class JavaGenerator implements CodeGenerator
 
                     case BEGIN_SET:
                         out.append(sb);
-                        out.append(generateBitSetProperty(propertyName, encodingToken, BASE_INDENT, typeName));
+                        out.append(generateBitSetProperty(true, ENCODER, propertyName, encodingToken, BASE_INDENT, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
                         out.append(sb);
-                        out.append(generateCompositeProperty(propertyName, encodingToken, BASE_INDENT, typeName));
+                        out.append(generateCompositeProperty(true, ENCODER, propertyName, encodingToken, BASE_INDENT, typeName));
                         i += encodingToken.componentTokenCount();
                         break;
                 }
@@ -1558,7 +1559,7 @@ public class JavaGenerator implements CodeGenerator
         }
 
         return String.format(
-            indent + "        if (actingVersion < %d)\n" +
+            indent + "        if (parentMessage.actingVersion < %d)\n" +
             indent + "        {\n" +
             indent + "            return %s;\n" +
             indent + "        }\n\n",
@@ -1574,7 +1575,7 @@ public class JavaGenerator implements CodeGenerator
         }
 
         return String.format(
-            indent + "        if (actingVersion < %d)\n" +
+            indent + "        if (parentMessage.actingVersion < %d)\n" +
             indent + "        {\n" +
             indent + "            return 0;\n" +
             indent + "        }\n\n",
@@ -1589,22 +1590,23 @@ public class JavaGenerator implements CodeGenerator
         }
 
         return String.format(
-            indent + "        if (actingVersion < %d)\n" +
+            indent + "        if (parentMessage.actingVersion < %d)\n" +
             indent + "        {\n" +
             indent + "            return \"\";\n" +
             indent + "        }\n\n",
             sinceVersion);
     }
 
-    private static CharSequence generateTypeFieldNotPresentCondition(final int sinceVersion, final String indent)
+    private static CharSequence generatePropertyNotPresentCondition(
+        final boolean inComposite, final CodecType codecType, final int sinceVersion, final String indent)
     {
-        if (0 == sinceVersion)
+        if (inComposite || codecType == ENCODER || 0 == sinceVersion)
         {
             return "";
         }
 
         return String.format(
-            indent + "        if (actingVersion < %d)\n" +
+            indent + "        if (parentMessage.actingVersion < %d)\n" +
             indent + "        {\n" +
             indent + "            return null;\n" +
             indent + "        }\n\n",
@@ -1906,9 +1908,7 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private static CharSequence generateCompositeFlyweightCode(
-        final String className,
-        final int size,
-        final String bufferImplementation)
+        final String className, final int size, final String bufferImplementation)
     {
         return String.format(
             "    public static final int ENCODED_LENGTH = %2$d;\n" +
@@ -1953,7 +1953,7 @@ public class JavaGenerator implements CodeGenerator
             className,
             readOnlyBuffer);
 
-        return generateFlyweightCode(CodecType.DECODER, className, token, wrapMethod, readOnlyBuffer);
+        return generateFlyweightCode(DECODER, className, token, wrapMethod, readOnlyBuffer);
     }
 
     private CharSequence generateFlyweightCode(
@@ -2082,11 +2082,11 @@ public class JavaGenerator implements CodeGenerator
                         break;
 
                     case BEGIN_SET:
-                        sb.append(generateBitSetProperty(propertyName, typeToken, indent, typeName));
+                        sb.append(generateBitSetProperty(false, ENCODER, propertyName, typeToken, indent, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
-                        sb.append(generateCompositeProperty(propertyName, typeToken, indent, typeName));
+                        sb.append(generateCompositeProperty(false, ENCODER, propertyName, typeToken, indent, typeName));
                         break;
                 }
             });
@@ -2094,7 +2094,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateDecoderFields(final boolean inComposite, final List<Token> tokens, final String indent)
+    private CharSequence generateDecoderFields(final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -2114,19 +2114,19 @@ public class JavaGenerator implements CodeGenerator
                 switch (typeToken.signal())
                 {
                     case ENCODING:
-                        sb.append(generatePrimitiveDecoder(inComposite, propertyName, typeToken, indent));
+                        sb.append(generatePrimitiveDecoder(false, propertyName, typeToken, indent));
                         break;
 
                     case BEGIN_ENUM:
-                        sb.append(generateEnumDecoder(fieldToken, propertyName, typeToken, indent));
+                        sb.append(generateEnumDecoder(false, fieldToken, propertyName, typeToken, indent));
                         break;
 
                     case BEGIN_SET:
-                        sb.append(generateBitSetProperty(propertyName, typeToken, indent, typeName));
+                        sb.append(generateBitSetProperty(false, DECODER, propertyName, typeToken, indent, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
-                        sb.append(generateCompositeProperty(propertyName, typeToken, indent, typeName));
+                        sb.append(generateCompositeProperty(false, DECODER, propertyName, typeToken, indent, typeName));
                         break;
                 }
             });
@@ -2228,7 +2228,11 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generateEnumDecoder(
-        final Token signalToken, final String propertyName, final Token token, final String indent)
+        final boolean inComposite,
+        final Token signalToken,
+        final String propertyName,
+        final Token token,
+        final String indent)
     {
         final String enumName = formatClassName(token.name());
         final Encoding encoding = token.encoding();
@@ -2256,7 +2260,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n\n",
                 enumName,
                 propertyName,
-                generateTypeFieldNotPresentCondition(token.version(), indent),
+                generatePropertyNotPresentCondition(inComposite, DECODER, token.version(), indent),
                 enumName,
                 generateGet(encoding.primitiveType(), "offset + " + token.offset(), byteOrderString(encoding)));
         }
@@ -2288,7 +2292,12 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generateBitSetProperty(
-        final String propertyName, final Token token, final String indent, final String bitSetName)
+        final boolean inComposite,
+        final CodecType codecType,
+        final String propertyName,
+        final Token token,
+        final String indent,
+        final String bitSetName)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -2309,7 +2318,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             bitSetName,
             propertyName,
-            generateTypeFieldNotPresentCondition(token.version(), indent),
+            generatePropertyNotPresentCondition(inComposite, codecType, token.version(), indent),
             propertyName,
             token.offset(),
             propertyName));
@@ -2318,7 +2327,12 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generateCompositeProperty(
-        final String propertyName, final Token token, final String indent, final String compositeName)
+        final boolean inComposite,
+        final CodecType codecType,
+        final String propertyName,
+        final Token token,
+        final String indent,
+        final String compositeName)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -2339,7 +2353,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             compositeName,
             propertyName,
-            generateTypeFieldNotPresentCondition(token.version(), indent),
+            generatePropertyNotPresentCondition(inComposite, codecType, token.version(), indent),
             propertyName,
             token.offset(),
             propertyName));
@@ -2648,9 +2662,9 @@ public class JavaGenerator implements CodeGenerator
         append(sb, indent, "    builder.append(\"|sbeSchemaId=\");");
         append(sb, indent, "    builder.append(SCHEMA_ID);");
         append(sb, indent, "    builder.append(\"|sbeSchemaVersion=\");");
-        append(sb, indent, "    if (actingVersion != SCHEMA_VERSION)");
+        append(sb, indent, "    if (parentMessage.actingVersion != SCHEMA_VERSION)");
         append(sb, indent, "    {");
-        append(sb, indent, "        builder.append(actingVersion);");
+        append(sb, indent, "        builder.append(parentMessage.actingVersion);");
         append(sb, indent, "        builder.append('/');");
         append(sb, indent, "    }");
         append(sb, indent, "    builder.append(SCHEMA_VERSION);");
@@ -2850,6 +2864,7 @@ public class JavaGenerator implements CodeGenerator
 
     private void appendToString(final StringBuilder sb, final String indent)
     {
+        sb.append('\n');
         append(sb, indent, "public String toString()");
         append(sb, indent, "{");
         append(sb, indent, "    return appendTo(new StringBuilder(100)).toString();");

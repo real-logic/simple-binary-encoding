@@ -90,6 +90,7 @@ public class VarDataEncodingEncoder
     {
         return (short)254;
     }
+
     public String toString()
     {
         return appendTo(new StringBuilder(100)).toString();

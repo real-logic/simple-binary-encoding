@@ -1339,6 +1339,7 @@ public class TokenCodecDecoder
         return value;
     }
 
+
     public String toString()
     {
         return appendTo(new StringBuilder(100)).toString();
@@ -1353,9 +1354,9 @@ public class TokenCodecDecoder
         builder.append("|sbeSchemaId=");
         builder.append(SCHEMA_ID);
         builder.append("|sbeSchemaVersion=");
-        if (actingVersion != SCHEMA_VERSION)
+        if (parentMessage.actingVersion != SCHEMA_VERSION)
         {
-            builder.append(actingVersion);
+            builder.append(parentMessage.actingVersion);
             builder.append('/');
         }
         builder.append(SCHEMA_VERSION);

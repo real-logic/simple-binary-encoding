@@ -120,9 +120,9 @@ public class CompositeType extends Type
     }
 
     /**
-     * Return list of the Type that compose this composite
+     * Return list of the {@link Type}s that compose this composite
      *
-     * @return {@link List} that holds the types in this composite
+     * @return {@link List} that holds the {@link Type}s in this composite
      */
     public List<Type> getTypeList()
     {
