@@ -309,7 +309,7 @@ public class CppGenerator implements CodeGenerator
             indent + "#else\n" +
             indent + "    template<class Func> inline void forEach(Func&& func)\n" +
             indent + "    {\n" +
-            indent + "        while(hasNext())\n" +
+            indent + "        while (hasNext())\n" +
             indent + "        {\n" +
             indent + "            next(); func(*this);\n" +
             indent + "        }\n" +
