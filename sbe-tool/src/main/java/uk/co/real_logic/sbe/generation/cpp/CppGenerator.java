@@ -301,7 +301,7 @@ public class CppGenerator implements CodeGenerator
             indent + "#if __cplusplus < 201103L\n" +
             indent + "    template<class Func> inline void forEach(Func& func)\n" +
             indent + "    {\n" +
-            indent + "        while(hasNext())\n" +
+            indent + "        while (hasNext())\n" +
             indent + "        {\n" +
             indent + "            next(); func(*this);\n" +
             indent + "        }\n" +
@@ -488,7 +488,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "    {\n" +
                 indent + "        if (str.length() > %6$d)\n" +
                 indent + "        {\n" +
-                indent + "             throw std::runtime_error(\"std::string length too long for length type [E109]\");\n" +
+                indent + "             throw std::runtime_error(\"std::string too long for length type [E109]\");\n" +
                 indent + "        }\n" +
                 indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
                 indent + "        std::uint64_t lengthPosition = position();\n" +
