@@ -18,6 +18,8 @@ package uk.co.real_logic.sbe.generation;
 import org.agrona.generation.PackageOutputManager;
 import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
 import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
+import uk.co.real_logic.sbe.generation.golang.GolangGenerator;
+import uk.co.real_logic.sbe.generation.golang.GolangOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
@@ -51,8 +53,15 @@ public enum TargetCodeGenerator
         {
             return new CppGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
-    };
+    },
 
+    GOLANG()
+    {
+        public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
+        {
+            return new GolangGenerator(ir, new GolangOutputManager(outputDir, ir.applicableNamespace()));
+        }
+    };
 
     /**
      * Get a new {@link CodeGenerator} for the given target language.
