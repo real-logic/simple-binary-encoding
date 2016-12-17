@@ -127,7 +127,7 @@ subprojects {
 
     checkstyle {
         configFile = new File(rootDir, 'config/checkstyle.xml')
-        toolVersion = '7.2'
+        toolVersion = '7.3'
     }
 
     compileJava {
