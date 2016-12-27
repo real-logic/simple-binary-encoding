@@ -29,7 +29,7 @@ public class EncodedCarTestBase
 
     private static byte[] vehicleCode;
     private static byte[] manufacturerCode;
-    private static byte[] brand;
+    private static byte[] manufacturer;
     private static byte[] model;
 
     @BeforeClass
@@ -39,7 +39,7 @@ public class EncodedCarTestBase
         {
             vehicleCode = "abcdef".getBytes(CarEncoder.vehicleCodeCharacterEncoding());
             manufacturerCode = "123".getBytes(EngineEncoder.manufacturerCodeCharacterEncoding());
-            brand = "Honda".getBytes(CarEncoder.brandCharacterEncoding());
+            manufacturer = "Honda".getBytes(CarEncoder.manufacturerCharacterEncoding());
             model = "Civic VTi".getBytes(CarEncoder.modelCharacterEncoding());
         }
         catch (final UnsupportedEncodingException ex)
@@ -106,7 +106,7 @@ public class EncodedCarTestBase
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-        CAR.brand(new String(brand));
+        CAR.manufacturer(new String(manufacturer));
         CAR.putModel(model, srcOffset, model.length);
 
         bufferOffset += CAR.encodedLength();

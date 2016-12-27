@@ -37,15 +37,15 @@ public final class ReflectionUtil
         return object.getClass().getMethod(fieldName).invoke(object);
     }
 
-    static String getBrand(final Object decoder) throws Exception
+    static String getManufacturer(final Object decoder) throws Exception
     {
-        return (String)get(decoder, "brand");
+        return (String)get(decoder, "manufacturer");
     }
 
-    static void setBrand(final Object encoder,
+    static void setManufacturer(final Object encoder,
         final String value) throws Exception
     {
-        encoder.getClass().getMethod("brand", String.class).invoke(encoder, value);
+        encoder.getClass().getMethod("manufacturer", String.class).invoke(encoder, value);
     }
 
     static void putSerialNumber(final Object encoder, final long serial) throws Exception
