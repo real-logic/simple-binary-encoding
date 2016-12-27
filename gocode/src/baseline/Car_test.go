@@ -22,7 +22,7 @@ func TestEncodeDecodeCar(t *testing.T) {
 	var engine Engine
 	engine = Engine{2000, 4, 0, manufacturerCode, [6]byte{}, EngineBooster{BoostType.NITROUS, 200}}
 
-	brand := []uint8("Honda")
+	manufacturer := []uint8("Honda")
 	model := []uint8("Civic VTi")
 	activationCode := []uint8("deadbeef")
 
@@ -46,7 +46,7 @@ func TestEncodeDecodeCar(t *testing.T) {
 	pf = append(pf, CarPerformanceFigures{99, acc2})
 
 
-	in := Car{1234, 2013, BooleanType.T, Model.A, [5]uint32{0, 1, 2, 3, 4}, vehicleCode, optionalExtras, Model.A, engine, fuel, pf, brand, model, activationCode}
+	in := Car{1234, 2013, BooleanType.T, Model.A, [5]uint32{0, 1, 2, 3, 4}, vehicleCode, optionalExtras, Model.A, engine, fuel, pf, manufacturer, model, activationCode}
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(buf, binary.LittleEndian); err != nil {

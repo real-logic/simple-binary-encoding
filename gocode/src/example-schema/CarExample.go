@@ -256,7 +256,7 @@ func makeCar() baseline.Car {
 	var engine baseline.Engine
 	engine = baseline.Engine{2000, 4, 0, manufacturerCode, [6]byte{}, baseline.EngineBooster{baseline.BoostType.NITROUS, 200}}
 
-	brand := []uint8("Honda")
+	manufacturer := []uint8("Honda")
 	model := []uint8("Civic VTi")
 	activationCode := []uint8("deadbeef")
 
@@ -280,7 +280,7 @@ func makeCar() baseline.Car {
 	pf = append(pf, baseline.CarPerformanceFigures{99, acc2})
 
 
-	car := baseline.Car{1234, 2013, baseline.BooleanType.T, baseline.Model.A, [5]uint32{0, 1, 2, 3, 4}, vehicleCode, optionalExtras, baseline.Model.A, engine, fuel, pf, brand, model, activationCode}
+	car := baseline.Car{1234, 2013, baseline.BooleanType.T, baseline.Model.A, [5]uint32{0, 1, 2, 3, 4}, vehicleCode, optionalExtras, baseline.Model.A, engine, fuel, pf, manufacturer, model, activationCode}
 
 	return car
 }
