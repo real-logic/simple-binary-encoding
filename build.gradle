@@ -481,7 +481,7 @@ task(generateGolangIrCodecs, type: JavaExec) {
 }
 
 task generateIrCodecs {
-    description = 'Generate Java, C++ and golang IR Codecs'
+    description = 'Generate Java, C++, and golang IR Codecs'
     dependsOn 'generateJavaIrCodecs', 'generateCppIrCodecs', 'generateGolangIrCodecs'
 }
 
