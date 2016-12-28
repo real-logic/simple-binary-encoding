@@ -16,6 +16,7 @@ build-local.properties
 deps
 /bin
 build
+classes
 .gradle
 target
 GTAGS
@@ -30,7 +31,7 @@ CMakeFiles
 lib
 gtest-prefix
 CMakeCache.txt
-Makefile
+./Makefile
 binaries
 codecs
 Testing
@@ -60,6 +61,24 @@ cppbuild/*.cache
 cppbuild/Debug
 cppbuild/Release
 cppbuild/Win32
+
+# golang
+gocode/pkg
+gocode/src/baseline/*.go
+!gocode/src/baseline/*_test.go
+gocode/src/composite/*.go
+!gocode/src/composite/*_test.go
+gocode/src/composite_elements/*.go
+!gocode/src/composite_elements/*_test.go
+gocode/src/group_with_data/*.go
+!gocode/src/group_with_data/*_test.go
+gocode/src/mktdata/*.go
+!gocode/src/mktdata/*_test.go
+gocode/src/simple/*.go
+!gocode/src/simple/*_test.go
+gocode/src/*/*/*.go
+!gocode/src/*/*/*_test.go
+gocode/src/example-schema/example-schema
 
 # Mac
 .DS_Store

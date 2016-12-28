@@ -24,8 +24,8 @@ using namespace uk::co::real_logic::sbe::benchmarks;
 char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
 uint32_t SOMENUMBERS[] = { 1, 2, 3, 4, 5 };
 char MANUFACTURER_CODE[] = {'1', '2', '3'};
-const char *MAKE = "Honda";
-int MAKELEN = strlen(MAKE);
+const char *MANUFACTURER = "Honda";
+int MANUFACTURERLEN = strlen(MANUFACTURER);
 const char *MODEL = "Civic VTi";
 int MODELLEN = strlen(MODEL);
 
@@ -73,7 +73,7 @@ public:
                 .next().mph(60).seconds(7.1f)
                 .next().mph(100).seconds(11.8f);
 
-        car.putMake(MAKE, MAKELEN);
+        car.putManufacturer(MANUFACTURER, MANUFACTURERLEN);
         car.putModel(MODEL, MODELLEN);
 
         return car.encodedLength();
@@ -130,7 +130,7 @@ public:
             }
         }
 
-        tmpChar = car.make();
+        tmpChar = car.manufacturer();
         tmpChar = car.model();
 
         return car.encodedLength();

@@ -46,7 +46,7 @@ static const uint8_t fieldIdPerfOctaneRating = 14;
 static const uint8_t fieldIdPerfAcceleration = 15;
 static const uint8_t fieldIdPerfAccMph = 16;
 static const uint8_t fieldIdPerfAccSeconds = 17;
-static const uint8_t fieldIdMake = 18;
+static const uint8_t fieldIdManufacturer = 18;
 static const uint8_t fieldIdModel = 19;
 static const uint8_t fieldIdActivationCode = 20;
 
@@ -63,13 +63,13 @@ static char MANUFACTURER_CODE[] = { '1', '2', '3' };
 static const char *FUEL_FIGURES_1_USAGE_DESCRIPTION = "Urban Cycle";
 static const char *FUEL_FIGURES_2_USAGE_DESCRIPTION = "Combined Cycle";
 static const char *FUEL_FIGURES_3_USAGE_DESCRIPTION = "Highway Cycle";
-static const char *MAKE = "Honda";
+static const char *MANUFACTURER = "Honda";
 static const char *MODEL = "Civic VTi";
 static const char *ACTIVATION_CODE = "deadbeef";
 
 static const int VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
 static const int MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
-static const size_t MAKE_LENGTH = 5;
+static const size_t MANUFACTURER_LENGTH = 5;
 static const size_t MODEL_LENGTH = 9;
 static const size_t ACTIVATION_CODE_LENGTH = 8;
 static const size_t PERFORMANCE_FIGURES_COUNT = 2;
@@ -178,7 +178,7 @@ enum EventNumber
     EN_performanceFigures2_acceleration3_seconds,
     EN_performanceFigures2_endAcceleration3,
     EN_endPerformanceFigures2,
-    EN_make,
+    EN_manufacturer,
     EN_model,
     EN_activationCode,
     EN_endMessage
@@ -274,7 +274,7 @@ public:
             .next().mph(perf2bMph).seconds(perf2bSeconds)
             .next().mph(perf2cMph).seconds(perf2cSeconds);
 
-        car.putMake(MAKE, static_cast<int>(strlen(MAKE)));
+        car.putManufacturer(MANUFACTURER, static_cast<int>(strlen(MANUFACTURER)));
         car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
         car.putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
 
@@ -1027,11 +1027,11 @@ public:
                 EXPECT_EQ(std::string(buffer, length), FUEL_FIGURES_3_USAGE_DESCRIPTION);
                 break;
             }
-            case EN_make:
+            case EN_manufacturer:
             {
-                EXPECT_EQ(fieldToken.fieldId(), fieldIdMake);
-                EXPECT_EQ(length, MAKE_LENGTH);
-                EXPECT_EQ(std::string(buffer, MAKE_LENGTH), MAKE);
+                EXPECT_EQ(fieldToken.fieldId(), fieldIdManufacturer);
+                EXPECT_EQ(length, MANUFACTURER_LENGTH);
+                EXPECT_EQ(std::string(buffer, MANUFACTURER_LENGTH), MANUFACTURER);
                 break;
             }
             case EN_model:

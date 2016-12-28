@@ -479,9 +479,19 @@ task(generateCppIrCodecs, type: JavaExec) {
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 
+task(generateGolangIrCodecs, type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+        'sbe.output.dir': 'sbe-tool/src/main/golang',
+        'sbe.target.language': 'golang',
+        'sbe.validation.xsd': validationXsdPath)
+    args = ['sbe-tool/src/main/resources/sbe-ir.xml']
+}
+
 task generateIrCodecs {
-    description = 'Generate Java and C++ IR Codecs'
-    dependsOn 'generateJavaIrCodecs', 'generateCppIrCodecs'
+    description = 'Generate Java, C++ and golang IR Codecs'
+    dependsOn 'generateJavaIrCodecs', 'generateCppIrCodecs', 'generateGolangIrCodecs'
 }
 
 task runBenchmarks(type: Exec) {
