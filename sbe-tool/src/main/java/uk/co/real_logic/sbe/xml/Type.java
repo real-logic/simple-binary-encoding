@@ -29,6 +29,7 @@ public abstract class Type
     private final Presence presence;
     private final String description;
     private final int sinceVersion;
+    private final int deprecated;
     private final String semanticType;
 
     private int offsetAttribute;
@@ -53,6 +54,7 @@ public abstract class Type
         presence = Presence.get(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
         sinceVersion = Integer.parseInt(getAttributeValue(node, "sinceVersion", "0"));
+        deprecated = Integer.parseInt(getAttributeValue(node, "deprecated", "0"));
         semanticType = getAttributeValueOrNull(node, "semanticType");
         offsetAttribute = Integer.parseInt(getAttributeValue(node, "offset", "-1"));
     }
@@ -64,6 +66,7 @@ public abstract class Type
      * @param presence     of the type
      * @param description  of the type or null
      * @param sinceVersion for the type
+     * @param deprecated   version in which this was deprecated.
      * @param semanticType of the type or null
      */
     public Type(
@@ -71,12 +74,14 @@ public abstract class Type
         final Presence presence,
         final String description,
         final int sinceVersion,
+        final int deprecated,
         final String semanticType)
     {
         this.name = name;
         this.presence = presence;
         this.description = description;
         this.sinceVersion = sinceVersion;
+        this.deprecated = deprecated;
         this.semanticType = semanticType;
         this.offsetAttribute = -1;
     }
@@ -128,6 +133,16 @@ public abstract class Type
     public int sinceVersion()
     {
         return sinceVersion;
+    }
+
+    /**
+     * Version in which type was deprecated. Only valid if greater than zero.
+     *
+     * @return version in which the type was deprecated.
+     */
+    public int deprecated()
+    {
+        return deprecated;
     }
 
     /**

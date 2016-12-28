@@ -225,6 +225,7 @@ public class EnumType extends Type
         private final String description;
         private final PrimitiveValue value;
         private final int sinceVersion;
+        private final int deprecated;
 
         /**
          * Construct a ValidValue given the XML node and the encodingType.
@@ -238,6 +239,7 @@ public class EnumType extends Type
             description = getAttributeValueOrNull(node, "description");
             value = PrimitiveValue.parse(node.getFirstChild().getNodeValue(), encodingType);
             sinceVersion = Integer.parseInt(getAttributeValue(node, "sinceVersion", "0"));
+            deprecated = Integer.parseInt(getAttributeValue(node, "deprecated", "0"));
 
             checkForValidName(node, name);
         }
@@ -280,6 +282,16 @@ public class EnumType extends Type
         public int sinceVersion()
         {
             return sinceVersion;
+        }
+
+        /**
+         * Version in which {@link ValidValue} was deprecated. Only valid if greater than zero.
+         *
+         * @return version in which the {@link ValidValue} was deprecated.
+         */
+        public int deprecated()
+        {
+            return deprecated;
         }
     }
 }

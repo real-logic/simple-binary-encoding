@@ -101,6 +101,7 @@ public class Token
     private final String description;
     private final int id;
     private final int version;
+    private final int deprecated;
     private int encodedLength;
     private final int offset;
     private int componentTokenCount;
@@ -109,15 +110,16 @@ public class Token
     /**
      * Construct an {@link Token} by providing values for all fields.
      *
-     * @param signal              for the token role
-     * @param name                of the token in the message
-     * @param description         of what the token is for
-     * @param id                  as the identifier in the message declaration
-     * @param version             application within the template
-     * @param encodedLength       of the component part
-     * @param offset              in the underlying message as octets
-     * @param componentTokenCount number of tokens in this component
-     * @param encoding            of the primitive field
+     * @param signal              for the token role.
+     * @param name                of the token in the message.
+     * @param description         of what the token is for.
+     * @param id                  as the identifier in the message declaration.
+     * @param version             application within the template.
+     * @param deprecated          as of this version.
+     * @param encodedLength       of the component part.
+     * @param offset              in the underlying message as octets.
+     * @param componentTokenCount number of tokens in this component.
+     * @param encoding            of the primitive field.
      */
     public Token(
         final Signal signal,
@@ -125,6 +127,7 @@ public class Token
         final String description,
         final int id,
         final int version,
+        final int deprecated,
         final int encodedLength,
         final int offset,
         final int componentTokenCount,
@@ -139,6 +142,7 @@ public class Token
         this.description = description;
         this.id = id;
         this.version = version;
+        this.deprecated = deprecated;
         this.encodedLength = encodedLength;
         this.offset = offset;
         this.componentTokenCount = componentTokenCount;
@@ -194,6 +198,16 @@ public class Token
     public int version()
     {
         return version;
+    }
+
+    /**
+     * The version in which this context was deprecated.
+     *
+     * @return the version in which this context was deprecated.
+     */
+    public int deprecated()
+    {
+        return deprecated;
     }
 
     /**
@@ -333,6 +347,7 @@ public class Token
             ", description='" + description + '\'' +
             ", id=" + id +
             ", version=" + version +
+            ", deprecated=" + deprecated +
             ", encodedLength=" + encodedLength +
             ", offset=" + offset +
             ", componentTokenCount=" + componentTokenCount +
@@ -347,6 +362,7 @@ public class Token
         private String description;
         private int id = INVALID_ID;
         private int version = 0;
+        private int deprecated = 0;
         private int size = 0;
         private int offset = 0;
         private int componentTokenCount = 1;
@@ -382,6 +398,12 @@ public class Token
             return this;
         }
 
+        public Builder deprecated(final int deprecated)
+        {
+            this.deprecated = deprecated;
+            return this;
+        }
+
         public Builder size(final int size)
         {
             this.size = size;
@@ -408,7 +430,7 @@ public class Token
 
         public Token build()
         {
-            return new Token(signal, name, description, id, version, size, offset, componentTokenCount, encoding);
+            return new Token(signal, name, description, id, version, deprecated, size, offset, componentTokenCount, encoding);
         }
     }
 }

@@ -142,7 +142,7 @@ public class EncodedDataType extends Type
         final int length,
         final boolean varLen)
     {
-        super(name, presence, description, 0, semanticType);
+        super(name, presence, description, 0, 0, semanticType);
 
         this.primitiveType = primitiveType;
         this.length = length;

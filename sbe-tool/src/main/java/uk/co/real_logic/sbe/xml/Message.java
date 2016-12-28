@@ -48,6 +48,8 @@ public class Message
     private final int id;
     private final String name;
     private final String description;
+    private final int sinceVersion;
+    private final int deprecated;
     private final int blockLength;
     private final List<Field> fieldList;
     private final String semanticType;
@@ -67,6 +69,8 @@ public class Message
         name = getAttributeValue(messageNode, "name");                                      // required
         description = getAttributeValueOrNull(messageNode, "description");                  // optional
         blockLength = Integer.parseInt(getAttributeValue(messageNode, "blockLength", "0")); // 0 means not set
+        sinceVersion = Integer.parseInt(getAttributeValue(messageNode, "sinceVersion", "0"));
+        deprecated = Integer.parseInt(getAttributeValue(messageNode, "deprecated", "0"));
         semanticType = getAttributeValueOrNull(messageNode, "semanticType");                // optional
         this.typeByNameMap = typeByNameMap;
 
@@ -115,6 +119,26 @@ public class Message
     public String semanticType()
     {
         return semanticType;
+    }
+
+    /**
+     * The version since this was added to the template.
+     *
+     * @return version since this was added to the template.
+     */
+    public int sinceVersion()
+    {
+        return sinceVersion;
+    }
+
+    /**
+     * Version in which message was deprecated. Only valid if greater than zero.
+     *
+     * @return version in which the message was deprecated.
+     */
+    public int deprecated()
+    {
+        return deprecated;
     }
 
     /**

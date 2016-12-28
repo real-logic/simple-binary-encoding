@@ -102,6 +102,7 @@ public class IrGenerator
             .size(msg.blockLength())
             .id(msg.id())
             .version(version)
+            .deprecated(msg.deprecated())
             .encoding(new Encoding.Builder()
                 .semanticType(msg.semanticType())
                 .build())
@@ -143,6 +144,7 @@ public class IrGenerator
             .id(field.id())
             .offset(field.computedOffset())
             .version(field.sinceVersion())
+            .deprecated(field.deprecated())
             .encoding(encodingBuilder.build())
             .build();
 
@@ -206,6 +208,7 @@ public class IrGenerator
             .offset(currOffset)
             .size(type.encodedLength())
             .version(type.sinceVersion())
+            .deprecated(type.deprecated())
             .description(type.description())
             .encoding(new Encoding.Builder()
                 .semanticType(semanticTypeOf(type, field))
@@ -214,6 +217,7 @@ public class IrGenerator
         if (field != null)
         {
             builder.version(field.sinceVersion());
+            builder.deprecated(field.deprecated());
             builder.description(field.description());
         }
 
@@ -269,12 +273,14 @@ public class IrGenerator
             .size(encodingType.size())
             .offset(offset)
             .version(type.sinceVersion())
+            .deprecated(type.deprecated())
             .description(type.description())
             .encoding(encodingBuilder.build());
 
         if (field != null)
         {
             builder.version(field.sinceVersion());
+            builder.deprecated(field.deprecated());
             builder.description(field.description());
         }
 
@@ -296,6 +302,7 @@ public class IrGenerator
             .signal(Signal.VALID_VALUE)
             .name(value.name())
             .version(value.sinceVersion())
+            .deprecated(value.deprecated())
             .description(value.description())
             .encoding(new Encoding.Builder()
                 .byteOrder(byteOrder)
@@ -316,6 +323,7 @@ public class IrGenerator
             .size(encodingType.size())
             .offset(offset)
             .version(type.sinceVersion())
+            .deprecated(type.deprecated())
             .description(type.description())
             .encoding(new Encoding.Builder()
                 .semanticType(semanticTypeOf(type, field))
@@ -325,6 +333,7 @@ public class IrGenerator
         if (field != null)
         {
             builder.version(field.sinceVersion());
+            builder.deprecated(field.deprecated());
             builder.description(field.description());
         }
 
@@ -347,6 +356,7 @@ public class IrGenerator
             .name(value.name())
             .description(value.description())
             .version(value.sinceVersion())
+            .deprecated(value.deprecated())
             .encoding(new Encoding.Builder()
                 .constValue(value.primitiveValue())
                 .byteOrder(byteOrder)
@@ -381,6 +391,7 @@ public class IrGenerator
         if (field != null && !(field.type() instanceof CompositeType))
         {
             tokenBuilder.version(field.sinceVersion());
+            tokenBuilder.deprecated(field.deprecated());
             tokenBuilder.description(field.description());
         }
 

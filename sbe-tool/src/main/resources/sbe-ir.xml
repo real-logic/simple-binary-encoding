@@ -2,7 +2,7 @@
 <sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
                    package="uk.co.real_logic.sbe.ir.generated"
                    id="1"
-                   version="0"
+                   version="1"
                    byteOrder="littleEndian"
                    description="SBE IR Serialization">
     <types>
@@ -62,6 +62,7 @@
             <validValue name="SBE_OPTIONAL">1</validValue>
             <validValue name="SBE_CONSTANT">2</validValue>
         </enum>
+        <type name="deprecatedVersionType" primitiveType="int32" presence="optional" sinceVersion="1" nullValue="0"/>
     </types>
 
     <sbe:message name="FrameCodec" id="1" description="Frame Header for start of encoding IR">
@@ -83,6 +84,7 @@
         <field name="primitiveType" id="17" type="PrimitiveTypeCodec"/>
         <field name="byteOrder" id="18" type="ByteOrderCodec"/>
         <field name="presence" id="19" type="PresenceCodec"/>
+        <field name="deprecated" id="30" type="deprecatedVersionType" sinceVersion="1"/>
         <data name="name" id="20" type="varDataEncoding"/>
         <data name="constValue" id="21" type="varDataEncoding"/>
         <data name="minValue" id="22" type="varDataEncoding"/>

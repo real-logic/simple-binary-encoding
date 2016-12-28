@@ -8,10 +8,10 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public class TokenCodecEncoder
 {
-    public static final int BLOCK_LENGTH = 24;
+    public static final int BLOCK_LENGTH = 28;
     public static final int TEMPLATE_ID = 2;
     public static final int SCHEMA_ID = 1;
-    public static final int SCHEMA_VERSION = 0;
+    public static final int SCHEMA_VERSION = 1;
 
     private final TokenCodecEncoder parentMessage = this;
     private MutableDirectBuffer buffer;
@@ -300,6 +300,38 @@ public class TokenCodecEncoder
         buffer.putByte(offset + 23, (byte)value.value());
         return this;
     }
+
+    public static int deprecatedEncodingOffset()
+    {
+        return 24;
+    }
+
+    public static int deprecatedEncodingLength()
+    {
+        return 4;
+    }
+
+    public static int deprecatedNullValue()
+    {
+        return 0;
+    }
+
+    public static int deprecatedMinValue()
+    {
+        return -2147483647;
+    }
+
+    public static int deprecatedMaxValue()
+    {
+        return 2147483647;
+    }
+
+    public TokenCodecEncoder deprecated(final int value)
+    {
+        buffer.putInt(offset + 24, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        return this;
+    }
+
 
     public static int nameId()
     {
