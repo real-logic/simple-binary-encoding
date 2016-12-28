@@ -2033,7 +2033,7 @@ public class JavaGenerator implements CodeGenerator
             schemaIdType,
             generateLiteral(headerStructure.schemaIdType(), Integer.toString(ir.id())),
             schemaVersionType,
-            generateLiteral(headerStructure.schemaVersionType(), Integer.toString(token.version())),
+            generateLiteral(headerStructure.schemaVersionType(), Integer.toString(ir.version())),
             className,
             semanticType,
             bufferImplementation,

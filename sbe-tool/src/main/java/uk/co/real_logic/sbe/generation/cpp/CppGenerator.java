@@ -1408,7 +1408,7 @@ public class CppGenerator implements CodeGenerator
             schemaIdType,
             generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
             schemaVersionType,
-            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(token.version())),
+            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             semanticType,
             className,
             generateConstructorsAndOperators(className));
