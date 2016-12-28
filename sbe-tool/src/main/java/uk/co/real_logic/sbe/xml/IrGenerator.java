@@ -33,7 +33,6 @@ public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
     private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
-    private int version = 0;
 
     /**
      * Generate a complete {@link uk.co.real_logic.sbe.ir.Ir} for a given schema.
@@ -72,7 +71,6 @@ public class IrGenerator
     {
         tokenList.clear();
         byteOrder = schema.byteOrder();
-        version = schema.version();
 
         final Message msg = schema.getMessage(messageId);
 
@@ -101,7 +99,7 @@ public class IrGenerator
             .description(msg.description())
             .size(msg.blockLength())
             .id(msg.id())
-            .version(version)
+            .version(msg.sinceVersion())
             .deprecated(msg.deprecated())
             .encoding(new Encoding.Builder()
                 .semanticType(msg.semanticType())
