@@ -19,6 +19,7 @@ import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
+import uk.co.real_logic.sbe.generation.TargetCodeGeneratorLoader;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.IrDecoder;
 import uk.co.real_logic.sbe.ir.IrEncoder;
@@ -279,7 +280,7 @@ public class SbeTool
     public static void generate(final Ir ir, final String outputDirName, final String targetLanguage)
         throws Exception
     {
-        final TargetCodeGenerator targetCodeGenerator = TargetCodeGenerator.get(targetLanguage);
+        final TargetCodeGenerator targetCodeGenerator = TargetCodeGeneratorLoader.get(targetLanguage);
         final CodeGenerator codeGenerator = targetCodeGenerator.newInstance(ir, outputDirName);
 
         codeGenerator.generate();

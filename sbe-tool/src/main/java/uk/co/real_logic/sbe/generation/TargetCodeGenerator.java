@@ -15,54 +15,15 @@
  */
 package uk.co.real_logic.sbe.generation;
 
-import org.agrona.generation.PackageOutputManager;
-import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
-import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
-import uk.co.real_logic.sbe.generation.golang.GolangGenerator;
-import uk.co.real_logic.sbe.generation.golang.GolangOutputManager;
-import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
 import java.io.IOException;
 
-import static uk.co.real_logic.sbe.SbeTool.*;
-
 /**
  * Target a code generator for a given language.
  */
-public enum TargetCodeGenerator
+public interface TargetCodeGenerator
 {
-    JAVA()
-    {
-        public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
-        {
-            return new JavaGenerator(
-                ir,
-                System.getProperty(JAVA_ENCODING_BUFFER_TYPE, JAVA_DEFAULT_ENCODING_BUFFER_TYPE),
-                System.getProperty(JAVA_DECODING_BUFFER_TYPE, JAVA_DEFAULT_DECODING_BUFFER_TYPE),
-                Boolean.getBoolean(JAVA_GROUP_ORDER_ANNOTATION),
-                Boolean.getBoolean(JAVA_GENERATE_INTERFACES),
-                Boolean.getBoolean(DECODE_UNKNOWN_ENUM_VALUES),
-                new PackageOutputManager(outputDir, ir.applicableNamespace()));
-        }
-    },
-
-    CPP()
-    {
-        public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
-        {
-            return new CppGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
-        }
-    },
-
-    GOLANG()
-    {
-        public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
-        {
-            return new GolangGenerator(ir, new GolangOutputManager(outputDir, ir.applicableNamespace()));
-        }
-    };
-
     /**
      * Get a new {@link CodeGenerator} for the given target language.
      *
@@ -71,24 +32,5 @@ public enum TargetCodeGenerator
      * @return a new instance of a {@link CodeGenerator} for the given target language.
      * @throws IOException if an error occurs when dealing with the output directory.
      */
-    public abstract CodeGenerator newInstance(Ir ir, String outputDir) throws IOException;
-
-    /**
-     * Do a case insensitive lookup of a target language for code generation.
-     *
-     * @param name of the target language to lookup.
-     * @return the {@link TargetCodeGenerator} for the given language name.
-     */
-    public static TargetCodeGenerator get(final String name)
-    {
-        for (final TargetCodeGenerator target : values())
-        {
-            if (target.name().equalsIgnoreCase(name))
-            {
-                return target;
-            }
-        }
-
-        throw new IllegalArgumentException("No code generator for name: " + name);
-    }
+    CodeGenerator newInstance(Ir ir, String outputDir) throws IOException;
 }
