@@ -235,6 +235,7 @@ public class Message
             .id(Integer.parseInt(getAttributeValue(node, "id")))
             .blockLength(Integer.parseInt(getAttributeValue(node, "blockLength", "0")))
             .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
+            .deprecated(Integer.parseInt(getAttributeValue(node, "deprecated", "0")))
             .dimensionType((CompositeType)dimensionType)
             .build();
 
@@ -264,6 +265,7 @@ public class Message
             .presence(Presence.get(getAttributeValue(node, "presence", "required")))
             .valueRef(getAttributeValueOrNull(node, "valueRef"))
             .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
+            .deprecated(Integer.parseInt(getAttributeValue(node, "deprecated", "0")))
             .epoch(getAttributeValue(node, "epoch", "unix"))
             .timeUnit(getAttributeValue(node, "timeUnit", "nanosecond"))
             .type(fieldType)
@@ -301,6 +303,7 @@ public class Message
             .semanticType(getAttributeValueOrNull(node, "semanticType"))
             .presence(Presence.get(getAttributeValue(node, "presence", "required")))
             .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
+            .deprecated(Integer.parseInt(getAttributeValue(node, "deprecated", "0")))
             .epoch(getAttributeValue(node, "epoch", "unix"))
             .timeUnit(getAttributeValue(node, "timeUnit", "nanosecond"))
             .type(fieldType)

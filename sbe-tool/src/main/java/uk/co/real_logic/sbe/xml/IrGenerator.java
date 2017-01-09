@@ -384,6 +384,7 @@ public class IrGenerator
             .size(type.encodedLength())
             .description(type.description())
             .version(type.sinceVersion())
+            .deprecated(type.deprecated())
             .offset(offset);
 
         if (field != null && !(field.type() instanceof CompositeType))
