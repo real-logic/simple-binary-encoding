@@ -235,10 +235,13 @@ public class CppGenerator implements CodeGenerator
             indent + "    inline void wrapForEncode(char *buffer, const %3$s count," +
                 " std::uint64_t *pos, const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
             indent + "    {\n" +
+            indent + "#pragma GCC diagnostic push\n" +
+            indent + "#pragma GCC diagnostic ignored \"-Wtype-limits\"\n" +
             indent + "        if (count < %5$d || count > %6$d)\n" +
             indent + "        {\n" +
             indent + "            throw std::runtime_error(\"count outside of allowed range [E110]\");\n" +
             indent + "        }\n" +
+            indent + "#pragma GCC diagnostic pop\n" +
             indent + "        m_buffer = buffer;\n" +
             indent + "        m_bufferLength = bufferLength;\n" +
             indent + "        m_dimensions.wrap(m_buffer, *pos, actingVersion, bufferLength);\n" +
@@ -314,8 +317,7 @@ public class CppGenerator implements CodeGenerator
             indent + "            next(); func(*this);\n" +
             indent + "        }\n" +
             indent + "    }\n\n" +
-            indent + "#endif\n\n",
-            formatClassName(groupName)));
+            indent + "#endif\n\n"));
     }
 
     private static CharSequence generateGroupProperty(
