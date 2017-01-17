@@ -18,13 +18,13 @@ func TestEncodeDecodeTestMessage1(t *testing.T) {
 	in.Entries = append(in.Entries, group)
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian); err != nil {
+	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage1 = *new(TestMessage1)
-	if err := out.Decode(buf, binary.LittleEndian, 0, true); err != nil {
+	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}

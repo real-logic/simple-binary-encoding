@@ -3,8 +3,6 @@ package sbe_tests
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
-	"reflect"
 	"testing"
 )
 
@@ -19,7 +17,7 @@ func TestEncodeDecodeEnum(t *testing.T) {
 	}
 
 	var out ENUMEnum = *new(ENUMEnum)
-	if err := out.Decode(buf, binary.LittleEndian, 0, true); err != nil {
+	if err := out.Decode(buf, binary.LittleEndian, 0); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
@@ -34,22 +32,65 @@ func TestEncodeDecodeEnum(t *testing.T) {
 	// xmain()
 }
 
-func xmain() {
-	// var e ENUMEnum = ENUME.Value1;
-	var e ENUMEnum = 9
+func TestEnumRange(t *testing.T) {
+
+	var in ENUMEnum = 9
+
+	// newer version should be ok
+	if err := in.RangeCheck(1, 0); err != nil {
+		t.Logf("RangeCheck failed and should have passed", err)
+		t.Fail()
+	}
+
+	// same version should fail
+	if err := in.RangeCheck(0, 0); err == nil {
+		t.Logf("RangeCheck passed and should have failed", err)
+		t.Fail()
+	}
+
+	// older version should fail
+	if err := in.RangeCheck(0, 1); err == nil {
+		t.Logf("RangeCheck passed and should have failed", err)
+		t.Fail()
+	}
+
+	// Now let's encode and decode that (no rangecheck performed)
+	// valie in the message
 	var buf = new(bytes.Buffer)
-	if err := e.Encode(buf, binary.LittleEndian); err != nil {
-		fmt.Println("Encoding Error", err)
-		return
+	if err := in.Encode(buf, binary.LittleEndian); err != nil {
+		t.Logf("Encoding Error", err)
+		t.Fail()
 	}
 
 	var out ENUMEnum = *new(ENUMEnum)
-	if err := out.Decode(buf, binary.LittleEndian, 0, true); err != nil {
-		fmt.Println("Decoding Error", err)
-		return
+	if err := out.Decode(buf, binary.LittleEndian, 0); err != nil {
+		t.Logf("Decoding Error", err)
+		t.Fail()
 	}
 
-	fmt.Println(e, out, reflect.TypeOf(out))
-	return
+	// Values should the be the same
+	if in != out {
+		t.Logf("in != out:\n", in, out)
+		t.Fail()
+	}
 
+	// But a rangeheck might fail
+	// newer version should be ok
+	if err := out.RangeCheck(1, 0); err != nil {
+		t.Logf("RangeCheck failed and should have passed", err)
+		t.Fail()
+	}
+
+	// same version should fail
+	if err := out.RangeCheck(0, 0); err == nil {
+		t.Logf("RangeCheck passed and should have failed", err)
+		t.Fail()
+	}
+
+	// older version should fail
+	if err := out.RangeCheck(0, 1); err == nil {
+		t.Logf("RangeCheck passed and should have failed", err)
+		t.Fail()
+	}
+	return
 }

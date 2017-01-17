@@ -45,17 +45,16 @@ func TestEncodeDecodeCar(t *testing.T) {
 	pf = append(pf, CarPerformanceFigures{95, acc1})
 	pf = append(pf, CarPerformanceFigures{99, acc2})
 
-
 	in := Car{1234, 2013, BooleanType.T, Model.A, [5]uint32{0, 1, 2, 3, 4}, vehicleCode, optionalExtras, Model.A, engine, fuel, pf, manufacturer, model, activationCode}
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian); err != nil {
+	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out Car = *new(Car)
-	if err := out.Decode(buf, binary.LittleEndian, 0, true); err != nil {
+	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
@@ -120,7 +119,7 @@ func TestDecodeJavaBuffer(t *testing.T) {
 	buf := bytes.NewBuffer(data)
 
 	var m MessageHeader
-	if err := m.Decode(buf, binary.LittleEndian, 0, true); err != nil {
+	if err := m.Decode(buf, binary.LittleEndian, 0); err != nil {
 		t.Logf("Failed to decode message header", err)
 		t.Fail()
 	}
@@ -131,7 +130,7 @@ func TestDecodeJavaBuffer(t *testing.T) {
 	// fmt.Println("Version = ", m.Version)
 	// fmt.Println("bytes: ", buf.Len())
 	var c Car
-	if err := c.Decode(buf, binary.LittleEndian, m.Version, true); err != nil {
+	if err := c.Decode(buf, binary.LittleEndian, m.Version, m.BlockLength, true); err != nil {
 		t.Logf("Failed to decode car", err)
 		t.Fail()
 	}

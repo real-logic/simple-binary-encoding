@@ -24,7 +24,7 @@
       -->
     </types>
     <sbe:message name="Simple0" id="11" semanticType="womble" description="A very simple first example" blockLength="76">
-        <field name="U64"     id="1"  type="uint64"/>
+        <field name="U64"     id="1"  type="uint64" deprecated="2" sinceVersion="1"/>
         <field name="U32"     id="2"  type="uint32"/>
         <field name="U16"     id="3"  type="uint16"/>
         <field name="U8"      id="4"  type="uint8"/>
