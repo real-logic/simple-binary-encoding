@@ -1023,7 +1023,7 @@ public class JavaGenerator implements CodeGenerator
             final String implementsString = implementsInterface(GEN_COMPOSITE_DECODER_FLYWEIGHT);
             generateCompositeFlyweightHeader(token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, implementsString);
 
-            for (int i = 1, end = tokens.size() - 1; i < end; i++)
+            for (int i = 1, end = tokens.size() - 1; i < end;)
             {
                 final Token encodingToken = tokens.get(i);
                 final String propertyName = formatPropertyName(encodingToken.name());
@@ -1053,9 +1053,10 @@ public class JavaGenerator implements CodeGenerator
                     case BEGIN_COMPOSITE:
                         out.append(sb);
                         out.append(generateCompositeProperty(true, DECODER, propertyName, encodingToken, BASE_INDENT, typeName));
-                        i += encodingToken.componentTokenCount();
                         break;
                 }
+
+                i += encodingToken.componentTokenCount();
             }
 
             out.append(generateCompositeDecoderDisplay(tokens, BASE_INDENT));
@@ -1068,7 +1069,7 @@ public class JavaGenerator implements CodeGenerator
             final String implementsString = implementsInterface(GEN_COMPOSITE_ENCODER_FLYWEIGHT);
             generateCompositeFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer, implementsString);
 
-            for (int i = 1, end = tokens.size() - 1; i < end; i++)
+            for (int i = 1, end = tokens.size() - 1; i < end;)
             {
                 final Token encodingToken = tokens.get(i);
                 final String propertyName = formatPropertyName(encodingToken.name());
@@ -1098,9 +1099,10 @@ public class JavaGenerator implements CodeGenerator
                     case BEGIN_COMPOSITE:
                         out.append(sb);
                         out.append(generateCompositeProperty(true, ENCODER, propertyName, encodingToken, BASE_INDENT, typeName));
-                        i += encodingToken.componentTokenCount();
                         break;
                 }
+
+                i += encodingToken.componentTokenCount();
             }
 
             out.append(generateCompositeEncoderDisplay(decoderName, BASE_INDENT));
@@ -2169,10 +2171,10 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-                indent + "    public static int %sEncodingOffset()\n" +
-                indent + "    {\n" +
-                indent + "        return %d;\n" +
-                indent + "    }\n",
+            indent + "    public static int %sEncodingOffset()\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n",
             formatPropertyName(name),
             offset));
     }
@@ -2182,10 +2184,10 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-                indent + "    public static int %sEncodingLength()\n" +
-                indent + "    {\n" +
-                indent + "        return %d;\n" +
-                indent + "    }\n",
+            indent + "    public static int %sEncodingLength()\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n",
             formatPropertyName(name),
             length));
     }
@@ -2194,10 +2196,10 @@ public class JavaGenerator implements CodeGenerator
     {
         sb.append(String.format(
             "\n" +
-                indent + "    public static int %sSinceVersion()\n" +
-                indent + "    {\n" +
-                indent + "        return %d;\n" +
-                indent + "    }\n",
+            indent + "    public static int %sSinceVersion()\n" +
+            indent + "    {\n" +
+            indent + "        return %d;\n" +
+            indent + "    }\n",
             formatPropertyName(token.name()),
             token.version()));
     }
@@ -2580,7 +2582,7 @@ public class JavaGenerator implements CodeGenerator
 
         int lengthBeforeLastGeneratedSeparator = -1;
 
-        for (int i = 1, end = tokens.size() - 1; i < end; )
+        for (int i = 1, end = tokens.size() - 1; i < end;)
         {
             final Token encodingToken = tokens.get(i);
             final String propertyName = formatPropertyName(encodingToken.name());
@@ -2629,8 +2631,7 @@ public class JavaGenerator implements CodeGenerator
                     append(sb, indent, "        builder.append(\"" + choiceName + "\");");
                     append(sb, indent, "        atLeastOne = true;");
                     append(sb, indent, "    }");
-                }
-            );
+                });
 
         Separators.END_SET.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
         sb.append('\n');
