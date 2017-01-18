@@ -1218,8 +1218,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        return (const char *)%1$sValues;\n" +
             indent + "    }\n\n",
             propertyName,
-            values
-        ));
+            values));
 
         sb.append(String.format(
             indent + "    %1$s %2$s(const std::uint64_t index) const\n" +
