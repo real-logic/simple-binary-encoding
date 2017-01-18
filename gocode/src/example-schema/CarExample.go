@@ -3,13 +3,17 @@
 package main
 
 import (
-	"baseline"
+	"baseline" // Car
 	"bytes"
 	"encoding/binary"
+	"extension"  // Car extended with cupholder
+	"extension2" // extension extended with CO2
 	"fmt"
 	"io"
+	"math"
 	"net"
 	"os"
+	"reflect"
 	"time"
 )
 
@@ -17,6 +21,18 @@ func main() {
 
 	fmt.Println("Example encode and decode")
 	ExampleEncodeDecode()
+
+	fmt.Println("Example of Car->Extension")
+	ExampleCarToExtension()
+
+	fmt.Println("Example Extension->Car")
+	ExampleExtensionToCar()
+
+	fmt.Println("Example Car->Extension2")
+	ExampleCarToExtension2()
+
+	// fmt.Println("Example Extension2->Car")
+	// ExampleExtension2ToCar()
 
 	fmt.Println("Example decode using bytes.buffer")
 	ExampleDecodeBuffer()
@@ -35,13 +51,13 @@ func ExampleEncodeDecode() bool {
 	in := makeCar()
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian); err != nil {
+	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
 		fmt.Println("Encoding Error", err)
 		os.Exit(1)
 	}
 
 	var out baseline.Car = *new(baseline.Car)
-	if err := out.Decode(buf, binary.LittleEndian, 0, true); err != nil {
+	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		fmt.Println("Decoding Error", err)
 		os.Exit(1)
 	}
@@ -102,14 +118,14 @@ func ExampleEncodeDecode() bool {
 func ExampleDecodeBuffer() bool {
 	buf := bytes.NewBuffer(data)
 	var m baseline.MessageHeader
-	if err := m.Decode(buf, binary.LittleEndian, 0, true); err != nil {
+	if err := m.Decode(buf, binary.LittleEndian, 0); err != nil {
 		fmt.Println("Failed to decode message header", err)
 		os.Exit(1)
 	}
 
 	// fmt.Println("\tbuffer is length:", buf.Len())
 	var c baseline.Car
-	if err := c.Decode(buf, binary.LittleEndian, m.Version, true); err != nil {
+	if err := c.Decode(buf, binary.LittleEndian, m.Version, m.BlockLength, true); err != nil {
 		fmt.Println("Failed to decode car", err)
 		os.Exit(1)
 	}
@@ -117,14 +133,15 @@ func ExampleDecodeBuffer() bool {
 }
 
 func ExampleDecodePipe() bool {
-	var r,w = io.Pipe()
+	var r, w = io.Pipe()
 
 	go func() {
 		defer w.Close()
 
-		// By way of test, stream the bytes into the pipe 32 at a time
+		// By way of test, stream the bytes into the pipe a
+		// chunk at a time
 		msg := data[0:]
-		for ;len(msg) > 0; {
+		for len(msg) > 0 {
 			min := MinInt(len(msg), 64)
 			// fmt.Println("writing: ", msg[0:min])
 			n, err := w.Write(msg[0:min])
@@ -132,7 +149,7 @@ func ExampleDecodePipe() bool {
 				fmt.Println("write error is", err)
 				os.Exit(1)
 			}
-			if (n < 8) {
+			if n < 8 {
 				fmt.Println("short write of", n, "bytes")
 				os.Exit(1)
 			}
@@ -142,17 +159,16 @@ func ExampleDecodePipe() bool {
 	}()
 
 	var m baseline.MessageHeader
-	m.Decode(r, binary.LittleEndian, 0, true);
+	m.Decode(r, binary.LittleEndian, 0)
 
 	var c baseline.Car
-	if err := c.Decode(r, binary.LittleEndian, m.Version, true); err != nil {
+	if err := c.Decode(r, binary.LittleEndian, m.Version, m.BlockLength, true); err != nil {
 		fmt.Println("Failed to decode car", err)
 		os.Exit(1)
 	}
 	r.Close()
 	return true
 }
-
 
 func ExampleDecodeSocket() bool {
 	addr := "127.0.0.1:15678"
@@ -184,14 +200,13 @@ func ExampleDecodeSocket() bool {
 		}
 		defer conn.Close()
 
-
 		// fmt.Println("reading messageheader")
 		var m baseline.MessageHeader
-		m.Decode(conn, binary.LittleEndian, 0, true);
+		m.Decode(conn, binary.LittleEndian, 0)
 
 		// fmt.Println("reading car")
 		var c baseline.Car
-		if err := c.Decode(conn, binary.LittleEndian, m.Version, true); err != nil {
+		if err := c.Decode(conn, binary.LittleEndian, m.Version, m.BlockLength, true); err != nil {
 			fmt.Println("Failed to decode car", err)
 			os.Exit(1)
 		}
@@ -213,9 +228,10 @@ func ExampleDecodeSocket() bool {
 		}
 		defer conn.Close()
 
-		// By way of test, stream the bytes into the pipe 32 at a time
+		// By way of test, stream the bytes into the pipe a
+		// chunk at a time
 		msg := data[0:]
-		for ;len(msg) > 0; {
+		for len(msg) > 0 {
 			min := MinInt(len(msg), 64)
 			// fmt.Println("writing: ", msg[0:min])
 			n, err := conn.Write(msg[0:min])
@@ -223,7 +239,7 @@ func ExampleDecodeSocket() bool {
 				fmt.Println("write error is", err)
 				os.Exit(1)
 			}
-			if (n < 8) {
+			if n < 8 {
 				fmt.Println("short write of", n, "bytes")
 				os.Exit(1)
 			}
@@ -231,15 +247,350 @@ func ExampleDecodeSocket() bool {
 			msg = msg[n:]
 			time.Sleep(time.Second)
 		}
-		<- readerDone
+		<-readerDone
 		writerDone <- true
 	}()
 
-	<- writerDone
+	<-writerDone
 
 	return true
 }
 
+func ExampleCarToExtension() bool {
+	in := makeCar()
+
+	var buf = new(bytes.Buffer)
+	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+		fmt.Println("Encoding Error", err)
+		os.Exit(1)
+	}
+
+	var out extension.Car = *new(extension.Car)
+	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+		fmt.Println("Decoding Error", err)
+		os.Exit(1)
+	}
+
+	if in.SerialNumber != out.SerialNumber {
+		fmt.Println("in.SerialNumber != out.SerialNumber:\n", in.SerialNumber, out.SerialNumber)
+		os.Exit(1)
+	}
+	if in.ModelYear != out.ModelYear {
+		fmt.Println("in.ModelYear != out.ModelYear:\n", in.ModelYear, out.ModelYear)
+		os.Exit(1)
+	}
+
+	// Note casts so we can compare
+	if in.Available != baseline.BooleanTypeEnum(out.Available) {
+		fmt.Println("in.Available != out.Available:\n", in.Available, out.Available)
+		os.Exit(1)
+	}
+	if in.Code != baseline.ModelEnum(out.Code) {
+		fmt.Println("in.Code != out.Code:\n", in.Code, out.Code)
+		os.Exit(1)
+	}
+	if in.SomeNumbers != out.SomeNumbers {
+		fmt.Println("in.SomeNumbers != out.SomeNumbers:\n", in.SomeNumbers, out.SomeNumbers)
+		os.Exit(1)
+	}
+	if in.VehicleCode != out.VehicleCode {
+		fmt.Println("in.VehicleCode != out.VehicleCode:\n", in.VehicleCode, out.VehicleCode)
+		os.Exit(1)
+	}
+	if in.Extras != baseline.OptionalExtras(out.Extras) {
+		fmt.Println("in.Extras != out.Extras:\n", in.Extras, out.Extras)
+		os.Exit(1)
+	}
+
+	// DiscountedModel is constant
+	if baseline.Model.C != baseline.ModelEnum(out.DiscountedModel) {
+		fmt.Println("in.DiscountedModel != out.DiscountedModel:\n", in.DiscountedModel, out.DiscountedModel)
+		os.Exit(1)
+	}
+
+	// Engine has two constant values which should come back filled in
+	if in.Engine.MaxRpm == out.Engine.MaxRpm {
+		fmt.Println("in.Engine.MaxRpm == out.Engine/MaxRpm (and they should be different):\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
+		os.Exit(1)
+	}
+
+	// Engine has constant elements so We should have used our the
+	// EngineInit() function to fill those in when we created the
+	// object, and then they will correctly compare
+	baseline.EngineInit(&in.Engine)
+	if in.Engine.MaxRpm != out.Engine.MaxRpm {
+		fmt.Println("in.Engine.MaxRpm != out.Engine.MaxRpm:\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
+		os.Exit(1)
+	}
+
+	if !reflect.DeepEqual(in.ActivationCode, out.ActivationCode) {
+		fmt.Println("in.ActivationCode != out.ActivationCode:\n", in.ActivationCode, out.ActivationCode)
+		os.Exit(1)
+	}
+
+	// Cupholder is not in example-schema and was introduced in
+	// extension-schema so it should be NullValue
+	if out.CupHolderCount != out.CupHolderCountNullValue() {
+		fmt.Println("out.cupholderCount not successfully nulled:\n", out.CupHolderCount)
+		os.Exit(1)
+	}
+
+	return true
+}
+
+func ExampleExtensionToCar() bool {
+	in := makeExtension()
+
+	var buf = new(bytes.Buffer)
+	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+		fmt.Println("Encoding Error", err)
+		os.Exit(1)
+	}
+
+	var out baseline.Car = *new(baseline.Car)
+	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+		fmt.Println("Decoding Error", err)
+		os.Exit(1)
+	}
+
+	if in.SerialNumber != out.SerialNumber {
+		fmt.Println("in.SerialNumber != out.SerialNumber:\n", in.SerialNumber, out.SerialNumber)
+		os.Exit(1)
+	}
+	if in.ModelYear != out.ModelYear {
+		fmt.Println("in.ModelYear != out.ModelYear:\n", in.ModelYear, out.ModelYear)
+		os.Exit(1)
+	}
+
+	// Note casts so we can compare
+	if in.Available != extension.BooleanTypeEnum(out.Available) {
+		fmt.Println("in.Available != out.Available:\n", in.Available, out.Available)
+		os.Exit(1)
+	}
+	if in.Code != extension.ModelEnum(out.Code) {
+		fmt.Println("in.Code != out.Code:\n", in.Code, out.Code)
+		os.Exit(1)
+	}
+	if in.SomeNumbers != out.SomeNumbers {
+		fmt.Println("in.SomeNumbers != out.SomeNumbers:\n", in.SomeNumbers, out.SomeNumbers)
+		os.Exit(1)
+	}
+	if in.VehicleCode != out.VehicleCode {
+		fmt.Println("in.VehicleCode != out.VehicleCode:\n", in.VehicleCode, out.VehicleCode)
+		os.Exit(1)
+	}
+	if in.Extras != extension.OptionalExtras(out.Extras) {
+		fmt.Println("in.Extras != out.Extras:\n", in.Extras, out.Extras)
+		os.Exit(1)
+	}
+
+	// DiscountedModel is constant
+	if extension.Model.C != extension.ModelEnum(out.DiscountedModel) {
+		fmt.Println("in.DiscountedModel != out.DiscountedModel:\n", in.DiscountedModel, out.DiscountedModel)
+		os.Exit(1)
+	}
+
+	// Engine has two constant values which should come back filled in
+	if in.Engine.MaxRpm == out.Engine.MaxRpm {
+		fmt.Println("in.Engine.MaxRpm == out.Engine/MaxRpm (and they should be different):\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
+		os.Exit(1)
+	}
+
+	// Engine has constant elements so We should have used our the
+	// EngineInit() function to fill those in when we created the
+	// object, and then they will correctly compare
+	extension.EngineInit(&in.Engine)
+	if in.Engine.MaxRpm != out.Engine.MaxRpm {
+		fmt.Println("in.Engine.MaxRpm != out.Engine.MaxRpm:\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
+		os.Exit(1)
+	}
+
+	if !reflect.DeepEqual(in.ActivationCode, out.ActivationCode) {
+		fmt.Println("in.ActivationCode != out.ActivationCode:\n", in.ActivationCode, out.ActivationCode)
+		os.Exit(1)
+	}
+
+	return true
+}
+
+func ExampleExtension2ToCar() bool {
+	in := makeExtension2()
+
+	var buf = new(bytes.Buffer)
+	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+		fmt.Println("Encoding Error", err)
+		os.Exit(1)
+	}
+
+	var out baseline.Car = *new(baseline.Car)
+	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+		fmt.Println("Decoding Error", err)
+		os.Exit(1)
+	}
+
+	if in.SerialNumber != out.SerialNumber {
+		fmt.Println("in.SerialNumber != out.SerialNumber:\n", in.SerialNumber, out.SerialNumber)
+		os.Exit(1)
+	}
+	if in.ModelYear != out.ModelYear {
+		fmt.Println("in.ModelYear != out.ModelYear:\n", in.ModelYear, out.ModelYear)
+		os.Exit(1)
+	}
+
+	// Note casts so we can compare
+	if in.Available != extension2.BooleanTypeEnum(out.Available) {
+		fmt.Println("in.Available != out.Available:\n", in.Available, out.Available)
+		os.Exit(1)
+	}
+	if in.Code != extension2.ModelEnum(out.Code) {
+		fmt.Println("in.Code != out.Code:\n", in.Code, out.Code)
+		os.Exit(1)
+	}
+	if in.SomeNumbers != out.SomeNumbers {
+		fmt.Println("in.SomeNumbers != out.SomeNumbers:\n", in.SomeNumbers, out.SomeNumbers)
+		os.Exit(1)
+	}
+	if in.VehicleCode != out.VehicleCode {
+		fmt.Println("in.VehicleCode != out.VehicleCode:\n", in.VehicleCode, out.VehicleCode)
+		os.Exit(1)
+	}
+	if in.Extras != extension2.OptionalExtras(out.Extras) {
+		fmt.Println("in.Extras != out.Extras:\n", in.Extras, out.Extras)
+		os.Exit(1)
+	}
+
+	// DiscountedModel is constant
+	if extension2.Model.C != extension2.ModelEnum(out.DiscountedModel) {
+		fmt.Println("in.DiscountedModel != out.DiscountedModel:\n", in.DiscountedModel, out.DiscountedModel)
+		os.Exit(1)
+	}
+
+	// Engine has two constant values which should come back filled in
+	if in.Engine.MaxRpm == out.Engine.MaxRpm {
+		fmt.Println("in.Engine.MaxRpm == out.Engine/MaxRpm (and they should be different):\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
+		os.Exit(1)
+	}
+
+	// Engine has constant elements so We should have used our the
+	// EngineInit() function to fill those in when we created the
+	// object, and then they will correctly compare
+	extension2.EngineInit(&in.Engine)
+	if in.Engine.MaxRpm != out.Engine.MaxRpm {
+		fmt.Println("in.Engine.MaxRpm != out.Engine.MaxRpm:\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
+		os.Exit(1)
+	}
+
+	if !reflect.DeepEqual(in.ActivationCode, out.ActivationCode) {
+		fmt.Println("in.ActivationCode != out.ActivationCode:\n", in.ActivationCode, out.ActivationCode)
+		os.Exit(1)
+
+	}
+
+	// Extension2 added Co2 to FuelFigures before the UsageDescription
+	// check UsageDescription still look right
+	if !reflect.DeepEqual(out.FuelFigures[0].UsageDescription, []uint8("Urban Cycle")) {
+		fmt.Println("out.FuelFigures[0].UsageDescription != 'Urban Cycle':\n", out.FuelFigures[0].UsageDescription)
+		os.Exit(1)
+	}
+
+	return true
+}
+
+func ExampleCarToExtension2() bool {
+	in := makeCar()
+
+	var buf = new(bytes.Buffer)
+	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+		fmt.Println("Encoding Error", err)
+		os.Exit(1)
+	}
+
+	var out extension2.Car = *new(extension2.Car)
+	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+		fmt.Println("Decoding Error", err)
+		os.Exit(1)
+	}
+
+	if in.SerialNumber != out.SerialNumber {
+		fmt.Println("in.SerialNumber != out.SerialNumber:\n", in.SerialNumber, out.SerialNumber)
+		os.Exit(1)
+	}
+	if in.ModelYear != out.ModelYear {
+		fmt.Println("in.ModelYear != out.ModelYear:\n", in.ModelYear, out.ModelYear)
+		os.Exit(1)
+	}
+
+	// Note casts so we can compare
+	if in.Available != baseline.BooleanTypeEnum(out.Available) {
+		fmt.Println("in.Available != out.Available:\n", in.Available, out.Available)
+		os.Exit(1)
+	}
+	if in.Code != baseline.ModelEnum(out.Code) {
+		fmt.Println("in.Code != out.Code:\n", in.Code, out.Code)
+		os.Exit(1)
+	}
+	if in.SomeNumbers != out.SomeNumbers {
+		fmt.Println("in.SomeNumbers != out.SomeNumbers:\n", in.SomeNumbers, out.SomeNumbers)
+		os.Exit(1)
+	}
+	if in.VehicleCode != out.VehicleCode {
+		fmt.Println("in.VehicleCode != out.VehicleCode:\n", in.VehicleCode, out.VehicleCode)
+		os.Exit(1)
+	}
+	if in.Extras != baseline.OptionalExtras(out.Extras) {
+		fmt.Println("in.Extras != out.Extras:\n", in.Extras, out.Extras)
+		os.Exit(1)
+	}
+
+	// DiscountedModel is constant
+	if baseline.Model.C != baseline.ModelEnum(out.DiscountedModel) {
+		fmt.Println("in.DiscountedModel != out.DiscountedModel:\n", in.DiscountedModel, out.DiscountedModel)
+		os.Exit(1)
+	}
+
+	// Engine has two constant values which should come back filled in
+	if in.Engine.MaxRpm == out.Engine.MaxRpm {
+		fmt.Println("in.Engine.MaxRpm == out.Engine/MaxRpm (and they should be different):\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
+		os.Exit(1)
+	}
+
+	// Engine has constant elements so We should have used our the
+	// EngineInit() function to fill those in when we created the
+	// object, and then they will correctly compare
+	baseline.EngineInit(&in.Engine)
+	if in.Engine.MaxRpm != out.Engine.MaxRpm {
+		fmt.Println("in.Engine.MaxRpm != out.Engine.MaxRpm:\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
+		os.Exit(1)
+	}
+
+	if !reflect.DeepEqual(in.ActivationCode, out.ActivationCode) {
+		fmt.Println("in.ActivationCode != out.ActivationCode:\n", in.ActivationCode, out.ActivationCode)
+		os.Exit(1)
+	}
+
+	// Extension
+	// Cupholder is not in example-schema and was introduced in
+	// extension-schema so it should be NullValue
+	if out.CupHolderCount != out.CupHolderCountNullValue() {
+		fmt.Println("out.cupholderCount not successfully nulled:\n", out.CupHolderCount)
+		os.Exit(1)
+	}
+
+	// Extension2
+	// We added Co2 to FuelFigures before the UsageDescription so
+	// check Co2 and UsageDescription look right
+	if !math.IsNaN(float64(out.FuelFigures[0].Co2)) {
+		fmt.Println("out.FuelFigures[0].Co2 is legit and should be NaN:\n", out.FuelFigures[0].Co2)
+		os.Exit(1)
+	}
+	if !reflect.DeepEqual(out.FuelFigures[0].UsageDescription, []uint8("Urban Cycle")) {
+		fmt.Println("out.FuelFigures[0].UsageDescription != 'Urban Cycle':\n", out.FuelFigures[0].UsageDescription)
+		os.Exit(1)
+	}
+
+	// fmt.Printf("%+v", out)
+	return true
+}
 
 // Helper to make a Car object as per the Java example
 func makeCar() baseline.Car {
@@ -279,8 +630,95 @@ func makeCar() baseline.Car {
 	pf = append(pf, baseline.CarPerformanceFigures{95, acc1})
 	pf = append(pf, baseline.CarPerformanceFigures{99, acc2})
 
-
 	car := baseline.Car{1234, 2013, baseline.BooleanType.T, baseline.Model.A, [5]uint32{0, 1, 2, 3, 4}, vehicleCode, optionalExtras, baseline.Model.A, engine, fuel, pf, manufacturer, model, activationCode}
+
+	return car
+}
+
+// Helper to make an Extension (car with cupholder) object
+func makeExtension() extension.Car {
+	var vehicleCode [6]byte
+	copy(vehicleCode[:], "abcdef")
+
+	var manufacturerCode [3]byte
+	copy(manufacturerCode[:], "123")
+
+	var optionalExtras [8]bool
+	optionalExtras[extension.OptionalExtrasChoice.CruiseControl] = true
+	optionalExtras[extension.OptionalExtrasChoice.SportsPack] = true
+
+	var engine extension.Engine
+	engine = extension.Engine{2000, 4, 0, manufacturerCode, [6]byte{}, extension.EngineBooster{extension.BoostType.NITROUS, 200}}
+
+	manufacturer := []uint8("Honda")
+	model := []uint8("Civic VTi")
+	activationCode := []uint8("deadbeef")
+
+	var fuel []extension.CarFuelFigures
+	fuel = append(fuel, extension.CarFuelFigures{30, 35.9, []uint8("Urban Cycle")})
+	fuel = append(fuel, extension.CarFuelFigures{55, 49.0, []uint8("Combined Cycle")})
+	fuel = append(fuel, extension.CarFuelFigures{75, 40.0, []uint8("Highway Cycle")})
+
+	var acc1 []extension.CarPerformanceFiguresAcceleration
+	acc1 = append(acc1, extension.CarPerformanceFiguresAcceleration{30, 3.8})
+	acc1 = append(acc1, extension.CarPerformanceFiguresAcceleration{60, 7.5})
+	acc1 = append(acc1, extension.CarPerformanceFiguresAcceleration{100, 12.2})
+
+	var acc2 []extension.CarPerformanceFiguresAcceleration
+	acc2 = append(acc2, extension.CarPerformanceFiguresAcceleration{30, 3.8})
+	acc2 = append(acc2, extension.CarPerformanceFiguresAcceleration{60, 7.5})
+	acc2 = append(acc2, extension.CarPerformanceFiguresAcceleration{100, 12.2})
+
+	var pf []extension.CarPerformanceFigures
+	pf = append(pf, extension.CarPerformanceFigures{95, acc1})
+	pf = append(pf, extension.CarPerformanceFigures{99, acc2})
+
+	// 119 cupholders!
+	car := extension.Car{1234, 2013, extension.BooleanType.T, extension.Model.A, [5]uint32{0, 1, 2, 3, 4}, vehicleCode, optionalExtras, extension.Model.A, engine, 119, fuel, pf, manufacturer, model, activationCode}
+
+	return car
+}
+
+// Helper to make an Extension2 (car with cupholder and c02 info) object
+func makeExtension2() extension2.Car {
+	var vehicleCode [6]byte
+	copy(vehicleCode[:], "abcdef")
+
+	var manufacturerCode [3]byte
+	copy(manufacturerCode[:], "123")
+
+	var optionalExtras [8]bool
+	optionalExtras[extension2.OptionalExtrasChoice.CruiseControl] = true
+	optionalExtras[extension2.OptionalExtrasChoice.SportsPack] = true
+
+	var engine extension2.Engine
+	engine = extension2.Engine{2000, 4, 0, manufacturerCode, [6]byte{}, extension2.EngineBooster{extension2.BoostType.NITROUS, 200}}
+
+	manufacturer := []uint8("Honda")
+	model := []uint8("Civic VTi")
+	activationCode := []uint8("deadbeef")
+
+	var fuel []extension2.CarFuelFigures
+	fuel = append(fuel, extension2.CarFuelFigures{30, 35.9, 0.1, []uint8("Urban Cycle")})
+	fuel = append(fuel, extension2.CarFuelFigures{55, 49.0, 0.2, []uint8("Combined Cycle")})
+	fuel = append(fuel, extension2.CarFuelFigures{75, 40.0, 0.3, []uint8("Highway Cycle")})
+
+	var acc1 []extension2.CarPerformanceFiguresAcceleration
+	acc1 = append(acc1, extension2.CarPerformanceFiguresAcceleration{30, 3.8})
+	acc1 = append(acc1, extension2.CarPerformanceFiguresAcceleration{60, 7.5})
+	acc1 = append(acc1, extension2.CarPerformanceFiguresAcceleration{100, 12.2})
+
+	var acc2 []extension2.CarPerformanceFiguresAcceleration
+	acc2 = append(acc2, extension2.CarPerformanceFiguresAcceleration{30, 3.8})
+	acc2 = append(acc2, extension2.CarPerformanceFiguresAcceleration{60, 7.5})
+	acc2 = append(acc2, extension2.CarPerformanceFiguresAcceleration{100, 12.2})
+
+	var pf []extension2.CarPerformanceFigures
+	pf = append(pf, extension2.CarPerformanceFigures{95, acc1})
+	pf = append(pf, extension2.CarPerformanceFigures{99, acc2})
+
+	// 119 cupholders!
+	car := extension2.Car{1234, 2013, extension2.BooleanType.T, extension2.Model.A, [5]uint32{0, 1, 2, 3, 4}, vehicleCode, optionalExtras, extension2.Model.A, engine, 119, fuel, pf, manufacturer, model, activationCode}
 
 	return car
 }
@@ -292,6 +730,7 @@ func MaxInt(a, b int) int {
 	}
 	return b
 }
+
 // MinInt returns the larger of two ints.
 func MinInt(a, b int) int {
 	if a < b {

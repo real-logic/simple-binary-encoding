@@ -70,15 +70,18 @@ gocode/src/composite/*.go
 !gocode/src/composite/*_test.go
 gocode/src/composite_elements/*.go
 !gocode/src/composite_elements/*_test.go
-gocode/src/group_with_data/*.go
-!gocode/src/group_with_data/*_test.go
+gocode/src/group_with_data*/*.go
+!gocode/src/group_with_data*/*_test.go
 gocode/src/mktdata/*.go
 !gocode/src/mktdata/*_test.go
 gocode/src/simple/*.go
 !gocode/src/simple/*_test.go
 gocode/src/*/*/*.go
 !gocode/src/*/*/*_test.go
-gocode/src/example-schema/example-schema
+gocode/src/example-schema/example-schema*
+gocode/src/example-schema/cpu.out
+gocode/src/extension
+gocode/src/extension2
 
 # Mac
 .DS_Store

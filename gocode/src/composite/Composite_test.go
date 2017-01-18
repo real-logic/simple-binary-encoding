@@ -13,17 +13,17 @@ func TestEncodeDecode(t *testing.T) {
 	copy(s2[:], "  end")
 	p1 := Point{s1, 3.14, 1, [2]uint8{66, 77}, Truthval1.NullValue, Truthval2.T}
 	p2 := Point{s2, 0.31, 2, [2]uint8{77, 88}, Truthval1.T, Truthval2.F}
-	c := Composite{p1, p2}
+	in := Composite{p1, p2}
 
 	var cbuf = new(bytes.Buffer)
-	if err := c.Encode(cbuf, binary.LittleEndian); err != nil {
+	if err := in.Encode(cbuf, binary.LittleEndian, true); err != nil {
 		t.Log("Composite Encoding Error", err)
 		t.Fail()
 	}
-	t.Log(c, " -> ", cbuf.Bytes())
+	t.Log(in, " -> ", cbuf.Bytes())
 	t.Log("Cap() = ", cbuf.Cap(), "Len() = \n", cbuf.Len())
 
-	m := MessageHeader{c.SbeBlockLength(), c.SbeTemplateId(), c.SbeSchemaId(), c.SbeSchemaVersion()}
+	m := MessageHeader{in.SbeBlockLength(), in.SbeTemplateId(), in.SbeSchemaId(), in.SbeSchemaVersion()}
 	var mbuf = new(bytes.Buffer)
 	if err := m.Encode(mbuf, binary.LittleEndian); err != nil {
 		t.Log("MessageHeader Encoding Error", err)
@@ -34,25 +34,24 @@ func TestEncodeDecode(t *testing.T) {
 
 	// Create a new empty MessageHeader and Composite
 	m = *new(MessageHeader)
-	var c2 Composite = *new(Composite)
+	var out Composite = *new(Composite)
 
-	if err := m.Decode(mbuf, binary.LittleEndian, c.SbeSchemaVersion(), true); err != nil {
+	if err := m.Decode(mbuf, binary.LittleEndian, in.SbeSchemaVersion()); err != nil {
 		t.Log("MessageHeader Decoding Error", err)
 		t.Fail()
 	}
 	t.Log("MessageHeader Decodes as: ", m)
 	t.Log("Cap() = ", mbuf.Cap(), "Len() = \n", mbuf.Len())
 
-	if err := c2.Decode(cbuf, binary.LittleEndian, c.SbeSchemaVersion(), true); err != nil {
+	if err := out.Decode(cbuf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Log("Composite Decoding Error", err)
 		t.Fail()
 	}
-	t.Log("Composite decodes as: ", c2)
+	t.Log("Composite decodes as: ", out)
 	t.Log("Cap() = ", cbuf.Cap(), "Len() = \n", cbuf.Len())
 
-	// c2.End.I = 18
-	if c != c2 {
-		t.Logf("c != c2\n%s\n%s", c, c2)
+	if in != out {
+		t.Logf("in != out\n%s\n%s", in, out)
 		t.Fail()
 	}
 }
