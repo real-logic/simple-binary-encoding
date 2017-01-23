@@ -19,7 +19,7 @@ for its buffer implementations.
 
 License (See LICENSE file for full license)
 -------------------------------------------
-Copyright 2014 - 2016 Real Logic Limited
+Copyright 2014 - 2017 Real Logic Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.5.5</version>
+    <version>1.5.6</version>
 </dependency>
 ```
 
