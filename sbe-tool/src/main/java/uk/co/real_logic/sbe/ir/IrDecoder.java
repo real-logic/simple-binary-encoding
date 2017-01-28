@@ -25,6 +25,7 @@ import uk.co.real_logic.sbe.ir.generated.TokenCodecDecoder;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class IrDecoder implements AutoCloseable
     private String irPackageName = null;
     private String irNamespaceName = null;
     private String semanticVersion = null;
+    private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
     private List<Token> irHeader = null;
     private int irId;
     private int irVersion = 0;
@@ -97,7 +99,7 @@ public class IrDecoder implements AutoCloseable
             i = captureHeader(tokens, 0);
         }
 
-        final Ir ir = new Ir(irPackageName, irNamespaceName, irId, irVersion, semanticVersion, irHeader);
+        final Ir ir = new Ir(irPackageName, irNamespaceName, irId, irVersion, semanticVersion, byteOrder, irHeader);
 
         for (int size = tokens.size(); i < size; i++)
         {

@@ -19,6 +19,7 @@ import org.agrona.Verify;
 
 import uk.co.real_logic.sbe.SbeTool;
 
+import java.nio.ByteOrder;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -33,6 +34,7 @@ public class Ir
     private final int id;
     private final int version;
     private final String semanticVersion;
+    private final ByteOrder byteOrder;
 
     private final HeaderStructure headerStructure;
     private final Map<Long, List<Token>> messagesByIdMap = new HashMap<>();
@@ -56,6 +58,7 @@ public class Ir
         final int id,
         final int version,
         final String semanticVersion,
+        final ByteOrder byteOrder,
         final List<Token> headerTokens)
     {
         Verify.notNull(packageName, "packageName");
@@ -66,6 +69,7 @@ public class Ir
         this.id = id;
         this.version = version;
         this.semanticVersion = semanticVersion;
+        this.byteOrder = byteOrder;
         this.headerStructure = new HeaderStructure(new ArrayList<>(headerTokens));
 
         if (Boolean.getBoolean(SbeTool.CPP_NAMESPACES_COLLAPSE))
@@ -205,6 +209,16 @@ public class Ir
     public String semanticVersion()
     {
         return semanticVersion;
+    }
+
+    /**
+     * Get the endianness of the schema.
+     *
+     * @return the ByteOrder of the schema
+     */
+    public ByteOrder byteOrder()
+    {
+        return byteOrder;
     }
 
     /**
