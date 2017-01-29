@@ -45,7 +45,13 @@ public class IrGenerator
     {
         final List<Token> headerTokens = generateForHeader(schema);
         final Ir ir = new Ir(
-            schema.packageName(), namespace, schema.id(), schema.version(), schema.semanticVersion(), headerTokens);
+            schema.packageName(),
+            namespace,
+            schema.id(),
+            schema.version(),
+            schema.semanticVersion(),
+            schema.byteOrder(),
+            headerTokens);
 
         for (final Message message : schema.messages())
         {
