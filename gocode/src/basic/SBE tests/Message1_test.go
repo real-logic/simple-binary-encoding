@@ -2,25 +2,25 @@ package sbe_tests
 
 import (
 	"bytes"
-	"encoding/binary"
 	"testing"
 )
 
 func TestEncodeDecodeMessage1(t *testing.T) {
 
+	m := NewSbeGoMarshaller()
 	var in Message1
 	copy(in.EDTField[:], "abcdefghijklmnopqrst")
 	in.Header = MessageHeader{in.SbeBlockLength(), in.SbeTemplateId(), in.SbeSchemaId(), in.SbeSchemaVersion()}
 	in.ENUMField = ENUM.Value10
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(m, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out Message1 = *new(Message1)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
@@ -32,7 +32,7 @@ func TestEncodeDecodeMessage1(t *testing.T) {
 
 	// Check that if we pass in an unknown enum value we get an error
 	in.ENUMField = 77
-	if err := in.Encode(buf, binary.LittleEndian, true); err == nil {
+	if err := in.Encode(m, buf, true); err == nil {
 		t.Logf("Encoding didn't fail on unknown value with rangecheck")
 		t.Fail()
 	} else {
@@ -41,14 +41,14 @@ func TestEncodeDecodeMessage1(t *testing.T) {
 
 	// Encode should work if we don't rangecheck
 	buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, false); err != nil {
+	if err := in.Encode(m, buf, false); err != nil {
 		t.Logf("Encoding failed on unknown value without rangecheck")
 		t.Fail()
 	}
 
 	// Decode should fail on the bogus value if we rangecheck
 	// FIXME: I reckon this should work
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err == nil {
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err == nil {
 		t.Logf("Decoding didn't fail on unknown value with rangecheck")
 		t.Fail()
 	} else {
@@ -57,8 +57,8 @@ func TestEncodeDecodeMessage1(t *testing.T) {
 
 	// Now check with proper values
 	in.ENUMField = ENUM.Value10
-	in.Encode(buf, binary.LittleEndian, true)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	in.Encode(m, buf, true)
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error:", err)
 		t.Fail()
 	}

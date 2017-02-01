@@ -31,13 +31,14 @@ SCHEMA_DIR=$(ROOT)/sbe-samples/src/main/resources
 EXAMPLES_SCHEMA=$(SCHEMA_DIR)/example-schema.xml
 EXTENSION_SCHEMA=$(SCHEMA_DIR)/example-extension-schema.xml
 EXTENSION2_SCHEMA=$(XMLLOCAL)/example-extension-2-schema.xml
+BIGENDIAN_SCHEMA=$(XMLLOCAL)/example-bigendian.xml
 GROUP_EXTENSION=$(XMLLOCAL)/group-with-data-extension-schema.xml
 
 # Convenience during development
 #SAVE_FORMAT=mkdir -p fmt && cp *.go fmt &&
 SAVE_FORMAT=
 
-$(OUTPUTDIR)/example-schema/example-schema: $(SBE_JAR) $(OUTPUTDIR)/baseline/Car.go $(OUTPUTDIR)/extension/Car.go $(OUTPUTDIR)/extension2/Car.go $(OUTPUTDIR)/example-schema/CarExample.go
+$(OUTPUTDIR)/example-schema/example-schema: $(SBE_JAR) $(OUTPUTDIR)/baseline/SbeMarshalling.go $(OUTPUTDIR)/baseline-bigendian/SbeMarshalling.go $(OUTPUTDIR)/extension/SbeMarshalling.go $(OUTPUTDIR)/extension2/SbeMarshalling.go $(OUTPUTDIR)/example-schema/CarExample.go $(OUTPUTDIR)/example-schema/CarExample_test.go
 	(export GOPATH=$(GOPATH) && \
 	cd $(OUTPUTDIR)/example-schema && \
 	go build && \
@@ -45,9 +46,9 @@ $(OUTPUTDIR)/example-schema/example-schema: $(SBE_JAR) $(OUTPUTDIR)/baseline/Car
 	./example-schema)
 
 clean:
-	rm -f $(OUTPUTDIR)/baseline/Car.go $(OUTPUTDIR)/extension/Car.go $(OUTPUTDIR)/extension2/Car.go
+	rm -f $(OUTPUTDIR)/*/SbeMarshalling.go $(OUTPUTDIR)/*/*/SbeMarshalling.go
 
-$(OUTPUTDIR)/baseline/Car.go: $(SBE_JAR)
+$(OUTPUTDIR)/baseline/SbeMarshalling.go: $(SBE_JAR)
 	$(JAVA) \
 	-Dsbe.output.dir=$(OUTPUTDIR) \
 	-Dsbe.generate.ir="false" \
@@ -61,7 +62,21 @@ $(OUTPUTDIR)/baseline/Car.go: $(SBE_JAR)
 	go test && \
 	go install)
 
-$(OUTPUTDIR)/extension/Car.go: $(SBE_JAR)
+$(OUTPUTDIR)/baseline-bigendian/SbeMarshalling.go: $(SBE_JAR)
+	$(JAVA) \
+	-Dsbe.output.dir=$(OUTPUTDIR) \
+	-Dsbe.generate.ir="false" \
+	-Dsbe.target.language="golang" \
+	-jar ${SBE_JAR} \
+	$(BIGENDIAN_SCHEMA)
+	(export GOPATH=$(GOPATH) && \
+        cd $(OUTPUTDIR)/baseline-bigendian && \
+	go build && \
+	go fmt && \
+	go test && \
+	go install)
+
+$(OUTPUTDIR)/extension/SbeMarshalling.go: $(SBE_JAR)
 	$(JAVA) \
 	-Dsbe.output.dir=$(OUTPUTDIR) \
 	-Dsbe.generate.ir="false" \
@@ -73,7 +88,7 @@ $(OUTPUTDIR)/extension/Car.go: $(SBE_JAR)
 	go build && \
 	go install)
 
-$(OUTPUTDIR)/extension2/Car.go: $(SBE_JAR)
+$(OUTPUTDIR)/extension2/SbeMarshalling.go: $(SBE_JAR)
 	$(JAVA) \
 	-Dsbe.output.dir=$(OUTPUTDIR) \
 	-Dsbe.generate.ir="false" \
@@ -89,7 +104,7 @@ bench: $(SBE_JAR) $(OUTPUTDIR)/example-schema/example-schema
 	(export GOPATH=$(GOPATH) && \
         cd $(OUTPUTDIR)/example-schema && \
 	go test --bench . -cpuprofile=cpu.out && \
-	go tool pprof -text example-schema cpu.out)
+	go tool pprof -text example-schema.test cpu.out)
 
 test: fix-binary nested-group nested-group-extension basic-vardata basic-group basic-types simple composite composite-elements
 

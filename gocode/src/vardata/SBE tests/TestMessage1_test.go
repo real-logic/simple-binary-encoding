@@ -2,24 +2,23 @@ package sbe_tests
 
 import (
 	"bytes"
-	"encoding/binary"
 	"testing"
 )
 
 func TestEncodeDecodeTestMessage1(t *testing.T) {
-
+	m := NewSbeGoMarshaller()
 	var in TestMessage1
 
 	in.EncryptedNewPassword = []byte("abcdefghijklmnopqrst")
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(m, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage1 = *new(TestMessage1)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}

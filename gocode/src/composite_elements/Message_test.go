@@ -2,11 +2,11 @@ package composite_elements
 
 import (
 	"bytes"
-	"encoding/binary"
 	"testing"
 )
 
 func TestEncodeDecodeMsg(t *testing.T) {
+	m := NewSbeGoMarshaller()
 
 	var set SetOne
 	var in Msg
@@ -15,13 +15,13 @@ func TestEncodeDecodeMsg(t *testing.T) {
 	in.Structure = Outer{EnumOne.Value10, 0, set, OuterInner{1, 2}}
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(m, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out Msg = *new(Msg)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
@@ -36,6 +36,7 @@ func TestEncodeDecodeMsg(t *testing.T) {
 }
 
 func TestEncodeDecodeMsg2(t *testing.T) {
+	m := NewSbeGoMarshaller()
 
 	var set SetOne
 	var in Msg2
@@ -44,7 +45,7 @@ func TestEncodeDecodeMsg2(t *testing.T) {
 	in.Structure = OuterWithOffsets{EnumOne.Value10, 0, set, OuterWithOffsetsInner{1, 2}}
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(m, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
@@ -54,7 +55,7 @@ func TestEncodeDecodeMsg2(t *testing.T) {
 	}
 
 	var out Msg2 = *new(Msg2)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
@@ -69,19 +70,20 @@ func TestEncodeDecodeMsg2(t *testing.T) {
 }
 
 func TestEncodeDecodeMsg3(t *testing.T) {
+	m := NewSbeGoMarshaller()
 
 	var in Msg3
 
 	in.Structure = FuturesPrice{65, 3, IsSettlement.T}
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(m, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out Msg3 = *new(Msg3)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
