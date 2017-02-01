@@ -2,11 +2,11 @@ package composite
 
 import (
 	"bytes"
-	"encoding/binary"
 	"testing"
 )
 
 func TestEncodeDecode(t *testing.T) {
+	m := NewSbeGoMarshaller()
 
 	var s1, s2 [5]byte
 	copy(s1[:], "start")
@@ -16,34 +16,34 @@ func TestEncodeDecode(t *testing.T) {
 	in := Composite{p1, p2}
 
 	var cbuf = new(bytes.Buffer)
-	if err := in.Encode(cbuf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(m, cbuf, true); err != nil {
 		t.Log("Composite Encoding Error", err)
 		t.Fail()
 	}
 	t.Log(in, " -> ", cbuf.Bytes())
 	t.Log("Cap() = ", cbuf.Cap(), "Len() = \n", cbuf.Len())
 
-	m := MessageHeader{in.SbeBlockLength(), in.SbeTemplateId(), in.SbeSchemaId(), in.SbeSchemaVersion()}
+	hdr := SbeGoMessageHeader{in.SbeBlockLength(), in.SbeTemplateId(), in.SbeSchemaId(), in.SbeSchemaVersion()}
 	var mbuf = new(bytes.Buffer)
-	if err := m.Encode(mbuf, binary.LittleEndian); err != nil {
-		t.Log("MessageHeader Encoding Error", err)
+	if err := hdr.Encode(m, mbuf); err != nil {
+		t.Log("SbeGoMessageHeader Encoding Error", err)
 		t.Fail()
 	}
-	t.Log(m, " -> ", mbuf.Bytes())
+	t.Log(hdr, " -> ", mbuf.Bytes())
 	t.Log("Cap() = ", mbuf.Cap(), "Len() = \n", mbuf.Len())
 
-	// Create a new empty MessageHeader and Composite
-	m = *new(MessageHeader)
+	// Create a new empty SbeGoMessageHeader and Composite
+	hdr = *new(SbeGoMessageHeader)
 	var out Composite = *new(Composite)
 
-	if err := m.Decode(mbuf, binary.LittleEndian, in.SbeSchemaVersion()); err != nil {
-		t.Log("MessageHeader Decoding Error", err)
+	if err := hdr.Decode(m, mbuf); err != nil {
+		t.Log("SbeGoMessageHeader Decoding Error", err)
 		t.Fail()
 	}
-	t.Log("MessageHeader Decodes as: ", m)
+	t.Log("SbeGoMessageHeader Decodes as: ", m)
 	t.Log("Cap() = ", mbuf.Cap(), "Len() = \n", mbuf.Len())
 
-	if err := out.Decode(cbuf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(m, cbuf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Log("Composite Decoding Error", err)
 		t.Fail()
 	}

@@ -46,7 +46,6 @@ public class GolangUtil
     }
 
 
-    /* FIXME: Share across languages */
     /**
      * Map the name of a {@link uk.co.real_logic.sbe.PrimitiveType} to a Golang primitive type name.
      *
@@ -56,6 +55,34 @@ public class GolangUtil
     public static String golangTypeName(final PrimitiveType primitiveType)
     {
         return typeNameByPrimitiveTypeMap.get(primitiveType);
+    }
+
+    private static Map<PrimitiveType, String> marshalTypeByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
+
+    static
+    {
+        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.CHAR, "Bytes");
+        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.INT8, "Int8");
+        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.INT16, "Int16");
+        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.INT32, "Int32");
+        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.INT64, "Int64");
+        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.UINT8, "Uint8");
+        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.UINT16, "Uint16");
+        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.UINT32, "Uint32");
+        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.UINT64, "Uint64");
+        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.FLOAT, "Float32");
+        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.DOUBLE, "Float64");
+    }
+
+    /**
+     * Map the name of a {@link uk.co.real_logic.sbe.PrimitiveType} to a Golang marhsalling function name.
+     *
+     * @param primitiveType to map.
+     * @return the name of the Java primitive that most closely maps.
+     */
+    public static String golangMarshalType(final PrimitiveType primitiveType)
+    {
+        return marshalTypeByPrimitiveTypeMap.get(primitiveType);
     }
 
     /**

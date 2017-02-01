@@ -124,11 +124,8 @@ decide what to with golang `Time`'s nanosecond timer when converting
 
 Roadmap
 =======
- * Examples documented
+ * Further examples and doumentation
  * Windows developer support (currently tested on Linux/MacOS)
- * Enhance Design/Rationale document (this one)
- * presence=optional
  * Unnecessary code removal (e.g., GroupSizeEncoding)
  * Further Unicode support
  * Testing/Bug fixes
- * Benchmarking & Performance Enhancements

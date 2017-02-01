@@ -5,7 +5,6 @@ package main
 import (
 	"baseline" // Car
 	"bytes"
-	"encoding/binary"
 	"extension"  // Car extended with cupholder
 	"extension2" // extension extended with CO2
 	"fmt"
@@ -16,6 +15,18 @@ import (
 	"reflect"
 	"time"
 )
+
+// String Preallocations which matches what the Java and C++ benchmarks do
+var vehicleCode [6]byte = [6]byte{'a', 'b', 'c', 'd', 'e', 'f'}
+var manufacturerCode [3]byte = [3]byte{'1', '2', '3'}
+var manufacturer []uint8 = []uint8("Honda")
+var model []uint8 = []uint8("Civic VTi")
+var activationCode []uint8 = []uint8("abcdef")
+
+// Both Java and C++ benchmarks ignore ignore CarFuelFigures.UsageDescription
+var urban []uint8 = []uint8("Urban Cycle")
+var combined []uint8 = []uint8("Combined Cycle")
+var highway []uint8 = []uint8("Highway Cycle")
 
 func main() {
 
@@ -31,8 +42,8 @@ func main() {
 	fmt.Println("Example Car->Extension2")
 	ExampleCarToExtension2()
 
-	// fmt.Println("Example Extension2->Car")
-	// ExampleExtension2ToCar()
+	fmt.Println("Example Extension2->Car")
+	ExampleExtension2ToCar()
 
 	fmt.Println("Example decode using bytes.buffer")
 	ExampleDecodeBuffer()
@@ -49,15 +60,16 @@ func main() {
 
 func ExampleEncodeDecode() bool {
 	in := makeCar()
+	min := baseline.NewSbeGoMarshaller()
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(min, buf, true); err != nil {
 		fmt.Println("Encoding Error", err)
 		os.Exit(1)
 	}
 
 	var out baseline.Car = *new(baseline.Car)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(min, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		fmt.Println("Decoding Error", err)
 		os.Exit(1)
 	}
@@ -99,7 +111,7 @@ func ExampleEncodeDecode() bool {
 
 	// Engine has two constant values which should come back filled in
 	if in.Engine == out.Engine {
-		fmt.Println("in.Engine == out.Engine (and they should be different):\n", in.Engine, out.Engine)
+		fmt.Println("in.Engine == out.Engine (and they should be different):\n", in.Engine, "\n", out.Engine)
 		os.Exit(1)
 	}
 
@@ -108,7 +120,7 @@ func ExampleEncodeDecode() bool {
 	// object, and then they will correctly compare
 	baseline.EngineInit(&in.Engine)
 	if in.Engine != out.Engine {
-		fmt.Println("in.Engine != out.Engine:\n", in.Engine, out.Engine)
+		fmt.Println("in.Engine != out.Engine:\n", in.Engine, "\n", out.Engine)
 		os.Exit(1)
 	}
 
@@ -117,15 +129,17 @@ func ExampleEncodeDecode() bool {
 
 func ExampleDecodeBuffer() bool {
 	buf := bytes.NewBuffer(data)
-	var m baseline.MessageHeader
-	if err := m.Decode(buf, binary.LittleEndian, 0); err != nil {
+	m := baseline.NewSbeGoMarshaller()
+
+	var hdr baseline.SbeGoMessageHeader
+	if err := hdr.Decode(m, buf); err != nil {
 		fmt.Println("Failed to decode message header", err)
 		os.Exit(1)
 	}
 
 	// fmt.Println("\tbuffer is length:", buf.Len())
 	var c baseline.Car
-	if err := c.Decode(buf, binary.LittleEndian, m.Version, m.BlockLength, true); err != nil {
+	if err := c.Decode(m, buf, hdr.Version, hdr.BlockLength, true); err != nil {
 		fmt.Println("Failed to decode car", err)
 		os.Exit(1)
 	}
@@ -134,6 +148,7 @@ func ExampleDecodeBuffer() bool {
 
 func ExampleDecodePipe() bool {
 	var r, w = io.Pipe()
+	m := baseline.NewSbeGoMarshaller()
 
 	go func() {
 		defer w.Close()
@@ -158,11 +173,11 @@ func ExampleDecodePipe() bool {
 		}
 	}()
 
-	var m baseline.MessageHeader
-	m.Decode(r, binary.LittleEndian, 0)
+	var hdr baseline.SbeGoMessageHeader
+	hdr.Decode(m, r)
 
 	var c baseline.Car
-	if err := c.Decode(r, binary.LittleEndian, m.Version, m.BlockLength, true); err != nil {
+	if err := c.Decode(m, r, hdr.Version, hdr.BlockLength, true); err != nil {
 		fmt.Println("Failed to decode car", err)
 		os.Exit(1)
 	}
@@ -177,6 +192,7 @@ func ExampleDecodeSocket() bool {
 
 	// Reader
 	go func() {
+		m := baseline.NewSbeGoMarshaller()
 		// fmt.Println("resolve")
 		tcpAddr, err := net.ResolveTCPAddr("tcp", addr)
 		if err != nil {
@@ -201,12 +217,12 @@ func ExampleDecodeSocket() bool {
 		defer conn.Close()
 
 		// fmt.Println("reading messageheader")
-		var m baseline.MessageHeader
-		m.Decode(conn, binary.LittleEndian, 0)
+		var hdr baseline.SbeGoMessageHeader
+		hdr.Decode(m, conn)
 
 		// fmt.Println("reading car")
 		var c baseline.Car
-		if err := c.Decode(conn, binary.LittleEndian, m.Version, m.BlockLength, true); err != nil {
+		if err := c.Decode(m, conn, hdr.Version, hdr.BlockLength, true); err != nil {
 			fmt.Println("Failed to decode car", err)
 			os.Exit(1)
 		}
@@ -258,15 +274,17 @@ func ExampleDecodeSocket() bool {
 
 func ExampleCarToExtension() bool {
 	in := makeCar()
+	min := baseline.NewSbeGoMarshaller()
+	mout := extension.NewSbeGoMarshaller()
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(min, buf, true); err != nil {
 		fmt.Println("Encoding Error", err)
 		os.Exit(1)
 	}
 
 	var out extension.Car = *new(extension.Car)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(mout, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		fmt.Println("Decoding Error", err)
 		os.Exit(1)
 	}
@@ -340,15 +358,17 @@ func ExampleCarToExtension() bool {
 
 func ExampleExtensionToCar() bool {
 	in := makeExtension()
+	min := extension.NewSbeGoMarshaller()
+	mout := baseline.NewSbeGoMarshaller()
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(min, buf, true); err != nil {
 		fmt.Println("Encoding Error", err)
 		os.Exit(1)
 	}
 
 	var out baseline.Car = *new(baseline.Car)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(mout, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		fmt.Println("Decoding Error", err)
 		os.Exit(1)
 	}
@@ -390,9 +410,9 @@ func ExampleExtensionToCar() bool {
 		os.Exit(1)
 	}
 
-	// Engine has two constant values which should come back filled in
-	if in.Engine.MaxRpm == out.Engine.MaxRpm {
-		fmt.Println("in.Engine.MaxRpm == out.Engine/MaxRpm (and they should be different):\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
+	// Engine has two constant values which in this case should match
+	if in.Engine.MaxRpm != out.Engine.MaxRpm {
+		fmt.Println("in.Engine.MaxRpm != out.Engine/MaxRpm:\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
 		os.Exit(1)
 	}
 
@@ -415,15 +435,17 @@ func ExampleExtensionToCar() bool {
 
 func ExampleExtension2ToCar() bool {
 	in := makeExtension2()
+	min := extension2.NewSbeGoMarshaller()
+	mout := baseline.NewSbeGoMarshaller()
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(min, buf, true); err != nil {
 		fmt.Println("Encoding Error", err)
 		os.Exit(1)
 	}
 
 	var out baseline.Car = *new(baseline.Car)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(mout, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		fmt.Println("Decoding Error", err)
 		os.Exit(1)
 	}
@@ -465,18 +487,9 @@ func ExampleExtension2ToCar() bool {
 		os.Exit(1)
 	}
 
-	// Engine has two constant values which should come back filled in
-	if in.Engine.MaxRpm == out.Engine.MaxRpm {
-		fmt.Println("in.Engine.MaxRpm == out.Engine/MaxRpm (and they should be different):\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
-		os.Exit(1)
-	}
-
-	// Engine has constant elements so We should have used our the
-	// EngineInit() function to fill those in when we created the
-	// object, and then they will correctly compare
-	extension2.EngineInit(&in.Engine)
+	// Engine has two constant values which in this case should match
 	if in.Engine.MaxRpm != out.Engine.MaxRpm {
-		fmt.Println("in.Engine.MaxRpm != out.Engine.MaxRpm:\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
+		fmt.Println("in.Engine.MaxRpm != out.Engine/MaxRpm:\n", in.Engine.MaxRpm, out.Engine.MaxRpm)
 		os.Exit(1)
 	}
 
@@ -498,15 +511,17 @@ func ExampleExtension2ToCar() bool {
 
 func ExampleCarToExtension2() bool {
 	in := makeCar()
+	min := baseline.NewSbeGoMarshaller()
+	mout := extension2.NewSbeGoMarshaller()
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(min, buf, true); err != nil {
 		fmt.Println("Encoding Error", err)
 		os.Exit(1)
 	}
 
 	var out extension2.Car = *new(extension2.Car)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(mout, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		fmt.Println("Decoding Error", err)
 		os.Exit(1)
 	}
@@ -594,133 +609,115 @@ func ExampleCarToExtension2() bool {
 
 // Helper to make a Car object as per the Java example
 func makeCar() baseline.Car {
-	var vehicleCode [6]byte
-	copy(vehicleCode[:], "abcdef")
-
-	var manufacturerCode [3]byte
-	copy(manufacturerCode[:], "123")
-
-	var optionalExtras [8]bool
-	optionalExtras[baseline.OptionalExtrasChoice.CruiseControl] = true
-	optionalExtras[baseline.OptionalExtrasChoice.SportsPack] = true
-
-	var engine baseline.Engine
-	engine = baseline.Engine{2000, 4, 0, manufacturerCode, [6]byte{}, baseline.EngineBooster{baseline.BoostType.NITROUS, 200}}
-
-	manufacturer := []uint8("Honda")
-	model := []uint8("Civic VTi")
-	activationCode := []uint8("deadbeef")
-
-	var fuel []baseline.CarFuelFigures
-	fuel = append(fuel, baseline.CarFuelFigures{30, 35.9, []uint8("Urban Cycle")})
-	fuel = append(fuel, baseline.CarFuelFigures{55, 49.0, []uint8("Combined Cycle")})
-	fuel = append(fuel, baseline.CarFuelFigures{75, 40.0, []uint8("Highway Cycle")})
-
-	var acc1 []baseline.CarPerformanceFiguresAcceleration
-	acc1 = append(acc1, baseline.CarPerformanceFiguresAcceleration{30, 3.8})
-	acc1 = append(acc1, baseline.CarPerformanceFiguresAcceleration{60, 7.5})
-	acc1 = append(acc1, baseline.CarPerformanceFiguresAcceleration{100, 12.2})
-
-	var acc2 []baseline.CarPerformanceFiguresAcceleration
-	acc2 = append(acc2, baseline.CarPerformanceFiguresAcceleration{30, 3.8})
-	acc2 = append(acc2, baseline.CarPerformanceFiguresAcceleration{60, 7.5})
-	acc2 = append(acc2, baseline.CarPerformanceFiguresAcceleration{100, 12.2})
-
-	var pf []baseline.CarPerformanceFigures
-	pf = append(pf, baseline.CarPerformanceFigures{95, acc1})
-	pf = append(pf, baseline.CarPerformanceFigures{99, acc2})
-
-	car := baseline.Car{1234, 2013, baseline.BooleanType.T, baseline.Model.A, [5]uint32{0, 1, 2, 3, 4}, vehicleCode, optionalExtras, baseline.Model.A, engine, fuel, pf, manufacturer, model, activationCode}
-
-	return car
+	return baseline.Car{
+		1234,
+		2013,
+		baseline.BooleanType.T,
+		baseline.Model.A,
+		[5]uint32{0, 1, 2, 3, 4},
+		vehicleCode,
+		[8]bool{false, true, true, false, false, false, false, false},
+		baseline.Model.A,
+		baseline.Engine{2000,
+			4,
+			9001, // will come back as constant value 9000
+			manufacturerCode,
+			[6]byte{'P', 'e', 't', 'r', 'o', 'l'},
+			baseline.EngineBooster{baseline.BoostType.NITROUS, 200}},
+		[]baseline.CarFuelFigures{
+			baseline.CarFuelFigures{30, 35.9, urban},
+			baseline.CarFuelFigures{55, 49.0, combined},
+			baseline.CarFuelFigures{75, 40.0, highway}},
+		[]baseline.CarPerformanceFigures{
+			baseline.CarPerformanceFigures{95,
+				[]baseline.CarPerformanceFiguresAcceleration{
+					baseline.CarPerformanceFiguresAcceleration{30, 4.0},
+					baseline.CarPerformanceFiguresAcceleration{60, 7.5},
+					baseline.CarPerformanceFiguresAcceleration{100, 12.2}}},
+			baseline.CarPerformanceFigures{99,
+				[]baseline.CarPerformanceFiguresAcceleration{
+					baseline.CarPerformanceFiguresAcceleration{30, 3.8},
+					baseline.CarPerformanceFiguresAcceleration{60, 7.1},
+					baseline.CarPerformanceFiguresAcceleration{100, 11.8}}}},
+		manufacturer,
+		model,
+		activationCode}
 }
 
 // Helper to make an Extension (car with cupholder) object
 func makeExtension() extension.Car {
-	var vehicleCode [6]byte
-	copy(vehicleCode[:], "abcdef")
-
-	var manufacturerCode [3]byte
-	copy(manufacturerCode[:], "123")
-
-	var optionalExtras [8]bool
-	optionalExtras[extension.OptionalExtrasChoice.CruiseControl] = true
-	optionalExtras[extension.OptionalExtrasChoice.SportsPack] = true
-
-	var engine extension.Engine
-	engine = extension.Engine{2000, 4, 0, manufacturerCode, [6]byte{}, extension.EngineBooster{extension.BoostType.NITROUS, 200}}
-
-	manufacturer := []uint8("Honda")
-	model := []uint8("Civic VTi")
-	activationCode := []uint8("deadbeef")
-
-	var fuel []extension.CarFuelFigures
-	fuel = append(fuel, extension.CarFuelFigures{30, 35.9, []uint8("Urban Cycle")})
-	fuel = append(fuel, extension.CarFuelFigures{55, 49.0, []uint8("Combined Cycle")})
-	fuel = append(fuel, extension.CarFuelFigures{75, 40.0, []uint8("Highway Cycle")})
-
-	var acc1 []extension.CarPerformanceFiguresAcceleration
-	acc1 = append(acc1, extension.CarPerformanceFiguresAcceleration{30, 3.8})
-	acc1 = append(acc1, extension.CarPerformanceFiguresAcceleration{60, 7.5})
-	acc1 = append(acc1, extension.CarPerformanceFiguresAcceleration{100, 12.2})
-
-	var acc2 []extension.CarPerformanceFiguresAcceleration
-	acc2 = append(acc2, extension.CarPerformanceFiguresAcceleration{30, 3.8})
-	acc2 = append(acc2, extension.CarPerformanceFiguresAcceleration{60, 7.5})
-	acc2 = append(acc2, extension.CarPerformanceFiguresAcceleration{100, 12.2})
-
-	var pf []extension.CarPerformanceFigures
-	pf = append(pf, extension.CarPerformanceFigures{95, acc1})
-	pf = append(pf, extension.CarPerformanceFigures{99, acc2})
-
-	// 119 cupholders!
-	car := extension.Car{1234, 2013, extension.BooleanType.T, extension.Model.A, [5]uint32{0, 1, 2, 3, 4}, vehicleCode, optionalExtras, extension.Model.A, engine, 119, fuel, pf, manufacturer, model, activationCode}
-
-	return car
+	return extension.Car{
+		1234,
+		2013,
+		extension.BooleanType.T,
+		extension.Model.A,
+		[5]uint32{0, 1, 2, 3, 4},
+		vehicleCode,
+		[8]bool{false, true, true, false, false, false, false, false},
+		extension.Model.A,
+		extension.Engine{2000,
+			4,
+			9000,
+			manufacturerCode,
+			[6]byte{'P', 'e', 't', 'r', 'o', 'l'},
+			extension.EngineBooster{extension.BoostType.NITROUS, 200}},
+		119, // sinceVersion = 1
+		[]extension.CarFuelFigures{
+			extension.CarFuelFigures{30, 35.9, urban},
+			extension.CarFuelFigures{55, 49.0, combined},
+			extension.CarFuelFigures{75, 40.0, highway}},
+		[]extension.CarPerformanceFigures{
+			extension.CarPerformanceFigures{95,
+				[]extension.CarPerformanceFiguresAcceleration{
+					extension.CarPerformanceFiguresAcceleration{30, 4.0},
+					extension.CarPerformanceFiguresAcceleration{60, 7.5},
+					extension.CarPerformanceFiguresAcceleration{100, 12.2}}},
+			extension.CarPerformanceFigures{99,
+				[]extension.CarPerformanceFiguresAcceleration{
+					extension.CarPerformanceFiguresAcceleration{30, 3.8},
+					extension.CarPerformanceFiguresAcceleration{60, 7.1},
+					extension.CarPerformanceFiguresAcceleration{100, 11.8}}}},
+		manufacturer,
+		model,
+		activationCode}
 }
 
 // Helper to make an Extension2 (car with cupholder and c02 info) object
 func makeExtension2() extension2.Car {
-	var vehicleCode [6]byte
-	copy(vehicleCode[:], "abcdef")
-
-	var manufacturerCode [3]byte
-	copy(manufacturerCode[:], "123")
-
-	var optionalExtras [8]bool
-	optionalExtras[extension2.OptionalExtrasChoice.CruiseControl] = true
-	optionalExtras[extension2.OptionalExtrasChoice.SportsPack] = true
-
-	var engine extension2.Engine
-	engine = extension2.Engine{2000, 4, 0, manufacturerCode, [6]byte{}, extension2.EngineBooster{extension2.BoostType.NITROUS, 200}}
-
-	manufacturer := []uint8("Honda")
-	model := []uint8("Civic VTi")
-	activationCode := []uint8("deadbeef")
-
-	var fuel []extension2.CarFuelFigures
-	fuel = append(fuel, extension2.CarFuelFigures{30, 35.9, 0.1, []uint8("Urban Cycle")})
-	fuel = append(fuel, extension2.CarFuelFigures{55, 49.0, 0.2, []uint8("Combined Cycle")})
-	fuel = append(fuel, extension2.CarFuelFigures{75, 40.0, 0.3, []uint8("Highway Cycle")})
-
-	var acc1 []extension2.CarPerformanceFiguresAcceleration
-	acc1 = append(acc1, extension2.CarPerformanceFiguresAcceleration{30, 3.8})
-	acc1 = append(acc1, extension2.CarPerformanceFiguresAcceleration{60, 7.5})
-	acc1 = append(acc1, extension2.CarPerformanceFiguresAcceleration{100, 12.2})
-
-	var acc2 []extension2.CarPerformanceFiguresAcceleration
-	acc2 = append(acc2, extension2.CarPerformanceFiguresAcceleration{30, 3.8})
-	acc2 = append(acc2, extension2.CarPerformanceFiguresAcceleration{60, 7.5})
-	acc2 = append(acc2, extension2.CarPerformanceFiguresAcceleration{100, 12.2})
-
-	var pf []extension2.CarPerformanceFigures
-	pf = append(pf, extension2.CarPerformanceFigures{95, acc1})
-	pf = append(pf, extension2.CarPerformanceFigures{99, acc2})
-
-	// 119 cupholders!
-	car := extension2.Car{1234, 2013, extension2.BooleanType.T, extension2.Model.A, [5]uint32{0, 1, 2, 3, 4}, vehicleCode, optionalExtras, extension2.Model.A, engine, 119, fuel, pf, manufacturer, model, activationCode}
-
-	return car
+	return extension2.Car{
+		1234,
+		2013,
+		extension2.BooleanType.T,
+		extension2.Model.A,
+		[5]uint32{0, 1, 2, 3, 4},
+		vehicleCode,
+		[8]bool{false, true, true, false, false, false, false, false},
+		extension2.Model.A,
+		extension2.Engine{2000,
+			4,
+			9000,
+			manufacturerCode,
+			[6]byte{'P', 'e', 't', 'r', 'o', 'l'},
+			extension2.EngineBooster{extension2.BoostType.NITROUS, 200}},
+		119, // sinceVersion = 1
+		[]extension2.CarFuelFigures{
+			extension2.CarFuelFigures{30, 35.9, 0.1, urban},
+			extension2.CarFuelFigures{55, 49.0, 0.2, combined},
+			extension2.CarFuelFigures{75, 40.0, 0.3, highway}},
+		[]extension2.CarPerformanceFigures{
+			extension2.CarPerformanceFigures{95,
+				[]extension2.CarPerformanceFiguresAcceleration{
+					extension2.CarPerformanceFiguresAcceleration{30, 4.0},
+					extension2.CarPerformanceFiguresAcceleration{60, 7.5},
+					extension2.CarPerformanceFiguresAcceleration{100, 12.2}}},
+			extension2.CarPerformanceFigures{99,
+				[]extension2.CarPerformanceFiguresAcceleration{
+					extension2.CarPerformanceFiguresAcceleration{30, 3.8},
+					extension2.CarPerformanceFiguresAcceleration{60, 7.1},
+					extension2.CarPerformanceFiguresAcceleration{100, 11.8}}}},
+		manufacturer,
+		model,
+		activationCode}
 }
 
 // MaxInt returns the larger of two ints.
@@ -739,5 +736,6 @@ func MinInt(a, b int) int {
 	return b
 }
 
-// The byte array is from the java example for interop test
+// The byte array is from the java example for interop test made by
+// running with -Dsbe.encoding.filename and then decoded using od -tu1
 var data []byte = []byte{47, 0, 1, 0, 1, 0, 0, 0, 210, 4, 0, 0, 0, 0, 0, 0, 221, 7, 1, 65, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0, 97, 98, 99, 100, 101, 102, 6, 208, 7, 4, 49, 50, 51, 78, 200, 6, 0, 3, 0, 30, 0, 154, 153, 15, 66, 11, 0, 0, 0, 85, 114, 98, 97, 110, 32, 67, 121, 99, 108, 101, 55, 0, 0, 0, 68, 66, 14, 0, 0, 0, 67, 111, 109, 98, 105, 110, 101, 100, 32, 67, 121, 99, 108, 101, 75, 0, 0, 0, 32, 66, 13, 0, 0, 0, 72, 105, 103, 104, 119, 97, 121, 32, 67, 121, 99, 108, 101, 1, 0, 2, 0, 95, 6, 0, 3, 0, 30, 0, 0, 0, 128, 64, 60, 0, 0, 0, 240, 64, 100, 0, 51, 51, 67, 65, 99, 6, 0, 3, 0, 30, 0, 51, 51, 115, 64, 60, 0, 51, 51, 227, 64, 100, 0, 205, 204, 60, 65, 5, 0, 0, 0, 72, 111, 110, 100, 97, 9, 0, 0, 0, 67, 105, 118, 105, 99, 32, 86, 84, 105, 6, 0, 0, 0, 97, 98, 99, 100, 101, 102}

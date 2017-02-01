@@ -2,7 +2,6 @@ package group_with_data_extension
 
 import (
 	"bytes"
-	"encoding/binary"
 	"fmt"
 	"group_with_data"
 	"math"
@@ -52,17 +51,18 @@ func makeTestMessage3Original() group_with_data.TestMessage3 {
 
 // Basic test of new message
 func TestEncodeDecodeNewtoNew(t *testing.T) {
+	m := NewSbeGoMarshaller()
 
 	var buf = new(bytes.Buffer)
 	in := makeTestMessage3Extension()
 
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(m, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage3 = *new(TestMessage3)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
@@ -107,17 +107,19 @@ func TestEncodeDecodeNewtoNew(t *testing.T) {
 
 // Test of New to Old
 func TestEncodeDecodeNewToOld(t *testing.T) {
+	min := NewSbeGoMarshaller()
+	mout := group_with_data.NewSbeGoMarshaller()
 
 	var buf = new(bytes.Buffer)
 	in := makeTestMessage3Extension()
 
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(min, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out group_with_data.TestMessage3 = *new(group_with_data.TestMessage3)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(mout, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
@@ -158,17 +160,19 @@ func TestEncodeDecodeNewToOld(t *testing.T) {
 
 // Test of Old to New
 func TestEncodeDecodeOldToNew(t *testing.T) {
+	min := group_with_data.NewSbeGoMarshaller()
+	mout := NewSbeGoMarshaller()
 
 	var buf = new(bytes.Buffer)
 	in := makeTestMessage3Original()
 
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(min, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage3 = *new(TestMessage3)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(mout, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
