@@ -61,7 +61,8 @@ public class OtfMessageDecoder
         final int tokenIdx = decodeFields(buffer, bufferIdx, actingVersion, msgTokens, 1, numTokens, listener);
         bufferIdx += blockLength;
 
-        final long packedValues = decodeGroups(buffer, bufferIdx, actingVersion, msgTokens, tokenIdx, numTokens, listener);
+        final long packedValues = decodeGroups(
+            buffer, bufferIdx, actingVersion, msgTokens, tokenIdx, numTokens, listener);
 
         bufferIdx = decodeData(
             buffer, bufferIndex(packedValues), msgTokens, tokenIndex(packedValues), numTokens, actingVersion, listener);
@@ -98,7 +99,13 @@ public class OtfMessageDecoder
             {
                 case BEGIN_COMPOSITE:
                     decodeComposite(
-                        fieldToken, buffer, bufferIdx + offset, tokens, tokenIdx, nextFieldIdx - 2, actingVersion, listener);
+                        fieldToken,
+                        buffer,
+                        bufferIdx + offset,
+                        tokens, tokenIdx,
+                        nextFieldIdx - 2,
+                        actingVersion,
+                        listener);
                     break;
 
                 case BEGIN_ENUM:
@@ -142,19 +149,21 @@ public class OtfMessageDecoder
             final boolean isPresent = token.version() <= actingVersion;
 
             final Token blockLengthToken = tokens.get(tokenIdx + 2);
-            final int blockLength = isPresent ? Types.getInt(
-                buffer,
-                bufferIdx + blockLengthToken.offset(),
-                blockLengthToken.encoding().primitiveType(),
-                blockLengthToken.encoding().byteOrder())
+            final int blockLength = isPresent ?
+                Types.getInt(
+                    buffer,
+                    bufferIdx + blockLengthToken.offset(),
+                    blockLengthToken.encoding().primitiveType(),
+                    blockLengthToken.encoding().byteOrder())
                 : 0;
 
             final Token numInGroupToken = tokens.get(tokenIdx + 3);
-            final int numInGroup = isPresent ? Types.getInt(
-                buffer,
-                bufferIdx + numInGroupToken.offset(),
-                numInGroupToken.encoding().primitiveType(),
-                numInGroupToken.encoding().byteOrder())
+            final int numInGroup = isPresent ?
+                Types.getInt(
+                    buffer,
+                    bufferIdx + numInGroupToken.offset(),
+                    numInGroupToken.encoding().primitiveType(),
+                    numInGroupToken.encoding().byteOrder())
                 : 0;
 
             final Token dimensionTypeComposite = tokens.get(tokenIdx + 1);
@@ -180,7 +189,13 @@ public class OtfMessageDecoder
                     buffer, bufferIdx, actingVersion, tokens, afterFieldsIdx, numTokens, listener);
 
                 bufferIdx = decodeData(
-                    buffer, bufferIndex(packedValues), tokens, tokenIndex(packedValues), numTokens, actingVersion, listener);
+                    buffer,
+                    bufferIndex(packedValues),
+                    tokens,
+                    tokenIndex(packedValues),
+                    numTokens,
+                    actingVersion,
+                    listener);
 
                 listener.onEndGroup(token, i, numInGroup);
             }
@@ -214,7 +229,13 @@ public class OtfMessageDecoder
             {
                 case BEGIN_COMPOSITE:
                     decodeComposite(
-                        fieldToken, buffer, bufferIdx + offset, tokens, i, nextFieldIdx - 1, actingVersion, listener);
+                        fieldToken,
+                        buffer,
+                        bufferIdx + offset,
+                        tokens, i,
+                        nextFieldIdx - 1,
+                        actingVersion,
+                        listener);
                     break;
 
                 case BEGIN_ENUM:
@@ -258,11 +279,12 @@ public class OtfMessageDecoder
             final boolean isPresent = token.version() <= actingVersion;
 
             final Token lengthToken = tokens.get(tokenIdx + 2);
-            final int length = isPresent ? Types.getInt(
-                buffer,
-                bufferIdx + lengthToken.offset(),
-                lengthToken.encoding().primitiveType(),
-                lengthToken.encoding().byteOrder())
+            final int length = isPresent ?
+                Types.getInt(
+                    buffer,
+                    bufferIdx + lengthToken.offset(),
+                    lengthToken.encoding().primitiveType(),
+                    lengthToken.encoding().byteOrder())
                 : 0;
 
             final Token dataToken = tokens.get(tokenIdx + 3);

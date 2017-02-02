@@ -69,7 +69,8 @@ public final class GenerationUtil
         return tokens.subList(1, tokens.size() - 1);
     }
 
-    public static CharSequence concatEncodingTokens(final List<Token> tokens, final Function<Token, CharSequence> mapper)
+    public static CharSequence concatEncodingTokens(
+        final List<Token> tokens, final Function<Token, CharSequence> mapper)
     {
         return concatTokens(tokens, Signal.ENCODING, mapper);
     }
@@ -84,7 +85,8 @@ public final class GenerationUtil
             .collect(joining());
     }
 
-    public static int findEndSignal(final List<Token> tokens, final int startIndex, final Signal signal, final String name)
+    public static int findEndSignal(
+        final List<Token> tokens, final int startIndex, final Signal signal, final String name)
     {
         int result = tokens.size() - 1;
 

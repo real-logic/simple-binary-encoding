@@ -31,7 +31,8 @@ public class GroupWithDataTest
     public void shouldParseSchemaSuccessfully()
         throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(TestUtil.getLocalResource(
+            "group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
         final Field entriesGroup = fields.get(1);
         final CompositeType dimensionType = entriesGroup.dimensionType();

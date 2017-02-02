@@ -49,7 +49,11 @@ public class JsonTokenListener implements TokenListener
     }
 
     public void onEncoding(
-        final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final Token typeToken, final int actingVersion)
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final Token typeToken,
+        final int actingVersion)
     {
         property(fieldToken);
         appendEncodingAsString(buffer, bufferIndex, typeToken, actingVersion);
@@ -78,11 +82,13 @@ public class JsonTokenListener implements TokenListener
     {
     }
 
-    public void onBeginComposite(final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
+    public void onBeginComposite(
+        final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
     }
 
-    public void onEndComposite(final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
+    public void onEndComposite(
+        final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
     }
 
@@ -108,7 +114,11 @@ public class JsonTokenListener implements TokenListener
     }
 
     public void onVarData(
-        final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final int length, final Token typeToken)
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final int length,
+        final Token typeToken)
     {
         try
         {

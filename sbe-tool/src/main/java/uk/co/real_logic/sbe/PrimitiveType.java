@@ -15,22 +15,24 @@
  */
 package uk.co.real_logic.sbe;
 
+import static uk.co.real_logic.sbe.PrimitiveValue.*;
+
 /**
  * Primitive types from which all other types are composed.
  */
 public enum PrimitiveType
 {
-    CHAR("char", 1, PrimitiveValue.MIN_VALUE_CHAR, PrimitiveValue.MAX_VALUE_CHAR, PrimitiveValue.NULL_VALUE_CHAR),
-    INT8("int8", 1, PrimitiveValue.MIN_VALUE_INT8, PrimitiveValue.MAX_VALUE_INT8, PrimitiveValue.NULL_VALUE_INT8),
-    INT16("int16", 2, PrimitiveValue.MIN_VALUE_INT16, PrimitiveValue.MAX_VALUE_INT16, PrimitiveValue.NULL_VALUE_INT16),
-    INT32("int32", 4, PrimitiveValue.MIN_VALUE_INT32, PrimitiveValue.MAX_VALUE_INT32, PrimitiveValue.NULL_VALUE_INT32),
-    INT64("int64", 8, PrimitiveValue.MIN_VALUE_INT64, PrimitiveValue.MAX_VALUE_INT64, PrimitiveValue.NULL_VALUE_INT64),
-    UINT8("uint8", 1, PrimitiveValue.MIN_VALUE_UINT8, PrimitiveValue.MAX_VALUE_UINT8, PrimitiveValue.NULL_VALUE_UINT8),
-    UINT16("uint16", 2, PrimitiveValue.MIN_VALUE_UINT16, PrimitiveValue.MAX_VALUE_UINT16, PrimitiveValue.NULL_VALUE_UINT16),
-    UINT32("uint32", 4, PrimitiveValue.MIN_VALUE_UINT32, PrimitiveValue.MAX_VALUE_UINT32, PrimitiveValue.NULL_VALUE_UINT32),
-    UINT64("uint64", 8, PrimitiveValue.MIN_VALUE_UINT64, PrimitiveValue.MAX_VALUE_UINT64, PrimitiveValue.NULL_VALUE_UINT64),
-    FLOAT("float", 4, PrimitiveValue.MIN_VALUE_FLOAT, PrimitiveValue.MAX_VALUE_FLOAT, PrimitiveValue.NULL_VALUE_FLOAT),
-    DOUBLE("double", 8, PrimitiveValue.MIN_VALUE_DOUBLE, PrimitiveValue.MAX_VALUE_DOUBLE, PrimitiveValue.NULL_VALUE_DOUBLE);
+    CHAR("char",     1, MIN_VALUE_CHAR, MAX_VALUE_CHAR, NULL_VALUE_CHAR),
+    INT8("int8",     1, MIN_VALUE_INT8, MAX_VALUE_INT8, NULL_VALUE_INT8),
+    INT16("int16",   2, MIN_VALUE_INT16, MAX_VALUE_INT16, NULL_VALUE_INT16),
+    INT32("int32",   4, MIN_VALUE_INT32, MAX_VALUE_INT32, NULL_VALUE_INT32),
+    INT64("int64",   8, MIN_VALUE_INT64, MAX_VALUE_INT64, NULL_VALUE_INT64),
+    UINT8("uint8",   1, MIN_VALUE_UINT8, MAX_VALUE_UINT8, NULL_VALUE_UINT8),
+    UINT16("uint16", 2, MIN_VALUE_UINT16, MAX_VALUE_UINT16, NULL_VALUE_UINT16),
+    UINT32("uint32", 4, MIN_VALUE_UINT32, MAX_VALUE_UINT32, NULL_VALUE_UINT32),
+    UINT64("uint64", 8, MIN_VALUE_UINT64, MAX_VALUE_UINT64, NULL_VALUE_UINT64),
+    FLOAT("float",   4, MIN_VALUE_FLOAT, MAX_VALUE_FLOAT, NULL_VALUE_FLOAT),
+    DOUBLE("double", 8, MIN_VALUE_DOUBLE, MAX_VALUE_DOUBLE, NULL_VALUE_DOUBLE);
 
     private final String name;
     private final int size;
@@ -47,7 +49,8 @@ public enum PrimitiveType
         this.nullValue = new PrimitiveValue(nullValue, size);
     }
 
-    PrimitiveType(final String name, final int size, final double minValue, final double maxValue, final double nullValue)
+    PrimitiveType(
+        final String name, final int size, final double minValue, final double maxValue, final double nullValue)
     {
         this.name = name;
         this.size = size;

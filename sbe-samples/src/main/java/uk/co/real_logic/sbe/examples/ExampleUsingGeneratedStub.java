@@ -156,7 +156,7 @@ public class ExampleUsingGeneratedStub
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-        // An exception will be raised if the string length is larger than can be encoded in the varDataEncoding length field
+        // An exception will be raised if the string length is larger than can be encoded in the varDataEncoding field
         // Please use a suitable schema type for varDataEncoding.length: uint8 <= 254, uint16 <= 65534
         car.manufacturer(new String(MANUFACTURER, StandardCharsets.UTF_8))
             .putModel(MODEL, srcOffset, MODEL.length)
@@ -218,7 +218,8 @@ public class ExampleUsingGeneratedStub
         sb.append("\ncar.engine.booster.boostType=").append(engine.booster().boostType());
         sb.append("\ncar.engine.booster.horsePower=").append(engine.booster().horsePower());
 
-        sb.append("\ncar.engine.fuel=").append(new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
+        sb.append("\ncar.engine.fuel=").append(
+            new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
 
         for (final CarDecoder.FuelFiguresDecoder fuelFigures : car.fuelFigures())
         {

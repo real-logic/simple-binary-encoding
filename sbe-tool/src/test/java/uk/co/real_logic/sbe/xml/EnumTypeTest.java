@@ -229,7 +229,8 @@ public class EnumTypeTest
     public void shouldHandleEncodingTypesWithNamedTypes()
         throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource("encoding-types-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(TestUtil.getLocalResource(
+            "encoding-types-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
 
         assertNotNull(fields);
@@ -252,7 +253,12 @@ public class EnumTypeTest
         final NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
         final Map<String, Type> map = new HashMap<>();
 
-        final ParserOptions options = ParserOptions.builder().stopOnError(true).suppressOutput(true).warningsFatal(true).build();
+        final ParserOptions options = ParserOptions.builder()
+            .stopOnError(true)
+            .suppressOutput(true)
+            .warningsFatal(true)
+            .build();
+
         document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, new ErrorHandler(options), null);
 
         for (int i = 0, size = list.getLength(); i < size; i++)

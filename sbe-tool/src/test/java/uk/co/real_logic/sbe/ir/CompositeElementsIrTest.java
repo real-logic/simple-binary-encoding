@@ -34,7 +34,8 @@ public class CompositeElementsIrTest
     public void shouldGenerateCorrectIrForCompositeElementsSchema()
         throws Exception
     {
-        final MessageSchema schema = parse(getLocalResource("composite-elements-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(getLocalResource(
+            "composite-elements-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final List<Token> tokens = ir.getMessage(1);
@@ -97,7 +98,8 @@ public class CompositeElementsIrTest
     public void shouldGenerateCorrectIrForCompositeElementsWithOffsetsSchemaRc4()
         throws Exception
     {
-        final MessageSchema schema = parse(getLocalResource("composite-elements-schema-rc4.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(getLocalResource(
+            "composite-elements-schema-rc4.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final List<Token> tokens = ir.getMessage(2);
@@ -152,7 +154,8 @@ public class CompositeElementsIrTest
     public void shouldGenerateCorrectIrForCompositeWithRefSchema()
         throws Exception
     {
-        final MessageSchema schema = parse(getLocalResource("composite-elements-schema-rc4.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(getLocalResource(
+            "composite-elements-schema-rc4.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final List<Token> tokens = ir.getMessage(3);

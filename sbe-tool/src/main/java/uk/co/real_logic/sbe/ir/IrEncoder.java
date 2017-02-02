@@ -179,7 +179,8 @@ public class IrEncoder implements AutoCloseable
             tokenEncoder.putMaxValue(valArray, 0, put(valBuffer, encoding.maxValue(), type));
             tokenEncoder.putNullValue(valArray, 0, put(valBuffer, encoding.nullValue(), type));
 
-            final byte[] charEncodingBytes = getBytes(encoding.characterEncoding(), characterEncodingCharacterEncoding());
+            final byte[] charEncodingBytes = getBytes(
+                encoding.characterEncoding(), characterEncodingCharacterEncoding());
             tokenEncoder.putCharacterEncoding(charEncodingBytes, 0, charEncodingBytes.length);
 
             final byte[] epochBytes = getBytes(encoding.epoch(), epochCharacterEncoding());

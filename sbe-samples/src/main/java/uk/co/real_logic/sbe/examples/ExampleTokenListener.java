@@ -124,7 +124,8 @@ public class ExampleTokenListener implements TokenListener
         out.println();
     }
 
-    public void onBeginComposite(final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
+    public void onBeginComposite(
+        final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
         ++compositeLevel;
 
@@ -158,7 +159,11 @@ public class ExampleTokenListener implements TokenListener
     }
 
     public void onVarData(
-        final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final int length, final Token typeToken)
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final int length,
+        final Token typeToken)
     {
         final String value;
         try

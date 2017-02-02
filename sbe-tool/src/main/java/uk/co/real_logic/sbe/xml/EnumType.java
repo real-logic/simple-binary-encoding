@@ -81,8 +81,8 @@ public class EnumType extends Type
 
             default:
                 // might not have ran into this type yet, so look for it
-                final Node encodingTypeNode =
-                    (Node)xPath.compile(String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
+                final Node encodingTypeNode = (Node)xPath.compile(
+                    String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
                         .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
 
                 if (null == encodingTypeNode)

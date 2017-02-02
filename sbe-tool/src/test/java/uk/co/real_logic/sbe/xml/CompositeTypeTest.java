@@ -146,7 +146,8 @@ public class CompositeTypeTest
             "<composite name=\"PRICENULL\" description=\"Price NULL\" semanticType=\"Price\">" +
             "    <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" +
                 nullValStr + "\" primitiveType=\"int64\"/>" +
-            "    <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">-7</type>" +
+            "    <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">" +
+                "-7</type>" +
             "</composite>" +
             "</types>";
 

@@ -46,7 +46,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testType\" presence=\"required\" primitiveType=\"char\" length=\"1\" variableLength=\"false\"/>" +
+            "    <type name=\"testType\" presence=\"required\" primitiveType=\"char\" length=\"1\" " +
+                "variableLength=\"false\"/>" +
             "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -69,8 +70,10 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testType1\" presence=\"required\" primitiveType=\"char\" length=\"1\" variableLength=\"false\"/>" +
-            "    <type name=\"testType2\" presence=\"required\" primitiveType=\"int8\" length=\"1\" variableLength=\"false\"/>" +
+            "    <type name=\"testType1\" presence=\"required\" primitiveType=\"char\" length=\"1\" " +
+                "variableLength=\"false\"/>" +
+            "    <type name=\"testType2\" presence=\"required\" primitiveType=\"int8\" length=\"1\" " +
+                "variableLength=\"false\"/>" +
             "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
@@ -395,7 +398,8 @@ public class EncodedDataTypeTest
             "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
-        assertThat((((EncodedDataType)map.get("testTypeInt8MinValue")).minValue()), is(parse(minVal, PrimitiveType.INT8)));
+        assertThat((((EncodedDataType)map.get("testTypeInt8MinValue")).minValue()),
+            is(parse(minVal, PrimitiveType.INT8)));
     }
 
     @Test
@@ -410,7 +414,8 @@ public class EncodedDataTypeTest
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
-        assertThat((((EncodedDataType)map.get("testTypeInt8MaxValue")).maxValue()), is(parse(maxVal, PrimitiveType.INT8)));
+        assertThat((((EncodedDataType)map.get("testTypeInt8MaxValue")).maxValue()),
+            is(parse(maxVal, PrimitiveType.INT8)));
     }
 
     @Test
@@ -426,7 +431,8 @@ public class EncodedDataTypeTest
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
-        assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).nullValue()), is(parse(nullVal, PrimitiveType.INT8)));
+        assertThat((((EncodedDataType)map.get("testTypeInt8NullValue")).nullValue()),
+            is(parse(nullVal, PrimitiveType.INT8)));
     }
 
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)

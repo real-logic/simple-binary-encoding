@@ -35,7 +35,8 @@ public class Types
      * @param byteOrder of the integer in the buffer.
      * @return the value of the encoded integer.
      */
-    public static int getInt(final DirectBuffer buffer, final int index, final PrimitiveType type, final ByteOrder byteOrder)
+    public static int getInt(
+        final DirectBuffer buffer, final int index, final PrimitiveType type, final ByteOrder byteOrder)
     {
         switch (type)
         {
@@ -58,7 +59,8 @@ public class Types
                 final int value = buffer.getInt(index, byteOrder);
                 if (value < 0)
                 {
-                    throw new IllegalStateException("UINT32 type should not be greater than Integer.MAX_VALUE: value=" + value);
+                    throw new IllegalStateException(
+                        "UINT32 type should not be greater than Integer.MAX_VALUE: value=" + value);
                 }
                 return value;
 

@@ -26,7 +26,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
  */
 public class Field
 {
-    public static final int INVALID_ID = Integer.MAX_VALUE;  // schemaId must only be short, so this is way out of range.
+    public static final int INVALID_ID = Integer.MAX_VALUE;  // schemaId must be a short, so this is way out of range.
 
     private final String name;                 // required for field/data & group
     private final String description;          // optional for field/data & group
@@ -42,7 +42,7 @@ public class Field
     private final int sinceVersion;            // optional
     private final int deprecated;              // optional
     private List<Field> groupFieldList;        // used by group fields as the list of child fields in the group
-    private int computedOffset;                // holds the calculated offset of this field from top level <message> or <group>
+    private int computedOffset;                // holds the calculated offset of this field from <message> or <group>
     private int computedBlockLength;           // used to hold the calculated block length of this group
     private final String epoch;                // optional, epoch from which a timestamps start, defaults to "unix"
     private final String timeUnit;             // optional, defaults to "nanosecond".
@@ -86,7 +86,9 @@ public class Field
 
     public void validate(final Node node)
     {
-        if (type != null && semanticType != null && type.semanticType() != null && !semanticType.equals(type.semanticType()))
+        if (type != null && semanticType != null &&
+            type.semanticType() != null &&
+            !semanticType.equals(type.semanticType()))
         {
             handleError(node, "Mismatched semanticType on type and field: " + name);
         }
@@ -104,7 +106,8 @@ public class Field
                 final int periodIndex = valueRef.indexOf('.');
                 if (periodIndex < 1 || periodIndex == (valueRef.length() - 1))
                 {
-                    handleError(node, "valueRef format not valid for constant (enum-name.valid-value-name): " + valueRef);
+                    handleError(
+                        node, "valueRef format not valid for constant (enum-name.valid-value-name): " + valueRef);
                 }
 
                 final String valueRefType = valueRef.substring(0, periodIndex);

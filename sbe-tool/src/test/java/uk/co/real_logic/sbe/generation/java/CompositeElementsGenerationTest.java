@@ -104,7 +104,8 @@ public class CompositeElementsGenerationTest
         final MsgDecoder msgDecoder = new MsgDecoder();
 
         hdrDecoder.wrap(decodeBuffer, 0);
-        msgDecoder.wrap(decodeBuffer, hdrDecoder.encodedLength(), MSG_ENCODER.sbeBlockLength(), MSG_ENCODER.sbeSchemaVersion());
+        msgDecoder.wrap(
+            decodeBuffer, hdrDecoder.encodedLength(), MSG_ENCODER.sbeBlockLength(), MSG_ENCODER.sbeSchemaVersion());
 
         assertThat(hdrDecoder.blockLength(), is(22));
         assertThat(hdrDecoder.templateId(), is(1));

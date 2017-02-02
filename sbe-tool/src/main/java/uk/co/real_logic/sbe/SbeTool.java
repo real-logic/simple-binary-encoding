@@ -44,22 +44,26 @@ import java.io.FileInputStream;
  *
  * System Properties:
  * <ul>
- * <li><code>sbe.validation.xsd</code>: Use XSD to validate or not.</li>
- * <li><code>sbe.validation.stop.on.error</code>: Should the parser stop on first error encountered? Defaults to false.</li>
- * <li><code>sbe.validation.warnings.fatal</code>: Are warnings in parsing considered fatal? Defaults to false.</li>
- * <li><code>sbe.validation.suppress.output</code>: Should the parser suppress output during validation? Defaults to false.</li>
- * <li><code>sbe.generate.stubs</code>: Generate stubs or not. Defaults to true.</li>
- * <li><code>sbe.target.language</code>: Target language for code generation, defaults to Java.</li>
- * <li><code>sbe.generate.ir</code>: Generate IR or not. Defaults to false.</li>
- * <li><code>sbe.output.dir</code>: Target directory for code generation, defaults to current directory.</li>
- * <li><code>sbe.java.generate.interfaces</code>: Generate interface hierarchy or not. Defaults to false.</li>
- * <li><code>sbe.java.encoding.buffer.type</code>: Type of the Java interface for the encoding buffer to wrap.</li>
- * <li><code>sbe.java.decoding.buffer.type</code>: Type of the Java interface for the decoding buffer to wrap.</li>
- * <li><code>sbe.target.namespace</code>: Namespace for the generated code to override schema package.</li>
- * <li><code>sbe.cpp.namespaces.collapse</code>: Namespace for the generated code to override schema package.</li>
- * <li><code>sbe.java.generate.group-order.annotation</code>: Should the GroupOrder annotation be added to generated stubs.</li>
- * <li><code>sbe.keyword.append.token</code>: Token to be appended to keywords.</li>
- * <li><code>sbe.decode.unknown.enum.values</code>: Support unknown decoded enum values.</li>
+ * <li><b>sbe.validation.xsd</b>: Use XSD to validate or not.</li>
+ * <li><b>sbe.validation.stop.on.error</b>: Should the parser stop on first error encountered? Defaults to false.</li>
+ * <li><b>sbe.validation.warnings.fatal</b>: Are warnings in parsing considered fatal? Defaults to false.</li>
+ * <li>
+ *     <b>sbe.validation.suppress.output</b>: Should the parser suppress output during validation? Defaults to false.
+ * </li>
+ * <li><b>sbe.generate.stubs</b>: Generate stubs or not. Defaults to true.</li>
+ * <li><b>sbe.target.language</b>: Target language for code generation, defaults to Java.</li>
+ * <li><b>sbe.generate.ir</b>: Generate IR or not. Defaults to false.</li>
+ * <li><b>sbe.output.dir</b>: Target directory for code generation, defaults to current directory.</li>
+ * <li><b>sbe.java.generate.interfaces</b>: Generate interface hierarchy or not. Defaults to false.</li>
+ * <li><b>sbe.java.encoding.buffer.type</b>: Type of the Java interface for the encoding buffer to wrap.</li>
+ * <li><b>sbe.java.decoding.buffer.type</b>: Type of the Java interface for the decoding buffer to wrap.</li>
+ * <li><b>sbe.target.namespace</b>: Namespace for the generated code to override schema package.</li>
+ * <li><b>sbe.cpp.namespaces.collapse</b>: Namespace for the generated code to override schema package.</li>
+ * <li>
+ *     <b>sbe.java.generate.group-order.annotation</b>: Should the GroupOrder annotation be added to generated stubs.
+ * </li>
+ * <li><b>sbe.keyword.append.token</b>: Token to be appended to keywords.</li>
+ * <li><b>sbe.decode.unknown.enum.values</b>: Support unknown decoded enum values.</li>
  * </ul>
  */
 public class SbeTool
@@ -125,7 +129,7 @@ public class SbeTool
     public static final String TARGET_NAMESPACE = "sbe.target.namespace";
 
     /**
-     * Boolean system property to turn on or off collapsing of nested namespaces in generated C++ stubs. Defaults to false.
+     * Boolean system property to toggle collapsing of nested namespaces in generated C++ stubs. Defaults to false.
      */
     public static final String CPP_NAMESPACES_COLLAPSE = "sbe.cpp.namespaces.collapse";
 

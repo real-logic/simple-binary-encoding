@@ -317,8 +317,8 @@ public class Message
 
     /*
      * Compute and validate the offsets of the fields in the list and will set the fields computedOffset.
-     * Will validate the blockLength of the fields encompassing &lt;message&gt; or &lt;group&gt; and recursively descend
-     * into repeated groups.
+     * Will validate the blockLength of the fields encompassing &lt;message&gt; or &lt;group&gt; and recursively
+     * descend into repeated groups.
      */
     private int computeAndValidateOffsets(final Node node, final List<Field> fields, final int blockLength)
     {
@@ -404,13 +404,15 @@ public class Message
         return blockLength;
     }
 
-    private static void validateBlockLength(final Node node, final long specifiedBlockLength, final long computedBlockLength)
+    private static void validateBlockLength(
+        final Node node, final long specifiedBlockLength, final long computedBlockLength)
     {
         if (0 != specifiedBlockLength && computedBlockLength > specifiedBlockLength)
         {
             handleError(
                 node,
-                "specified blockLength provides insufficient space " + computedBlockLength + " > " + specifiedBlockLength);
+                "specified blockLength provides insufficient space " +
+                    computedBlockLength + " > " + specifiedBlockLength);
         }
     }
 }

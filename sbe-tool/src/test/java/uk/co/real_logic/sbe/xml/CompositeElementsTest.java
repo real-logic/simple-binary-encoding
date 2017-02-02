@@ -30,7 +30,8 @@ public class CompositeElementsTest
     public void shouldParseSchemaSuccessfully()
         throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource("composite-elements-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(TestUtil.getLocalResource(
+            "composite-elements-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
         final Field composite = fields.get(0);
 

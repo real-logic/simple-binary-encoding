@@ -226,7 +226,8 @@ public class CompositeType extends Type
 
         if ("optional".equals(getAttributeValueOrNull(node, "presence")))
         {
-            XmlSchemaParser.handleError(node, "composite for variable length data encoding cannot have presence=\"optional\"");
+            XmlSchemaParser.handleError(
+                node, "composite for variable length data encoding cannot have presence=\"optional\"");
         }
 
         if (containedTypeByNameMap.get("varData") == null)
@@ -235,7 +236,8 @@ public class CompositeType extends Type
         }
     }
 
-    private static void validateMaxValue(final Node node, final PrimitiveType primitiveType, final PrimitiveValue value)
+    private static void validateMaxValue(
+        final Node node, final PrimitiveType primitiveType, final PrimitiveValue value)
     {
         if (null != value)
         {

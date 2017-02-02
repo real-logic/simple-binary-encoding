@@ -31,8 +31,10 @@ public class MarketDataBenchmark
         final MessageHeaderEncoder messageHeaderEncoder = new MessageHeaderEncoder();
         final MessageHeaderDecoder messageHeaderDecoder = new MessageHeaderDecoder();
 
-        final MarketDataIncrementalRefreshTradesEncoder marketDataEncoder = new MarketDataIncrementalRefreshTradesEncoder();
-        final MarketDataIncrementalRefreshTradesDecoder marketDataDecoder = new MarketDataIncrementalRefreshTradesDecoder();
+        final MarketDataIncrementalRefreshTradesEncoder marketDataEncoder =
+            new MarketDataIncrementalRefreshTradesEncoder();
+        final MarketDataIncrementalRefreshTradesDecoder marketDataDecoder =
+            new MarketDataIncrementalRefreshTradesDecoder();
 
         final UnsafeBuffer encodeBuffer = new UnsafeBuffer(ByteBuffer.allocateDirect(1024));
         final UnsafeBuffer decodeBuffer = new UnsafeBuffer(ByteBuffer.allocateDirect(1024));
@@ -171,7 +173,7 @@ public class MarketDataBenchmark
         final long totalDuration = System.nanoTime() - start;
 
         System.out.printf(
-            "%d - %d(ns) average duration for %s.testEncode() - message encodedLength %d\n",
+            "%d - %d(ns) average duration for %s.testEncode() - message encodedLength %d%n",
             runNumber,
             totalDuration / reps,
             benchmark.getClass().getName(),
@@ -193,7 +195,7 @@ public class MarketDataBenchmark
         final long totalDuration = System.nanoTime() - start;
 
         System.out.printf(
-            "%d - %d(ns) average duration for %s.testDecode() - message encodedLength %d\n",
+            "%d - %d(ns) average duration for %s.testDecode() - message encodedLength %d%n",
             runNumber,
             totalDuration / reps,
             benchmark.getClass().getName(),

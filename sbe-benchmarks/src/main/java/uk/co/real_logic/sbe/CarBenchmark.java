@@ -18,6 +18,8 @@ package uk.co.real_logic.sbe;
 import org.openjdk.jmh.annotations.*;
 import org.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.benchmarks.*;
+import uk.co.real_logic.sbe.benchmarks.CarDecoder.PerformanceFiguresDecoder;
+import uk.co.real_logic.sbe.benchmarks.CarDecoder.PerformanceFiguresDecoder.AccelerationDecoder;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -95,7 +97,10 @@ public class CarBenchmark
     }
 
     public static void encode(
-        final MessageHeaderEncoder messageHeader, final CarEncoder car, final UnsafeBuffer buffer, final int bufferIndex)
+        final MessageHeaderEncoder messageHeader,
+        final CarEncoder car,
+        final UnsafeBuffer buffer,
+        final int bufferIndex)
     {
         messageHeader
             .wrap(buffer, bufferIndex)
@@ -196,11 +201,11 @@ public class CarBenchmark
             fuelFigures.mpg();
         }
 
-        for (final CarDecoder.PerformanceFiguresDecoder performanceFigures : car.performanceFigures())
+        for (final PerformanceFiguresDecoder performanceFigures : car.performanceFigures())
         {
             performanceFigures.octaneRating();
 
-            for (final CarDecoder.PerformanceFiguresDecoder.AccelerationDecoder acceleration : performanceFigures.acceleration())
+            for (final AccelerationDecoder acceleration : performanceFigures.acceleration())
             {
                 acceleration.mph();
                 acceleration.seconds();
@@ -239,7 +244,7 @@ public class CarBenchmark
         final long totalDuration = System.nanoTime() - start;
 
         System.out.printf(
-            "%d - %d(ns) average duration for %s.testEncode() - message encodedLength %d\n",
+            "%d - %d(ns) average duration for %s.testEncode() - message encodedLength %d%n",
             runNumber,
             totalDuration / reps,
             benchmark.getClass().getName(),
@@ -261,7 +266,7 @@ public class CarBenchmark
         final long totalDuration = System.nanoTime() - start;
 
         System.out.printf(
-            "%d - %d(ns) average duration for %s.testDecode() - message encodedLength %d\n",
+            "%d - %d(ns) average duration for %s.testDecode() - message encodedLength %d%n",
             runNumber,
             totalDuration / reps,
             benchmark.getClass().getName(),

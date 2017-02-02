@@ -39,7 +39,11 @@ public abstract class AbstractTokenListener implements TokenListener
     }
 
     public void onEncoding(
-        final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final Token typeToken, final int actingVersion)
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final Token typeToken,
+        final int actingVersion)
     {
         // no op
     }
@@ -68,12 +72,14 @@ public abstract class AbstractTokenListener implements TokenListener
         // no op
     }
 
-    public void onBeginComposite(final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
+    public void onBeginComposite(
+        final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
         // no op
     }
 
-    public void onEndComposite(final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
+    public void onEndComposite(
+        final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
         // no op
     }
@@ -94,7 +100,11 @@ public abstract class AbstractTokenListener implements TokenListener
     }
 
     public void onVarData(
-        final Token fieldToken, final DirectBuffer buffer, final int bufferIndex, final int length, final Token typeToken)
+        final Token fieldToken,
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final int length,
+        final Token typeToken)
     {
         // no op
     }

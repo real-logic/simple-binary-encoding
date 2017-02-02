@@ -92,7 +92,7 @@ public class PrimitiveValue
      * Construct and fill in value as a long.
      *
      * @param value in long format
-     * @param size of the type in bytes
+     * @param size  of the type in bytes
      */
     public PrimitiveValue(final long value, final int size)
     {
@@ -108,7 +108,7 @@ public class PrimitiveValue
      * Construct and fill in value as a double.
      *
      * @param value in double format
-     * @param size of the type in bytes
+     * @param size  of the type in bytes
      */
     public PrimitiveValue(final double value, final int size)
     {
@@ -123,9 +123,9 @@ public class PrimitiveValue
     /**
      * Construct and fill in value as a byte array.
      *
-     * @param value as a byte array
+     * @param value             as a byte array
      * @param characterEncoding of the characters
-     * @param size of string in characters
+     * @param size              of string in characters
      */
     public PrimitiveValue(final byte[] value, final String characterEncoding, final int size)
     {
@@ -140,7 +140,7 @@ public class PrimitiveValue
     /**
      * Parse constant value string and set representation based on type
      *
-     * @param value     expressed as a String
+     * @param value         expressed as a String
      * @param primitiveType that this is supposed to be
      * @return a new {@link PrimitiveValue} for the value.
      * @throws IllegalArgumentException if parsing malformed type
@@ -199,8 +199,8 @@ public class PrimitiveValue
     /**
      * Parse constant value string and set representation based on type, length, and characterEncoding
      *
-     * @param value expressed as a String
-     * @param length of the type
+     * @param value             expressed as a String
+     * @param length            of the type
      * @param characterEncoding of the String
      * @return a new {@link PrimitiveValue} for the value.
      * @throws IllegalArgumentException if parsing malformed type
@@ -320,7 +320,8 @@ public class PrimitiveValue
             case BYTE_ARRAY:
                 try
                 {
-                    return characterEncoding == null ? new String(byteArrayValue) : new String(byteArrayValue, characterEncoding);
+                    return characterEncoding == null ?
+                        new String(byteArrayValue) : new String(byteArrayValue, characterEncoding);
                 }
                 catch (final UnsupportedEncodingException ex)
                 {

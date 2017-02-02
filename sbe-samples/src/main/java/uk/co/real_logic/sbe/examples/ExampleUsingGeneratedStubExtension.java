@@ -48,7 +48,8 @@ public class ExampleUsingGeneratedStubExtension
             MANUFACTURER_CODE = "123".getBytes(baseline.EngineEncoder.manufacturerCodeCharacterEncoding());
             MANUFACTURER = "Honda".getBytes(baseline.CarEncoder.manufacturerCharacterEncoding());
             MODEL = "Civic VTi".getBytes(baseline.CarEncoder.modelCharacterEncoding());
-            ACTIVATION_CODE = new UnsafeBuffer("abcdef".getBytes(baseline.CarEncoder.activationCodeCharacterEncoding()));
+            ACTIVATION_CODE = new UnsafeBuffer(
+                "abcdef".getBytes(baseline.CarEncoder.activationCodeCharacterEncoding()));
         }
         catch (final UnsupportedEncodingException ex)
         {
@@ -217,9 +218,11 @@ public class ExampleUsingGeneratedStubExtension
         sb.append("\ncar.engine.booster.boostType=").append(engine.booster().boostType());
         sb.append("\ncar.engine.booster.horsePower=").append(engine.booster().horsePower());
 
-        sb.append("\ncar.engine.fuel=").append(new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
+        sb.append("\ncar.engine.fuel=").append(
+            new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
 
-        final String cupHolderCount = car.cupHolderCount() == cupHolderCountNullValue() ? "null" : car.cupHolderCount() + "";
+        final String cupHolderCount =
+            car.cupHolderCount() == cupHolderCountNullValue() ? "null" : car.cupHolderCount() + "";
         sb.append("\ncar.cutHolderCount=").append(cupHolderCount);
 
         for (final extension.CarDecoder.FuelFiguresDecoder fuelFigures : car.fuelFigures())
@@ -245,7 +248,8 @@ public class ExampleUsingGeneratedStubExtension
                buffer, 0, buffer.length), extension.CarEncoder.manufacturerCharacterEncoding()));
 
         sb.append("\ncar.model=").append(
-            new String(buffer, 0, car.getModel(buffer, 0, buffer.length), extension.CarEncoder.modelCharacterEncoding()));
+            new String(buffer, 0, car.getModel(
+                buffer, 0, buffer.length), extension.CarEncoder.modelCharacterEncoding()));
 
         final UnsafeBuffer tempBuffer = new UnsafeBuffer(buffer);
         final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());
