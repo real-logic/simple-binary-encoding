@@ -145,6 +145,7 @@ public class GolangGenerator implements CodeGenerator
 
                 out.append(generateFileHeader(ir.namespaces()));
                 out.append(sb);
+
             }
         }
     }
@@ -155,11 +156,11 @@ public class GolangGenerator implements CodeGenerator
         {
             return String.format(
                 "\n" +
-                "%1$s\tfor i := 0; i < %2$d; i++ {\n" +
-                "%1$s\t\tif err := _m.WriteUint8(_w, uint8(0)); err != nil {\n" +
-                "%1$s\t\t\treturn err\n" +
-                "%1$s\t\t}\n" +
-                "%1$s\t}\n",
+                    "%1$s\tfor i := 0; i < %2$d; i++ {\n" +
+                    "%1$s\t\tif err := _m.WriteUint8(_w, uint8(0)); err != nil {\n" +
+                    "%1$s\t\t\treturn err\n" +
+                    "%1$s\t\t}\n" +
+                    "%1$s\t}\n",
                 indent,
                 gap);
         }
@@ -188,11 +189,11 @@ public class GolangGenerator implements CodeGenerator
                 this.imports.add("fmt");
                 sb.append(String.format(
                     "\tfor idx, ch := range %1$s {\n" +
-                    "\t\tif ch > 127 {\n" +
-                    "\t\t\treturn fmt.Errorf(\"%1$s[%%d]=%%d" +
-                    " failed ASCII validation\", idx, ch)\n" +
-                    "\t\t}\n" +
-                    "\t}\n",
+                        "\t\tif ch > 127 {\n" +
+                        "\t\t\treturn fmt.Errorf(\"%1$s[%%d]=%%d" +
+                        " failed ASCII validation\", idx, ch)\n" +
+                        "\t\t}\n" +
+                        "\t}\n",
                     varName));
                 break;
 
@@ -201,8 +202,8 @@ public class GolangGenerator implements CodeGenerator
                 this.imports.add("unicode/utf8");
                 sb.append(String.format(
                     "\tif !utf8.Valid(%1$s[:]) {\n" +
-                    "\t\treturn errors.New(\"%1$s failed UTF-8 validation\")\n" +
-                    "\t}\n",
+                        "\t\treturn errors.New(\"%1$s failed UTF-8 validation\")\n" +
+                        "\t}\n",
                     varName));
                 break;
         }
@@ -228,21 +229,21 @@ public class GolangGenerator implements CodeGenerator
                 // byte or uint8 arrays get treated as Bytes
                 // We take a slice to make the type right
                 sb.append(String.format(
-                     "\tif err := _m.WriteBytes(_w, %1$s.%2$s[:]); err != nil {\n" +
-                     "\t\treturn err\n" +
-                     "\t}\n",
-                     varName,
-                     propertyName));
+                    "\tif err := _m.WriteBytes(_w, %1$s.%2$s[:]); err != nil {\n" +
+                        "\t\treturn err\n" +
+                        "\t}\n",
+                    varName,
+                    propertyName));
             }
             else
             {
                 // A single byte or uint8 gets treated as a uint8
                 sb.append(String.format(
-                     "\tif err := _m.WriteUint8(_w, %1$s.%2$s); err != nil {\n" +
-                     "\t\treturn err\n" +
-                     "\t}\n",
-                     varName,
-                     propertyName));
+                    "\tif err := _m.WriteUint8(_w, %1$s.%2$s); err != nil {\n" +
+                        "\t\treturn err\n" +
+                        "\t}\n",
+                    varName,
+                    propertyName));
             }
         }
         else
@@ -251,25 +252,25 @@ public class GolangGenerator implements CodeGenerator
             {
                 // Other array types need a for loop
                 sb.append(String.format(
-                     "\tfor idx := 0; idx < %1$d; idx++ {\n" +
-                     "\t\tif err := _m.Write%2$s(_w, %3$s.%4$s[idx]); err != nil {\n" +
-                     "\t\t\treturn err\n" +
-                     "\t\t}\n" +
-                     "\t}\n",
-                     encodingToken.arrayLength(),
-                     marshalType,
-                     varName,
-                     propertyName));
+                    "\tfor idx := 0; idx < %1$d; idx++ {\n" +
+                        "\t\tif err := _m.Write%2$s(_w, %3$s.%4$s[idx]); err != nil {\n" +
+                        "\t\t\treturn err\n" +
+                        "\t\t}\n" +
+                        "\t}\n",
+                    encodingToken.arrayLength(),
+                    marshalType,
+                    varName,
+                    propertyName));
             }
             else
             {
                 sb.append(String.format(
-                     "\tif err := _m.Write%1$s(_w, %2$s.%3$s); err != nil {\n" +
-                     "\t\treturn err\n" +
-                     "\t}\n",
-                     marshalType,
-                     varName,
-                     propertyName));
+                    "\tif err := _m.Write%1$s(_w, %2$s.%3$s); err != nil {\n" +
+                        "\t\treturn err\n" +
+                        "\t}\n",
+                    marshalType,
+                    varName,
+                    propertyName));
             }
         }
     }
@@ -281,7 +282,6 @@ public class GolangGenerator implements CodeGenerator
     {
         final PrimitiveType primitiveType =  token.encoding().primitiveType();
         final String marshalType = golangMarshalType(primitiveType);
-
 
         // Complexity lurks here
         // A single character (byte) is handled as a uint8 (equivalent to byte)
@@ -498,12 +498,12 @@ public class GolangGenerator implements CodeGenerator
     private void generateEncodeDecodeClose(
         final StringBuilder encode,
         final StringBuilder decode,
-        final StringBuilder rangeCheck,
+        final StringBuilder rangecheck,
         final StringBuilder init)
     {
         encode.append("\treturn nil\n}\n");
         decode.append("\treturn nil\n}\n");
-        rangeCheck.append("\treturn nil\n}\n");
+        rangecheck.append("\treturn nil\n}\n");
         init.append("\treturn\n}\n");
     }
 
@@ -536,14 +536,14 @@ public class GolangGenerator implements CodeGenerator
         final StringBuilder encode = new StringBuilder();
         final StringBuilder decode = new StringBuilder();
         final StringBuilder init = new StringBuilder();
-        final StringBuilder rangeCheck = new StringBuilder();
+        final StringBuilder rangecheck = new StringBuilder();
         final StringBuilder nested = new StringBuilder();
         int currentOffset = 0;
         int gap = 0;
         boolean extensionStarted = false;
 
         // Open all our methods
-        generateEncodeDecodeOpen(encode, decode, rangeCheck, init, varName, typeName, isMessage, isExtensible);
+        generateEncodeDecodeOpen(encode, decode, rangecheck, init, varName, typeName, isMessage, isExtensible);
 
         for (int i = 0; i < tokens.size(); i++)
         {
@@ -594,7 +594,7 @@ public class GolangGenerator implements CodeGenerator
                         signalToken, typeName, encode, decode, currentOffset);
                     i += signalToken.componentTokenCount() - 1;
 
-                    rangeCheck.append(String.format(
+                    rangecheck.append(String.format(
                         "\tif err := %1$s.%2$s.RangeCheck(actingVersion, schemaVersion); err != nil {\n" +
                         "\t\treturn err\n" +
                         "\t}\n",
@@ -606,7 +606,7 @@ public class GolangGenerator implements CodeGenerator
                     {
                         currentOffset += generateFieldEncodeDecode(
                             tokens.subList(i, tokens.size() - 1),
-                            varName, currentOffset, encode, decode, rangeCheck, init);
+                            varName, currentOffset, encode, decode, rangecheck, init);
 
                         // Encodings just move past the encoding token
                         if (tokens.get(i + 1).signal() == Signal.ENCODING)
@@ -634,7 +634,7 @@ public class GolangGenerator implements CodeGenerator
                     }
                     final String primitive = Character.toString(varName) + "." + propertyName;
                     generateDecodePrimitive(decode, primitive, signalToken);
-                    generateRangeCheckPrimitive(rangeCheck, primitive, signalToken);
+                    generateRangeCheckPrimitive(rangecheck, primitive, signalToken);
                     generateInitPrimitive(init, primitive, signalToken);
                     break;
 
@@ -650,16 +650,16 @@ public class GolangGenerator implements CodeGenerator
                     currentOffset += generateGroupEncodeDecode(
                         tokens.subList(i, tokens.size() - 1),
                         typeName,
-                        encode, decode, rangeCheck, currentOffset);
+                        encode, decode, rangecheck, currentOffset);
 
                     // Recurse
                     gap = Math.max(0,
                         signalToken.encodedLength() -
-                        generateEncodeDecode(
-                            nested,
-                            typeName + toUpperFirstChar(signalToken.name()),
-                            tokens.subList(i + 5, tokens.size() - 1),
-                            false, true));
+                            generateEncodeDecode(
+                                nested,
+                                typeName + toUpperFirstChar(signalToken.name()),
+                                tokens.subList(i + 5, tokens.size() - 1),
+                                false, true));
 
                     // Group gap blocklength handling
                     encode.append(generateEncodeOffset(gap, "\t")).append("\t}\n");
@@ -678,8 +678,8 @@ public class GolangGenerator implements CodeGenerator
                         extensionStarted = true;
                     }
                     // Close out this group and unwind
-                    generateEncodeDecodeClose(encode, decode, rangeCheck, init);
-                    sb.append(encode).append(decode).append(rangeCheck).append(init).append(nested);
+                    generateEncodeDecodeClose(encode, decode, rangecheck, init);
+                    sb.append(encode).append(decode).append(rangecheck).append(init).append(nested);
                     return currentOffset; // for gap calculations
 
                 case BEGIN_VAR_DATA:
@@ -692,7 +692,7 @@ public class GolangGenerator implements CodeGenerator
                     currentOffset += generateVarDataEncodeDecode(
                         tokens.subList(i, tokens.size() - 1),
                         typeName,
-                        encode, decode, rangeCheck, currentOffset);
+                        encode, decode, rangecheck, currentOffset);
                     // And we can move over this group
                     i += signalToken.componentTokenCount() - 1;
                     break;
@@ -708,8 +708,8 @@ public class GolangGenerator implements CodeGenerator
             decode.append(generateDecodeOffset(gap, ""));
         }
         // Close out the methods and append
-        generateEncodeDecodeClose(encode, decode, rangeCheck, init);
-        sb.append(encode).append(decode).append(rangeCheck).append(init).append(nested);
+        generateEncodeDecodeClose(encode, decode, rangecheck, init);
+        sb.append(encode).append(decode).append(rangecheck).append(init).append(nested);
         return currentOffset;
     }
 
@@ -719,23 +719,40 @@ public class GolangGenerator implements CodeGenerator
         final Token token)
     {
         final char varName = Character.toLowerCase(enumName.charAt(0));
+        final String typeName =  golangTypeName(token.encoding().primitiveType());
+        final String marshalType;
+
+        // The enum type might be char (golang byte) which we encode
+        // as a uint8
+        if (token.encoding().primitiveType() == PrimitiveType.CHAR)
+        {
+            marshalType = "Uint8";
+        }
+        else
+        {
+            marshalType =  golangMarshalType(token.encoding().primitiveType());
+        }
 
         // Encode
         generateEncodeHeader(sb, varName, enumName + "Enum", false);
         sb.append(String.format(
-            "\tif err := binary.Write(writer, order, %1$s); err != nil {\n" +
+            "\tif err := _m.Write%1$s(_w, %2$s(%3$s)); err != nil {\n" +
             "\t\treturn err\n" +
             "\t}\n" +
             "\treturn nil\n}\n",
+            marshalType,
+            typeName,
             varName));
 
         // Decode
         generateDecodeHeader(sb, varName, enumName + "Enum", false, false);
         sb.append(String.format(
-            "\tif err := binary.Read(reader, order, %1$s); err != nil {\n" +
-            "\t\treturn err\n" +
-            "\t}\n" +
-            "\treturn nil\n}\n",
+            "\tif err := _m.Read%1$s(_r, (*%2$s)(%3$s)); err != nil {\n" +
+                "\t\treturn err\n" +
+                "\t}\n" +
+                "\treturn nil\n}\n",
+            marshalType,
+            typeName,
             varName));
 
         // Range check
@@ -746,7 +763,7 @@ public class GolangGenerator implements CodeGenerator
         generateRangeCheckHeader(sb, varName, enumName + "Enum");
 
         // For enums we can add new fields so if we're decoding a
-        // newer version then the content is definitely ok.
+        // newer version then the content is definitionally ok.
         // When encoding actingVersion === schemaVersion
         sb.append(
             "\tif actingVersion > schemaVersion {\n" +
@@ -1029,20 +1046,19 @@ public class GolangGenerator implements CodeGenerator
         final String golangTypeForLengthMarshal = golangMarshalType(tokens.get(2).encoding().primitiveType());
         final String golangTypeForData = golangTypeName(tokens.get(3).encoding().primitiveType());
 
-
         generateCharacterEncodingRangeCheck(rc, varName + "." + propertyName, tokens.get(3));
 
         encode.append(String.format(
-                "\tif err := _m.Write%1$s(_w, %2$s(len(%3$s.%4$s))); err != nil {\n" +
-                "\t\treturn err\n" +
-                "\t}\n" +
-                "\tif err := _m.WriteBytes(_w, %3$s.%4$s); err != nil {\n" +
-                "\t\treturn err\n" +
-                "\t}\n",
-                golangTypeForLengthMarshal,
-                golangTypeForLength,
-                varName,
-                propertyName));
+            "\tif err := _m.Write%1$s(_w, %2$s(len(%3$s.%4$s))); err != nil {\n" +
+            "\t\treturn err\n" +
+            "\t}\n" +
+            "\tif err := _m.WriteBytes(_w, %3$s.%4$s); err != nil {\n" +
+            "\t\treturn err\n" +
+            "\t}\n",
+            golangTypeForLengthMarshal,
+            golangTypeForLength,
+            varName,
+            propertyName));
 
         decode.append(String.format(
             "\n" +
@@ -1164,6 +1180,7 @@ public class GolangGenerator implements CodeGenerator
         return gap;
     }
 
+
     // Recursively traverse groups to create the group properties
     private void generateGroupProperties(
         final StringBuilder sb,
@@ -1205,7 +1222,6 @@ public class GolangGenerator implements CodeGenerator
 
             // Make a unique Group name by adding our parent
             final String groupName = prefix + formatTypeName(groupToken.name());
-            final String golangTypeForNumInGroup = golangTypeName(tokens.get(i + 3).encoding().primitiveType());
 
             ++i;
             final int groupHeaderTokenCount = tokens.get(i).componentTokenCount();
@@ -1266,7 +1282,7 @@ public class GolangGenerator implements CodeGenerator
         generateSinceActingDeprecated(sb, typeName, propertyName, token);
         sb.append(String.format(
             "\nfunc (%1$s %2$s) %3$sCharacterEncoding() string {\n" +
-             "\treturn \"%4$s\"\n" +
+            "\treturn \"%4$s\"\n" +
             "}\n" +
             "\nfunc (%1$s %2$s) %3$sHeaderLength() uint64 {\n" +
             "\treturn %5$s\n" +
@@ -1431,13 +1447,16 @@ public class GolangGenerator implements CodeGenerator
             enumName));
 
         // And now the Enum Values expressed as a variable
-        sb.append(String.format("\nvar %1$s = %1$sValues{", enumName));
+        sb.append(String.format(
+            "\nvar %1$s = %1$sValues{",
+            enumName));
 
         for (final Token token : tokens)
         {
             sb.append(generateLiteral(
                 token.encoding().primitiveType(), token.encoding().constValue().toString())).append(", ");
         }
+
         // Add the NullValue and close
         sb.append(encodingToken.encoding().applicableNullValue().toString()).append("}\n");
     }
@@ -1448,8 +1467,6 @@ public class GolangGenerator implements CodeGenerator
         final List<Token> tokens,
         final Token encodingToken)
     {
-        final Encoding encoding = encodingToken.encoding();
-
         // gofmt lines up the types and we don't want it to have to rewrite
         // our generated files. To line things up we need to know the longest
         // string length and then fill with whitespace
@@ -1482,8 +1499,8 @@ public class GolangGenerator implements CodeGenerator
 
         // And now the Values expressed as a variable
         sb.append(String.format(
-             "\nvar %1$sChoice = %1$sChoiceValues{",
-             choiceName));
+            "\nvar %1$sChoice = %1$sChoiceValues{",
+            choiceName));
 
         String comma = "";
         for (final Token token : tokens)
@@ -1495,18 +1512,22 @@ public class GolangGenerator implements CodeGenerator
         sb.append("}\n");
     }
 
-    private CharSequence generateFileHeader(
-        final CharSequence[] namespaces,
-        final String typeName)
+    private String namespacesToPackageName(
+        final CharSequence[] namespaces)
+    {
+        return String.join("_", namespaces).toLowerCase().replace('.', '_').replace(' ', '_').replace('-', '_');
+    }
+
+    private StringBuilder generateFileHeader(
+        final CharSequence[] namespaces)
     {
         final StringBuilder sb = new StringBuilder();
-
         sb.append("// Generated SBE (Simple Binary Encoding) message codec\n\n");
         sb.append(String.format(
             "package %1$s\n" +
             "\n" +
             "import (\n",
-            String.join("_", namespaces).toLowerCase().replace('.', '_').replace(' ', '_')));
+            namespacesToPackageName(namespaces)));
 
         for (final String s : imports)
         {
@@ -1601,8 +1622,7 @@ public class GolangGenerator implements CodeGenerator
                                 break;
 
                             case BEGIN_SET:
-                                sb.append("\t")
-                                    .append(propertyName)
+                                sb.append("\t").append(propertyName)
                                     .append(String.format(String.format(
                                         "%%%ds", longest - propertyName.length() + 1), " "))
                                     .append(arrayspec)
@@ -1671,10 +1691,10 @@ public class GolangGenerator implements CodeGenerator
                     break;
             }
         }
-
         sb.append("}\n");
         sb.append(nested);
     }
+
 
     private void generateCompositePropertyElements(
         final StringBuilder sb,
@@ -1709,7 +1729,6 @@ public class GolangGenerator implements CodeGenerator
                 default:
                     break;
             }
-
             i += tokens.get(i).componentTokenCount();
         }
     }
@@ -1906,7 +1925,6 @@ public class GolangGenerator implements CodeGenerator
                     break;
             }
         }
-
         sb.append("}\n");
     }
 
@@ -2222,46 +2240,45 @@ public class GolangGenerator implements CodeGenerator
         return literal;
     }
 
-    private String templateMessageHeader =
+    private final String templateMessageHeader =
         "// Generated SBE (Simple Binary Encoding) message codec\n" +
-        "\n" +
-        "package %1$s\n" +
-        "\n" +
-        "import (\n" +
-        "\t\"io\"\n" +
-        ")\n" +
-        "\n" +
-        "type MessageHeader struct {\n" +
-        "\tBlockLength uint16 // token.\n" +
-        "\tTemplateId  uint16\n" +
-        "\tSchemaId    uint16\n" +
-        "\tVersion     uint16\n" +
-        "}\n" +
-        "\n" +
-        "func (m MessageHeader) Encode(_m *SbeGoMarshaller, _w io.Writer) error {\n" +
-        "\t_m.b8[0] = byte(m.BlockLenth)\n" +
-        "\t_m.b8[1] = byte(m.BlockLength >> 8)\n" +
-        "\t_m.b8[2] = byte(m.TemplateId)\n" +
-        "\t_m.b8[3] = byte(m.TemplateId >> 8)\n" +
-        "\t_m.b8[4] = byte(m.ScehemaId)\n" +
-        "\t_m.b8[5] = byte(m.ScehemaId >> 8)\n" +
-        "\t_m.b8[6] = byte(m.Version)\n" +
-        "\t_m.b8[7] = byte(m.Version >> 8)\n" +
-        "\tif err := _w.Write(m.b8); err != nil {\n" +
-        "\t\treturn err\n" +
-        "\t}\n" +
-        "\treturn nil\n" +
-        "}\n" +
-        "\n" +
-        "func (m *MessageHeader) Decode(_m *SbeGoMarshaller, _r io.Reader, actingVersion uint16) error {\n" +
-        "\tif _, err = io.ReadFull(_r, m.b8); err != nil {\n" +
-        "\t\treturn err\n" +
-        "\t}\n" +
-        "\tm.BlockLenth = uint16(m.b8[0]) | uint16(m.b8[1])<<8))\n" +
-        "\tm.TemplateId = uint16(m.b8[2]) | uint16(m.b8[3])<<8))\n" +
-        "\tm.ScehemaId= uint16(m.b8[4]) | uint16(m.b8[5])<<8))\n" +
-        "\tm.Version= uint16(m.b8[6]) | uint16(m.b8[7])<<8))\n" +
-        "\treturn nil\n" +
-        "}\n";
-
+            "\n" +
+            "package %1$s\n" +
+            "\n" +
+            "import (\n" +
+            "\t\"io\"\n" +
+            ")\n" +
+            "\n" +
+            "type MessageHeader struct {\n" +
+            "\tBlockLength uint16 // token.\n" +
+            "\tTemplateId  uint16\n" +
+            "\tSchemaId    uint16\n" +
+            "\tVersion     uint16\n" +
+            "}\n" +
+            "\n" +
+            "func (m MessageHeader) Encode(_m *SbeGoMarshaller, _w io.Writer) error {\n" +
+            "\t_m.b8[0] = byte(m.BlockLenth)\n" +
+            "\t_m.b8[1] = byte(m.BlockLength >> 8)\n" +
+            "\t_m.b8[2] = byte(m.TemplateId)\n" +
+            "\t_m.b8[3] = byte(m.TemplateId >> 8)\n" +
+            "\t_m.b8[4] = byte(m.ScehemaId)\n" +
+            "\t_m.b8[5] = byte(m.ScehemaId >> 8)\n" +
+            "\t_m.b8[6] = byte(m.Version)\n" +
+            "\t_m.b8[7] = byte(m.Version >> 8)\n" +
+            "\tif err := _w.Write(m.b8); err != nil {\n" +
+            "\t\treturn err\n" +
+            "\t}\n" +
+            "\treturn nil\n" +
+            "}\n" +
+            "\n" +
+            "func (m *MessageHeader) Decode(_m *SbeGoMarshaller, _r io.Reader, actingVersion uint16) error {\n" +
+            "\tif _, err = io.ReadFull(_r, m.b8); err != nil {\n" +
+            "\t\treturn err\n" +
+            "\t}\n" +
+            "\tm.BlockLenth = uint16(m.b8[0]) | uint16(m.b8[1])<<8))\n" +
+            "\tm.TemplateId = uint16(m.b8[2]) | uint16(m.b8[3])<<8))\n" +
+            "\tm.ScehemaId= uint16(m.b8[4]) | uint16(m.b8[5])<<8))\n" +
+            "\tm.Version= uint16(m.b8[6]) | uint16(m.b8[7])<<8))\n" +
+            "\treturn nil\n" +
+            "}\n";
 }
