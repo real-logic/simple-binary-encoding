@@ -2,13 +2,12 @@ package group_with_data
 
 import (
 	"bytes"
-	"encoding/binary"
 	_ "fmt"
 	"testing"
 )
 
 func TestEncodeDecodeTestMessage1(t *testing.T) {
-
+	m := NewSbeGoMarshaller()
 	var tm1e TestMessage1Entries
 	copy(tm1e.TagGroup1[:], "123456789")
 	tm1e.TagGroup2 = 123456789
@@ -19,13 +18,13 @@ func TestEncodeDecodeTestMessage1(t *testing.T) {
 	in.Entries = append(in.Entries, tm1e)
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(m, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage1 = *new(TestMessage1)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
@@ -53,6 +52,7 @@ func TestEncodeDecodeTestMessage1(t *testing.T) {
 }
 
 func TestEncodeDecodeTestMessage2(t *testing.T) {
+	m := NewSbeGoMarshaller()
 
 	var tm2e TestMessage2Entries
 	copy(tm2e.TagGroup1[:], "123456789")
@@ -66,13 +66,13 @@ func TestEncodeDecodeTestMessage2(t *testing.T) {
 	in.Entries = append(in.Entries, tm2e)
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(m, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage2 = *new(TestMessage2)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
@@ -107,6 +107,7 @@ func TestEncodeDecodeTestMessage2(t *testing.T) {
 }
 
 func TestEncodeDecodeTestMessage3(t *testing.T) {
+	m := NewSbeGoMarshaller()
 
 	var tm3en TestMessage3EntriesNestedEntries
 	tm3en.TagGroup2 = 99887766
@@ -123,13 +124,13 @@ func TestEncodeDecodeTestMessage3(t *testing.T) {
 	in.Entries = append(in.Entries, tm3e)
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(m, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage3 = *new(TestMessage3)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
@@ -167,6 +168,7 @@ func TestEncodeDecodeTestMessage3(t *testing.T) {
 }
 
 func TestEncodeDecodeTestMessage4(t *testing.T) {
+	m := NewSbeGoMarshaller()
 
 	var tm4e TestMessage4Entries
 	tm4e.VarDataField1 = []byte("abcdef")
@@ -179,13 +181,13 @@ func TestEncodeDecodeTestMessage4(t *testing.T) {
 	in.Entries = append(in.Entries, tm4e)
 
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian, true); err != nil {
+	if err := in.Encode(m, buf, true); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage4 = *new(TestMessage4)
-	if err := out.Decode(buf, binary.LittleEndian, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}

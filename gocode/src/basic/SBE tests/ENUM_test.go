@@ -2,22 +2,23 @@ package sbe_tests
 
 import (
 	"bytes"
-	"encoding/binary"
 	"testing"
 )
 
 func TestEncodeDecodeEnum(t *testing.T) {
 
+	m := NewSbeGoMarshaller()
+
 	// var e ENUMEnum = Value1;
 	var in ENUMEnum = ENUM.Value10
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian); err != nil {
+	if err := in.Encode(m, buf); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out ENUMEnum = *new(ENUMEnum)
-	if err := out.Decode(buf, binary.LittleEndian, 0); err != nil {
+	if err := out.Decode(m, buf, 0); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}
@@ -34,6 +35,7 @@ func TestEncodeDecodeEnum(t *testing.T) {
 
 func TestEnumRange(t *testing.T) {
 
+	m := NewSbeGoMarshaller()
 	var in ENUMEnum = 9
 
 	// newer version should be ok
@@ -57,13 +59,13 @@ func TestEnumRange(t *testing.T) {
 	// Now let's encode and decode that (no rangecheck performed)
 	// valie in the message
 	var buf = new(bytes.Buffer)
-	if err := in.Encode(buf, binary.LittleEndian); err != nil {
+	if err := in.Encode(m, buf); err != nil {
 		t.Logf("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out ENUMEnum = *new(ENUMEnum)
-	if err := out.Decode(buf, binary.LittleEndian, 0); err != nil {
+	if err := out.Decode(m, buf, 0); err != nil {
 		t.Logf("Decoding Error", err)
 		t.Fail()
 	}

@@ -22,9 +22,12 @@ import uk.co.real_logic.sbe.ir.*;
 import org.agrona.Verify;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.TreeSet;
 
 import static uk.co.real_logic.sbe.PrimitiveType.CHAR;
@@ -50,28 +53,11 @@ public class GolangGenerator implements CodeGenerator
         this.outputManager = outputManager;
     }
 
-    public void generateMessageHeaderStub() throws IOException
+    public void generateFileFromTemplate(String fileName, String templateName) throws IOException
     {
-        final String messageHeader = "MessageHeader";
-        try (Writer out = outputManager.createOutput(messageHeader))
+        try (Writer out = outputManager.createOutput(fileName))
         {
-            // Initialize the imports
-            imports = new TreeSet<>();
-            imports.add("io");
-            imports.add("encoding/binary");
-
-            final StringBuilder sb = new StringBuilder();
-
-            final List<Token> tokens = ir.headerStructure().tokens();
-
-            generateTypeDeclaration(sb, messageHeader);
-            generateTypeBodyComposite(sb, messageHeader, tokens.subList(1, tokens.size() - 1));
-            generateEncodeDecode(sb, messageHeader, tokens.subList(1, tokens.size() - 1), false, false);
-            generateEncodedLength(sb, messageHeader, tokens.get(0).encodedLength());
-            generateCompositePropertyElements(sb, messageHeader, tokens.subList(1, tokens.size() - 1));
-
-            out.append(generateFileHeader(ir.namespaces(), messageHeader));
-            out.append(sb);
+            out.append(generateFromTemplate(ir.namespaces(), templateName));
         }
     }
 
@@ -104,7 +90,22 @@ public class GolangGenerator implements CodeGenerator
 
     public void generate() throws IOException
     {
-        generateMessageHeaderStub();
+        // Add the Marshalling from the big or little endian
+        // template kept inside the jar.
+        //
+        // The MessageHeader structure along with it's en/decoding is
+        // also in the templated SbeMarshalling.go
+        //
+        // final Token token = ir.messages().iterator().next().get(0);
+        if (ir.byteOrder() == ByteOrder.LITTLE_ENDIAN)
+        {
+            generateFileFromTemplate("SbeMarshalling", "SbeMarshallingLittleEndian");
+        }
+        else
+        {
+            generateFileFromTemplate("SbeMarshalling", "SbeMarshallingBigEndian");
+        }
+
         generateTypeStubs();
 
         for (final List<Token> tokens : ir.messages())
@@ -119,7 +120,6 @@ public class GolangGenerator implements CodeGenerator
                 // Initialize the imports
                 imports = new TreeSet<>();
                 this.imports.add("io");
-                this.imports.add("encoding/binary");
 
                 generateTypeDeclaration(sb, typeName);
                 generateTypeBody(sb, typeName, tokens.subList(1, tokens.size() - 1));
@@ -143,7 +143,7 @@ public class GolangGenerator implements CodeGenerator
                 generateGroupProperties(sb, groups, typeName);
                 generateVarData(sb, typeName, varData, "");
 
-                out.append(generateFileHeader(ir.namespaces(), typeName));
+                out.append(generateFileHeader(ir.namespaces()));
                 out.append(sb);
             }
         }
@@ -156,7 +156,7 @@ public class GolangGenerator implements CodeGenerator
             return String.format(
                 "\n" +
                 "%1$s\tfor i := 0; i < %2$d; i++ {\n" +
-                "%1$s\t\tif err := binary.Write(writer, order, uint8(0)); err != nil {\n" +
+                "%1$s\t\tif err := _m.WriteUint8(_w, uint8(0)); err != nil {\n" +
                 "%1$s\t\t\treturn err\n" +
                 "%1$s\t\t}\n" +
                 "%1$s\t}\n",
@@ -172,7 +172,7 @@ public class GolangGenerator implements CodeGenerator
         {
             this.imports.add("io");
             this.imports.add("io/ioutil");
-            return String.format("%1$s\tio.CopyN(ioutil.Discard, reader, %2$d)\n", indent, gap);
+            return String.format("%1$s\tio.CopyN(ioutil.Discard, _r, %2$d)\n", indent, gap);
         }
         return "";
     }
@@ -211,14 +211,67 @@ public class GolangGenerator implements CodeGenerator
     private void generateEncodePrimitive(
         final StringBuilder sb,
         final char varName,
-        final String propertyName)
+        final String propertyName,
+        final Token encodingToken)
     {
-        sb.append(String.format(
-            "\tif err := binary.Write(writer, order, %1$s.%2$s); err != nil {\n" +
-            "\t\treturn err\n" +
-            "\t}\n",
-            varName,
-            propertyName));
+        final PrimitiveType primitiveType = encodingToken.encoding().primitiveType();
+        final String marshalType = golangMarshalType(primitiveType);
+
+        // Complexity lurks here
+        // A single character (byte) is handled as a uint8 (equivalent to byte)
+        // An array of uint8 or byte is handled as Bytes (for speed)
+
+        if (primitiveType == PrimitiveType.CHAR || primitiveType == PrimitiveType.UINT8)
+        {
+            if (encodingToken.arrayLength() > 1)
+            {
+                // byte or uint8 arrays get treated as Bytes
+                // We take a slice to make the type right
+                sb.append(String.format(
+                     "\tif err := _m.WriteBytes(_w, %1$s.%2$s[:]); err != nil {\n" +
+                     "\t\treturn err\n" +
+                     "\t}\n",
+                     varName,
+                     propertyName));
+            }
+            else
+            {
+                // A single byte or uint8 gets treated as a uint8
+                sb.append(String.format(
+                     "\tif err := _m.WriteUint8(_w, %1$s.%2$s); err != nil {\n" +
+                     "\t\treturn err\n" +
+                     "\t}\n",
+                     varName,
+                     propertyName));
+            }
+        }
+        else
+        {
+            if (encodingToken.arrayLength() > 1)
+            {
+                // Other array types need a for loop
+                sb.append(String.format(
+                     "\tfor idx := 0; idx < %1$d; idx++ {\n" +
+                     "\t\tif err := _m.Write%2$s(_w, %3$s.%4$s[idx]); err != nil {\n" +
+                     "\t\t\treturn err\n" +
+                     "\t\t}\n" +
+                     "\t}\n",
+                     encodingToken.arrayLength(),
+                     marshalType,
+                     varName,
+                     propertyName));
+            }
+            else
+            {
+                sb.append(String.format(
+                     "\tif err := _m.Write%1$s(_w, %2$s.%3$s); err != nil {\n" +
+                     "\t\treturn err\n" +
+                     "\t}\n",
+                     marshalType,
+                     varName,
+                     propertyName));
+            }
+        }
     }
 
     private void generateDecodePrimitive(
@@ -226,13 +279,21 @@ public class GolangGenerator implements CodeGenerator
         final String varName,
         final Token token)
     {
-        this.imports.add("fmt");
+        final PrimitiveType primitiveType =  token.encoding().primitiveType();
+        final String marshalType = golangMarshalType(primitiveType);
+
+
+        // Complexity lurks here
+        // A single character (byte) is handled as a uint8 (equivalent to byte)
+        // An array of uint8 or byte is handled as Bytes (for speed)
+        // And then we need to deal with constant encodings
+        // Finally don't forget sinceVersion as we might get default values
 
         // Decode of a constant is simply assignment
         if (token.isConstantEncoding())
         {
             // if primitiveType="char" this is a character array
-            if (token.encoding().primitiveType() == CHAR)
+            if (primitiveType == CHAR)
             {
                 if (token.encoding().constValue().size() > 1)
                 {
@@ -256,36 +317,78 @@ public class GolangGenerator implements CodeGenerator
                 sb.append(String.format(
                     "\t%1$s = %2$s\n",
                     varName,
-                    generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString())));
+                    generateLiteral(primitiveType, token.encoding().constValue().toString())));
             }
 
         }
         else
         {
-            final String copyNull;
-            if (token.arrayLength() > 1)
+            if (primitiveType == PrimitiveType.CHAR || primitiveType == PrimitiveType.UINT8)
             {
-                copyNull =
-                    "\t\tfor idx := 0; idx < %2$s; idx++ {\n" +
-                    "\t\t\t%1$s[idx] = %1$sNullValue()\n" +
-                    "\t\t}\n";
+                if (token.arrayLength() > 1)
+                {
+                    sb.append(String.format(
+                        "\tif !%1$sInActingVersion(actingVersion) {\n" +
+                        "\t\tfor idx := 0; idx < %2$s; idx++ {\n" +
+                        "\t\t\t%1$s[idx] = %1$sNullValue()\n" +
+                        "\t\t}\n" +
+                        "\t} else {\n" +
+                        "\t\tif err := _m.ReadBytes(_r, %1$s[:]); err != nil {\n" +
+                        "\t\t\treturn err\n" +
+                        "\t\t}\n" +
+                        "\t}\n",
+                        varName,
+                        token.arrayLength()));
+                }
+                else
+                {
+                    // A single byte or uint8 gets treated as a uint8
+                    sb.append(String.format(
+                        "\tif !%1$sInActingVersion(actingVersion) {\n" +
+                        "\t\t%1$s = %1$sNullValue()\n" +
+                        "\t} else {\n" +
+                        "\t\tif err := _m.ReadUint8(_r, &%1$s); err != nil {\n" +
+                        "\t\t\treturn err\n" +
+                        "\t\t}\n" +
+                        "\t}\n",
+                        varName));
+                }
             }
             else
             {
-                copyNull =
-                    "\t\t%1$s = %1$sNullValue()\n";
+                if (token.arrayLength() > 1)
+                {
+                    // Other array types need a for loop
+                    sb.append(String.format(
+                        "\tif !%2$sInActingVersion(actingVersion) {\n" +
+                        "\t\tfor idx := 0; idx < %1$d; idx++ {\n" +
+                        "\t\t\t%2$s[idx] = %2$sNullValue()\n" +
+                        "\t\t}\n" +
+                        "\t} else {\n" +
+                        "\t\tfor idx := 0; idx < %1$d; idx++ {\n" +
+                        "\t\t\tif err := _m.Read%3$s(_r, &%2$s[idx]); err != nil {\n" +
+                        "\t\t\t\treturn err\n" +
+                        "\t\t\t}\n" +
+                        "\t\t}\n" +
+                        "\t}\n",
+                        token.arrayLength(),
+                        varName,
+                        marshalType));
+                }
+                else
+                {
+                    sb.append(String.format(
+                        "\tif !%1$sInActingVersion(actingVersion) {\n" +
+                        "\t\t%1$s = %1$sNullValue()\n" +
+                        "\t} else {\n" +
+                        "\t\tif err := _m.Read%2$s(_r, &%1$s); err != nil {\n" +
+                        "\t\t\treturn err\n" +
+                        "\t\t}\n" +
+                        "\t}\n",
+                        varName,
+                        marshalType));
+                }
             }
-
-            sb.append(String.format(
-                "\tif !%1$sInActingVersion(actingVersion) {\n" +
-                copyNull +
-                "\t} else {\n" +
-                "\t\tif err := binary.Read(reader, order, &%1$s); err != nil {\n" +
-                "\t\t\treturn err\n" +
-                "\t\t}\n" +
-                "\t}\n",
-                varName,
-                token.arrayLength()));
         }
     }
 
@@ -416,7 +519,7 @@ public class GolangGenerator implements CodeGenerator
         this.imports.add("io/ioutil");
         sb.append(String.format(
             "\tif actingVersion > %1$s.SbeSchemaVersion() && blockLength > %1$s.SbeBlockLength() {\n" +
-            "\t\tio.CopyN(ioutil.Discard, reader, int64(blockLength-%1$s.SbeBlockLength()))\n" +
+            "\t\tio.CopyN(ioutil.Discard, _r, int64(blockLength-%1$s.SbeBlockLength()))\n" +
             "\t}\n",
             varName));
     }
@@ -526,7 +629,8 @@ public class GolangGenerator implements CodeGenerator
                     // Encode of a constant is a nullop
                     if (!signalToken.isConstantEncoding())
                     {
-                        generateEncodePrimitive(encode, varName, formatPropertyName(signalToken.name()));
+                        generateEncodePrimitive(encode, varName, formatPropertyName(signalToken.name()), signalToken);
+
                     }
                     final String primitive = Character.toString(varName) + "." + propertyName;
                     generateDecodePrimitive(decode, primitive, signalToken);
@@ -679,7 +783,7 @@ public class GolangGenerator implements CodeGenerator
             "\t\tif v {\n" +
             "\t\t\twireval |= (1 << uint(k))\n" +
             "\t\t}\n\t}\n" +
-            "\treturn binary.Write(writer, order, wireval)\n" +
+            "\treturn _m.WriteUint%1$d(_w, wireval)\n" +
             "}\n",
             token.encodedLength() * 8,
             varName));
@@ -689,7 +793,7 @@ public class GolangGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\tvar wireval uint%1$d\n\n" +
-            "\tif err := binary.Read(reader, order, &wireval); err != nil {\n" +
+            "\tif err := _m.ReadUint%1$d(_r, &wireval); err != nil {\n" +
             "\t\treturn err\n" +
             "\t}\n" +
             "\n" +
@@ -717,7 +821,7 @@ public class GolangGenerator implements CodeGenerator
         }
 
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) Encode(writer io.Writer, order binary.ByteOrder" +
+            "\nfunc (%1$s %2$s) Encode(_m *SbeGoMarshaller, _w io.Writer" +
             messageArgs +
             ") error {\n",
             varName,
@@ -734,10 +838,19 @@ public class GolangGenerator implements CodeGenerator
         String decodeArgs = "";
 
         // Messages, groups, and vardata are extensible so need to know
-        // working blocklength
+        // working blocklength.
+        // Messages mandate only 16 bits, otherwise let's be generous and
+        // support the platform.
         if (isExtensible)
         {
-            decodeArgs += ", blockLength uint16";
+            if (isMessage)
+            {
+                decodeArgs += ", blockLength uint16";
+            }
+            else
+            {
+                decodeArgs += ", blockLength uint";
+            }
         }
 
         // Only messages get the rangeCheck flags
@@ -747,7 +860,7 @@ public class GolangGenerator implements CodeGenerator
         }
 
         sb.append(String.format(
-            "\nfunc (%1$s *%2$s) Decode(reader io.Reader, order binary.ByteOrder, actingVersion uint16" +
+            "\nfunc (%1$s *%2$s) Decode(_m *SbeGoMarshaller, _r io.Reader, actingVersion uint16" +
             decodeArgs +
             ") error {\n",
             varName,
@@ -817,14 +930,14 @@ public class GolangGenerator implements CodeGenerator
                 else
                 {
                     encode.append(String.format(
-                        "\tif err := %1$s.%2$s.Encode(writer, order); err != nil {\n" +
+                        "\tif err := %1$s.%2$s.Encode(_m, _w); err != nil {\n" +
                         "\t\treturn err\n" +
                         "\t}\n",
                         varName, propertyName));
 
                     decode.append(String.format(
                         "\tif %1$s.%2$sInActingVersion(actingVersion) {\n" +
-                        "\t\tif err := %1$s.%2$s.Decode(reader, order, actingVersion); err != nil {\n" +
+                        "\t\tif err := %1$s.%2$s.Decode(_m, _r, actingVersion); err != nil {\n" +
                         "\t\t\treturn err\n" +
                         "\t\t}\n" +
                         "\t}\n",
@@ -849,7 +962,7 @@ public class GolangGenerator implements CodeGenerator
                 // Encode of a constant is a nullop
                 if (!encodingToken.isConstantEncoding())
                 {
-                    generateEncodePrimitive(encode, varName, formatPropertyName(signalToken.name()));
+                    generateEncodePrimitive(encode, varName, formatPropertyName(signalToken.name()), encodingToken);
                 }
                 final String primitive = Character.toString(varName) + "." + propertyName;
                 generateDecodePrimitive(decode, primitive, encodingToken);
@@ -877,14 +990,14 @@ public class GolangGenerator implements CodeGenerator
         decode.append(generateDecodeOffset(gap, ""));
 
         encode.append(String.format(
-            "\tif err := %1$s.%2$s.Encode(writer, order); err != nil {\n" +
+            "\tif err := %1$s.%2$s.Encode(_m, _w); err != nil {\n" +
             "\t\treturn err\n" +
             "\t}\n",
             varName, propertyName));
 
         decode.append(String.format(
             "\tif %1$s.%2$sInActingVersion(actingVersion) {\n" +
-            "\t\tif err := %1$s.%2$s.Decode(reader, order, actingVersion); err != nil {\n" +
+            "\t\tif err := %1$s.%2$s.Decode(_m, _r, actingVersion); err != nil {\n" +
             "\t\t\treturn err\n" +
             "\t\t}\n" +
             "\t}\n",
@@ -913,36 +1026,41 @@ public class GolangGenerator implements CodeGenerator
 
         // Write the group header (blocklength and numingroup)
         final String golangTypeForLength = golangTypeName(tokens.get(2).encoding().primitiveType());
+        final String golangTypeForLengthMarshal = golangMarshalType(tokens.get(2).encoding().primitiveType());
         final String golangTypeForData = golangTypeName(tokens.get(3).encoding().primitiveType());
+
 
         generateCharacterEncodingRangeCheck(rc, varName + "." + propertyName, tokens.get(3));
 
         encode.append(String.format(
-                "\tif err := binary.Write(writer, order, %1$s(len(%2$s.%3$s))); err != nil {\n" +
+                "\tif err := _m.Write%1$s(_w, %2$s(len(%3$s.%4$s))); err != nil {\n" +
                 "\t\treturn err\n" +
                 "\t}\n" +
-                "\tif err := binary.Write(writer, order, %2$s.%3$s); err != nil {\n" +
+                "\tif err := _m.WriteBytes(_w, %3$s.%4$s); err != nil {\n" +
                 "\t\treturn err\n" +
                 "\t}\n",
+                golangTypeForLengthMarshal,
                 golangTypeForLength,
                 varName,
                 propertyName));
 
-        // FIXME:performance we might check capacity before make(),
         decode.append(String.format(
             "\n" +
-            "\tif %1$s.%2$sInActingVersion(actingVersion) {\n" +
-            "\t\tvar %2$sLength %3$s\n" +
-            "\t\tif err := binary.Read(reader, order, &%2$sLength); err != nil {\n" +
+            "\tif %1$c.%2$sInActingVersion(actingVersion) {\n" +
+            "\t\tvar %2$sLength %4$s\n" +
+            "\t\tif err := _m.Read%3$s(_r, &%2$sLength); err != nil {\n" +
             "\t\t\treturn err\n" +
             "\t\t}\n" +
-            "\t\t%1$s.%2$s = make([]%4$s, %2$sLength)\n" +
-            "\t\tif err := binary.Read(reader, order, &%1$s.%2$s); err != nil {\n" +
+            "\t\tif cap(%1$c.%2$s) < int(%2$sLength) {\n" +
+            "\t\t\t%1$s.%2$s = make([]%5$s, %2$sLength)\n" +
+            "\t\t}\n" +
+            "\t\tif err := _m.ReadBytes(_r, %1$c.%2$s); err != nil {\n" +
             "\t\t\treturn err\n" +
             "\t\t}\n" +
             "\t}\n",
             varName,
             propertyName,
+            golangTypeForLengthMarshal,
             golangTypeForLength,
             golangTypeForData));
 
@@ -962,7 +1080,9 @@ public class GolangGenerator implements CodeGenerator
         final Token signalToken = tokens.get(0);
         final String propertyName = formatPropertyName(signalToken.name());
         final String blockLengthType = golangTypeName(tokens.get(2).encoding().primitiveType());
+        final String blockLengthMarshalType = golangMarshalType(tokens.get(2).encoding().primitiveType());
         final String numInGroupType = golangTypeName(tokens.get(3).encoding().primitiveType());
+        final String numInGroupMarshalType = golangMarshalType(tokens.get(3).encoding().primitiveType());
 
         // Offset handling
         final int gap = Math.max(signalToken.offset() - currentOffset, 0);
@@ -971,12 +1091,12 @@ public class GolangGenerator implements CodeGenerator
 
         // Write/Read the group header
         encode.append(String.format(
-            "\n\tvar %6$sBlockLength %1$s = %2$d\n" +
-            "\tvar %6$sNumInGroup %3$s = %3$s(len(%4$s.%5$s))\n" +
-            "\tif err := binary.Write(writer, order, %6$sBlockLength); err != nil {\n" +
+            "\n\tvar %7$sBlockLength %1$s = %2$d\n" +
+            "\tvar %7$sNumInGroup %3$s = %3$s(len(%4$s.%5$s))\n" +
+            "\tif err := _m.Write%6$s(_w, %7$sBlockLength); err != nil {\n" +
             "\t\treturn err\n" +
             "\t}\n" +
-            "\tif err := binary.Write(writer, order, %6$sNumInGroup); err != nil {\n" +
+            "\tif err := _m.Write%8$s(_w, %7$sNumInGroup); err != nil {\n" +
             "\t\treturn err\n" +
             "\t}\n",
             blockLengthType,
@@ -984,12 +1104,14 @@ public class GolangGenerator implements CodeGenerator
             numInGroupType,
             varName,
             toUpperFirstChar(signalToken.name()),
-            propertyName));
+            blockLengthMarshalType,
+            propertyName,
+            numInGroupMarshalType));
 
         // Write/Read the group itself
         encode.append(String.format(
             "\tfor _, prop := range %1$s.%2$s {\n" +
-            "\t\tif err := prop.Encode(writer, order); err != nil {\n" +
+            "\t\tif err := prop.Encode(_m, _w); err != nil {\n" +
             "\t\t\treturn err\n" +
             "\t\t}\n",
             varName,
@@ -1001,22 +1123,26 @@ public class GolangGenerator implements CodeGenerator
             "\tif %1$s.%2$sInActingVersion(actingVersion) {\n" +
             "\t\tvar %2$sBlockLength %3$s\n" +
             "\t\tvar %2$sNumInGroup %4$s\n" +
-            "\t\tif err := binary.Read(reader, order, &%2$sBlockLength); err != nil {\n" +
+            "\t\tif err := _m.Read%5$s(_r, &%2$sBlockLength); err != nil {\n" +
             "\t\t\treturn err\n" +
             "\t\t}\n" +
-            "\t\tif err := binary.Read(reader, order, &%2$sNumInGroup); err != nil {\n" +
+            "\t\tif err := _m.Read%6$s(_r, &%2$sNumInGroup); err != nil {\n" +
             "\t\t\treturn err\n" +
             "\t\t}\n",
             varName,
             propertyName,
             blockLengthType,
-            numInGroupType));
+            numInGroupType,
+            blockLengthMarshalType,
+            numInGroupMarshalType));
 
         // Read num elements
         decode.append(String.format(
-            "\t\t%1$s.%2$s = make([]%3$s%2$s, %2$sNumInGroup)\n" +
+            "\t\tif cap(%1$c.%2$s) < int(%2$sNumInGroup) {\n" +
+            "\t\t\t%1$s.%2$s = make([]%3$s%2$s, %2$sNumInGroup)\n" +
+            "\t\t}\n" +
             "\t\tfor i, _ := range %1$s.%2$s {\n" +
-            "\t\t\tif err := %1$s.%2$s[i].Decode(reader, order, actingVersion, %4$sBlockLength); err != nil {\n" +
+            "\t\t\tif err := %1$s.%2$s[i].Decode(_m, _r, actingVersion, uint(%4$sBlockLength)); err != nil {\n" +
             "\t\t\t\treturn err\n" +
             "\t\t\t}\n" +
             "\t\t}\n",
@@ -1164,7 +1290,6 @@ public class GolangGenerator implements CodeGenerator
             // Initialize the imports
             imports = new TreeSet<>();
             imports.add("io");
-            imports.add("encoding/binary");
 
             generateChoiceDecls(
                 sb,
@@ -1187,7 +1312,7 @@ public class GolangGenerator implements CodeGenerator
             {
                 generateSinceActingDeprecated(sb, choiceName, token.name(), token);
             }
-            out.append(generateFileHeader(ir.namespaces(), choiceName));
+            out.append(generateFileHeader(ir.namespaces()));
             out.append(sb);
         }
     }
@@ -1205,7 +1330,6 @@ public class GolangGenerator implements CodeGenerator
             // Initialize the imports
             imports = new TreeSet<>();
             imports.add("io");
-            imports.add("encoding/binary");
 
             generateEnumDecls(
                 sb,
@@ -1230,7 +1354,7 @@ public class GolangGenerator implements CodeGenerator
                 generateSinceActingDeprecated(sb, enumName + "Enum", token.name(), token);
             }
 
-            out.append(generateFileHeader(ir.namespaces(), enumName));
+            out.append(generateFileHeader(ir.namespaces()));
             out.append(sb);
         }
     }
@@ -1247,7 +1371,6 @@ public class GolangGenerator implements CodeGenerator
             // Initialize the imports
             imports = new TreeSet<>();
             imports.add("io");
-            imports.add("encoding/binary");
 
             generateTypeDeclaration(sb, compositeName);
             generateTypeBodyComposite(sb, compositeName, tokens.subList(1, tokens.size() - 1));
@@ -1259,7 +1382,7 @@ public class GolangGenerator implements CodeGenerator
 
             // The FileHeader needs to know which imports to add so
             // it's created last once that's known.
-            out.append(generateFileHeader(ir.namespaces(), compositeName));
+            out.append(generateFileHeader(ir.namespaces()));
             out.append(sb);
         }
     }
@@ -1372,7 +1495,9 @@ public class GolangGenerator implements CodeGenerator
         sb.append("}\n");
     }
 
-    private CharSequence generateFileHeader(final CharSequence[] namespaces, final String typeName)
+    private CharSequence generateFileHeader(
+        final CharSequence[] namespaces,
+        final String typeName)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1390,6 +1515,19 @@ public class GolangGenerator implements CodeGenerator
 
         sb.append(")\n\n");
         return sb;
+    }
+
+    private String generateFromTemplate(
+        final CharSequence[] namespaces,
+        final String templateName) throws IOException
+    {
+        final String jarFile = "golang/templates/" + templateName + ".go";
+        final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(jarFile);
+        final Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        final String template = s.hasNext() ? s.next() : "";
+        inputStream.close();
+
+        return String.format(template, namespacesToPackageName(namespaces));
     }
 
     private static void generateTypeDeclaration(
@@ -1837,15 +1975,14 @@ public class GolangGenerator implements CodeGenerator
         final Token token)
     {
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) SbeBlockLength() (blockLength %3$s) {\n" +
-            "\treturn %4$s\n" +
+            "\nfunc (%1$s %2$s) SbeBlockLength() (blockLength uint) {\n" +
+            "\treturn %3$s\n" +
             "}\n" +
-            "\nfunc (%1$s %2$s) SbeSchemaVersion() (schemaVersion %5$s) {\n" +
-            "\treturn %6$s\n" +
+            "\nfunc (%1$s %2$s) SbeSchemaVersion() (schemaVersion %4$s) {\n" +
+            "\treturn %5$s\n" +
             "}\n",
             Character.toLowerCase(typeName.charAt(0)),
             typeName,
-            golangTypeName(ir.headerStructure().blockLengthType()),
             generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.encodedLength())),
             golangTypeName(ir.headerStructure().schemaVersionType()),
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version()))));
@@ -2047,19 +2184,29 @@ public class GolangGenerator implements CodeGenerator
         switch (type)
         {
             case CHAR:
-            case UINT8:
-            case UINT16:
             case INT8:
             case INT16:
+            case INT32:
+            case UINT8:
+            case UINT16:
+            case UINT32:
                 literal = value;
                 break;
 
-            case UINT32:
-            case INT32:
-                literal = value;
-                break;
-            case INT64:
             case UINT64:
+                // We get negative numbers from the IR as java has
+                // signed types only.
+                if (value.charAt(0) == '-')
+                {
+                    literal = Long.toUnsignedString(Long.parseLong(value));
+                }
+                else
+                {
+                    literal = castType + "(" + value + ")";
+                }
+                break;
+
+            case INT64:
                 literal = castType + "(" + value + ")";
                 break;
 
@@ -2074,4 +2221,47 @@ public class GolangGenerator implements CodeGenerator
 
         return literal;
     }
+
+    private String templateMessageHeader =
+        "// Generated SBE (Simple Binary Encoding) message codec\n" +
+        "\n" +
+        "package %1$s\n" +
+        "\n" +
+        "import (\n" +
+        "\t\"io\"\n" +
+        ")\n" +
+        "\n" +
+        "type MessageHeader struct {\n" +
+        "\tBlockLength uint16 // token.\n" +
+        "\tTemplateId  uint16\n" +
+        "\tSchemaId    uint16\n" +
+        "\tVersion     uint16\n" +
+        "}\n" +
+        "\n" +
+        "func (m MessageHeader) Encode(_m *SbeGoMarshaller, _w io.Writer) error {\n" +
+        "\t_m.b8[0] = byte(m.BlockLenth)\n" +
+        "\t_m.b8[1] = byte(m.BlockLength >> 8)\n" +
+        "\t_m.b8[2] = byte(m.TemplateId)\n" +
+        "\t_m.b8[3] = byte(m.TemplateId >> 8)\n" +
+        "\t_m.b8[4] = byte(m.ScehemaId)\n" +
+        "\t_m.b8[5] = byte(m.ScehemaId >> 8)\n" +
+        "\t_m.b8[6] = byte(m.Version)\n" +
+        "\t_m.b8[7] = byte(m.Version >> 8)\n" +
+        "\tif err := _w.Write(m.b8); err != nil {\n" +
+        "\t\treturn err\n" +
+        "\t}\n" +
+        "\treturn nil\n" +
+        "}\n" +
+        "\n" +
+        "func (m *MessageHeader) Decode(_m *SbeGoMarshaller, _r io.Reader, actingVersion uint16) error {\n" +
+        "\tif _, err = io.ReadFull(_r, m.b8); err != nil {\n" +
+        "\t\treturn err\n" +
+        "\t}\n" +
+        "\tm.BlockLenth = uint16(m.b8[0]) | uint16(m.b8[1])<<8))\n" +
+        "\tm.TemplateId = uint16(m.b8[2]) | uint16(m.b8[3])<<8))\n" +
+        "\tm.ScehemaId= uint16(m.b8[4]) | uint16(m.b8[5])<<8))\n" +
+        "\tm.Version= uint16(m.b8[6]) | uint16(m.b8[7])<<8))\n" +
+        "\treturn nil\n" +
+        "}\n";
+
 }
