@@ -109,7 +109,13 @@ public enum PrimitiveType
         return nullValue;
     }
 
-    public static boolean isUnsigned(PrimitiveType type)
+    /**
+     * Is the type an unsigned type like in C.
+     *
+     * @param type to be tested.
+     * @return true if unsigned otherwise false.
+     */
+    public static boolean isUnsigned(final PrimitiveType type)
     {
         switch (type)
         {

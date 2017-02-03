@@ -84,7 +84,7 @@ public abstract class AbstractTokenListener implements TokenListener
         // no op
     }
 
-    public void onGroupHeader(Token token, int numInGroup)
+    public void onGroupHeader(final Token token, final int numInGroup)
     {
         // no op
     }

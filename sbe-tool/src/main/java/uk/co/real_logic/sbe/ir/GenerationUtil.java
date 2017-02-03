@@ -44,24 +44,26 @@ public final class GenerationUtil
         return collect(Signal.BEGIN_VAR_DATA, tokens, index, varData);
     }
 
-    public static int collect(final Signal signal, final List<Token> tokens, int index, final List<Token> collected)
+    public static int collect(
+        final Signal signal, final List<Token> tokens, final int index, final List<Token> collected)
     {
-        while (index < tokens.size())
+        int i = index;
+        while (i < tokens.size())
         {
-            final Token token = tokens.get(index);
+            final Token token = tokens.get(i);
             if (signal != token.signal())
             {
                 break;
             }
 
             final int tokenCount = token.componentTokenCount();
-            for (final int limit = index + tokenCount; index < limit; index++)
+            for (final int limit = i + tokenCount; i < limit; i++)
             {
-                collected.add(tokens.get(index));
+                collected.add(tokens.get(i));
             }
         }
 
-        return index;
+        return i;
     }
 
     public static List<Token> getMessageBody(final List<Token> tokens)

@@ -1353,15 +1353,16 @@ public class JavaGenerator implements CodeGenerator
         final String className,
         final List<Token> tokens,
         final Appendable out,
-        int index,
+        final int index,
         final Function<String, String> nameMapping) throws IOException
     {
         if (shouldGenerateGroupOrderAnnotation)
         {
             final List<String> groupClassNames = new ArrayList<>();
             int level = 0;
+            int i = index;
 
-            for (int size = tokens.size(); index < size; index++)
+            for (int size = tokens.size(); i < size; i++)
             {
                 if (tokens.get(index).signal() == Signal.BEGIN_GROUP)
                 {
@@ -1381,11 +1382,11 @@ public class JavaGenerator implements CodeGenerator
             if (!groupClassNames.isEmpty())
             {
                 out.append(indent).append("@uk.co.real_logic.sbe.codec.java.GroupOrder({");
-                index = 0;
+                i = 0;
                 for (final String name : groupClassNames)
                 {
                     out.append(className).append('.').append(name).append(".class");
-                    if (++index < groupClassNames.size())
+                    if (++i < groupClassNames.size())
                     {
                         out.append(", ");
                     }

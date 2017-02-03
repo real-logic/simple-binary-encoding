@@ -320,21 +320,22 @@ public class Ir
         }
     }
 
-    private int captureType(final List<Token> tokens, int index, final Signal endSignal, final String name)
+    private int captureType(final List<Token> tokens, final int index, final Signal endSignal, final String name)
     {
         final List<Token> typeTokens = new ArrayList<>();
 
-        Token token = tokens.get(index);
+        int i = index;
+        Token token = tokens.get(i);
         typeTokens.add(token);
         do
         {
-            token = tokens.get(++index);
+            token = tokens.get(++i);
             typeTokens.add(token);
         }
         while (endSignal != token.signal() || !name.equals(token.name()));
 
         typesByNameMap.put(name, typeTokens);
 
-        return index;
+        return i;
     }
 }

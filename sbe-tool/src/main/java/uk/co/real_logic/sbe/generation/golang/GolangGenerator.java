@@ -53,7 +53,7 @@ public class GolangGenerator implements CodeGenerator
         this.outputManager = outputManager;
     }
 
-    public void generateFileFromTemplate(String fileName, String templateName) throws IOException
+    public void generateFileFromTemplate(final String fileName, final String templateName) throws IOException
     {
         try (Writer out = outputManager.createOutput(fileName))
         {
@@ -512,8 +512,8 @@ public class GolangGenerator implements CodeGenerator
     // length elements (groups and vardata). We read past the difference
     // between the message's blockLength and our (older) schema's blockLength
     private void generateExtensionCheck(
-        StringBuilder sb,
-        char varName)
+        final StringBuilder sb,
+        final char varName)
     {
         this.imports.add("io");
         this.imports.add("io/ioutil");
@@ -529,8 +529,8 @@ public class GolangGenerator implements CodeGenerator
         final StringBuilder sb,
         final String typeName,
         final List<Token> tokens,
-        boolean isMessage,
-        boolean isExtensible)
+        final boolean isMessage,
+        final boolean isExtensible)
     {
         final char varName = Character.toLowerCase(typeName.charAt(0));
         final StringBuilder encode = new StringBuilder();
@@ -913,10 +913,10 @@ public class GolangGenerator implements CodeGenerator
         final List<Token> tokens,
         final char varName,
         final int currentOffset,
-        StringBuilder encode,
-        StringBuilder decode,
-        StringBuilder rc,
-        StringBuilder init)
+        final StringBuilder encode,
+        final StringBuilder decode,
+        final StringBuilder rc,
+        final StringBuilder init)
     {
         final Token signalToken = tokens.get(0);
         final Token encodingToken = tokens.get(1);

@@ -86,7 +86,7 @@ public final class ReflectionUtil
         return getInt(flyweight, "capacity");
     }
 
-    public static void setCapacity(final Object flyweight, int value) throws Exception
+    public static void setCapacity(final Object flyweight, final int value) throws Exception
     {
         flyweight
             .getClass()
@@ -108,17 +108,17 @@ public final class ReflectionUtil
         return clazz.getDeclaredMethod("get", byte.class).invoke(null, value);
     }
 
-    static Object getFuelFigures(Object msgFlyweight) throws Exception
+    static Object getFuelFigures(final Object msgFlyweight) throws Exception
     {
         return get(msgFlyweight, "fuelFigures");
     }
 
-    static Object fuelFiguresCount(Object msgFlyweight, int count) throws Exception
+    static Object fuelFiguresCount(final Object msgFlyweight, final int count) throws Exception
     {
         return msgFlyweight.getClass().getMethod("fuelFiguresCount", int.class).invoke(msgFlyweight, count);
     }
 
-    static int getCount(Object groupFlyweight) throws Exception
+    static int getCount(final Object groupFlyweight) throws Exception
     {
         return getInt(groupFlyweight, "count");
     }

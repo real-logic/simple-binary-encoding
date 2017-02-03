@@ -176,7 +176,7 @@ public class Field
         return blockLength;
     }
 
-    public void computedBlockLength(int length)
+    public void computedBlockLength(final int length)
     {
         computedBlockLength = length;
     }

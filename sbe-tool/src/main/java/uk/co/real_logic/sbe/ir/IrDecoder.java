@@ -130,22 +130,23 @@ public class IrDecoder implements AutoCloseable
         return index;
     }
 
-    private static int captureMessage(final List<Token> tokens, int index, final Ir ir)
+    private static int captureMessage(final List<Token> tokens, final int index, final Ir ir)
     {
         final List<Token> messageTokens = new ArrayList<>();
 
-        Token token = tokens.get(index);
+        int i = index;
+        Token token = tokens.get(i);
         messageTokens.add(token);
         do
         {
-            token = tokens.get(++index);
+            token = tokens.get(++i);
             messageTokens.add(token);
         }
         while (Signal.END_MESSAGE != token.signal());
 
-        ir.addMessage(tokens.get(index).id(), messageTokens);
+        ir.addMessage(tokens.get(i).id(), messageTokens);
 
-        return index;
+        return i;
     }
 
     private void decodeFrame()
