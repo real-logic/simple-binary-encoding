@@ -126,7 +126,7 @@ subprojects {
     }
 
     checkstyle {
-        configFile = new File(rootDir, 'config/checkstyle.xml')
+        configFile = new File(rootDir, 'config/checkstyle/checkstyle.xml')
         toolVersion = '7.4'
     }
 
