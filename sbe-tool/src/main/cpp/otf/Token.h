@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 - 2016 Real Logic Ltd.
+ * Copyright 2015 - 2017 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,14 +78,21 @@ public:
         Signal signal,
         std::string name,
         std::string description,
-        Encoding encoding) :
-        m_offset(offset), m_fieldId(fieldId), m_version(version), m_encodedLength(encodedLength),
-        m_componentTokenCount(componentTokenCount), m_signal(signal), m_name(name),
-        m_description(description), m_encoding(encoding)
+        Encoding encoding)
+        :
+        m_offset(offset),
+        m_fieldId(fieldId),
+        m_version(version),
+        m_encodedLength(encodedLength),
+        m_componentTokenCount(componentTokenCount),
+        m_signal(signal),
+        m_name(name),
+        m_description(description),
+        m_encoding(encoding)
     {
     }
 
-    inline Signal signal() const
+    inline const Signal signal() const
     {
         return m_signal;
     }
@@ -93,6 +100,11 @@ public:
     inline const std::string& name() const
     {
         return m_name;
+    }
+
+    inline const std::string& description() const
+    {
+        return m_description;
     }
 
     inline std::int32_t fieldId() const
@@ -136,10 +148,10 @@ private:
     const std::int32_t m_version;
     const std::int32_t m_encodedLength;
     const std::int32_t m_componentTokenCount;
-    Signal m_signal;
-    std::string m_name;
-    std::string m_description;
-    Encoding m_encoding;
+    const Signal m_signal;
+    const std::string m_name;
+    const std::string m_description;
+    const Encoding m_encoding;
 };
 
 }}

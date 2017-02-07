@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 - 2016 Real Logic Ltd.
+ * Copyright 2015 - 2017 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -291,10 +291,19 @@ public:
         std::string characterEncoding,
         std::string epoch,
         std::string timeUnit,
-        std::string semanticType) :
-        m_presence(presence), m_primitiveType(type), m_byteOrder(byteOrder), m_minValue(minValue), m_maxValue(maxValue),
-        m_nullValue(nullValue), m_constValue(constValue), m_characterEncoding(characterEncoding), m_epoch(epoch),
-        m_timeUnit(timeUnit), m_semanticType(semanticType)
+        std::string semanticType)
+        :
+        m_presence(presence),
+        m_primitiveType(type),
+        m_byteOrder(byteOrder),
+        m_minValue(minValue),
+        m_maxValue(maxValue),
+        m_nullValue(nullValue),
+        m_constValue(constValue),
+        m_characterEncoding(characterEncoding),
+        m_epoch(epoch),
+        m_timeUnit(timeUnit),
+        m_semanticType(semanticType)
     {
     }
 
@@ -405,17 +414,17 @@ public:
         }
     }
 
-    inline Presence presence() const
+    inline const Presence presence() const
     {
         return m_presence;
     }
 
-    inline ByteOrder byteOrder() const
+    inline const ByteOrder byteOrder() const
     {
         return m_byteOrder;
     }
 
-    inline PrimitiveType primitiveType() const
+    inline const PrimitiveType primitiveType() const
     {
         return m_primitiveType;
     }
@@ -435,25 +444,60 @@ public:
         return getDouble(m_primitiveType, m_byteOrder, buffer);
     }
 
+    inline const PrimitiveValue& minValue() const
+    {
+        return m_minValue;
+    }
+
+    inline const PrimitiveValue& maxValue() const
+    {
+        return m_maxValue;
+    }
+
+    inline const PrimitiveValue& nullValue() const
+    {
+        return m_nullValue;
+    }
+
     inline const PrimitiveValue& constValue() const
     {
         return m_constValue;
     }
 
+    inline const std::string& characterEncoding() const
+    {
+        return m_characterEncoding;
+    }
+
+    inline const std::string& epoch() const
+    {
+        return m_epoch;
+    }
+
+    inline const std::string& timeUnit() const
+    {
+        return m_timeUnit;
+    }
+
+    inline const std::string& semanticType() const
+    {
+        return m_semanticType;
+    }
+
 private:
-    Presence m_presence;
-    PrimitiveType m_primitiveType;
-    ByteOrder m_byteOrder;
+    const Presence m_presence;
+    const PrimitiveType m_primitiveType;
+    const ByteOrder m_byteOrder;
 
-    PrimitiveValue m_minValue;
-    PrimitiveValue m_maxValue;
-    PrimitiveValue m_nullValue;
-    PrimitiveValue m_constValue;
+    const PrimitiveValue m_minValue;
+    const PrimitiveValue m_maxValue;
+    const PrimitiveValue m_nullValue;
+    const PrimitiveValue m_constValue;
 
-    std::string m_characterEncoding;
-    std::string m_epoch;
-    std::string m_timeUnit;
-    std::string m_semanticType;
+    const std::string m_characterEncoding;
+    const std::string m_epoch;
+    const std::string m_timeUnit;
+    const std::string m_semanticType;
 };
 
 }}
