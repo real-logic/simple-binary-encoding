@@ -303,17 +303,17 @@ public class XmlSchemaParser
     {
         if (!ValidationUtil.isSbeCppName(name))
         {
-            handleError(node, "name is not valid for C++: " + name);
+            handleWarning(node, "name is not valid for C++: " + name);
         }
 
         if (!ValidationUtil.isSbeJavaName(name))
         {
-            handleError(node, "name is not valid for Java: " + name);
+            handleWarning(node, "name is not valid for Java: " + name);
         }
 
         if (!ValidationUtil.isSbeGolangName(name))
         {
-            handleError(node, "name is not valid for Golang: " + name);
+            handleWarning(node, "name is not valid for Golang: " + name);
         }
     }
 

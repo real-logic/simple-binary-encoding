@@ -92,8 +92,8 @@ public class ErrorHandlerTest
         parseTestXmlAddToMap(map, "/types/enum", testXmlString, handler);
         parseTestXmlAddToMap(map, "/types/set", testXmlString, handler);
 
-        assertThat(valueOf(handler.errorCount()), is(valueOf(24)));
-        assertThat(valueOf(handler.warningCount()), is(valueOf(5)));
+        assertThat(valueOf(handler.errorCount()), is(valueOf(3)));
+        assertThat(valueOf(handler.warningCount()), is(valueOf(26)));
     }
 
     @Test
@@ -173,7 +173,7 @@ public class ErrorHandlerTest
         throws Exception
     {
         exceptionRule.expect(IllegalStateException.class);
-        exceptionRule.expectMessage("had 12 errors");
+        exceptionRule.expectMessage("had 12 warnings");
 
         final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
