@@ -8,7 +8,7 @@
                    byteOrder="littleEndian">
     <types>
         <composite name="messageHeader" description="Message identifiers and length of message root">
-            <type name="blockLength" primitiveType="uint16"/>
+            <type name="blockLength" primitiveType="uint8"/>
             <type name="templateId" primitiveType="uint16"/>
             <type name="schemaId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint16"/>
@@ -27,7 +27,10 @@
     </types>
     <sbe:message name="Simple0" id="11" semanticType="womble" description="A very simple first example" blockLength="76">
         <field name="U64nv"   id="10"  type="uint64nv" sinceVersion="1"/>
-        <field name="U64"     id="20"  type="uint64" deprecated="2" sinceVersion="1" presence="optional" nullValue="18446744073709551615"/>
+        <!-- open spec issue on whether this can be allowed 
+             <field name="U64"     id="20"  type="uint64" deprecated="2" sinceVersion="1" presence="optional" nullValue="18446744073709551615"/>
+        -->
+        <field name="U64"     id="20"  type="uint64" deprecated="2" sinceVersion="1"/>
         <field name="U32"     id="30"  type="uint32"/>
         <field name="U16"     id="40"  type="uint16"/>
         <field name="U8"      id="50"  type="uint8"/>

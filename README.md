@@ -3,7 +3,7 @@ Simple Binary Encoding (SBE)
 
 [SBE](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) is an OSI layer 6 presentation for 
 encoding and decoding binary application messages for low-latency financial applications. This repository contains 
-the reference implementations in Java and C++.
+the reference implementations in Java, C++, and Golang.
 
 Further details on the background and usage of SBE can be found on the
 [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
@@ -107,3 +107,24 @@ If you are comfortable with using CMake, then a full clean, build, and test look
     $ cmake ../..
     $ cmake --build . --clean-first
     $ ctest
+
+Golang Build
+------------
+
+First build using Gradle to generate the SBE jar and then use it to
+generate the golang code for testing
+
+    $ ./gradlew
+    $ ./gradlew generateGolangCodecs
+
+For convenience on Linux, a gnu Makefile is provided that runs some
+tests and containes some examples
+
+    $ cd gocode
+    # make # test, examples, bench
+
+Users of golang generated code should see the [user
+documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Golang-User-Guide). Developers
+wishing to enhance golang generator should see the [developer
+documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/gocode/README.md)
+
