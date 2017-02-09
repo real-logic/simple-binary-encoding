@@ -6,5 +6,5 @@ import (
 )
 
 func TestFixme(t *testing.T) {
-	fmt.Println("FIXME")
+	fmt.Println("No tests implemented here")
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"baseline"
+	"bufio"
 	"bytes"
 	"io"
 	"testing"
@@ -151,6 +152,26 @@ func BenchmarkDecodeLax(b *testing.B) {
 		}
 	}
 }
+func xBenchmarkDecodeLaxBufio(b *testing.B) {
+	car := makeCar()
+	m := baseline.NewSbeGoMarshaller()
+	var buf = new(bytes.Buffer)
+	for i := 0; i < b.N; i++ {
+		if err := car.Encode(m, buf, false); err != nil {
+			b.Logf("Encoding Error", err)
+			b.Fail()
+		}
+	}
+
+	buf2 := bufio.NewReader(buf)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if err := car.Decode(m, buf2, car.SbeSchemaVersion(), car.SbeBlockLength(), false); err != nil {
+			b.Logf("Decoding Error", err)
+			b.Fail()
+		}
+	}
+}
 
 func BenchmarkPipe(b *testing.B) {
 	var r, w = io.Pipe()
@@ -169,7 +190,7 @@ func BenchmarkPipe(b *testing.B) {
 		}
 	}()
 
-	var hdr baseline.SbeGoMessageHeader
+	var hdr baseline.MessageHeader
 	var c baseline.Car
 	m := baseline.NewSbeGoMarshaller()
 	<-writerReady
@@ -177,6 +198,40 @@ func BenchmarkPipe(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		hdr.Decode(m, r)
 		if err := c.Decode(m, r, hdr.Version, hdr.BlockLength, false); err != nil {
+			b.Logf("Failed to decode car", err)
+			b.Fail()
+		}
+	}
+	r.Close()
+}
+
+func BenchmarkPipeBufio(b *testing.B) {
+	var r, w = io.Pipe()
+	var data []byte = []byte{47, 0, 1, 0, 1, 0, 0, 0, 210, 4, 0, 0, 0, 0, 0, 0, 221, 7, 1, 65, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0, 97, 98, 99, 100, 101, 102, 6, 208, 7, 4, 49, 50, 51, 78, 200, 6, 0, 3, 0, 30, 0, 154, 153, 15, 66, 11, 0, 0, 0, 85, 114, 98, 97, 110, 32, 67, 121, 99, 108, 101, 55, 0, 0, 0, 68, 66, 14, 0, 0, 0, 67, 111, 109, 98, 105, 110, 101, 100, 32, 67, 121, 99, 108, 101, 75, 0, 0, 0, 32, 66, 13, 0, 0, 0, 72, 105, 103, 104, 119, 97, 121, 32, 67, 121, 99, 108, 101, 1, 0, 2, 0, 95, 6, 0, 3, 0, 30, 0, 0, 0, 128, 64, 60, 0, 0, 0, 240, 64, 100, 0, 51, 51, 67, 65, 99, 6, 0, 3, 0, 30, 0, 51, 51, 115, 64, 60, 0, 51, 51, 227, 64, 100, 0, 205, 204, 60, 65, 5, 0, 0, 0, 72, 111, 110, 100, 97, 9, 0, 0, 0, 67, 105, 118, 105, 99, 32, 86, 84, 105, 6, 0, 0, 0, 97, 98, 99, 100, 101, 102}
+	writerReady := make(chan bool)
+
+	go func() {
+		defer w.Close()
+		writerReady <- true
+		// By way of test, stream the bytes into the pipe a
+		// chunk at a time
+		for looping := true; looping; {
+			if _, err := w.Write(data); err != nil {
+				looping = false
+			}
+		}
+	}()
+
+	var hdr baseline.MessageHeader
+	var c baseline.Car
+	m := baseline.NewSbeGoMarshaller()
+	<-writerReady
+	b.ResetTimer()
+	buf := bufio.NewReader(r)
+
+	for i := 0; i < b.N; i++ {
+		hdr.Decode(m, r)
+		if err := c.Decode(m, buf, hdr.Version, hdr.BlockLength, false); err != nil {
 			b.Logf("Failed to decode car", err)
 			b.Fail()
 		}

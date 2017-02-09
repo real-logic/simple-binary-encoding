@@ -131,7 +131,7 @@ func ExampleDecodeBuffer() bool {
 	buf := bytes.NewBuffer(data)
 	m := baseline.NewSbeGoMarshaller()
 
-	var hdr baseline.SbeGoMessageHeader
+	var hdr baseline.MessageHeader
 	if err := hdr.Decode(m, buf); err != nil {
 		fmt.Println("Failed to decode message header", err)
 		os.Exit(1)
@@ -173,7 +173,7 @@ func ExampleDecodePipe() bool {
 		}
 	}()
 
-	var hdr baseline.SbeGoMessageHeader
+	var hdr baseline.MessageHeader
 	hdr.Decode(m, r)
 
 	var c baseline.Car
@@ -217,7 +217,7 @@ func ExampleDecodeSocket() bool {
 		defer conn.Close()
 
 		// fmt.Println("reading messageheader")
-		var hdr baseline.SbeGoMessageHeader
+		var hdr baseline.MessageHeader
 		hdr.Decode(m, conn)
 
 		// fmt.Println("reading car")

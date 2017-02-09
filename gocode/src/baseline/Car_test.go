@@ -120,7 +120,7 @@ func TestDecodeJavaBuffer(t *testing.T) {
 	buf := bytes.NewBuffer(data)
 	m := NewSbeGoMarshaller()
 
-	var hdr SbeGoMessageHeader
+	var hdr MessageHeader
 	if err := hdr.Decode(m, buf); err != nil {
 		t.Logf("Failed to decode message header", err)
 		t.Fail()

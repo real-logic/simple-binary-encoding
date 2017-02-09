@@ -76,7 +76,7 @@ func mainReader(doDecode bool, iterations int) {
 			}
 		}
 	} else {
-		var h baseline.SbeGoMessageHeader
+		var h baseline.MessageHeader
 		m := baseline.NewSbeGoMarshaller()
 		for i := 0; i < iterations; i++ {
 			if err := h.Decode(m, conn); err != nil {
@@ -124,7 +124,7 @@ func mainWriter(doEncode bool, iterations int) {
 				}
 			}
 		} else {
-			var h = baseline.SbeGoMessageHeader{car.SbeBlockLength(), car.SbeTemplateId(), car.SbeSchemaId(), car.SbeSchemaVersion()}
+			var h = baseline.MessageHeader{car.SbeBlockLength(), car.SbeTemplateId(), car.SbeSchemaId(), car.SbeSchemaVersion()}
 			m := baseline.NewSbeGoMarshaller()
 			for i := 0; i < iterations; i++ {
 				if err := h.Encode(m, conn); err != nil {

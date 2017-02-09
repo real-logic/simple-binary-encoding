@@ -88,6 +88,65 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
+    private String messageHeaderEncodeDecodeTemplate =
+        "\n" +
+        "func (m MessageHeader) Encode(_m *SbeGoMarshaller, _w io.Writer) error {\n" +
+        "\tif err := _m.Write%1$s(_w, m.BlockLength); err != nil {\n" +
+        "\t\treturn err\n" +
+        "\t}\n" +
+        "\tif err := _m.WriteUint16(_w, m.TemplateId); err != nil {\n" +
+        "\t\treturn err\n" +
+        "\t}\n" +
+        "\tif err := _m.WriteUint16(_w, m.SchemaId); err != nil {\n" +
+        "\t\treturn err\n" +
+        "\t}\n" +
+        "\tif err := _m.WriteUint16(_w, m.Version); err != nil {\n" +
+        "\t\treturn err\n" +
+        "\t}\n" +
+        "\treturn nil\n" +
+        "}\n" +
+        "\n" +
+        "func (m *MessageHeader) Decode(_m *SbeGoMarshaller, _r io.Reader) error {\n" +
+        "\tif err := _m.Read%1$s(_r, &m.BlockLength); err != nil {\n" +
+        "\t\treturn err\n" +
+        "\t}\n" +
+        "\tif err := _m.ReadUint16(_r, &m.TemplateId); err != nil {\n" +
+        "\t\treturn err\n" +
+        "\t}\n" +
+        "\tif err := _m.ReadUint16(_r, &m.SchemaId); err != nil {\n" +
+        "\t\treturn err\n" +
+        "\t}\n" +
+        "\tif err := _m.ReadUint16(_r, &m.Version); err != nil {\n" +
+        "\t\treturn err\n" +
+        "\t}\n" +
+        "\treturn nil\n" +
+        "}\n";
+
+    // MesssageHeader is special
+    // All we need is imports, type declaration, and simplfiied encode/decode
+    public void generateMessageHeaderStub() throws IOException
+    {
+        final String messageHeader = "MessageHeader";
+        try (Writer out = outputManager.createOutput(messageHeader))
+        {
+            final StringBuilder sb = new StringBuilder();
+            final List<Token> tokens = ir.headerStructure().tokens();
+
+            // Initialize the imports
+            imports = new TreeSet<>();
+            imports.add("io");
+
+            generateTypeDeclaration(sb, messageHeader);
+            generateTypeBodyComposite(sb, messageHeader, tokens.subList(1, tokens.size() - 1));
+
+            sb.append(String.format(
+                messageHeaderEncodeDecodeTemplate,
+                golangMarshalType(ir.headerStructure().blockLengthType())));
+            out.append(generateFileHeader(ir.namespaces()));
+            out.append(sb);
+        }
+    }
+
     public void generate() throws IOException
     {
         // Add the Marshalling from the big or little endian
@@ -106,6 +165,7 @@ public class GolangGenerator implements CodeGenerator
             generateFileFromTemplate("SbeMarshalling", "SbeMarshallingBigEndian");
         }
 
+        generateMessageHeaderStub();
         generateTypeStubs();
 
         for (final List<Token> tokens : ir.messages())
@@ -853,6 +913,7 @@ public class GolangGenerator implements CodeGenerator
         final Boolean isExtensible)
     {
         String decodeArgs = "";
+        final String blockLengthType = golangTypeName(ir.headerStructure().blockLengthType());
 
         // Messages, groups, and vardata are extensible so need to know
         // working blocklength.
@@ -862,7 +923,7 @@ public class GolangGenerator implements CodeGenerator
         {
             if (isMessage)
             {
-                decodeArgs += ", blockLength uint16";
+                decodeArgs += ", blockLength " + blockLengthType;
             }
             else
             {
@@ -2239,46 +2300,5 @@ public class GolangGenerator implements CodeGenerator
 
         return literal;
     }
-
-    private final String templateMessageHeader =
-        "// Generated SBE (Simple Binary Encoding) message codec\n" +
-            "\n" +
-            "package %1$s\n" +
-            "\n" +
-            "import (\n" +
-            "\t\"io\"\n" +
-            ")\n" +
-            "\n" +
-            "type MessageHeader struct {\n" +
-            "\tBlockLength uint16 // token.\n" +
-            "\tTemplateId  uint16\n" +
-            "\tSchemaId    uint16\n" +
-            "\tVersion     uint16\n" +
-            "}\n" +
-            "\n" +
-            "func (m MessageHeader) Encode(_m *SbeGoMarshaller, _w io.Writer) error {\n" +
-            "\t_m.b8[0] = byte(m.BlockLenth)\n" +
-            "\t_m.b8[1] = byte(m.BlockLength >> 8)\n" +
-            "\t_m.b8[2] = byte(m.TemplateId)\n" +
-            "\t_m.b8[3] = byte(m.TemplateId >> 8)\n" +
-            "\t_m.b8[4] = byte(m.ScehemaId)\n" +
-            "\t_m.b8[5] = byte(m.ScehemaId >> 8)\n" +
-            "\t_m.b8[6] = byte(m.Version)\n" +
-            "\t_m.b8[7] = byte(m.Version >> 8)\n" +
-            "\tif err := _w.Write(m.b8); err != nil {\n" +
-            "\t\treturn err\n" +
-            "\t}\n" +
-            "\treturn nil\n" +
-            "}\n" +
-            "\n" +
-            "func (m *MessageHeader) Decode(_m *SbeGoMarshaller, _r io.Reader, actingVersion uint16) error {\n" +
-            "\tif _, err = io.ReadFull(_r, m.b8); err != nil {\n" +
-            "\t\treturn err\n" +
-            "\t}\n" +
-            "\tm.BlockLenth = uint16(m.b8[0]) | uint16(m.b8[1])<<8))\n" +
-            "\tm.TemplateId = uint16(m.b8[2]) | uint16(m.b8[3])<<8))\n" +
-            "\tm.ScehemaId= uint16(m.b8[4]) | uint16(m.b8[5])<<8))\n" +
-            "\tm.Version= uint16(m.b8[6]) | uint16(m.b8[7])<<8))\n" +
-            "\treturn nil\n" +
-            "}\n";
 }
+

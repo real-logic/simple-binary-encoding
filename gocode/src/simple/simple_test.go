@@ -18,24 +18,24 @@ func TestEncodeDecode(t *testing.T) {
 	t.Log(in, " -> ", sbuf.Bytes())
 	t.Log("Cap() = ", sbuf.Cap(), "Len() = ", sbuf.Len())
 
-	hdr := SbeGoMessageHeader{in.SbeBlockLength(), in.SbeTemplateId(), in.SbeSchemaId(), in.SbeSchemaVersion()}
+	hdr := MessageHeader{in.SbeBlockLength(), in.SbeTemplateId(), in.SbeSchemaId(), in.SbeSchemaVersion()}
 	var mbuf = new(bytes.Buffer)
 	if err := hdr.Encode(m, mbuf); err != nil {
-		t.Log("SbeGoMessageHeader Encoding Error", err)
+		t.Log("MessageHeader Encoding Error", err)
 		t.Fail()
 	}
 	t.Log(hdr, " -> ", mbuf.Bytes())
 	t.Log("Cap() = ", mbuf.Cap(), "Len() = ", mbuf.Len())
 
-	// Create a new empty SbeGoMessageHeader and Simple0
-	hdr = *new(SbeGoMessageHeader)
+	// Create a new empty MessageHeader and Simple0
+	hdr = *new(MessageHeader)
 	var out Simple0 = *new(Simple0)
 
 	if err := hdr.Decode(m, mbuf); err != nil {
-		t.Log("SbeGoMessageHeader Decoding Error", err)
+		t.Log("MessageHeader Decoding Error", err)
 		t.Fail()
 	}
-	t.Log("SbeGoMessageHeader Decodes as: ", m)
+	t.Log("MessageHeader Decodes as: ", m)
 	t.Log("Cap() = ", mbuf.Cap(), "Len() = ", mbuf.Len())
 
 	if err := out.Decode(m, sbuf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
