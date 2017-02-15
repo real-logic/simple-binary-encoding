@@ -247,6 +247,9 @@ private:
         tmpLen = tokenCodec.getDescription(tmpBuffer, sizeof(tmpBuffer));
         std::string description(tmpBuffer, tmpLen);
 
+        tmpLen = tokenCodec.getReferencedName(tmpBuffer, sizeof(tmpBuffer));
+        std::string referencedName(tmpBuffer, tmpLen);
+
         Encoding encoding(
             type, presence, byteOrder, minValue, maxValue, nullValue, constValue,
             characterEncoding, epoch, timeUnit, semanticType);
