@@ -569,7 +569,7 @@ public class CppGenerator implements CodeGenerator
 
     private void generateChoiceSet(final List<Token> tokens) throws IOException
     {
-        final String bitSetName = formatClassName(tokens.get(0).name());
+        final String bitSetName = formatClassName(tokens.get(0).contextualTypeName());
 
         try (Writer out = outputManager.createOutput(bitSetName))
         {
@@ -596,7 +596,7 @@ public class CppGenerator implements CodeGenerator
     private void generateEnum(final List<Token> tokens) throws IOException
     {
         final Token enumToken = tokens.get(0);
-        final String enumName = formatClassName(tokens.get(0).name());
+        final String enumName = formatClassName(tokens.get(0).contextualTypeName());
 
         try (Writer out = outputManager.createOutput(enumName))
         {
@@ -614,7 +614,7 @@ public class CppGenerator implements CodeGenerator
 
     private void generateComposite(final List<Token> tokens) throws IOException
     {
-        final String compositeName = formatClassName(tokens.get(0).name());
+        final String compositeName = formatClassName(tokens.get(0).contextualTypeName());
 
         try (Writer out = outputManager.createOutput(compositeName))
         {
