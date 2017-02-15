@@ -194,6 +194,9 @@ public class IrEncoder implements AutoCloseable
 
             final byte[] descriptionBytes = getBytes(token.description(), descriptionCharacterEncoding());
             tokenEncoder.putDescription(descriptionBytes, 0, descriptionBytes.length);
+
+            final byte[] referencedNameBytes = getBytes(token.referencedName(), referencedNameCharacterEncoding());
+            tokenEncoder.putReferencedName(referencedNameBytes, 0, referencedNameBytes.length);
         }
         catch (final UnsupportedEncodingException ex)
         {

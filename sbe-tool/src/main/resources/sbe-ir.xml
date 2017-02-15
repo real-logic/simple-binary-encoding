@@ -2,7 +2,7 @@
 <sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
                    package="uk.co.real_logic.sbe.ir.generated"
                    id="1"
-                   version="1"
+                   version="0"
                    byteOrder="littleEndian"
                    description="SBE IR Serialization">
     <types>
@@ -84,7 +84,7 @@
         <field name="primitiveType" id="17" type="PrimitiveTypeCodec"/>
         <field name="byteOrder" id="18" type="ByteOrderCodec"/>
         <field name="presence" id="19" type="PresenceCodec"/>
-        <field name="deprecated" id="30" type="deprecatedVersionType" sinceVersion="1"/>
+        <field name="deprecated" id="30" type="deprecatedVersionType"/>
         <data name="name" id="20" type="varDataEncoding"/>
         <data name="constValue" id="21" type="varDataEncoding"/>
         <data name="minValue" id="22" type="varDataEncoding"/>
@@ -95,5 +95,6 @@
         <data name="timeUnit" id="27" type="varDataEncoding"/>
         <data name="semanticType" id="28" type="varDataEncoding"/>
         <data name="description" id="29" type="varDataEncoding"/>
+        <data name="referencedName" id="30" type="varDataEncoding"/>
     </sbe:message>
 </sbe:messageSchema>

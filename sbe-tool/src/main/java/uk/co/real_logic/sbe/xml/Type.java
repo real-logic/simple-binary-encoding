@@ -31,16 +31,18 @@ public abstract class Type
     private final int sinceVersion;
     private final int deprecated;
     private final String semanticType;
+    private final String referencedName;
 
     private int offsetAttribute;
 
     /**
      * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
      *
-     * @param node      from the XML Schema Parsing
-     * @param givenName of this node, if null then the attributed name will be used.
+     * @param node           from the XML Schema Parsing
+     * @param givenName      of this node, if null then the attributed name will be used.
+     * @param referencedName of the type when created from a ref in a composite.
      */
-    public Type(final Node node, final String givenName)
+    public Type(final Node node, final String givenName, final String referencedName)
     {
         if (null == givenName)
         {
@@ -50,6 +52,8 @@ public abstract class Type
         {
             name = givenName;
         }
+
+        this.referencedName = referencedName;
 
         presence = Presence.get(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
@@ -84,6 +88,7 @@ public abstract class Type
         this.deprecated = deprecated;
         this.semanticType = semanticType;
         this.offsetAttribute = -1;
+        this.referencedName = null;
     }
 
     /**
@@ -94,6 +99,16 @@ public abstract class Type
     public String name()
     {
         return name;
+    }
+
+    /**
+     * Get the name of the type field is from a reference.
+     *
+     * @return the name of the type field is from a reference.
+     */
+    public String referencedName()
+    {
+        return referencedName;
     }
 
     /**

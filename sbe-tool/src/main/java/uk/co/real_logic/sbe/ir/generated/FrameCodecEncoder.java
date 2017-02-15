@@ -11,7 +11,7 @@ public class FrameCodecEncoder
     public static final int BLOCK_LENGTH = 12;
     public static final int TEMPLATE_ID = 1;
     public static final int SCHEMA_ID = 1;
-    public static final int SCHEMA_VERSION = 1;
+    public static final int SCHEMA_VERSION = 0;
 
     private final FrameCodecEncoder parentMessage = this;
     private MutableDirectBuffer buffer;

@@ -98,6 +98,7 @@ public class Token
 
     private final Signal signal;
     private final String name;
+    private final String referencedName;
     private final String description;
     private final int id;
     private final int version;
@@ -112,6 +113,7 @@ public class Token
      *
      * @param signal              for the token role.
      * @param name                of the token in the message.
+     * @param referencedName      of the type when created from a ref in a composite.
      * @param description         of what the token is for.
      * @param id                  as the identifier in the message declaration.
      * @param version             application within the template.
@@ -124,6 +126,7 @@ public class Token
     public Token(
         final Signal signal,
         final String name,
+        final String referencedName,
         final String description,
         final int id,
         final int version,
@@ -139,6 +142,7 @@ public class Token
 
         this.signal = signal;
         this.name = name;
+        this.referencedName = referencedName;
         this.description = description;
         this.id = id;
         this.version = version;
@@ -167,6 +171,16 @@ public class Token
     public String name()
     {
         return name;
+    }
+
+    /**
+     * Get the name of the type when this is from a reference.
+     *
+     * @return the name of the type when this is from a reference.
+     */
+    public String referencedName()
+    {
+        return referencedName;
     }
 
     /**
@@ -208,6 +222,16 @@ public class Token
     public int deprecated()
     {
         return deprecated;
+    }
+
+    /**
+     * Get the name of the type that should be used in context.
+     *
+     * @return the name of the type that should be used in context.
+     */
+    public String contextualTypeName()
+    {
+        return null == referencedName ? name : referencedName;
     }
 
     /**
@@ -344,6 +368,7 @@ public class Token
         return "Token{" +
             "signal=" + signal +
             ", name='" + name + '\'' +
+            ", referencedName='" + referencedName + '\'' +
             ", description='" + description + '\'' +
             ", id=" + id +
             ", version=" + version +
@@ -359,6 +384,7 @@ public class Token
     {
         private Signal signal;
         private String name;
+        private String referencedName;
         private String description;
         private int id = INVALID_ID;
         private int version = 0;
@@ -377,6 +403,12 @@ public class Token
         public Builder name(final String name)
         {
             this.name = name;
+            return this;
+        }
+
+        public Builder referencedName(final String referencedName)
+        {
+            this.referencedName = referencedName;
             return this;
         }
 
@@ -431,7 +463,17 @@ public class Token
         public Token build()
         {
             return new Token(
-                signal, name, description, id, version, deprecated, size, offset, componentTokenCount, encoding);
+                signal,
+                name,
+                referencedName,
+                description,
+                id,
+                version,
+                deprecated,
+                size,
+                offset,
+                componentTokenCount,
+                encoding);
         }
     }
 }

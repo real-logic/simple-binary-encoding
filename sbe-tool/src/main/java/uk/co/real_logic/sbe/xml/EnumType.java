@@ -49,19 +49,21 @@ public class EnumType extends Type
 
     public EnumType(final Node node) throws XPathExpressionException
     {
-        this(node, null);
+        this(node, null, null);
     }
 
     /**
      * Construct a new enumType from XML Schema.
      *
-     * @param node      from the XML Schema Parsing
-     * @param givenName for the node.
+     * @param node           from the XML Schema Parsing
+     * @param givenName      for the node.
+     * @param referencedName of the type when created from a ref in a composite.
      * @throws XPathExpressionException if the XPath is invalid
      */
-    public EnumType(final Node node, final String givenName) throws XPathExpressionException
+    public EnumType(final Node node, final String givenName, final String referencedName)
+        throws XPathExpressionException
     {
-        super(node, givenName);
+        super(node, givenName, referencedName);
 
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final String encodingTypeStr = getAttributeValue(node, "encodingType");
@@ -83,7 +85,7 @@ public class EnumType extends Type
                 // might not have ran into this type yet, so look for it
                 final Node encodingTypeNode = (Node)xPath.compile(
                     String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
-                        .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
+                    .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
 
                 if (null == encodingTypeNode)
                 {

@@ -951,7 +951,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateBitSet(final List<Token> tokens) throws IOException
     {
         final Token token = tokens.get(0);
-        final String bitSetName = formatClassName(token.name());
+        final String bitSetName = formatClassName(token.contextualTypeName());
         final String decoderName = decoderName(bitSetName);
         final String encoderName = encoderName(bitSetName);
         final List<Token> messageBody = getMessageBody(tokens);
@@ -1000,7 +1000,7 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateEnum(final List<Token> tokens) throws IOException
     {
-        final String enumName = formatClassName(tokens.get(0).name());
+        final String enumName = formatClassName(tokens.get(0).contextualTypeName());
 
         try (Writer out = outputManager.createOutput(enumName))
         {
@@ -1019,7 +1019,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateComposite(final List<Token> tokens) throws IOException
     {
         final Token token = tokens.get(0);
-        final String compositeName = formatClassName(token.name());
+        final String compositeName = formatClassName(token.contextualTypeName());
         final String decoderName = decoderName(compositeName);
         final String encoderName = encoderName(compositeName);
 
@@ -1033,7 +1033,7 @@ public class JavaGenerator implements CodeGenerator
             {
                 final Token encodingToken = tokens.get(i);
                 final String propertyName = formatPropertyName(encodingToken.name());
-                final String typeName = formatClassName(decoderName(encodingToken.name()));
+                final String typeName = formatClassName(decoderName(encodingToken.contextualTypeName()));
 
                 final StringBuilder sb = new StringBuilder();
                 generateEncodingOffsetMethod(sb, propertyName, encodingToken.offset(), BASE_INDENT);
@@ -1083,7 +1083,7 @@ public class JavaGenerator implements CodeGenerator
             {
                 final Token encodingToken = tokens.get(i);
                 final String propertyName = formatPropertyName(encodingToken.name());
-                final String typeName = formatClassName(encoderName(encodingToken.name()));
+                final String typeName = formatClassName(encoderName(encodingToken.contextualTypeName()));
 
                 final StringBuilder sb = new StringBuilder();
                 generateEncodingOffsetMethod(sb, propertyName, encodingToken.offset(), BASE_INDENT);
@@ -2256,7 +2256,7 @@ public class JavaGenerator implements CodeGenerator
         final Token token,
         final String indent)
     {
-        final String enumName = formatClassName(token.name());
+        final String enumName = formatClassName(token.contextualTypeName());
         final Encoding encoding = token.encoding();
 
         if (token.isConstantEncoding())
@@ -2296,7 +2296,7 @@ public class JavaGenerator implements CodeGenerator
             return "";
         }
 
-        final String enumName = formatClassName(token.name());
+        final String enumName = formatClassName(token.contextualTypeName());
         final Encoding encoding = token.encoding();
         final int offset = token.offset();
 

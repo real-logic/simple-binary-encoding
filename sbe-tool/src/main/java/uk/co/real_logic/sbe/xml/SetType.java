@@ -44,21 +44,22 @@ public class SetType extends Type
     public SetType(final Node node)
         throws XPathExpressionException, IllegalArgumentException
     {
-        this(node, null);
+        this(node, null, null);
     }
 
     /**
      * Construct a new SetType from XML Schema.
      *
-     * @param node      from the XML Schema Parsing
-     * @param givenName for the node.
+     * @param node           from the XML Schema Parsing
+     * @param givenName      for the node.
+     * @param referencedName of the type when created from a ref in a composite.
      * @throws XPathExpressionException on invalid XPath.
      * @throws IllegalArgumentException on illegal encoding type.
      */
-    public SetType(final Node node, final String givenName)
+    public SetType(final Node node, final String givenName, final String referencedName)
         throws XPathExpressionException, IllegalArgumentException
     {
-        super(node, givenName);
+        super(node, givenName, referencedName);
 
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final String encodingTypeStr = getAttributeValue(node, "encodingType");

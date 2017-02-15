@@ -61,7 +61,7 @@ public class EncodedDataType extends Type
      */
     public EncodedDataType(final Node node, final String givenName)
     {
-        super(node, givenName);
+        super(node, givenName, null);
 
         primitiveType = PrimitiveType.get(getAttributeValue(node, "primitiveType"));
         length = Integer.parseInt(getAttributeValue(node, "length", "1"));

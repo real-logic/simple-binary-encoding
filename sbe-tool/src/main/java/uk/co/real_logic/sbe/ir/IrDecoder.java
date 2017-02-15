@@ -151,7 +151,7 @@ public class IrDecoder implements AutoCloseable
 
     private void decodeFrame()
     {
-        frameDecoder.wrap(directBuffer, offset, frameDecoder.sbeBlockLength(), 0);
+        frameDecoder.wrap(directBuffer, offset, frameDecoder.sbeBlockLength(), FrameCodecDecoder.SCHEMA_VERSION);
 
         irId = frameDecoder.irId();
 
@@ -183,7 +183,7 @@ public class IrDecoder implements AutoCloseable
         final Token.Builder tokenBuilder = new Token.Builder();
         final Encoding.Builder encBuilder = new Encoding.Builder();
 
-        tokenDecoder.wrap(directBuffer, offset, tokenDecoder.sbeBlockLength(), 0);
+        tokenDecoder.wrap(directBuffer, offset, tokenDecoder.sbeBlockLength(), TokenCodecDecoder.SCHEMA_VERSION);
 
         tokenBuilder
             .offset(tokenDecoder.tokenOffset())
@@ -221,6 +221,9 @@ public class IrDecoder implements AutoCloseable
 
         final String description = tokenDecoder.description();
         tokenBuilder.description(description.isEmpty() ? null : description);
+
+        final String referencedName = tokenDecoder.referencedName();
+        tokenBuilder.referencedName(referencedName.isEmpty() ? null : referencedName);
 
         offset += tokenDecoder.encodedLength();
 
