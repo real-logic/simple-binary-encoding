@@ -121,14 +121,14 @@ public class MessageSchema
     }
 
     /**
-     * Return a given {@link Message} object with the given schemaId.
+     * Return a given {@link Message} object with the given messageId.
      *
-     * @param schemaId of the message to return.
-     * @return a given {@link Message} for the schemaId.
+     * @param messageId of the message to return.
+     * @return a given {@link Message} for the messageId.
      */
-    public Message getMessage(final long schemaId)
+    public Message getMessage(final long messageId)
     {
-        return messageByIdMap.get(schemaId);
+        return messageByIdMap.get(messageId);
     }
 
     /**
