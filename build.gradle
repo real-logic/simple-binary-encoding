@@ -466,6 +466,7 @@ task(generateGolangCodecTestComposite, type:JavaExec) {
         'sbe.target.language': 'golang')
     args = [ 'sbe-tool/src/test/resources/composite-elements-schema-rc4.xml' ]
 }
+
 task(generateGolangCodecTestBasic, type:JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
@@ -474,6 +475,7 @@ task(generateGolangCodecTestBasic, type:JavaExec) {
         'sbe.target.language': 'golang')
     args = [ 'sbe-tool/src/test/resources/basic-types-schema.xml' ]
 }
+
 task(generateGolangCodecTestGroup, type:JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
@@ -482,6 +484,7 @@ task(generateGolangCodecTestGroup, type:JavaExec) {
         'sbe.target.language': 'golang')
     args = [ 'sbe-tool/src/test/resources/basic-group-schema.xml' ]
 }
+
 task(generateGolangCodecTestVarData, type:JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
@@ -490,6 +493,7 @@ task(generateGolangCodecTestVarData, type:JavaExec) {
         'sbe.target.language': 'golang')
     args = [ 'sbe-tool/src/test/resources/basic-variable-length-schema.xml' ]
 }
+
 task(generateGolangCodecsWithXSD, type:JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
@@ -497,11 +501,24 @@ task(generateGolangCodecsWithXSD, type:JavaExec) {
         'sbe.output.dir': 'gocode/src',
         'sbe.target.language': 'golang',
         'sbe.validation.xsd': validationXsdPath)
-    args = [ 'sbe-tool/src/test/resources/group-with-data-schema.xml', 'sbe-tool/src/test/resources/FixBinary.xml', 'gocode/resources/example-bigendian.xml', 'gocode/resources/example-composite.xml', 'gocode/resources/example-extension-2-schema.xml', 'gocode/resources/group-with-data-extension-schema.xml', 'gocode/resources/simple.xml', 'sbe-samples/src/main/resources/example-schema.xml', 'sbe-samples/src/main/resources/example-extension-schema.xml' ]
+    args = [ 'sbe-tool/src/test/resources/group-with-data-schema.xml',
+             'sbe-tool/src/test/resources/FixBinary.xml',
+             'gocode/resources/example-bigendian.xml',
+             'gocode/resources/example-composite.xml',
+             'gocode/resources/example-extension-2-schema.xml',
+             'gocode/resources/group-with-data-extension-schema.xml',
+             'gocode/resources/simple.xml',
+             'sbe-samples/src/main/resources/example-schema.xml',
+             'sbe-samples/src/main/resources/example-extension-schema.xml' ]
 }
+
 task generateGolangCodecs {
     description = 'Generate golang test codecs'
-    dependsOn 'generateGolangCodecTestVarData', 'generateGolangCodecTestGroup', 'generateGolangCodecTestBasic', 'generateGolangCodecTestComposite', 'generateGolangCodecsWithXSD'
+    dependsOn 'generateGolangCodecTestVarData',
+        'generateGolangCodecTestGroup',
+        'generateGolangCodecTestBasic',
+        'generateGolangCodecTestComposite',
+        'generateGolangCodecsWithXSD'
 }
 
 task(generateJavaIrCodecs, type: JavaExec) {
