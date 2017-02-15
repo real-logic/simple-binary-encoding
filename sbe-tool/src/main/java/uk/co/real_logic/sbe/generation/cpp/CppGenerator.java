@@ -87,7 +87,7 @@ public class CppGenerator implements CodeGenerator
                     break;
             }
 
-            typesToInclude.add(tokens.get(0).name());
+            typesToInclude.add(tokens.get(0).contextualTypeName());
         }
 
         return typesToInclude;
@@ -104,7 +104,7 @@ public class CppGenerator implements CodeGenerator
                 case BEGIN_ENUM:
                 case BEGIN_SET:
                 case BEGIN_COMPOSITE:
-                    typesToInclude.add(token.name());
+                    typesToInclude.add(token.contextualTypeName());
                     break;
             }
         }
@@ -1520,7 +1520,7 @@ public class CppGenerator implements CodeGenerator
         final Token token,
         final String indent)
     {
-        final String enumName = formatClassName(token.name());
+        final String enumName = formatClassName(token.contextualTypeName());
         final String typeName = cppTypeName(token.encoding().primitiveType());
         final int offset = token.offset();
 
@@ -1587,7 +1587,7 @@ public class CppGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        final String bitsetName = formatClassName(token.name());
+        final String bitsetName = formatClassName(token.contextualTypeName());
         final int offset = token.offset();
 
         sb.append(String.format(
@@ -1623,7 +1623,7 @@ public class CppGenerator implements CodeGenerator
 
     private static Object generateCompositeProperty(final String propertyName, final Token token, final String indent)
     {
-        final String compositeName = formatClassName(token.name());
+        final String compositeName = formatClassName(token.contextualTypeName());
         final int offset = token.offset();
 
         final StringBuilder sb = new StringBuilder();

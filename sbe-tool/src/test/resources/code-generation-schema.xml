@@ -27,7 +27,7 @@
         <type name="VehicleCode" primitiveType="char" length="6" characterEncoding="ASCII"/>
         <type name="someNumbers" primitiveType="int32" length="5"/>
         <type name="Ron" primitiveType="uint8" minValue="90" maxValue="110"/>
-        <composite name="Booster">
+        <composite name="BoosterT">
             <enum name="BoostType" encodingType="char">
                 <validValue name="TURBO">T</validValue>
                 <validValue name="SUPERCHARGER">S</validValue>
@@ -42,7 +42,7 @@
             <type name="maxRpm" primitiveType="uint16" presence="constant">9000</type>
             <type name="manufacturerCode" primitiveType="char" length="3"/>
             <type name="fuel" primitiveType="char" presence="constant">Petrol</type>
-            <ref name="booster" type="Booster"/>
+            <ref name="booster" type="BoosterT"/>
         </composite>
         <enum name="BooleanType" encodingType="uint8">
             <validValue name="F">0</validValue>
