@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.examples;
 
+import baseline.BooleanType;
 import baseline.BoostType;
 import extension.CarDecoder.PerformanceFiguresDecoder.AccelerationDecoder;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -137,6 +138,8 @@ public class ExampleUsingGeneratedStubExtension
             .capacity(2000)
             .numCylinders((short)4)
             .putManufacturerCode(MANUFACTURER_CODE, srcOffset)
+            .efficiency((byte)35)
+            .boosterEnabled(BooleanType.T)
             .booster().boostType(BoostType.NITROUS).horsePower((short)200);
 
         car.fuelFiguresCount(3)
@@ -215,6 +218,8 @@ public class ExampleUsingGeneratedStubExtension
         {
             sb.append((char)engine.manufacturerCode(i));
         }
+        sb.append("\ncar.engine.efficiency=").append(engine.efficiency());
+        sb.append("\ncar.engine.boosterEnabled=").append(engine.boosterEnabled());
         sb.append("\ncar.engine.booster.boostType=").append(engine.booster().boostType());
         sb.append("\ncar.engine.booster.horsePower=").append(engine.booster().horsePower());
 
