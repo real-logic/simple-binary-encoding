@@ -7,6 +7,15 @@
                    description="Example schema"
                    byteOrder="littleEndian">
     <types>
+        <composite name="BoosterT">
+            <enum name="BoostType" encodingType="char">
+                <validValue name="TURBO">T</validValue>
+                <validValue name="SUPERCHARGER">S</validValue>
+                <validValue name="NITROUS">N</validValue>
+                <validValue name="KERS">K</validValue>
+            </enum>
+            <type name="horsePower" primitiveType="uint8"/>
+        </composite>
         <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="templateId" primitiveType="uint16"/>
@@ -27,15 +36,6 @@
         <type name="VehicleCode" primitiveType="char" length="6" characterEncoding="ASCII"/>
         <type name="someNumbers" primitiveType="int32" length="5"/>
         <type name="Ron" primitiveType="uint8" minValue="90" maxValue="110"/>
-        <composite name="BoosterT">
-            <enum name="BoostType" encodingType="char">
-                <validValue name="TURBO">T</validValue>
-                <validValue name="SUPERCHARGER">S</validValue>
-                <validValue name="NITROUS">N</validValue>
-                <validValue name="KERS">K</validValue>
-            </enum>
-            <type name="horsePower" primitiveType="uint8"/>
-        </composite>
         <composite name="Engine">
             <type name="capacity" primitiveType="uint16"/>
             <type name="numCylinders" primitiveType="uint8"/>

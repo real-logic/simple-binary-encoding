@@ -51,20 +51,7 @@ public class CppGenerator implements CodeGenerator
 
     public void generateMessageHeaderStub() throws IOException
     {
-        final String messageHeader = "MessageHeader";
-
-        try (Writer out = outputManager.createOutput(messageHeader))
-        {
-            final List<Token> tokens = ir.headerStructure().tokens();
-            out.append(generateFileHeader(ir.namespaces(), messageHeader,
-                generateTypesToIncludes(tokens.subList(1, tokens.size() - 1))));
-            out.append(generateClassDeclaration(messageHeader));
-            out.append(generateFixedFlyweightCode(messageHeader, tokens.get(0).encodedLength()));
-            out.append(generateCompositePropertyElements(
-                messageHeader, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
-            out.append("};\n");
-            out.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
-        }
+        generateComposite(ir.headerStructure().tokens());
     }
 
     public List<String> generateTypeStubs() throws IOException
