@@ -136,26 +136,7 @@ public class JavaGenerator implements CodeGenerator
 
     public void generateMessageHeaderStub() throws IOException
     {
-        final List<Token> tokens = ir.headerStructure().tokens();
-        final Token firstToken = tokens.get(0);
-        try (Writer out = outputManager.createOutput(MESSAGE_HEADER_ENCODER_TYPE))
-        {
-            generateFixedFlyweightHeader(firstToken, MESSAGE_HEADER_ENCODER_TYPE, out, mutableBuffer, fqMutableBuffer);
-            out.append(concatEncodingTokens(
-                tokens,
-                (token) -> generatePrimitiveEncoder(MESSAGE_HEADER_ENCODER_TYPE, token.name(), token, BASE_INDENT)));
-            out.append("}\n");
-        }
-
-        try (Writer out = outputManager.createOutput(MESSAGE_HEADER_DECODER_TYPE))
-        {
-            generateFixedFlyweightHeader(
-                firstToken, MESSAGE_HEADER_DECODER_TYPE, out, readOnlyBuffer, fqReadOnlyBuffer);
-            out.append(concatEncodingTokens(
-                tokens,
-                (token) -> generatePrimitiveDecoder(true, token.name(), token, BASE_INDENT)));
-            out.append("}\n");
-        }
+        generateComposite(ir.headerStructure().tokens());
     }
 
     public void generateTypeStubs() throws IOException
@@ -183,8 +164,8 @@ public class JavaGenerator implements CodeGenerator
 
     public void generate() throws IOException
     {
-        generateMessageHeaderStub();
         generateTypeStubs();
+        generateMessageHeaderStub();
 
         for (final List<Token> tokens : ir.messages())
         {
