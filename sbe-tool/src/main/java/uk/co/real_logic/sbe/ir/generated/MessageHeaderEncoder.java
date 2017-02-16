@@ -8,8 +8,8 @@ import org.agrona.MutableDirectBuffer;
 public class MessageHeaderEncoder
 {
     public static final int ENCODED_LENGTH = 8;
-    private MutableDirectBuffer buffer;
     private int offset;
+    private MutableDirectBuffer buffer;
 
     public MessageHeaderEncoder wrap(final MutableDirectBuffer buffer, final int offset)
     {
@@ -34,6 +34,16 @@ public class MessageHeaderEncoder
         return ENCODED_LENGTH;
     }
 
+    public static int blockLengthEncodingOffset()
+    {
+        return 0;
+    }
+
+    public static int blockLengthEncodingLength()
+    {
+        return 2;
+    }
+
     public static int blockLengthNullValue()
     {
         return 65535;
@@ -55,6 +65,16 @@ public class MessageHeaderEncoder
         return this;
     }
 
+
+    public static int templateIdEncodingOffset()
+    {
+        return 2;
+    }
+
+    public static int templateIdEncodingLength()
+    {
+        return 2;
+    }
 
     public static int templateIdNullValue()
     {
@@ -78,6 +98,16 @@ public class MessageHeaderEncoder
     }
 
 
+    public static int schemaIdEncodingOffset()
+    {
+        return 4;
+    }
+
+    public static int schemaIdEncodingLength()
+    {
+        return 2;
+    }
+
     public static int schemaIdNullValue()
     {
         return 65535;
@@ -100,6 +130,16 @@ public class MessageHeaderEncoder
     }
 
 
+    public static int versionEncodingOffset()
+    {
+        return 6;
+    }
+
+    public static int versionEncodingLength()
+    {
+        return 2;
+    }
+
     public static int versionNullValue()
     {
         return 65535;
@@ -121,4 +161,17 @@ public class MessageHeaderEncoder
         return this;
     }
 
+
+    public String toString()
+    {
+        return appendTo(new StringBuilder(100)).toString();
+    }
+
+    public StringBuilder appendTo(final StringBuilder builder)
+    {
+        MessageHeaderDecoder writer = new MessageHeaderDecoder();
+        writer.wrap(buffer, offset);
+
+        return writer.appendTo(builder);
+    }
 }

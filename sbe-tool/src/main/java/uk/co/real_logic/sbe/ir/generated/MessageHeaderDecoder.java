@@ -8,8 +8,8 @@ import org.agrona.DirectBuffer;
 public class MessageHeaderDecoder
 {
     public static final int ENCODED_LENGTH = 8;
-    private DirectBuffer buffer;
     private int offset;
+    private DirectBuffer buffer;
 
     public MessageHeaderDecoder wrap(final DirectBuffer buffer, final int offset)
     {
@@ -34,6 +34,16 @@ public class MessageHeaderDecoder
         return ENCODED_LENGTH;
     }
 
+    public static int blockLengthEncodingOffset()
+    {
+        return 0;
+    }
+
+    public static int blockLengthEncodingLength()
+    {
+        return 2;
+    }
+
     public static int blockLengthNullValue()
     {
         return 65535;
@@ -54,6 +64,16 @@ public class MessageHeaderDecoder
         return (buffer.getShort(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
+
+    public static int templateIdEncodingOffset()
+    {
+        return 2;
+    }
+
+    public static int templateIdEncodingLength()
+    {
+        return 2;
+    }
 
     public static int templateIdNullValue()
     {
@@ -76,6 +96,16 @@ public class MessageHeaderDecoder
     }
 
 
+    public static int schemaIdEncodingOffset()
+    {
+        return 4;
+    }
+
+    public static int schemaIdEncodingLength()
+    {
+        return 2;
+    }
+
     public static int schemaIdNullValue()
     {
         return 65535;
@@ -97,6 +127,16 @@ public class MessageHeaderDecoder
     }
 
 
+    public static int versionEncodingOffset()
+    {
+        return 6;
+    }
+
+    public static int versionEncodingLength()
+    {
+        return 2;
+    }
+
     public static int versionNullValue()
     {
         return 65535;
@@ -117,4 +157,32 @@ public class MessageHeaderDecoder
         return (buffer.getShort(offset + 6, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
+
+    public String toString()
+    {
+        return appendTo(new StringBuilder(100)).toString();
+    }
+
+    public StringBuilder appendTo(final StringBuilder builder)
+    {
+        builder.append('(');
+        //Token{signal=ENCODING, name='blockLength', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=2, offset=0, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=UINT16, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='UTF-8', epoch='null', timeUnit=null, semanticType='null'}}
+        builder.append("blockLength=");
+        builder.append(blockLength());
+        builder.append('|');
+        //Token{signal=ENCODING, name='templateId', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=2, offset=2, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=UINT16, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='UTF-8', epoch='null', timeUnit=null, semanticType='null'}}
+        builder.append("templateId=");
+        builder.append(templateId());
+        builder.append('|');
+        //Token{signal=ENCODING, name='schemaId', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=2, offset=4, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=UINT16, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='UTF-8', epoch='null', timeUnit=null, semanticType='null'}}
+        builder.append("schemaId=");
+        builder.append(schemaId());
+        builder.append('|');
+        //Token{signal=ENCODING, name='version', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=2, offset=6, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=UINT16, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='UTF-8', epoch='null', timeUnit=null, semanticType='null'}}
+        builder.append("version=");
+        builder.append(version());
+        builder.append(')');
+
+        return builder;
+    }
 }
