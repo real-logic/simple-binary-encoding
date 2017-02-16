@@ -720,7 +720,7 @@ public class CppGenerator implements CodeGenerator
 
     private static CharSequence generateEnumLookupMethod(final List<Token> tokens, final Token encodingToken)
     {
-        final String enumName = formatClassName(encodingToken.name());
+        final String enumName = formatClassName(encodingToken.contextualTypeName());
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
