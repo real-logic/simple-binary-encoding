@@ -75,7 +75,7 @@ public class CppGenerator implements CodeGenerator
                     break;
             }
 
-            typesToInclude.add(tokens.get(0).contextualTypeName());
+            typesToInclude.add(tokens.get(0).applicableTypeName());
         }
 
         return typesToInclude;
@@ -92,7 +92,7 @@ public class CppGenerator implements CodeGenerator
                 case BEGIN_ENUM:
                 case BEGIN_SET:
                 case BEGIN_COMPOSITE:
-                    typesToInclude.add(token.contextualTypeName());
+                    typesToInclude.add(token.applicableTypeName());
                     break;
             }
         }
@@ -557,7 +557,7 @@ public class CppGenerator implements CodeGenerator
 
     private void generateChoiceSet(final List<Token> tokens) throws IOException
     {
-        final String bitSetName = formatClassName(tokens.get(0).contextualTypeName());
+        final String bitSetName = formatClassName(tokens.get(0).applicableTypeName());
 
         try (Writer out = outputManager.createOutput(bitSetName))
         {
@@ -584,7 +584,7 @@ public class CppGenerator implements CodeGenerator
     private void generateEnum(final List<Token> tokens) throws IOException
     {
         final Token enumToken = tokens.get(0);
-        final String enumName = formatClassName(tokens.get(0).contextualTypeName());
+        final String enumName = formatClassName(tokens.get(0).applicableTypeName());
 
         try (Writer out = outputManager.createOutput(enumName))
         {
@@ -602,7 +602,7 @@ public class CppGenerator implements CodeGenerator
 
     private void generateComposite(final List<Token> tokens) throws IOException
     {
-        final String compositeName = formatClassName(tokens.get(0).contextualTypeName());
+        final String compositeName = formatClassName(tokens.get(0).applicableTypeName());
 
         try (Writer out = outputManager.createOutput(compositeName))
         {
@@ -708,7 +708,7 @@ public class CppGenerator implements CodeGenerator
 
     private static CharSequence generateEnumLookupMethod(final List<Token> tokens, final Token encodingToken)
     {
-        final String enumName = formatClassName(encodingToken.contextualTypeName());
+        final String enumName = formatClassName(encodingToken.applicableTypeName());
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
@@ -1508,7 +1508,7 @@ public class CppGenerator implements CodeGenerator
         final Token token,
         final String indent)
     {
-        final String enumName = formatClassName(token.contextualTypeName());
+        final String enumName = formatClassName(token.applicableTypeName());
         final String typeName = cppTypeName(token.encoding().primitiveType());
         final int offset = token.offset();
 
@@ -1575,7 +1575,7 @@ public class CppGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        final String bitsetName = formatClassName(token.contextualTypeName());
+        final String bitsetName = formatClassName(token.applicableTypeName());
         final int offset = token.offset();
 
         sb.append(String.format(
@@ -1611,7 +1611,7 @@ public class CppGenerator implements CodeGenerator
 
     private static Object generateCompositeProperty(final String propertyName, final Token token, final String indent)
     {
-        final String compositeName = formatClassName(token.contextualTypeName());
+        final String compositeName = formatClassName(token.applicableTypeName());
         final int offset = token.offset();
 
         final StringBuilder sb = new StringBuilder();

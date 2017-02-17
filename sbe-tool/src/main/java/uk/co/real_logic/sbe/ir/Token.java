@@ -225,11 +225,11 @@ public class Token
     }
 
     /**
-     * Get the name of the type that should be used in context.
+     * Get the name of the type that should be applied in context.
      *
-     * @return the name of the type that should be used in context.
+     * @return the name of the type that should be applied in context.
      */
-    public String contextualTypeName()
+    public String applicableTypeName()
     {
         return null == referencedName ? name : referencedName;
     }
