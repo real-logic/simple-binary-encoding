@@ -414,17 +414,17 @@ public:
         }
     }
 
-    inline const Presence presence() const
+    inline Presence presence() const
     {
         return m_presence;
     }
 
-    inline const ByteOrder byteOrder() const
+    inline ByteOrder byteOrder() const
     {
         return m_byteOrder;
     }
 
-    inline const PrimitiveType primitiveType() const
+    inline PrimitiveType primitiveType() const
     {
         return m_primitiveType;
     }

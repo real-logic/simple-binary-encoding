@@ -92,7 +92,7 @@ public:
     {
     }
 
-    inline const Signal signal() const
+    inline Signal signal() const
     {
         return m_signal;
     }
