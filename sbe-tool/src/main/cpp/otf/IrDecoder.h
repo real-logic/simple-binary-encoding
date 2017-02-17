@@ -42,7 +42,6 @@
 #include "Token.h"
 
 using namespace sbe::otf;
-using namespace uk::co::real_logic::sbe::ir::generated;
 
 namespace sbe {
 namespace otf {
@@ -164,6 +163,8 @@ private:
 
     int decodeIr()
     {
+        using namespace uk::co::real_logic::sbe::ir::generated;
+
         FrameCodec frame;
         std::uint64_t offset = 0, tmpLen = 0;
         char tmp[256];
@@ -202,6 +203,8 @@ private:
 
     std::uint64_t decodeAndAddToken(std::shared_ptr<std::vector<Token>> tokens, std::uint64_t offset)
     {
+        using namespace uk::co::real_logic::sbe::ir::generated;
+
         TokenCodec tokenCodec;
         tokenCodec.wrapForDecode(m_buffer.get(), offset, tokenCodec.sbeBlockLength(), tokenCodec.sbeSchemaVersion(), m_length);
 
