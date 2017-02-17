@@ -180,7 +180,6 @@ public class CppGenerator implements CodeGenerator
     {
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
         final int dimensionHeaderLength = tokens.get(index + 1).encodedLength();
-
         final int blockLength = tokens.get(index).encodedLength();
         final Token numInGroupToken = tokens.get(index + 3);
         final String cppTypeForBlockLength = cppTypeName(tokens.get(index + 2).encoding().primitiveType());
