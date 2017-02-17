@@ -81,6 +81,7 @@ public class JavaGeneratorTest
         when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
 
         final JavaGenerator generator = generator();
+        generator.generateTypeStubs();
         generator.generateMessageHeaderStub();
 
         final Class<?> clazz = compile(fqClassName);
@@ -106,6 +107,7 @@ public class JavaGeneratorTest
         when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
 
         final JavaGenerator generator = generator();
+        generator.generateTypeStubs();
         generator.generateMessageHeaderStub();
 
         final Class<?> clazz = compile(fqClassName);

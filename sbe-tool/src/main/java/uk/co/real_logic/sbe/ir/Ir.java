@@ -73,6 +73,8 @@ public class Ir
         this.byteOrder = byteOrder;
         this.headerStructure = new HeaderStructure(new ArrayList<>(headerTokens));
 
+        captureTypes(headerTokens, 0, headerTokens.size() - 1);
+
         if (Boolean.getBoolean(SbeTool.CPP_NAMESPACES_COLLAPSE))
         {
             this.namespaces = new String[]{ (namespaceName == null ? packageName : namespaceName).replace(".", "_") };
