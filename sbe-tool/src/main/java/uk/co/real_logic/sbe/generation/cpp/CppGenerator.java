@@ -448,7 +448,7 @@ public class CppGenerator implements CodeGenerator
                 className));
 
             sb.append(String.format(
-                indent + "    const std::string get%1$sAsString()\n" +
+                indent + "    std::string get%1$sAsString()\n" +
                 indent + "    {\n" +
                 "%2$s" +
                 indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
@@ -456,7 +456,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        position(lengthPosition + lengthOfLengthField);\n" +
                 indent + "        std::uint64_t dataLength = %4$s(*((%5$s *)(m_buffer + lengthPosition)));\n" +
                 indent + "        std::uint64_t pos = position();\n" +
-                indent + "        const std::string result(m_buffer + pos, dataLength);\n" +
+                indent + "        std::string result(m_buffer + pos, dataLength);\n" +
                 indent + "        position(position() + dataLength);\n" +
                 indent + "        return result;\n" +
                 indent + "    }\n\n",
