@@ -508,6 +508,7 @@ task(generateGolangCodecsWithXSD, type:JavaExec) {
              'gocode/resources/example-extension-2-schema.xml',
              'gocode/resources/group-with-data-extension-schema.xml',
              'gocode/resources/simple.xml',
+             'gocode/resources/issue435.xml',
              'sbe-samples/src/main/resources/example-schema.xml',
              'sbe-samples/src/main/resources/example-extension-schema.xml' ]
 }

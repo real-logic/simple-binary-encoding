@@ -31,7 +31,8 @@ func TestEncodeDecode(t *testing.T) {
 	hdr = *new(MessageHeader)
 	var out Simple0 = *new(Simple0)
 
-	if err := hdr.Decode(m, mbuf); err != nil {
+	// Note generated standard header in use (as blocklength is uint8)
+	if err := hdr.Decode(m, mbuf, in.SbeSchemaVersion()); err != nil {
 		t.Log("MessageHeader Decoding Error", err)
 		t.Fail()
 	}

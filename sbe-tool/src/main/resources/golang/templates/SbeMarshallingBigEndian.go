@@ -41,6 +41,50 @@ func NewSbeGoMarshaller() *SbeGoMarshaller {
 	return &m
 }
 
+// The "standard" MessageHeader.
+//
+// Most applications will use this as it's the default and optimized
+// although it's possible to change it by:
+// a) using a different sized BlockLength, or
+// b) adding arbitrary fields
+//
+// If the MessageHeader is not "standard" then you can use the
+// generated MessageHeader type in MessageHeader.go otherwise we
+// recommend this one.
+type SbeGoMessageHeader struct {
+	BlockLength uint16
+	TemplateId  uint16
+	SchemaId    uint16
+	Version     uint16
+}
+
+func (m SbeGoMessageHeader) Encode(_m *SbeGoMarshaller, _w io.Writer) error {
+	_m.b8[1] = byte(m.BlockLength)
+	_m.b8[0] = byte(m.BlockLength >> 8)
+	_m.b8[3] = byte(m.TemplateId)
+	_m.b8[2] = byte(m.TemplateId >> 8)
+	_m.b8[5] = byte(m.SchemaId)
+	_m.b8[4] = byte(m.SchemaId >> 8)
+	_m.b8[7] = byte(m.Version)
+	_m.b8[6] = byte(m.Version >> 8)
+	if _, err := _w.Write(_m.b8); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *SbeGoMessageHeader) Decode(_m *SbeGoMarshaller, _r io.Reader) error {
+	if _, err := io.ReadFull(_r, _m.b8); err != nil {
+		return err
+	}
+	m.BlockLength = uint16(_m.b8[1]) | uint16(_m.b8[0])<<8
+	m.TemplateId = uint16(_m.b8[3]) | uint16(_m.b8[2])<<8
+	m.SchemaId = uint16(_m.b8[5]) | uint16(_m.b8[4])<<8
+	m.Version = uint16(_m.b8[7]) | uint16(_m.b8[6])<<8
+	return nil
+}
+
+
 func (m *SbeGoMarshaller) WriteUint8(w io.Writer, v uint8) error {
 	m.b1[0] = byte(v)
 	_, err := w.Write(m.b1)

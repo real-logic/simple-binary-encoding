@@ -1,21 +1,21 @@
 Overview
 ========
 
-There is now a [user
-guide]https://github.com/real-logic/simple-binary-encoding/wiki/Golang-User-Guide
+There is now a
+[user guide](https://github.com/real-logic/simple-binary-encoding/wiki/Golang-User-Guide)
 and this document is for development of the SBE golang generator.
 
 Code Layout
 -----------
 The Java code that performs the generation of golang code is
-[here]https://github.com/real-logic/simple-binary-encoding/tree/master/sbe-tool/src/main/java/uk/co/real_logic/sbe/generation/golang.
+[here](https://github.com/real-logic/simple-binary-encoding/tree/master/sbe-tool/src/main/java/uk/co/real_logic/sbe/generation/golang).
 
-Golang code used for testing resides in the top-level [gocode
-directory]https://github.com/real-logic/simple-binary-encoding/tree/master/gocode
+Golang code used for testing resides in the top-level
+[gocode directory](https://github.com/real-logic/simple-binary-encoding/tree/master/gocode).
 
 Building and testing
 --------------------
-At some point teh golang build will be better integrated into
+At some point the golang build will be better integrated into
 gradle. For the time being some instructions/procedures are encoded
 into a gnu Makefile in the top level gocode directory
 
@@ -50,23 +50,15 @@ test code for them.
 Design choices
 --------------
 Most of the design choice rationale is contained in the user guide
-however, Some design decisions are based around the structure of
-sbe-tool itself. sbe-tool parses the XML into an internal
-representation (IR) and then passes this to the language specific
-generator. As a result some information on the xml structure has been
-lost.
+however, some design decisions are based around the structure of
+sbe-tool itself.
 
-The first example of this include the use of the `<ref>` tag which if
-used to the same underlying type in a composite will create two
-differently named definitions of the type in the IR.
-
-A second example occurs where a field references an aliased primitive
-type definition in which case we lose the aliased type name in the IR
-as it is unreferenced.
+sbe-tool parses the XML into an internal representation (IR) and then
+passes this to the language specific generator. It is this IR which a
+generator processes.
 
 Roadmap
 =======
  * Windows developer support (currently tested on Linux/MacOS)
- * Unnecessary code removal (e.g., GroupSizeEncoding)
  * Further Unicode support
  * Testing/Bug fixes

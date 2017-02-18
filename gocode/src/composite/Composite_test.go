@@ -11,8 +11,8 @@ func TestEncodeDecode(t *testing.T) {
 	var s1, s2 [5]byte
 	copy(s1[:], "start")
 	copy(s2[:], "  end")
-	p1 := Point{s1, 3.14, 1, [2]uint8{66, 77}, Truthval1.NullValue, Truthval2.T}
-	p2 := Point{s2, 0.31, 2, [2]uint8{77, 88}, Truthval1.T, Truthval2.F}
+	p1 := Point{s1, 3.14, 1, [2]uint8{66, 77}, BooleanEnum.NullValue, BooleanEnum.T}
+	p2 := Point{s2, 0.31, 2, [2]uint8{77, 88}, BooleanEnum.T, BooleanEnum.F}
 	in := Composite{p1, p2}
 
 	var cbuf = new(bytes.Buffer)
@@ -23,7 +23,7 @@ func TestEncodeDecode(t *testing.T) {
 	t.Log(in, " -> ", cbuf.Bytes())
 	t.Log("Cap() = ", cbuf.Cap(), "Len() = \n", cbuf.Len())
 
-	hdr := MessageHeader{in.SbeBlockLength(), in.SbeTemplateId(), in.SbeSchemaId(), in.SbeSchemaVersion()}
+	hdr := SbeGoMessageHeader{in.SbeBlockLength(), in.SbeTemplateId(), in.SbeSchemaId(), in.SbeSchemaVersion()}
 	var mbuf = new(bytes.Buffer)
 	if err := hdr.Encode(m, mbuf); err != nil {
 		t.Log("MessageHeader Encoding Error", err)
@@ -33,7 +33,7 @@ func TestEncodeDecode(t *testing.T) {
 	t.Log("Cap() = ", mbuf.Cap(), "Len() = \n", mbuf.Len())
 
 	// Create a new empty MessageHeader and Composite
-	hdr = *new(MessageHeader)
+	hdr = *new(SbeGoMessageHeader)
 	var out Composite = *new(Composite)
 
 	if err := hdr.Decode(m, mbuf); err != nil {

@@ -88,42 +88,9 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
-    private String messageHeaderEncodeDecodeTemplate =
-        "\n" +
-        "func (m MessageHeader) Encode(_m *SbeGoMarshaller, _w io.Writer) error {\n" +
-        "\tif err := _m.Write%1$s(_w, m.BlockLength); err != nil {\n" +
-        "\t\treturn err\n" +
-        "\t}\n" +
-        "\tif err := _m.WriteUint16(_w, m.TemplateId); err != nil {\n" +
-        "\t\treturn err\n" +
-        "\t}\n" +
-        "\tif err := _m.WriteUint16(_w, m.SchemaId); err != nil {\n" +
-        "\t\treturn err\n" +
-        "\t}\n" +
-        "\tif err := _m.WriteUint16(_w, m.Version); err != nil {\n" +
-        "\t\treturn err\n" +
-        "\t}\n" +
-        "\treturn nil\n" +
-        "}\n" +
-        "\n" +
-        "func (m *MessageHeader) Decode(_m *SbeGoMarshaller, _r io.Reader) error {\n" +
-        "\tif err := _m.Read%1$s(_r, &m.BlockLength); err != nil {\n" +
-        "\t\treturn err\n" +
-        "\t}\n" +
-        "\tif err := _m.ReadUint16(_r, &m.TemplateId); err != nil {\n" +
-        "\t\treturn err\n" +
-        "\t}\n" +
-        "\tif err := _m.ReadUint16(_r, &m.SchemaId); err != nil {\n" +
-        "\t\treturn err\n" +
-        "\t}\n" +
-        "\tif err := _m.ReadUint16(_r, &m.Version); err != nil {\n" +
-        "\t\treturn err\n" +
-        "\t}\n" +
-        "\treturn nil\n" +
-        "}\n";
-
-    // MesssageHeader is special
-    // All we need is imports, type declaration, and simplfiied encode/decode
+    // MesssageHeader is special but the standard allows it to be
+    // pretty arbitrary after the first four fields.
+    // All we need is the imports, type declaration, and encode/decode
     public void generateMessageHeaderStub() throws IOException
     {
         final String messageHeader = "MessageHeader";
@@ -139,9 +106,8 @@ public class GolangGenerator implements CodeGenerator
             generateTypeDeclaration(sb, messageHeader);
             generateTypeBodyComposite(sb, messageHeader, tokens.subList(1, tokens.size() - 1));
 
-            sb.append(String.format(
-                messageHeaderEncodeDecodeTemplate,
-                golangMarshalType(ir.headerStructure().blockLengthType())));
+            generateEncodeDecode(sb, messageHeader, tokens.subList(1, tokens.size() - 1), false, false);
+            generateCompositePropertyElements(sb, messageHeader, tokens.subList(1, tokens.size() - 1));
             out.append(generateFileHeader(ir.namespaces()));
             out.append(sb);
         }
@@ -1358,7 +1324,7 @@ public class GolangGenerator implements CodeGenerator
     private void generateChoiceSet(final List<Token> tokens) throws IOException
     {
         final Token choiceToken = tokens.get(0);
-        final String choiceName = formatTypeName(choiceToken.name());
+        final String choiceName = formatTypeName(choiceToken.applicableTypeName());
         final char varName = Character.toLowerCase(choiceName.charAt(0));
         final StringBuilder sb = new StringBuilder();
 
@@ -1397,7 +1363,7 @@ public class GolangGenerator implements CodeGenerator
     private void generateEnum(final List<Token> tokens) throws IOException
     {
         final Token enumToken = tokens.get(0);
-        final String enumName = formatTypeName(tokens.get(0).name());
+        final String enumName = formatTypeName(tokens.get(0).applicableTypeName());
         final char varName = Character.toLowerCase(enumName.charAt(0));
 
         final StringBuilder sb = new StringBuilder();
@@ -1440,7 +1406,7 @@ public class GolangGenerator implements CodeGenerator
         final List<Token> tokens,
         final String namePrefix) throws IOException
     {
-        final String compositeName = namePrefix + formatTypeName(tokens.get(0).name());
+        final String compositeName = namePrefix + formatTypeName(tokens.get(0).applicableTypeName());
         final StringBuilder sb = new StringBuilder();
 
         try (Writer out = outputManager.createOutput(compositeName))
@@ -1553,7 +1519,7 @@ public class GolangGenerator implements CodeGenerator
                 "\t%1$s%2$s%3$sChoiceValue\n",
                 toUpperFirstChar(token.name()),
                 String.format(String.format("%%%ds", longest - token.name().length() + 1), " "),
-                toUpperFirstChar(encodingToken.name())));
+                toUpperFirstChar(encodingToken.applicableTypeName())));
         }
 
         sb.append("}\n");
@@ -1678,7 +1644,7 @@ public class GolangGenerator implements CodeGenerator
                                     .append(String.format(String.format(
                                         "%%%ds", longest - propertyName.length() + 1), " "))
                                     .append(arrayspec)
-                                    .append(encodingToken.name())
+                                    .append(encodingToken.applicableTypeName())
                                     .append("Enum\n");
                                 break;
 
@@ -1687,7 +1653,7 @@ public class GolangGenerator implements CodeGenerator
                                     .append(String.format(String.format(
                                         "%%%ds", longest - propertyName.length() + 1), " "))
                                     .append(arrayspec)
-                                    .append(encodingToken.name())
+                                    .append(encodingToken.applicableTypeName())
                                     .append("\n");
                                 break;
 
@@ -1938,6 +1904,7 @@ public class GolangGenerator implements CodeGenerator
         {
             final Token token = tokens.get(i);
             final String propertyName = formatPropertyName(token.name());
+            final String propertyType = formatPropertyName(token.applicableTypeName());
             int arrayLength = token.arrayLength();
 
             switch (token.signal())
@@ -1965,13 +1932,13 @@ public class GolangGenerator implements CodeGenerator
                     sb.append("\t").append(propertyName)
                         .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
                         .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "")
-                        .append(propertyName).append("Enum\n");
+                        .append(propertyType).append("Enum\n");
                     break;
 
                 case BEGIN_SET:
                     sb.append("\t").append(propertyName)
                         .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
-                        .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "").append(propertyName).append("\n");
+                        .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "").append(propertyType).append("\n");
                     break;
 
                 case BEGIN_COMPOSITE:
