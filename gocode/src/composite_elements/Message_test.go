@@ -74,7 +74,7 @@ func TestEncodeDecodeMsg3(t *testing.T) {
 
 	var in Msg3
 
-	in.Structure = FuturesPrice{65, 3, IsSettlement.T}
+	in.Structure = FuturesPrice{65, 3, BooleanEnum.T}
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(m, buf, true); err != nil {

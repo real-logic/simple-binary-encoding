@@ -131,7 +131,7 @@ func ExampleDecodeBuffer() bool {
 	buf := bytes.NewBuffer(data)
 	m := baseline.NewSbeGoMarshaller()
 
-	var hdr baseline.MessageHeader
+	var hdr baseline.SbeGoMessageHeader
 	if err := hdr.Decode(m, buf); err != nil {
 		fmt.Println("Failed to decode message header", err)
 		os.Exit(1)
@@ -173,7 +173,7 @@ func ExampleDecodePipe() bool {
 		}
 	}()
 
-	var hdr baseline.MessageHeader
+	var hdr baseline.SbeGoMessageHeader
 	hdr.Decode(m, r)
 
 	var c baseline.Car
@@ -217,7 +217,7 @@ func ExampleDecodeSocket() bool {
 		defer conn.Close()
 
 		// fmt.Println("reading messageheader")
-		var hdr baseline.MessageHeader
+		var hdr baseline.SbeGoMessageHeader
 		hdr.Decode(m, conn)
 
 		// fmt.Println("reading car")
@@ -623,6 +623,8 @@ func makeCar() baseline.Car {
 			9001, // will come back as constant value 9000
 			manufacturerCode,
 			[6]byte{'P', 'e', 't', 'r', 'o', 'l'},
+			35,
+			baseline.BooleanType.T,
 			baseline.EngineBooster{baseline.BoostType.NITROUS, 200}},
 		[]baseline.CarFuelFigures{
 			baseline.CarFuelFigures{30, 35.9, urban},
@@ -660,6 +662,8 @@ func makeExtension() extension.Car {
 			9000,
 			manufacturerCode,
 			[6]byte{'P', 'e', 't', 'r', 'o', 'l'},
+			35,
+			extension.BooleanType.T,
 			extension.EngineBooster{extension.BoostType.NITROUS, 200}},
 		119, // sinceVersion = 1
 		[]extension.CarFuelFigures{
@@ -698,6 +702,8 @@ func makeExtension2() extension2.Car {
 			9000,
 			manufacturerCode,
 			[6]byte{'P', 'e', 't', 'r', 'o', 'l'},
+			35,
+			extension2.BooleanType.T,
 			extension2.EngineBooster{extension2.BoostType.NITROUS, 200}},
 		119, // sinceVersion = 1
 		[]extension2.CarFuelFigures{
@@ -738,4 +744,4 @@ func MinInt(a, b int) int {
 
 // The byte array is from the java example for interop test made by
 // running with -Dsbe.encoding.filename and then decoded using od -tu1
-var data []byte = []byte{47, 0, 1, 0, 1, 0, 0, 0, 210, 4, 0, 0, 0, 0, 0, 0, 221, 7, 1, 65, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0, 97, 98, 99, 100, 101, 102, 6, 208, 7, 4, 49, 50, 51, 78, 200, 6, 0, 3, 0, 30, 0, 154, 153, 15, 66, 11, 0, 0, 0, 85, 114, 98, 97, 110, 32, 67, 121, 99, 108, 101, 55, 0, 0, 0, 68, 66, 14, 0, 0, 0, 67, 111, 109, 98, 105, 110, 101, 100, 32, 67, 121, 99, 108, 101, 75, 0, 0, 0, 32, 66, 13, 0, 0, 0, 72, 105, 103, 104, 119, 97, 121, 32, 67, 121, 99, 108, 101, 1, 0, 2, 0, 95, 6, 0, 3, 0, 30, 0, 0, 0, 128, 64, 60, 0, 0, 0, 240, 64, 100, 0, 51, 51, 67, 65, 99, 6, 0, 3, 0, 30, 0, 51, 51, 115, 64, 60, 0, 51, 51, 227, 64, 100, 0, 205, 204, 60, 65, 5, 0, 0, 0, 72, 111, 110, 100, 97, 9, 0, 0, 0, 67, 105, 118, 105, 99, 32, 86, 84, 105, 6, 0, 0, 0, 97, 98, 99, 100, 101, 102}
+var data []byte = []byte{49, 0, 1, 0, 1, 0, 0, 0, 210, 4, 0, 0, 0, 0, 0, 0, 221, 7, 1, 65, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0, 97, 98, 99, 100, 101, 102, 6, 208, 7, 4, 49, 50, 51, 35, 1, 78, 200, 6, 0, 3, 0, 30, 0, 154, 153, 15, 66, 11, 0, 0, 0, 85, 114, 98, 97, 110, 32, 67, 121, 99, 108, 101, 55, 0, 0, 0, 68, 66, 14, 0, 0, 0, 67, 111, 109, 98, 105, 110, 101, 100, 32, 67, 121, 99, 108, 101, 75, 0, 0, 0, 32, 66, 13, 0, 0, 0, 72, 105, 103, 104, 119, 97, 121, 32, 67, 121, 99, 108, 101, 1, 0, 2, 0, 95, 6, 0, 3, 0, 30, 0, 0, 0, 128, 64, 60, 0, 0, 0, 240, 64, 100, 0, 51, 51, 67, 65, 99, 6, 0, 3, 0, 30, 0, 51, 51, 115, 64, 60, 0, 51, 51, 227, 64, 100, 0, 205, 204, 60, 65, 5, 0, 0, 0, 72, 111, 110, 100, 97, 9, 0, 0, 0, 67, 105, 118, 105, 99, 32, 86, 84, 105, 6, 0, 0, 0, 97, 98, 99, 100, 101, 102}

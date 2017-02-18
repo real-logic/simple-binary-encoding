@@ -38,7 +38,7 @@ src/example-schema/example-schema: $(DEP)
 	go fmt && \
 	./example-schema)
 
-bench: $(DEP) src/example-schema/example-schema.test
+bench: $(DEP)
 	(export GOPATH=$(GOPATH) && \
         cd src/example-schema && \
 	go test --bench . -cpuprofile=cpu.out && \
@@ -68,7 +68,7 @@ test: $(DEP)
 		go install \
 		;done))
 	(export GOPATH=$(GOPATH) && \
-		(for t in mktdata group_with_data group_with_data_extension composite_element composite simple; do \
+		(for t in mktdata group_with_data group_with_data_extension composite_elements composite simple issue435; do \
 		cd $(GOPATH)/src/$$t && \
 		go build && \
 		go fmt && \

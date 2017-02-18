@@ -125,6 +125,6 @@ tests and containes some examples
 
 Users of golang generated code should see the [user
 documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Golang-User-Guide). Developers
-wishing to enhance golang generator should see the [developer
+wishing to enhance the golang generator should see the [developer
 documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/gocode/README.md)
 

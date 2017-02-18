@@ -78,6 +78,8 @@ gocode/src/mktdata/*.go
 !gocode/src/mktdata/*_test.go
 gocode/src/simple/*.go
 !gocode/src/simple/*_test.go
+gocode/src/issue*/*.go
+!gocode/src/issue*/*_test.go
 gocode/src/*/*/*.go
 !gocode/src/*/*/*_test.go
 gocode/src/example-schema/example-schema*
