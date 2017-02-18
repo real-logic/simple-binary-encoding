@@ -97,7 +97,7 @@ enum class Presence : int
         SBE_CONSTANT = 2
 };
 
-std::size_t lengthOfType(PrimitiveType type)
+inline std::size_t lengthOfType(PrimitiveType type)
 {
     switch (type)
     {
