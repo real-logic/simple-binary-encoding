@@ -1023,26 +1023,22 @@ public class JavaGenerator implements CodeGenerator
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
-                        out.append(sb);
-                        out.append(generatePrimitiveDecoder(
+                        out.append(sb).append(generatePrimitiveDecoder(
                             true, encodingToken.name(), encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_ENUM:
-                        out.append(sb);
-                        out.append(generateEnumDecoder(
+                        out.append(sb).append(generateEnumDecoder(
                             true, encodingToken, propertyName, encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_SET:
-                        out.append(sb);
-                        out.append(generateBitSetProperty(
+                        out.append(sb).append(generateBitSetProperty(
                             true, DECODER, propertyName, encodingToken, BASE_INDENT, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
-                        out.append(sb);
-                        out.append(generateCompositeProperty(
+                        out.append(sb).append(generateCompositeProperty(
                             true, DECODER, propertyName, encodingToken, BASE_INDENT, typeName));
                         break;
                 }
@@ -1073,26 +1069,22 @@ public class JavaGenerator implements CodeGenerator
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
-                        out.append(sb);
-                        out.append(generatePrimitiveEncoder(
+                        out.append(sb).append(generatePrimitiveEncoder(
                             encoderName, encodingToken.name(), encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_ENUM:
-                        out.append(sb);
-                        out.append(generateEnumEncoder(
+                        out.append(sb).append(generateEnumEncoder(
                             encoderName, propertyName, encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_SET:
-                        out.append(sb);
-                        out.append(generateBitSetProperty(
+                        out.append(sb).append(generateBitSetProperty(
                             true, ENCODER, propertyName, encodingToken, BASE_INDENT, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
-                        out.append(sb);
-                        out.append(generateCompositeProperty(
+                        out.append(sb).append(generateCompositeProperty(
                             true, ENCODER, propertyName, encodingToken, BASE_INDENT, typeName));
                         break;
                 }
@@ -1101,7 +1093,6 @@ public class JavaGenerator implements CodeGenerator
             }
 
             out.append(generateCompositeEncoderDisplay(decoderName, BASE_INDENT));
-
             out.append("}\n");
         }
     }
