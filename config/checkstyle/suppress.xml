@@ -4,5 +4,4 @@
         "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 <suppressions>
     <suppress files=".*generated.*" checks="."/>
-    <suppress files="GolangGenerator.java" checks="MethodLength"/>
 </suppressions>

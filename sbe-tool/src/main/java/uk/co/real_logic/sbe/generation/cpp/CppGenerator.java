@@ -31,6 +31,7 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 
+@SuppressWarnings("MethodLength")
 public class CppGenerator implements CodeGenerator
 {
     private static final String BASE_INDENT = "";

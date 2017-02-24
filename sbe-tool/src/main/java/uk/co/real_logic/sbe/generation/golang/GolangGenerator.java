@@ -36,6 +36,7 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 
+@SuppressWarnings("MethodLength")
 public class GolangGenerator implements CodeGenerator
 {
     private final Ir ir;
@@ -182,11 +183,11 @@ public class GolangGenerator implements CodeGenerator
         {
             return String.format(
                 "\n" +
-                    "%1$s\tfor i := 0; i < %2$d; i++ {\n" +
-                    "%1$s\t\tif err := _m.WriteUint8(_w, uint8(0)); err != nil {\n" +
-                    "%1$s\t\t\treturn err\n" +
-                    "%1$s\t\t}\n" +
-                    "%1$s\t}\n",
+                "%1$s\tfor i := 0; i < %2$d; i++ {\n" +
+                "%1$s\t\tif err := _m.WriteUint8(_w, uint8(0)); err != nil {\n" +
+                "%1$s\t\t\treturn err\n" +
+                "%1$s\t\t}\n" +
+                "%1$s\t}\n",
                 indent,
                 gap);
         }
@@ -215,11 +216,11 @@ public class GolangGenerator implements CodeGenerator
                 this.imports.add("fmt");
                 sb.append(String.format(
                     "\tfor idx, ch := range %1$s {\n" +
-                        "\t\tif ch > 127 {\n" +
-                        "\t\t\treturn fmt.Errorf(\"%1$s[%%d]=%%d" +
-                        " failed ASCII validation\", idx, ch)\n" +
-                        "\t\t}\n" +
-                        "\t}\n",
+                    "\t\tif ch > 127 {\n" +
+                    "\t\t\treturn fmt.Errorf(\"%1$s[%%d]=%%d" +
+                    " failed ASCII validation\", idx, ch)\n" +
+                    "\t\t}\n" +
+                    "\t}\n",
                     varName));
                 break;
 
@@ -228,8 +229,8 @@ public class GolangGenerator implements CodeGenerator
                 this.imports.add("unicode/utf8");
                 sb.append(String.format(
                     "\tif !utf8.Valid(%1$s[:]) {\n" +
-                        "\t\treturn errors.New(\"%1$s failed UTF-8 validation\")\n" +
-                        "\t}\n",
+                    "\t\treturn errors.New(\"%1$s failed UTF-8 validation\")\n" +
+                    "\t}\n",
                     varName));
                 break;
         }
@@ -256,8 +257,8 @@ public class GolangGenerator implements CodeGenerator
                 // We take a slice to make the type right
                 sb.append(String.format(
                     "\tif err := _m.WriteBytes(_w, %1$s.%2$s[:]); err != nil {\n" +
-                        "\t\treturn err\n" +
-                        "\t}\n",
+                    "\t\treturn err\n" +
+                    "\t}\n",
                     varName,
                     propertyName));
             }
@@ -266,8 +267,8 @@ public class GolangGenerator implements CodeGenerator
                 // A single byte or uint8 gets treated as a uint8
                 sb.append(String.format(
                     "\tif err := _m.WriteUint8(_w, %1$s.%2$s); err != nil {\n" +
-                        "\t\treturn err\n" +
-                        "\t}\n",
+                    "\t\treturn err\n" +
+                    "\t}\n",
                     varName,
                     propertyName));
             }
@@ -279,10 +280,10 @@ public class GolangGenerator implements CodeGenerator
                 // Other array types need a for loop
                 sb.append(String.format(
                     "\tfor idx := 0; idx < %1$d; idx++ {\n" +
-                        "\t\tif err := _m.Write%2$s(_w, %3$s.%4$s[idx]); err != nil {\n" +
-                        "\t\t\treturn err\n" +
-                        "\t\t}\n" +
-                        "\t}\n",
+                    "\t\tif err := _m.Write%2$s(_w, %3$s.%4$s[idx]); err != nil {\n" +
+                    "\t\t\treturn err\n" +
+                    "\t\t}\n" +
+                    "\t}\n",
                     encodingToken.arrayLength(),
                     marshalType,
                     varName,
@@ -292,8 +293,8 @@ public class GolangGenerator implements CodeGenerator
             {
                 sb.append(String.format(
                     "\tif err := _m.Write%1$s(_w, %2$s.%3$s); err != nil {\n" +
-                        "\t\treturn err\n" +
-                        "\t}\n",
+                    "\t\treturn err\n" +
+                    "\t}\n",
                     marshalType,
                     varName,
                     propertyName));
@@ -524,12 +525,12 @@ public class GolangGenerator implements CodeGenerator
     private void generateEncodeDecodeClose(
         final StringBuilder encode,
         final StringBuilder decode,
-        final StringBuilder rangecheck,
+        final StringBuilder rangeCheck,
         final StringBuilder init)
     {
         encode.append("\treturn nil\n}\n");
         decode.append("\treturn nil\n}\n");
-        rangecheck.append("\treturn nil\n}\n");
+        rangeCheck.append("\treturn nil\n}\n");
         init.append("\treturn\n}\n");
     }
 
@@ -562,14 +563,14 @@ public class GolangGenerator implements CodeGenerator
         final StringBuilder encode = new StringBuilder();
         final StringBuilder decode = new StringBuilder();
         final StringBuilder init = new StringBuilder();
-        final StringBuilder rangecheck = new StringBuilder();
+        final StringBuilder rangeCheck = new StringBuilder();
         final StringBuilder nested = new StringBuilder();
         int currentOffset = 0;
-        int gap = 0;
+        int gap;
         boolean extensionStarted = false;
 
         // Open all our methods
-        generateEncodeDecodeOpen(encode, decode, rangecheck, init, varName, typeName, isMessage, isExtensible);
+        generateEncodeDecodeOpen(encode, decode, rangeCheck, init, varName, typeName, isMessage, isExtensible);
 
         for (int i = 0; i < tokens.size(); i++)
         {
@@ -620,7 +621,7 @@ public class GolangGenerator implements CodeGenerator
                         signalToken, typeName, encode, decode, currentOffset);
                     i += signalToken.componentTokenCount() - 1;
 
-                    rangecheck.append(String.format(
+                    rangeCheck.append(String.format(
                         "\tif err := %1$s.%2$s.RangeCheck(actingVersion, schemaVersion); err != nil {\n" +
                         "\t\treturn err\n" +
                         "\t}\n",
@@ -632,7 +633,7 @@ public class GolangGenerator implements CodeGenerator
                     {
                         currentOffset += generateFieldEncodeDecode(
                             tokens.subList(i, tokens.size() - 1),
-                            varName, currentOffset, encode, decode, rangecheck, init);
+                            varName, currentOffset, encode, decode, rangeCheck, init);
 
                         // Encodings just move past the encoding token
                         if (tokens.get(i + 1).signal() == Signal.ENCODING)
@@ -660,7 +661,7 @@ public class GolangGenerator implements CodeGenerator
                     }
                     final String primitive = Character.toString(varName) + "." + propertyName;
                     generateDecodePrimitive(decode, primitive, signalToken);
-                    generateRangeCheckPrimitive(rangecheck, primitive, signalToken);
+                    generateRangeCheckPrimitive(rangeCheck, primitive, signalToken);
                     generateInitPrimitive(init, primitive, signalToken);
                     break;
 
@@ -676,7 +677,7 @@ public class GolangGenerator implements CodeGenerator
                     currentOffset += generateGroupEncodeDecode(
                         tokens.subList(i, tokens.size() - 1),
                         typeName,
-                        encode, decode, rangecheck, currentOffset);
+                        encode, decode, rangeCheck, currentOffset);
 
                     // Recurse
                     gap = Math.max(0,
@@ -704,8 +705,8 @@ public class GolangGenerator implements CodeGenerator
                         extensionStarted = true;
                     }
                     // Close out this group and unwind
-                    generateEncodeDecodeClose(encode, decode, rangecheck, init);
-                    sb.append(encode).append(decode).append(rangecheck).append(init).append(nested);
+                    generateEncodeDecodeClose(encode, decode, rangeCheck, init);
+                    sb.append(encode).append(decode).append(rangeCheck).append(init).append(nested);
                     return currentOffset; // for gap calculations
 
                 case BEGIN_VAR_DATA:
@@ -718,12 +719,13 @@ public class GolangGenerator implements CodeGenerator
                     currentOffset += generateVarDataEncodeDecode(
                         tokens.subList(i, tokens.size() - 1),
                         typeName,
-                        encode, decode, rangecheck, currentOffset);
+                        encode, decode, rangeCheck, currentOffset);
                     // And we can move over this group
                     i += signalToken.componentTokenCount() - 1;
                     break;
             }
         }
+
         // You can use blockLength on both messages and groups (handled above)
         // to leave some space (akin to an offset).
         final Token endToken = tokens.get(tokens.size() - 1);
@@ -733,9 +735,10 @@ public class GolangGenerator implements CodeGenerator
             encode.append(generateEncodeOffset(gap, ""));
             decode.append(generateDecodeOffset(gap, ""));
         }
+
         // Close out the methods and append
-        generateEncodeDecodeClose(encode, decode, rangecheck, init);
-        sb.append(encode).append(decode).append(rangecheck).append(init).append(nested);
+        generateEncodeDecodeClose(encode, decode, rangeCheck, init);
+        sb.append(encode).append(decode).append(rangeCheck).append(init).append(nested);
         return currentOffset;
     }
 
@@ -949,7 +952,6 @@ public class GolangGenerator implements CodeGenerator
         final Token encodingToken = tokens.get(1);
         final String propertyName = formatPropertyName(signalToken.name());
 
-        final String golangType = golangTypeName(encodingToken.encoding().primitiveType());
         int gap = 0; // for offset calculations
 
         switch (encodingToken.signal())
@@ -1026,7 +1028,6 @@ public class GolangGenerator implements CodeGenerator
         final StringBuilder decode,
         final int currentOffset)
     {
-
         final char varName = Character.toLowerCase(typeName.charAt(0));
         final String propertyName = formatPropertyName(token.name());
         final int gap = token.offset() - currentOffset;
@@ -1219,8 +1220,6 @@ public class GolangGenerator implements CodeGenerator
             final Token token = tokens.get(i);
             if (token.signal() == Signal.BEGIN_GROUP)
             {
-
-                final char varName = Character.toLowerCase(prefix.charAt(0));
                 final String propertyName = formatPropertyName(token.name());
 
                 generateId(sb, prefix, propertyName, token);
@@ -1437,8 +1436,6 @@ public class GolangGenerator implements CodeGenerator
         final List<Token> tokens,
         final Token encodingToken)
     {
-        final Encoding encoding = encodingToken.encoding();
-
         // gofmt lines up the types and we don't want it to have to rewrite
         // our generated files. To line things up we need to know the longest
         // string length and then fill with whitespace
