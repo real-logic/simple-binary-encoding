@@ -24,6 +24,7 @@
 #include <limits.h>
 #include <stdexcept>
 #include <cstdint>
+#include <limits>
 
 /*
  * Types used by C++ codecs
@@ -77,37 +78,15 @@ namespace sbe {
 #else
     #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))
 #endif
-
-#if defined(__GNUC__)
-    #define SBE_NULLVALUE_INT8 (INT8_MIN)
-    #define SBE_NULLVALUE_INT16 (INT16_MIN)
-    #define SBE_NULLVALUE_INT32 (INT32_MIN)
-    #define SBE_NULLVALUE_INT64 (INT64_MIN)
-    #define SBE_NULLVALUE_UINT8 (UINT8_MAX)
-    #define SBE_NULLVALUE_UINT16 (UINT16_MAX)
-    #define SBE_NULLVALUE_UINT32 (UINT32_MAX)
-    #define SBE_NULLVALUE_UINT64 (UINT64_MAX)
-#elif defined(_MSC_VER)
-    // Visual C++ does not handle minimum integer values properly
-    // See: http://msdn.microsoft.com/en-us/library/4kh09110.aspx
-    #define SBE_NULLVALUE_INT8 (SCHAR_MIN)
-    #define SBE_NULLVALUE_INT16 (SHRT_MIN)
-    #define SBE_NULLVALUE_INT32 (LONG_MIN)
-    #define SBE_NULLVALUE_INT64 (LLONG_MIN)
-    #define SBE_NULLVALUE_UINT8 (UCHAR_MAX)
-    #define SBE_NULLVALUE_UINT16 (USHRT_MAX)
-    #define SBE_NULLVALUE_UINT32 (ULONG_MAX)
-    #define SBE_NULLVALUE_UINT64 (ULLONG_MAX)
-#else
-    #define SBE_NULLVALUE_INT8 (INT8_MIN)
-    #define SBE_NULLVALUE_INT16 (INT16_MIN)
-    #define SBE_NULLVALUE_INT32 (INT32_MIN)
-    #define SBE_NULLVALUE_INT64 (INT64_MIN)
-    #define SBE_NULLVALUE_UINT8 (UINT8_MAX)
-    #define SBE_NULLVALUE_UINT16 (UINT16_MAX)
-    #define SBE_NULLVALUE_UINT32 (UINT32_MAX)
-    #define SBE_NULLVALUE_UINT64 (UINT64_MAX)
-#endif
+   
+#define SBE_NULLVALUE_INT8 std::numeric_limits<std::int8_t>::min()
+#define SBE_NULLVALUE_INT16 std::numeric_limits<std::int16_t>::min()
+#define SBE_NULLVALUE_INT32 std::numeric_limits<std::int32_t>::min()
+#define SBE_NULLVALUE_INT64 std::numeric_limits<std::int64_t>::min()
+#define SBE_NULLVALUE_UINT8 std::numeric_limits<std::uint8_t>::max()
+#define SBE_NULLVALUE_UINT16 std::numeric_limits<std::uint16_t>::max()
+#define SBE_NULLVALUE_UINT32 std::numeric_limits<std::uint32_t>::max()
+#define SBE_NULLVALUE_UINT64 std::numeric_limits<std::uint64_t>::max()
 
 namespace MetaAttribute {
 
