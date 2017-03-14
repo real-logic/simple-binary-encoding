@@ -85,11 +85,6 @@ def projectPom = {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.4'
-    distributionType = 'ALL'
-}
-
 configurations {
     shadow
 }
@@ -567,4 +562,9 @@ task runBenchmarks(type: Exec) {
 task uploadToMavenCentral {
     dependsOn 'sbe-tool:uploadArchives', 'sbe-samples:uploadArchives', 'sbe-benchmarks:uploadArchives',
             'sbe-all:uploadArchives', 'sbe-all:uploadShadow'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.4.1'
+    distributionType = 'ALL'
 }
