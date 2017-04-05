@@ -72,6 +72,8 @@ gocode/src/composite/*.go
 !gocode/src/composite/*_test.go
 gocode/src/composite_elements/*.go
 !gocode/src/composite_elements/*_test.go
+gocode/src/since-deprecated/*.go
+!gocode/src/since-deprecated/*_test.go
 gocode/src/group_with_data*/*.go
 !gocode/src/group_with_data*/*_test.go
 gocode/src/mktdata/*.go

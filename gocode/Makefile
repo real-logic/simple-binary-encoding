@@ -68,7 +68,7 @@ test: $(DEP)
 		go install \
 		;done))
 	(export GOPATH=$(GOPATH) && \
-		(for t in mktdata group_with_data group_with_data_extension composite_elements composite simple issue435; do \
+		(for t in mktdata group_with_data group_with_data_extension composite_elements composite since-deprecated simple issue435; do \
 		cd $(GOPATH)/src/$$t && \
 		go build && \
 		go fmt && \
