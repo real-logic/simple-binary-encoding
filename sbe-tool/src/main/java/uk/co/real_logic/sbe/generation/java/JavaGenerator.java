@@ -1649,7 +1649,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        if (dstOffset < 0 || dstOffset > (dst.length - length))\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
-                                          "\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
+                                          "\"Copy will go out of range: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
                 "%s" +
                 indent + "        buffer.getBytes(this.offset + %d, dst, dstOffset, length);\n\n" +
@@ -1742,7 +1742,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        if (srcOffset < 0 || srcOffset > (src.length - length))\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
-                                          "\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
+                                          "\"Copy will go out of range: offset=\" + srcOffset);\n" +
                 indent + "        }\n\n" +
                 indent + "        buffer.putBytes(this.offset + %d, src, srcOffset, length);\n\n" +
                 indent + "        return this;\n" +
