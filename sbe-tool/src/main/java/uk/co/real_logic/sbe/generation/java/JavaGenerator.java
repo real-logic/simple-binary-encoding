@@ -2047,7 +2047,24 @@ public class JavaGenerator implements CodeGenerator
             className,
             mutableBuffer);
 
-        return generateFlyweightCode(CodecType.ENCODER, className, token, wrapMethod, mutableBuffer);
+        final String wrapAndApplyHeaderMethod = String.format(
+            "    public %1$s wrapAndApplyHeader(\n" +
+            "        final %2$s buffer, final int offset, final %3$s headerEncoder)\n" +
+            "    {\n" +
+            "        headerEncoder\n" +
+            "            .wrap(buffer, offset)\n" +
+            "            .blockLength(BLOCK_LENGTH)\n" +
+            "            .templateId(TEMPLATE_ID)\n" +
+            "            .schemaId(SCHEMA_ID)\n" +
+            "            .version(SCHEMA_VERSION);\n\n" +
+            "        return wrap(buffer, offset + %3$s.ENCODED_LENGTH);\n" +
+            "    }\n\n",
+            className,
+            mutableBuffer,
+            formatClassName(ir.headerStructure().tokens().get(0).applicableTypeName() + "Encoder"));
+
+        return generateFlyweightCode(
+            CodecType.ENCODER, className, token, wrapMethod + wrapAndApplyHeaderMethod, mutableBuffer);
     }
 
     private CharSequence generateEncoderFields(

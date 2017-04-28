@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.examples;
 import baseline.BooleanType;
 import baseline.BoostType;
 import extension.CarDecoder.PerformanceFiguresDecoder.AccelerationDecoder;
+import extension.MessageHeaderEncoder;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.io.FileOutputStream;
@@ -64,21 +65,8 @@ public class ExampleUsingGeneratedStubExtension
 
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
         final UnsafeBuffer directBuffer = new UnsafeBuffer(byteBuffer);
-        int bufferOffset = 0;
-        int encodingLength = 0;
 
-        // Setup for encoding a message
-
-        MESSAGE_HEADER_ENCODER
-            .wrap(directBuffer, bufferOffset)
-            .blockLength(CAR_ENCODER_0.sbeBlockLength())
-            .templateId(CAR_ENCODER_0.sbeTemplateId())
-            .schemaId(CAR_ENCODER_0.sbeSchemaId())
-            .version(CAR_ENCODER_0.sbeSchemaVersion());
-
-        bufferOffset += MESSAGE_HEADER_ENCODER.encodedLength();
-        encodingLength += MESSAGE_HEADER_ENCODER.encodedLength();
-        encodingLength += encode(CAR_ENCODER_0, directBuffer, bufferOffset);
+        final int encodingLengthPlusHeader = encode(CAR_ENCODER_0, directBuffer, MESSAGE_HEADER_ENCODER);
 
         // Optionally write the encoded buffer to a file for decoding by the On-The-Fly decoder
 
@@ -87,14 +75,14 @@ public class ExampleUsingGeneratedStubExtension
         {
             try (FileChannel channel = new FileOutputStream(encodingFilename).getChannel())
             {
-                byteBuffer.limit(encodingLength);
+                byteBuffer.limit(encodingLengthPlusHeader);
                 channel.write(byteBuffer);
             }
         }
 
         // Decode the encoded message
 
-        bufferOffset = 0;
+        int bufferOffset = 0;
         MESSAGE_HEADER_DECODER.wrap(directBuffer, bufferOffset);
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
@@ -105,23 +93,23 @@ public class ExampleUsingGeneratedStubExtension
         }
 
         final int actingBlockLength = MESSAGE_HEADER_DECODER.blockLength();
-        final int schemaId = MESSAGE_HEADER_DECODER.schemaId();
         final int actingVersion = MESSAGE_HEADER_DECODER.version();
 
         bufferOffset += MESSAGE_HEADER_DECODER.encodedLength();
-        decode(CAR_DECODER_1, directBuffer, bufferOffset, schemaId, actingBlockLength, actingVersion);
+        decode(CAR_DECODER_1, directBuffer, bufferOffset, actingBlockLength, actingVersion);
     }
 
-    public static int encode(final baseline.CarEncoder car, final UnsafeBuffer directBuffer, final int bufferOffset)
+    public static int encode(
+        final baseline.CarEncoder car,
+        final UnsafeBuffer directBuffer,
+        final baseline.MessageHeaderEncoder headerEncoder)
     {
-        final int srcOffset = 0;
-
-        car.wrap(directBuffer, bufferOffset)
+        car.wrapAndApplyHeader(directBuffer, 0, headerEncoder)
             .serialNumber(1234)
             .modelYear(2013)
             .available(baseline.BooleanType.T)
             .code(baseline.Model.A)
-            .putVehicleCode(VEHICLE_CODE, srcOffset);
+            .putVehicleCode(VEHICLE_CODE, 0);
 
         for (int i = 0, size = baseline.CarEncoder.someNumbersLength(); i < size; i++)
         {
@@ -137,7 +125,7 @@ public class ExampleUsingGeneratedStubExtension
         car.engine()
             .capacity(2000)
             .numCylinders((short)4)
-            .putManufacturerCode(MANUFACTURER_CODE, srcOffset)
+            .putManufacturerCode(MANUFACTURER_CODE, 0)
             .efficiency((byte)35)
             .boosterEnabled(BooleanType.T)
             .booster().boostType(BoostType.NITROUS).horsePower((short)200);
@@ -161,18 +149,17 @@ public class ExampleUsingGeneratedStubExtension
             .next().mph(60).seconds(7.1f)
             .next().mph(100).seconds(11.8f);
 
-        car.putManufacturer(MANUFACTURER, srcOffset, MANUFACTURER.length)
-            .putModel(MODEL, srcOffset, MODEL.length)
+        car.putManufacturer(MANUFACTURER, 0, MANUFACTURER.length)
+            .putModel(MODEL, 0, MODEL.length)
             .putActivationCode(ACTIVATION_CODE, 0, ACTIVATION_CODE.capacity());
 
-        return car.encodedLength();
+        return MessageHeaderEncoder.ENCODED_LENGTH + car.encodedLength();
     }
 
     public static void decode(
         final extension.CarDecoder car,
         final UnsafeBuffer directBuffer,
         final int bufferOffset,
-        final int schemaId,
         final int actingBlockLength,
         final int actingVersion)
         throws Exception
@@ -182,9 +169,6 @@ public class ExampleUsingGeneratedStubExtension
 
         car.wrap(directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
-        sb.append("\ncar.templateId=").append(car.sbeTemplateId());
-        sb.append("\ncar.schemaId=").append(schemaId);
-        sb.append("\ncar.schemaVersion=").append(car.sbeSchemaVersion());
         sb.append("\ncar.serialNumber=").append(car.serialNumber());
         sb.append("\ncar.modelYear=").append(car.modelYear());
         sb.append("\ncar.available=").append(car.available());

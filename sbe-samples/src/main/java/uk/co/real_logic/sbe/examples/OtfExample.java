@@ -38,7 +38,7 @@ import java.util.List;
 
 public class OtfExample
 {
-    private static final MessageHeaderEncoder MESSAGE_HEADER = new MessageHeaderEncoder();
+    private static final MessageHeaderEncoder HEADER_ENCODER = new MessageHeaderEncoder();
     private static final CarEncoder CAR_ENCODER = new CarEncoder();
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
@@ -108,19 +108,9 @@ public class OtfExample
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(byteBuffer);
 
-        int bufferOffset = 0;
-        MESSAGE_HEADER
-            .wrap(buffer, bufferOffset)
-            .blockLength(CAR_ENCODER.sbeBlockLength())
-            .templateId(CAR_ENCODER.sbeTemplateId())
-            .schemaId(CAR_ENCODER.sbeSchemaId())
-            .version(CAR_ENCODER.sbeSchemaVersion());
+        final int encodedLength = ExampleUsingGeneratedStub.encode(CAR_ENCODER, buffer, HEADER_ENCODER);
 
-        bufferOffset += MESSAGE_HEADER.encodedLength();
-
-        bufferOffset += ExampleUsingGeneratedStub.encode(CAR_ENCODER, buffer, bufferOffset);
-
-        byteBuffer.position(bufferOffset);
+        byteBuffer.position(encodedLength);
     }
 
     private static Ir decodeIr(final ByteBuffer buffer) throws IOException

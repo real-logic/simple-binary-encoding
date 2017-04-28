@@ -61,21 +61,8 @@ public class ExampleUsingGeneratedStub
 
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
         final UnsafeBuffer directBuffer = new UnsafeBuffer(byteBuffer);
-        int bufferOffset = 0;
-        int encodingLength = 0;
 
-        // Setup for encoding a message
-
-        MESSAGE_HEADER_ENCODER
-            .wrap(directBuffer, bufferOffset)
-            .blockLength(CAR_ENCODER.sbeBlockLength())
-            .templateId(CAR_ENCODER.sbeTemplateId())
-            .schemaId(CAR_ENCODER.sbeSchemaId())
-            .version(CAR_ENCODER.sbeSchemaVersion());
-
-        bufferOffset += MESSAGE_HEADER_ENCODER.encodedLength();
-        encodingLength += MESSAGE_HEADER_ENCODER.encodedLength();
-        encodingLength += encode(CAR_ENCODER, directBuffer, bufferOffset);
+        final int encodingLengthPlusHeader = encode(CAR_ENCODER, directBuffer, MESSAGE_HEADER_ENCODER);
 
         // Optionally write the encoded buffer to a file for decoding by the On-The-Fly decoder
 
@@ -84,14 +71,14 @@ public class ExampleUsingGeneratedStub
         {
             try (FileChannel channel = new FileOutputStream(encodingFilename).getChannel())
             {
-                byteBuffer.limit(encodingLength);
+                byteBuffer.limit(encodingLengthPlusHeader);
                 channel.write(byteBuffer);
             }
         }
 
         // Decode the encoded message
 
-        bufferOffset = 0;
+        int bufferOffset = 0;
         MESSAGE_HEADER_DECODER.wrap(directBuffer, bufferOffset);
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
@@ -102,23 +89,21 @@ public class ExampleUsingGeneratedStub
         }
 
         final int actingBlockLength = MESSAGE_HEADER_DECODER.blockLength();
-        final int schemaId = MESSAGE_HEADER_DECODER.schemaId();
         final int actingVersion = MESSAGE_HEADER_DECODER.version();
 
         bufferOffset += MESSAGE_HEADER_DECODER.encodedLength();
-        decode(CAR_DECODER, directBuffer, bufferOffset, actingBlockLength, schemaId, actingVersion);
+        decode(CAR_DECODER, directBuffer, bufferOffset, actingBlockLength, actingVersion);
     }
 
-    public static int encode(final CarEncoder car, final UnsafeBuffer directBuffer, final int bufferOffset)
+    public static int encode(
+        final CarEncoder car, final UnsafeBuffer directBuffer, final MessageHeaderEncoder messageHeaderEncoder)
     {
-        final int srcOffset = 0;
-
-        car.wrap(directBuffer, bufferOffset)
+        car.wrapAndApplyHeader(directBuffer, 0, messageHeaderEncoder)
             .serialNumber(1234)
             .modelYear(2013)
             .available(BooleanType.T)
             .code(Model.A)
-            .putVehicleCode(VEHICLE_CODE, srcOffset);
+            .putVehicleCode(VEHICLE_CODE, 0);
 
         for (int i = 0, size = CarEncoder.someNumbersLength(); i < size; i++)
         {
@@ -134,7 +119,7 @@ public class ExampleUsingGeneratedStub
         car.engine()
             .capacity(2000)
             .numCylinders((short)4)
-            .putManufacturerCode(MANUFACTURER_CODE, srcOffset)
+            .putManufacturerCode(MANUFACTURER_CODE, 0)
             .efficiency((byte)35)
             .boosterEnabled(BooleanType.T)
             .booster().boostType(BoostType.NITROUS).horsePower((short)200);
@@ -161,10 +146,10 @@ public class ExampleUsingGeneratedStub
         // An exception will be raised if the string length is larger than can be encoded in the varDataEncoding field
         // Please use a suitable schema type for varDataEncoding.length: uint8 <= 254, uint16 <= 65534
         car.manufacturer(new String(MANUFACTURER, StandardCharsets.UTF_8))
-            .putModel(MODEL, srcOffset, MODEL.length)
+            .putModel(MODEL, 0, MODEL.length)
             .putActivationCode(ACTIVATION_CODE, 0, ACTIVATION_CODE.capacity());
 
-        return car.encodedLength();
+        return MessageHeaderEncoder.ENCODED_LENGTH + car.encodedLength();
     }
 
     public static void decode(
@@ -172,7 +157,6 @@ public class ExampleUsingGeneratedStub
         final UnsafeBuffer directBuffer,
         final int bufferOffset,
         final int actingBlockLength,
-        final int schemaId,
         final int actingVersion)
         throws Exception
     {
@@ -181,9 +165,6 @@ public class ExampleUsingGeneratedStub
 
         car.wrap(directBuffer, bufferOffset, actingBlockLength, actingVersion);
 
-        sb.append("\ncar.templateId=").append(car.sbeTemplateId());
-        sb.append("\ncar.schemaId=").append(schemaId);
-        sb.append("\ncar.schemaVersion=").append(car.sbeSchemaVersion());
         sb.append("\ncar.serialNumber=").append(car.serialNumber());
         sb.append("\ncar.modelYear=").append(car.modelYear());
         sb.append("\ncar.available=").append(car.available());

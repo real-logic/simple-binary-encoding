@@ -62,6 +62,19 @@ public class FrameCodecEncoder
         return this;
     }
 
+    public FrameCodecEncoder wrapAndApplyHeader(
+        final MutableDirectBuffer buffer, final int offset, final MessageHeaderEncoder headerEncoder)
+    {
+        headerEncoder
+            .wrap(buffer, offset)
+            .blockLength(BLOCK_LENGTH)
+            .templateId(TEMPLATE_ID)
+            .schemaId(SCHEMA_ID)
+            .version(SCHEMA_VERSION);
+
+        return wrap(buffer, offset + MessageHeaderEncoder.ENCODED_LENGTH);
+    }
+
     public int encodedLength()
     {
         return limit - offset;
