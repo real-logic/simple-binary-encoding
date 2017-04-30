@@ -78,15 +78,8 @@ public class MarketDataBenchmark
         final UnsafeBuffer buffer,
         final int bufferIndex)
     {
-        messageHeader
-            .wrap(buffer, bufferIndex)
-            .blockLength(marketData.sbeBlockLength())
-            .templateId(marketData.sbeTemplateId())
-            .schemaId(marketData.sbeSchemaId())
-            .version(marketData.sbeSchemaVersion());
-
         marketData
-            .wrap(buffer, bufferIndex + messageHeader.encodedLength())
+            .wrapAndApplyHeader(buffer, bufferIndex, messageHeader)
             .transactTime(1234L)
             .eventTimeDelta(987)
             .matchEventIndicator(MatchEventIndicator.END_EVENT);

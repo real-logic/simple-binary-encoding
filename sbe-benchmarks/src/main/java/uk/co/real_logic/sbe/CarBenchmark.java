@@ -102,15 +102,8 @@ public class CarBenchmark
         final UnsafeBuffer buffer,
         final int bufferIndex)
     {
-        messageHeader
-            .wrap(buffer, bufferIndex)
-            .blockLength(car.sbeBlockLength())
-            .templateId(car.sbeTemplateId())
-            .schemaId(car.sbeSchemaId())
-            .version(car.sbeSchemaVersion());
-
         car
-            .wrap(buffer, bufferIndex + messageHeader.encodedLength())
+            .wrapAndApplyHeader(buffer, bufferIndex, messageHeader)
             .code(Model.A)
             .modelYear(2005)
             .serialNumber(12345)
