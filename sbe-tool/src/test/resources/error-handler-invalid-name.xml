@@ -15,7 +15,7 @@
             <type name="blockLength" primitiveType="uint16"/>
             <type name="numInGroup" primitiveType="uint8"/>
         </composite>
-        <composite name="varDataEncoding">
+        <composite name="varStringEncoding">
             <type name="length" primitiveType="uint8"/>
             <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
         </composite>
@@ -32,7 +32,7 @@
             <field name="field1" id="6" type="uint16"/>
             <field name="field2" id="7" type="float"/>
         </group>
-        <data name="invalid data field name!" id="8" type="varDataEncoding"/>
-        <data name="validDataFieldName" id="9" type="varDataEncoding"/>
+        <data name="invalid data field name!" id="8" type="varStringEncoding"/>
+        <data name="validDataFieldName" id="9" type="varStringEncoding"/>
     </message>
 </messageSchema>

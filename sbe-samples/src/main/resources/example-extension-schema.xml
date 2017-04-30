@@ -18,9 +18,13 @@
             <type name="blockLength" primitiveType="uint16"/>
             <type name="numInGroup" primitiveType="uint16"/>
         </composite>
-        <composite name="varDataEncoding">
+        <composite name="varStringEncoding">
             <type name="length" primitiveType="uint32" maxValue="1073741824"/>
             <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
+        </composite>
+        <composite name="varDataEncoding">
+            <type name="length" primitiveType="uint32" maxValue="1073741824"/>
+            <type name="varData" primitiveType="uint8" length="0"/>
         </composite>
     </types>
     <types>
@@ -77,7 +81,7 @@
         <group name="fuelFigures" id="10" dimensionType="groupSizeEncoding">
             <field name="speed" id="11" type="uint16"/>
             <field name="mpg" id="12" type="float"/>
-            <data name="usageDescription" id="200" type="varDataEncoding"/>
+            <data name="usageDescription" id="200" type="varStringEncoding"/>
         </group>
         <group name="performanceFigures" id="13" dimensionType="groupSizeEncoding">
             <field name="octaneRating" id="14" type="Ron"/>
@@ -86,8 +90,8 @@
                 <field name="seconds" id="17" type="float"/>
             </group>
         </group>
-        <data name="manufacturer" id="18" type="varDataEncoding"/>
-        <data name="model" id="19" type="varDataEncoding"/>
-        <data name="activationCode" id="20" type="varDataEncoding"/>
+        <data name="manufacturer" id="18" type="varStringEncoding"/>
+        <data name="model" id="19" type="varStringEncoding"/>
+        <data name="activationCode" id="20" type="varStringEncoding"/>
     </sbe:message>
 </sbe:messageSchema>

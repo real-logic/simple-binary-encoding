@@ -770,33 +770,36 @@ public class JavaGenerator implements CodeGenerator
             byteOrderStr,
             indent);
 
-        sb.append(String.format(
-            "\n" +
-            indent + "    public String %1$s()\n" +
-            indent + "    {\n" +
-            "%2$s" +
-            indent + "        final int headerLength = %3$d;\n" +
-            indent + "        final int limit = parentMessage.limit();\n" +
-            indent + "        final int dataLength = (int)%4$s;\n" +
-            indent + "        parentMessage.limit(limit + headerLength + dataLength);\n" +
-            indent + "        final byte[] tmp = new byte[dataLength];\n" +
-            indent + "        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);\n\n" +
-            indent + "        final String value;\n" +
-            indent + "        try\n" +
-            indent + "        {\n" +
-            indent + "            value = new String(tmp, \"%5$s\");\n" +
-            indent + "        }\n" +
-            indent + "        catch (final java.io.UnsupportedEncodingException ex)\n" +
-            indent + "        {\n" +
-            indent + "            throw new RuntimeException(ex);\n" +
-            indent + "        }\n\n" +
-            indent + "        return value;\n" +
-            indent + "    }\n",
-            formatPropertyName(propertyName),
-            generateStringNotPresentCondition(token.version(), indent),
-            sizeOfLengthField,
-            generateGet(lengthType, "limit", byteOrderStr),
-            characterEncoding));
+        if (null != characterEncoding)
+        {
+            sb.append(String.format(
+                "\n" +
+                indent + "    public String %1$s()\n" +
+                indent + "    {\n" +
+                "%2$s" +
+                indent + "        final int headerLength = %3$d;\n" +
+                indent + "        final int limit = parentMessage.limit();\n" +
+                indent + "        final int dataLength = (int)%4$s;\n" +
+                indent + "        parentMessage.limit(limit + headerLength + dataLength);\n" +
+                indent + "        final byte[] tmp = new byte[dataLength];\n" +
+                indent + "        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);\n\n" +
+                indent + "        final String value;\n" +
+                indent + "        try\n" +
+                indent + "        {\n" +
+                indent + "            value = new String(tmp, \"%5$s\");\n" +
+                indent + "        }\n" +
+                indent + "        catch (final java.io.UnsupportedEncodingException ex)\n" +
+                indent + "        {\n" +
+                indent + "            throw new RuntimeException(ex);\n" +
+                indent + "        }\n\n" +
+                indent + "        return value;\n" +
+                indent + "    }\n",
+                formatPropertyName(propertyName),
+                generateStringNotPresentCondition(token.version(), indent),
+                sizeOfLengthField,
+                generateGet(lengthType, "limit", byteOrderStr),
+                characterEncoding));
+        }
     }
 
     private void generateDataEncodeMethods(
@@ -832,37 +835,41 @@ public class JavaGenerator implements CodeGenerator
             byteOrderStr,
             indent);
 
-        sb.append(String.format(
-            "\n" +
-            indent + "    public %1$s %2$s(final String value)\n" +
-            indent + "    {\n" +
-            indent + "        final byte[] bytes;\n" +
-            indent + "        try\n" +
-            indent + "        {\n" +
-            indent + "            bytes = value.getBytes(\"%3$s\");\n" +
-            indent + "        }\n" +
-            indent + "        catch (final java.io.UnsupportedEncodingException ex)\n" +
-            indent + "        {\n" +
-            indent + "            throw new RuntimeException(ex);\n" +
-            indent + "        }\n\n" +
-            indent + "        final int length = bytes.length;\n" +
-            indent + "        if (length > %4$d)\n" +
-            indent + "        {\n" +
-            indent + "            throw new IllegalArgumentException(\"length > max value for type: \" + length);\n" +
-            indent + "        }\n\n" +
-            indent + "        final int headerLength = %5$d;\n" +
-            indent + "        final int limit = parentMessage.limit();\n" +
-            indent + "        parentMessage.limit(limit + headerLength + length);\n" +
-            indent + "        %6$s;\n" +
-            indent + "        buffer.putBytes(limit + headerLength, bytes, 0, length);\n\n" +
-            indent + "        return this;\n" +
-            indent + "    }\n",
-            className,
-            formatPropertyName(propertyName),
-            characterEncoding,
-            maxLengthValue,
-            sizeOfLengthField,
-            generatePut(lengthType, "limit", "length", byteOrderStr)));
+        if (null != characterEncoding)
+        {
+            sb.append(String.format(
+                "\n" +
+                indent + "    public %1$s %2$s(final String value)\n" +
+                indent + "    {\n" +
+                indent + "        final byte[] bytes;\n" +
+                indent + "        try\n" +
+                indent + "        {\n" +
+                indent + "            bytes = value.getBytes(\"%3$s\");\n" +
+                indent + "        }\n" +
+                indent + "        catch (final java.io.UnsupportedEncodingException ex)\n" +
+                indent + "        {\n" +
+                indent + "            throw new RuntimeException(ex);\n" +
+                indent + "        }\n\n" +
+                indent + "        final int length = bytes.length;\n" +
+                indent + "        if (length > %4$d)\n" +
+                indent + "        {\n" +
+                indent + "            throw new IllegalArgumentException(" +
+                    "\"length > max value for type: \" + length);\n" +
+                indent + "        }\n\n" +
+                indent + "        final int headerLength = %5$d;\n" +
+                indent + "        final int limit = parentMessage.limit();\n" +
+                indent + "        parentMessage.limit(limit + headerLength + length);\n" +
+                indent + "        %6$s;\n" +
+                indent + "        buffer.putBytes(limit + headerLength, bytes, 0, length);\n\n" +
+                indent + "        return this;\n" +
+                indent + "    }\n",
+                className,
+                formatPropertyName(propertyName),
+                characterEncoding,
+                maxLengthValue,
+                sizeOfLengthField,
+                generatePut(lengthType, "limit", "length", byteOrderStr)));
+        }
     }
 
     private void generateDataTypedDecoder(
@@ -1787,16 +1794,19 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private static void generateCharacterEncodingMethod(
-        final StringBuilder sb, final String propertyName, final String encoding, final String indent)
+        final StringBuilder sb, final String propertyName, final String characterEncoding, final String indent)
     {
-        sb.append(String.format(
-            "\n" +
-            indent + "    public static String %sCharacterEncoding()\n" +
-            indent + "    {\n" +
-            indent + "        return \"%s\";\n" +
-            indent + "    }\n",
-            formatPropertyName(propertyName),
-            encoding));
+        if (null != characterEncoding)
+        {
+            sb.append(String.format(
+                "\n" +
+                indent + "    public static String %sCharacterEncoding()\n" +
+                indent + "    {\n" +
+                indent + "        return \"%s\";\n" +
+                indent + "    }\n",
+                formatPropertyName(propertyName),
+                characterEncoding));
+        }
     }
 
     private CharSequence generateConstPropertyMethods(
@@ -2791,9 +2801,17 @@ public class JavaGenerator implements CodeGenerator
 
             append(sb, indent, "//" + varDataToken);
 
+            final String characterEncoding = varData.get(i + 3).encoding().characterEncoding();
             final String varDataName = formatPropertyName(varDataToken.name());
             append(sb, indent, "builder.append(\"" + varDataName + Separators.KEY_VALUE + "\");");
-            append(sb, indent, "builder.append(" + varDataName + "());");
+            if (null == characterEncoding)
+            {
+                append(sb, indent, "builder.append(" + varDataName + "Length() + \" raw bytes\");");
+            }
+            else
+            {
+                append(sb, indent, "builder.append(" + varDataName + "());");
+            }
 
             lengthBeforeLastGeneratedSeparator = sb.length();
             Separators.FIELD.appendToGeneratedBuilder(sb, indent, "builder");

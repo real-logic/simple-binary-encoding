@@ -15,14 +15,14 @@
     -->
 
     <types>
-        <type name="string2" length="2" primitiveType="char"/>
-        <type name="string3" length="3" primitiveType="char"/>
-        <type name="string10" length="10" primitiveType="char"/>
-        <type name="string12" length="12" primitiveType="char"/>
-        <type name="string18" length="18" primitiveType="char"/>
-        <type name="string20" length="20" primitiveType="char"/>
-        <type name="string23" length="23" primitiveType="char"/>
-        <type name="Symbol" length="6" primitiveType="char"/>
+        <type name="string2" length="2" primitiveType="char" characterEncoding="US-ASCII"/>
+        <type name="string3" length="3" primitiveType="char" characterEncoding="US-ASCII"/>
+        <type name="string10" length="10" primitiveType="char" characterEncoding="US-ASCII"/>
+        <type name="string12" length="12" primitiveType="char" characterEncoding="US-ASCII"/>
+        <type name="string18" length="18" primitiveType="char" characterEncoding="US-ASCII"/>
+        <type name="string20" length="20" primitiveType="char" characterEncoding="US-ASCII"/>
+        <type name="string23" length="23" primitiveType="char" characterEncoding="US-ASCII"/>
+        <type name="Symbol" length="6" primitiveType="char" characterEncoding="US-ASCII"/>
         <type name="timestamp" primitiveType="uint64" semanticType="UTCTimestamp"/>
         <type name="LocalMktDate" primitiveType="uint16" semanticType="LocalMktDate"/>
         <type name="optionalInt64" primitiveType="int64" presence="optional" semanticType="int"/>
