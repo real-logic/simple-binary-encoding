@@ -62,7 +62,7 @@
             <validValue name="SBE_OPTIONAL">1</validValue>
             <validValue name="SBE_CONSTANT">2</validValue>
         </enum>
-        <type name="deprecatedVersionType" primitiveType="int32" presence="optional" sinceVersion="1" nullValue="0"/>
+        <type name="deprecatedVersionType" primitiveType="int32" presence="optional" nullValue="0"/>
     </types>
 
     <sbe:message name="FrameCodec" id="1" description="Frame Header for start of encoding IR">
