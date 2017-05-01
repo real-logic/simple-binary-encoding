@@ -289,7 +289,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n\n",
             dimensionHeaderLength, blockLength, formatClassName(groupName)));
 
-        sb.append(String.format(
+        sb.append(
             indent + "#if __cplusplus < 201103L\n" +
             indent + "    template<class Func> inline void forEach(Func& func)\n" +
             indent + "    {\n" +
@@ -306,7 +306,7 @@ public class CppGenerator implements CodeGenerator
             indent + "            next(); func(*this);\n" +
             indent + "        }\n" +
             indent + "    }\n\n" +
-            indent + "#endif\n\n"));
+            indent + "#endif\n\n");
     }
 
     private static CharSequence generateGroupProperty(
