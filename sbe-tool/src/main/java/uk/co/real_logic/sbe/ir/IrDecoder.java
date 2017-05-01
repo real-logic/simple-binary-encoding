@@ -119,13 +119,14 @@ public class IrDecoder implements AutoCloseable
 
         int index = 0;
         Token token = tokens.get(index);
+        final String headerName = token.name();
         headerTokens.add(token);
         do
         {
             token = tokens.get(++index);
             headerTokens.add(token);
         }
-        while (Signal.END_COMPOSITE != token.signal());
+        while (Signal.END_COMPOSITE != token.signal() || !headerName.equals(token.name()));
 
         irHeader = headerTokens;
 
