@@ -29,11 +29,11 @@ import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class OtfExample
@@ -93,7 +93,8 @@ public class OtfExample
 
     private static void encodeSchema(final ByteBuffer byteBuffer) throws Exception
     {
-        try (InputStream in = new FileInputStream("src/main/resources/example-schema.xml"))
+        final Path path = Paths.get("src/main/resources/example-schema.xml");
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(path)))
         {
             final MessageSchema schema = XmlSchemaParser.parse(in, ParserOptions.DEFAULT);
             final Ir ir = new IrGenerator().generate(schema);

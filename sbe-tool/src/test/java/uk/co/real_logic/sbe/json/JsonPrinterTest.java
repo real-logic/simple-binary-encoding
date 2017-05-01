@@ -25,10 +25,13 @@ import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
-import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -117,7 +120,8 @@ public class JsonPrinterTest extends EncodedCarTestBase
 
     private static void encodeSchema(final ByteBuffer buffer) throws Exception
     {
-        try (InputStream in = new FileInputStream("src/test/resources/json-printer-test-schema.xml"))
+        final Path path = Paths.get("src/test/resources/json-printer-test-schema.xml");
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(path)))
         {
             final MessageSchema schema = XmlSchemaParser.parse(in, ParserOptions.DEFAULT);
             final Ir ir = new IrGenerator().generate(schema);

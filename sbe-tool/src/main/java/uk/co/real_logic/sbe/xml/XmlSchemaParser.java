@@ -73,8 +73,8 @@ public class XmlSchemaParser
     }
 
     /**
-     * Take an {@link InputStream} and parse it generating map of template ID to Message objects, types, and schema
-     * Input could be from {@link java.io.FileInputStream}, {@link java.io.ByteArrayInputStream}, etc.
+     * Take an {@link InputStream} and parse it generating map of template ID to Message objects, types, and schema.
+     *
      * Exceptions are passed back up for any problems.
      *
      * @param in      stream from which schema is read.
