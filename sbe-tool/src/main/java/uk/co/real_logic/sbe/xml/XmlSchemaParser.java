@@ -347,12 +347,12 @@ public class XmlSchemaParser
 
         return
             "at " +
-                "<" + parentNode.getNodeName() +
-                (getAttributeValueOrNull(parentNode, "name") == null ?
-                    ">" : (" name=\"" + getAttributeValueOrNull(parentNode, "name") + "\"> ")) +
-                "<" + node.getNodeName() +
-                (getAttributeValueOrNull(node, "name") == null ?
-                    ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
+            "<" + parentNode.getNodeName() +
+            (getAttributeValueOrNull(parentNode, "name") == null ?
+                ">" : (" name=\"" + getAttributeValueOrNull(parentNode, "name") + "\"> ")) +
+            "<" + node.getNodeName() +
+            (getAttributeValueOrNull(node, "name") == null ?
+                ">" : (" name=\"" + getAttributeValueOrNull(node, "name") + "\"> "));
     }
 
     @FunctionalInterface
