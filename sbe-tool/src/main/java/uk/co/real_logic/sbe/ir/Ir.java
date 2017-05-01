@@ -341,7 +341,6 @@ public class Ir
         }
         while (endSignal != token.signal() || !name.equals(token.name()));
 
-
         updateComponentTokenCounts(typeTokens);
         typesByNameMap.put(name, typeTokens);
 
