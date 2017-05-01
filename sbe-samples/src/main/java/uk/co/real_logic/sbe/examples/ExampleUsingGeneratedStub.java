@@ -19,11 +19,15 @@ import baseline.*;
 import baseline.CarDecoder.PerformanceFiguresDecoder.AccelerationDecoder;
 import org.agrona.concurrent.UnsafeBuffer;
 
-import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 public class ExampleUsingGeneratedStub
 {
@@ -69,7 +73,7 @@ public class ExampleUsingGeneratedStub
         final String encodingFilename = System.getProperty(ENCODING_FILENAME);
         if (encodingFilename != null)
         {
-            try (FileChannel channel = new FileOutputStream(encodingFilename).getChannel())
+            try (FileChannel channel = FileChannel.open(Paths.get(encodingFilename), READ, WRITE, CREATE))
             {
                 byteBuffer.limit(encodingLengthPlusHeader);
                 channel.write(byteBuffer);

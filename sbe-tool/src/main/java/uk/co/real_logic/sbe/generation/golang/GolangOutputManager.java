@@ -19,6 +19,8 @@ import org.agrona.generation.OutputManager;
 import org.agrona.Verify;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import static java.io.File.separatorChar;
 
@@ -34,7 +36,7 @@ public class GolangOutputManager implements OutputManager
      * Create a new {@link OutputManager} for generating golang source files into a given package.
      *
      * @param baseDirectoryName for the generated source code.
-     * @param namespaceName for the generated source code relative to the baseDirectoryName.
+     * @param namespaceName     for the generated source code relative to the baseDirectoryName.
      * @throws IOException if an error occurs during output
      */
     public GolangOutputManager(final String baseDirectoryName, final String namespaceName)
@@ -66,6 +68,7 @@ public class GolangOutputManager implements OutputManager
     public Writer createOutput(final String name) throws IOException
     {
         final File targetFile = new File(outputDir, name + ".go");
-        return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetFile), "UTF-8"));
+
+        return Files.newBufferedWriter(targetFile.toPath(), StandardCharsets.UTF_8);
     }
 }

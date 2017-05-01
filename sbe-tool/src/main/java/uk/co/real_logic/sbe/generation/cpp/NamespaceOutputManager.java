@@ -19,6 +19,8 @@ import org.agrona.generation.OutputManager;
 import org.agrona.Verify;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import static java.io.File.separatorChar;
 
@@ -66,6 +68,6 @@ public class NamespaceOutputManager implements OutputManager
     public Writer createOutput(final String name) throws IOException
     {
         final File targetFile = new File(outputDir, name + ".h");
-        return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetFile), "UTF-8"));
+        return Files.newBufferedWriter(targetFile.toPath(), StandardCharsets.UTF_8);
     }
 }
