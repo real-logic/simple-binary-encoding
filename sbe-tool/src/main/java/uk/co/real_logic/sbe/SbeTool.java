@@ -30,7 +30,9 @@ import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * A tool for running the SBE parser, validator, and code generator.
@@ -243,7 +245,7 @@ public class SbeTool
     public static void validateAgainstSchema(final String sbeSchemaFilename, final String xsdFilename)
         throws Exception
     {
-        try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename)))
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(Paths.get(sbeSchemaFilename))))
         {
             XmlSchemaParser.validate(xsdFilename, in);
         }
@@ -267,7 +269,7 @@ public class SbeTool
                 .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
                 .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
 
-        try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename)))
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(Paths.get(sbeSchemaFilename))))
         {
             return XmlSchemaParser.parse(in, optionsBuilder.build());
         }

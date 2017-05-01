@@ -27,7 +27,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteOrder;
@@ -62,7 +61,7 @@ public class XmlSchemaParser
      * @param in          document to be validated.
      * @throws Exception if an error occurs when parsing the document or schema.
      */
-    public static void validate(final String xsdFilename, final BufferedInputStream in) throws Exception
+    public static void validate(final String xsdFilename, final InputStream in) throws Exception
     {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

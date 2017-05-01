@@ -27,8 +27,12 @@ import org.agrona.Verify;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Paths;
 import java.util.List;
 
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.WRITE;
 import static uk.co.real_logic.sbe.ir.IrUtil.*;
 import static uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder.namespaceNameCharacterEncoding;
 import static uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder.packageNameCharacterEncoding;
@@ -54,7 +58,7 @@ public class IrEncoder implements AutoCloseable
     {
         try
         {
-            channel = new FileOutputStream(fileName).getChannel();
+            channel = FileChannel.open(Paths.get(fileName), READ, WRITE, CREATE);
             resultBuffer = null;
             buffer = ByteBuffer.allocateDirect(CAPACITY);
             directBuffer = new UnsafeBuffer(buffer);

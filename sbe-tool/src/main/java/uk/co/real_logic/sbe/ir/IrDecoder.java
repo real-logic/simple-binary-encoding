@@ -23,14 +23,15 @@ import uk.co.real_logic.sbe.ir.generated.FrameCodecDecoder;
 import uk.co.real_logic.sbe.ir.generated.TokenCodecDecoder;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.file.StandardOpenOption.READ;
 import static uk.co.real_logic.sbe.ir.IrUtil.*;
 
 public class IrDecoder implements AutoCloseable
@@ -56,10 +57,11 @@ public class IrDecoder implements AutoCloseable
     {
         try
         {
-            channel = new RandomAccessFile(fileName, "r").getChannel();
-            final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            channel = FileChannel.open(Paths.get(fileName), READ);
+            final long fileLength = channel.size();
+            final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, fileLength);
             directBuffer = new UnsafeBuffer(buffer);
-            length = channel.size();
+            length = fileLength;
             offset = 0;
         }
         catch (final IOException ex)
