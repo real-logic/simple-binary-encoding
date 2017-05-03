@@ -257,7 +257,7 @@ public class PrimitiveValue
             throw new IllegalStateException("PrimitiveValue is not a byte[] representation");
         }
 
-        return byteArrayValue;
+        return byteArrayValue.clone();
     }
 
     /**
@@ -271,12 +271,12 @@ public class PrimitiveValue
     {
         if (representation == Representation.BYTE_ARRAY)
         {
-            return byteArrayValue;
+            return byteArrayValue.clone();
         }
         else if (representation == Representation.LONG && size == 1 && type == PrimitiveType.CHAR)
         {
             byteArrayValueForLong[0] = (byte)longValue;
-            return byteArrayValueForLong;
+            return byteArrayValueForLong.clone();
         }
 
         throw new IllegalStateException("PrimitiveValue is not a byte[] representation");
