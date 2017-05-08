@@ -79,14 +79,14 @@ namespace sbe {
     #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))
 #endif
    
-#define SBE_NULLVALUE_INT8 std::numeric_limits<std::int8_t>::min()
-#define SBE_NULLVALUE_INT16 std::numeric_limits<std::int16_t>::min()
-#define SBE_NULLVALUE_INT32 std::numeric_limits<std::int32_t>::min()
-#define SBE_NULLVALUE_INT64 std::numeric_limits<std::int64_t>::min()
-#define SBE_NULLVALUE_UINT8 std::numeric_limits<std::uint8_t>::max()
-#define SBE_NULLVALUE_UINT16 std::numeric_limits<std::uint16_t>::max()
-#define SBE_NULLVALUE_UINT32 std::numeric_limits<std::uint32_t>::max()
-#define SBE_NULLVALUE_UINT64 std::numeric_limits<std::uint64_t>::max()
+#define SBE_NULLVALUE_INT8 (std::numeric_limits<std::int8_t>::min)()
+#define SBE_NULLVALUE_INT16 (std::numeric_limits<std::int16_t>::min)()
+#define SBE_NULLVALUE_INT32 (std::numeric_limits<std::int32_t>::min)()
+#define SBE_NULLVALUE_INT64 (std::numeric_limits<std::int64_t>::min)()
+#define SBE_NULLVALUE_UINT8 (std::numeric_limits<std::uint8_t>::max)()
+#define SBE_NULLVALUE_UINT16 (std::numeric_limits<std::uint16_t>::max)()
+#define SBE_NULLVALUE_UINT32 (std::numeric_limits<std::uint32_t>::max)()
+#define SBE_NULLVALUE_UINT64 (std::numeric_limits<std::uint64_t>::max)()
 
 namespace MetaAttribute {
 
