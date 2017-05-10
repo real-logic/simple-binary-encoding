@@ -91,5 +91,25 @@ gocode/src/example-schema/cpu.out
 gocode/src/extension
 gocode/src/extension2
 
+# csharp
+csharp/*/bin
+csharp/*/obj
+csharp/.nuget/sbe-tool*.nupkg
+csharp/.nuget/sbe-tool-all.jar
+csharp/.nuget/examples/bin
+csharp/.nuget/examples/obj
+csharp/.nuget/examples/packages
+csharp/.nuget/examples/.vs
+csharp/.vs
+csharp/TestResults
+csharp/packages
+csharp/sbe-generated/baseline
+csharp/sbe-generated/baseline-bigendian
+csharp/sbe-generated/extension
+csharp/sbe-generated/issue435
+csharp/sbe-generated/since-deprecated
+csharp/sbe-generated/mktdata/*.cs
+csharp/sbe-generated/uk_co_real_logic_sbe_benchmarks_fix
+
 # Mac
 .DS_Store

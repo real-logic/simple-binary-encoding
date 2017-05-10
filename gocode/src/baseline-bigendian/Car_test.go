@@ -20,7 +20,7 @@ func TestEncodeDecodeCar(t *testing.T) {
 	optionalExtras[OptionalExtrasChoice.SportsPack] = true
 
 	var engine Engine
-	engine = Engine{2000, 4, 0, manufacturerCode, [6]byte{}, EngineBooster{BoostType.NITROUS, 200}}
+	engine = Engine{2000, 4, 0, manufacturerCode, [6]byte{}, 42, BooleanType.T, EngineBooster{BoostType.NITROUS, 200}}
 
 	manufacturer := []uint8("Honda")
 	model := []uint8("Civic VTi")
@@ -122,7 +122,7 @@ func TestDecodeJavaBuffer(t *testing.T) {
 	buf := bytes.NewBuffer(data)
 	m := NewSbeGoMarshaller()
 
-	var hdr MessageHeader
+	var hdr SbeGoMessageHeader
 	if err := hdr.Decode(m, buf); err != nil {
 		t.Logf("Failed to decode message header", err)
 		t.Fail()

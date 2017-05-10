@@ -1,5 +1,6 @@
 /*
  * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2017 MarketFactory Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -313,6 +314,10 @@ public class XmlSchemaParser
         if (!ValidationUtil.isSbeGolangName(name))
         {
             handleWarning(node, "name is not valid for Golang: " + name);
+        }
+        if (!ValidationUtil.isSbeCsharpName(name))
+        {
+            handleWarning(node, "name is not valid for Csharp: " + name);
         }
     }
 
