@@ -181,8 +181,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "private int _offset;\n\n",
             formatClassName(groupName),
             dimensionsClassName,
-            parentMessageClassName
-        ));
+            parentMessageClassName));
 
         sb.append(String.format(
             indent + INDENT + "public void WrapForDecode(%s parentMessage, DirectBuffer buffer, int actingVersion)\n" +
@@ -196,8 +195,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_index = -1;\n" +
             indent + INDENT + INDENT + "_parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + INDENT + "}\n\n",
-            parentMessageClassName
-        ));
+            parentMessageClassName));
 
         final int blockLength = tokens.get(index).encodedLength();
         final String typeForBlockLength = cSharpTypeName(tokens.get(index + 2).encoding().primitiveType());
@@ -219,21 +217,19 @@ public class CSharpGenerator implements CodeGenerator
             parentMessageClassName,
             typeForBlockLength,
             blockLength,
-            typeForNumInGroup
-        ));
+            typeForNumInGroup));
 
         sb.append(String.format(
-                indent + INDENT + "public const int SbeBlockLength = %d;\n" +
-                indent + INDENT + "public const int SbeHeaderSize = %d;\n",
-                blockLength,
-                dimensionHeaderLength
-        ));
+            indent + INDENT + "public const int SbeBlockLength = %d;\n" +
+            indent + INDENT + "public const int SbeHeaderSize = %d;\n",
+            blockLength,
+            dimensionHeaderLength));
 
-        sb.append(String.format(
+        sb.append(
             indent + INDENT + "public int ActingBlockLength { get { return _blockLength; } }\n\n" +
             indent + INDENT + "public int Count { get { return _count; } }\n\n" +
             indent + INDENT + "public bool HasNext { get { return (_index + 1) < _count; } }\n\n"
-        ));
+        );
 
         sb.append(String.format(
             indent + INDENT + "public %sGroup Next()\n" +
@@ -247,8 +243,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "++_index;\n\n" +
             indent + INDENT + INDENT + "return this;\n" +
             indent + INDENT + "}\n",
-            formatClassName(groupName)
-        ));
+            formatClassName(groupName)));
     }
 
     private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)
@@ -262,15 +257,13 @@ public class CSharpGenerator implements CodeGenerator
             indent + "private readonly %sGroup _%s = new %sGroup();\n",
             className,
             toLowerFirstChar(groupName),
-            className
-        ));
+            className));
 
         sb.append(String.format(
             "\n" +
             indent + "public const long %sId = %d;\n",
             toUpperFirstChar(groupName),
-            token.id()
-        ));
+            token.id()));
 
         generateSinceActingDeprecated(sb, indent, toUpperFirstChar(groupName), token);
 
@@ -286,8 +279,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "}\n",
             className,
             toUpperFirstChar(groupName),
-            toLowerFirstChar(groupName)
-        ));
+            toLowerFirstChar(groupName)));
 
         sb.append(String.format(
             "\n" +
@@ -298,8 +290,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "}\n",
             className,
             toUpperFirstChar(groupName),
-            toLowerFirstChar(groupName)
-        ));
+            toLowerFirstChar(groupName)));
 
         return sb;
     }
@@ -332,11 +323,10 @@ public class CSharpGenerator implements CodeGenerator
                 final String byteOrderStr = generateByteOrder(byteOrder, lengthEncoding.primitiveType().size());
 
                 sb.append(String.format(
-                        "\n" +
-                            indent + "public const int %sHeaderSize = %d;\n",
-                        propertyName,
-                        sizeOfLengthField
-                ));
+                    "\n" +
+                        indent + "public const int %sHeaderSize = %d;\n",
+                    propertyName,
+                    sizeOfLengthField));
 
                 sb.append(String.format(
                     "\n" +
@@ -435,7 +425,7 @@ public class CSharpGenerator implements CodeGenerator
     }
 
     private CharSequence generateCompositePropertyElements(
-            final String containingClassName, final List<Token> tokens, final String indent)
+        final String containingClassName, final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -696,8 +686,7 @@ public class CSharpGenerator implements CodeGenerator
             generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
             typePrefix,
             offset,
-            byteOrderStr
-        ));
+            byteOrderStr));
 
         return sb;
     }
@@ -739,8 +728,7 @@ public class CSharpGenerator implements CodeGenerator
 
         return String.format(
             indent + INDENT + INDENT + "if (actingVersion < %d) return 0;\n\n",
-            sinceVersion
-        );
+            sinceVersion);
     }
 
     private CharSequence generateTypeFieldNotPresentCondition(
@@ -754,8 +742,7 @@ public class CSharpGenerator implements CodeGenerator
 
         return String.format(
             indent + INDENT + INDENT + "if (actingVersion < %d) return null;\n\n",
-            sinceVersion
-        );
+            sinceVersion);
     }
 
     private CharSequence generateArrayProperty(
@@ -778,8 +765,7 @@ public class CSharpGenerator implements CodeGenerator
             "\n" +
             indent + "public const int %sLength = %d;\n\n",
             propName,
-            fieldLength
-        ));
+            fieldLength));
 
         sb.append(String.format(
             indent + "public %1$s Get%2$s(int index)\n" +
@@ -859,6 +845,7 @@ public class CSharpGenerator implements CodeGenerator
                 fieldLength,
                 offset));
         }
+
         return sb;
     }
 
@@ -872,8 +859,7 @@ public class CSharpGenerator implements CodeGenerator
             "\n" +
             indent + "public const string %sCharacterEncoding = \"%s\";\n\n",
             formatPropertyName(propertyName),
-            encoding
-        ));
+            encoding));
     }
 
     private CharSequence generateConstPropertyMethods(
@@ -890,8 +876,7 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + "public %1$s %2$s { get { return %3$s; } }\n",
                 cSharpTypeName(token.encoding().primitiveType()),
                 toUpperFirstChar(propertyName),
-                generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString())
-            );
+                generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString()));
         }
 
         final StringBuilder sb = new StringBuilder();
@@ -905,15 +890,13 @@ public class CSharpGenerator implements CodeGenerator
             "\n" +
             indent + INDENT + "private static readonly byte[] _%1$sValue = { %2$s };\n",
             propertyName,
-            values
-        ));
+            values));
 
         sb.append(String.format(
             "\n" +
             indent + INDENT + "public const int %1$sLength = %2$d;\n",
             toUpperFirstChar(propertyName),
-            constantValue.length
-        ));
+            constantValue.length));
 
         sb.append(String.format(
             indent + INDENT + "public %1$s %2$s(int index)\n" +
@@ -922,8 +905,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "}\n\n",
             javaTypeName,
             toUpperFirstChar(propertyName),
-            propertyName
-        ));
+            propertyName));
 
         sb.append(String.format(
             indent + INDENT + "public int Get%1$s(byte[] dst, int offset, int length)\n" +
@@ -934,8 +916,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "}\n",
             toUpperFirstChar(propertyName),
             constantValue.length,
-            propertyName
-        ));
+            propertyName));
 
         return sb;
     }
@@ -969,8 +950,7 @@ public class CSharpGenerator implements CodeGenerator
             INDENT + INDENT + INDENT + "_buffer = buffer;\n" +
             INDENT + INDENT + "}\n\n" +
             INDENT + INDENT + "public const int Size = %d;\n",
-            size
-        );
+            size);
     }
 
     private CharSequence generateMessageFlyweightCode(final String className, final Token token, final String indent)
@@ -1092,8 +1072,8 @@ public class CSharpGenerator implements CodeGenerator
             "\n" +
             indent + "public const int %sId = %d;\n",
             CSharpUtil.formatPropertyName(token.name()),
-            token.id()
-        ));
+            token.id()));
+
         generateSinceActingDeprecated(sb, indent, CSharpUtil.formatPropertyName(token.name()), token);
     }
 
@@ -1119,8 +1099,7 @@ public class CSharpGenerator implements CodeGenerator
             toUpperFirstChar(token.name()),
             epoch,
             timeUnit,
-            semanticType
-        ));
+            semanticType));
     }
 
     private CharSequence generateEnumFieldNotPresentCondition(
@@ -1136,8 +1115,7 @@ public class CSharpGenerator implements CodeGenerator
         return String.format(
             indent + INDENT + INDENT + "if (_actingVersion < %d) return %s.NULL_VALUE;\n\n",
             sinceVersion,
-            enumName
-        );
+            enumName);
     }
 
     private CharSequence generateEnumProperty(final String propertyName, final Token token, final String indent)
@@ -1172,8 +1150,7 @@ public class CSharpGenerator implements CodeGenerator
             typePrefix,
             offset,
             byteOrderStr,
-            enumUnderlyingType
-        ));
+            enumUnderlyingType));
 
         return sb;
     }
@@ -1210,8 +1187,7 @@ public class CSharpGenerator implements CodeGenerator
             typePrefix,
             offset,
             byteOrderStr,
-            typeName
-        ));
+            typeName));
 
         return sb;
     }
@@ -1227,8 +1203,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "private readonly %1$s _%2$s = new %3$s();\n",
             compositeName,
             toLowerFirstChar(propertyName),
-            compositeName
-        ));
+            compositeName));
 
         sb.append(String.format(
             "\n" +
@@ -1245,8 +1220,7 @@ public class CSharpGenerator implements CodeGenerator
             toUpperFirstChar(propertyName),
             generateTypeFieldNotPresentCondition(token.version(), indent),
             toLowerFirstChar(propertyName),
-            offset
-        ));
+            offset));
 
         return sb;
     }
@@ -1268,6 +1242,7 @@ public class CSharpGenerator implements CodeGenerator
             token.version(),
             token.deprecated()));
     }
+
     private String generateByteOrder(final ByteOrder byteOrder, final int primitiveTypeSize)
     {
         if (primitiveTypeSize == 1)
