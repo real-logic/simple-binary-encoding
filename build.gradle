@@ -82,6 +82,12 @@ def projectPom = {
             email = 'richard.warburton@gmail.com'
             url = 'https://github.com/RichardWarburton'
         }
+        developer {
+            id = 'BillSegall'
+            name = 'Bill Segall'
+            email = 'bill.segall@gmail.com'
+            url = 'https://github.com/BillSegall'
+        }
     }
 }
 
@@ -500,7 +506,7 @@ task(generateGolangCodecsWithXSD, type:JavaExec) {
              'sbe-tool/src/test/resources/FixBinary.xml',
              'sbe-tool/src/test/resources/issue435.xml',
              'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
-             'gocode/resources/example-bigendian.xml',
+             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
              'gocode/resources/example-composite.xml',
              'gocode/resources/example-extension-2-schema.xml',
              'gocode/resources/group-with-data-extension-schema.xml',
@@ -516,6 +522,24 @@ task generateGolangCodecs {
         'generateGolangCodecTestBasic',
         'generateGolangCodecTestComposite',
         'generateGolangCodecsWithXSD'
+}
+
+task(generateCsharpCodecs, type:JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+        'sbe.output.dir': 'csharp/sbe-generated',
+        'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.Csharp',
+        'sbe.validation.xsd': validationXsdPath)
+    args = [ 
+             'sbe-tool/src/test/resources/FixBinary.xml',
+             'sbe-tool/src/test/resources/issue435.xml',
+             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
+             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
+             'sbe-samples/src/main/resources/example-schema.xml',
+             'sbe-samples/src/main/resources/example-extension-schema.xml',
+             'sbe-benchmarks/src/main/resources/fix-message-samples.xml'
+           ]
 }
 
 task(generateJavaIrCodecs, type: JavaExec) {

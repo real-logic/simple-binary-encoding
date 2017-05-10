@@ -1,5 +1,6 @@
 /*
  * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2017 MarketFactory Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +94,7 @@ public class ErrorHandlerTest
         parseTestXmlAddToMap(map, "/types/set", testXmlString, handler);
 
         assertThat(valueOf(handler.errorCount()), is(valueOf(3)));
-        assertThat(valueOf(handler.warningCount()), is(valueOf(26)));
+        assertThat(valueOf(handler.warningCount()), is(valueOf(33)));
     }
 
     @Test
@@ -173,7 +174,7 @@ public class ErrorHandlerTest
         throws Exception
     {
         exceptionRule.expect(IllegalStateException.class);
-        exceptionRule.expectMessage("had 12 warnings");
+        exceptionRule.expectMessage("had 16 warnings");
 
         final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 

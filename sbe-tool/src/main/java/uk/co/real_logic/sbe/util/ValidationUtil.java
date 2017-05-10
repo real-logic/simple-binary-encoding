@@ -291,4 +291,120 @@ public class ValidationUtil
         return Character.isLetterOrDigit(c) || c == '_';
     }
 
+    private static final Set<String> CSHARP_KEYWORDS = new HashSet<>(
+        Arrays.asList(new String[]
+        {
+            /**
+             * https://docs.microsoft.com/en-gb/dotnet/articles/csharp/language-reference/keywords/index
+             * Note this does not include the contextual keywords
+             * Note "virtual" is no longer but was in early versions of C#
+             */
+            "abstract", "as",       "base",       "bool",         "break",
+            "byte",     "case",     "catch",      "char",         "checked",
+            "class",    "const",    "continue",   "decimal",      "default",
+            "delegate", "do",       "double",     "else",         "enum",
+            "event",    "explicit", "extern",     "false",        "finally",
+            "fixed",    "float",    "for",        "foreach",      "goto",
+            "if",       "implicit", "in",         "int",          "interface",
+            "internal", "is",       "lock",       "long",         "namespace",
+            "new",      "null",     "object",     "operator",     "out",
+            "override", "params",   "private",    "protected",    "public",
+            "readonly", "ref",      "return",     "sbyte",        "sealed",
+            "short",    "sizeof",   "stackalloc", "static",       "string",
+            "struct",   "switch",   "this",       "throw",        "true",
+            "try",      "typeof",   "uint",       "ulong",        "unchecked",
+            "unsafe",   "ushort",   "using",      "using static", "virtual",
+            "void",     "volatile", "while"
+        }));
+
+    /**
+     * "Check" value for validity of usage as a csharp identifier.
+     * https://msdn.microsoft.com/en-us/library/aa664670(v=vs.71).aspx
+     ( Which basically boils down to
+     *
+     * first subsequent*
+     * first is { @ | letter | underscore }
+     * subsequent is { first | digit | connecing | combining | formatting }*
+     *
+     * letter is Lu, Ll, Lt, Lm, Lo, or Nl (possibly escaped)
+     * digit is Nd (possibly escaped)
+     * connecting is Pc (possibly escaped)
+     * combining is Mn or Mc (possibly escaped)
+     * formatting is Cf (possibly escaped)
+     *
+     * so that all becomes:
+     * { @ | _ | Lu | Ll | Lt | Lm | Lo | Nl } { @ | _ | Lu | Ll | Lt | Lm | Lo | Nl | Nd | Pc | Mn | Mc | Cf}*
+     *
+     * @param value to check
+     * @return true for validity as a csharp name. false if not.
+     */
+    public static boolean isSbeCsharpName(final String value)
+    {
+        if (possibleCsharpKeyword(value))
+        {
+            if (isCsharpKeyword(value))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isCsharpKeyword(final String token)
+    {
+        return CSHARP_KEYWORDS.contains(token);
+    }
+
+    private static boolean possibleCsharpKeyword(final String value)
+    {
+        for (int i = 0, size = value.length(); i < size; i++)
+        {
+            final char c = value.charAt(i);
+
+            if (i == 0 && isSbeCsharpIdentifierStart(c))
+            {
+                continue;
+            }
+
+            if (isSbeCsharpIdentifierPart(c))
+            {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean isSbeCsharpIdentifierStart(final char c)
+    {
+        return Character.isLetter(c) || c == '_' || c == '@';
+    }
+
+    private static boolean isSbeCsharpIdentifierPart(final char c)
+    {
+        if (isSbeCsharpIdentifierStart(c))
+        {
+            return true;
+        }
+
+        switch (Character.getType(c))
+        {
+            case Character.NON_SPACING_MARK: // Mn
+            case Character.COMBINING_SPACING_MARK: // Mc
+            case Character.DECIMAL_DIGIT_NUMBER: // Nd
+            case Character.CONNECTOR_PUNCTUATION: // Pc
+            case Character.FORMAT: // Cf
+                return true;
+            default:
+                return false;
+        }
+    }
+
 }

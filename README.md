@@ -3,7 +3,7 @@ Simple Binary Encoding (SBE)
 
 [SBE](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) is an OSI layer 6 presentation for 
 encoding and decoding binary application messages for low-latency financial applications. This repository contains 
-the reference implementations in Java, C++, and Golang.
+the reference implementations in Java, C++, Golang, and Csharp.
 
 Further details on the background and usage of SBE can be found on the
 [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
@@ -13,13 +13,15 @@ An XSD for SBE specs can be found
 
 For the latest version information and changes see the [Change Log](https://github.com/real-logic/simple-binary-encoding/wiki/Change-Log) with **downloads** at [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Csbe). 
 
-This SBE implementation is designed with work very efficiently with the [Aeron](https://github.com/real-logic/Aeron) 
-messaging system for low-latency and high-throughput communications. SBE has a dependency on [Agrona](https://github.com/real-logic/Agrona) 
-for its buffer implementations.
+The Java and C++ SBE implementations are designed with work very efficiently with the
+[Aeron](https://github.com/real-logic/Aeron) messaging system for low-latency and
+high-throughput communications. The Java SBE implementation has a dependency on
+[Agrona](https://github.com/real-logic/Agrona) for its buffer implementations.
 
 License (See LICENSE file for full license)
 -------------------------------------------
 Copyright 2014 - 2017 Real Logic Limited
+Copyright 2017 MarketFactory Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -85,7 +87,6 @@ Jars for the executable, source, and javadoc for the various modules can be foun
 
     <module>/build/libs
 
-
 C++ Build using CMake
 ---------------------
 NOTE: Linux, Mac OS, and Windows only for the moment. See
@@ -124,7 +125,25 @@ tests and containes some examples
     # make # test, examples, bench
 
 Users of golang generated code should see the [user
-documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Golang-User-Guide). Developers
-wishing to enhance the golang generator should see the [developer
+documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Golang-User-Guide).
+
+Developers wishing to enhance the golang generator should see the [developer
 documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/gocode/README.md)
 
+C# Build
+--------
+As of April 2017, the csharp build is considered a preview release. API stability is not yet guaranteed. User and Developer guides are not yet released or are incomplete.
+
+First build using Gradle to generate the SBE jar and then use it to
+generate the C# code used for testing and the examples.
+
+    $ ./gradlew
+    $ ./gradlew generateCsharpCodecs
+
+You can then use the [Visual Studio 2017 Community solution](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharp.sln) to build and explore the
+example. This solution also builds some tests which can be run via the provided
+[runtests.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/runtests.sh) script.
+
+Users of csharp generated code should see the [user documentation (coming)](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide).
+
+Developers wishing to enhance the csharp generator should see the [developer documentation (coming)](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/README.md)
