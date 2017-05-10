@@ -26,6 +26,5 @@ public class Csharp implements TargetCodeGenerator
     public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
     {
         return new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
-
     }
 }
