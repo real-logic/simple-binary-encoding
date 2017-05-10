@@ -223,13 +223,17 @@ public class CppGenerator implements CodeGenerator
             indent + "    inline void wrapForEncode(char *buffer, const %3$s count," +
                 " std::uint64_t *pos, const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
             indent + "    {\n" +
+            indent + "#if defined(__GNUG__) && !defined(__clang__)\n" +
             indent + "#pragma GCC diagnostic push\n" +
             indent + "#pragma GCC diagnostic ignored \"-Wtype-limits\"\n" +
+            indent + "#endif\n" +
             indent + "        if (count < %5$d || count > %6$d)\n" +
             indent + "        {\n" +
             indent + "            throw std::runtime_error(\"count outside of allowed range [E110]\");\n" +
             indent + "        }\n" +
+            indent + "#if defined(__GNUG__) && !defined(__clang__)\n" +
             indent + "#pragma GCC diagnostic pop\n" +
+            indent + "#endif\n" +
             indent + "        m_buffer = buffer;\n" +
             indent + "        m_bufferLength = bufferLength;\n" +
             indent + "        m_dimensions.wrap(m_buffer, *pos, actingVersion, bufferLength);\n" +
@@ -363,10 +367,14 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n\n" +
             indent + "    bool %1$sInActingVersion()\n" +
             indent + "    {\n" +
+            indent + "#if defined(__clang__)\n" +
             indent + "#pragma clang diagnostic push\n" +
             indent + "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
+            indent + "#endif\n" +
             indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
+            indent + "#if SBE_SBE_CLANG\n" +
             indent + "#pragma clang diagnostic pop\n" +
+            indent + "#endif\n" +
             indent + "    }\n",
             propertyName,
             token.version()));
@@ -522,10 +530,14 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n\n" +
             indent + "    bool %1$sInActingVersion()\n" +
             indent + "    {\n" +
+            indent + "#if defined(__clang__)\n" +
             indent + "#pragma clang diagnostic push\n" +
             indent + "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
+            indent + "#endif\n" +
             indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
+            indent + "#if defined(__clang__)\n" +
             indent + "#pragma clang diagnostic pop\n" +
+            indent + "#endif\n" +
             indent + "    }\n\n" +
             indent + "    static SBE_CONSTEXPR std::uint16_t %1$sId()\n" +
             indent + "    {\n" +
@@ -1414,10 +1426,14 @@ public class CppGenerator implements CodeGenerator
                     indent + "    }\n\n" +
                     indent + "    bool %1$sInActingVersion()\n" +
                     indent + "    {\n" +
+                    indent + "#if defined(__clang__)\n" +
                     indent + "#pragma clang diagnostic push\n" +
                     indent + "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
+                    indent + "#endif\n" +
                     indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
+                    indent + "#if defined(__clang__)\n" +
                     indent + "#pragma clang diagnostic pop\n" +
+                    indent + "#endif\n" +
                     indent + "    }\n\n",
                     propertyName,
                     signalToken.version()));
