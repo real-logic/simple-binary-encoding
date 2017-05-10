@@ -315,9 +315,10 @@ public class XmlSchemaParser
         {
             handleWarning(node, "name is not valid for Golang: " + name);
         }
-        if (!ValidationUtil.isSbeCsharpName(name))
+
+        if (!ValidationUtil.isSbeCSharpName(name))
         {
-            handleWarning(node, "name is not valid for Csharp: " + name);
+            handleWarning(node, "name is not valid for C#: " + name);
         }
     }
 

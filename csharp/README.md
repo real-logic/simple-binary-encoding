@@ -19,7 +19,7 @@ The Java code that performs the generation of C# code is
 [here](https://github.com/real-logic/simple-binary-encoding/tree/master/sbe-tool/src/main/java/uk/co/real_logic/sbe/generation/csharp).
 
     $ ./gradlew                       # Will build sbe-tool jar
-    $ ./gradlew generateCsharpCodecs  # will generate the test, benchmark, and example C# code
+    $ ./gradlew generateCSharpCodecs  # will generate the test, benchmark, and example C# code
 
 The [Visual Studio 2017 Community
 solution](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharp.sln) provides the projects:
@@ -46,7 +46,7 @@ Want to build things yourself?
 
 For now you can:
  * build the SBE csharp generator using `gradlew`
- * generate the csharp codecs using `gradlew GenerateCsharpCodecs`
+ * generate the csharp codecs using `gradlew GenerateCSharpCodecs`
  * Use the [Visual Studio 2017 Community solution](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharp.sln) to build the solution, run the unit tests, examples and benchmarks
  * Use the bash script [runtests.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/runtests.sh) to run the tests
  * Build the nuget package via [do-release.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/.nuget/do-release.sh) although this remains a largely manual process.

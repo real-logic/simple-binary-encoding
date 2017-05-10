@@ -21,7 +21,7 @@ import uk.co.real_logic.sbe.ir.Ir;
 
 import java.io.IOException;
 
-public class Csharp implements TargetCodeGenerator
+public class CSharp implements TargetCodeGenerator
 {
     public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
     {

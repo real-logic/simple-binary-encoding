@@ -3,7 +3,7 @@ Simple Binary Encoding (SBE)
 
 [SBE](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) is an OSI layer 6 presentation for 
 encoding and decoding binary application messages for low-latency financial applications. This repository contains 
-the reference implementations in Java, C++, Golang, and Csharp.
+the reference implementations in Java, C++, Golang, and C#.
 
 Further details on the background and usage of SBE can be found on the
 [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
@@ -138,7 +138,7 @@ First build using Gradle to generate the SBE jar and then use it to
 generate the C# code used for testing and the examples.
 
     $ ./gradlew
-    $ ./gradlew generateCsharpCodecs
+    $ ./gradlew generateCSharpCodecs
 
 You can then use the [Visual Studio 2017 Community solution](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharp.sln) to build and explore the
 example. This solution also builds some tests which can be run via the provided

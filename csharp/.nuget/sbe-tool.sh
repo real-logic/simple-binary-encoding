@@ -37,6 +37,6 @@ if [ ! -f $SCHEMA ]; then echo no schema at $SCHEMA; exit 1; fi
 java \
 -Dsbe.output.dir=$OUTPUTDIR \
 -Dsbe.generate.ir="false" \
--Dsbe.target.language="uk.co.real_logic.sbe.generation.csharp.Csharp" \
+-Dsbe.target.language="uk.co.real_logic.sbe.generation.csharp.CSharp" \
 -jar $SBE_JAR \
 $SCHEMA

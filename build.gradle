@@ -524,14 +524,14 @@ task generateGolangCodecs {
         'generateGolangCodecsWithXSD'
 }
 
-task(generateCsharpCodecs, type:JavaExec) {
+task(generateCSharpCodecs, type:JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'csharp/sbe-generated',
-        'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.Csharp',
+        'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
         'sbe.validation.xsd': validationXsdPath)
-    args = [ 
+    args = [
              'sbe-tool/src/test/resources/FixBinary.xml',
              'sbe-tool/src/test/resources/issue435.xml',
              'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
