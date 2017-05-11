@@ -372,7 +372,7 @@ public class CppGenerator implements CodeGenerator
             indent + "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
             indent + "#endif\n" +
             indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
-            indent + "#if SBE_SBE_CLANG\n" +
+            indent + "#if defined(__clang__)\n" +
             indent + "#pragma clang diagnostic pop\n" +
             indent + "#endif\n" +
             indent + "    }\n",
