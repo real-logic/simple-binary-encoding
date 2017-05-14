@@ -47,7 +47,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.6.2</version>
+    <version>1.7.0</version>
 </dependency>
 ```
 
@@ -132,7 +132,7 @@ documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/
 
 C# Build
 --------
-As of April 2017, the csharp build is considered a preview release. API stability is not yet guaranteed. User and Developer guides are not yet released or are incomplete.
+As of May 2017, the csharp build is considered a preview release. API stability is not yet guaranteed. User and Developer guides are not yet released or are incomplete.
 
 First build using Gradle to generate the SBE jar and then use it to
 generate the C# code used for testing and the examples.
