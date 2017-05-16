@@ -1167,6 +1167,11 @@ public class CppGenerator implements CodeGenerator
                 indent + "    {\n" +
                 indent + "        return %3$s;\n" +
                 indent + "    }\n",
+                "\n" +
+                indent + "    static SBE_CONSTEXPR const %1$s %2$sConst(void)\n" +
+                indent + "    {\n" +
+                indent + "        return %3$s;\n" +
+                indent + "    }\n",
                 cppTypeName,
                 propertyName,
                 generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString()));
