@@ -16,15 +16,10 @@
     <tags>SBE Marshaling Low Latency Simple Binary Encoding</tags>
   </metadata>
   <files>
-    <file src="..\sbe-dll\bin\**\SBE.*" target="lib\net45" />
-    <file src="sbe-tool.sh" target="bin\net45" />
-    <file src="sbe-tool-all.jar" target="bin\net45" />
-    <file src="examples/App.config" target="examples" />
-    <file src="examples/*.cs" target="examples" />
-    <file src="examples/Properties/AssemblyInfo.cs" target="examples" />
-    <file src="examples/baseline/*.cs" target="examples" />
-    <file src="examples/example-schema.xml" target="examples" />
-    <file src="examples/sbe-example.sln" target="examples" />
-    <file src="examples/sbe-samples-car.csproj" target="examples" />
+    <file src="..\sbe-dll\bin\Release\**\SBE.*" target="lib" />	
+    <file src="readme.txt" target="" />
+    <file src="sbe-tool.sh" target="tools" />
+    <file src="sbe-tool-all.jar" target="tools" />
+    <file src="examples\**" exclude="**\obj\**;**\bin\**" target="src\examples" />
   </files>
 </package>
