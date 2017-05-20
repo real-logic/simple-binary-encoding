@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sbe-dll", "sbe-dll\sbe-dll.csproj", "{CE883FD9-14A5-409C-AEBC-86BEA4E3C502}"
 EndProject
@@ -11,10 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sbe-samples-extension", "sb
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DF19E161-4491-4C5E-9393-70B1CD14315E}"
 	ProjectSection(SolutionItems) = preProject
-		build.xml = build.xml
-		GlobalAssemblyInfo.cs = GlobalAssemblyInfo.cs
 		README.md = README.md
-		TrackJavaCommits.txt = TrackJavaCommits.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sbe-benchmarks", "sbe-benchmarks\sbe-benchmarks.csproj", "{B4A22C65-AC09-43A7-B7D6-141A0B9EC0E0}"
