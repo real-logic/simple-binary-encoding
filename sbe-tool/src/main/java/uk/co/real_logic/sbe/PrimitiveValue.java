@@ -59,18 +59,18 @@ public class PrimitiveValue
     public static final long NULL_VALUE_INT32 = -2147483648;
 
     public static final long MIN_VALUE_UINT32 = 0;
-    public static final long MAX_VALUE_UINT32 = 4294967293L; // 0xFFFFFFFD
-    public static final long NULL_VALUE_UINT32 = 4294967294L; // 0xFFFFFFFE
+    public static final long MAX_VALUE_UINT32 = 0xFFFF_FFFFL - 1;
+    public static final long NULL_VALUE_UINT32 = 0xFFFF_FFFFL;
 
-    public static final long MIN_VALUE_INT64 = Long.MIN_VALUE + 1;  // (-2 ^ 63) + 1
-    public static final long MAX_VALUE_INT64 = Long.MAX_VALUE;      // (2 ^ 63) - 1  (SBE spec says (-2 ^ 63) - 1)
-    public static final long NULL_VALUE_INT64 = Long.MIN_VALUE;     // (-2 ^ 63)
+    public static final long MIN_VALUE_INT64 = Long.MIN_VALUE + 1; // (-2 ^ 63) + 1
+    public static final long MAX_VALUE_INT64 = Long.MAX_VALUE;     // ( 2 ^ 63) - 1
+    public static final long NULL_VALUE_INT64 = Long.MIN_VALUE;    // (-2 ^ 63)
 
     public static final long MIN_VALUE_UINT64 = 0;
     public static final BigInteger BI_MAX_VALUE_UINT64 = new BigInteger("18446744073709551614");
-    public static final long MAX_VALUE_UINT64 = BI_MAX_VALUE_UINT64.longValue(); // (2 ^ 64)- 2
+    public static final long MAX_VALUE_UINT64 = BI_MAX_VALUE_UINT64.longValue(); // (2 ^ 64) - 2
     public static final BigInteger BI_NULL_VALUE_UINT64 = new BigInteger("18446744073709551615");
-    public static final long NULL_VALUE_UINT64 = BI_NULL_VALUE_UINT64.longValue(); // (2 ^ 64)- 1
+    public static final long NULL_VALUE_UINT64 = BI_NULL_VALUE_UINT64.longValue(); // (2 ^ 64) - 1
 
     public static final float MIN_VALUE_FLOAT = Float.MIN_VALUE;
     public static final float MAX_VALUE_FLOAT = Float.MAX_VALUE;

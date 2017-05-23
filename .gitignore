@@ -24,6 +24,7 @@ GRTAGS
 GPATH
 prop
 out
+.vs/
 
 # cmake
 CMakeFiles
