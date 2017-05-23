@@ -3,22 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sbe-dll", "sbe-dll\sbe-dll.csproj", "{CE883FD9-14A5-409C-AEBC-86BEA4E3C502}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-dll", "sbe-dll\sbe-dll.csproj", "{CE883FD9-14A5-409C-AEBC-86BEA4E3C502}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sbe-samples-car", "sbe-samples\sbe-samples-car.csproj", "{1B325F15-0C54-49F5-A4B9-16088222CC0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-samples-car", "sbe-samples\sbe-samples-car.csproj", "{1B325F15-0C54-49F5-A4B9-16088222CC0E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sbe-samples-extension", "sbe-samples\sbe-samples-extension.csproj", "{3B325F15-0C54-49F5-A4B9-16088222CC0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-samples-extension", "sbe-samples\sbe-samples-extension.csproj", "{3B325F15-0C54-49F5-A4B9-16088222CC0E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DF19E161-4491-4C5E-9393-70B1CD14315E}"
-	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-benchmarks", "sbe-benchmarks\sbe-benchmarks.csproj", "{B4A22C65-AC09-43A7-B7D6-141A0B9EC0E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sbe-benchmarks", "sbe-benchmarks\sbe-benchmarks.csproj", "{B4A22C65-AC09-43A7-B7D6-141A0B9EC0E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-generated", "sbe-generated\sbe-generated.csproj", "{A623D315-CC7F-40D9-ACC1-3A5253FA141D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sbe-generated", "sbe-generated\sbe-generated.csproj", "{A623D315-CC7F-40D9-ACC1-3A5253FA141D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sbe-tests", "sbe-tests\sbe-tests.csproj", "{385951E3-F332-462D-9D4C-DD17A8DBACB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-tests", "sbe-tests\sbe-tests.csproj", "{385951E3-F332-462D-9D4C-DD17A8DBACB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

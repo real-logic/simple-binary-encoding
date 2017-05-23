@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>sbe-tool</id>
-    <version>0.1.7.0-alpha-1</version>
+    <version>0.1.7.1-alpha-2</version>
     <title>Simple Binary Encoding for .NET</title>
     <authors>MarketFactory Inc, Adaptive Consulting</authors>
     <owners>MarketFactory Inc, Adaptive Consulting</owners>

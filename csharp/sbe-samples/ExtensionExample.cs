@@ -20,7 +20,7 @@ using Org.SbeTool.Sbe.Dll;
 
 class Example
 {
-    public static void Main()
+    public static void ExampleMain()
     {
         // This byte array is used for encoding and decoding, this is what you would send on the wire or save to disk
         var byteBuffer = new byte[4096];
@@ -318,7 +318,7 @@ namespace Extension
             }
         }
 
-        public static void Main()
+        public static void ExtensionMain()
         {
             // This byte array is used for encoding and decoding, this is what ou would send on the wire or save to disk
             var byteBuffer = new byte[4096];

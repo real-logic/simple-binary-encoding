@@ -1,10 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <OutputType>exe</OutputType>
+  </PropertyGroup>
+
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
     <OutputTypeEx>exe</OutputTypeEx>
     <RootNamespace>Org.SbeTool.Sbe.Example.Car</RootNamespace>
-    <AssemblyName>Org.SbeTool.Sbe.Example.Car</AssemblyName>    
+    <AssemblyName>Org.SbeTool.Sbe.Example.Car</AssemblyName>
+    <ApplicationIcon />
+    <StartupObject />    
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="ExtensionExample.cs"/>
+    <Compile Remove="ExtensionExample.cs" />
   </ItemGroup>
 
 </Project>

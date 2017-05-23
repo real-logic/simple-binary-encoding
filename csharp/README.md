@@ -34,11 +34,23 @@ Roadmap
 -------
 The csharp generator is as of May 2017 a preview release. API stability is not guaranteed. Documentation is a work in progress. The current roadmap contains: 
 
- * Documentation
+ * Improved Documentation
  * Testing/bug fixes
  * Better nuget Packaging 
- * Dotnet core support (The code is known to work but is not built/distributed for dotnet core)
- * Possible changes to make soem objects iterable
+ * Dotnet standard 2.9 support when available
+ * Possible changes to make group objects accessible without requiring
+   a linear progression.
+
+Nuget Package
+-------------
+The nuget package can be built using ~csharp/.nuget/do-release.sh. It has a dependency on the [nuget.exe]
+(https://dist.nuget.org/index.html).
+
+Before release it will probbalty be necessary to copy in changed files for the example contained in the published nuget
+package. This is a manual process for now.
+
+Once the nuget package is built it can be tested within the example project by adding a local disk path to the nuget
+file locations and then updating sbe-tool within the example. 
 
 
 Want to build things yourself?
@@ -48,5 +60,7 @@ For now you can:
  * build the SBE csharp generator using `gradlew`
  * generate the csharp codecs using `gradlew GenerateCSharpCodecs`
  * Use the [Visual Studio 2017 Community solution](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharp.sln) to build the solution, run the unit tests, examples and benchmarks
+ * Use the command script
+ * [csharpbuild.cmd](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharpbuild.cmd) to build the dotnet core support
  * Use the bash script [runtests.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/runtests.sh) to run the tests
  * Build the nuget package via [do-release.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/.nuget/do-release.sh) although this remains a largely manual process.

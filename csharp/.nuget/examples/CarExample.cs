@@ -19,7 +19,7 @@ using Org.SbeTool.Sbe.Dll;
 
 class Example
 {
-    public static void Main()
+    public static void ExampleMain()
     {
         // This byte array is used for encoding and decoding, this is what you would send on the wire or save to disk
         var byteBuffer = new byte[4096];
@@ -230,7 +230,8 @@ namespace Baseline
             sb.Append("\ncar.engine.Booster.BoostType=").Append(engine.Booster.BoostType);
             sb.Append("\ncar.engine.Booster.HorsePower=").Append(engine.Booster.HorsePower);
 
-            var fuelFiguresGroup = car.FuelFigures; // decode a repeatable group (we will change the API to support foreach soon)
+            // The first way to access a repeating group is by using Next()
+            var fuelFiguresGroup = car.FuelFigures; 
             while (fuelFiguresGroup.HasNext)
             {
                 var fuelFigures = fuelFiguresGroup.Next();
@@ -238,15 +239,14 @@ namespace Baseline
                 sb.Append("\ncar.fuelFigures.mpg=").Append(fuelFigures.Mpg);
             }
 
-            // the nested group
-            var performanceFiguresGroup = car.PerformanceFigures;
-            while (performanceFiguresGroup.HasNext)
+            // The second way to access a repeating group is to use an iterator
+            foreach (Car.PerformanceFiguresGroup performanceFigures in car.PerformanceFigures)
             {
-                var performanceFigures = performanceFiguresGroup.Next();
                 sb.Append("\ncar.performanceFigures.octaneRating=").Append(performanceFigures.OctaneRating);
 
+                // The third way to access a repeating group is loop over the count of elements
                 var accelerationGroup = performanceFigures.Acceleration;
-                while (accelerationGroup.HasNext)
+                for (int i = 0; i < accelerationGroup.Count; i++)
                 {
                     var acceleration = accelerationGroup.Next();
                     sb.Append("\ncar.performanceFigures.acceleration.mph=").Append(acceleration.Mph);
