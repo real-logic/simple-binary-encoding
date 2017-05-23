@@ -1,7 +1,7 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
-@javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.SignalCodec"})
+@javax.annotation.Generated(value = { "uk.co.real_logic.generation.java.JavaGenerator" })
 public enum SignalCodec
 {
     BEGIN_MESSAGE((short)1),

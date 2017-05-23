@@ -3,7 +3,7 @@ package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.MutableDirectBuffer;
 
-@javax.annotation.Generated(value = {"uk.co.real_logic.sbe.ir.generated.MessageHeaderEncoder"})
+@javax.annotation.Generated(value = { "uk.co.real_logic.generation.java.JavaGenerator" })
 @SuppressWarnings("all")
 public class MessageHeaderEncoder
 {

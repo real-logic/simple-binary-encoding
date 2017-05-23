@@ -199,7 +199,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(className))
         {
-            out.append(generateMainHeader(className, ir.applicableNamespace()));
+            out.append(generateMainHeader(ir.applicableNamespace()));
 
             generateAnnotations(indent, className, groups, out, 0, this::encoderName);
             out.append(generateDeclaration(className, implementsString));
@@ -230,7 +230,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(className))
         {
-            out.append(generateMainHeader(className, ir.applicableNamespace()));
+            out.append(generateMainHeader(ir.applicableNamespace()));
 
             generateAnnotations(indent, className, groups, out, 0, this::decoderName);
             out.append(generateDeclaration(className, implementsString));
@@ -968,7 +968,7 @@ public class JavaGenerator implements CodeGenerator
         final String buffer,
         final String fqBuffer) throws IOException
     {
-        out.append(generateFileHeader(typeName, ir.applicableNamespace(), fqBuffer));
+        out.append(generateFileHeader(ir.applicableNamespace(), fqBuffer));
         out.append(generateDeclaration(typeName, ""));
         out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
     }
@@ -981,7 +981,7 @@ public class JavaGenerator implements CodeGenerator
         final String fqBuffer,
         final String implementsString) throws IOException
     {
-        out.append(generateFileHeader(typeName, ir.applicableNamespace(), fqBuffer));
+        out.append(generateFileHeader(ir.applicableNamespace(), fqBuffer));
         out.append(generateDeclaration(typeName, implementsString));
         out.append(generateCompositeFlyweightCode(typeName, token.encodedLength(), buffer));
     }
@@ -992,7 +992,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateEnumFileHeader(enumName, ir.applicableNamespace()));
+            out.append(generateEnumFileHeader(ir.applicableNamespace()));
             out.append(generateEnumDeclaration(enumName));
 
             out.append(generateEnumValues(getMessageBody(tokens)));
@@ -1267,22 +1267,20 @@ public class JavaGenerator implements CodeGenerator
         return String.format("import %s.*;\n\n", JAVA_INTERFACE_PACKAGE);
     }
 
-    private CharSequence generateFileHeader(final String className, final String packageName, final String fqBuffer)
+    private CharSequence generateFileHeader(final String packageName, final String fqBuffer)
     {
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
             "package %s;\n\n" +
             "import %s;\n" +
             "%s" +
-            "@javax.annotation.Generated(value = {\"%s.%s\"})\n",
+            "@javax.annotation.Generated(value = { \"uk.co.real_logic.generation.java.JavaGenerator\" })\n",
             packageName,
             fqBuffer,
-            interfaceImportLine(),
-            packageName,
-            className);
+            interfaceImportLine());
     }
 
-    private CharSequence generateMainHeader(final String className, final String packageName)
+    private CharSequence generateMainHeader(final String packageName)
     {
         if (fqMutableBuffer.equals(fqReadOnlyBuffer))
         {
@@ -1291,12 +1289,10 @@ public class JavaGenerator implements CodeGenerator
                 "package %s;\n\n" +
                 "import %s;\n" +
                 "%s" +
-                "@javax.annotation.Generated(value = {\"%s.%s\"})\n",
+                "@javax.annotation.Generated(value = { \"uk.co.real_logic.generation.java.JavaGenerator\" })\n",
                 packageName,
                 fqMutableBuffer,
-                interfaceImportLine(),
-                packageName,
-                className);
+                interfaceImportLine());
         }
         else
         {
@@ -1306,25 +1302,21 @@ public class JavaGenerator implements CodeGenerator
                 "import %s;\n" +
                 "import %s;\n" +
                 "%s" +
-                "@javax.annotation.Generated(value = {\"%s.%s\"})\n",
+                "@javax.annotation.Generated(value = { \"uk.co.real_logic.generation.java.JavaGenerator\" })\n",
                 packageName,
                 fqMutableBuffer,
                 fqReadOnlyBuffer,
-                interfaceImportLine(),
-                packageName,
-                className);
+                interfaceImportLine());
         }
     }
 
-    private static CharSequence generateEnumFileHeader(final String className, final String packageName)
+    private static CharSequence generateEnumFileHeader(final String packageName)
     {
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
             "package %s;\n\n" +
-            "@javax.annotation.Generated(value = {\"%s.%s\"})\n",
-            packageName,
-            packageName,
-            className);
+            "@javax.annotation.Generated(value = { \"uk.co.real_logic.generation.java.JavaGenerator\" })\n",
+            packageName);
     }
 
     private void generateAnnotations(
@@ -1393,14 +1385,13 @@ public class JavaGenerator implements CodeGenerator
             out.append(String.format(
                 "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
                 "package %s;\n\n" +
-                "@javax.annotation.Generated(value = {\"%s.MetaAttribute\"})\n" +
+                "@javax.annotation.Generated(value = { \"uk.co.real_logic.generation.java.JavaGenerator\" })\n" +
                 "public enum MetaAttribute\n" +
                 "{\n" +
                 "    EPOCH,\n" +
                 "    TIME_UNIT,\n" +
                 "    SEMANTIC_TYPE\n" +
                 "}\n",
-                ir.applicableNamespace(),
                 ir.applicableNamespace()));
         }
     }
@@ -2707,7 +2698,7 @@ public class JavaGenerator implements CodeGenerator
         return sb.toString();
     }
 
-    private StringBuilder appendGroupInstanceDecoderDisplay(
+    private void appendGroupInstanceDecoderDisplay(
         final StringBuilder sb,
         final List<Token> fields,
         final List<Token> groups,
@@ -2726,11 +2717,9 @@ public class JavaGenerator implements CodeGenerator
         Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
         append(sb, indent, "    return builder;");
         append(sb, indent, "}");
-
-        return sb;
     }
 
-    private StringBuilder appendDecoderDisplay(
+    private void appendDecoderDisplay(
         final StringBuilder sb,
         final List<Token> fields,
         final List<Token> groups,
@@ -2823,8 +2812,6 @@ public class JavaGenerator implements CodeGenerator
         {
             sb.setLength(lengthBeforeLastGeneratedSeparator);
         }
-
-        return sb;
     }
 
     private int writeTokenDisplay(
