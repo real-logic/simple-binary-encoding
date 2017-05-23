@@ -20,7 +20,7 @@ namespace Baseline
     {
         public static void Main()
         {
-            Example.Main();
+            Example.ExampleMain();
 
             Console.WriteLine("Press a key to continue...");
             Console.ReadKey();

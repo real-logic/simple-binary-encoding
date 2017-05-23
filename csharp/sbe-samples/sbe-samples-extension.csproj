@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <OutputType>exe</OutputType>
+  </PropertyGroup>
+
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
     <OutputTypeEx>exe</OutputTypeEx>
@@ -8,6 +12,8 @@
     <Copyright>Copyright © 2017 MarketFactory Inc. Copyright © Adaptive 2014. All rights reserved.</Copyright>
     <Description />
     <Product>SBE</Product>
+    <ApplicationIcon />
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>

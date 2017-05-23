@@ -228,9 +228,9 @@ namespace Baseline
             return "";
         }
 
-        public const uint SomeNumbersNullValue = 4294967294U;
+        public const uint SomeNumbersNullValue = 4294967295U;
         public const uint SomeNumbersMinValue = 0U;
-        public const uint SomeNumbersMaxValue = 4294967293U;
+        public const uint SomeNumbersMaxValue = 4294967294U;
 
         public const int SomeNumbersLength = 5;
 
@@ -509,6 +509,14 @@ namespace Baseline
                 return this;
             }
 
+            public System.Collections.IEnumerator GetEnumerator()
+            {
+                while (this.HasNext)
+                {
+                    yield return this.Next();
+                }
+            }
+
             public const int SpeedId = 11;
             public const int SpeedSinceVersion = 0;
             public const int SpeedDeprecated = 0;
@@ -716,6 +724,14 @@ namespace Baseline
                 return this;
             }
 
+            public System.Collections.IEnumerator GetEnumerator()
+            {
+                while (this.HasNext)
+                {
+                    yield return this.Next();
+                }
+            }
+
             public const int OctaneRatingId = 14;
             public const int OctaneRatingSinceVersion = 0;
             public const int OctaneRatingDeprecated = 0;
@@ -834,6 +850,14 @@ namespace Baseline
                     ++_index;
 
                     return this;
+                }
+
+                public System.Collections.IEnumerator GetEnumerator()
+                {
+                    while (this.HasNext)
+                    {
+                        yield return this.Next();
+                    }
                 }
 
                 public const int MphId = 16;

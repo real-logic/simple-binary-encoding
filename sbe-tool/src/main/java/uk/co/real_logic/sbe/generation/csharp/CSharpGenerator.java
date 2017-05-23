@@ -242,8 +242,17 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_parentMessage.Limit = _offset + _blockLength;\n" +
             indent + INDENT + INDENT + "++_index;\n\n" +
             indent + INDENT + INDENT + "return this;\n" +
-            indent + INDENT + "}\n",
+            indent + INDENT + "}\n\n",
             formatClassName(groupName)));
+
+        sb.append(
+            indent + INDENT + "public System.Collections.IEnumerator GetEnumerator()\n" +
+            indent + INDENT + "{\n" +
+            indent + INDENT + INDENT + "while (this.HasNext)\n" +
+            indent + INDENT + INDENT + "{\n" +
+            indent + INDENT + INDENT + INDENT + "yield return this.Next();\n" +
+            indent + INDENT + INDENT + "}\n" +
+            indent + INDENT + "}\n");
     }
 
     private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)

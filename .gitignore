@@ -95,6 +95,7 @@ gocode/src/extension2
 # csharp
 csharp/*/bin
 csharp/*/obj
+csharp/.nuget/nuget.exe
 csharp/.nuget/sbe-tool*.nupkg
 csharp/.nuget/sbe-tool-all.jar
 csharp/.nuget/examples/bin

@@ -21,7 +21,7 @@ namespace Baseline
 
         public const int Size = -1;
 
-        public const uint LengthNullValue = 4294967294U;
+        public const uint LengthNullValue = 4294967295U;
         public const uint LengthMinValue = 0U;
         public const uint LengthMaxValue = 1073741824U;
 
