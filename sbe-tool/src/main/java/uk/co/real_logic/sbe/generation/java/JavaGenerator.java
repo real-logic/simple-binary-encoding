@@ -1274,7 +1274,7 @@ public class JavaGenerator implements CodeGenerator
             "package %s;\n\n" +
             "import %s;\n" +
             "%s" +
-            "@javax.annotation.Generated(value = { \"uk.co.real_logic.generation.java.JavaGenerator\" })\n",
+            "@javax.annotation.Generated(value = { \"uk.co.real_logic.sbe.generation.java.JavaGenerator\" })\n",
             packageName,
             fqBuffer,
             interfaceImportLine());
@@ -1289,7 +1289,7 @@ public class JavaGenerator implements CodeGenerator
                 "package %s;\n\n" +
                 "import %s;\n" +
                 "%s" +
-                "@javax.annotation.Generated(value = { \"uk.co.real_logic.generation.java.JavaGenerator\" })\n",
+                "@javax.annotation.Generated(value = { \"uk.co.real_logic.sbe.generation.java.JavaGenerator\" })\n",
                 packageName,
                 fqMutableBuffer,
                 interfaceImportLine());
@@ -1302,7 +1302,7 @@ public class JavaGenerator implements CodeGenerator
                 "import %s;\n" +
                 "import %s;\n" +
                 "%s" +
-                "@javax.annotation.Generated(value = { \"uk.co.real_logic.generation.java.JavaGenerator\" })\n",
+                "@javax.annotation.Generated(value = { \"uk.co.real_logic.sbe.generation.java.JavaGenerator\" })\n",
                 packageName,
                 fqMutableBuffer,
                 fqReadOnlyBuffer,
@@ -1315,7 +1315,7 @@ public class JavaGenerator implements CodeGenerator
         return String.format(
             "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
             "package %s;\n\n" +
-            "@javax.annotation.Generated(value = { \"uk.co.real_logic.generation.java.JavaGenerator\" })\n",
+            "@javax.annotation.Generated(value = { \"uk.co.real_logic.sbe.generation.java.JavaGenerator\" })\n",
             packageName);
     }
 
@@ -1385,7 +1385,7 @@ public class JavaGenerator implements CodeGenerator
             out.append(String.format(
                 "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
                 "package %s;\n\n" +
-                "@javax.annotation.Generated(value = { \"uk.co.real_logic.generation.java.JavaGenerator\" })\n" +
+                "@javax.annotation.Generated(value = { \"uk.co.real_logic.sbe.generation.java.JavaGenerator\" })\n" +
                 "public enum MetaAttribute\n" +
                 "{\n" +
                 "    EPOCH,\n" +
