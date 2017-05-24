@@ -1758,26 +1758,69 @@ public class JavaGenerator implements CodeGenerator
 
         if (encoding.primitiveType() == PrimitiveType.CHAR)
         {
-            generateCharacterEncodingMethod(sb, propertyName, encoding.characterEncoding(), indent);
+            generateCharArrayEncodeMethods(
+                containingClassName, propertyName, indent, encoding, offset, fieldLength, sb);
+        }
 
+        return sb;
+    }
+
+    private void generateCharArrayEncodeMethods(
+        final String containingClassName,
+        final String propertyName,
+        final String indent,
+        final Encoding encoding,
+        final int offset,
+        final int fieldLength,
+        final StringBuilder sb)
+    {
+        generateCharacterEncodingMethod(sb, propertyName, encoding.characterEncoding(), indent);
+
+        sb.append(String.format(
+            "\n" +
+            indent + "    public %s put%s(final byte[] src, final int srcOffset)\n" +
+            indent + "    {\n" +
+            indent + "        final int length = %d;\n" +
+            indent + "        if (srcOffset < 0 || srcOffset > (src.length - length))\n" +
+            indent + "        {\n" +
+            indent + "            throw new IndexOutOfBoundsException(" +
+                                      "\"Copy will go out of range: offset=\" + srcOffset);\n" +
+            indent + "        }\n\n" +
+            indent + "        buffer.putBytes(this.offset + %d, src, srcOffset, length);\n\n" +
+            indent + "        return this;\n" +
+            indent + "    }\n",
+            formatClassName(containingClassName),
+            toUpperFirstChar(propertyName),
+            fieldLength,
+            offset));
+
+        if (encoding.characterEncoding().contains("ASCII"))
+        {
             sb.append(String.format(
                 "\n" +
-                indent + "    public %s put%s(final byte[] src, final int srcOffset)\n" +
+                indent + "    public %1$s %2$s(final String src)\n" +
                 indent + "    {\n" +
-                indent + "        final int length = %d;\n" +
-                indent + "        if (srcOffset < 0 || srcOffset > (src.length - length))\n" +
+                indent + "        final int length = %3$d;\n" +
+                indent + "        final int srcLength = src.length();\n" +
+                indent + "        if (srcLength > length)\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
-                                          "\"Copy will go out of range: offset=\" + srcOffset);\n" +
+                                          "\"String too large for copy: byte length=\" + srcLength);\n" +
                 indent + "        }\n\n" +
-                indent + "        buffer.putBytes(this.offset + %d, src, srcOffset, length);\n\n" +
+                indent + "        buffer.putStringWithoutLengthAscii(this.offset + %4$d, src);\n\n" +
+                indent + "        for (int start = srcLength; start < length; ++start)\n" +
+                indent + "        {\n" +
+                indent + "            buffer.putByte(this.offset + %4$d + start, (byte)0);\n" +
+                indent + "        }\n\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
                 formatClassName(containingClassName),
-                toUpperFirstChar(propertyName),
+                propertyName,
                 fieldLength,
                 offset));
-
+        }
+        else
+        {
             sb.append(String.format(
                 "\n" +
                 indent + "    public %s %s(final String src)\n" +
@@ -1803,8 +1846,6 @@ public class JavaGenerator implements CodeGenerator
                 offset,
                 offset));
         }
-
-        return sb;
     }
 
     private static int sizeOfPrimitive(final Encoding encoding)
