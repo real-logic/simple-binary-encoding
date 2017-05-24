@@ -20,7 +20,7 @@ high-throughput communications. The Java SBE implementation has a dependency on
 
 License (See LICENSE file for full license)
 -------------------------------------------
-Copyright 2014 - 2017 Real Logic Limited
+Copyright 2014 - 2017 Real Logic Limited  
 Copyright 2017 MarketFactory Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
