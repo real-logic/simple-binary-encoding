@@ -835,7 +835,36 @@ public class JavaGenerator implements CodeGenerator
             byteOrderStr,
             indent);
 
-        if (null != characterEncoding)
+        if (null == characterEncoding)
+        {
+            return;
+        }
+
+        if (characterEncoding.contains("ASCII"))
+        {
+            sb.append(String.format(
+                "\n" +
+                indent + "    public %1$s %2$s(final String value)\n" +
+                indent + "    {\n" +
+                indent + "        final int length = value.length();\n" +
+                indent + "        if (length > %3$d)\n" +
+                indent + "        {\n" +
+                indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
+                indent + "        }\n\n" +
+                indent + "        final int headerLength = %4$d;\n" +
+                indent + "        final int limit = parentMessage.limit();\n" +
+                indent + "        parentMessage.limit(limit + headerLength + length);\n" +
+                indent + "        %5$s;\n" +
+                indent + "        buffer.putStringWithoutLengthAscii(limit + headerLength, value);\n\n" +
+                indent + "        return this;\n" +
+                indent + "    }\n",
+                className,
+                formatPropertyName(propertyName),
+                maxLengthValue,
+                sizeOfLengthField,
+                generatePut(lengthType, "limit", "length", byteOrderStr)));
+        }
+        else
         {
             sb.append(String.format(
                 "\n" +
@@ -853,8 +882,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        final int length = bytes.length;\n" +
                 indent + "        if (length > %4$d)\n" +
                 indent + "        {\n" +
-                indent + "            throw new IllegalArgumentException(" +
-                    "\"length > max value for type: \" + length);\n" +
+                indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
                 indent + "        }\n\n" +
                 indent + "        final int headerLength = %5$d;\n" +
                 indent + "        final int limit = parentMessage.limit();\n" +
@@ -919,7 +947,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        if (length > %4$d)\n" +
             indent + "        {\n" +
-            indent + "            throw new IllegalArgumentException(\"length > max value for type: \" + length);\n" +
+            indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
             indent + "        }\n\n" +
             indent + "        final int headerLength = %5$d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
