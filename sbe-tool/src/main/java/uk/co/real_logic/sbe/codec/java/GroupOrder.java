@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * Group order for repeating groups in encoded messages.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 public @interface GroupOrder
 {
     Class<?>[] value();

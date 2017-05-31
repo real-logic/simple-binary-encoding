@@ -226,7 +226,7 @@ public class Ir
 
     /**
      * Get the namespaceName to be used for generated code.
-     *
+     * <p>
      * If {@link #namespaceName} is null then {@link #packageName} is used.
      *
      * @return the namespaceName to be used for generated code.

@@ -151,7 +151,7 @@ public class JavaUtil
 
     /**
      * Format a property name for generated code.
-     *
+     * <p>
      * If the formatted property name is a keyword then {@link SbeTool#KEYWORD_APPEND_TOKEN} is appended if set.
      *
      * @param value to be formatted.

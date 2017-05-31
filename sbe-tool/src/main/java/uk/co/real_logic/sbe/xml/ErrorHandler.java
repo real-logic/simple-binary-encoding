@@ -32,7 +32,7 @@ public class ErrorHandler
     /**
      * Construct a new {@link ErrorHandler} that outputs to a provided {@link PrintStream}.
      *
-     * @param stream to which output should be sent.
+     * @param stream  to which output should be sent.
      * @param options the parsing options.
      */
     public ErrorHandler(final PrintStream stream, final ParserOptions options)

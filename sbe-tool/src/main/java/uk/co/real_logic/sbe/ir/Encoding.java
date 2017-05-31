@@ -273,18 +273,18 @@ public class Encoding
     {
         return
             "Encoding{" +
-            "presence=" + presence +
-            ", primitiveType=" + primitiveType +
-            ", byteOrder=" + byteOrder +
-            ", minValue=" + minValue +
-            ", maxValue=" + maxValue +
-            ", nullValue=" + nullValue +
-            ", constValue=" + constValue +
-            ", characterEncoding='" + characterEncoding + '\'' +
-            ", epoch='" + epoch + '\'' +
-            ", timeUnit=" + timeUnit +
-            ", semanticType='" + semanticType + '\'' +
-            '}';
+                "presence=" + presence +
+                ", primitiveType=" + primitiveType +
+                ", byteOrder=" + byteOrder +
+                ", minValue=" + minValue +
+                ", maxValue=" + maxValue +
+                ", nullValue=" + nullValue +
+                ", constValue=" + constValue +
+                ", characterEncoding='" + characterEncoding + '\'' +
+                ", epoch='" + epoch + '\'' +
+                ", timeUnit=" + timeUnit +
+                ", semanticType='" + semanticType + '\'' +
+                '}';
     }
 
     /**

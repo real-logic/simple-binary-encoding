@@ -31,10 +31,10 @@ public final class ParserOptions
     /**
      * Sets up the parsing options.
      *
-     * @param stopOnError specifies whether the parsing should stop on error.
-     * @param warningsFatal specifies whether the warnings should be handled as fatal errors.
+     * @param stopOnError    specifies whether the parsing should stop on error.
+     * @param warningsFatal  specifies whether the warnings should be handled as fatal errors.
      * @param suppressOutput specifies whether to suppress the output of errors and warnings.
-     * @param xsdFilename the name of the schema file.
+     * @param xsdFilename    the name of the schema file.
      */
     private ParserOptions(
         final boolean stopOnError, final boolean warningsFatal, final boolean suppressOutput, final String xsdFilename)

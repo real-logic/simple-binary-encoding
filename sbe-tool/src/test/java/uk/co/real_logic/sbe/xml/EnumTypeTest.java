@@ -48,11 +48,11 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"biOp\" encodingType=\"uint8\">" +
-            "    <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
-            "    <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
-            "</enum>" +
-            "</types>";
+                "<enum name=\"biOp\" encodingType=\"uint8\">" +
+                "    <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
+                "    <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
+                "</enum>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         final EnumType e = (EnumType)map.get("biOp");
@@ -70,11 +70,11 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"Boolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
-            "    <validValue name=\"False\">0</validValue>" +
-            "    <validValue name=\"True\">1</validValue>" +
-            "</enum>" +
-            "</types>";
+                "<enum name=\"Boolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
+                "    <validValue name=\"False\">0</validValue>" +
+                "    <validValue name=\"True\">1</validValue>" +
+                "</enum>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         final EnumType e = (EnumType)map.get("Boolean");
@@ -93,12 +93,12 @@ public class EnumTypeTest
         final String nullValueStr = "255";
         final String testXmlString =
             "<types>" +
-            "<enum name=\"optionalBoolean\" encodingType=\"uint8\" presence=\"optional\"" +
-            "      nullValue=\"" + nullValueStr + "\" semanticType=\"Boolean\">" +
-            "    <validValue name=\"False\">0</validValue>" +
-            "    <validValue name=\"True\">1</validValue>" +
-            "</enum>" +
-            "</types>";
+                "<enum name=\"optionalBoolean\" encodingType=\"uint8\" presence=\"optional\"" +
+                "      nullValue=\"" + nullValueStr + "\" semanticType=\"Boolean\">" +
+                "    <validValue name=\"False\">0</validValue>" +
+                "    <validValue name=\"True\">1</validValue>" +
+                "</enum>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         final EnumType e = (EnumType)map.get("optionalBoolean");
@@ -117,12 +117,12 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"triOp\" encodingType=\"uint8\">" +
-            "    <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
-            "    <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
-            "    <validValue name=\"notKnown\" description=\"switch is unknown\">2</validValue>" +
-            "</enum>" +
-            "</types>";
+                "<enum name=\"triOp\" encodingType=\"uint8\">" +
+                "    <validValue name=\"off\" description=\"switch is off\">0</validValue>" +
+                "    <validValue name=\"on\" description=\"switch is on\">1</validValue>" +
+                "    <validValue name=\"notKnown\" description=\"switch is unknown\">2</validValue>" +
+                "</enum>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         final EnumType e = (EnumType)map.get("triOp");
@@ -160,13 +160,13 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"mixed\" encodingType=\"char\">" +
-            "    <validValue name=\"Cee\">C</validValue>" +
-            "    <validValue name=\"One\">1</validValue>" +
-            "    <validValue name=\"Two\">2</validValue>" +
-            "    <validValue name=\"Eee\">E</validValue>" +
-            "</enum>" +
-            "</types>";
+                "<enum name=\"mixed\" encodingType=\"char\">" +
+                "    <validValue name=\"Cee\">C</validValue>" +
+                "    <validValue name=\"One\">1</validValue>" +
+                "    <validValue name=\"Two\">2</validValue>" +
+                "    <validValue name=\"Eee\">E</validValue>" +
+                "</enum>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
         final EnumType e = (EnumType)map.get("mixed");
@@ -184,11 +184,11 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"boolean\" encodingType=\"int64\" semanticType=\"Boolean\">" +
-            "    <validValue name=\"false\">0</validValue>" +
-            "    <validValue name=\"true\">1</validValue>" +
-            "</enum>" +
-            "</types>";
+                "<enum name=\"boolean\" encodingType=\"int64\" semanticType=\"Boolean\">" +
+                "    <validValue name=\"false\">0</validValue>" +
+                "    <validValue name=\"true\">1</validValue>" +
+                "</enum>" +
+                "</types>";
 
         parseTestXmlWithMap("/types/enum", testXmlString);
     }
@@ -199,12 +199,12 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"boolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
-            "    <validValue name=\"false\">0</validValue>" +
-            "    <validValue name=\"anotherFalse\">0</validValue>" +
-            "    <validValue name=\"true\">1</validValue>" +
-            "</enum>" +
-            "</types>";
+                "<enum name=\"boolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
+                "    <validValue name=\"false\">0</validValue>" +
+                "    <validValue name=\"anotherFalse\">0</validValue>" +
+                "    <validValue name=\"true\">1</validValue>" +
+                "</enum>" +
+                "</types>";
 
         parseTestXmlWithMap("/types/enum", testXmlString);
     }
@@ -215,12 +215,12 @@ public class EnumTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"boolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
-            "    <validValue name=\"false\">0</validValue>" +
-            "    <validValue name=\"false\">2</validValue>" +
-            "    <validValue name=\"true\">1</validValue>" +
-            "</enum>" +
-            "</types>";
+                "<enum name=\"boolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
+                "    <validValue name=\"false\">0</validValue>" +
+                "    <validValue name=\"false\">2</validValue>" +
+                "    <validValue name=\"true\">1</validValue>" +
+                "</enum>" +
+                "</types>";
 
         parseTestXmlWithMap("/types/enum", testXmlString);
     }

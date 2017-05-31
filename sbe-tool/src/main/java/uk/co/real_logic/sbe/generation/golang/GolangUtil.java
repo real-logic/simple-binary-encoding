@@ -45,7 +45,6 @@ public class GolangUtil
         typeNameByPrimitiveTypeMap.put(PrimitiveType.DOUBLE, "float64");
     }
 
-
     /**
      * Map the name of a {@link uk.co.real_logic.sbe.PrimitiveType} to a Golang primitive type name.
      *
@@ -147,7 +146,7 @@ public class GolangUtil
     /**
      * Return the Golang formatted byte order encoding string to use for a given byte order and primitiveType
      *
-     * @param byteOrder of the {@link uk.co.real_logic.sbe.ir.Token}
+     * @param byteOrder     of the {@link uk.co.real_logic.sbe.ir.Token}
      * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}
      * @return the string formatted as the byte ordering encoding
      */

@@ -42,8 +42,8 @@ public class PackageOutputManagerTest
 
         final String fullyQualifiedFilename =
             (tempDirName.endsWith("" + File.separatorChar) ? tempDirName : tempDirName + File.separatorChar) +
-            packageName.replace('.', File.separatorChar) +
-            File.separatorChar + exampleClassName + ".java";
+                packageName.replace('.', File.separatorChar) +
+                File.separatorChar + exampleClassName + ".java";
 
         final Path path = FileSystems.getDefault().getPath(fullyQualifiedFilename);
         final boolean exists = Files.exists(path);

@@ -46,9 +46,9 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testType\" presence=\"required\" primitiveType=\"char\" length=\"1\" " +
+                "    <type name=\"testType\" presence=\"required\" primitiveType=\"char\" length=\"1\" " +
                 "variableLength=\"false\"/>" +
-            "</types>";
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         // assert that testType is in map and name of Type is correct
@@ -70,11 +70,11 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testType1\" presence=\"required\" primitiveType=\"char\" length=\"1\" " +
+                "    <type name=\"testType1\" presence=\"required\" primitiveType=\"char\" length=\"1\" " +
                 "variableLength=\"false\"/>" +
-            "    <type name=\"testType2\" presence=\"required\" primitiveType=\"int8\" length=\"1\" " +
+                "    <type name=\"testType2\" presence=\"required\" primitiveType=\"int8\" length=\"1\" " +
                 "variableLength=\"false\"/>" +
-            "</types>";
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
@@ -90,8 +90,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testType\" primitiveType=\"char\"/>" +
-            "</types>";
+                "    <type name=\"testType\" primitiveType=\"char\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         // assert that testType is in map and name of Type is correct
@@ -111,11 +111,11 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeDefault\" primitiveType=\"char\"/>" +
-            "    <type name=\"testTypeRequired\" presence=\"required\" primitiveType=\"char\"/>" +
-            "    <type name=\"testTypeOptional\" presence=\"optional\" primitiveType=\"char\"/>" +
-            "    <type name=\"testTypeConstant\" presence=\"constant\" primitiveType=\"char\">A</type>" +
-            "</types>";
+                "    <type name=\"testTypeDefault\" primitiveType=\"char\"/>" +
+                "    <type name=\"testTypeRequired\" presence=\"required\" primitiveType=\"char\"/>" +
+                "    <type name=\"testTypeOptional\" presence=\"optional\" primitiveType=\"char\"/>" +
+                "    <type name=\"testTypeConstant\" presence=\"constant\" primitiveType=\"char\">A</type>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
@@ -131,8 +131,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTyeUnknown\" presence=\"XXXXX\" primitiveType=\"char\"/>" +
-            "</types>";
+                "    <type name=\"testTyeUnknown\" presence=\"XXXXX\" primitiveType=\"char\"/>" +
+                "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
     }
@@ -143,8 +143,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testType\"/>" +
-            "</types>";
+                "    <type name=\"testType\"/>" +
+                "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
     }
@@ -155,8 +155,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type primitiveType=\"char\"/>" +
-            "</types>";
+                "    <type primitiveType=\"char\"/>" +
+                "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
     }
@@ -167,18 +167,18 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeChar\" primitiveType=\"char\"/>" +
-            "    <type name=\"testTypeInt8\" primitiveType=\"int8\"/>" +
-            "    <type name=\"testTypeInt16\" primitiveType=\"int16\"/>" +
-            "    <type name=\"testTypeInt32\" primitiveType=\"int32\"/>" +
-            "    <type name=\"testTypeInt64\" primitiveType=\"int64\"/>" +
-            "    <type name=\"testTypeUInt8\" primitiveType=\"uint8\"/>" +
-            "    <type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
-            "    <type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
-            "    <type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
-            "    <type name=\"testTypeFloat\" primitiveType=\"float\"/>" +
-            "    <type name=\"testTypeDouble\" primitiveType=\"double\"/>" +
-            "</types>";
+                "    <type name=\"testTypeChar\" primitiveType=\"char\"/>" +
+                "    <type name=\"testTypeInt8\" primitiveType=\"int8\"/>" +
+                "    <type name=\"testTypeInt16\" primitiveType=\"int16\"/>" +
+                "    <type name=\"testTypeInt32\" primitiveType=\"int32\"/>" +
+                "    <type name=\"testTypeInt64\" primitiveType=\"int64\"/>" +
+                "    <type name=\"testTypeUInt8\" primitiveType=\"uint8\"/>" +
+                "    <type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
+                "    <type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
+                "    <type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
+                "    <type name=\"testTypeFloat\" primitiveType=\"float\"/>" +
+                "    <type name=\"testTypeDouble\" primitiveType=\"double\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
@@ -201,8 +201,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeUnknown\" primitiveType=\"XXXX\"/>" +
-            "</types>";
+                "    <type name=\"testTypeUnknown\" primitiveType=\"XXXX\"/>" +
+                "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
     }
@@ -213,18 +213,18 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeChar\" primitiveType=\"char\"/>" +
-            "    <type name=\"testTypeInt8\" primitiveType=\"int8\"/>" +
-            "    <type name=\"testTypeInt16\" primitiveType=\"int16\"/>" +
-            "    <type name=\"testTypeInt32\" primitiveType=\"int32\"/>" +
-            "    <type name=\"testTypeInt64\" primitiveType=\"int64\"/>" +
-            "    <type name=\"testTypeUInt8\" primitiveType=\"uint8\"/>" +
-            "    <type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
-            "    <type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
-            "    <type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
-            "    <type name=\"testTypeFloat\" primitiveType=\"float\"/>" +
-            "    <type name=\"testTypeDouble\" primitiveType=\"double\"/>" +
-            "</types>";
+                "    <type name=\"testTypeChar\" primitiveType=\"char\"/>" +
+                "    <type name=\"testTypeInt8\" primitiveType=\"int8\"/>" +
+                "    <type name=\"testTypeInt16\" primitiveType=\"int16\"/>" +
+                "    <type name=\"testTypeInt32\" primitiveType=\"int32\"/>" +
+                "    <type name=\"testTypeInt64\" primitiveType=\"int64\"/>" +
+                "    <type name=\"testTypeUInt8\" primitiveType=\"uint8\"/>" +
+                "    <type name=\"testTypeUInt16\" primitiveType=\"uint16\"/>" +
+                "    <type name=\"testTypeUInt32\" primitiveType=\"uint32\"/>" +
+                "    <type name=\"testTypeUInt64\" primitiveType=\"uint64\"/>" +
+                "    <type name=\"testTypeFloat\" primitiveType=\"float\"/>" +
+                "    <type name=\"testTypeDouble\" primitiveType=\"double\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
@@ -247,8 +247,8 @@ public class EncodedDataTypeTest
         final String desc = "basic description attribute of a type element";
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeDescription\" primitiveType=\"char\" description=\"" + desc + "\"/>" +
-            "</types>";
+                "    <type name=\"testTypeDescription\" primitiveType=\"char\" description=\"" + desc + "\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
@@ -261,8 +261,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeNoDescription\" primitiveType=\"char\"/>" +
-            "</types>";
+                "    <type name=\"testTypeNoDescription\" primitiveType=\"char\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         final String description = map.get("testTypeNoDescription").description();
@@ -277,8 +277,8 @@ public class EncodedDataTypeTest
         final String semanticType = "char";
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testType\" primitiveType=\"char\" semanticType=\"" + semanticType + "\"/>" +
-            "</types>";
+                "    <type name=\"testType\" primitiveType=\"char\" semanticType=\"" + semanticType + "\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
@@ -291,8 +291,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testType\" primitiveType=\"char\"/>" +
-            "</types>";
+                "    <type name=\"testType\" primitiveType=\"char\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
@@ -305,8 +305,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\"></type>" +
-            "</types>";
+                "    <type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\"></type>" +
+                "</types>";
 
         parseTestXmlWithMap("/types/type", testXmlString);
     }
@@ -317,8 +317,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\">F</type>" +
-            "</types>";
+                "    <type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\">F</type>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         final String expectedString = "F";
@@ -334,15 +334,15 @@ public class EncodedDataTypeTest
         final String strConst = "string constant";
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeConstString\" primitiveType=\"char\" presence=\"constant\" " +
-                      "length=\"" + strConst.length() + "\"" +
-                 ">" + strConst + "</type>" +
-            "</types>";
+                "    <type name=\"testTypeConstString\" primitiveType=\"char\" presence=\"constant\" " +
+                "length=\"" + strConst.length() + "\"" +
+                ">" + strConst + "</type>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
         assertThat((((EncodedDataType)map.get("testTypeConstString")).constVal()),
-                   is(parse(strConst, strConst.length(), "UTF-8")));
+            is(parse(strConst, strConst.length(), "UTF-8")));
     }
 
     @Test
@@ -351,8 +351,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeDefaultCharMinValue\" primitiveType=\"char\"/>" +
-            "</types>";
+                "    <type name=\"testTypeDefaultCharMinValue\" primitiveType=\"char\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
@@ -365,8 +365,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeDefaultCharMaxValue\" primitiveType=\"char\"/>" +
-            "</types>";
+                "    <type name=\"testTypeDefaultCharMaxValue\" primitiveType=\"char\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
@@ -379,8 +379,8 @@ public class EncodedDataTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeDefaultCharNullValue\" primitiveType=\"char\"/>" +
-            "</types>";
+                "    <type name=\"testTypeDefaultCharNullValue\" primitiveType=\"char\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
@@ -394,8 +394,8 @@ public class EncodedDataTypeTest
         final String minVal = "10";
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeInt8MinValue\" primitiveType=\"int8\" minValue=\"" + minVal + "\"/>" +
-            "</types>";
+                "    <type name=\"testTypeInt8MinValue\" primitiveType=\"int8\" minValue=\"" + minVal + "\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         assertThat((((EncodedDataType)map.get("testTypeInt8MinValue")).minValue()),
@@ -409,8 +409,8 @@ public class EncodedDataTypeTest
         final String maxVal = "10";
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeInt8MaxValue\" primitiveType=\"int8\" maxValue=\"" + maxVal + "\"/>" +
-            "</types>";
+                "    <type name=\"testTypeInt8MaxValue\" primitiveType=\"int8\" maxValue=\"" + maxVal + "\"/>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
@@ -425,9 +425,9 @@ public class EncodedDataTypeTest
         final String nullVal = "10";
         final String testXmlString =
             "<types>" +
-            "    <type name=\"testTypeInt8NullValue\" primitiveType=\"int8\" presence=\"optional\" nullValue=\"" +
+                "    <type name=\"testTypeInt8NullValue\" primitiveType=\"int8\" presence=\"optional\" nullValue=\"" +
                 nullVal + "\"/>" +
-            "</types>";
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 

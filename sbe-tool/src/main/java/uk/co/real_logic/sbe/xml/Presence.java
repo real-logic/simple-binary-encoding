@@ -20,13 +20,19 @@ package uk.co.real_logic.sbe.xml;
  */
 public enum Presence
 {
-    /** The field must be present in the message encoding. */
+    /**
+     * The field must be present in the message encoding.
+     */
     REQUIRED("required"),
 
-    /** The field value is constant and held in the schema and not passed on the wire. */
+    /**
+     * The field value is constant and held in the schema and not passed on the wire.
+     */
     CONSTANT("constant"),
 
-    /** The field is optional and an optional value must be provided in the schema. */
+    /**
+     * The field is optional and an optional value must be provided in the schema.
+     */
     OPTIONAL("optional");
 
     private final String value;

@@ -44,11 +44,11 @@ public class CompositeTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<composite name=\"decimal\">" +
-            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
-            "</composite>" +
-            "</types>";
+                "<composite name=\"decimal\">" +
+                "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+                "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
+                "</composite>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         final CompositeType decimal = (CompositeType)map.get("decimal");
@@ -69,11 +69,11 @@ public class CompositeTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<composite name=\"decimal32\">" +
-            "    <type name=\"mantissa\" primitiveType=\"int32\"/>" +
-            "    <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
-            "</composite>" +
-            "</types>";
+                "<composite name=\"decimal32\">" +
+                "    <type name=\"mantissa\" primitiveType=\"int32\"/>" +
+                "    <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
+                "</composite>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         final CompositeType decimal32 = (CompositeType)map.get("decimal32");
@@ -96,11 +96,11 @@ public class CompositeTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<composite name=\"decimal64\">" +
-            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "    <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
-            "</composite>" +
-            "</types>";
+                "<composite name=\"decimal64\">" +
+                "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+                "    <type name=\"exponent\" primitiveType=\"int8\" presence=\"constant\">-2</type>" +
+                "</composite>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         final CompositeType decimal64 = (CompositeType)map.get("decimal64");
@@ -122,11 +122,11 @@ public class CompositeTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<composite name=\"decimal\">" +
-            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
-            "</composite>" +
-            "</types>";
+                "<composite name=\"decimal\">" +
+                "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+                "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
+                "</composite>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         final CompositeType c = (CompositeType)map.get("decimal");
@@ -143,13 +143,13 @@ public class CompositeTypeTest
         final String nullValStr = "9223372036854775807";
         final String testXmlString =
             "<types>" +
-            "<composite name=\"PRICENULL\" description=\"Price NULL\" semanticType=\"Price\">" +
-            "    <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" +
+                "<composite name=\"PRICENULL\" description=\"Price NULL\" semanticType=\"Price\">" +
+                "    <type name=\"mantissa\" description=\"mantissa\" presence=\"optional\" nullValue=\"" +
                 nullValStr + "\" primitiveType=\"int64\"/>" +
-            "    <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">" +
+                "    <type name=\"exponent\" description=\"exponent\" presence=\"constant\" primitiveType=\"int8\">" +
                 "-7</type>" +
-            "</composite>" +
-            "</types>";
+                "</composite>" +
+                "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/composite", testXmlString);
         final CompositeType c = (CompositeType)map.get("PRICENULL");
@@ -164,12 +164,12 @@ public class CompositeTypeTest
     {
         final String testXmlString =
             "<types>" +
-            "<composite name=\"decimal\">" +
-            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
-            "</composite>" +
-            "</types>";
+                "<composite name=\"decimal\">" +
+                "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+                "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+                "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
+                "</composite>" +
+                "</types>";
 
         parseTestXmlWithMap("/types/composite", testXmlString);
     }

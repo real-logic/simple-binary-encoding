@@ -36,21 +36,21 @@ import java.nio.file.Paths;
 
 /**
  * A tool for running the SBE parser, validator, and code generator.
- *
+ * <p>
  * Usage:
  * <pre>
  *     $ java -jar sbe.jar &lt;filename.xml&gt;
  *     $ java -Doption=value -jar sbe.jar &lt;filename.xml&gt;
  *     $ java -Doption=value -jar sbe.jar &lt;filename.sbeir&gt;
  * </pre>
- *
+ * <p>
  * System Properties:
  * <ul>
  * <li><b>sbe.validation.xsd</b>: Use XSD to validate or not.</li>
  * <li><b>sbe.validation.stop.on.error</b>: Should the parser stop on first error encountered? Defaults to false.</li>
  * <li><b>sbe.validation.warnings.fatal</b>: Are warnings in parsing considered fatal? Defaults to false.</li>
  * <li>
- *     <b>sbe.validation.suppress.output</b>: Should the parser suppress output during validation? Defaults to false.
+ * <b>sbe.validation.suppress.output</b>: Should the parser suppress output during validation? Defaults to false.
  * </li>
  * <li><b>sbe.generate.stubs</b>: Generate stubs or not. Defaults to true.</li>
  * <li><b>sbe.target.language</b>: Target language for code generation, defaults to Java.</li>
@@ -62,7 +62,7 @@ import java.nio.file.Paths;
  * <li><b>sbe.target.namespace</b>: Namespace for the generated code to override schema package.</li>
  * <li><b>sbe.cpp.namespaces.collapse</b>: Namespace for the generated code to override schema package.</li>
  * <li>
- *     <b>sbe.java.generate.group-order.annotation</b>: Should the GroupOrder annotation be added to generated stubs.
+ * <b>sbe.java.generate.group-order.annotation</b>: Should the GroupOrder annotation be added to generated stubs.
  * </li>
  * <li><b>sbe.keyword.append.token</b>: Token to be appended to keywords.</li>
  * <li><b>sbe.decode.unknown.enum.values</b>: Support unknown decoded enum values.</li>
@@ -157,7 +157,7 @@ public class SbeTool
 
     /**
      * Specifies token that should be appended to keywords to avoid compilation errors.
-     *
+     * <p>
      * If none is supplied then use of keywords results in an error during schema parsing. The
      * underscore character is a good example fo a token to use.
      */
@@ -165,7 +165,7 @@ public class SbeTool
 
     /**
      * Should unknown enum values be decoded to support extension. Defaults to false.
-     *
+     * <p>
      * If an unknown enum value is decoded then a language specific SBE_UNKNOWN enum value will be returned
      * rather than throwing an error.
      */

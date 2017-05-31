@@ -24,9 +24,9 @@ import java.nio.ByteOrder;
 
 /**
  * Used to decode a message header while doing on-the-fly decoding of a message stream.
- *
+ * <p>
  * Meta data is cached to improve the performance of decoding headers.
- *
+ * <p>
  * This class is thread safe.
  */
 public class OtfHeaderDecoder
@@ -45,7 +45,6 @@ public class OtfHeaderDecoder
     private ByteOrder templateIdByteOrder;
     private ByteOrder schemaIdByteOrder;
     private ByteOrder schemaVersionByteOrder;
-
 
     /**
      * Read the message header structure and cache the meta data for finding the key fields for decoding messages.
@@ -100,7 +99,7 @@ public class OtfHeaderDecoder
     /**
      * Get the template id from the message header.
      *
-     * @param buffer from which to read the value.
+     * @param buffer       from which to read the value.
      * @param bufferOffset in the buffer at which the message header begins.
      * @return the value of the template id.
      */
@@ -112,7 +111,7 @@ public class OtfHeaderDecoder
     /**
      * Get the schema id number from the message header.
      *
-     * @param buffer from which to read the value.
+     * @param buffer       from which to read the value.
      * @param bufferOffset in the buffer at which the message header begins.
      * @return the value of the schema id number.
      */
@@ -124,7 +123,7 @@ public class OtfHeaderDecoder
     /**
      * Get the schema version number from the message header.
      *
-     * @param buffer from which to read the value.
+     * @param buffer       from which to read the value.
      * @param bufferOffset in the buffer at which the message header begins.
      * @return the value of the schema version number.
      */
@@ -136,7 +135,7 @@ public class OtfHeaderDecoder
     /**
      * Get the block length of the root block in the message.
      *
-     * @param buffer from which to read the value.
+     * @param buffer       from which to read the value.
      * @param bufferOffset in the buffer at which the message header begins.
      * @return the length of the root block in the coming message.
      */

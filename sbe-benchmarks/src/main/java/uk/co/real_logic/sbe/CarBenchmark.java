@@ -116,28 +116,28 @@ public class CarBenchmark
         }
 
         car.extras().clear()
-           .sportsPack(true)
-           .sunRoof(true);
+            .sportsPack(true)
+            .sunRoof(true);
 
         car.engine().capacity(4200)
-           .numCylinders((short)8)
-           .putManufacturerCode(ENG_MAN_CODE, 0);
+            .numCylinders((short)8)
+            .putManufacturerCode(ENG_MAN_CODE, 0);
 
         car.fuelFiguresCount(3).next().speed(30).mpg(35.9f)
-           .next().speed(55).mpg(49.0f)
-           .next().speed(75).mpg(40.0f);
+            .next().speed(55).mpg(49.0f)
+            .next().speed(75).mpg(40.0f);
 
         final CarEncoder.PerformanceFiguresEncoder perfFigures = car.performanceFiguresCount(2);
         perfFigures
             .next().octaneRating((short)95)
-                   .accelerationCount(3).next().mph(30).seconds(4.0f)
-                   .next().mph(60).seconds(7.5f)
-                   .next().mph(100).seconds(12.2f);
+            .accelerationCount(3).next().mph(30).seconds(4.0f)
+            .next().mph(60).seconds(7.5f)
+            .next().mph(100).seconds(12.2f);
         perfFigures
             .next().octaneRating((short)99)
-                   .accelerationCount(3).next().mph(30).seconds(3.8f)
-                   .next().mph(60).seconds(7.1f)
-                   .next().mph(100).seconds(11.8f);
+            .accelerationCount(3).next().mph(30).seconds(3.8f)
+            .next().mph(60).seconds(7.1f)
+            .next().mph(100).seconds(11.8f);
 
         car.putManufacturer(MANUFACTURER, 0, MANUFACTURER.length);
         car.putModel(MODEL, 0, MODEL.length);

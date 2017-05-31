@@ -53,36 +53,36 @@ public class ErrorHandlerTest
     {
         final String testXmlString =
             "<types>" +
-            "<enum name=\"NullBoolean\" encodingType=\"uint8\" nullValue=\"255\" semanticType=\"Boolean\">" +
-            "    <validValue name=\"false\">0</validValue>" +
-            "    <validValue name=\"true\">1</validValue>" +
-            "</enum>" +
-            "<enum name=\"DupNameBoolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
-            "    <validValue name=\"false\">0</validValue>" +
-            "    <validValue name=\"anotherFalse\">0</validValue>" +
-            "    <validValue name=\"true\">1</validValue>" +
-            "</enum>" +
-            "<enum name=\"DupValBoolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
-            "    <validValue name=\"false\">0</validValue>" +
-            "    <validValue name=\"false\">2</validValue>" +
-            "    <validValue name=\"true\">1</validValue>" +
-            "</enum>" +
-            "<set name=\"DupValueSet\" encodingType=\"uint8\">" +
-            "    <choice name=\"Bit0\">0</choice>" +
-            "    <choice name=\"AnotherBit0\">0</choice>" +
-            "</set>" +
-            "<set name=\"DupNameSet\" encodingType=\"uint8\">" +
-            "    <choice name=\"Bit0\">0</choice>" +
-            "    <choice name=\"Bit0\">1</choice>" +
-            "</set>" +
-            "<composite name=\"decimal\">" +
-            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
-            "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
-            "</composite>" +
-            "<type name=\"ConstButNoValue\" primitiveType=\"char\" presence=\"constant\"></type>" +
-            "<type name=\"NullButNotOptional\" primitiveType=\"int8\" presence=\"required\" nullValue=\"10\"/>" +
-            "</types>";
+                "<enum name=\"NullBoolean\" encodingType=\"uint8\" nullValue=\"255\" semanticType=\"Boolean\">" +
+                "    <validValue name=\"false\">0</validValue>" +
+                "    <validValue name=\"true\">1</validValue>" +
+                "</enum>" +
+                "<enum name=\"DupNameBoolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
+                "    <validValue name=\"false\">0</validValue>" +
+                "    <validValue name=\"anotherFalse\">0</validValue>" +
+                "    <validValue name=\"true\">1</validValue>" +
+                "</enum>" +
+                "<enum name=\"DupValBoolean\" encodingType=\"uint8\" semanticType=\"Boolean\">" +
+                "    <validValue name=\"false\">0</validValue>" +
+                "    <validValue name=\"false\">2</validValue>" +
+                "    <validValue name=\"true\">1</validValue>" +
+                "</enum>" +
+                "<set name=\"DupValueSet\" encodingType=\"uint8\">" +
+                "    <choice name=\"Bit0\">0</choice>" +
+                "    <choice name=\"AnotherBit0\">0</choice>" +
+                "</set>" +
+                "<set name=\"DupNameSet\" encodingType=\"uint8\">" +
+                "    <choice name=\"Bit0\">0</choice>" +
+                "    <choice name=\"Bit0\">1</choice>" +
+                "</set>" +
+                "<composite name=\"decimal\">" +
+                "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+                "    <type name=\"mantissa\" primitiveType=\"int64\"/>" +
+                "    <type name=\"exponent\" primitiveType=\"int8\"/>" +
+                "</composite>" +
+                "<type name=\"ConstButNoValue\" primitiveType=\"char\" presence=\"constant\"></type>" +
+                "<type name=\"NullButNotOptional\" primitiveType=\"int8\" presence=\"required\" nullValue=\"10\"/>" +
+                "</types>";
 
         final Map<String, Type> map = new HashMap<>();
         final ParserOptions options = ParserOptions.builder().suppressOutput(true).build();

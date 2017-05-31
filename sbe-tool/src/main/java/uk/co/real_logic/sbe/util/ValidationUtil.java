@@ -53,7 +53,7 @@ public class ValidationUtil
      * Check value for validity of usage as a C++ identifier. A programmatic variable
      * must have all elements be a letter or digit or '_'. The first character must not be a digit.
      * And must not be a C++ keyword.
-     *
+     * <p>
      * http://en.cppreference.com/w/cpp/keyword
      *
      * @param value to check
@@ -128,7 +128,7 @@ public class ValidationUtil
 
     /**
      * Check string for validity of usage as a Java identifier. Avoiding keywords.
-     *
+     * <p>
      * http://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.9
      *
      * @param value to check
@@ -217,10 +217,10 @@ public class ValidationUtil
     /**
      * "Check" value for validity of usage as a golang identifier. From:
      * https://golang.org/ref/spec#Identifiers
-     *
+     * <p>
      * identifier = letter { letter | unicode_digit }
      * letter        = unicode_letter | "_" .
-     *
+     * <p>
      * unicode_letter and unicode_digit are defined in section 4.5 of the the unicode
      * standard at http://www.unicode.org/versions/Unicode8.0.0/ and
      * the Java Character and Digit functions are unicode friendly
@@ -309,17 +309,17 @@ public class ValidationUtil
      * "Check" value for validity of usage as a csharp identifier.
      * https://msdn.microsoft.com/en-us/library/aa664670(v=vs.71).aspx
      * ( Which basically boils down to
-     *
+     * <p>
      * first subsequent*
      * first is { @ | letter | underscore }
      * subsequent is { first | digit | connecing | combining | formatting }*
-     *
+     * <p>
      * letter is Lu, Ll, Lt, Lm, Lo, or Nl (possibly escaped)
      * digit is Nd (possibly escaped)
      * connecting is Pc (possibly escaped)
      * combining is Mn or Mc (possibly escaped)
      * formatting is Cf (possibly escaped)
-     *
+     * <p>
      * so that all becomes:
      * { @ | _ | Lu | Ll | Lt | Lm | Lo | Nl } { @ | _ | Lu | Ll | Lt | Lm | Lo | Nl | Nd | Pc | Mn | Mc | Cf}*
      *
@@ -390,6 +390,7 @@ public class ValidationUtil
             case Character.CONNECTOR_PUNCTUATION: // Pc
             case Character.FORMAT: // Cf
                 return true;
+
             default:
                 return false;
         }

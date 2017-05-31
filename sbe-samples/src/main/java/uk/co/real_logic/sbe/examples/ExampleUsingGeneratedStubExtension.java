@@ -237,7 +237,7 @@ public class ExampleUsingGeneratedStubExtension
 
         sb.append("\ncar.manufacturer=").append(
             new String(buffer, 0, car.getManufacturer(
-               buffer, 0, buffer.length), extension.CarEncoder.manufacturerCharacterEncoding()));
+                buffer, 0, buffer.length), extension.CarEncoder.manufacturerCharacterEncoding()));
 
         sb.append("\ncar.model=").append(
             new String(buffer, 0, car.getModel(

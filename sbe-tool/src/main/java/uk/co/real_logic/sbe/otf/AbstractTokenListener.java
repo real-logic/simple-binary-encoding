@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Abstract {@link TokenListener} that can be extended when not all callback methods are required.
- *
+ * <p>
  * By extending this class their is a possibility for the optimizer to elide unused methods otherwise
  * requiring polymorphic dispatch.
  */

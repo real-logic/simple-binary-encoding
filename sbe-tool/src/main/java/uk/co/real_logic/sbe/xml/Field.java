@@ -86,7 +86,8 @@ public class Field
 
     public void validate(final Node node)
     {
-        if (type != null && semanticType != null &&
+        if (type != null &&
+            semanticType != null &&
             type.semanticType() != null &&
             !semanticType.equals(type.semanticType()))
         {
@@ -233,8 +234,7 @@ public class Field
 
     public String toString()
     {
-        return
-            "Field{name='" + name + '\'' +
+        return "Field{name='" + name + '\'' +
             ", description='" + description + '\'' +
             ", id=" + id +
             ", type=" + type +

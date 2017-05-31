@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Callback interface to be implemented by code wanting to decode messages on-the-fly.
- *
+ * <p>
  * If all methods are not required then consider extending {@link AbstractTokenListener}
  * for potential performance benefits and simpler code.
  */
@@ -44,7 +44,7 @@ public interface TokenListener
 
     /**
      * Primitive encoded type encountered. This can be a root block field or field within a composite or group.
-     *
+     * <p>
      * Within a composite the typeToken and fieldToken are the same.
      *
      * @param fieldToken    in the IR representing the field of the message root or group.
@@ -148,7 +148,7 @@ public interface TokenListener
      * @param buffer      containing the encoded message.
      * @param bufferIndex at which the variable data begins.
      * @param length      of the variable data in bytes.
-     * @param typeToken   of the variable data. Specifically needed to determine character encoding of the variable data.
+     * @param typeToken   of the variable data. Needed to determine character encoding of the variable data.
      */
     void onVarData(Token fieldToken, DirectBuffer buffer, int bufferIndex, int length, Token typeToken);
 }

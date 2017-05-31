@@ -123,7 +123,7 @@ public abstract class Type
 
     /**
      * The encodedLength (in octets) of the Type.
-     *
+     * <p>
      * Overridden by subtypes. This returns 0 by default.
      *
      * @return encodedLength of the type in octets

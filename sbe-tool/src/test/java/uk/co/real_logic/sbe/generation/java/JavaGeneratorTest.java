@@ -181,7 +181,7 @@ public class JavaGeneratorTest
         final int numCylindersOffset = bufferOffset + 2;
         final int expectedEngineCapacity = 2000;
         final int manufacturerCodeOffset = bufferOffset + 3;
-        final byte[] manufacturerCode = {'A', 'B', 'C'};
+        final byte[] manufacturerCode = { 'A', 'B', 'C' };
         final String className = "EngineEncoder";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 
