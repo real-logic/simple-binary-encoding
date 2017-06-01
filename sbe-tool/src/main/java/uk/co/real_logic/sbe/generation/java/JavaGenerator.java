@@ -1455,11 +1455,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(generatePrimitiveFieldMetaData(propertyName, token, indent));
 
-        if (token.isConstantEncoding())
-        {
-            sb.append(generateConstPropertyMethods(propertyName, token, indent));
-        }
-        else
+        if (!token.isConstantEncoding())
         {
             sb.append(generatePrimitivePropertyEncodeMethods(containingClassName, propertyName, token, indent));
         }
@@ -1889,17 +1885,17 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         final String javaTypeName = javaTypeName(encoding.primitiveType());
-        final byte[] constantValue = encoding.constValue().byteArrayValue(encoding.primitiveType());
+        final byte[] constBytes = encoding.constValue().byteArrayValue(encoding.primitiveType());
         final CharSequence values = generateByteLiteralList(
             encoding.constValue().byteArrayValue(encoding.primitiveType()));
 
         sb.append(String.format(
             "\n" +
-            indent + "    private static final byte[] %s_VALUE = {%s};\n",
+            indent + "    private static final byte[] %s_VALUE = { %s };\n",
             propertyName.toUpperCase(),
             values));
 
-        generateArrayLengthMethod(propertyName, indent, constantValue.length, sb);
+        generateArrayLengthMethod(propertyName, indent, constBytes.length, sb);
 
         sb.append(String.format(
             indent + "    public %s %s(final int index)\n" +
@@ -1918,8 +1914,17 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return bytesCopied;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
-            constantValue.length,
+            constBytes.length,
             propertyName.toUpperCase()));
+
+        sb.append(String.format(
+            "\n" +
+            indent + "    public String %s()\n" +
+            indent + "    {\n" +
+            indent + "        return \"%s\";\n" +
+            indent + "    }\n\n",
+            propertyName,
+            encoding.constValue()));
 
         return sb;
     }

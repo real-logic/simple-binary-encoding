@@ -339,13 +339,13 @@ public class IrUtil
             case CHAR:
                 if (length == 1)
                 {
-                    return new PrimitiveValue(buffer.getByte(0), 1);
+                    return new PrimitiveValue(buffer.getByte(0), "US-ASCII");
                 }
                 else
                 {
                     final byte[] array = new byte[length];
                     buffer.getBytes(0, array, 0, array.length);
-                    return new PrimitiveValue(array, "UTF-8", array.length);
+                    return new PrimitiveValue(array, "US-ASCII", array.length);
                 }
 
             case INT8:

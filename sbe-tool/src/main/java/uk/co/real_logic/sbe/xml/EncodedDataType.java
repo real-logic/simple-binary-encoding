@@ -91,7 +91,7 @@ public class EncodedDataType extends Type
                 {
                     if (nodeValue.length() == 1)
                     {
-                        constValue = PrimitiveValue.parse(nodeValue, primitiveType);
+                        constValue = PrimitiveValue.parse(nodeValue, primitiveType, characterEncoding);
                     }
                     else
                     {

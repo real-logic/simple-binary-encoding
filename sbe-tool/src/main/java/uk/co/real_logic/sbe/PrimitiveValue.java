@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import static java.lang.Double.doubleToLongBits;
 import static java.nio.charset.Charset.forName;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
  * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
@@ -105,6 +106,22 @@ public class PrimitiveValue
     }
 
     /**
+     * Construct and fill in value as a long.
+     *
+     * @param value             in long format
+     * @param characterEncoding of the char type.
+     */
+    public PrimitiveValue(final byte value, final String characterEncoding)
+    {
+        representation = Representation.LONG;
+        longValue = value;
+        doubleValue = 0.0;
+        byteArrayValue = null;
+        this.characterEncoding = characterEncoding;
+        this.size = 1;
+    }
+
+    /**
      * Construct and fill in value as a double.
      *
      * @param value in double format
@@ -154,7 +171,7 @@ public class PrimitiveValue
                 {
                     throw new IllegalArgumentException("Constant char value malformed: " + value);
                 }
-                return new PrimitiveValue((long)value.getBytes(forName("US-ASCII"))[0], 1);
+                return new PrimitiveValue((long)value.getBytes(US_ASCII)[0], 1);
 
             case INT8:
                 return new PrimitiveValue(Byte.parseByte(value), 1);
@@ -197,6 +214,31 @@ public class PrimitiveValue
     }
 
     /**
+     * Parse constant value string and set representation based on type
+     *
+     * @param value             expressed as a String
+     * @param primitiveType     that this is supposed to be
+     * @param characterEncoding of the constant value.
+     * @return a new {@link PrimitiveValue} for the value.
+     * @throws IllegalArgumentException if parsing malformed type
+     */
+    public static PrimitiveValue parse(
+        final String value, final PrimitiveType primitiveType, final String characterEncoding)
+    {
+        if (PrimitiveType.CHAR != primitiveType)
+        {
+            throw new IllegalArgumentException("primitiveType must be char: " + primitiveType);
+        }
+
+        if (value.length() > 1)
+        {
+            throw new IllegalArgumentException("Constant char value malformed: " + value);
+        }
+
+        return new PrimitiveValue(value.getBytes(forName(characterEncoding))[0], characterEncoding);
+    }
+
+    /**
      * Parse constant value string and set representation based on type, length, and characterEncoding
      *
      * @param value             expressed as a String
@@ -208,7 +250,11 @@ public class PrimitiveValue
     public static PrimitiveValue parse(
         final String value, final int length, final String characterEncoding)
     {
-        // TODO: handle incorrect length, characterEncoding, etc.
+        if (value.length() != length)
+        {
+            throw new IllegalStateException("value.length=" + value.length() + " not equal to length=" + length);
+        }
+
         return new PrimitiveValue(value.getBytes(forName(characterEncoding)), characterEncoding, length);
     }
 
@@ -312,7 +358,22 @@ public class PrimitiveValue
         switch (representation)
         {
             case LONG:
-                return Long.toString(longValue);
+                if (null != characterEncoding)
+                {
+                    try
+                    {
+                        final byte[] bytes = new byte[]{ (byte)longValue };
+                        return new String(bytes, characterEncoding);
+                    }
+                    catch (final UnsupportedEncodingException ex)
+                    {
+                        throw new IllegalStateException(ex);
+                    }
+                }
+                else
+                {
+                    return Long.toString(longValue);
+                }
 
             case DOUBLE:
                 return Double.toString(doubleValue);
@@ -320,7 +381,7 @@ public class PrimitiveValue
             case BYTE_ARRAY:
                 try
                 {
-                    return characterEncoding == null ?
+                    return null == characterEncoding ?
                         new String(byteArrayValue) : new String(byteArrayValue, characterEncoding);
                 }
                 catch (final UnsupportedEncodingException ex)
