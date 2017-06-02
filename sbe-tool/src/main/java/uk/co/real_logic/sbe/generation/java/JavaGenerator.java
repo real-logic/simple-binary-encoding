@@ -1917,14 +1917,28 @@ public class JavaGenerator implements CodeGenerator
             constBytes.length,
             propertyName.toUpperCase()));
 
-        sb.append(String.format(
-            "\n" +
-            indent + "    public String %s()\n" +
-            indent + "    {\n" +
-            indent + "        return \"%s\";\n" +
-            indent + "    }\n\n",
-            propertyName,
-            encoding.constValue()));
+        if (constBytes.length > 1)
+        {
+            sb.append(String.format(
+                "\n" +
+                indent + "    public String %s()\n" +
+                indent + "    {\n" +
+                indent + "        return \"%s\";\n" +
+                indent + "    }\n\n",
+                propertyName,
+                encoding.constValue()));
+        }
+        else
+        {
+            sb.append(String.format(
+                "\n" +
+                indent + "    public byte %s()\n" +
+                indent + "    {\n" +
+                indent + "        return (byte)'%s';\n" +
+                indent + "    }\n\n",
+                propertyName,
+                encoding.constValue()));
+        }
 
         return sb;
     }
