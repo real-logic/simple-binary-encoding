@@ -64,7 +64,8 @@ public class EncodedDataType extends Type
         super(node, givenName, null);
 
         primitiveType = PrimitiveType.get(getAttributeValue(node, "primitiveType"));
-        length = Integer.parseInt(getAttributeValue(node, "length", "1"));
+        final String lengthAttr = getAttributeValueOrNull(node, "length");
+        length = Integer.parseInt(null == lengthAttr ? "1" : lengthAttr);
         varLen = Boolean.parseBoolean(getAttributeValue(node, "variableLength", "false"));
 
         if (PrimitiveType.CHAR == primitiveType)
@@ -89,13 +90,34 @@ public class EncodedDataType extends Type
                 final String nodeValue = node.getFirstChild().getNodeValue();
                 if (PrimitiveType.CHAR == primitiveType)
                 {
-                    if (nodeValue.length() == 1)
+                    final int valueLength = nodeValue.length();
+
+                    if (null != lengthAttr && length < valueLength)
                     {
-                        constValue = PrimitiveValue.parse(nodeValue, primitiveType, characterEncoding);
+                        handleError(node, "length of " + length + " is less than provided value: " + nodeValue);
+                    }
+
+                    if (valueLength == 1)
+                    {
+                        if (null == lengthAttr)
+                        {
+                            constValue = PrimitiveValue.parse(nodeValue, primitiveType, characterEncoding);
+                        }
+                        else
+                        {
+                            constValue = PrimitiveValue.parse(nodeValue, length, characterEncoding);
+                        }
                     }
                     else
                     {
-                        constValue = PrimitiveValue.parse(nodeValue, nodeValue.length(), characterEncoding);
+                        if (null == lengthAttr)
+                        {
+                            constValue = PrimitiveValue.parse(nodeValue, valueLength, characterEncoding);
+                        }
+                        else
+                        {
+                            constValue = PrimitiveValue.parse(nodeValue, length, characterEncoding);
+                        }
                     }
                 }
                 else

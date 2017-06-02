@@ -250,12 +250,18 @@ public class PrimitiveValue
     public static PrimitiveValue parse(
         final String value, final int length, final String characterEncoding)
     {
-        if (value.length() != length)
+        if (value.length() > length)
         {
-            throw new IllegalStateException("value.length=" + value.length() + " not equal to length=" + length);
+            throw new IllegalStateException("value.length=" + value.length() + " greater than length=" + length);
         }
 
-        return new PrimitiveValue(value.getBytes(forName(characterEncoding)), characterEncoding, length);
+        byte[] bytes = value.getBytes(forName(characterEncoding));
+        if (bytes.length < length)
+        {
+            bytes = Arrays.copyOf(bytes, length);
+        }
+
+        return new PrimitiveValue(bytes, characterEncoding, length);
     }
 
     /**
