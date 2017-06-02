@@ -90,35 +90,7 @@ public class EncodedDataType extends Type
                 final String nodeValue = node.getFirstChild().getNodeValue();
                 if (PrimitiveType.CHAR == primitiveType)
                 {
-                    final int valueLength = nodeValue.length();
-
-                    if (null != lengthAttr && length < valueLength)
-                    {
-                        handleError(node, "length of " + length + " is less than provided value: " + nodeValue);
-                    }
-
-                    if (valueLength == 1)
-                    {
-                        if (null == lengthAttr)
-                        {
-                            constValue = PrimitiveValue.parse(nodeValue, primitiveType, characterEncoding);
-                        }
-                        else
-                        {
-                            constValue = PrimitiveValue.parse(nodeValue, length, characterEncoding);
-                        }
-                    }
-                    else
-                    {
-                        if (null == lengthAttr)
-                        {
-                            constValue = PrimitiveValue.parse(nodeValue, valueLength, characterEncoding);
-                        }
-                        else
-                        {
-                            constValue = PrimitiveValue.parse(nodeValue, length, characterEncoding);
-                        }
-                    }
+                    constValue = processConstantChar(node, lengthAttr, nodeValue);
                 }
                 else
                 {
@@ -294,5 +266,42 @@ public class EncodedDataType extends Type
     public String characterEncoding()
     {
         return characterEncoding;
+    }
+
+    private PrimitiveValue processConstantChar(final Node node, final String lengthAttr, final String nodeValue)
+    {
+        final int valueLength = nodeValue.length();
+
+        if (null != lengthAttr && length < valueLength)
+        {
+            handleError(node, "length of " + length + " is less than provided value: " + nodeValue);
+        }
+
+        final PrimitiveValue primitiveValue;
+
+        if (valueLength == 1)
+        {
+            if (null == lengthAttr)
+            {
+                primitiveValue = PrimitiveValue.parse(nodeValue, primitiveType, characterEncoding);
+            }
+            else
+            {
+                primitiveValue = PrimitiveValue.parse(nodeValue, length, characterEncoding);
+            }
+        }
+        else
+        {
+            if (null == lengthAttr)
+            {
+                primitiveValue = PrimitiveValue.parse(nodeValue, valueLength, characterEncoding);
+            }
+            else
+            {
+                primitiveValue = PrimitiveValue.parse(nodeValue, length, characterEncoding);
+            }
+        }
+
+        return primitiveValue;
     }
 }
