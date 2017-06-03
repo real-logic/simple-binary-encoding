@@ -203,7 +203,22 @@ public class ExampleTokenListener implements TokenListener
         final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, actingVersion);
         if (null != constOrNotPresentValue)
         {
-            return constOrNotPresentValue.toString();
+            if (constOrNotPresentValue.size() == 1)
+            {
+                try
+                {
+                    final byte[] bytes = { (byte)constOrNotPresentValue.longValue() };
+                    return new String(bytes, constOrNotPresentValue.characterEncoding());
+                }
+                catch (final UnsupportedEncodingException ex)
+                {
+                    throw new RuntimeException(ex);
+                }
+            }
+            else
+            {
+                return constOrNotPresentValue.toString();
+            }
         }
 
         final StringBuilder sb = new StringBuilder();

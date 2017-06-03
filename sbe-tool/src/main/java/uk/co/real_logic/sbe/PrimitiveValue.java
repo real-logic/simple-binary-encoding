@@ -364,22 +364,7 @@ public class PrimitiveValue
         switch (representation)
         {
             case LONG:
-                if (null != characterEncoding)
-                {
-                    try
-                    {
-                        final byte[] bytes = new byte[]{ (byte)longValue };
-                        return new String(bytes, characterEncoding);
-                    }
-                    catch (final UnsupportedEncodingException ex)
-                    {
-                        throw new IllegalStateException(ex);
-                    }
-                }
-                else
-                {
-                    return Long.toString(longValue);
-                }
+                return Long.toString(longValue);
 
             case DOUBLE:
                 return Double.toString(doubleValue);

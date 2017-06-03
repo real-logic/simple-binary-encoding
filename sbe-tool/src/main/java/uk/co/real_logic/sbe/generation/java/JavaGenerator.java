@@ -1934,7 +1934,7 @@ public class JavaGenerator implements CodeGenerator
                 "\n" +
                 indent + "    public byte %s()\n" +
                 indent + "    {\n" +
-                indent + "        return (byte)'%s';\n" +
+                indent + "        return (byte)%s;\n" +
                 indent + "    }\n\n",
                 propertyName,
                 encoding.constValue()));
