@@ -1108,23 +1108,25 @@ public class CppGenerator implements CodeGenerator
             indent + "             throw std::runtime_error(\"length too large for get%1$s [E106]\");\n" +
             indent + "        }\n\n" +
                 "%3$s" +
-            indent + "        std::memcpy(dst, m_buffer + m_offset + %4$d, length);\n" +
+            indent + "        std::memcpy(dst, m_buffer + m_offset + %4$d, sizeof(%5$s) * length);\n" +
             indent + "        return length;\n" +
             indent + "    }\n\n",
             toUpperFirstChar(propertyName),
             token.arrayLength(),
             generateArrayFieldNotPresentCondition(token.version(), indent),
-            offset));
+            offset,
+            cppTypeName));
 
         sb.append(String.format(
             indent + "    %1$s &put%2$s(const char *src)\n" +
             indent + "    {\n" +
-            indent + "        std::memcpy(m_buffer + m_offset + %3$d, src, %4$d);\n" +
+            indent + "        std::memcpy(m_buffer + m_offset + %3$d, src, sizeof(%4$s) * %5$d);\n" +
             indent + "        return *this;\n" +
             indent + "    }\n\n",
             containingClassName,
             toUpperFirstChar(propertyName),
             offset,
+            cppTypeName,
             token.arrayLength()));
 
         if (token.encoding().primitiveType() == PrimitiveType.CHAR)
