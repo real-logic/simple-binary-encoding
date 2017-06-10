@@ -83,9 +83,18 @@ Run the Java examples
 
 Distribution
 ------------
-Jars for the executable, source, and javadoc for the various modules can be found in
+Jars for the executable, source, and javadoc for the various modules can be found in the following directories:
 
-    <module>/build/libs
+    sbe-benchmarks/build/libs
+    sbe-samples/build/libs
+    sbe-tool/build/libs
+    sbe-all/build/libs
+
+An example to execute a Jar from command line:
+
+    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-tool/build/libs/sbe-tool-1.7.0-all.jar my_sbe_input.xml
+
+Note: The Jars in directory `build/libs` do not contain `META-INF/MANIFEST.MF` and the error *"no main manifest attribute"* will occur when trying to execute it.
 
 C++ Build using CMake
 ---------------------
