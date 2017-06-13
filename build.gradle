@@ -95,6 +95,8 @@ configurations {
     shadow
 }
 
+jar.enabled = false
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
@@ -113,6 +115,8 @@ subprojects {
             url "http://sevntu-checkstyle.github.com/sevntu.checkstyle/maven2"
         }
     }
+
+    jar.enabled = true
 
     [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
