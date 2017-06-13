@@ -217,7 +217,7 @@ public class FrameCodecEncoder
     {
         if (length > 65534)
         {
-            throw new IllegalArgumentException("length > max value for type: " + length);
+            throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
         final int headerLength = 2;
@@ -233,7 +233,7 @@ public class FrameCodecEncoder
     {
         if (length > 65534)
         {
-            throw new IllegalArgumentException("length > max value for type: " + length);
+            throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
         final int headerLength = 2;
@@ -260,7 +260,7 @@ public class FrameCodecEncoder
         final int length = bytes.length;
         if (length > 65534)
         {
-            throw new IllegalArgumentException("length > max value for type: " + length);
+            throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
         final int headerLength = 2;
@@ -303,7 +303,7 @@ public class FrameCodecEncoder
     {
         if (length > 65534)
         {
-            throw new IllegalArgumentException("length > max value for type: " + length);
+            throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
         final int headerLength = 2;
@@ -319,7 +319,7 @@ public class FrameCodecEncoder
     {
         if (length > 65534)
         {
-            throw new IllegalArgumentException("length > max value for type: " + length);
+            throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
         final int headerLength = 2;
@@ -346,7 +346,7 @@ public class FrameCodecEncoder
         final int length = bytes.length;
         if (length > 65534)
         {
-            throw new IllegalArgumentException("length > max value for type: " + length);
+            throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
         final int headerLength = 2;
@@ -389,7 +389,7 @@ public class FrameCodecEncoder
     {
         if (length > 65534)
         {
-            throw new IllegalArgumentException("length > max value for type: " + length);
+            throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
         final int headerLength = 2;
@@ -405,7 +405,7 @@ public class FrameCodecEncoder
     {
         if (length > 65534)
         {
-            throw new IllegalArgumentException("length > max value for type: " + length);
+            throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
         final int headerLength = 2;
@@ -432,7 +432,7 @@ public class FrameCodecEncoder
         final int length = bytes.length;
         if (length > 65534)
         {
-            throw new IllegalArgumentException("length > max value for type: " + length);
+            throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
         final int headerLength = 2;
