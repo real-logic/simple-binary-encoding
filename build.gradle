@@ -169,7 +169,7 @@ project(':sbe-tool') {
     dependencies {
         compile 'org.agrona:agrona:0.9.6'
 
-        testCompile files('build/classes/generated')
+        testCompile files('build/classes/java/generated')
     }
 
     jar {
@@ -316,7 +316,7 @@ project(':sbe-samples') {
     dependencies {
         compile project(':sbe-tool')
 
-        compile files('build/classes/generated')
+        compile files('build/classes/java/generated')
     }
 
     sourceSets {
@@ -402,7 +402,7 @@ project(':sbe-benchmarks') {
         compile project(':sbe-tool')
         compile 'org.openjdk.jmh:jmh-core:1.18'
         compile 'org.openjdk.jmh:jmh-generator-annprocess:1.18'
-        compile files('build/classes/generated')
+        compile files('build/classes/java/generated')
     }
 
     sourceSets {
@@ -608,6 +608,6 @@ task uploadToMavenCentral {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.5'
+    gradleVersion = '4.0'
     distributionType = 'ALL'
 }
