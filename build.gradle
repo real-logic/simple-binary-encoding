@@ -126,7 +126,7 @@ subprojects {
 
         testCompile 'org.hamcrest:hamcrest-all:1.3'
         testCompile 'junit:junit:4.12'
-        testCompile 'org.mockito:mockito-core:2.8.9'
+        testCompile 'org.mockito:mockito-core:2.8.47'
         testCompile 'com.google.code.gson:gson:2.8.0'
     }
 
