@@ -273,7 +273,14 @@ public class IrUtil
             case CHAR:
                 if (value.size() == 1)
                 {
-                    buffer.putByte(0, (byte)value.longValue());
+                    if (value.representation() == PrimitiveValue.Representation.LONG)
+                    {
+                        buffer.putByte(0, (byte)value.longValue());
+                    }
+                    else
+                    {
+                        buffer.putByte(0, value.byteArrayValue()[0]);
+                    }
                     return 1;
                 }
                 else

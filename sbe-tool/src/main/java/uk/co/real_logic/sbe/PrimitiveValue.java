@@ -30,8 +30,19 @@ public class PrimitiveValue
 {
     public enum Representation
     {
+        /**
+         * Value is stored in a long value.
+         */
         LONG,
+
+        /**
+         * Value is stored in a double value.
+         */
         DOUBLE,
+
+        /**
+         * Value is stored in a byte[].
+         */
         BYTE_ARRAY
     }
 
@@ -155,6 +166,16 @@ public class PrimitiveValue
     }
 
     /**
+     * Get the {@link Representation} of the value.
+     *
+     * @return the {@link Representation} of the value.
+     */
+    public Representation representation()
+    {
+        return representation;
+    }
+
+    /**
      * Parse constant value string and set representation based on type
      *
      * @param value         expressed as a String
@@ -274,7 +295,8 @@ public class PrimitiveValue
     {
         if (representation != Representation.LONG)
         {
-            throw new IllegalStateException("PrimitiveValue is not a long representation");
+            throw new IllegalStateException(
+                "Not a long representation: representation=" + representation + " value=" + toString());
         }
 
         return longValue;
@@ -290,7 +312,8 @@ public class PrimitiveValue
     {
         if (representation != Representation.DOUBLE)
         {
-            throw new IllegalStateException("PrimitiveValue is not a double representation");
+            throw new IllegalStateException(
+                "Not a double representation: representation=" + representation + " value=" + toString());
         }
 
         return doubleValue;
@@ -306,7 +329,8 @@ public class PrimitiveValue
     {
         if (representation != Representation.BYTE_ARRAY)
         {
-            throw new IllegalStateException("PrimitiveValue is not a byte[] representation");
+            throw new IllegalStateException(
+                "Not a byte[] representation: representation=" + representation + " value=" + toString());
         }
 
         return byteArrayValue;
