@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import org.agrona.collections.ObjectHashSet;
 import uk.co.real_logic.sbe.ir.Token;
 
 import org.w3c.dom.Node;
@@ -55,6 +56,7 @@ public class Message
     private final String semanticType;
     private final int computedBlockLength;
     private final Map<String, Type> typeByNameMap;
+    private final ObjectHashSet<String> names = new ObjectHashSet<>();
 
     /**
      * Construct a new message from XML Schema.
@@ -202,6 +204,11 @@ public class Message
 
                 default:
                     throw new IllegalStateException("Unknown node name: " + nodeName);
+            }
+
+            if (!names.add(field.name()))
+            {
+                handleError(node, "duplicate name found: " + field.name());
             }
 
             fieldList.add(field);

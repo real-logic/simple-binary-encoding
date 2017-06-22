@@ -16,6 +16,7 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import org.agrona.collections.ObjectHashSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -161,9 +162,10 @@ public class XmlSchemaParser
         final Document document, final XPath xPath, final Map<String, Type> typeByNameMap) throws Exception
     {
         final Map<Long, Message> messageByIdMap = new HashMap<>();
+        final ObjectHashSet<String> names = new ObjectHashSet<>();
 
         forEach((NodeList)xPath.compile(MESSAGE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-            (node) -> addMessageWithIdCheck(messageByIdMap, new Message(node, typeByNameMap), node));
+            (node) -> addMessageWithIdCheck(names, messageByIdMap, new Message(node, typeByNameMap), node));
 
         return messageByIdMap;
     }
@@ -335,11 +337,19 @@ public class XmlSchemaParser
     }
 
     private static void addMessageWithIdCheck(
-        final Map<Long, Message> messageByIdMap, final Message message, final Node node)
+        final ObjectHashSet<String> names,
+        final Map<Long, Message> messageByIdMap,
+        final Message message,
+        final Node node)
     {
         if (messageByIdMap.get((long)message.id()) != null)
         {
             handleError(node, "message template id already exists: " + message.id());
+        }
+
+        if (!names.add(message.name()))
+        {
+            handleError(node, "message name already exists: " + message.name());
         }
 
         checkForValidName(node, message.name());
