@@ -56,7 +56,6 @@ public class Message
     private final String semanticType;
     private final int computedBlockLength;
     private final Map<String, Type> typeByNameMap;
-    private final ObjectHashSet<String> names = new ObjectHashSet<>();
 
     /**
      * Construct a new message from XML Schema.
@@ -169,6 +168,7 @@ public class Message
         final NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, NODESET);
         boolean groupEncountered = false, dataEncountered = false;
 
+        final ObjectHashSet<String> distinctNames = new ObjectHashSet<>();
         final List<Field> fieldList = new ArrayList<>();
 
         for (int i = 0, size = list.getLength(); i < size; i++)
@@ -206,7 +206,7 @@ public class Message
                     throw new IllegalStateException("Unknown node name: " + nodeName);
             }
 
-            if (!names.add(field.name()))
+            if (!distinctNames.add(field.name()))
             {
                 handleError(node, "duplicate name found: " + field.name());
             }

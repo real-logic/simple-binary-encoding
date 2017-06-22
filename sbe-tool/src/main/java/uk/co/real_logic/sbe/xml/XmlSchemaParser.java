@@ -162,10 +162,10 @@ public class XmlSchemaParser
         final Document document, final XPath xPath, final Map<String, Type> typeByNameMap) throws Exception
     {
         final Map<Long, Message> messageByIdMap = new HashMap<>();
-        final ObjectHashSet<String> names = new ObjectHashSet<>();
+        final ObjectHashSet<String> distinctNames = new ObjectHashSet<>();
 
         forEach((NodeList)xPath.compile(MESSAGE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
-            (node) -> addMessageWithIdCheck(names, messageByIdMap, new Message(node, typeByNameMap), node));
+            (node) -> addMessageWithIdCheck(distinctNames, messageByIdMap, new Message(node, typeByNameMap), node));
 
         return messageByIdMap;
     }
@@ -337,7 +337,7 @@ public class XmlSchemaParser
     }
 
     private static void addMessageWithIdCheck(
-        final ObjectHashSet<String> names,
+        final ObjectHashSet<String> distinctNames,
         final Map<Long, Message> messageByIdMap,
         final Message message,
         final Node node)
@@ -347,7 +347,7 @@ public class XmlSchemaParser
             handleError(node, "message template id already exists: " + message.id());
         }
 
-        if (!names.add(message.name()))
+        if (!distinctNames.add(message.name()))
         {
             handleError(node, "message name already exists: " + message.name());
         }
