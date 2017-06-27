@@ -68,7 +68,7 @@ test: $(DEP)
 		go install \
 		;done))
 	(export GOPATH=$(GOPATH) && \
-		(for t in baseline-bignendian mktdata group_with_data group_with_data_extension composite_elements composite since-deprecated simple issue435; do \
+		(for t in baseline-bigendian mktdata group_with_data group_with_data_extension composite_elements composite since-deprecated simple issue435 issue472; do \
 		cd $(GOPATH)/src/$$t && \
 		go build && \
 		go fmt && \
