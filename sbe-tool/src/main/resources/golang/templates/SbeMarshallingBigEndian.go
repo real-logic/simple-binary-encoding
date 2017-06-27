@@ -84,7 +84,6 @@ func (m *SbeGoMessageHeader) Decode(_m *SbeGoMarshaller, _r io.Reader) error {
 	return nil
 }
 
-
 func (m *SbeGoMarshaller) WriteUint8(w io.Writer, v uint8) error {
 	m.b1[0] = byte(v)
 	_, err := w.Write(m.b1)

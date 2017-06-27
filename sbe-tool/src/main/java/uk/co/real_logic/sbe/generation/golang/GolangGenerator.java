@@ -422,8 +422,15 @@ public class GolangGenerator implements CodeGenerator
     private void generateRangeCheckPrimitive(
         final StringBuilder sb,
         final String varName,
-        final Token token)
+        final Token token,
+        final Boolean isOptional)
     {
+        // Note that constant encoding is a property of the type
+        // and so works on signal/encoding tokens but optionality is
+        // a property of the field and so is not set on the encoding token.
+        // For this reason we can use the token to check for constancy
+        // but pass in optionality as a parameter
+
         // Constant values don't need checking
         if (token.isConstantEncoding())
         {
@@ -431,7 +438,7 @@ public class GolangGenerator implements CodeGenerator
         }
 
         // If this field is unknown then we have nothing to check
-        // Otherwise do a The Min,MaxValue checks (possibly for arrays)
+        // Otherwise do the Min,MaxValue checks (possibly for arrays)
         this.imports.add("fmt");
         if (token.arrayLength() > 1)
         {
@@ -449,9 +456,22 @@ public class GolangGenerator implements CodeGenerator
         }
         else
         {
+            // Optional fields can be NullValue which may be outside the
+            // range of Min->Max so we need a special case.
+            // Structured this way for go fmt sanity on both cases.
+            final String check;
+            if (isOptional)
+            {
+                check = "\t\tif %1$s != %1$sNullValue() && (%1$s < %1$sMinValue() || %1$s > %1$sMaxValue()) {\n";
+            }
+            else
+            {
+                check = "\t\tif %1$s < %1$sMinValue() || %1$s > %1$sMaxValue() {\n";
+            }
+
             sb.append(String.format(
                 "\tif %1$sInActingVersion(actingVersion) {\n" +
-                "\t\tif %1$s < %1$sMinValue() || %1$s > %1$sMaxValue() {\n" +
+                check +
                 "\t\t\treturn fmt.Errorf(\"Range check failed on %1$s " +
                 "(%%d < %%d > %%d)\", %1$sMinValue(), %1$s, %1$sMaxValue())\n" +
                 "\t\t}\n" +
@@ -468,24 +488,40 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
-    private void generateInitPrimitive(
+    private void generateOptionalInitPrimitive(
         final StringBuilder sb,
         final String varName,
         final Token token)
     {
+        final Encoding encoding = token.encoding();
+
+        // Optional items get initialized to their NullValue
+        sb.append(String.format(
+            "\t%1$s = %2$s\n",
+            varName,
+            generateNullValueLiteral(encoding.primitiveType(), encoding)));
+    }
+
+    private void generateConstantInitPrimitive(
+        final StringBuilder sb,
+        final String varName,
+        final Token token)
+    {
+        final Encoding encoding = token.encoding();
+
         // Decode of a constant is simply assignment
         if (token.isConstantEncoding())
         {
             // if primitiveType="char" this is a character array
-            if (token.encoding().primitiveType() == CHAR)
+            if (encoding.primitiveType() == CHAR)
             {
-                if (token.encoding().constValue().size() > 1)
+                if (encoding.constValue().size() > 1)
                 {
                     // constValue is a string
                     sb.append(String.format(
                         "\tcopy(%1$s[:], \"%2$s\")\n",
                         varName,
-                        token.encoding().constValue()));
+                        encoding.constValue()));
                 }
                 else
                 {
@@ -493,7 +529,7 @@ public class GolangGenerator implements CodeGenerator
                     sb.append(String.format(
                         "\t%1$s[0] = %2$s\n",
                         varName,
-                        token.encoding().constValue()));
+                        encoding.constValue()));
                 }
             }
             else
@@ -501,7 +537,7 @@ public class GolangGenerator implements CodeGenerator
                 sb.append(String.format(
                     "\t%1$s = %2$s\n",
                     varName,
-                    generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString())));
+                    generateLiteral(encoding.primitiveType(), encoding.constValue().toString())));
             }
         }
     }
@@ -652,17 +688,28 @@ public class GolangGenerator implements CodeGenerator
                     encode.append(generateEncodeOffset(gap, ""));
                     decode.append(generateDecodeOffset(gap, ""));
                     currentOffset += signalToken.encodedLength() + gap;
+                    final String primitive = Character.toString(varName) + "." + propertyName;
 
-                    // Encode of a constant is a nullop
-                    if (!signalToken.isConstantEncoding())
+                    // Encode of a constant is a nullop and we want to
+                    // initialize constant values.
+                    if (signalToken.isConstantEncoding())
+                    {
+                        generateConstantInitPrimitive(init, primitive, signalToken);
+                    }
+                    else
                     {
                         generateEncodePrimitive(encode, varName, formatPropertyName(signalToken.name()), signalToken);
-
                     }
-                    final String primitive = Character.toString(varName) + "." + propertyName;
+
+                    // Optional tokens also get initialized
+                    if (signalToken.isOptionalEncoding())
+                    {
+                        generateOptionalInitPrimitive(init, primitive, signalToken);
+                    }
+
                     generateDecodePrimitive(decode, primitive, signalToken);
-                    generateRangeCheckPrimitive(rangeCheck, primitive, signalToken);
-                    generateInitPrimitive(init, primitive, signalToken);
+                    generateRangeCheckPrimitive(rangeCheck, primitive, signalToken, signalToken.isOptionalEncoding());
+
                     break;
 
                 case BEGIN_GROUP:
@@ -1004,16 +1051,29 @@ public class GolangGenerator implements CodeGenerator
                 gap = encodingToken.offset() - currentOffset;
                 encode.append(generateEncodeOffset(gap, ""));
                 decode.append(generateDecodeOffset(gap, ""));
+                final String primitive = Character.toString(varName) + "." + propertyName;
 
-                // Encode of a constant is a nullop
-                if (!encodingToken.isConstantEncoding())
+                // Encode of a constant is a nullop and we want to
+                // initialize constant values.
+                // (note: constancy is determined by the type's token)
+                if (encodingToken.isConstantEncoding())
+                {
+                    generateConstantInitPrimitive(init, primitive, encodingToken);
+                }
+                else
                 {
                     generateEncodePrimitive(encode, varName, formatPropertyName(signalToken.name()), encodingToken);
                 }
-                final String primitive = Character.toString(varName) + "." + propertyName;
+
+                // Optional tokens get initialized to NullValue
+                // (note: optionality is determined by the field's token)
+                if (signalToken.isOptionalEncoding())
+                {
+                    generateOptionalInitPrimitive(init, primitive, encodingToken);
+                }
+
                 generateDecodePrimitive(decode, primitive, encodingToken);
-                generateRangeCheckPrimitive(rc, primitive, encodingToken);
-                generateInitPrimitive(init, primitive, encodingToken);
+                generateRangeCheckPrimitive(rc, primitive, encodingToken, signalToken.isOptionalEncoding());
                 break;
         }
 
