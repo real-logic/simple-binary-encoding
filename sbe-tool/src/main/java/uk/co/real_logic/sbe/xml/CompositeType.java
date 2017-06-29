@@ -364,7 +364,7 @@ public class CompositeType extends Type
         switch (nodeName)
         {
             case "type":
-                type = addType(subTypeNode, subTypeName, new EncodedDataType(subTypeNode, givenName));
+                type = addType(subTypeNode, subTypeName, new EncodedDataType(subTypeNode, givenName, referencedName));
                 break;
 
             case "enum":
