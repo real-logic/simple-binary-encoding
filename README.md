@@ -16,7 +16,7 @@ For the latest version information and changes see the [Change Log](https://gith
 The Java and C++ SBE implementations are designed with work very efficiently with the
 [Aeron](https://github.com/real-logic/Aeron) messaging system for low-latency and
 high-throughput communications. The Java SBE implementation has a dependency on
-[Agrona](https://github.com/real-logic/Agrona) for its buffer implementations.
+[Agrona](https://github.com/real-logic/agrona) for its buffer implementations.
 
 License (See LICENSE file for full license)
 -------------------------------------------
