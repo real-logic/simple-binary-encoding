@@ -182,7 +182,7 @@ public class CompositeElementsGenerationTest
         inOrder.verify(mockTokenListener).onEndComposite(any(), any(), eq(2), eq(17));
     }
 
-    private static int encodeTestMessage(final ByteBuffer buffer)
+    private static void encodeTestMessage(final ByteBuffer buffer)
     {
         final UnsafeBuffer directBuffer = new UnsafeBuffer(buffer);
 
@@ -206,8 +206,6 @@ public class CompositeElementsGenerationTest
         MSG_ENCODER.structure().inner()
             .first(101)
             .second(202);
-
-        return MSG_ENCODER.encodedLength();
     }
 
     private static void encodeSchema(final ByteBuffer buffer) throws Exception
