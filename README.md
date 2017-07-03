@@ -14,9 +14,9 @@ An XSD for SBE specs can be found
 For the latest version information and changes see the [Change Log](https://github.com/real-logic/simple-binary-encoding/wiki/Change-Log) with **downloads** at [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Csbe). 
 
 The Java and C++ SBE implementations are designed with work very efficiently with the
-[Aeron](https://github.com/real-logic/Aeron) messaging system for low-latency and
+[Aeron](https://github.com/real-logic/aeron) messaging system for low-latency and
 high-throughput communications. The Java SBE implementation has a dependency on
-[Agrona](https://github.com/real-logic/Agrona) for its buffer implementations.
+[Agrona](https://github.com/real-logic/agrona) for its buffer implementations.
 
 License (See LICENSE file for full license)
 -------------------------------------------
