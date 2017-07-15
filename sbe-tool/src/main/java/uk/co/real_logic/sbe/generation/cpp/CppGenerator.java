@@ -1246,7 +1246,7 @@ public class CppGenerator implements CodeGenerator
             "        if (SBE_BOUNDS_CHECK_EXPECT(((offset + %2$s) > bufferLength), false))\n" +
             "        {\n" +
             "            throw std::runtime_error(\"buffer too short for flyweight [E107]\");\n" +
-            "        }\n" +
+            "        }\n\n" +
             "        m_buffer = buffer;\n" +
             "        m_bufferLength = bufferLength;\n" +
             "        m_offset = offset;\n" +
@@ -1297,6 +1297,10 @@ public class CppGenerator implements CodeGenerator
             "    char *buffer()\n" +
             "    {\n" +
             "        return m_buffer;\n" +
+            "    }\n\n" +
+            "    std::uint64_t bufferLength() const\n" +
+            "    {\n" +
+            "        return m_bufferLength;\n" +
             "    }\n\n",
             className,
             size);
