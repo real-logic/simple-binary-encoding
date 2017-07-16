@@ -199,7 +199,8 @@ project(':sbe-tool') {
                 'sbe.target.language': 'Java',
                 'sbe.validation.stop.on.error': 'true',
                 'sbe.validation.xsd': validationXsdPath)
-        args = ['src/test/resources/json-printer-test-schema.xml', 'src/test/resources/composite-elements-schema.xml']
+        args = ['src/test/resources/json-printer-test-schema.xml',
+                'src/test/resources/composite-elements-schema.xml']
     }
 
     uploadArchives {
@@ -336,7 +337,8 @@ project(':sbe-samples') {
                 'sbe.java.generate.interfaces': 'false',
                 'sbe.validation.stop.on.error': 'true',
                 'sbe.validation.xsd': validationXsdPath)
-        args = ['src/main/resources/example-schema.xml', 'src/main/resources/example-extension-schema.xml']
+        args = ['src/main/resources/example-schema.xml',
+                'src/main/resources/example-extension-schema.xml']
     }
 
     task(runExampleUsingGeneratedStub, dependsOn: 'compileJava', type: JavaExec) {
@@ -599,8 +601,11 @@ task runBenchmarks(type: Exec) {
 }
 
 task uploadToMavenCentral {
-    dependsOn 'sbe-tool:uploadArchives', 'sbe-samples:uploadArchives', 'sbe-benchmarks:uploadArchives',
-            'sbe-all:uploadArchives', 'sbe-all:uploadShadow'
+    dependsOn 'sbe-tool:uploadArchives',
+            'sbe-samples:uploadArchives',
+            'sbe-benchmarks:uploadArchives',
+            'sbe-all:uploadArchives',
+            'sbe-all:uploadShadow'
 }
 
 task wrapper(type: Wrapper) {
