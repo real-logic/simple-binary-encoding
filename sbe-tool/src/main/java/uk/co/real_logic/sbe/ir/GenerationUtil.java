@@ -15,7 +15,9 @@
  */
 package uk.co.real_logic.sbe.ir;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.joining;
@@ -44,8 +46,26 @@ public final class GenerationUtil
         return collect(Signal.BEGIN_VAR_DATA, tokens, index, varData);
     }
 
+    public static MessageComponents collectMessageComponents(final List<Token> tokens)
+    {
+        final Token msgToken = tokens.get(0);
+        final List<Token> messageBody = getMessageBody(tokens);
+
+        int i = 0;
+        final List<Token> fields = new ArrayList<>();
+        i = collectFields(messageBody, i, fields);
+
+        final List<Token> groups = new ArrayList<>();
+        i = collectGroups(messageBody, i, groups);
+
+        final List<Token> varData = new ArrayList<>();
+        collectVarData(messageBody, i, varData);
+        return new MessageComponents(msgToken, fields, groups, varData);
+    }
+
+
     public static int collect(
-        final Signal signal, final List<Token> tokens, final int index, final List<Token> collected)
+            final Signal signal, final List<Token> tokens, final int index, final List<Token> collected)
     {
         int i = index;
         while (i < tokens.size())
@@ -72,23 +92,23 @@ public final class GenerationUtil
     }
 
     public static CharSequence concatEncodingTokens(
-        final List<Token> tokens, final Function<Token, CharSequence> mapper)
+            final List<Token> tokens, final Function<Token, CharSequence> mapper)
     {
         return concatTokens(tokens, Signal.ENCODING, mapper);
     }
 
     public static CharSequence concatTokens(
-        final List<Token> tokens, final Signal signal, final Function<Token, CharSequence> mapper)
+            final List<Token> tokens, final Signal signal, final Function<Token, CharSequence> mapper)
     {
         return tokens
-            .stream()
-            .filter((token) -> token.signal() == signal)
-            .map(mapper)
-            .collect(joining());
+                .stream()
+                .filter((token) -> token.signal() == signal)
+                .map(mapper)
+                .collect(joining());
     }
 
     public static int findEndSignal(
-        final List<Token> tokens, final int startIndex, final Signal signal, final String name)
+            final List<Token> tokens, final int startIndex, final Signal signal, final String name)
     {
         int result = tokens.size() - 1;
 
@@ -104,5 +124,23 @@ public final class GenerationUtil
         }
 
         return result;
+    }
+
+    public static void eachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
+    {
+        for (int i = 0, size = tokens.size(); i < size;)
+        {
+            final Token fieldToken = tokens.get(i);
+            if (fieldToken.signal() == Signal.BEGIN_FIELD)
+            {
+                final Token encodingToken = tokens.get(i + 1);
+                consumer.accept(fieldToken, encodingToken);
+                i += fieldToken.componentTokenCount();
+            }
+            else
+            {
+                ++i;
+            }
+        }
     }
 }

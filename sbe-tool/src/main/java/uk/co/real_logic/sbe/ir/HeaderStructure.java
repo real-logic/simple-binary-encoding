@@ -98,4 +98,14 @@ public class HeaderStructure
     {
         return schemaVersionType;
     }
+
+    public int totalByteSize()
+    {
+        return tokens.stream()
+                .filter(t -> t.signal() == Signal.ENCODING
+                        || t.signal() == Signal.BEGIN_ENUM || t.signal() == Signal.BEGIN_SET)
+                .mapToInt(Token::encodedLength)
+                .sum();
+
+    }
 }

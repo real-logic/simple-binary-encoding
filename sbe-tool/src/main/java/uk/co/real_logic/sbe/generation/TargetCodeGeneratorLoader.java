@@ -21,6 +21,7 @@ import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.golang.GolangGenerator;
 import uk.co.real_logic.sbe.generation.golang.GolangOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
+import uk.co.real_logic.sbe.generation.rust.Rust;
 import uk.co.real_logic.sbe.ir.Ir;
 
 import java.io.IOException;
@@ -58,6 +59,14 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         {
             return new GolangGenerator(ir, new GolangOutputManager(outputDir, ir.applicableNamespace()));
         }
+    },
+
+    RUST()
+    {
+        public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
+        {
+            return Rust.defaultRustGenerator(ir, outputDir);
+        }
     };
 
     /**
@@ -84,7 +93,6 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         {
             // do nothing and fall through
         }
-
         throw new IllegalArgumentException("No code generator for name: " + name);
     }
 }

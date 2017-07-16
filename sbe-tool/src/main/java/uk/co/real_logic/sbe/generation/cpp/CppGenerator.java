@@ -108,32 +108,20 @@ public class CppGenerator implements CodeGenerator
 
         for (final List<Token> tokens : ir.messages())
         {
-            final Token msgToken = tokens.get(0);
-            final String className = formatClassName(msgToken.name());
+            final MessageComponents components = GenerationUtil.collectMessageComponents(tokens);
+            final String className = formatClassName(components.messageToken.name());
 
             try (Writer out = outputManager.createOutput(className))
             {
                 out.append(generateFileHeader(ir.namespaces(), className, typesToInclude));
                 out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(className, msgToken));
-
-                final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
-                int i = 0;
-
-                final List<Token> fields = new ArrayList<>();
-                i = collectFields(messageBody, i, fields);
-
-                final List<Token> groups = new ArrayList<>();
-                i = collectGroups(messageBody, i, groups);
-
-                final List<Token> varData = new ArrayList<>();
-                collectVarData(messageBody, i, varData);
+                out.append(generateMessageFlyweightCode(className, components.messageToken));
 
                 final StringBuilder sb = new StringBuilder();
-                out.append(generateFields(className, fields, BASE_INDENT));
-                generateGroups(sb, groups, BASE_INDENT);
+                out.append(generateFields(className, components.fields, BASE_INDENT));
+                generateGroups(sb, components.groups, BASE_INDENT);
                 out.append(sb);
-                out.append(generateVarData(className, varData, BASE_INDENT));
+                out.append(generateVarData(className, components.varData, BASE_INDENT));
                 out.append("};\n");
                 out.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
             }

@@ -1,0 +1,229 @@
+package uk.co.real_logic.sbe.generation.rust;
+
+import junit.framework.AssertionFailedError;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertTrue;
+import static uk.co.real_logic.sbe.generation.java.JavaGeneratorTest.generateIrForResource;
+import static uk.co.real_logic.sbe.generation.rust.RustTest.minimalDummyIr;
+
+public class RustGeneratorTest
+{
+    public static final String BROAD_USE_CASES_SCHEMA = "code-generation-schema";
+    public static final String BASIC_TYPES_SCHEMA = "basic-types-schema";
+    public static final String NESTED_GROUP_SCHEMA = "nested-group-schema";
+    private SingleStringOutputManager outputManager;
+
+    @Rule
+    public TemporaryFolder folderRule = new TemporaryFolder();
+
+    @Before
+    public void setUp() throws Exception
+    {
+        outputManager = new SingleStringOutputManager();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void nullOutputManagerTossesNPE()
+    {
+        new RustGenerator(minimalDummyIr(), null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void nullIrTossesNPE()
+    {
+        new RustGenerator(null, outputManager);
+    }
+
+    @Test
+    public void generateSharedImports() throws IOException
+    {
+        RustGenerator.generateSharedImports(generateIrForResource(BROAD_USE_CASES_SCHEMA), outputManager);
+        assertContainsSharedImports(outputManager.toString());
+    }
+
+    private static void assertContainsSharedImports(final String generatedRust)
+    {
+        assertTrue(generatedRust.contains("Shared Imports"));
+        assertTrue(generatedRust.contains("Result as IoResult"));
+    }
+
+    @Test
+    public void generateBasicEnum() throws IOException
+    {
+        RustGenerator.generateSharedImports(generateIrForResource(BASIC_TYPES_SCHEMA), outputManager);
+        assertContainsSharedImports(outputManager.toString());
+    }
+
+    private static String fullGenerateForResource(final SingleStringOutputManager outputManager,
+                                                  final String localResourceName)
+    {
+        outputManager.clear();
+        final RustGenerator rustGenerator = new RustGenerator(generateIrForResource(localResourceName), outputManager);
+        try
+        {
+            rustGenerator.generate();
+        } catch (final IOException e)
+        {
+            throw new AssertionFailedError("Unexpected IOException during generation. " + e.getMessage());
+        }
+        return outputManager.toString();
+    }
+
+    @Test
+    public void fullGenerateBasicTypes() throws IOException
+    {
+        final String generatedRust = fullGenerateForResource(outputManager, BASIC_TYPES_SCHEMA);
+        assertContainsSharedImports(generatedRust);
+        assertContainsNumericEnum(generatedRust);
+    }
+
+    private void assertContainsNumericEnum(final String generatedRust)
+    {
+        final String expectedDeclaration =
+            "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
+                "#[repr(u8)]\n" +
+                "pub enum ENUM {\n" +
+                "  Value1 = 1u8,\n" +
+                "  Value10 = 10u8,\n" +
+                "}\n";
+        assertTrue(generatedRust.contains(expectedDeclaration));
+    }
+
+    @Test
+    public void fullGenerateBroadUseCase() throws IOException, InterruptedException
+    {
+        final String generatedRust = fullGenerateForResource(outputManager, "example-schema");
+        assertContainsSharedImports(generatedRust);
+        final String expectedBooleanTypeDeclaration =
+            "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
+                "#[repr(u8)]\n" +
+                "pub enum BooleanType {\n" +
+                "  F = 0u8,\n" +
+                "  T = 1u8,\n" +
+                "}\n";
+        assertTrue(generatedRust.contains(expectedBooleanTypeDeclaration));
+        final String expectedCharTypeDeclaration =
+            "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
+                "#[repr(i8)]\n" +
+                "pub enum Model {\n" +
+                "  A = 65i8,\n" +
+                "  B = 66i8,\n" +
+                "  C = 67i8,\n" +
+                "}\n";
+        assertTrue(generatedRust.contains(expectedCharTypeDeclaration));
+        assertRustBuildable(generatedRust, Optional.of(BROAD_USE_CASES_SCHEMA));
+    }
+
+    private File writeCargoFolderWrapper(final String name, final String generatedRust, final File folder) throws
+        IOException
+    {
+        final File src = new File(folder, "src");
+        src.mkdirs();
+        final File cargo = new File(folder, "Cargo.toml");
+        try (Writer cargoWriter = Files.newBufferedWriter(cargo.toPath()))
+        {
+            cargoWriter.append("[package]\n")
+                .append(String.format("name = \"%s\"\n", name))
+                .append("version = \"0.1.0\"\n")
+                .append("authors = []\n\n")
+                .append("[dependencies]\n")
+                .append("[dev-dependencies]\n");
+        }
+        final File lib = new File(src, "lib.rs");
+        try (Writer libWriter = Files.newBufferedWriter(lib.toPath()))
+        {
+            libWriter.append(generatedRust);
+        }
+        return folder;
+    }
+
+    private static boolean cargoCheckInDirectory(final File folder) throws IOException, InterruptedException
+    {
+        final ProcessBuilder builder = new ProcessBuilder("cargo", "check");
+        builder.directory(folder);
+        final Process process = builder.start();
+        process.waitFor(20, TimeUnit.SECONDS);
+        final boolean success = process.exitValue() == 0;
+        if (!success)
+        {
+            // Include output as a debugging aid when things go wrong
+            try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream())))
+            {
+                while (true)
+                {
+                    final String line = errorReader.readLine();
+                    if (line == null)
+                    {
+                        break;
+                    }
+                    System.out.printf("Cargo: %s%n", line);
+                }
+            }
+        }
+        return success;
+    }
+
+    private static boolean cargoExists() throws IOException, InterruptedException
+    {
+        final ProcessBuilder builder = new ProcessBuilder("cargo", "-v");
+        final Process process = builder.start();
+        process.waitFor(20, TimeUnit.SECONDS);
+        return process.exitValue() == 0;
+    }
+
+    private void assertRustBuildable(final String generatedRust, final Optional<String> name) throws IOException,
+        InterruptedException
+    {
+        Assume.assumeTrue(cargoExists());
+        final File folder = writeCargoFolderWrapper(name.orElse("test"), generatedRust, folderRule.newFolder());
+        assertTrue("Generated Rust should be buildable with cargo", cargoCheckInDirectory(folder));
+    }
+
+    private String assertSchemaInterpretableAsRust(final String localResourceSchema) throws IOException,
+        InterruptedException
+    {
+        final String rust = fullGenerateForResource(outputManager, localResourceSchema);
+        assertRustBuildable(rust, Optional.of(localResourceSchema));
+        return rust;
+    }
+
+    @Test
+    public void checkValidRustFromAllExampleSchema() throws IOException, InterruptedException
+    {
+        final String[] schema =
+        {
+            "basic-group-schema",
+            BASIC_TYPES_SCHEMA,
+            "basic-variable-length-schema",
+            "block-length-schema",
+            BROAD_USE_CASES_SCHEMA,
+            "composite-elements-schema",
+            "composite-elements-schema-rc4",
+            "composite-offsets-schema",
+            "encoding-types-schema",
+            "example-schema",
+            "FixBinary",
+            "group-with-data-schema",
+            "issue435",
+            "message-block-length-test",
+            NESTED_GROUP_SCHEMA,
+            "new-order-single-schema",
+        };
+        for (final String s : schema)
+        {
+            assertSchemaInterpretableAsRust(s);
+        }
+
+
+    }
+}
