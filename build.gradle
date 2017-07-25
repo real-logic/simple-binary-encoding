@@ -165,7 +165,6 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 project(':sbe-tool') {
     dependencies {
         compile 'org.agrona:agrona:0.9.6'
-        compile 'com.google.guava:guava:21.0'
 
         testCompile files('build/classes/java/generated')
     }

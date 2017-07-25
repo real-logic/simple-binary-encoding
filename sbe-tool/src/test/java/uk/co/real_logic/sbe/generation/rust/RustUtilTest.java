@@ -4,6 +4,7 @@ import org.junit.Test;
 import uk.co.real_logic.sbe.PrimitiveType;
 
 import static org.junit.Assert.assertEquals;
+import static uk.co.real_logic.sbe.generation.rust.RustUtil.formatMethodName;
 import static uk.co.real_logic.sbe.generation.rust.RustUtil.generateRustLiteral;
 
 public class RustUtilTest
@@ -62,5 +63,21 @@ public class RustUtilTest
     public void generateRustLiteralNullValueParam()
     {
         generateRustLiteral(PrimitiveType.INT8, null);
+    }
+
+    @Test
+    public void methodNameCasing()
+    {
+        assertEquals("", formatMethodName(""));
+        assertEquals("a", formatMethodName("a"));
+        assertEquals("a", formatMethodName("A"));
+        assertEquals("car", formatMethodName("Car"));
+        assertEquals("car", formatMethodName("car"));
+        assertEquals("decode_car", formatMethodName("DecodeCar"));
+        assertEquals("decode_car", formatMethodName("decodeCar"));
+        assertEquals("decode_car", formatMethodName("decode_car"));
+        assertEquals("decode_car", formatMethodName("Decode_car"));
+        assertEquals("decode_car", formatMethodName("decode_Car"));
+        assertEquals("decode_car", formatMethodName("Decode_Car"));
     }
 }

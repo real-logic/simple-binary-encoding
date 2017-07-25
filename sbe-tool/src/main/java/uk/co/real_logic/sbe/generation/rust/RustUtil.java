@@ -1,6 +1,5 @@
 package uk.co.real_logic.sbe.generation.rust;
 
-import com.google.common.base.CaseFormat;
 import org.agrona.Verify;
 import uk.co.real_logic.sbe.PrimitiveType;
 
@@ -96,8 +95,54 @@ public class RustUtil
         {
             return value;
         }
-        final String fromUpper = toLowerFirstChar(value);
-        return sanitizeMethodOrProperty(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fromUpper));
+        return sanitizeMethodOrProperty(toLowerUnderscoreFromCamel(value));
+    }
+
+    // Adapted from Guava, Apache License Version 2.0
+    private static String toLowerUnderscoreFromCamel(final String value)
+    {
+        if (value.isEmpty())
+        {
+            return value;
+        }
+        final String s = toLowerFirstChar(value);
+
+        // include some extra space for separators
+        final StringBuilder out = new StringBuilder(s.length() + 4);
+        int i = 0;
+        int j = -1;
+        while ((j = indexInUpperAlphaRange(s, ++j)) != -1)
+        {
+            final String word = s.substring(i, j).toLowerCase();
+            out.append(word);
+            if (!word.endsWith("_"))
+            {
+                out.append("_");
+            }
+            i = j;
+        }
+        return (i == 0)
+            ? s.toLowerCase()
+            : out.append(s.substring(i).toLowerCase()).toString();
+    }
+
+    // Adapted from Guava, Apache License Version 2.0
+    private static int indexInUpperAlphaRange(final CharSequence sequence, final int start)
+    {
+        final int length = sequence.length();
+        if (start < 0 || start > length)
+        {
+            throw new IndexOutOfBoundsException();
+        }
+        for (int i = start; i < length; i++)
+        {
+            final char c = sequence.charAt(i);
+            if ('A' <= c && c <= 'Z')
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static String sanitizeMethodOrProperty(final String name)
