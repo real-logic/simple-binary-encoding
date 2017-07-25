@@ -5,7 +5,7 @@ import uk.co.real_logic.sbe.ir.Token;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.ir.GenerationUtil.eachField;
+import static uk.co.real_logic.sbe.generation.java.JavaGenerator.eachField;
 
 final class NamedToken
 {

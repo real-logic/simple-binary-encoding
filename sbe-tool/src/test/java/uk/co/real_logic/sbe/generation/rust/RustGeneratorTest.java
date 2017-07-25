@@ -6,6 +6,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.ir.Ir;
+import uk.co.real_logic.sbe.xml.IrGenerator;
+import uk.co.real_logic.sbe.xml.MessageSchema;
+import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -13,8 +18,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
-import static uk.co.real_logic.sbe.generation.java.JavaGeneratorTest.generateIrForResource;
 import static uk.co.real_logic.sbe.generation.rust.RustTest.minimalDummyIr;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class RustGeneratorTest
 {
@@ -30,6 +35,23 @@ public class RustGeneratorTest
     public void setUp() throws Exception
     {
         outputManager = new SingleStringOutputManager();
+    }
+
+    public static Ir generateIrForResource(final String localResourceName)
+    {
+        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+        final String xmlLocalResourceName = localResourceName.endsWith(".xml")
+            ? localResourceName : localResourceName + ".xml";
+        final MessageSchema schema;
+        try
+        {
+            schema = parse(TestUtil.getLocalResource(xmlLocalResourceName), options);
+        } catch (final Exception e)
+        {
+            throw new IllegalStateException(e);
+        }
+        final IrGenerator irg = new IrGenerator();
+        return irg.generate(schema);
     }
 
     @Test(expected = NullPointerException.class)

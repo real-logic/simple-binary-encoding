@@ -137,8 +137,8 @@ public class GolangGenerator implements CodeGenerator
 
         for (final List<Token> tokens : ir.messages())
         {
-            final MessageComponents components = GenerationUtil.collectMessageComponents(tokens);
-            final String typeName = formatTypeName(components.messageToken.name());
+            final Token msgToken = tokens.get(0);
+            final String typeName = formatTypeName(msgToken.name());
 
             try (Writer out = outputManager.createOutput(typeName))
             {
@@ -153,10 +153,22 @@ public class GolangGenerator implements CodeGenerator
 
                 generateMessageCode(sb, typeName, tokens);
 
-                generateFields(sb, typeName, components.fields, "");
-                generateGroups(sb, components.groups, typeName);
-                generateGroupProperties(sb, components.groups, typeName);
-                generateVarData(sb, typeName, components.varData, "");
+                final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
+                int i = 0;
+
+                final List<Token> fields = new ArrayList<>();
+                i = collectFields(messageBody, i, fields);
+
+                final List<Token> groups = new ArrayList<>();
+                i = collectGroups(messageBody, i, groups);
+
+                final List<Token> varData = new ArrayList<>();
+                collectVarData(messageBody, i, varData);
+
+                generateFields(sb, typeName, fields, "");
+                generateGroups(sb, groups, typeName);
+                generateGroupProperties(sb, groups, typeName);
+                generateVarData(sb, typeName, varData, "");
 
                 out.append(generateFileHeader(ir.namespaces()));
                 out.append(sb);

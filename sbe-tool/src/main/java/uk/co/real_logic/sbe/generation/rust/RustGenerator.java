@@ -45,11 +45,11 @@ public class RustGenerator implements CodeGenerator
         generateEnums(ir, outputManager);
         generateComposites(ir, outputManager);
         generateBitSets(ir, outputManager);
-        final int headerSize = ir.headerStructure().totalByteSize();
+        final int headerSize = totalByteSize(ir.headerStructure());
 
         for (final List<Token> tokens : ir.messages())
         {
-            final MessageComponents components = GenerationUtil.collectMessageComponents(tokens);
+            final MessageComponents components = MessageComponents.collectMessageComponents(tokens);
             final String messageTypeName = formatTypeName(components.messageToken.name());
 
             final Optional<FieldsRepresentationSummary> fieldsRepresentation =
@@ -63,6 +63,16 @@ public class RustGenerator implements CodeGenerator
             generateMessageDecoder(outputManager, components, groupTree, fieldsRepresentation, headerSize);
             generateMessageEncoder(outputManager, components, groupTree, fieldsRepresentation, headerSize);
         }
+
+    }
+
+    private static int totalByteSize(final HeaderStructure headerStructure)
+    {
+        return headerStructure.tokens().stream()
+            .filter(t -> t.signal() == Signal.ENCODING
+                || t.signal() == Signal.BEGIN_ENUM || t.signal() == Signal.BEGIN_SET)
+            .mapToInt(Token::encodedLength)
+            .sum();
 
     }
 

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
@@ -168,17 +169,31 @@ public class JavaGenerator implements CodeGenerator
 
         for (final List<Token> tokens : ir.messages())
         {
-            final MessageComponents messageComponents = GenerationUtil.collectMessageComponents(tokens);
-            generateDecoder(BASE_INDENT, messageComponents);
-            generateEncoder(BASE_INDENT, messageComponents);
+            final Token msgToken = tokens.get(0);
+            final List<Token> messageBody = getMessageBody(tokens);
+
+            int i = 0;
+            final List<Token> fields = new ArrayList<>();
+            i = collectFields(messageBody, i, fields);
+
+            final List<Token> groups = new ArrayList<>();
+            i = collectGroups(messageBody, i, groups);
+
+            final List<Token> varData = new ArrayList<>();
+            collectVarData(messageBody, i, varData);
+
+            generateDecoder(BASE_INDENT, fields, groups, varData, msgToken);
+            generateEncoder(BASE_INDENT, fields, groups, varData, msgToken);
         }
     }
 
     private void generateEncoder(
         final String indent,
-        final MessageComponents components) throws IOException
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData,
+        final Token msgToken) throws IOException
     {
-        final Token msgToken = components.messageToken;
         final String className = formatClassName(encoderName(msgToken.name()));
         final String implementsString = implementsInterface(GEN_MESSAGE_ENCODER_FLYWEIGHT);
 
@@ -186,16 +201,16 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateMainHeader(ir.applicableNamespace()));
 
-            generateAnnotations(indent, className, components.groups, out, 0, this::encoderName);
+            generateAnnotations(indent, className, groups, out, 0, this::encoderName);
             out.append(generateDeclaration(className, implementsString));
             out.append(generateEncoderFlyweightCode(className, msgToken));
-            out.append(generateEncoderFields(className, components.fields, indent));
+            out.append(generateEncoderFields(className, fields, indent));
 
             final StringBuilder sb = new StringBuilder();
-            generateEncoderGroups(sb, className, components.groups, indent);
+            generateEncoderGroups(sb, className, groups, indent);
             out.append(sb);
 
-            out.append(generateEncoderVarData(className, components.varData, indent));
+            out.append(generateEncoderVarData(className, varData, indent));
 
             out.append(generateEncoderDisplay(formatClassName(decoderName(msgToken.name())), indent));
 
@@ -205,9 +220,11 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateDecoder(
         final String indent,
-        final MessageComponents components) throws IOException
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData,
+        final Token msgToken) throws IOException
     {
-        final Token msgToken = components.messageToken;
         final String className = formatClassName(decoderName(msgToken.name()));
         final String implementsString = implementsInterface(GEN_MESSAGE_DECODER_FLYWEIGHT);
 
@@ -215,19 +232,18 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateMainHeader(ir.applicableNamespace()));
 
-            generateAnnotations(indent, className, components.groups, out, 0, this::decoderName);
+            generateAnnotations(indent, className, groups, out, 0, this::decoderName);
             out.append(generateDeclaration(className, implementsString));
             out.append(generateDecoderFlyweightCode(className, msgToken));
-            out.append(generateDecoderFields(components.fields, indent));
+            out.append(generateDecoderFields(fields, indent));
 
             final StringBuilder sb = new StringBuilder();
-            generateDecoderGroups(sb, className, components.groups, indent);
+            generateDecoderGroups(sb, className, groups, indent);
             out.append(sb);
 
-            out.append(generateDecoderVarData(components.varData, indent));
+            out.append(generateDecoderVarData(varData, indent));
 
-            out.append(generateDecoderDisplay(msgToken.name(), components.fields, components.groups, components.varData,
-                    indent));
+            out.append(generateDecoderDisplay(msgToken.name(), fields, groups, varData, indent));
 
             out.append("}\n");
         }
@@ -2216,6 +2232,24 @@ public class JavaGenerator implements CodeGenerator
             });
 
         return sb;
+    }
+
+    public static void eachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
+    {
+        for (int i = 0, size = tokens.size(); i < size;)
+        {
+            final Token fieldToken = tokens.get(i);
+            if (fieldToken.signal() == Signal.BEGIN_FIELD)
+            {
+                final Token encodingToken = tokens.get(i + 1);
+                consumer.accept(fieldToken, encodingToken);
+                i += fieldToken.componentTokenCount();
+            }
+            else
+            {
+                ++i;
+            }
+        }
     }
 
     private static void generateFieldIdMethod(final StringBuilder sb, final Token token, final String indent)

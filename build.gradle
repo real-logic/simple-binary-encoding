@@ -477,7 +477,7 @@ task(generateRustCarExample, type: JavaExec) {
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
             'sbe.output.dir': 'rust/car_example/src',
-            'sbe.target.language': 'rust',
+            'sbe.target.language': 'uk.co.real_logic.sbe.generation.rust.Rust',
             'sbe.target.namespace': 'car_example_generated_codec')
     args = ['sbe-tool/src/test/resources/example-schema.xml']
 }
@@ -500,11 +500,11 @@ task(runRustCarExample, type: Exec) {
 }
 
 def cargo_exists() {
-    def stdout = new ByteArrayOutputStream()
     def result = project.exec {
         commandLine 'cargo'
         args '-v'
-        standardOutput = stdout
+        standardOutput = new ByteArrayOutputStream()
+        errorOutput = new ByteArrayOutputStream()
     }
     return result.exitValue == 0
 }
