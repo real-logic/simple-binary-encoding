@@ -39,6 +39,7 @@ public class RustGenerator implements CodeGenerator
     public void generate() throws IOException
     {
         generateSharedImports(ir, outputManager);
+        generateResultEnums(outputManager);
         generateDecoderScratchStruct(outputManager);
         generateEncoderScratchStruct(ir, outputManager);
         generateEitherEnum(outputManager);
@@ -403,7 +404,7 @@ public class RustGenerator implements CodeGenerator
             final String fieldsType = node.contextualName + "Member";
             indent(out, 1, "pub fn next_%s_member(mut self, fields: &%s)",
                     formatMethodName(node.originalName), fieldsType);
-            out.append(format(" -> IoResult<%s> {\n", withLifetime(nextCoderType)));
+            out.append(format(" -> CodecResult<%s> {\n", withLifetime(nextCoderType)));
             final String scratchChain = toScratchChain(node);
             indent(out, 2, "%s.write_type::<%s>(fields, %s)?; // block length\n",
                     scratchChain, fieldsType, node.blockLength);
@@ -412,7 +413,7 @@ public class RustGenerator implements CodeGenerator
             indent(out).append("}\n");
 
             indent(out).append("#[inline]\n");
-            indent(out, 1, "pub fn done_with_%s(mut self) -> IoResult<%s> {\n",
+            indent(out, 1, "pub fn done_with_%s(mut self) -> CodecResult<%s> {\n",
                     formatMethodName(node.originalName), withLifetime(afterGroupCoderType));
             indent(out, 2, "%s.write_at_position::<%s>(self.count_write_pos, &self.count, %s)?;\n",
                     scratchChain, rustCountType, node.numInGroupType.size());
@@ -432,7 +433,7 @@ public class RustGenerator implements CodeGenerator
                     .append(INDENT).append("}\n");
 
             indent(out).append("#[inline]\n");
-            indent(out, 1, "pub fn %s_individually(mut self) -> IoResult<%s> {\n",
+            indent(out, 1, "pub fn %s_individually(mut self) -> CodecResult<%s> {\n",
                     formatMethodName(node.originalName), withLifetime(memberCoderType));
             indent(out, 2, "%s.write_type::<%s>(&%s, %s)?; // block length\n",
                     scratchChain, rustTypeName(node.blockLengthType),
@@ -464,7 +465,7 @@ public class RustGenerator implements CodeGenerator
             contentProperty, final String fieldsType, final String scratchChain) throws IOException
     {
         indent(out).append("#[inline]\n");
-        indent(out, 1, "pub fn %s_as_slice(mut self, count: %s) -> IoResult<(&%s mut [%s], %s)> {\n",
+        indent(out, 1, "pub fn %s_as_slice(mut self, count: %s) -> CodecResult<(&%s mut [%s], %s)> {\n",
                 formatMethodName(node.originalName), rustCountType, DATA_LIFETIME, fieldsType,
                 withLifetime(afterGroupCoderType));
         indent(out, 2, "%s.write_type::<%s>(&%s, %s)?; // block length\n",
@@ -481,7 +482,7 @@ public class RustGenerator implements CodeGenerator
         indent(out, 1).append("}\n");
 
         indent(out).append("#[inline]\n");
-        indent(out, 1, "pub fn %s_from_slice(mut self, s: &%s [%s]) -> IoResult<%s> {\n",
+        indent(out, 1, "pub fn %s_from_slice(mut self, s: &%s [%s]) -> CodecResult<%s> {\n",
                 formatMethodName(node.originalName), DATA_LIFETIME, fieldsType,
                 withLifetime(afterGroupCoderType));
         indent(out, 2, "%s.write_type::<%s>(&%s, %s)?; // block length\n",
@@ -490,7 +491,7 @@ public class RustGenerator implements CodeGenerator
                 node.blockLengthType.size());
         indent(out, 2, "let count = s.len();\n");
         indent(out, 2, "if count > %s {\n", node.numInGroupType.maxValue());
-        indent(out, 3).append("return Err(Error::new(ErrorKind::Other, \"slice is too big\"))\n");
+        indent(out, 3).append("return Err(CodecErr::SliceIsLongerThanAllowedBySchema)\n");
         indent(out, 2).append("}\n");
         indent(out, 2, "%s.write_type::<%s>(&(count as %s), %s)?; // group count\n",
                 scratchChain, rustCountType, rustCountType, node.numInGroupType.size());
@@ -544,7 +545,7 @@ public class RustGenerator implements CodeGenerator
             indent(out, 2).append("}\n").append(INDENT).append("}\n\n");
 
             indent(out, 1, "pub fn next_%s_member(mut self)", formatMethodName(node.originalName));
-            out.append(format(" -> IoResult<(&%s %s, %s)> {\n", DATA_LIFETIME, node.contextualName + "Member",
+            out.append(format(" -> CodecResult<(&%s %s, %s)> {\n", DATA_LIFETIME, node.contextualName + "Member",
                     nextDecoderType.startsWith("Either") ? nextDecoderType : withLifetime(nextDecoderType)));
             // TODO - account for version mismatch by making use of previously read in-message blockLength
             indent(out, 2, "let v = %s.read_type::<%s>(%s)?;\n",
@@ -572,7 +573,7 @@ public class RustGenerator implements CodeGenerator
             indent(out, 2, "%s { %s: %s }\n", headerDecoderType, contentProperty, contentProperty)
                     .append(INDENT).append("}\n");
 
-            indent(out, 1, "pub fn %s_individually(mut self) -> IoResult<%s> {\n",
+            indent(out, 1, "pub fn %s_individually(mut self) -> CodecResult<%s> {\n",
                     formatMethodName(node.originalName), groupLevelNextDecoderType);
             indent(out, 2, "%s.skip_bytes(%s)?; // Skip reading block length for now\n",
                     toScratchChain(node), node.blockLengthType.size());
@@ -608,7 +609,7 @@ public class RustGenerator implements CodeGenerator
             final Writer out,
             final String contentProperty) throws IOException
     {
-        indent(out, 1, "pub fn %s_as_slice(mut self) -> IoResult<(&%s [%s], %s)> {\n",
+        indent(out, 1, "pub fn %s_as_slice(mut self) -> CodecResult<(&%s [%s], %s)> {\n",
                 formatMethodName(node.originalName), DATA_LIFETIME, node.contextualName + "Member",
                 initialNextDecoderType.startsWith("Either")
                         ? initialNextDecoderType : withLifetime(initialNextDecoderType));
@@ -833,13 +834,13 @@ public class RustGenerator implements CodeGenerator
                 indent(writer, 2, "%s { %s: %s }\n",
                         decoderType, contentPropertyName, contentPropertyName).append(INDENT).append("}\n");
 
-                indent(writer, 1, "pub fn %s(mut self, s: &%s [%s]) -> IoResult<%s> {\n",
+                indent(writer, 1, "pub fn %s(mut self, s: &%s [%s]) -> CodecResult<%s> {\n",
                         formatMethodName(name), DATA_LIFETIME, rustTypeName(this.dataType),
                         atEndOfGroup ? nextCoderType : withLifetime(nextCoderType));
 
                 indent(writer, 2).append("let l = s.len();\n");
                 indent(writer, 2, "if l > %s {\n", this.lengthType.maxValue());
-                indent(writer, 3).append("return Err(Error::new(ErrorKind::Other, \"slice is too big\"))\n");
+                indent(writer, 3).append("return Err(CodecErr::SliceIsLongerThanAllowedBySchema)\n");
                 indent(writer, 2).append("}\n");
                 indent(writer, 2).append("// Write data length\n");
                 indent(writer, 2, "%s.write_type::<%s>(&(l as %s), %s); // group length\n",
@@ -882,7 +883,7 @@ public class RustGenerator implements CodeGenerator
                 indent(writer, 2, "%s { %s: %s }\n",
                         decoderType, contentPropertyName, contentPropertyName).append(INDENT).append("}\n");
 
-                indent(writer, 1, "pub fn %s(mut self) -> IoResult<(&%s [%s], %s)> {\n",
+                indent(writer, 1, "pub fn %s(mut self) -> CodecResult<(&%s [%s], %s)> {\n",
                         formatMethodName(name), DATA_LIFETIME, rustTypeName(this.dataType),
                         atEndOfGroup ? nextDecoderType : withLifetime(nextDecoderType));
                 indent(writer, 2, "let count = *%s.read_type::<%s>(%s)?;\n",
@@ -992,8 +993,20 @@ public class RustGenerator implements CodeGenerator
     {
         try (Writer writer = outputManager.createOutput("Shared Imports"))
         {
-            // TODO - replace use of IoResult with a custom enum
-            writer.append("use std::io::{Error, ErrorKind, Result as IoResult};\n");
+            writer.append("extern crate core;\n");
+        }
+    }
+
+    static void generateResultEnums(final OutputManager outputManager) throws IOException
+    {
+        try (Writer writer = outputManager.createOutput("Result types"))
+        {
+            writer.append("#[derive(Debug)]\n");
+            writer.append("pub enum CodecErr {\n");
+            indent(writer, 1, "NotEnoughBytes,\n");
+            indent(writer, 1, "SliceIsLongerThanAllowedBySchema,\n");
+            writer.append("}\n\n");
+            writer.append("pub type CodecResult<T> = core::result::Result<T, CodecErr>;\n");
         }
     }
 
@@ -1011,23 +1024,23 @@ public class RustGenerator implements CodeGenerator
 
             indent(writer).append("#[inline]\n");
             indent(writer).append("fn write_type<T>(&mut self, t: & T, num_bytes: usize) -> " +
-                    "IoResult<()> {\n");
+                    "CodecResult<()> {\n");
             indent(writer, 2).append("let end = self.pos + num_bytes;\n");
             indent(writer, 2).append("if end <= self.data.len() {\n");
             indent(writer, 3).append("let source_bytes: &[u8] = unsafe {\n");
-            indent(writer, 4).append("::std::slice::from_raw_parts(t as *const T as *const u8, num_bytes)\n");
+            indent(writer, 4).append("core::slice::from_raw_parts(t as *const T as *const u8, num_bytes)\n");
             indent(writer, 3).append("};\n");
             indent(writer, 3).append("(&mut self.data[self.pos..end]).copy_from_slice(source_bytes);\n");
             indent(writer, 3).append("self.pos = end;\n");
             indent(writer, 3).append("Ok(())\n");
             indent(writer, 2).append("} else {\n");
-            indent(writer, 3).append("Err(Error::new(ErrorKind::Other, \"not enough bytes left\"))\n");
+            indent(writer, 3).append("Err(CodecErr::NotEnoughBytes)\n");
             indent(writer, 2).append("}\n");
             indent(writer).append("}\n");
 
             indent(writer).append("#[inline]\n");
             indent(writer, 1, "fn writable_overlay<T>(&mut self, num_bytes: usize) " +
-                    "-> IoResult<&%s mut T> {\n", DATA_LIFETIME);
+                    "-> CodecResult<&%s mut T> {\n", DATA_LIFETIME);
             indent(writer, 2).append("let end = self.pos + num_bytes;\n");
             indent(writer, 2).append("if end <= self.data.len() {\n");
             indent(writer, 3, "let v: &%s mut T = unsafe {\n", DATA_LIFETIME);
@@ -1037,55 +1050,55 @@ public class RustGenerator implements CodeGenerator
             indent(writer, 3).append("self.pos = end;\n");
             indent(writer, 3).append("Ok(v)\n");
             indent(writer, 2).append("} else {\n");
-            indent(writer, 3).append("Err(Error::new(ErrorKind::Other, \"not enough bytes left\"))\n");
+            indent(writer, 3).append("Err(CodecErr::NotEnoughBytes)\n");
             indent(writer, 2).append("}\n");
             indent(writer).append("}\n");
 
             indent(writer).append("#[inline]\n");
             indent(writer, 1, "fn writable_slice<T>(&mut self, count: usize, bytes_per_item: usize) " +
-                    "-> IoResult<&%s mut [T]> {\n", DATA_LIFETIME);
+                    "-> CodecResult<&%s mut [T]> {\n", DATA_LIFETIME);
             indent(writer, 2).append("let end = self.pos + (count * bytes_per_item);\n");
             indent(writer, 2).append("if end <= self.data.len() {\n");
             indent(writer, 3, "let v: &%s mut [T] = unsafe {\n", DATA_LIFETIME);
-            indent(writer, 4).append("::std::slice::from_raw_parts_mut(" +
+            indent(writer, 4).append("core::slice::from_raw_parts_mut(" +
                     "self.data[self.pos..end].as_mut_ptr() as *mut T, count)\n");
             indent(writer, 3).append("};\n");
             indent(writer, 3).append("self.pos = end;\n");
             indent(writer, 3).append("Ok(v)\n");
             indent(writer, 2).append("} else {\n");
-            indent(writer, 3).append("Err(Error::new(ErrorKind::Other, \"not enough bytes left\"))\n");
+            indent(writer, 3).append("Err(CodecErr::NotEnoughBytes)\n");
             indent(writer, 2).append("}\n");
             indent(writer).append("}\n");
 
             indent(writer).append("#[inline]\n");
             indent(writer).append("fn write_slice_without_count<T>(&mut self, t: &[T], bytes_per_item: usize) -> " +
-                    "IoResult<()> {\n");
+                    "CodecResult<()> {\n");
             indent(writer, 2).append("let content_bytes_size = bytes_per_item * t.len();\n");
             indent(writer, 2).append("let end = self.pos + content_bytes_size;\n");
             indent(writer, 2).append("if end <= self.data.len() {\n");
             indent(writer, 3).append("let source_bytes: &[u8] = unsafe {\n");
-            indent(writer, 4).append("::std::slice::from_raw_parts(t.as_ptr() as *const u8, content_bytes_size)\n");
+            indent(writer, 4).append("core::slice::from_raw_parts(t.as_ptr() as *const u8, content_bytes_size)\n");
             indent(writer, 3).append("};\n");
             indent(writer, 3).append("(&mut self.data[self.pos..end]).copy_from_slice(source_bytes);\n");
             indent(writer, 3).append("self.pos = end;\n");
             indent(writer, 3).append("Ok(())\n");
             indent(writer, 2).append("} else {\n");
-            indent(writer, 3).append("Err(Error::new(ErrorKind::Other, \"not enough bytes left\"))\n");
+            indent(writer, 3).append("Err(CodecErr::NotEnoughBytes)\n");
             indent(writer, 2).append("}\n");
             indent(writer).append("}\n");
 
             indent(writer).append("#[inline]\n");
             indent(writer).append("fn write_at_position<T>(&mut self, position: usize, t: & T, num_bytes: usize) -> " +
-                    "IoResult<()> {\n");
+                    "CodecResult<()> {\n");
             indent(writer, 2).append("let end = position + num_bytes;\n");
             indent(writer, 2).append("if end <= self.data.len() {\n");
             indent(writer, 3).append("let source_bytes: &[u8] = unsafe {\n");
-            indent(writer, 4).append("::std::slice::from_raw_parts(t as *const T as *const u8, num_bytes)\n");
+            indent(writer, 4).append("core::slice::from_raw_parts(t as *const T as *const u8, num_bytes)\n");
             indent(writer, 3).append("};\n");
             indent(writer, 3).append("(&mut self.data[position..end]).copy_from_slice(source_bytes);\n");
             indent(writer, 3).append("Ok(())\n");
             indent(writer, 2).append("} else {\n");
-            indent(writer, 3).append("Err(Error::new(ErrorKind::Other, \"not enough bytes left\"))\n");
+            indent(writer, 3).append("Err(CodecErr::NotEnoughBytes)\n");
             indent(writer, 2).append("}\n");
             indent(writer).append("}\n");
 
@@ -1107,7 +1120,7 @@ public class RustGenerator implements CodeGenerator
             writer.append(format("%nimpl<%s> %s<%s> {%n", DATA_LIFETIME, SCRATCH_DECODER_TYPE, DATA_LIFETIME));
 
             indent(writer).append("#[inline]\n");
-            indent(writer, 1, "fn read_type<T>(&mut self, num_bytes: usize) -> IoResult<&%s T> {%n", DATA_LIFETIME);
+            indent(writer, 1, "fn read_type<T>(&mut self, num_bytes: usize) -> CodecResult<&%s T> {%n", DATA_LIFETIME);
             indent(writer, 2).append("let end = self.pos + num_bytes;\n");
             indent(writer, 2).append("if end <= self.data.len() {\n");
             indent(writer, 3).append("let s = self.data[self.pos..end].as_ptr() as *mut T;\n");
@@ -1115,36 +1128,35 @@ public class RustGenerator implements CodeGenerator
             indent(writer, 3).append("self.pos = end;\n");
             indent(writer, 3).append("Ok(v)\n");
             indent(writer, 2).append("} else {\n");
-            indent(writer, 3).append("Err(Error::new(ErrorKind::Other, \"not enough bytes left\"))\n");
+            indent(writer, 3).append("Err(CodecErr::NotEnoughBytes)\n");
             indent(writer, 2).append("}\n");
             indent(writer).append("}\n");
 
             indent(writer).append("#[inline]\n");
-            indent(writer).append("fn skip_bytes(&mut self, num_bytes: usize) -> IoResult<()> {\n");
+            indent(writer).append("fn skip_bytes(&mut self, num_bytes: usize) -> CodecResult<()> {\n");
             indent(writer, 2).append("let end = self.pos + num_bytes;\n");
             indent(writer, 2).append("if end <= self.data.len() {\n");
             indent(writer, 3).append("self.pos = end;\n");
             indent(writer, 3).append("Ok(())\n");
             indent(writer, 2).append("} else {\n");
-            indent(writer, 3).append("Err(Error::new(ErrorKind::Other, \"not enough bytes left\"))\n");
+            indent(writer, 3).append("Err(CodecErr::NotEnoughBytes)\n");
             indent(writer, 2).append("}\n");
             indent(writer).append("}\n");
 
             indent(writer).append("#[inline]\n");
-            indent(writer, 1, "fn read_slice<T>(&mut self, count: usize, bytes_per_item: usize) -> IoResult<&%s [T]> " +
-                            "{%n",
-                    DATA_LIFETIME);
+            indent(writer, 1, "fn read_slice<T>(&mut self, count: usize, bytes_per_item: usize) " +
+                    "-> CodecResult<&%s [T]> {%n", DATA_LIFETIME);
             indent(writer, 2).append("let num_bytes = bytes_per_item * count;\n");
             indent(writer, 2).append("let end = self.pos + num_bytes;\n");
             indent(writer, 2).append("if end <= self.data.len() {\n");
             indent(writer, 3, "let v: &%s [T] = unsafe {%n", DATA_LIFETIME);
-            indent(writer, 4).append("::std::slice::from_raw_parts(self.data[self.pos..end].as_ptr() as *const T, " +
+            indent(writer, 4).append("core::slice::from_raw_parts(self.data[self.pos..end].as_ptr() as *const T, " +
                     "count)\n");
             indent(writer, 3).append("};\n");
             indent(writer, 3).append("self.pos = end;\n");
             indent(writer, 3).append("Ok(v)\n");
             indent(writer, 2).append("} else {\n");
-            indent(writer, 3).append("Err(Error::new(ErrorKind::Other, \"not enough bytes left\"))\n");
+            indent(writer, 3).append("Err(CodecErr::NotEnoughBytes)\n");
             indent(writer, 2).append("}\n");
             indent(writer).append("}\n");
 

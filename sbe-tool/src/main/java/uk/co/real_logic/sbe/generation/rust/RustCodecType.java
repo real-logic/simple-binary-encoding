@@ -31,7 +31,7 @@ enum RustCodecType
                                      final String representationType, final String nextCoderType,
                                      final int numBytes) throws IOException
         {
-            indent(appendable, 1, "pub fn %s(mut self) -> IoResult<(&%s %s, %s)> {\n",
+            indent(appendable, 1, "pub fn %s(mut self) -> CodecResult<(&%s %s, %s)> {\n",
                     methodName, DATA_LIFETIME, representationType,
                     RustGenerator.withLifetime(nextCoderType));
             indent(appendable, 2, "let v = self.%s.read_type::<%s>(%s)?;\n",
@@ -67,7 +67,7 @@ enum RustCodecType
                                      final int numBytes) throws IOException
         {
 
-            indent(appendable, 1, "pub fn %s(mut self) -> IoResult<(&%s mut %s, %s)> {\n",
+            indent(appendable, 1, "pub fn %s(mut self) -> CodecResult<(&%s mut %s, %s)> {\n",
                     methodName, DATA_LIFETIME, representationType, RustGenerator.withLifetime(nextCoderType));
             indent(appendable, 2, "let v = self.%s.writable_overlay::<%s>(%s)?;\n",
                             RustCodecType.Encoder.scratchProperty(), representationType, numBytes);
@@ -75,7 +75,7 @@ enum RustCodecType
                     nextCoderType, RustCodecType.Encoder.scratchProperty());
             indent(appendable).append("}\n");
 
-            indent(appendable).append(String.format("pub fn %s_copy(mut self, t: &%s) -> IoResult<%s> {\n",
+            indent(appendable).append(String.format("pub fn %s_copy(mut self, t: &%s) -> CodecResult<%s> {\n",
                     methodName, representationType, RustGenerator.withLifetime(nextCoderType)));
             indent(appendable, 2)
                     .append(format("self.%s.write_type::<%s>(t, %s)?;\n",
