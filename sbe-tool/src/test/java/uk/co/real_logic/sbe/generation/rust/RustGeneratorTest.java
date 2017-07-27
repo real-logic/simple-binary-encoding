@@ -143,7 +143,7 @@ public class RustGeneratorTest
                 "  C = 67i8,\n" +
                 "}\n";
         assertTrue(generatedRust.contains(expectedCharTypeDeclaration));
-        assertRustBuildable(generatedRust, Optional.of(BROAD_USE_CASES_SCHEMA));
+        assertRustBuildable(generatedRust, Optional.of("example-schema"));
     }
 
     private File writeCargoFolderWrapper(final String name, final String generatedRust, final File folder) throws
@@ -236,6 +236,7 @@ public class RustGeneratorTest
             "example-schema",
             "FixBinary",
             "group-with-data-schema",
+            "group-with-constant-fields",
             "issue435",
             "message-block-length-test",
             NESTED_GROUP_SCHEMA,
@@ -247,5 +248,59 @@ public class RustGeneratorTest
         }
 
 
+    }
+
+    @Test
+    public void constantFieldsCase() throws IOException, InterruptedException
+    {
+        final String rust = fullGenerateForResource(outputManager, "group-with-constant-fields");
+        assertContainsSharedImports(rust);
+        final String expectedCharTypeDeclaration =
+            "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
+                "#[repr(i8)]\n" +
+                "pub enum Model {\n" +
+                "  A = 65i8,\n" +
+                "  B = 66i8,\n" +
+                "  C = 67i8,\n" +
+                "}\n";
+        assertContains(rust, expectedCharTypeDeclaration);
+        final String expectedComposite =
+            "pub struct CompositeWithConst {\n" +
+                "  pub w:u8,\n" +
+                "}";
+        assertContains(rust, expectedComposite);
+        assertContains(rust, "impl CompositeWithConst {");
+        assertContains(rust, "  pub fn x() -> u8 {\n" +
+            "    250u8\n  }");
+        assertContains(rust, "  pub fn y() -> u16 {\n" +
+            "    9000u16\n  }");
+        assertContains(rust, "pub struct ConstantsGaloreFields {\n" +
+            "  pub a:u8,\n" +
+            "  pub e:CompositeWithConst,\n}");
+        assertContains(rust, "impl ConstantsGaloreFields {");
+        assertContains(rust, "  pub fn b() -> u16 {\n" +
+            "    9000u16\n  }");
+        assertContains(rust, "  pub fn c() -> Model {\n" +
+            "    Model::C\n  }");
+        assertContains(rust, "  pub fn d() -> u16 {\n" +
+            "    9000u16\n  }");
+        assertContains(rust, "pub struct ConstantsGaloreFMember {\n" +
+            "  pub g:u8,\n" +
+            "  pub h:CompositeWithConst,\n}");
+        assertContains(rust, "impl ConstantsGaloreFMember {");
+        assertContains(rust, "  pub fn i() -> u16 {\n" +
+            "    9000u16\n  }");
+        assertContains(rust, "  pub fn j() -> u16 {\n" +
+            "    9000u16\n  }");
+        assertContains(rust, "  pub fn k() -> Model {\n" +
+            "    Model::C\n  }");
+        assertContains(rust, "  pub fn l() -> &'static str {\n" +
+            "    \"Huzzah\"\n  }");
+        assertRustBuildable(rust, Optional.of("group-with-constant-fields"));
+    }
+
+    private static void assertContains(final String haystack, final String needle)
+    {
+        assertTrue(String.format("Did not contain %s", needle), haystack.contains(needle));
     }
 }

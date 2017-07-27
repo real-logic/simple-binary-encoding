@@ -51,6 +51,9 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> CodecResult<()> {
     assert_eq!(0u16, h.version);
     println!("Header read");
 
+    assert_eq!(Model::C, CarFields::discounted_model());
+    assert_eq!(9000u16, Engine::max_rpm());
+    assert_eq!("Petrol", Engine::fuel());
 
     let mut found_fuel_figures = Vec::<FuelFigure>::with_capacity(EXPECTED_FUEL_FIGURES.len());
 
@@ -60,6 +63,10 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> CodecResult<()> {
     assert_eq!(BooleanType::T, fields.available);
     assert_eq!([97_i8, 98, 99, 100, 101, 102], fields.vehicle_code); // abcdef
     assert_eq!([0_u32, 1, 2, 3, 4], fields.some_numbers);
+    assert_eq!(6, fields.extras.0);
+    assert!(fields.extras.get_cruise_control());
+    assert!(fields.extras.get_sports_pack());
+    assert!(!fields.extras.get_sun_roof());
 
     let dec_perf_figures_header = match dec_fuel_figures_header.fuel_figures_individually()? {
         Either::Left(mut dec_ff_members) => {
@@ -153,7 +160,10 @@ fn encode_car_from_scratch() -> CodecResult<Vec<u8>> {
         fields.code = Model::A;
         fields.vehicle_code = [97_i8, 98, 99, 100, 101, 102]; // abcdef
         fields.some_numbers = [0_u32, 1, 2, 3, 4];
-        fields.extras = OptionalExtras(6);
+        fields.extras = OptionalExtras::new();
+        fields.extras.set_cruise_control(true)
+            .set_sports_pack(true)
+            .set_sun_roof(false);
         fields.engine = Engine {
             capacity: 2000,
             num_cylinders: 4,

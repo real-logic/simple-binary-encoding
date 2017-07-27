@@ -92,8 +92,10 @@ public class RustGenerator implements CodeGenerator
         for (final GroupTreeNode node : groupTree)
         {
             appendStructHeader(appendable, node.contextualName + "Member", true);
-            appendStructFields(appendable, node.fields);
+            appendStructFields(appendable, node.simpleNamedFields);
             appendable.append("}\n");
+
+            generateConstantAccessorImpl(appendable, node.contextualName + "Member", node.rawFields);
 
             generateGroupFieldRepresentations(appendable, node.groups);
         }
@@ -128,7 +130,8 @@ public class RustGenerator implements CodeGenerator
             appendStructHeader(writer, representationStruct, true);
             appendStructFields(writer, namedFieldTokens);
             writer.append("}\n");
-            // TODO - also implement constants
+
+            generateConstantAccessorImpl(writer, representationStruct, components.fields);
         }
         final int numBytes = components.fields.stream()
                 .filter(t -> !t.isConstantEncoding())
@@ -161,8 +164,38 @@ public class RustGenerator implements CodeGenerator
             writer.append("#[repr(C,packed)]\n");
             final String rustPrimitiveType = rustTypeName(beginToken.encoding().primitiveType());
             writer.append(format("pub struct %s(pub %s);%n", setType, rustPrimitiveType));
+            writer.append(format("impl %s {\n", setType));
+            indent(writer, 1, "pub fn new() -> Self {\n");
+            indent(writer, 2, "%s(0)\n", setType);
+            indent(writer, 1, "}\n");
 
-            // TODO - implementation to extract named choices with methods
+            indent(writer, 1, "pub fn clear(&mut self) -> &mut Self {\n");
+            indent(writer, 2, "self.0 = 0;\n");
+            indent(writer, 2, "self\n");
+            indent(writer, 1, "}\n");
+            for (final Token token : tokens)
+            {
+                if (Signal.CHOICE != token.signal())
+                {
+                    continue;
+                }
+                final String choiceName = formatMethodName(token.name());
+                final Encoding encoding = token.encoding();
+                final String choiceBitIndex = encoding.constValue().toString();
+                indent(writer, 1, "pub fn get_%s(&self) -> bool {\n", choiceName);
+                indent(writer, 2, "0 != self.0 & (1 << %s)\n", choiceBitIndex);
+                indent(writer, 1, "}\n", choiceName);
+
+                indent(writer, 1, "pub fn set_%s(&mut self, value: bool) -> &mut Self {\n", choiceName);
+                indent(writer, 2, "self.0 = if value {\n", choiceBitIndex);
+                indent(writer, 3, "self.0 | (1 << %s)\n", choiceBitIndex);
+                indent(writer, 2, "} else {\n");
+                indent(writer, 3, "self.0 & !(1 << %s)\n", choiceBitIndex);
+                indent(writer, 2, "};\n");
+                indent(writer, 2, "self\n");
+                indent(writer, 1, "}\n", choiceName);
+            }
+            writer.append("}\n");
         }
 
     }
@@ -695,7 +728,6 @@ public class RustGenerator implements CodeGenerator
 
             final List<Token> fields = new ArrayList<>();
             i = collectFields(groupsTokens, i, fields);
-            final List<NamedToken> namedFields = NamedToken.gatherNamedFieldTokens(fields);
 
             final List<Token> childGroups = new ArrayList<>();
             i = collectGroups(groupsTokens, i, childGroups);
@@ -711,7 +743,7 @@ public class RustGenerator implements CodeGenerator
                     numInGroupType,
                     blockLengthType,
                     blockLength,
-                    namedFields,
+                    fields,
                     varDataSummaries
             );
             groups.add(node);
@@ -746,7 +778,8 @@ public class RustGenerator implements CodeGenerator
         final PrimitiveType numInGroupType;
         final PrimitiveType blockLengthType;
         final int blockLength;
-        final List<NamedToken> fields;
+        final List<Token> rawFields;
+        final List<NamedToken> simpleNamedFields;
         final List<GroupTreeNode> groups = new ArrayList<>();
         final List<VarDataSummary> varData;
 
@@ -756,7 +789,7 @@ public class RustGenerator implements CodeGenerator
                       final PrimitiveType numInGroupType,
                       final PrimitiveType blockLengthType,
                       final int blockLength,
-                      final List<NamedToken> fields,
+                      final List<Token> fields,
                       final List<VarDataSummary> varData)
         {
             this.parent = parent;
@@ -765,7 +798,8 @@ public class RustGenerator implements CodeGenerator
             this.numInGroupType = numInGroupType;
             this.blockLengthType = blockLengthType;
             this.blockLength = blockLength;
-            this.fields = fields;
+            this.rawFields = fields;
+            this.simpleNamedFields = NamedToken.gatherNamedFieldTokens(fields);
             this.varData = varData;
             parent.ifPresent(p -> p.addChild(this));
         }
@@ -1231,10 +1265,7 @@ public class RustGenerator implements CodeGenerator
             appendStructFields(writer, splitTokens.nonConstantEncodingTokens);
             writer.append("}\n");
 
-            if (!splitTokens.constantEncodingTokens.isEmpty())
-            {
-                generateCompositeImplForConstants(formattedTypeName, writer, splitTokens.constantEncodingTokens);
-            }
+            generateConstantAccessorImpl(writer, formattedTypeName, getMessageBody(tokens));
         }
     }
 
@@ -1351,20 +1382,42 @@ public class RustGenerator implements CodeGenerator
         return rustType;
     }
 
-    private static void generateCompositeImplForConstants(final String formattedTypeName,
-                                                          final Writer writer,
-                                                          final List<Token> deferredConstantTokens) throws IOException
+    private static void generateConstantAccessorImpl(final Appendable writer, final String formattedTypeName,
+                                                     final List<Token> unfilteredFields) throws IOException
     {
         writer.append(format("%nimpl %s {%n", formattedTypeName));
-        for (final Token constantToken : deferredConstantTokens)
+        for (int i = 0; i < unfilteredFields.size(); )
         {
+            final Token fieldToken = unfilteredFields.get(i);
+            final String name = fieldToken.name();
+            final int componentTokenCount = fieldToken.componentTokenCount();
+            final Token signalToken;
+            if (fieldToken.signal() == BEGIN_FIELD)
+            {
+                if (i > unfilteredFields.size() - 1)
+                {
+                    throw new ArrayIndexOutOfBoundsException("BEGIN_FIELD token should be followed by content tokens");
+                }
+                signalToken = unfilteredFields.get(i + 1);
+            } else
+            {
+                signalToken = fieldToken;
+            }
+
+            // Either the field must be marked directly as constant
+            // or it must wrap something that is fully constant
+            if (!(fieldToken.isConstantEncoding() || signalToken.isConstantEncoding()))
+            {
+                i += componentTokenCount;
+                continue;
+            }
             final String constantRustTypeName;
             final String constantRustExpression;
-            switch (constantToken.signal())
+            switch (signalToken.signal())
             {
                 case ENCODING:
-                    final String rawValue = constantToken.encoding().constValue().toString();
-                    if (constantToken.encoding().primitiveType() == PrimitiveType.CHAR)
+                    final String rawValue = signalToken.encoding().constValue().toString();
+                    if (signalToken.encoding().primitiveType() == PrimitiveType.CHAR)
                     {
                         // Special case string handling
                         constantRustTypeName = "&'static str";
@@ -1373,32 +1426,54 @@ public class RustGenerator implements CodeGenerator
 
                     } else
                     {
-                        final String constantRustPrimitiveType = RustUtil.rustTypeName(constantToken.encoding()
-                                .primitiveType());
-                        constantRustTypeName = getRustTypeForPrimitivePossiblyArray(constantToken,
-                                constantRustPrimitiveType);
-                        constantRustExpression = generateRustLiteral(constantToken.encoding().primitiveType(),
-                                rawValue);
+                        final String constantRustPrimitiveType = RustUtil.rustTypeName(signalToken.encoding()
+                            .primitiveType());
+                        constantRustTypeName = getRustTypeForPrimitivePossiblyArray(signalToken,
+                            constantRustPrimitiveType);
+                        constantRustExpression = generateRustLiteral(signalToken.encoding().primitiveType(),
+                            rawValue);
                     }
                     break;
                 case BEGIN_ENUM:
-                    // TODO - implement constant enums
-                    throw new IllegalStateException(format("Unsupported constant presence enum or bitset property " +
-                            "%s", constantToken.toString()));
+                    final String enumType = formatTypeName(signalToken.applicableTypeName());
+                    String enumValue = null;
+                    for (int j = i; j < unfilteredFields.size(); j++)
+                    {
+                        final Token searchAhead = unfilteredFields.get(j);
+                        if (searchAhead.signal() == VALID_VALUE)
+                        {
+                            enumValue = searchAhead.name();
+                            break;
+                        }
+                    }
+                    if (enumValue == null)
+                    {
+                        throw new IllegalStateException("Found a constant enum field with incomplete token content");
+                    }
+                    constantRustTypeName = enumType;
+                    constantRustExpression = enumType + "::" + enumValue;
+                    break;
                 case BEGIN_SET:
                 case BEGIN_COMPOSITE:
                 default:
                     throw new IllegalStateException(format("Unsupported constant presence property " +
-                            "%s", constantToken.toString()));
+                        "%s", fieldToken.toString()));
             }
-            writer.append("\n").append(INDENT).append("#[inline]\n").append(INDENT);
-            writer.append(format("pub fn %s() -> %s {%n", formatMethodName(constantToken.name()),
-                    constantRustTypeName));
-            indent(writer, 2).append(constantRustExpression).append("\n");
-            indent(writer).append("}\n");
+            appendConstAccessor(writer, name, constantRustTypeName, constantRustExpression);
+            i += componentTokenCount;
         }
 
         writer.append("}\n");
+    }
+
+    private static void appendConstAccessor(final Appendable writer, final String name,
+                                            final String rustTypeName, final String rustExpression) throws IOException
+    {
+        writer.append("\n").append(INDENT).append("#[inline]\n").append(INDENT);
+        writer.append(format("pub fn %s() -> %s {%n", formatMethodName(name),
+            rustTypeName));
+        indent(writer, 2).append(rustExpression).append("\n");
+        indent(writer).append("}\n");
     }
 
 }
