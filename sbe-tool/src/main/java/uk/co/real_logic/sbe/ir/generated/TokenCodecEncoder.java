@@ -363,6 +363,7 @@ public class TokenCodecEncoder
             case EPOCH: return "unix";
             case TIME_UNIT: return "nanosecond";
             case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
         }
 
         return "";
@@ -449,6 +450,7 @@ public class TokenCodecEncoder
             case EPOCH: return "unix";
             case TIME_UNIT: return "nanosecond";
             case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
         }
 
         return "";
@@ -535,6 +537,7 @@ public class TokenCodecEncoder
             case EPOCH: return "unix";
             case TIME_UNIT: return "nanosecond";
             case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
         }
 
         return "";
@@ -621,6 +624,7 @@ public class TokenCodecEncoder
             case EPOCH: return "unix";
             case TIME_UNIT: return "nanosecond";
             case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
         }
 
         return "";
@@ -707,6 +711,7 @@ public class TokenCodecEncoder
             case EPOCH: return "unix";
             case TIME_UNIT: return "nanosecond";
             case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
         }
 
         return "";
@@ -793,6 +798,7 @@ public class TokenCodecEncoder
             case EPOCH: return "unix";
             case TIME_UNIT: return "nanosecond";
             case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
         }
 
         return "";
@@ -879,6 +885,7 @@ public class TokenCodecEncoder
             case EPOCH: return "unix";
             case TIME_UNIT: return "nanosecond";
             case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
         }
 
         return "";
@@ -965,6 +972,7 @@ public class TokenCodecEncoder
             case EPOCH: return "unix";
             case TIME_UNIT: return "nanosecond";
             case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
         }
 
         return "";
@@ -1051,6 +1059,7 @@ public class TokenCodecEncoder
             case EPOCH: return "unix";
             case TIME_UNIT: return "nanosecond";
             case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
         }
 
         return "";
@@ -1137,6 +1146,7 @@ public class TokenCodecEncoder
             case EPOCH: return "unix";
             case TIME_UNIT: return "nanosecond";
             case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
         }
 
         return "";
@@ -1223,6 +1233,7 @@ public class TokenCodecEncoder
             case EPOCH: return "unix";
             case TIME_UNIT: return "nanosecond";
             case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
         }
 
         return "";

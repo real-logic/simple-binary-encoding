@@ -1418,7 +1418,8 @@ public class JavaGenerator implements CodeGenerator
                 "{\n" +
                 "    EPOCH,\n" +
                 "    TIME_UNIT,\n" +
-                "    SEMANTIC_TYPE\n" +
+                "    SEMANTIC_TYPE,\n" +
+                "    PRESENCE\n" +
                 "}\n",
                 ir.applicableNamespace()));
         }
@@ -2318,13 +2319,15 @@ public class JavaGenerator implements CodeGenerator
             indent + "            case EPOCH: return \"%s\";\n" +
             indent + "            case TIME_UNIT: return \"%s\";\n" +
             indent + "            case SEMANTIC_TYPE: return \"%s\";\n" +
+            indent + "            case PRESENCE: return \"%s\";\n" +
             indent + "        }\n\n" +
             indent + "        return \"\";\n" +
             indent + "    }\n",
             formatPropertyName(token.name()),
             epoch,
             timeUnit,
-            semanticType));
+            semanticType,
+            encoding.presence().toString().toLowerCase()));
     }
 
     private CharSequence generateEnumDecoder(

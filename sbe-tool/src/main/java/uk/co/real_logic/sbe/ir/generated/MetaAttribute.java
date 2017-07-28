@@ -6,5 +6,6 @@ public enum MetaAttribute
 {
     EPOCH,
     TIME_UNIT,
-    SEMANTIC_TYPE
+    SEMANTIC_TYPE,
+    PRESENCE
 }

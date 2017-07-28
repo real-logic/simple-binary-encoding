@@ -263,13 +263,28 @@ public class Message
             handleError(node, "could not find type: " + typeName);
         }
 
+        final String presenceStr = getAttributeValueOrNull(node, "presence");
+        final Presence presence;
+        if (null != presenceStr)
+        {
+            presence = Presence.get(presenceStr);
+        }
+        else if (null != fieldType)
+        {
+            presence = fieldType.presence();
+        }
+        else
+        {
+            presence = Presence.REQUIRED;
+        }
+
         final Field field = new Field.Builder()
             .name(getAttributeValue(node, "name"))
             .description(getAttributeValueOrNull(node, "description"))
             .id(Integer.parseInt(getAttributeValue(node, "id")))
             .offset(Integer.parseInt(getAttributeValue(node, "offset", "0")))
             .semanticType(getAttributeValueOrNull(node, "semanticType"))
-            .presence(Presence.get(getAttributeValue(node, "presence", "required")))
+            .presence(presence)
             .valueRef(getAttributeValueOrNull(node, "valueRef"))
             .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
             .deprecated(Integer.parseInt(getAttributeValue(node, "deprecated", "0")))
