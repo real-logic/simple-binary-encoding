@@ -1552,13 +1552,15 @@ public class CppGenerator implements CodeGenerator
             indent + "            case MetaAttribute::EPOCH: return \"%s\";\n" +
             indent + "            case MetaAttribute::TIME_UNIT: return \"%s\";\n" +
             indent + "            case MetaAttribute::SEMANTIC_TYPE: return \"%s\";\n" +
+            indent + "            case MetaAttribute::PRESENCE: return \"%s\";\n" +
             indent + "        }\n\n" +
             indent + "        return \"\";\n" +
             indent + "    }\n",
             token.name(),
             epoch,
             timeUnit,
-            semanticType));
+            semanticType,
+            encoding.presence().toString().toLowerCase()));
     }
 
     private static CharSequence generateEnumFieldNotPresentCondition(
