@@ -78,7 +78,7 @@ public class Message
         fieldList = parseFieldsAndGroups(messageNode);
         computeAndValidateOffsets(messageNode, fieldList, blockLength);
 
-        computedBlockLength = computeMessageRootBlockLength();
+        computedBlockLength = computeMessageRootBlockLength(fieldList);
         validateBlockLength(messageNode, blockLength, computedBlockLength);
     }
 
@@ -348,7 +348,7 @@ public class Message
      * Will validate the blockLength of the fields encompassing &lt;message&gt; or &lt;group&gt; and recursively
      * descend into repeated groups.
      */
-    private int computeAndValidateOffsets(final Node node, final List<Field> fields, final int blockLength)
+    private static int computeAndValidateOffsets(final Node node, final List<Field> fields, final int blockLength)
     {
         boolean variableLengthBlock = false;
         int offset = 0;
@@ -406,11 +406,11 @@ public class Message
         return offset;
     }
 
-    private int computeMessageRootBlockLength()
+    private static int computeMessageRootBlockLength(final List<Field> fields)
     {
         int blockLength = 0;
 
-        for (final Field field : fieldList)
+        for (final Field field : fields)
         {
             if (field.groupFields() != null)
             {
