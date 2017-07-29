@@ -263,8 +263,31 @@ public class Message
             handleError(node, "could not find type: " + typeName);
         }
 
+        final Field field = new Field.Builder()
+            .name(getAttributeValue(node, "name"))
+            .description(getAttributeValueOrNull(node, "description"))
+            .id(Integer.parseInt(getAttributeValue(node, "id")))
+            .offset(Integer.parseInt(getAttributeValue(node, "offset", "0")))
+            .semanticType(getAttributeValueOrNull(node, "semanticType"))
+            .presence(getPresence(node, fieldType))
+            .valueRef(getAttributeValueOrNull(node, "valueRef"))
+            .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
+            .deprecated(Integer.parseInt(getAttributeValue(node, "deprecated", "0")))
+            .epoch(getAttributeValue(node, "epoch", "unix"))
+            .timeUnit(getAttributeValue(node, "timeUnit", "nanosecond"))
+            .type(fieldType)
+            .build();
+
+        field.validate(node);
+
+        return field;
+    }
+
+    private static Presence getPresence(final Node node, final Type fieldType)
+    {
         final String presenceStr = getAttributeValueOrNull(node, "presence");
         final Presence presence;
+
         if (null != presenceStr)
         {
             presence = Presence.get(presenceStr);
@@ -278,24 +301,7 @@ public class Message
             presence = Presence.REQUIRED;
         }
 
-        final Field field = new Field.Builder()
-            .name(getAttributeValue(node, "name"))
-            .description(getAttributeValueOrNull(node, "description"))
-            .id(Integer.parseInt(getAttributeValue(node, "id")))
-            .offset(Integer.parseInt(getAttributeValue(node, "offset", "0")))
-            .semanticType(getAttributeValueOrNull(node, "semanticType"))
-            .presence(presence)
-            .valueRef(getAttributeValueOrNull(node, "valueRef"))
-            .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
-            .deprecated(Integer.parseInt(getAttributeValue(node, "deprecated", "0")))
-            .epoch(getAttributeValue(node, "epoch", "unix"))
-            .timeUnit(getAttributeValue(node, "timeUnit", "nanosecond"))
-            .type(fieldType)
-            .build();
-
-        field.validate(node);
-
-        return field;
+        return presence;
     }
 
     private Field parseDataField(final NodeList nodeList, final int nodeIndex)
