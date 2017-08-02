@@ -114,6 +114,24 @@ public:
         return result;
     }
 
+    std::shared_ptr<std::vector<Token>> message(int id)
+    {
+        std::shared_ptr<std::vector<Token>> result;
+
+        std::for_each(m_messages.begin(), m_messages.end(),
+            [&](std::shared_ptr<std::vector<Token>> tokens)
+            {
+                Token& token = tokens->at(0);
+
+                if (token.signal() == Signal::BEGIN_MESSAGE && token.fieldId() == id)
+                {
+                    result = tokens;
+                }
+            });
+
+        return result;
+    }
+
 protected:
     // OS specifics
     static long getFileSize(const char *filename)
