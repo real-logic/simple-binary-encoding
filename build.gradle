@@ -164,7 +164,7 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
-        compile 'org.agrona:agrona:0.9.6'
+        compile 'org.agrona:agrona:0.9.7-SNAPSHOT'
 
         testCompile files('build/classes/java/generated')
     }
@@ -610,6 +610,6 @@ task uploadToMavenCentral {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.0.1'
+    gradleVersion = '4.0.2'
     distributionType = 'ALL'
 }
