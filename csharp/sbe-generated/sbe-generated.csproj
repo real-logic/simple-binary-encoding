@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="baseline\bill%40harri" />
+    <None Remove="baseline\Car.cs.good" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\sbe-dll\sbe-dll.csproj" />
   </ItemGroup>
   

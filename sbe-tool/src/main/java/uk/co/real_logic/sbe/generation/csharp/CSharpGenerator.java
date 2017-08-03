@@ -559,7 +559,8 @@ public class CSharpGenerator implements CodeGenerator
                 INDENT + "{\n" +
                 INDENT + INDENT + "Epoch,\n" +
                 INDENT + INDENT + "TimeUnit,\n" +
-                INDENT + INDENT + "SemanticType\n" +
+                INDENT + INDENT + "SemanticType,\n" +
+                INDENT + INDENT + "Presence\n" +
                 INDENT + "}\n" +
                 "}\n"
             );
@@ -1092,6 +1093,7 @@ public class CSharpGenerator implements CodeGenerator
         final String epoch = encoding.epoch() == null ? "" : encoding.epoch();
         final String timeUnit = encoding.timeUnit() == null ? "" : encoding.timeUnit();
         final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
+        final String presence = encoding.presence() == null ? "" : encoding.presence().toString().toLowerCase();
 
         sb.append(String.format(
             "\n" +
@@ -1102,13 +1104,15 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "case MetaAttribute.Epoch: return \"%s\";\n" +
             indent + INDENT + INDENT + "case MetaAttribute.TimeUnit: return \"%s\";\n" +
             indent + INDENT + INDENT + "case MetaAttribute.SemanticType: return \"%s\";\n" +
+            indent + INDENT + INDENT + "case MetaAttribute.Presence: return \"%s\";\n" +
             indent + INDENT + "}\n\n" +
             indent + INDENT + "return \"\";\n" +
             indent + "}\n",
             toUpperFirstChar(token.name()),
             epoch,
             timeUnit,
-            semanticType));
+            semanticType,
+            presence));
     }
 
     private CharSequence generateEnumFieldNotPresentCondition(
