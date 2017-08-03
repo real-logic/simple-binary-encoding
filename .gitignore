@@ -106,6 +106,7 @@ csharp/sbe-generated/baseline
 csharp/sbe-generated/baseline-bigendian
 csharp/sbe-generated/extension
 csharp/sbe-generated/issue435
+csharp/sbe-generated/issue483
 csharp/sbe-generated/since-deprecated
 csharp/sbe-generated/mktdata/*.cs
 csharp/sbe-generated/uk_co_real_logic_sbe_benchmarks_fix
