@@ -523,6 +523,7 @@ task(generateGolangCodecsWithXSD, type: JavaExec) {
             'sbe-tool/src/test/resources/FixBinary.xml',
             'sbe-tool/src/test/resources/issue435.xml',
             'sbe-tool/src/test/resources/issue472.xml',
+            'sbe-tool/src/test/resources/issue483.xml',
             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
             'gocode/resources/example-composite.xml',

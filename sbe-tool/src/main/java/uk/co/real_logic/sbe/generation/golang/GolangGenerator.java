@@ -2142,6 +2142,8 @@ public class GolangGenerator implements CodeGenerator
         final String epoch = encoding.epoch() == null ? "" : encoding.epoch();
         final String timeUnit = encoding.timeUnit() == null ? "" : encoding.timeUnit();
         final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
+        final String presence = encoding.presence() == null ? "" : encoding.presence().toString().toLowerCase();
+
         sb.append(String.format(
             "\nfunc (%1$s %2$s) %3$sMetaAttribute(meta int) string {\n" +
             "\tswitch meta {\n" +
@@ -2151,6 +2153,8 @@ public class GolangGenerator implements CodeGenerator
             "\t\treturn \"%5$s\"\n" +
             "\tcase 3:\n" +
             "\t\treturn \"%6$s\"\n" +
+            "\tcase 4:\n" +
+            "\t\treturn \"%7$s\"\n" +
             "\t}\n" +
             "\treturn \"\"\n" +
             "}\n",
@@ -2159,7 +2163,8 @@ public class GolangGenerator implements CodeGenerator
             toUpperFirstChar(token.name()),
             epoch,
             timeUnit,
-            semanticType));
+            semanticType,
+            presence));
     }
 
     private CharSequence generateMinValueLiteral(final PrimitiveType primitiveType, final Encoding encoding)
