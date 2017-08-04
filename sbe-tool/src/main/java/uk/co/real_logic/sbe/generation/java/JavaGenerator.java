@@ -1164,16 +1164,45 @@ public class JavaGenerator implements CodeGenerator
                 final Encoding encoding = token.encoding();
                 final String choiceBitIndex = encoding.constValue().toString();
                 final String byteOrderStr = byteOrderString(encoding);
+                final PrimitiveType primitiveType = encoding.primitiveType();
+                final String argType;
+
+                switch (primitiveType)
+                {
+                    case UINT8:
+                        argType = "byte";
+                        break;
+
+                    case UINT16:
+                        argType = "short";
+                        break;
+
+                    case UINT32:
+                        argType = "int";
+                        break;
+
+                    case UINT64:
+                        argType = "long";
+                        break;
+
+                    default:
+                        throw new IllegalStateException("Invalid type: " + primitiveType);
+                }
 
                 return String.format(
                     "\n" +
-                    "    public boolean %s()\n" +
+                    "    public boolean %1$s()\n" +
                     "    {\n" +
-                    "        return %s;\n" +
+                    "        return %2$s;\n" +
+                    "    }\n\n" +
+                    "    public static boolean %1$s(final %3$s value)\n" +
+                    "    {\n" +
+                    "        return %4$s;\n" +
                     "    }\n",
                     choiceName,
-                    generateChoiceGet(encoding.primitiveType(), choiceBitIndex, byteOrderStr)
-                );
+                    generateChoiceGet(primitiveType, choiceBitIndex, byteOrderStr),
+                    argType,
+                    generateStaticChoiceGet(primitiveType, choiceBitIndex));
             });
     }
 
@@ -2597,6 +2626,26 @@ public class JavaGenerator implements CodeGenerator
 
             case UINT64:
                 return "0 != (buffer.getLong(offset" + byteOrder + ") & (1L << " + bitIndex + "))";
+        }
+
+        throw new IllegalArgumentException("primitive type not supported: " + type);
+    }
+
+    private String generateStaticChoiceGet(final PrimitiveType type, final String bitIndex)
+    {
+        switch (type)
+        {
+            case UINT8:
+                return "0 != (value & (1 << " + bitIndex + "))";
+
+            case UINT16:
+                return "0 != (value & (1 << " + bitIndex + "))";
+
+            case UINT32:
+                return "0 != (value & (1 << " + bitIndex + "))";
+
+            case UINT64:
+                return "0 != (value & (1L << " + bitIndex + "))";
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
