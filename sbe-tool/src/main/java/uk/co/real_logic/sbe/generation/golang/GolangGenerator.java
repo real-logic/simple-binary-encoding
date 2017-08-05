@@ -210,29 +210,34 @@ public class GolangGenerator implements CodeGenerator
         final String varName,
         final Token token)
     {
-        switch (token.encoding().characterEncoding())
-        {
-            case "ASCII":
-                this.imports.add("fmt");
-                sb.append(String.format(
-                    "\tfor idx, ch := range %1$s {\n" +
-                    "\t\tif ch > 127 {\n" +
-                    "\t\t\treturn fmt.Errorf(\"%1$s[%%d]=%%d" +
-                    " failed ASCII validation\", idx, ch)\n" +
-                    "\t\t}\n" +
-                    "\t}\n",
-                    varName));
-                break;
+        final String characterEncoding = token.encoding().characterEncoding();
 
-            case "UTF-8":
-                this.imports.add("errors");
-                this.imports.add("unicode/utf8");
-                sb.append(String.format(
-                    "\tif !utf8.Valid(%1$s[:]) {\n" +
-                    "\t\treturn errors.New(\"%1$s failed UTF-8 validation\")\n" +
-                    "\t}\n",
-                    varName));
-                break;
+        if (null != characterEncoding)
+        {
+            switch (token.encoding().characterEncoding())
+            {
+                case "ASCII":
+                    this.imports.add("fmt");
+                    sb.append(String.format(
+                        "\tfor idx, ch := range %1$s {\n" +
+                        "\t\tif ch > 127 {\n" +
+                        "\t\t\treturn fmt.Errorf(\"%1$s[%%d]=%%d" +
+                        " failed ASCII validation\", idx, ch)\n" +
+                        "\t\t}\n" +
+                        "\t}\n",
+                        varName));
+                    break;
+
+                case "UTF-8":
+                    this.imports.add("errors");
+                    this.imports.add("unicode/utf8");
+                    sb.append(String.format(
+                        "\tif !utf8.Valid(%1$s[:]) {\n" +
+                        "\t\treturn errors.New(\"%1$s failed UTF-8 validation\")\n" +
+                        "\t}\n",
+                        varName));
+                    break;
+            }
         }
     }
 
