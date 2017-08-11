@@ -164,8 +164,8 @@ public class OtfMessageDecoder
                     buffer,
                     bufferOffset + blockLengthToken.offset(),
                     blockLengthToken.encoding().primitiveType(),
-                    blockLengthToken.encoding().byteOrder())
-                : 0;
+                    blockLengthToken.encoding().byteOrder()) :
+                0;
 
             final Token numInGroupToken = tokens.get(tokenIdx + 3);
             final int numInGroup = isPresent ?
@@ -173,8 +173,8 @@ public class OtfMessageDecoder
                     buffer,
                     bufferOffset + numInGroupToken.offset(),
                     numInGroupToken.encoding().primitiveType(),
-                    numInGroupToken.encoding().byteOrder())
-                : 0;
+                    numInGroupToken.encoding().byteOrder()) :
+                0;
 
             final Token dimensionTypeComposite = tokens.get(tokenIdx + 1);
 
@@ -294,8 +294,8 @@ public class OtfMessageDecoder
                     buffer,
                     bufferOffset + lengthToken.offset(),
                     lengthToken.encoding().primitiveType(),
-                    lengthToken.encoding().byteOrder())
-                : 0;
+                    lengthToken.encoding().byteOrder()) :
+                0;
 
             final Token dataToken = tokens.get(tokenIdx + 3);
             if (isPresent)
