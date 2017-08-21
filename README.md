@@ -47,7 +47,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.7.0</version>
+    <version>1.7.1</version>
 </dependency>
 ```
 
@@ -128,7 +128,7 @@ generate the golang code for testing
     $ ./gradlew generateGolangCodecs
 
 For convenience on Linux, a gnu Makefile is provided that runs some
-tests and containes some examples
+tests and contains some examples
 
     $ cd gocode
     # make # test, examples, bench
