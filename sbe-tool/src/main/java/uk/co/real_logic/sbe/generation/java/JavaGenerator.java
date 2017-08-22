@@ -2264,7 +2264,7 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private static void eachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
+    public static void eachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
     {
         for (int i = 0, size = tokens.size(); i < size;)
         {

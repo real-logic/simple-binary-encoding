@@ -469,6 +469,56 @@ project(':sbe-benchmarks') {
 }
 
 /*
+ * Rust codec targets used for testing and demonstration
+ */
+task(generateRustCarExample, type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'rust/car_example/src',
+            'sbe.target.language': 'uk.co.real_logic.sbe.generation.rust.Rust',
+            'sbe.target.namespace': 'car_example_generated_codec')
+    args = ['sbe-tool/src/test/resources/example-schema.xml']
+}
+task(generateCarExampleDataFile, type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
+    classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.encoding.filename': 'rust/car_example/car_example_data.sbe')
+    args = []
+    standardOutput = new ByteArrayOutputStream()
+}
+
+task(runRustCarExample, type: Exec) {
+    workingDir './rust/car_example'
+    commandLine 'cargo'
+    args 'run'
+    standardOutput = new ByteArrayOutputStream()
+    errorOutput = new ByteArrayOutputStream()
+    dependsOn 'generateRustCarExample', 'generateCarExampleDataFile'
+}
+
+def cargo_exists() {
+    def result = project.exec {
+        commandLine 'cargo'
+        args '-v'
+        standardOutput = new ByteArrayOutputStream()
+        errorOutput = new ByteArrayOutputStream()
+    }
+    return result.exitValue == 0
+}
+
+if (cargo_exists()) {
+    test.dependsOn('runRustCarExample')
+}
+
+task generateRustCodecs {
+    description = 'Generate rust test codecs'
+    dependsOn 'generateRustCarExample',
+            'generateCarExampleDataFile'
+}
+
+/*
  * Golang codec targets used for testing, benchmarking etc. We have
  * multiple targets as:
  *  *) some of the test files generate warnings from the xsd so we don't
