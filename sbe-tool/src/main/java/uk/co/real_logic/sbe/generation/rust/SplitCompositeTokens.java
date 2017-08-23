@@ -21,6 +21,7 @@ final class SplitCompositeTokens
     {
         final List<Token> constantTokens = new ArrayList<>();
         final List<NamedToken> namedNonConstantTokens = new ArrayList<>();
+
         for (int i = 1, end = tokens.size() - 1; i < end; )
         {
             final Token encodingToken = tokens.get(i);
@@ -32,8 +33,10 @@ final class SplitCompositeTokens
             {
                 namedNonConstantTokens.add(new NamedToken(encodingToken.name(), encodingToken));
             }
+
             i += encodingToken.componentTokenCount();
         }
+
         return new SplitCompositeTokens(constantTokens, namedNonConstantTokens);
     }
 }

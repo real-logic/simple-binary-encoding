@@ -13,9 +13,9 @@ import static uk.co.real_logic.sbe.generation.java.JavaUtil.toUpperFirstChar;
 
 public class RustUtil
 {
+    static final String INDENT = "  ";
     private static final Map<PrimitiveType, String> TYPE_NAME_BY_PRIMITIVE_TYPE_MAP =
         new EnumMap<>(PrimitiveType.class);
-    static final String INDENT = "  ";
 
     static
     {
@@ -52,6 +52,7 @@ public class RustUtil
         {
             throw new IllegalArgumentException("Unknown Rust type name found for primitive " + type.primitiveName());
         }
+
         switch (type)
         {
             case CHAR:
@@ -64,9 +65,11 @@ public class RustUtil
             case UINT32:
             case UINT64:
                 return value + typeName;
+
             case FLOAT:
             case DOUBLE:
                 return value.endsWith("NaN") ? typeName + "::NAN" : value + typeName;
+
             default:
                 throw new IllegalArgumentException("Unsupported literal generation for type: " + type.primitiveName());
         }
@@ -81,6 +84,7 @@ public class RustUtil
             throw new IllegalArgumentException(
                 format("String value %s did not fit into a single 8-bit " + "character", asciiCharacter));
         }
+
         return bytes[0];
     }
 
@@ -121,6 +125,7 @@ public class RustUtil
             }
             i = j;
         }
+
         return (i == 0) ? s.toLowerCase() : out.append(s.substring(i).toLowerCase()).toString();
     }
 
@@ -132,6 +137,7 @@ public class RustUtil
         {
             throw new IndexOutOfBoundsException();
         }
+
         for (int i = start; i < length; i++)
         {
             final char c = sequence.charAt(i);
@@ -140,6 +146,7 @@ public class RustUtil
                 return i;
             }
         }
+
         return -1;
     }
 
@@ -172,6 +179,7 @@ public class RustUtil
         {
             out = out.append(INDENT);
         }
+
         return out;
     }
 
@@ -204,6 +212,4 @@ public class RustUtil
             return lowerCaseNames.contains(v.toLowerCase());
         }
     }
-
-
 }

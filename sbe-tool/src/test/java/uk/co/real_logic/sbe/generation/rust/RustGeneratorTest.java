@@ -40,6 +40,7 @@ public class RustGeneratorTest
         final String xmlLocalResourceName = localResourceName.endsWith(".xml") ? localResourceName :
             localResourceName + ".xml";
         final MessageSchema schema;
+
         try
         {
             schema = parse(TestUtil.getLocalResource(xmlLocalResourceName), options);
@@ -48,18 +49,20 @@ public class RustGeneratorTest
         {
             throw new IllegalStateException(e);
         }
+
         final IrGenerator irg = new IrGenerator();
+
         return irg.generate(schema);
     }
 
     @Test(expected = NullPointerException.class)
-    public void nullOutputManagerTossesNPE()
+    public void nullOutputManagerTossesNpe()
     {
         new RustGenerator(minimalDummyIr(), null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void nullIrTossesNPE()
+    public void nullIrTossesNpe()
     {
         new RustGenerator(null, outputManager);
     }
@@ -84,10 +87,12 @@ public class RustGeneratorTest
         assertContainsSharedImports(outputManager.toString());
     }
 
-    private static String fullGenerateForResource(final SingleStringOutputManager outputManager,
-                                                  final String localResourceName)
+    private static String fullGenerateForResource(
+        final SingleStringOutputManager outputManager,
+        final String localResourceName)
     {
         outputManager.clear();
+
         final RustGenerator rustGenerator = new RustGenerator(generateIrForResource(localResourceName), outputManager);
         try
         {
@@ -97,6 +102,7 @@ public class RustGeneratorTest
         {
             throw new AssertionFailedError("Unexpected IOException during generation. " + e.getMessage());
         }
+
         return outputManager.toString();
     }
 
@@ -112,11 +118,11 @@ public class RustGeneratorTest
     {
         final String expectedDeclaration =
             "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
-                "#[repr(u8)]\n" +
-                "pub enum ENUM {\n" +
-                "  Value1 = 1u8,\n" +
-                "  Value10 = 10u8,\n" +
-                "}\n";
+            "#[repr(u8)]\n" +
+            "pub enum ENUM {\n" +
+            "  Value1 = 1u8,\n" +
+            "  Value10 = 10u8,\n" +
+            "}\n";
         assertTrue(generatedRust.contains(expectedDeclaration));
     }
 
@@ -127,29 +133,30 @@ public class RustGeneratorTest
         assertContainsSharedImports(generatedRust);
         final String expectedBooleanTypeDeclaration =
             "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
-                "#[repr(u8)]\n" +
-                "pub enum BooleanType {\n" +
-                "  F = 0u8,\n" +
-                "  T = 1u8,\n" +
-                "}\n";
+            "#[repr(u8)]\n" +
+            "pub enum BooleanType {\n" +
+            "  F = 0u8,\n" +
+            "  T = 1u8,\n" +
+            "}\n";
         assertTrue(generatedRust.contains(expectedBooleanTypeDeclaration));
         final String expectedCharTypeDeclaration =
             "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
-                "#[repr(i8)]\n" +
-                "pub enum Model {\n" +
-                "  A = 65i8,\n" +
-                "  B = 66i8,\n" +
-                "  C = 67i8,\n" +
-                "}\n";
+            "#[repr(i8)]\n" +
+            "pub enum Model {\n" +
+            "  A = 65i8,\n" +
+            "  B = 66i8,\n" +
+            "  C = 67i8,\n" +
+            "}\n";
         assertTrue(generatedRust.contains(expectedCharTypeDeclaration));
         assertRustBuildable(generatedRust, Optional.of("example-schema"));
     }
 
     private File writeCargoFolderWrapper(final String name, final String generatedRust, final File folder) throws
-        IOException
+                                                                                                           IOException
     {
         final File src = new File(folder, "src");
         src.mkdirs();
+
         final File cargo = new File(folder, "Cargo.toml");
         try (Writer cargoWriter = Files.newBufferedWriter(cargo.toPath()))
         {
@@ -160,11 +167,13 @@ public class RustGeneratorTest
                 .append("[dependencies]\n")
                 .append("[dev-dependencies]\n");
         }
+
         final File lib = new File(src, "lib.rs");
         try (Writer libWriter = Files.newBufferedWriter(lib.toPath()))
         {
             libWriter.append(generatedRust);
         }
+
         return folder;
     }
 
@@ -175,6 +184,7 @@ public class RustGeneratorTest
         final Process process = builder.start();
         process.waitFor(20, TimeUnit.SECONDS);
         final boolean success = process.exitValue() == 0;
+
         if (!success)
         {
             // Include output as a debugging aid when things go wrong
@@ -187,10 +197,12 @@ public class RustGeneratorTest
                     {
                         break;
                     }
+
                     System.out.printf("Cargo: %s%n", line);
                 }
             }
         }
+
         return success;
     }
 
@@ -203,25 +215,26 @@ public class RustGeneratorTest
             process.waitFor(20, TimeUnit.SECONDS);
             return process.exitValue() == 0;
         }
-        catch (final IOException | InterruptedException e)
+        catch (final IOException | InterruptedException ignore)
         {
             return false;
         }
     }
 
-    private void assertRustBuildable(final String generatedRust, final Optional<String> name) throws IOException,
-        InterruptedException
+    private void assertRustBuildable(final String generatedRust, final Optional<String> name)
+        throws IOException, InterruptedException
     {
         Assume.assumeTrue(cargoExists());
         final File folder = writeCargoFolderWrapper(name.orElse("test"), generatedRust, folderRule.newFolder());
         assertTrue("Generated Rust should be buildable with cargo", cargoCheckInDirectory(folder));
     }
 
-    private String assertSchemaInterpretableAsRust(final String localResourceSchema) throws IOException,
-        InterruptedException
+    private String assertSchemaInterpretableAsRust(final String localResourceSchema)
+        throws IOException, InterruptedException
     {
         final String rust = fullGenerateForResource(outputManager, localResourceSchema);
         assertRustBuildable(rust, Optional.of(localResourceSchema));
+
         return rust;
     }
 
@@ -229,7 +242,8 @@ public class RustGeneratorTest
     @Test
     public void checkValidRustFromAllExampleSchema() throws IOException, InterruptedException
     {
-        final String[] schema = {
+        final String[] schema =
+        {
             "basic-group-schema",
             BASIC_TYPES_SCHEMA,
             "basic-variable-length-schema",
@@ -263,17 +277,17 @@ public class RustGeneratorTest
         assertContainsSharedImports(rust);
         final String expectedCharTypeDeclaration =
             "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
-                "#[repr(i8)]\n" +
-                "pub enum Model {\n" +
-                "  A = 65i8,\n" +
-                "  B = 66i8,\n" +
-                "  C = 67i8,\n" +
-                "}\n";
+            "#[repr(i8)]\n" +
+            "pub enum Model {\n" +
+            "  A = 65i8,\n" +
+            "  B = 66i8,\n" +
+            "  C = 67i8,\n" +
+            "}\n";
         assertContains(rust, expectedCharTypeDeclaration);
         final String expectedComposite =
             "pub struct CompositeWithConst {\n" +
-                "  pub w:u8,\n" +
-                "}";
+            "  pub w:u8,\n" +
+            "}";
         assertContains(rust, expectedComposite);
         assertContains(rust, "impl CompositeWithConst {");
         assertContains(rust, "  pub fn x() -> u8 {\n" +

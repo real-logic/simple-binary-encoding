@@ -12,7 +12,6 @@ public class SingleStringOutputManager implements OutputManager
 {
     private final List<Map.Entry<String, StringWriter>> sections = new ArrayList<>();
 
-    @Override
     public Writer createOutput(final String name) throws IOException
     {
         final StringWriter stringWriter = new StringWriter();
@@ -23,8 +22,8 @@ public class SingleStringOutputManager implements OutputManager
     public String toString()
     {
         return sections.stream()
-                .map(e -> String.format("\n/// %s%n%s", e.getKey(), e.getValue().toString()))
-                .collect(Collectors.joining());
+            .map((e) -> String.format("\n/// %s%n%s", e.getKey(), e.getValue().toString()))
+            .collect(Collectors.joining());
     }
 
     public void clear()

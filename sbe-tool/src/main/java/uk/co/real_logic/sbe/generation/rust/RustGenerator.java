@@ -31,11 +31,11 @@ public class RustGenerator implements CodeGenerator
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
+
         this.ir = ir;
         this.outputManager = outputManager;
     }
 
-    @Override
     public void generate() throws IOException
     {
         generateSharedImports(ir, outputManager);
@@ -64,17 +64,18 @@ public class RustGenerator implements CodeGenerator
             generateMessageDecoder(outputManager, components, groupTree, fieldsRepresentation, headerSize);
             generateMessageEncoder(outputManager, components, groupTree, fieldsRepresentation, headerSize);
         }
-
     }
 
     private static int totalByteSize(final HeaderStructure headerStructure)
     {
-        return headerStructure.tokens().stream()
-            .filter(t -> t.signal() == Signal.ENCODING || t.signal() == Signal.BEGIN_ENUM ||
+        return headerStructure
+            .tokens()
+            .stream()
+            .filter((t) -> t.signal() == Signal.ENCODING ||
+                t.signal() == Signal.BEGIN_ENUM ||
                 t.signal() == Signal.BEGIN_SET)
             .mapToInt(Token::encodedLength)
             .sum();
-
     }
 
     private void generateGroupFieldRepresentations(
@@ -99,7 +100,6 @@ public class RustGenerator implements CodeGenerator
 
             generateGroupFieldRepresentations(appendable, node.groups);
         }
-
     }
 
     private static final class FieldsRepresentationSummary
@@ -124,6 +124,7 @@ public class RustGenerator implements CodeGenerator
         {
             return Optional.empty();
         }
+
         final String representationStruct = messageTypeName + "Fields";
         try (Writer writer = outputManager.createOutput(messageTypeName + "Fixed Fields"))
         {
@@ -133,6 +134,7 @@ public class RustGenerator implements CodeGenerator
 
             generateConstantAccessorImpl(writer, representationStruct, components.fields);
         }
+
         final int numBytes = components.fields.stream()
             .filter(t -> !t.isConstantEncoding())
             .filter(t -> t.signal() == ENCODING || t.signal() == BEGIN_ENUM || t.signal() == BEGIN_SET)
@@ -154,7 +156,7 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generateSingleBitSet(final List<Token> tokens, final OutputManager outputManager) throws
-        IOException
+                                                                                                          IOException
     {
         final Token beginToken = tokens.get(0);
         final String setType = formatTypeName(beginToken.applicableTypeName());
@@ -173,15 +175,18 @@ public class RustGenerator implements CodeGenerator
             indent(writer, 2, "self.0 = 0;\n");
             indent(writer, 2, "self\n");
             indent(writer, 1, "}\n");
+
             for (final Token token : tokens)
             {
                 if (Signal.CHOICE != token.signal())
                 {
                     continue;
                 }
+
                 final String choiceName = formatMethodName(token.name());
                 final Encoding encoding = token.encoding();
                 final String choiceBitIndex = encoding.constValue().toString();
+
                 indent(writer, 1, "pub fn get_%s(&self) -> bool {\n", choiceName);
                 indent(writer, 2, "0 != self.0 & (1 << %s)\n", choiceBitIndex);
                 indent(writer, 1, "}\n", choiceName);
@@ -200,11 +205,12 @@ public class RustGenerator implements CodeGenerator
 
     }
 
-    private static void generateMessageEncoder(final OutputManager outputManager,
-                                               final MessageComponents components,
-                                               final List<GroupTreeNode> groupTree,
-                                               final Optional<FieldsRepresentationSummary> fieldsRepresentation,
-                                               final int headerSize)
+    private static void generateMessageEncoder(
+        final OutputManager outputManager,
+        final MessageComponents components,
+        final List<GroupTreeNode> groupTree,
+        final Optional<FieldsRepresentationSummary> fieldsRepresentation,
+        final int headerSize)
         throws IOException
     {
 
@@ -221,11 +227,12 @@ public class RustGenerator implements CodeGenerator
         generateEntryPoint(messageTypeName, outputManager, topType, codecType);
     }
 
-    private static void generateMessageDecoder(final OutputManager outputManager,
-                                               final MessageComponents components,
-                                               final List<GroupTreeNode> groupTree,
-                                               final Optional<FieldsRepresentationSummary> fieldsRepresentation,
-                                               final int headerSize)
+    private static void generateMessageDecoder(
+        final OutputManager outputManager,
+        final MessageComponents components,
+        final List<GroupTreeNode> groupTree,
+        final Optional<FieldsRepresentationSummary> fieldsRepresentation,
+        final int headerSize)
         throws IOException
     {
 
@@ -242,10 +249,11 @@ public class RustGenerator implements CodeGenerator
         generateEntryPoint(messageTypeName, outputManager, topType, codecType);
     }
 
-    private static void generateEntryPoint(final String messageTypeName,
-                                           final OutputManager outputManager,
-                                           final String topType,
-                                           final RustCodecType codecType) throws IOException
+    private static void generateEntryPoint(
+        final String messageTypeName,
+        final OutputManager outputManager,
+        final String topType,
+        final RustCodecType codecType) throws IOException
     {
         try (Writer writer = outputManager.createOutput(messageTypeName + format(" %s entry point", codecType.name())))
         {
@@ -265,17 +273,19 @@ public class RustGenerator implements CodeGenerator
         return format("%s<%s>", typeName, DATA_LIFETIME);
     }
 
-    private static String generateFixedFieldCoder(final String messageTypeName,
-                                                  final OutputManager outputManager,
-                                                  final String topType,
-                                                  final Optional<FieldsRepresentationSummary>
-                                                      fieldsRepresentationOptional,
-                                                  final RustCodecType codecType) throws IOException
+    private static String generateFixedFieldCoder(
+        final String messageTypeName,
+        final OutputManager outputManager,
+        final String topType,
+        final Optional<FieldsRepresentationSummary>
+            fieldsRepresentationOptional,
+        final RustCodecType codecType) throws IOException
     {
         if (!fieldsRepresentationOptional.isPresent())
         {
             return topType;
         }
+
         final FieldsRepresentationSummary fieldsRepresentation = fieldsRepresentationOptional.get();
         try (Writer writer = outputManager.createOutput(messageTypeName + " Fixed fields " + codecType.name()))
         {
@@ -293,10 +303,11 @@ public class RustGenerator implements CodeGenerator
         }
     }
 
-    private static String generateGroupsCoders(final List<GroupTreeNode> groupTreeNodes,
-                                               final OutputManager outputManager,
-                                               final String initialNextCoderType,
-                                               final RustCodecType codecType) throws IOException
+    private static String generateGroupsCoders(
+        final List<GroupTreeNode> groupTreeNodes,
+        final OutputManager outputManager,
+        final String initialNextCoderType,
+        final RustCodecType codecType) throws IOException
     {
 
         String nextCoderType = initialNextCoderType;
@@ -318,10 +329,11 @@ public class RustGenerator implements CodeGenerator
         return nextCoderType;
     }
 
-    private static String generateGroupNodeEncoders(final OutputManager outputManager,
-                                                    final String afterGroupCoderType,
-                                                    final GroupTreeNode node,
-                                                    final boolean atEndOfParent) throws IOException
+    private static String generateGroupNodeEncoders(
+        final OutputManager outputManager,
+        final String afterGroupCoderType,
+        final GroupTreeNode node,
+        final boolean atEndOfParent) throws IOException
     {
         final boolean hasParent = node.parent.isPresent();
         if (!hasParent && atEndOfParent)
@@ -355,16 +367,18 @@ public class RustGenerator implements CodeGenerator
             atEndOfCurrentLevel, memberCoderType, nextCoderType);
     }
 
-    private static String generateGroupNodeDecoders(final OutputManager outputManager,
-                                                    final String initialNextDecoderType,
-                                                    final GroupTreeNode node,
-                                                    final boolean atEndOfParent) throws IOException
+    private static String generateGroupNodeDecoders(
+        final OutputManager outputManager,
+        final String initialNextDecoderType,
+        final GroupTreeNode node,
+        final boolean atEndOfParent) throws IOException
     {
         final boolean hasParent = node.parent.isPresent();
         if (!hasParent && atEndOfParent)
         {
             throw new IllegalArgumentException("Group cannot both lack a parent and be at the end of a parent group");
         }
+
         boolean atEndOfCurrentLevel = true;
         final String memberDecoderType = node.contextualName + "MemberDecoder";
         final String headerDecoderType = node.contextualName + "HeaderDecoder";
@@ -392,6 +406,7 @@ public class RustGenerator implements CodeGenerator
 
         writeGroupDecoderTopTypes(outputManager, initialNextDecoderType, node, atEndOfParent,
             atEndOfCurrentLevel, memberDecoderType, headerDecoderType, groupLevelNextDecoderType, nextDecoderType);
+
         return headerDecoderType;
     }
 
@@ -489,6 +504,7 @@ public class RustGenerator implements CodeGenerator
 
             out.append("}\n");
         }
+
         return headerCoderType;
     }
 
@@ -638,6 +654,7 @@ public class RustGenerator implements CodeGenerator
                 appendFixedSizeMemberGroupDecoderMethods(initialNextDecoderType, node, atEndOfParent, out,
                     contentProperty);
             }
+
             out.append("}\n");
         }
     }
@@ -674,6 +691,7 @@ public class RustGenerator implements CodeGenerator
             currentParent = currentParent.get().parent;
         }
         builder.append(".scratch");
+
         return builder.toString();
     }
 
@@ -685,6 +703,7 @@ public class RustGenerator implements CodeGenerator
             builder.append(".parent");
         }
         builder.append(format(".%s", SCRATCH_DECODER_PROPERY));
+
         return builder.toString();
     }
 
@@ -696,20 +715,24 @@ public class RustGenerator implements CodeGenerator
             {
                 return list.stream().iterator();
             }
+
             final int maxIndex = list.size() - 1;
-            return IntStream.rangeClosed(0, maxIndex).mapToObj(i -> list.get(maxIndex - i)).iterator();
+
+            return IntStream.rangeClosed(0, maxIndex).mapToObj((i) -> list.get(maxIndex - i)).iterator();
         };
     }
 
-    private static List<GroupTreeNode> buildGroupTrees(final String parentTypeName,
-                                                       final List<Token> groupsTokens)
+    private static List<GroupTreeNode> buildGroupTrees(
+        final String parentTypeName,
+        final List<Token> groupsTokens)
     {
         return buildGroupTrees(parentTypeName, groupsTokens, Optional.empty());
     }
 
-    private static List<GroupTreeNode> buildGroupTrees(final String parentTypeName,
-                                                       final List<Token> groupsTokens,
-                                                       final Optional<GroupTreeNode> parent)
+    private static List<GroupTreeNode> buildGroupTrees(
+        final String parentTypeName,
+        final List<Token> groupsTokens,
+        final Optional<GroupTreeNode> parent)
 
     {
         final int size = groupsTokens.size();
@@ -721,9 +744,11 @@ public class RustGenerator implements CodeGenerator
             {
                 throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
             }
+
             final String originalName = groupToken.name();
             final String contextualName = parentTypeName + formatTypeName(originalName);
             ++i;
+
             final Token dimensionsToken = groupsTokens.get(i);
             final int groupHeaderTokenCount = dimensionsToken.componentTokenCount();
             final List<Token> dimensionsTokens = groupsTokens.subList(i, i + groupHeaderTokenCount);
@@ -751,11 +776,12 @@ public class RustGenerator implements CodeGenerator
                 blockLengthType,
                 blockLength,
                 fields,
-                varDataSummaries
-            );
+                varDataSummaries);
+
             groups.add(node);
             buildGroupTrees(contextualName, childGroups, Optional.of(node));
         }
+
         return groups;
     }
 
@@ -768,12 +794,14 @@ public class RustGenerator implements CodeGenerator
     {
         for (final Token token : tokens)
         {
-            if (targetName.equalsIgnoreCase(token.name()) && token.encoding() != null &&
+            if (targetName.equalsIgnoreCase(token.name()) &&
+                token.encoding() != null &&
                 token.encoding().primitiveType() != null)
             {
                 return token;
             }
         }
+
         throw new IllegalStateException(format("%s not specified for group", targetName));
     }
 
@@ -790,14 +818,15 @@ public class RustGenerator implements CodeGenerator
         final List<GroupTreeNode> groups = new ArrayList<>();
         final List<VarDataSummary> varData;
 
-        GroupTreeNode(final Optional<GroupTreeNode> parent,
-                      final String originalName,
-                      final String contextualName,
-                      final PrimitiveType numInGroupType,
-                      final PrimitiveType blockLengthType,
-                      final int blockLength,
-                      final List<Token> fields,
-                      final List<VarDataSummary> varData)
+        GroupTreeNode(
+            final Optional<GroupTreeNode> parent,
+            final String originalName,
+            final String contextualName,
+            final PrimitiveType numInGroupType,
+            final PrimitiveType blockLengthType,
+            final int blockLength,
+            final List<Token> fields,
+            final List<VarDataSummary> varData)
         {
             this.parent = parent;
             this.originalName = originalName;
@@ -808,7 +837,8 @@ public class RustGenerator implements CodeGenerator
             this.rawFields = fields;
             this.simpleNamedFields = NamedToken.gatherNamedFieldTokens(fields);
             this.varData = varData;
-            parent.ifPresent(p -> p.addChild(this));
+
+            parent.ifPresent((p) -> p.addChild(this));
         }
 
         void addChild(final GroupTreeNode child)
@@ -825,6 +855,7 @@ public class RustGenerator implements CodeGenerator
                 d += 1;
                 currentParent = currentParent.get().parent;
             }
+
             return d;
         }
 
@@ -894,6 +925,7 @@ public class RustGenerator implements CodeGenerator
 
                 indent(writer).append("}\n}\n");
             }
+
             return decoderType;
         }
 
@@ -972,11 +1004,12 @@ public class RustGenerator implements CodeGenerator
         }
     }
 
-    static String generateTopVarDataCoders(final String messageTypeName,
-                                           final List<Token> tokens,
-                                           final OutputManager outputManager,
-                                           final String initialNextType, final RustCodecType codecType) throws
-        IOException
+    static String generateTopVarDataCoders(
+        final String messageTypeName,
+        final List<Token> tokens,
+        final OutputManager outputManager,
+        final String initialNextType, final RustCodecType codecType) throws
+                                                                     IOException
     {
         final List<VarDataSummary> summaries = VarDataSummary.gatherVarDataSummaries(tokens);
 
@@ -1003,7 +1036,7 @@ public class RustGenerator implements CodeGenerator
     }
 
     static void appendImplWithLifetimeHeader(final Appendable appendable, final String typeName) throws
-        IOException
+                                                                                                 IOException
     {
         appendable.append(format("impl<%s> %s<%s> {\n", DATA_LIFETIME, typeName, DATA_LIFETIME));
     }
@@ -1205,7 +1238,6 @@ public class RustGenerator implements CodeGenerator
             indent(writer).append("}\n");
 
             writer.append("}\n");
-
         }
     }
 
@@ -1233,11 +1265,13 @@ public class RustGenerator implements CodeGenerator
             {
                 throw new IllegalArgumentException("No valid values provided for enum " + originalEnumName);
             }
+
             writer.append("#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]").append("\n");
             final String rustReprTypeName = rustTypeName(messageBody.get(0).encoding().primitiveType());
             writer.append(format("#[repr(%s)]",
                 rustReprTypeName)).append("\n");
             writer.append("pub enum ").append(enumRustName).append(" {\n");
+
             for (final Token token : messageBody)
             {
                 final Encoding encoding = token.encoding();
@@ -1247,6 +1281,7 @@ public class RustGenerator implements CodeGenerator
                     .append(literal)
                     .append(",\n");
             }
+
             writer.append("}\n");
         }
     }
@@ -1263,7 +1298,7 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generateSingleComposite(final List<Token> tokens, final OutputManager outputManager) throws
-        IOException
+                                                                                                             IOException
     {
         final Token beginToken = tokens.get(0);
         final String originalTypeName = beginToken.applicableTypeName();
@@ -1289,8 +1324,10 @@ public class RustGenerator implements CodeGenerator
             {
                 continue;
             }
+
             final String propertyName = formatMethodName(namedToken.name);
             indent(appendable).append("pub ").append(propertyName).append(":");
+
             switch (typeToken.signal())
             {
                 case ENCODING:
@@ -1298,23 +1335,27 @@ public class RustGenerator implements CodeGenerator
                     final String rustFieldType = getRustTypeForPrimitivePossiblyArray(typeToken, rustPrimitiveType);
                     appendable.append(rustFieldType);
                     break;
+
                 case BEGIN_ENUM:
                 case BEGIN_SET:
                 case BEGIN_COMPOSITE:
                     appendable.append(formatTypeName(typeToken.applicableTypeName()));
                     break;
+
                 default:
-                    throw new IllegalStateException(format("Unsupported struct property from %s",
-                        typeToken.toString()));
+                    throw new IllegalStateException(
+                        format("Unsupported struct property from %s", typeToken.toString()));
             }
+
             appendable.append(",\n");
         }
 
     }
 
-    private void generateMessageHeaderDefault(final Ir ir,
-                                              final OutputManager outputManager,
-                                              final Token messageToken)
+    private void generateMessageHeaderDefault(
+        final Ir ir,
+        final OutputManager outputManager,
+        final Token messageToken)
         throws IOException
     {
         final HeaderStructure header = ir.headerStructure();
@@ -1344,10 +1385,11 @@ public class RustGenerator implements CodeGenerator
             // to provide some sort of default for them
             final Set<String> reserved = new HashSet<>(Arrays.asList("blockLength", "templateId", "schemaId",
                 "version"));
+
             final List<NamedToken> nonReservedNamedTokens = SplitCompositeTokens.splitInnerTokens(header.tokens())
                 .nonConstantEncodingTokens
                 .stream()
-                .filter(namedToken -> !reserved.contains(namedToken.name))
+                .filter((namedToken) -> !reserved.contains(namedToken.name))
                 .collect(Collectors.toList());
 
             for (final NamedToken namedToken : nonReservedNamedTokens)
@@ -1355,31 +1397,31 @@ public class RustGenerator implements CodeGenerator
                 indent(writer, 4, "%s: Default::default(),\n", formatMethodName(namedToken.name));
             }
 
-
             indent(writer, 3, "}\n");
 
             indent(writer, 2, "}\n");
             indent(writer, 1, "}\n");
 
             writer.append("}\n");
-
         }
 
     }
 
-    private static void appendStructHeader(final Appendable appendable,
-                                           final String structName,
-                                           final boolean packedCRepresentation) throws IOException
+    private static void appendStructHeader(
+        final Appendable appendable,
+        final String structName,
+        final boolean packedCRepresentation) throws IOException
     {
         if (packedCRepresentation)
         {
             appendable.append("#[repr(C,packed)]\n");
         }
+
         appendable.append(format("pub struct %s {%n", structName));
     }
 
-    private static String getRustTypeForPrimitivePossiblyArray(final Token encodingToken, final String
-        rustPrimitiveType)
+    private static String getRustTypeForPrimitivePossiblyArray(
+        final Token encodingToken, final String rustPrimitiveType)
     {
         final String rustType;
         if (encodingToken.arrayLength() > 1)
@@ -1390,13 +1432,17 @@ public class RustGenerator implements CodeGenerator
         {
             rustType = rustPrimitiveType;
         }
+
         return rustType;
     }
 
-    private static void generateConstantAccessorImpl(final Appendable writer, final String formattedTypeName,
-                                                     final List<Token> unfilteredFields) throws IOException
+    private static void generateConstantAccessorImpl(
+        final Appendable writer,
+        final String formattedTypeName,
+        final List<Token> unfilteredFields) throws IOException
     {
         writer.append(format("%nimpl %s {%n", formattedTypeName));
+
         for (int i = 0; i < unfilteredFields.size(); )
         {
             final Token fieldToken = unfilteredFields.get(i);
@@ -1447,6 +1493,7 @@ public class RustGenerator implements CodeGenerator
                             rawValue);
                     }
                     break;
+
                 case BEGIN_ENUM:
                     final String enumType = formatTypeName(signalToken.applicableTypeName());
                     String enumValue = null;
@@ -1466,12 +1513,14 @@ public class RustGenerator implements CodeGenerator
                     constantRustTypeName = enumType;
                     constantRustExpression = enumType + "::" + enumValue;
                     break;
+
                 case BEGIN_SET:
                 case BEGIN_COMPOSITE:
                 default:
                     throw new IllegalStateException(format("Unsupported constant presence property " +
                         "%s", fieldToken.toString()));
             }
+
             appendConstAccessor(writer, name, constantRustTypeName, constantRustExpression);
             i += componentTokenCount;
         }
@@ -1479,14 +1528,15 @@ public class RustGenerator implements CodeGenerator
         writer.append("}\n");
     }
 
-    private static void appendConstAccessor(final Appendable writer, final String name,
-                                            final String rustTypeName, final String rustExpression) throws IOException
+    private static void appendConstAccessor(
+        final Appendable writer,
+        final String name,
+        final String rustTypeName,
+        final String rustExpression) throws IOException
     {
         writer.append("\n").append(INDENT).append("#[inline]\n").append(INDENT);
-        writer.append(format("pub fn %s() -> %s {%n", formatMethodName(name),
-            rustTypeName));
+        writer.append(format("pub fn %s() -> %s {%n", formatMethodName(name), rustTypeName));
         indent(writer, 2).append(rustExpression).append("\n");
         indent(writer).append("}\n");
     }
-
 }

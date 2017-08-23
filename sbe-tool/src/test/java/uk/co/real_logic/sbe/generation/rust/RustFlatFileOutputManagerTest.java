@@ -57,7 +57,7 @@ public class RustFlatFileOutputManagerTest
     }
 
     @Test(expected = NullPointerException.class)
-    public void nullPackageParamThrowsNPE()
+    public void nullPackageParamThrowsNpe()
     {
         new RustFlatFileOutputManager(folderRule.getRoot().getAbsolutePath(), null);
     }
@@ -69,11 +69,12 @@ public class RustFlatFileOutputManagerTest
         final File tempDir = folderRule.newFolder();
         assertTrue(tempDir.setReadOnly());
         final String tempDirName = tempDir.getAbsolutePath();
+
         try
         {
             new RustFlatFileOutputManager(tempDirName, PACKAGE_NAME);
         }
-        catch (final IllegalStateException e)
+        catch (final IllegalStateException ex)
         {
             int waitCount = 0;
             boolean writable;
@@ -84,8 +85,10 @@ public class RustFlatFileOutputManagerTest
                 waitCount += 1;
             }
             while (!writable && waitCount < 10);
-            throw e;
+
+            throw ex;
         }
+
         fail("should be unreachable");
     }
 

@@ -13,7 +13,6 @@ import java.io.IOException;
  */
 public class Rust implements TargetCodeGenerator
 {
-    @Override
     public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
     {
         return defaultRustGenerator(ir, outputDir);

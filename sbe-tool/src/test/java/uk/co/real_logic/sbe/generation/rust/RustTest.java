@@ -44,19 +44,28 @@ public class RustTest
     static Ir minimalDummyIr()
     {
         return new Ir("a", "b", 0, 1, "2", ByteOrder.BIG_ENDIAN,
-                Arrays.asList(
-                        dummyToken(Signal.ENCODING, HeaderStructure.BLOCK_LENGTH),
-                        dummyToken(Signal.ENCODING, HeaderStructure.SCHEMA_ID),
-                        dummyToken(Signal.ENCODING, HeaderStructure.SCHEMA_VERSION),
-                        dummyToken(Signal.ENCODING, HeaderStructure.TEMPLATE_ID)
-                )
+            Arrays.asList(
+                dummyToken(Signal.ENCODING, HeaderStructure.BLOCK_LENGTH),
+                dummyToken(Signal.ENCODING, HeaderStructure.SCHEMA_ID),
+                dummyToken(Signal.ENCODING, HeaderStructure.SCHEMA_VERSION),
+                dummyToken(Signal.ENCODING, HeaderStructure.TEMPLATE_ID)
+            )
         );
     }
 
     private static Token dummyToken(final Signal signal, final String name)
     {
-        return new Token(signal,
-                name, name, name, 0, 0, 0, 0, 0, 1,
-                new Encoding.Builder().primitiveType(PrimitiveType.INT32).build());
+        return new Token(
+            signal,
+            name,
+            name,
+            name,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            new Encoding.Builder().primitiveType(PrimitiveType.INT32).build());
     }
 }
