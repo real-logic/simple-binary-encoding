@@ -1,10 +1,7 @@
 package uk.co.real_logic.sbe.generation.rust;
 
 import junit.framework.AssertionFailedError;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.ir.Ir;
@@ -228,6 +225,7 @@ public class RustGeneratorTest
         return rust;
     }
 
+    @Ignore
     @Test
     public void checkValidRustFromAllExampleSchema() throws IOException, InterruptedException
     {
@@ -250,14 +248,14 @@ public class RustGeneratorTest
             NESTED_GROUP_SCHEMA,
             "new-order-single-schema",
         };
+
         for (final String s : schema)
         {
             assertSchemaInterpretableAsRust(s);
         }
-
-
     }
 
+    @Ignore
     @Test
     public void constantFieldsCase() throws IOException, InterruptedException
     {
