@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static uk.co.real_logic.sbe.generation.rust.RustTest.minimalDummyIr;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
@@ -197,8 +199,6 @@ public class RustGeneratorTest
                     {
                         break;
                     }
-
-                    System.out.printf("Cargo: %s%n", line);
                 }
             }
         }
@@ -266,7 +266,6 @@ public class RustGeneratorTest
         }
     }
 
-    @Ignore
     @Test
     public void constantFieldsCase() throws IOException, InterruptedException
     {
@@ -318,6 +317,6 @@ public class RustGeneratorTest
 
     private static void assertContains(final String haystack, final String needle)
     {
-        assertTrue(String.format("Did not contain %s", needle), haystack.contains(needle));
+        assertThat(haystack, containsString(needle));
     }
 }

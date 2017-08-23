@@ -165,7 +165,7 @@ public class RustGenerator implements CodeGenerator
             writer.append("#[derive(Debug,Default)]\n");
             writer.append("#[repr(C,packed)]\n");
             final String rustPrimitiveType = rustTypeName(beginToken.encoding().primitiveType());
-            writer.append(format("pub struct %s(pub %s);%n", setType, rustPrimitiveType));
+            writer.append(format("pub struct %s(pub %s);\n", setType, rustPrimitiveType));
             writer.append(format("impl %s {\n", setType));
             indent(writer, 1, "pub fn new() -> Self {\n");
             indent(writer, 2, "%s(0)\n", setType);
@@ -1092,12 +1092,12 @@ public class RustGenerator implements CodeGenerator
         try (Writer writer = outputManager.createOutput("Scratch Encoder Data Wrapper"))
         {
             writer.append("#[derive(Debug)]\n");
-            writer.append(format("struct %s<%s> {%n", SCRATCH_ENCODER_TYPE, DATA_LIFETIME));
-            indent(writer, 1, "data: &%s mut [u8],%n", DATA_LIFETIME);
+            writer.append(format("struct %s<%s> {\n", SCRATCH_ENCODER_TYPE, DATA_LIFETIME));
+            indent(writer, 1, "data: &%s mut [u8],\n", DATA_LIFETIME);
             indent(writer).append("pos: usize,\n");
             writer.append("}\n");
 
-            writer.append(format("%nimpl<%s> %s<%s> {%n", DATA_LIFETIME, SCRATCH_ENCODER_TYPE, DATA_LIFETIME));
+            writer.append(format("%nimpl<%s> %s<%s> {\n", DATA_LIFETIME, SCRATCH_ENCODER_TYPE, DATA_LIFETIME));
 
             indent(writer).append("#[inline]\n");
             indent(writer).append("fn write_type<T>(&mut self, t: & T, num_bytes: usize) -> " +
@@ -1189,19 +1189,19 @@ public class RustGenerator implements CodeGenerator
         try (Writer writer = outputManager.createOutput("Scratch Decoder Data Wrapper"))
         {
             writer.append("#[derive(Debug)]\n");
-            writer.append(format("struct %s<%s> {%n", SCRATCH_DECODER_TYPE, DATA_LIFETIME));
-            indent(writer, 1, "data: &%s [u8],%n", DATA_LIFETIME);
+            writer.append(format("struct %s<%s> {\n", SCRATCH_DECODER_TYPE, DATA_LIFETIME));
+            indent(writer, 1, "data: &%s [u8],\n", DATA_LIFETIME);
             indent(writer).append("pos: usize,\n");
             writer.append("}\n");
 
-            writer.append(format("%nimpl<%s> %s<%s> {%n", DATA_LIFETIME, SCRATCH_DECODER_TYPE, DATA_LIFETIME));
+            writer.append(format("%nimpl<%s> %s<%s> {\n", DATA_LIFETIME, SCRATCH_DECODER_TYPE, DATA_LIFETIME));
 
             indent(writer).append("#[inline]\n");
-            indent(writer, 1, "fn read_type<T>(&mut self, num_bytes: usize) -> CodecResult<&%s T> {%n", DATA_LIFETIME);
+            indent(writer, 1, "fn read_type<T>(&mut self, num_bytes: usize) -> CodecResult<&%s T> {\n", DATA_LIFETIME);
             indent(writer, 2).append("let end = self.pos + num_bytes;\n");
             indent(writer, 2).append("if end <= self.data.len() {\n");
             indent(writer, 3).append("let s = self.data[self.pos..end].as_ptr() as *mut T;\n");
-            indent(writer, 3, "let v: &%s T = unsafe { &*s };%n", DATA_LIFETIME);
+            indent(writer, 3, "let v: &%s T = unsafe { &*s };\n", DATA_LIFETIME);
             indent(writer, 3).append("self.pos = end;\n");
             indent(writer, 3).append("Ok(v)\n");
             indent(writer, 2).append("} else {\n");
@@ -1222,11 +1222,11 @@ public class RustGenerator implements CodeGenerator
 
             indent(writer).append("#[inline]\n");
             indent(writer, 1, "fn read_slice<T>(&mut self, count: usize, bytes_per_item: usize) " +
-                "-> CodecResult<&%s [T]> {%n", DATA_LIFETIME);
+                "-> CodecResult<&%s [T]> {\n", DATA_LIFETIME);
             indent(writer, 2).append("let num_bytes = bytes_per_item * count;\n");
             indent(writer, 2).append("let end = self.pos + num_bytes;\n");
             indent(writer, 2).append("if end <= self.data.len() {\n");
-            indent(writer, 3, "let v: &%s [T] = unsafe {%n", DATA_LIFETIME);
+            indent(writer, 3, "let v: &%s [T] = unsafe {\n", DATA_LIFETIME);
             indent(writer, 4).append("core::slice::from_raw_parts(self.data[self.pos..end].as_ptr() as *const T, " +
                 "count)\n");
             indent(writer, 3).append("};\n");
@@ -1417,7 +1417,7 @@ public class RustGenerator implements CodeGenerator
             appendable.append("#[repr(C,packed)]\n");
         }
 
-        appendable.append(format("pub struct %s {%n", structName));
+        appendable.append(format("pub struct %s {\n", structName));
     }
 
     private static String getRustTypeForPrimitivePossiblyArray(
@@ -1441,7 +1441,7 @@ public class RustGenerator implements CodeGenerator
         final String formattedTypeName,
         final List<Token> unfilteredFields) throws IOException
     {
-        writer.append(format("%nimpl %s {%n", formattedTypeName));
+        writer.append(format("%nimpl %s {\n", formattedTypeName));
 
         for (int i = 0; i < unfilteredFields.size(); )
         {
@@ -1535,7 +1535,7 @@ public class RustGenerator implements CodeGenerator
         final String rustExpression) throws IOException
     {
         writer.append("\n").append(INDENT).append("#[inline]\n").append(INDENT);
-        writer.append(format("pub fn %s() -> %s {%n", formatMethodName(name), rustTypeName));
+        writer.append(format("pub fn %s() -> %s {\n", formatMethodName(name), rustTypeName));
         indent(writer, 2).append(rustExpression).append("\n");
         indent(writer).append("}\n");
     }
