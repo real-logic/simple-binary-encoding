@@ -151,11 +151,11 @@ public class RustGeneratorTest
         assertRustBuildable(generatedRust, Optional.of("example-schema"));
     }
 
-    private File writeCargoFolderWrapper(final String name, final String generatedRust, final File folder) throws
-                                                                                                           IOException
+    private File writeCargoFolderWrapper(final String name, final String generatedRust, final File folder)
+        throws IOException
     {
         final File src = new File(folder, "src");
-        src.mkdirs();
+        assertTrue(src.mkdirs());
 
         final File cargo = new File(folder, "Cargo.toml");
         try (Writer cargoWriter = Files.newBufferedWriter(cargo.toPath()))
@@ -229,13 +229,11 @@ public class RustGeneratorTest
         assertTrue("Generated Rust should be buildable with cargo", cargoCheckInDirectory(folder));
     }
 
-    private String assertSchemaInterpretableAsRust(final String localResourceSchema)
+    private void assertSchemaInterpretableAsRust(final String localResourceSchema)
         throws IOException, InterruptedException
     {
         final String rust = fullGenerateForResource(outputManager, localResourceSchema);
         assertRustBuildable(rust, Optional.of(localResourceSchema));
-
-        return rust;
     }
 
     @Test
