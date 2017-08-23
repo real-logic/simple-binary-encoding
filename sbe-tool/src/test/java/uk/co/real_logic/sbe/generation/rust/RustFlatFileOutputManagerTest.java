@@ -1,5 +1,6 @@
 package uk.co.real_logic.sbe.generation.rust;
 
+import org.junit.Assume;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,7 +68,7 @@ public class RustFlatFileOutputManagerTest
     public void shouldThrowExceptionIfTargetDirNotWritable() throws IOException, InterruptedException
     {
         final File tempDir = folderRule.newFolder();
-        assertTrue(tempDir.setReadOnly());
+        Assume.assumeTrue(tempDir.setReadOnly());
         final String tempDirName = tempDir.getAbsolutePath();
 
         try
