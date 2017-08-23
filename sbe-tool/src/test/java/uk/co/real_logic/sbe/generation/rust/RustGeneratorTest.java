@@ -238,7 +238,6 @@ public class RustGeneratorTest
         return rust;
     }
 
-    @Ignore
     @Test
     public void checkValidRustFromAllExampleSchema() throws IOException, InterruptedException
     {
