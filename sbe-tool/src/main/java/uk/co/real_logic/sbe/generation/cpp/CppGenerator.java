@@ -294,13 +294,22 @@ public class CppGenerator implements CodeGenerator
             dimensionHeaderLength, blockLength, formatClassName(groupName)));
 
         sb.append(
-            indent + "    template<class Func> inline void forEach(Func func)\n" +
+            indent + "    template<class Func> inline void forEach(Func& func)\n" +
             indent + "    {\n" +
             indent + "        while (hasNext())\n" +
             indent + "        {\n" +
             indent + "            next(); func(*this);\n" +
             indent + "        }\n" +
-            indent + "    }\n\n");
+            indent + "    }\n" +
+            indent + "#if __cplusplus >= 201103L\n" +
+            indent + "    template<class Func> inline void forEach(Func&& func)\n" +
+            indent + "    {\n" +
+            indent + "        while (hasNext())\n" +
+            indent + "        {\n" +
+            indent + "            next(); func(*this);\n" +
+            indent + "        }\n" +
+            indent + "    }\n" +
+            indent + "#endif\n\n
     }
 
     private static CharSequence generateGroupProperty(
