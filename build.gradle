@@ -508,7 +508,7 @@ def cargo_exists() {
         }
         return result.exitValue == 0
     }
-    catch (Exception e)
+    catch (Exception ignore)
     {
         return false
     }
