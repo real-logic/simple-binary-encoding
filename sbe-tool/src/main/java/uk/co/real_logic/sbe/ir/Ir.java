@@ -312,22 +312,27 @@ public class Ir
             switch (token.signal())
             {
                 case BEGIN_COMPOSITE:
-                    i = captureType(tokens, i, Signal.END_COMPOSITE, token.name());
+                    i = captureType(tokens, i, Signal.END_COMPOSITE, token.name(), token.referencedName());
                     captureTypes(tokens, typeBeginIndex + 1, i - 1);
                     break;
 
                 case BEGIN_ENUM:
-                    i = captureType(tokens, i, Signal.END_ENUM, token.name());
+                    i = captureType(tokens, i, Signal.END_ENUM, token.name(), token.referencedName());
                     break;
 
                 case BEGIN_SET:
-                    i = captureType(tokens, i, Signal.END_SET, token.name());
+                    i = captureType(tokens, i, Signal.END_SET, token.name(), token.referencedName());
                     break;
             }
         }
     }
 
-    private int captureType(final List<Token> tokens, final int index, final Signal endSignal, final String name)
+    private int captureType(
+        final List<Token> tokens,
+        final int index,
+        final Signal endSignal,
+        final String name,
+        final String referencedName)
     {
         final List<Token> typeTokens = new ArrayList<>();
 
@@ -342,7 +347,15 @@ public class Ir
         while (endSignal != token.signal() || !name.equals(token.name()));
 
         updateComponentTokenCounts(typeTokens);
-        typesByNameMap.put(name, typeTokens);
+
+        if (null == referencedName)
+        {
+            typesByNameMap.put(name, typeTokens);
+        }
+        else
+        {
+            typesByNameMap.put(referencedName, typeTokens);
+        }
 
         return i;
     }
