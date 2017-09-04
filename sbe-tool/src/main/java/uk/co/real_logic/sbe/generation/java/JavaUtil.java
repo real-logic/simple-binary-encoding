@@ -220,4 +220,48 @@ public class JavaUtil
             return "java.nio.charset.Charset.forName(\"" + encoding + "\")";
         }
     }
+
+    public static String generateLiteral(final PrimitiveType type, final String value)
+    {
+        String literal = "";
+
+        final String castType = javaTypeName(type);
+        switch (type)
+        {
+            case CHAR:
+            case UINT8:
+            case INT8:
+            case INT16:
+                literal = "(" + castType + ")" + value;
+                break;
+
+            case UINT16:
+            case INT32:
+                literal = value;
+                break;
+
+            case UINT32:
+                literal = value + "L";
+                break;
+
+            case FLOAT:
+                literal = value.endsWith("NaN") ? "Float.NaN" : value + "f";
+                break;
+
+            case INT64:
+                literal = value + "L";
+                break;
+
+            case UINT64:
+                literal = "0x" + Long.toHexString(Long.parseLong(value)) + "L";
+                break;
+
+            case DOUBLE:
+                literal = value.endsWith("NaN") ? "Double.NaN" : value + "d";
+                break;
+        }
+
+        return literal;
+    }
+
 }
