@@ -221,6 +221,13 @@ public class JavaUtil
         }
     }
 
+    /**
+     * Generate a literal value to be used in code generation.
+     *
+     * @param type  of the lateral value.
+     * @param value of the lateral.
+     * @return a String representation of the Java literal.
+     */
     public static String generateLiteral(final PrimitiveType type, final String value)
     {
         String literal = "";
@@ -263,5 +270,4 @@ public class JavaUtil
 
         return literal;
     }
-
 }
