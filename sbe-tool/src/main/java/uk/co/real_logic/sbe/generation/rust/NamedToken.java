@@ -5,7 +5,7 @@ import uk.co.real_logic.sbe.ir.Token;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.generation.java.JavaGenerator.eachField;
+import static uk.co.real_logic.sbe.generation.java.JavaUtil.forEachField;
 
 final class NamedToken
 {
@@ -21,7 +21,7 @@ final class NamedToken
     static List<NamedToken> gatherNamedFieldTokens(final List<Token> fields)
     {
         final List<NamedToken> namedTokens = new ArrayList<>();
-        eachField(fields, (f, t) -> namedTokens.add(new NamedToken(f.name(), t)));
+        forEachField(fields, (f, t) -> namedTokens.add(new NamedToken(f.name(), t)));
         return namedTokens;
     }
 }

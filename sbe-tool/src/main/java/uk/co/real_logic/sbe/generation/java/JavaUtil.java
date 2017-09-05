@@ -17,6 +17,8 @@ package uk.co.real_logic.sbe.generation.java;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
+import uk.co.real_logic.sbe.ir.Signal;
+import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.util.ValidationUtil;
 
 import java.lang.reflect.Field;
@@ -24,7 +26,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import static java.lang.reflect.Modifier.STATIC;
 
@@ -269,5 +273,30 @@ public class JavaUtil
         }
 
         return literal;
+    }
+
+    /**
+     * For each field found in a list of field {@link Token}s take the field token and following type token to
+     * a {@link BiConsumer}.
+     *
+     * @param tokens   to be iterated over.
+     * @param consumer to for the field and encoding token pair.
+     */
+    public static void forEachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
+    {
+        for (int i = 0, size = tokens.size(); i < size;)
+        {
+            final Token fieldToken = tokens.get(i);
+            if (fieldToken.signal() == Signal.BEGIN_FIELD)
+            {
+                final Token typeToken = tokens.get(i + 1);
+                consumer.accept(fieldToken, typeToken);
+                i += fieldToken.componentTokenCount();
+            }
+            else
+            {
+                ++i;
+            }
+        }
     }
 }

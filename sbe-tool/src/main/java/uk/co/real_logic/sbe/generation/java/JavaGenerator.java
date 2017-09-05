@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
@@ -2191,7 +2190,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        eachField(
+        forEachField(
             tokens,
             (fieldToken, typeToken) ->
             {
@@ -2228,7 +2227,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        eachField(
+        forEachField(
             tokens,
             (fieldToken, typeToken) ->
             {
@@ -2262,24 +2261,6 @@ public class JavaGenerator implements CodeGenerator
             });
 
         return sb;
-    }
-
-    public static void eachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
-    {
-        for (int i = 0, size = tokens.size(); i < size;)
-        {
-            final Token fieldToken = tokens.get(i);
-            if (fieldToken.signal() == Signal.BEGIN_FIELD)
-            {
-                final Token encodingToken = tokens.get(i + 1);
-                consumer.accept(fieldToken, encodingToken);
-                i += fieldToken.componentTokenCount();
-            }
-            else
-            {
-                ++i;
-            }
-        }
     }
 
     private static void generateFieldIdMethod(final StringBuilder sb, final Token token, final String indent)
