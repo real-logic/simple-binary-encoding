@@ -1,5 +1,6 @@
 package uk.co.real_logic.sbe.generation.rust;
 
+import uk.co.real_logic.sbe.generation.NamedToken;
 import uk.co.real_logic.sbe.ir.Token;
 
 import java.util.ArrayList;
@@ -7,17 +8,27 @@ import java.util.List;
 
 final class SplitCompositeTokens
 {
-    final List<Token> constantEncodingTokens;
-    final List<NamedToken> nonConstantEncodingTokens;
+    private final List<Token> constantEncodingTokens;
+    private final List<NamedToken> nonConstantEncodingTokens;
 
-    private SplitCompositeTokens(final List<Token> constantEncodingTokens, final List<NamedToken>
-        nonConstantEncodingTokens)
+    private SplitCompositeTokens(
+        final List<Token> constantEncodingTokens, final List<NamedToken> nonConstantEncodingTokens)
     {
         this.constantEncodingTokens = constantEncodingTokens;
         this.nonConstantEncodingTokens = nonConstantEncodingTokens;
     }
 
-    static SplitCompositeTokens splitInnerTokens(final List<Token> tokens)
+    public List<Token> constantEncodingTokens()
+    {
+        return constantEncodingTokens;
+    }
+
+    public List<NamedToken> nonConstantEncodingTokens()
+    {
+        return nonConstantEncodingTokens;
+    }
+
+    public static SplitCompositeTokens splitInnerTokens(final List<Token> tokens)
     {
         final List<Token> constantTokens = new ArrayList<>();
         final List<NamedToken> namedNonConstantTokens = new ArrayList<>();

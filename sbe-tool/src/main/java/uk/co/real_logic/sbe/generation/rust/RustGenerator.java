@@ -4,6 +4,7 @@ import org.agrona.Verify;
 import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
+import uk.co.real_logic.sbe.generation.NamedToken;
 import uk.co.real_logic.sbe.ir.*;
 
 import java.io.IOException;
@@ -218,11 +219,9 @@ public class RustGenerator implements CodeGenerator
         final String messageTypeName = formatTypeName(msgToken.name());
         final RustCodecType codecType = RustCodecType.Encoder;
         String topType = codecType.generateDoneCoderType(outputManager, messageTypeName);
-        topType = generateTopVarDataCoders(messageTypeName, components.varData,
-            outputManager, topType, codecType);
+        topType = generateTopVarDataCoders(messageTypeName, components.varData, outputManager, topType, codecType);
         topType = generateGroupsCoders(groupTree, outputManager, topType, codecType);
-        topType = generateFixedFieldCoder(messageTypeName, outputManager, topType,
-            fieldsRepresentation, codecType);
+        topType = generateFixedFieldCoder(messageTypeName, outputManager, topType, fieldsRepresentation, codecType);
         topType = codecType.generateMessageHeaderCoder(messageTypeName, outputManager, topType, headerSize);
         generateEntryPoint(messageTypeName, outputManager, topType, codecType);
     }
@@ -240,11 +239,9 @@ public class RustGenerator implements CodeGenerator
         final String messageTypeName = formatTypeName(msgToken.name());
         final RustCodecType codecType = RustCodecType.Decoder;
         String topType = codecType.generateDoneCoderType(outputManager, messageTypeName);
-        topType = generateTopVarDataCoders(messageTypeName, components.varData,
-            outputManager, topType, codecType);
+        topType = generateTopVarDataCoders(messageTypeName, components.varData, outputManager, topType, codecType);
         topType = generateGroupsCoders(groupTree, outputManager, topType, codecType);
-        topType = generateFixedFieldCoder(messageTypeName, outputManager, topType,
-            fieldsRepresentation, codecType);
+        topType = generateFixedFieldCoder(messageTypeName, outputManager, topType, fieldsRepresentation, codecType);
         topType = codecType.generateMessageHeaderCoder(messageTypeName, outputManager, topType, headerSize);
         generateEntryPoint(messageTypeName, outputManager, topType, codecType);
     }
@@ -363,8 +360,14 @@ public class RustGenerator implements CodeGenerator
             atEndOfCurrentLevel = false;
         }
 
-        return writeGroupEncoderTopTypes(outputManager, afterGroupCoderType, node, atEndOfParent,
-            atEndOfCurrentLevel, memberCoderType, nextCoderType);
+        return writeGroupEncoderTopTypes(
+            outputManager,
+            afterGroupCoderType,
+            node,
+            atEndOfParent,
+            atEndOfCurrentLevel,
+            memberCoderType,
+            nextCoderType);
     }
 
     private static String generateGroupNodeDecoders(
@@ -709,22 +712,21 @@ public class RustGenerator implements CodeGenerator
 
     private static <T> Iterable<T> reversedList(final List<T> list)
     {
-        return () ->
-        {
-            if (list.isEmpty())
+        return
+            () ->
             {
-                return list.stream().iterator();
-            }
+                if (list.isEmpty())
+                {
+                    return list.stream().iterator();
+                }
 
-            final int maxIndex = list.size() - 1;
+                final int maxIndex = list.size() - 1;
 
-            return IntStream.rangeClosed(0, maxIndex).mapToObj((i) -> list.get(maxIndex - i)).iterator();
-        };
+                return IntStream.rangeClosed(0, maxIndex).mapToObj((i) -> list.get(maxIndex - i)).iterator();
+            };
     }
 
-    private static List<GroupTreeNode> buildGroupTrees(
-        final String parentTypeName,
-        final List<Token> groupsTokens)
+    private static List<GroupTreeNode> buildGroupTrees(final String parentTypeName, final List<Token> groupsTokens)
     {
         return buildGroupTrees(parentTypeName, groupsTokens, Optional.empty());
     }
@@ -971,6 +973,7 @@ public class RustGenerator implements CodeGenerator
                 {
                     goToNext = format("%s::wrap(self.%s)", nextDecoderType, contentPropertyName);
                 }
+
                 indent(writer, 2,
                     "Ok((%s.read_slice::<%s>(count as usize, %s)?, %s))\n", toScratchChain(groupDepth),
                     rustTypeName(this.dataType), this.dataType.size(), goToNext);
@@ -978,6 +981,7 @@ public class RustGenerator implements CodeGenerator
 
                 writer.append("}\n");
             }
+
             return decoderType;
         }
 
@@ -1000,6 +1004,7 @@ public class RustGenerator implements CodeGenerator
                 summaries.add(new VarDataSummary(beginToken.name(), lengthType, dataType));
                 i += headerTokenCount;
             }
+
             return summaries;
         }
     }
@@ -1008,8 +1013,9 @@ public class RustGenerator implements CodeGenerator
         final String messageTypeName,
         final List<Token> tokens,
         final OutputManager outputManager,
-        final String initialNextType, final RustCodecType codecType) throws
-                                                                     IOException
+        final String initialNextType,
+        final RustCodecType codecType)
+        throws IOException
     {
         final List<VarDataSummary> summaries = VarDataSummary.gatherVarDataSummaries(tokens);
 
@@ -1051,16 +1057,19 @@ public class RustGenerator implements CodeGenerator
             {
                 continue;
             }
+
             final Token beginToken = tokens.get(0);
             if (beginToken.signal() != BEGIN_ENUM)
             {
                 continue;
             }
+
             final String typeName = beginToken.applicableTypeName();
             if (enumTypeNames.contains(typeName))
             {
                 continue;
             }
+
             generateEnum(tokens, outputManager);
             enumTypeNames.add(typeName);
         }
@@ -1297,8 +1306,8 @@ public class RustGenerator implements CodeGenerator
         }
     }
 
-    private static void generateSingleComposite(final List<Token> tokens, final OutputManager outputManager) throws
-                                                                                                             IOException
+    private static void generateSingleComposite(final List<Token> tokens, final OutputManager outputManager)
+        throws IOException
     {
         final Token beginToken = tokens.get(0);
         final String originalTypeName = beginToken.applicableTypeName();
@@ -1307,7 +1316,7 @@ public class RustGenerator implements CodeGenerator
         try (Writer writer = outputManager.createOutput(formattedTypeName))
         {
             appendStructHeader(writer, formattedTypeName, true);
-            appendStructFields(writer, splitTokens.nonConstantEncodingTokens);
+            appendStructFields(writer, splitTokens.nonConstantEncodingTokens());
             writer.append("}\n");
 
             generateConstantAccessorImpl(writer, formattedTypeName, getMessageBody(tokens));
@@ -1319,13 +1328,13 @@ public class RustGenerator implements CodeGenerator
     {
         for (final NamedToken namedToken : namedTokens)
         {
-            final Token typeToken = namedToken.typeToken;
+            final Token typeToken = namedToken.typeToken();
             if (typeToken.isConstantEncoding())
             {
                 continue;
             }
 
-            final String propertyName = formatMethodName(namedToken.name);
+            final String propertyName = formatMethodName(namedToken.name());
             indent(appendable).append("pub ").append(propertyName).append(":");
 
             switch (typeToken.signal())
@@ -1387,14 +1396,14 @@ public class RustGenerator implements CodeGenerator
                 "version"));
 
             final List<NamedToken> nonReservedNamedTokens = SplitCompositeTokens.splitInnerTokens(header.tokens())
-                .nonConstantEncodingTokens
+                .nonConstantEncodingTokens()
                 .stream()
-                .filter((namedToken) -> !reserved.contains(namedToken.name))
+                .filter((namedToken) -> !reserved.contains(namedToken.name()))
                 .collect(Collectors.toList());
 
             for (final NamedToken namedToken : nonReservedNamedTokens)
             {
-                indent(writer, 4, "%s: Default::default(),\n", formatMethodName(namedToken.name));
+                indent(writer, 4, "%s: Default::default(),\n", formatMethodName(namedToken.name()));
             }
 
             indent(writer, 3, "}\n");
@@ -1517,8 +1526,7 @@ public class RustGenerator implements CodeGenerator
                 case BEGIN_SET:
                 case BEGIN_COMPOSITE:
                 default:
-                    throw new IllegalStateException(format("Unsupported constant presence property " +
-                        "%s", fieldToken.toString()));
+                    throw new IllegalStateException("Unsupported constant presence property " + fieldToken);
             }
 
             appendConstAccessor(writer, name, constantRustTypeName, constantRustExpression);
