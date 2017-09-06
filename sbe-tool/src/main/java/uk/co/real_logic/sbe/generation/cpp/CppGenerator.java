@@ -675,6 +675,16 @@ public class CppGenerator implements CodeGenerator
                         choiceBitPosition));
 
                     sb.append(String.format(
+                        "\n" +
+                        "    static %2$s %1$s(const %2$s bits, const bool value)\n" +
+                        "    {\n" +
+                        "        return value ? (bits | (0x1L << %3$s)) : (bits & ~(0x1L << %3$s));\n" +
+                        "    }\n\n",
+                        choiceName,
+                        typeName,
+                        choiceBitPosition));
+
+                    sb.append(String.format(
                         "    bool %1$s() const\n" +
                         "    {\n" +
                         "%2$s" +
