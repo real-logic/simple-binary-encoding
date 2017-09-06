@@ -1518,7 +1518,6 @@ public class CppGenerator implements CodeGenerator
                         sb.append(generatePrimitiveProperty(containingClassName, propertyName, encodingToken, indent));
                         break;
 
-
                     case BEGIN_ENUM:
                         sb.append(generateEnumProperty(
                             containingClassName, signalToken, propertyName, encodingToken, indent));
