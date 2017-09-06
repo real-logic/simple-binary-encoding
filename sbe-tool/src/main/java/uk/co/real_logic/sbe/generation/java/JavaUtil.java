@@ -17,8 +17,7 @@ package uk.co.real_logic.sbe.generation.java;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
-import uk.co.real_logic.sbe.ir.Signal;
-import uk.co.real_logic.sbe.ir.Token;
+import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.util.ValidationUtil;
 
 import java.lang.reflect.Field;
@@ -26,9 +25,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import static java.lang.reflect.Modifier.STATIC;
 
@@ -132,28 +129,6 @@ public class JavaUtil
     }
 
     /**
-     * Uppercase the first character of a given String.
-     *
-     * @param s to have the first character upper cased.
-     * @return a new String with the first character in uppercase.
-     */
-    public static String toUpperFirstChar(final String s)
-    {
-        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
-    }
-
-    /**
-     * Lowercase the first character of a given String.
-     *
-     * @param s to have the first character upper cased.
-     * @return a new String with the first character in uppercase.
-     */
-    public static String toLowerFirstChar(final String s)
-    {
-        return Character.toLowerCase(s.charAt(0)) + s.substring(1);
-    }
-
-    /**
      * Format a property name for generated code.
      * <p>
      * If the formatted property name is a keyword then {@link SbeTool#KEYWORD_APPEND_TOKEN} is appended if set.
@@ -164,7 +139,7 @@ public class JavaUtil
      */
     public static String formatPropertyName(final String value)
     {
-        String formattedValue = toLowerFirstChar(value);
+        String formattedValue = Generators.toLowerFirstChar(value);
 
         if (ValidationUtil.isJavaKeyword(formattedValue))
         {
@@ -190,7 +165,7 @@ public class JavaUtil
      */
     public static String formatClassName(final String value)
     {
-        return toUpperFirstChar(value);
+        return Generators.toUpperFirstChar(value);
     }
 
 
@@ -273,30 +248,5 @@ public class JavaUtil
         }
 
         return literal;
-    }
-
-    /**
-     * For each field found in a list of field {@link Token}s take the field token and following type token to
-     * a {@link BiConsumer}.
-     *
-     * @param tokens   to be iterated over.
-     * @param consumer to for the field and encoding token pair.
-     */
-    public static void forEachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
-    {
-        for (int i = 0, size = tokens.size(); i < size;)
-        {
-            final Token fieldToken = tokens.get(i);
-            if (fieldToken.signal() == Signal.BEGIN_FIELD)
-            {
-                final Token typeToken = tokens.get(i + 1);
-                consumer.accept(fieldToken, typeToken);
-                i += fieldToken.componentTokenCount();
-            }
-            else
-            {
-                ++i;
-            }
-        }
     }
 }

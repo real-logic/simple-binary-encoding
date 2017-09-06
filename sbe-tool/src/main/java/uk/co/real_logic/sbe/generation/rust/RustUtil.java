@@ -8,8 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static java.lang.String.format;
-import static uk.co.real_logic.sbe.generation.java.JavaUtil.toLowerFirstChar;
-import static uk.co.real_logic.sbe.generation.java.JavaUtil.toUpperFirstChar;
+import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
+import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 
 public class RustUtil
 {

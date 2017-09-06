@@ -20,7 +20,7 @@ import uk.co.real_logic.sbe.ir.Token;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.generation.java.JavaUtil.forEachField;
+import static uk.co.real_logic.sbe.generation.Generators.forEachField;
 
 public class NamedToken
 {

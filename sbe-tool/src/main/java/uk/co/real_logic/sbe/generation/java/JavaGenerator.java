@@ -21,6 +21,7 @@ import org.agrona.Verify;
 import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
+import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.*;
 
 import java.io.IOException;
@@ -652,7 +653,7 @@ public class JavaGenerator implements CodeGenerator
             generateCharacterEncodingMethod(sb, token.name(), characterEncoding, indent);
             generateFieldMetaAttributeMethod(sb, token, indent);
 
-            final String propertyName = toUpperFirstChar(token.name());
+            final String propertyName = Generators.toUpperFirstChar(token.name());
             final Token lengthToken = tokens.get(i + 2);
             final int sizeOfLengthField = lengthToken.encodedLength();
             final Encoding lengthEncoding = lengthToken.encoding();
@@ -665,7 +666,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    {\n" +
                 indent + "        return %d;\n" +
                 indent + "    }\n",
-                toLowerFirstChar(propertyName),
+                Generators.toLowerFirstChar(propertyName),
                 sizeOfLengthField));
 
             sb.append(String.format(
@@ -676,7 +677,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        return (int)%s;\n" +
                 indent + "    }\n",
-                toLowerFirstChar(propertyName),
+                Generators.toLowerFirstChar(propertyName),
                 generateArrayFieldNotPresentCondition(token.version(), indent),
                 generateGet(lengthType, "limit", byteOrderStr)));
 
@@ -706,7 +707,7 @@ public class JavaGenerator implements CodeGenerator
             generateCharacterEncodingMethod(sb, token.name(), characterEncoding, indent);
             generateFieldMetaAttributeMethod(sb, token, indent);
 
-            final String propertyName = toUpperFirstChar(token.name());
+            final String propertyName = Generators.toUpperFirstChar(token.name());
             final Token lengthToken = tokens.get(i + 2);
             final int sizeOfLengthField = lengthToken.encodedLength();
             final Encoding lengthEncoding = lengthToken.encoding();
@@ -719,7 +720,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    {\n" +
                 indent + "        return %d;\n" +
                 indent + "    }\n",
-                toLowerFirstChar(propertyName),
+                Generators.toLowerFirstChar(propertyName),
                 sizeOfLengthField));
 
             generateDataEncodeMethods(
@@ -1706,7 +1707,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        buffer.getBytes(this.offset + %d, dst, dstOffset, length);\n\n" +
                 indent + "        return length;\n" +
                 indent + "    }\n",
-                toUpperFirstChar(propertyName),
+                Generators.toUpperFirstChar(propertyName),
                 fieldLength,
                 generateArrayFieldNotPresentCondition(token.version(), indent),
                 offset));
@@ -1815,7 +1816,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return this;\n" +
             indent + "    }\n",
             formatClassName(containingClassName),
-            toUpperFirstChar(propertyName),
+            Generators.toUpperFirstChar(propertyName),
             fieldLength,
             offset));
 
@@ -1942,7 +1943,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        System.arraycopy(%s_VALUE, 0, dst, offset, bytesCopied);\n\n" +
             indent + "        return bytesCopied;\n" +
             indent + "    }\n",
-            toUpperFirstChar(propertyName),
+            Generators.toUpperFirstChar(propertyName),
             constBytes.length,
             propertyName.toUpperCase()));
 
@@ -2190,7 +2191,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        forEachField(
+        Generators.forEachField(
             tokens,
             (fieldToken, typeToken) ->
             {
@@ -2227,7 +2228,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        forEachField(
+        Generators.forEachField(
             tokens,
             (fieldToken, typeToken) ->
             {
