@@ -1,13 +1,10 @@
 package uk.co.real_logic.sbe.generation.rust;
 
-import org.junit.Assume;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
@@ -61,36 +58,6 @@ public class RustFlatFileOutputManagerTest
     public void nullPackageParamThrowsNpe()
     {
         new RustFlatFileOutputManager(folderRule.getRoot().getAbsolutePath(), null);
-    }
-
-    @Ignore
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionIfTargetDirNotWritable() throws IOException, InterruptedException
-    {
-        final File tempDir = folderRule.newFolder();
-        Assume.assumeTrue(tempDir.setReadOnly());
-        final String tempDirName = tempDir.getAbsolutePath();
-
-        try
-        {
-            new RustFlatFileOutputManager(tempDirName, PACKAGE_NAME);
-        }
-        catch (final IllegalStateException ex)
-        {
-            int waitCount = 0;
-            boolean writable;
-            do
-            {
-                writable = tempDir.setWritable(true);
-                Thread.sleep(100);
-                waitCount += 1;
-            }
-            while (!writable && waitCount < 10);
-
-            throw ex;
-        }
-
-        fail("should be unreachable");
     }
 
     private static String getExpectedFullFileName(final String tempDirName)
