@@ -18,23 +18,6 @@ The Java and C++ SBE implementations are designed with work very efficiently wit
 high-throughput communications. The Java SBE implementation has a dependency on
 [Agrona](https://github.com/real-logic/agrona) for its buffer implementations.
 
-License (See LICENSE file for full license)
--------------------------------------------
-Copyright 2014 - 2017 Real Logic Limited  
-Copyright 2017 MarketFactory Inc
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
 
 Binaries
 --------
@@ -50,7 +33,6 @@ Example for Maven:
     <version>1.7.1</version>
 </dependency>
 ```
-
 
 Directory Layout
 ----------------
@@ -156,3 +138,21 @@ example. This solution also builds some tests which can be run via the provided
 Users of csharp generated code should see the [user documentation (coming)](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide).
 
 Developers wishing to enhance the csharp generator should see the [developer documentation (coming)](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/README.md)
+
+
+License (See LICENSE file for full license)
+-------------------------------------------
+Copyright 2014 - 2017 Real Logic Limited  
+Copyright 2017 MarketFactory Inc
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
