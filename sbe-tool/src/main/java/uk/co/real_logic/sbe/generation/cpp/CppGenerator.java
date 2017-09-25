@@ -309,7 +309,14 @@ public class CppGenerator implements CodeGenerator
             indent + "            next(); func(*this);\n" +
             indent + "        }\n" +
             indent + "    }\n" +
-            indent + "#endif\n\n
+            indent + "    template<class Func> inline void forEach(Func const& func)\n" +
+            indent + "    {\n" +
+            indent + "        while (hasNext())\n" +
+            indent + "        {\n" +
+            indent + "            next(); func(*this);\n" +
+            indent + "        }\n" +
+            indent + "    }\n" +
+            indent + "#endif\n\n");
     }
 
     private static CharSequence generateGroupProperty(
@@ -1316,7 +1323,23 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        reset(codec);\n" +
             "        return *this;\n" +
-            "    }\n\n",
+            "    }\n\n" +
+            "#if __cplusplus >= 201103L\n" +
+            "    %1$s(%1$s&& codec) : \n" +
+            "    {\n" +
+            "        reset(codec);\n" +
+            "        codec.reset(%1$s());\n" +
+            "    }\n\n" +
+            "    %1$s& operator =(%1$s&& codec) : \n" +
+            "    {\n" +
+            "        if (this != &codec)\n" +
+            "        {\n" +
+            "            reset(codec);\n" +
+            "            codec.reset(%1$s());\n" +
+            "        }\n" +
+            "        return *this;\n" +
+            "    }\n" +
+            "#endif\n\n",
             className);
     }
 
