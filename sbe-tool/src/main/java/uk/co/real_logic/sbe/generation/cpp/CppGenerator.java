@@ -294,28 +294,22 @@ public class CppGenerator implements CodeGenerator
             dimensionHeaderLength, blockLength, formatClassName(groupName)));
 
         sb.append(
+            indent + "#if __cplusplus < 201103L\n" +
             indent + "    template<class Func> inline void forEach(Func& func)\n" +
             indent + "    {\n" +
             indent + "        while (hasNext())\n" +
             indent + "        {\n" +
             indent + "            next(); func(*this);\n" +
             indent + "        }\n" +
-            indent + "    }\n" +
-            indent + "#if __cplusplus >= 201103L\n" +
+            indent + "    }\n\n" +
+            indent + "#else\n" +
             indent + "    template<class Func> inline void forEach(Func&& func)\n" +
             indent + "    {\n" +
             indent + "        while (hasNext())\n" +
             indent + "        {\n" +
             indent + "            next(); func(*this);\n" +
             indent + "        }\n" +
-            indent + "    }\n" +
-            indent + "    template<class Func> inline void forEach(Func const& func)\n" +
-            indent + "    {\n" +
-            indent + "        while (hasNext())\n" +
-            indent + "        {\n" +
-            indent + "            next(); func(*this);\n" +
-            indent + "        }\n" +
-            indent + "    }\n" +
+            indent + "    }\n\n" +
             indent + "#endif\n\n");
     }
 
@@ -1291,21 +1285,17 @@ public class CppGenerator implements CodeGenerator
             "        m_offset(codec.m_offset),\n" +
             "        m_actingVersion(codec.m_actingVersion){}\n\n" +
             "#if __cplusplus >= 201103L\n" +
-            "    %1$s(%1$s&& codec) SBE_NOEXCEPT :\n" +
+            "    %1$s(%1$s&& codec) :\n" +
             "        m_buffer(codec.m_buffer),\n" +
             "        m_bufferLength(codec.m_bufferLength),\n" +
             "        m_offset(codec.m_offset),\n" +
-            "        m_actingVersion(codec.m_actingVersion)\n" +
-            "        {\n" +
-            "            codec.reset(%1$s())\n" +
-            "        }\n\n" +
+            "        m_actingVersion(codec.m_actingVersion){}\n\n" +
             "    %1$s& operator=(%1$s&& codec) SBE_NOEXCEPT\n" +
             "    {\n" +
-            "        if (this != &codec);\n" +
-            "        {\n" +
-            "            reset(codec);\n" +
-            "            codec.reset(%1$s());\n" +
-            "        }\n" +
+            "        m_buffer = codec.m_buffer;\n" +
+            "        m_bufferLength = codec.m_bufferLength;\n" +
+            "        m_offset = codec.m_offset;\n" +
+            "        m_actingVersion = codec.m_actingVersion;\n" +
             "        return *this;\n" +
             "    }\n\n" +
             "#endif\n\n" +
@@ -1360,27 +1350,22 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        reset(codec);\n" +
             "    }\n\n" +
-            "    %1$s& operator=(const %1$s& codec) SBE_NOEXCEPT\n" +
-            "    {\n" +
-            "        reset(codec);\n" +
-            "        return *this;\n" +
-            "    }\n\n" +
             "#if __cplusplus >= 201103L\n" +
-            "    %1$s(%1$s&& codec) SBE_NOEXCEPT : \n" +
+            "    %1$s(%1$s&& codec)\n" +
             "    {\n" +
             "        reset(codec);\n" +
-            "        codec.reset(%1$s());\n" +
             "    }\n\n" +
-            "    %1$s& operator =(%1$s&& codec) SBE_NOEXCEPT : \n" +
+            "    %1$s& operator=(%1$s&& codec)\n" +
             "    {\n" +
-            "        if (this != &codec)\n" +
-            "        {\n" +
-            "            reset(codec);\n" +
-            "            codec.reset(%1$s());\n" +
-            "        }\n" +
+            "        reset(codec);\n" +
             "        return *this;\n" +
-            "    }\n" +
-            "#endif\n\n",
+            "    }\n\n" +
+            "#endif\n\n" +
+            "    %1$s& operator=(const %1$s& codec)\n" +
+            "    {\n" +
+            "        reset(codec);\n" +
+            "        return *this;\n" +
+            "    }\n\n",
             className);
     }
 
