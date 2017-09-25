@@ -83,8 +83,6 @@ public:
     {
         car.wrapForDecode((char *)buffer, 0, Car::sbeBlockLength(), Car::sbeSchemaVersion(), bufferLength);
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
         int64_t tmpInt;
         const char *tmpChar;
         double tmpDouble;
@@ -134,7 +132,6 @@ public:
 
         tmpChar = car.manufacturer();
         tmpChar = car.model();
-#pragma GCC diagnostic pop
 
         return car.encodedLength();
     };
