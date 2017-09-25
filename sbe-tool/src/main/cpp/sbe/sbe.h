@@ -26,21 +26,6 @@
 #include <cstdint>
 #include <limits>
 
-/*
- * Types used by C++ codecs
- */
-typedef char sbe_char_t;
-typedef std::int8_t sbe_int8_t;
-typedef std::int16_t sbe_int16_t;
-typedef std::int32_t sbe_int32_t;
-typedef std::int64_t sbe_int64_t;
-typedef std::uint8_t sbe_uint8_t;
-typedef std::uint16_t sbe_uint16_t;
-typedef std::uint32_t sbe_uint32_t;
-typedef std::uint64_t sbe_uint64_t;
-typedef float sbe_float_t;
-typedef double sbe_double_t;
-
 namespace sbe {
 
 /*

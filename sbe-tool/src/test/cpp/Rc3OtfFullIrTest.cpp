@@ -50,8 +50,8 @@ static const uint8_t fieldIdManufacturer = 18;
 static const uint8_t fieldIdModel = 19;
 static const uint8_t fieldIdActivationCode = 20;
 
-static const sbe_uint32_t SERIAL_NUMBER = 1234;
-static const sbe_uint16_t MODEL_YEAR = 2013;
+static const std::uint32_t SERIAL_NUMBER = 1234;
+static const std::uint16_t MODEL_YEAR = 2013;
 static const BooleanType::Value AVAILABLE = BooleanType::T;
 static const Model::Value CODE = Model::A;
 static const bool CRUISE_CONTROL = true;
@@ -76,31 +76,31 @@ static const size_t PERFORMANCE_FIGURES_COUNT = 2;
 static const size_t FUEL_FIGURES_COUNT = 3;
 static const size_t ACCELERATION_COUNT = 3;
 
-static const sbe_uint16_t fuel1Speed = 30;
-static const sbe_float_t fuel1Mpg = 35.9f;
-static const sbe_uint16_t fuel2Speed = 55;
-static const sbe_float_t fuel2Mpg = 49.0f;
-static const sbe_uint16_t fuel3Speed = 75;
-static const sbe_float_t fuel3Mpg = 40.0f;
+static const std::uint16_t fuel1Speed = 30;
+static const float fuel1Mpg = 35.9f;
+static const std::uint16_t fuel2Speed = 55;
+static const float fuel2Mpg = 49.0f;
+static const std::uint16_t fuel3Speed = 75;
+static const float fuel3Mpg = 40.0f;
 
-static const sbe_uint8_t perf1Octane = 95;
-static const sbe_uint16_t perf1aMph = 30;
-static const sbe_float_t perf1aSeconds = 4.0f;
-static const sbe_uint16_t perf1bMph = 60;
-static const sbe_float_t perf1bSeconds = 7.5f;
-static const sbe_uint16_t perf1cMph = 100;
-static const sbe_float_t perf1cSeconds = 12.2f;
+static const std::uint8_t perf1Octane = 95;
+static const std::uint16_t perf1aMph = 30;
+static const float perf1aSeconds = 4.0f;
+static const std::uint16_t perf1bMph = 60;
+static const float perf1bSeconds = 7.5f;
+static const std::uint16_t perf1cMph = 100;
+static const float perf1cSeconds = 12.2f;
 
-static const sbe_uint8_t perf2Octane = 99;
-static const sbe_uint16_t perf2aMph = 30;
-static const sbe_float_t perf2aSeconds = 3.8f;
-static const sbe_uint16_t perf2bMph = 60;
-static const sbe_float_t perf2bSeconds = 7.1f;
-static const sbe_uint16_t perf2cMph = 100;
-static const sbe_float_t perf2cSeconds = 11.8f;
+static const std::uint8_t perf2Octane = 99;
+static const std::uint16_t perf2aMph = 30;
+static const float perf2aSeconds = 3.8f;
+static const std::uint16_t perf2bMph = 60;
+static const float perf2bSeconds = 7.1f;
+static const std::uint16_t perf2cMph = 100;
+static const float perf2cSeconds = 11.8f;
 
-static const sbe_uint16_t engineCapacity = 2000;
-static const sbe_uint8_t engineNumCylinders = 4;
+static const std::uint16_t engineCapacity = 2000;
+static const std::uint8_t engineNumCylinders = 4;
 
 static const std::uint64_t encodedCarAndHdrLength = 191 + 8;
 

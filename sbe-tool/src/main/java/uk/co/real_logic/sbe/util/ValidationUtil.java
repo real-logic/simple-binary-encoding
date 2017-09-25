@@ -133,7 +133,6 @@ public class ValidationUtil
      *
      * @param value to check
      * @return true for validity as a Java name. false if not.
-     * @see javax.lang.model.SourceVersion#isName(CharSequence)
      */
     public static boolean isSbeJavaName(final String value)
     {

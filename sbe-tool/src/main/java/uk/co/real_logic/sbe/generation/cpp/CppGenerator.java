@@ -672,6 +672,25 @@ public class CppGenerator implements CodeGenerator
 
                     sb.append(String.format(
                         "\n" +
+                        "    static bool %1$s(const %2$s bits)\n" +
+                        "    {\n" +
+                        "        return bits & (0x1L << %3$s);\n" +
+                        "    }\n\n",
+                        choiceName,
+                        typeName,
+                        choiceBitPosition));
+
+                    sb.append(String.format(
+                        "\n" +
+                        "    static %2$s %1$s(const %2$s bits, const bool value)\n" +
+                        "    {\n" +
+                        "        return value ? (bits | (0x1L << %3$s)) : (bits & ~(0x1L << %3$s));\n" +
+                        "    }\n\n",
+                        choiceName,
+                        typeName,
+                        choiceBitPosition));
+
+                    sb.append(String.format(
                         "    bool %1$s() const\n" +
                         "    {\n" +
                         "%2$s" +
@@ -1208,7 +1227,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format(
             indent + "    const char *%1$s() const\n" +
             indent + "    {\n" +
-            indent + "        static sbe_uint8_t %1$sValues[] = {%2$s};\n\n" +
+            indent + "        static std::uint8_t %1$sValues[] = {%2$s};\n\n" +
             indent + "        return (const char *)%1$sValues;\n" +
             indent + "    }\n\n",
             propertyName,
@@ -1217,7 +1236,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format(
             indent + "    %1$s %2$s(const std::uint64_t index) const\n" +
             indent + "    {\n" +
-            indent + "        static sbe_uint8_t %2$sValues[] = {%3$s};\n\n" +
+            indent + "        static std::uint8_t %2$sValues[] = {%3$s};\n\n" +
             indent + "        return %2$sValues[index];\n" +
             indent + "    }\n\n",
             cppTypeName,
@@ -1227,7 +1246,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format(
             indent + "    std::uint64_t get%1$s(char *dst, const std::uint64_t length) const\n" +
             indent + "    {\n" +
-            indent + "        static sbe_uint8_t %2$sValues[] = {%3$s};\n" +
+            indent + "        static std::uint8_t %2$sValues[] = {%3$s};\n" +
             indent + "        std::uint64_t bytesToCopy = " +
                 "length < sizeof(%2$sValues) ? length : sizeof(%2$sValues);\n\n" +
             indent + "        std::memcpy(dst, %2$sValues, bytesToCopy);\n" +
@@ -1267,7 +1286,29 @@ public class CppGenerator implements CodeGenerator
             "        reset(buffer, 0, bufferLength, actingVersion);\n" +
             "    }\n\n" +
             "    %1$s(const %1$s& codec) :\n" +
-            "        m_buffer(codec.m_buffer), m_offset(codec.m_offset), m_actingVersion(codec.m_actingVersion){}\n\n" +
+            "        m_buffer(codec.m_buffer),\n" +
+            "        m_bufferLength(codec.m_bufferLength),\n" +
+            "        m_offset(codec.m_offset),\n" +
+            "        m_actingVersion(codec.m_actingVersion){}\n\n" +
+            "#if __cplusplus >= 201103L\n" +
+            "    %1$s(%1$s&& codec) SBE_NOEXCEPT :\n" +
+            "        m_buffer(codec.m_buffer),\n" +
+            "        m_bufferLength(codec.m_bufferLength),\n" +
+            "        m_offset(codec.m_offset),\n" +
+            "        m_actingVersion(codec.m_actingVersion)\n" +
+	    "        {\n" +
+	    "            codec.reset(%1$s())\n" +
+	    "        }\n\n" +
+            "    %1$s& operator=(%1$s&& codec) SBE_NOEXCEPT\n" +
+            "    {\n" +
+            "        if (this != &codec);\n" +
+            "        {\n" +
+            "            reset(codec);\n" +
+            "            codec.reset(%1$s());\n" +
+            "        }\n" +
+            "        return *this;\n" +
+            "    }\n\n" +
+            "#endif\n\n" +
             "    %1$s& operator=(const %1$s& codec) SBE_NOEXCEPT\n" +
             "    {\n" +
             "        m_buffer = codec.m_buffer;\n" +
@@ -1319,18 +1360,18 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        reset(codec);\n" +
             "    }\n\n" +
-            "    %1$s& operator=(const %1$s& codec)\n" +
+            "    %1$s& operator=(const %1$s& codec) SBE_NOEXCEPT\n" +
             "    {\n" +
             "        reset(codec);\n" +
             "        return *this;\n" +
             "    }\n\n" +
             "#if __cplusplus >= 201103L\n" +
-            "    %1$s(%1$s&& codec) : \n" +
+            "    %1$s(%1$s&& codec) SBE_NOEXCEPT : \n" +
             "    {\n" +
             "        reset(codec);\n" +
             "        codec.reset(%1$s());\n" +
             "    }\n\n" +
-            "    %1$s& operator =(%1$s&& codec) : \n" +
+            "    %1$s& operator =(%1$s&& codec) SBE_NOEXCEPT : \n" +
             "    {\n" +
             "        if (this != &codec)\n" +
             "        {\n" +
@@ -1516,7 +1557,6 @@ public class CppGenerator implements CodeGenerator
                     case ENCODING:
                         sb.append(generatePrimitiveProperty(containingClassName, propertyName, encodingToken, indent));
                         break;
-
 
                     case BEGIN_ENUM:
                         sb.append(generateEnumProperty(

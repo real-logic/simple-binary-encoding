@@ -282,7 +282,7 @@ public class EncodedDataType extends Type
 
         if (valueLength == 1)
         {
-            if (null == lengthAttr)
+            if (null == lengthAttr || length == 1)
             {
                 primitiveValue = PrimitiveValue.parse(nodeValue, primitiveType, characterEncoding);
             }

@@ -17,6 +17,7 @@ package uk.co.real_logic.sbe.generation.java;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
+import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.util.ValidationUtil;
 
 import java.lang.reflect.Field;
@@ -128,28 +129,6 @@ public class JavaUtil
     }
 
     /**
-     * Uppercase the first character of a given String.
-     *
-     * @param s to have the first character upper cased.
-     * @return a new String with the first character in uppercase.
-     */
-    public static String toUpperFirstChar(final String s)
-    {
-        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
-    }
-
-    /**
-     * Lowercase the first character of a given String.
-     *
-     * @param s to have the first character upper cased.
-     * @return a new String with the first character in uppercase.
-     */
-    public static String toLowerFirstChar(final String s)
-    {
-        return Character.toLowerCase(s.charAt(0)) + s.substring(1);
-    }
-
-    /**
      * Format a property name for generated code.
      * <p>
      * If the formatted property name is a keyword then {@link SbeTool#KEYWORD_APPEND_TOKEN} is appended if set.
@@ -160,7 +139,7 @@ public class JavaUtil
      */
     public static String formatPropertyName(final String value)
     {
-        String formattedValue = toLowerFirstChar(value);
+        String formattedValue = Generators.toLowerFirstChar(value);
 
         if (ValidationUtil.isJavaKeyword(formattedValue))
         {
@@ -186,7 +165,7 @@ public class JavaUtil
      */
     public static String formatClassName(final String value)
     {
-        return toUpperFirstChar(value);
+        return Generators.toUpperFirstChar(value);
     }
 
 
@@ -219,5 +198,55 @@ public class JavaUtil
         {
             return "java.nio.charset.Charset.forName(\"" + encoding + "\")";
         }
+    }
+
+    /**
+     * Generate a literal value to be used in code generation.
+     *
+     * @param type  of the lateral value.
+     * @param value of the lateral.
+     * @return a String representation of the Java literal.
+     */
+    public static String generateLiteral(final PrimitiveType type, final String value)
+    {
+        String literal = "";
+
+        final String castType = javaTypeName(type);
+        switch (type)
+        {
+            case CHAR:
+            case UINT8:
+            case INT8:
+            case INT16:
+                literal = "(" + castType + ")" + value;
+                break;
+
+            case UINT16:
+            case INT32:
+                literal = value;
+                break;
+
+            case UINT32:
+                literal = value + "L";
+                break;
+
+            case FLOAT:
+                literal = value.endsWith("NaN") ? "Float.NaN" : value + "f";
+                break;
+
+            case INT64:
+                literal = value + "L";
+                break;
+
+            case UINT64:
+                literal = "0x" + Long.toHexString(Long.parseLong(value)) + "L";
+                break;
+
+            case DOUBLE:
+                literal = value.endsWith("NaN") ? "Double.NaN" : value + "d";
+                break;
+        }
+
+        return literal;
     }
 }

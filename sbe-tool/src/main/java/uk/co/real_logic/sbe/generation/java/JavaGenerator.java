@@ -21,13 +21,13 @@ import org.agrona.Verify;
 import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
+import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.*;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
@@ -653,7 +653,7 @@ public class JavaGenerator implements CodeGenerator
             generateCharacterEncodingMethod(sb, token.name(), characterEncoding, indent);
             generateFieldMetaAttributeMethod(sb, token, indent);
 
-            final String propertyName = toUpperFirstChar(token.name());
+            final String propertyName = Generators.toUpperFirstChar(token.name());
             final Token lengthToken = tokens.get(i + 2);
             final int sizeOfLengthField = lengthToken.encodedLength();
             final Encoding lengthEncoding = lengthToken.encoding();
@@ -666,7 +666,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    {\n" +
                 indent + "        return %d;\n" +
                 indent + "    }\n",
-                toLowerFirstChar(propertyName),
+                Generators.toLowerFirstChar(propertyName),
                 sizeOfLengthField));
 
             sb.append(String.format(
@@ -677,7 +677,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        return (int)%s;\n" +
                 indent + "    }\n",
-                toLowerFirstChar(propertyName),
+                Generators.toLowerFirstChar(propertyName),
                 generateArrayFieldNotPresentCondition(token.version(), indent),
                 generateGet(lengthType, "limit", byteOrderStr)));
 
@@ -707,7 +707,7 @@ public class JavaGenerator implements CodeGenerator
             generateCharacterEncodingMethod(sb, token.name(), characterEncoding, indent);
             generateFieldMetaAttributeMethod(sb, token, indent);
 
-            final String propertyName = toUpperFirstChar(token.name());
+            final String propertyName = Generators.toUpperFirstChar(token.name());
             final Token lengthToken = tokens.get(i + 2);
             final int sizeOfLengthField = lengthToken.encodedLength();
             final Encoding lengthEncoding = lengthToken.encoding();
@@ -720,7 +720,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    {\n" +
                 indent + "        return %d;\n" +
                 indent + "    }\n",
-                toLowerFirstChar(propertyName),
+                Generators.toLowerFirstChar(propertyName),
                 sizeOfLengthField));
 
             generateDataEncodeMethods(
@@ -1165,29 +1165,7 @@ public class JavaGenerator implements CodeGenerator
                 final String choiceBitIndex = encoding.constValue().toString();
                 final String byteOrderStr = byteOrderString(encoding);
                 final PrimitiveType primitiveType = encoding.primitiveType();
-                final String argType;
-
-                switch (primitiveType)
-                {
-                    case UINT8:
-                        argType = "byte";
-                        break;
-
-                    case UINT16:
-                        argType = "short";
-                        break;
-
-                    case UINT32:
-                        argType = "int";
-                        break;
-
-                    case UINT64:
-                        argType = "long";
-                        break;
-
-                    default:
-                        throw new IllegalStateException("Invalid type: " + primitiveType);
-                }
+                final String argType = bitsetArgType(primitiveType);
 
                 return String.format(
                     "\n" +
@@ -1217,18 +1195,47 @@ public class JavaGenerator implements CodeGenerator
                 final Encoding encoding = token.encoding();
                 final String choiceBitIndex = encoding.constValue().toString();
                 final String byteOrderStr = byteOrderString(encoding);
+                final PrimitiveType primitiveType = encoding.primitiveType();
+                final String argType = bitsetArgType(primitiveType);
 
                 return String.format(
                     "\n" +
-                    "    public %s %s(final boolean value)\n" +
+                    "    public %1$s %2$s(final boolean value)\n" +
                     "    {\n" +
-                    "%s\n" +
+                    "%3$s\n" +
                     "        return this;\n" +
+                    "    }\n\n" +
+                    "    public static %4$s %2$s(final %4$s bits, final boolean value)\n" +
+                    "    {\n" +
+                    "%5$s" +
                     "    }\n",
                     bitSetClassName,
                     choiceName,
-                    generateChoicePut(encoding.primitiveType(), choiceBitIndex, byteOrderStr));
+                    generateChoicePut(encoding.primitiveType(), choiceBitIndex, byteOrderStr),
+                    argType,
+                    generateStaticChoicePut(encoding.primitiveType(), choiceBitIndex));
             });
+    }
+
+    private String bitsetArgType(final PrimitiveType primitiveType)
+    {
+        switch (primitiveType)
+        {
+            case UINT8:
+                return "byte";
+
+            case UINT16:
+                return "short";
+
+            case UINT32:
+                return "int";
+
+            case UINT64:
+                return "long";
+
+            default:
+                throw new IllegalStateException("Invalid type: " + primitiveType);
+        }
     }
 
     private CharSequence generateEnumValues(final List<Token> tokens)
@@ -1707,7 +1714,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        buffer.getBytes(this.offset + %d, dst, dstOffset, length);\n\n" +
                 indent + "        return length;\n" +
                 indent + "    }\n",
-                toUpperFirstChar(propertyName),
+                Generators.toUpperFirstChar(propertyName),
                 fieldLength,
                 generateArrayFieldNotPresentCondition(token.version(), indent),
                 offset));
@@ -1816,7 +1823,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return this;\n" +
             indent + "    }\n",
             formatClassName(containingClassName),
-            toUpperFirstChar(propertyName),
+            Generators.toUpperFirstChar(propertyName),
             fieldLength,
             offset));
 
@@ -1943,7 +1950,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        System.arraycopy(%s_VALUE, 0, dst, offset, bytesCopied);\n\n" +
             indent + "        return bytesCopied;\n" +
             indent + "    }\n",
-            toUpperFirstChar(propertyName),
+            Generators.toUpperFirstChar(propertyName),
             constBytes.length,
             propertyName.toUpperCase()));
 
@@ -2191,7 +2198,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        eachField(
+        Generators.forEachField(
             tokens,
             (fieldToken, typeToken) ->
             {
@@ -2228,7 +2235,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        eachField(
+        Generators.forEachField(
             tokens,
             (fieldToken, typeToken) ->
             {
@@ -2262,24 +2269,6 @@ public class JavaGenerator implements CodeGenerator
             });
 
         return sb;
-    }
-
-    private static void eachField(final List<Token> tokens, final BiConsumer<Token, Token> consumer)
-    {
-        for (int i = 0, size = tokens.size(); i < size;)
-        {
-            final Token fieldToken = tokens.get(i);
-            if (fieldToken.signal() == Signal.BEGIN_FIELD)
-            {
-                final Token encodingToken = tokens.get(i + 1);
-                consumer.accept(fieldToken, encodingToken);
-                i += fieldToken.componentTokenCount();
-            }
-            else
-            {
-                ++i;
-            }
-        }
     }
 
     private static void generateFieldIdMethod(final StringBuilder sb, final Token token, final String indent)
@@ -2493,49 +2482,6 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private String generateLiteral(final PrimitiveType type, final String value)
-    {
-        String literal = "";
-
-        final String castType = javaTypeName(type);
-        switch (type)
-        {
-            case CHAR:
-            case UINT8:
-            case INT8:
-            case INT16:
-                literal = "(" + castType + ")" + value;
-                break;
-
-            case UINT16:
-            case INT32:
-                literal = value;
-                break;
-
-            case UINT32:
-                literal = value + "L";
-                break;
-
-            case FLOAT:
-                literal = value.endsWith("NaN") ? "Float.NaN" : value + "f";
-                break;
-
-            case INT64:
-                literal = value + "L";
-                break;
-
-            case UINT64:
-                literal = "0x" + Long.toHexString(Long.parseLong(value)) + "L";
-                break;
-
-            case DOUBLE:
-                literal = value.endsWith("NaN") ? "Double.NaN" : value + "d";
-                break;
-        }
-
-        return literal;
-    }
-
     private String generateGet(final PrimitiveType type, final String index, final String byteOrder)
     {
         switch (type)
@@ -2651,8 +2597,7 @@ public class JavaGenerator implements CodeGenerator
         throw new IllegalArgumentException("primitive type not supported: " + type);
     }
 
-    private String generateChoicePut(
-        final PrimitiveType type, final String bitIdx, final String byteOrder)
+    private String generateChoicePut(final PrimitiveType type, final String bitIdx, final String byteOrder)
     {
         switch (type)
         {
@@ -2679,6 +2624,30 @@ public class JavaGenerator implements CodeGenerator
                     "        long bits = buffer.getLong(offset" + byteOrder + ");\n" +
                     "        bits = value ? bits | (1L << " + bitIdx + ") : bits & ~(1L << " + bitIdx + ");\n" +
                     "        buffer.putLong(offset, bits" + byteOrder + ");";
+        }
+
+        throw new IllegalArgumentException("primitive type not supported: " + type);
+    }
+
+    private String generateStaticChoicePut(final PrimitiveType type, final String bitIdx)
+    {
+        switch (type)
+        {
+            case UINT8:
+                return
+                    "        return (byte)(value ? bits | (1 << " + bitIdx + ") : bits & ~(1 << " + bitIdx + "));\n";
+
+            case UINT16:
+                return
+                    "        return (short)(value ? bits | (1 << " + bitIdx + ") : bits & ~(1 << " + bitIdx + "));\n";
+
+            case UINT32:
+                return
+                    "        return value ? bits | (1 << " + bitIdx + ") : bits & ~(1 << " + bitIdx + ");\n";
+
+            case UINT64:
+                return
+                    "        return value ? bits | (1L << " + bitIdx + ") : bits & ~(1L << " + bitIdx + ");\n";
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
