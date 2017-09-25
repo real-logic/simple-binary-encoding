@@ -1296,9 +1296,9 @@ public class CppGenerator implements CodeGenerator
             "        m_bufferLength(codec.m_bufferLength),\n" +
             "        m_offset(codec.m_offset),\n" +
             "        m_actingVersion(codec.m_actingVersion)\n" +
-	    "        {\n" +
-	    "            codec.reset(%1$s())\n" +
-	    "        }\n\n" +
+            "        {\n" +
+            "            codec.reset(%1$s())\n" +
+            "        }\n\n" +
             "    %1$s& operator=(%1$s&& codec) SBE_NOEXCEPT\n" +
             "    {\n" +
             "        if (this != &codec);\n" +
