@@ -539,8 +539,8 @@ public class RustGenerator implements CodeGenerator
         indent(out, 1).append("}\n");
 
         indent(out).append("#[inline]\n");
-        indent(out, 1, "pub fn %s_from_slice(mut self, s: &%s [%s]) -> CodecResult<%s> {\n",
-            formatMethodName(node.originalName), DATA_LIFETIME, fieldsType,
+        indent(out, 1, "pub fn %s_from_slice(mut self, s: &[%s]) -> CodecResult<%s> {\n",
+            formatMethodName(node.originalName), fieldsType,
             withLifetime(afterGroupCoderType));
         indent(out, 2, "%s.write_type::<%s>(&%s, %s)?; // block length\n",
             scratchChain, rustTypeName(node.blockLengthType),
