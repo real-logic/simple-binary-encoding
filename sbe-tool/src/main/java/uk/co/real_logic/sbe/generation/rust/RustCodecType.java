@@ -118,11 +118,10 @@ enum RustCodecType
         {
             appendScratchWrappingStruct(writer, doneTypeName);
             RustGenerator.appendImplWithLifetimeHeader(writer, doneTypeName);
-            writer.append(INDENT).append(String.format("pub fn unwrap(mut self) -> (usize, &%s%s [u8]) {\n",
-                DATA_LIFETIME, this == Encoder ? " mut" : ""))
-                .append(INDENT).append(INDENT).append(format("(self.%s.pos, self.%s.data)\n",
-                scratchProperty(), scratchProperty()))
-                .append(INDENT).append("}\n");
+            indent(writer, 1, "/// Returns the number of bytes %s\n", this == Encoder ? "encoded" : "decoded");
+            indent(writer, 1, "pub fn unwrap(self) -> usize {\n");
+            indent(writer, 2, "self.%s.pos\n", scratchProperty());
+            indent(writer, 1, "}\n");
 
             appendWrapMethod(writer, doneTypeName);
             writer.append("}\n");

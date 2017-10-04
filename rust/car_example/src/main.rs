@@ -139,10 +139,10 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> CodecResult<()> {
     println!("Activation Code: {}", activation_code);
     assert_eq!("abcdef", activation_code);
 
-    let (position, buffer_back) = dec_done.unwrap();
+    let position = dec_done.unwrap();
     println!("Finished decoding. Made it to position {0} out of {1}",
              position,
-             buffer_back.len());
+             buffer.len());
     Ok(())
 }
 
@@ -202,7 +202,7 @@ fn encode_car_from_scratch() -> CodecResult<Vec<u8>> {
         let enc_model = enc_manufacturer.manufacturer("Honda".as_bytes())?;
         let enc_activation_code = enc_model.model("Civic VTi".as_bytes())?;
         let done = enc_activation_code.activation_code("abcdef".as_bytes())?;
-        let (pos, _) = done.unwrap();
+        let pos = done.unwrap();
         pos
     };
     println!("encoded up to position {}", used_pos);
