@@ -78,7 +78,7 @@ public class RustGeneratorTest
 
     private static void assertContainsSharedImports(final String generatedRust)
     {
-        assertTrue(generatedRust.contains("Shared Imports"));
+        assertTrue(generatedRust.contains("Imports core rather than std"));
         assertTrue(generatedRust.contains("extern crate core;"));
     }
 

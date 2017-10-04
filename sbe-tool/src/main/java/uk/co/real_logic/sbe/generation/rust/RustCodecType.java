@@ -66,14 +66,18 @@ enum RustCodecType
             final String nextCoderType,
             final int numBytes) throws IOException
         {
+            indent(appendable, 1, "\n/// Create a mutable struct reference overlaid atop the data buffer\n");
+            indent(appendable, 1, "/// such that changes to the struct directly edit the buffer. \n");
+            indent(appendable, 1, "/// Note that the initial content of the struct's fields may be garbage.\n");
             indent(appendable, 1, "pub fn %s(mut self) -> CodecResult<(&%s mut %s, %s)> {\n",
                 methodName, DATA_LIFETIME, representationType, RustGenerator.withLifetime(nextCoderType));
             indent(appendable, 2, "let v = self.%s.writable_overlay::<%s>(%s)?;\n",
                 RustCodecType.Encoder.scratchProperty(), representationType, numBytes);
             indent(appendable, 2, "Ok((v, %s::wrap(self.%s)))\n",
                 nextCoderType, RustCodecType.Encoder.scratchProperty());
-            indent(appendable).append("}\n");
+            indent(appendable).append("}\n\n");
 
+            indent(appendable, 1, "/// Copy the bytes of a value into the data buffer\n");
             indent(appendable).append(String.format("pub fn %s_copy(mut self, t: &%s) -> CodecResult<%s> {\n",
                 methodName, representationType, RustGenerator.withLifetime(nextCoderType)));
             indent(appendable, 2)
