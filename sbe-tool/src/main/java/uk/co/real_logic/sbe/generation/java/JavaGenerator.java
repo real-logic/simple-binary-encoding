@@ -199,7 +199,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(className))
         {
-            out.append(generateMainHeader(ir.applicableNamespace()));
+            out.append(generateMainHeader(ir.applicableNamespace(), msgToken));
 
             generateAnnotations(indent, className, groups, out, 0, this::encoderName);
             out.append(generateDeclaration(className, implementsString));
@@ -230,7 +230,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(className))
         {
-            out.append(generateMainHeader(ir.applicableNamespace()));
+            out.append(generateMainHeader(ir.applicableNamespace(), msgToken));
 
             generateAnnotations(indent, className, groups, out, 0, this::decoderName);
             out.append(generateDeclaration(className, implementsString));
@@ -1344,7 +1344,7 @@ public class JavaGenerator implements CodeGenerator
             interfaceImportLine());
     }
 
-    private CharSequence generateMainHeader(final String packageName)
+    private CharSequence generateMainHeader(final String packageName, final Token msgToken)
     {
         if (fqMutableBuffer.equals(fqReadOnlyBuffer))
         {
@@ -1353,10 +1353,12 @@ public class JavaGenerator implements CodeGenerator
                 "package %s;\n\n" +
                 "import %s;\n" +
                 "%s" +
+                "%s" +
                 "@javax.annotation.Generated(value = { \"uk.co.real_logic.sbe.generation.java.JavaGenerator\" })\n",
                 packageName,
                 fqMutableBuffer,
-                interfaceImportLine());
+                interfaceImportLine(),
+                generateClassJavaDoc(msgToken));
         }
         else
         {
@@ -1366,12 +1368,34 @@ public class JavaGenerator implements CodeGenerator
                 "import %s;\n" +
                 "import %s;\n" +
                 "%s" +
+                "%s" +
                 "@javax.annotation.Generated(value = { \"uk.co.real_logic.sbe.generation.java.JavaGenerator\" })\n",
                 packageName,
                 fqMutableBuffer,
                 fqReadOnlyBuffer,
-                interfaceImportLine());
+                interfaceImportLine(),
+                generateClassJavaDoc(msgToken));
         }
+    }
+
+    private static String generateClassJavaDoc(final Token msgToken)
+    {
+        final StringBuilder sb = new StringBuilder();
+        if (msgToken.description() != null)
+        {
+            sb.append(" * ").append(msgToken.description()).append("\n");
+        }
+
+        sb.append(" * ").append("@since ").append(msgToken.version()).append("\n");
+
+        if (sb.length() > 0)
+        {
+            return "/**\n" +
+                    sb.toString() +
+                    " */\n";
+        }
+
+        return "";
     }
 
     private static CharSequence generateEnumFileHeader(final String packageName)
