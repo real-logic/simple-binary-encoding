@@ -40,9 +40,12 @@ public class JsonPrinter
 
     public void print(final ByteBuffer encodedMessage, final StringBuilder output)
     {
-        int bufferOffset = 0;
         final UnsafeBuffer buffer = new UnsafeBuffer(encodedMessage);
+        print(output, buffer, 0);
+    }
 
+    public void print(final StringBuilder output, final UnsafeBuffer buffer, final int bufferOffset)
+    {
         final int templateId = headerDecoder.getTemplateId(buffer, bufferOffset);
         final int schemaId = headerDecoder.getSchemaId(buffer, bufferOffset);
         final int actingVersion = headerDecoder.getSchemaVersion(buffer, bufferOffset);
@@ -51,13 +54,13 @@ public class JsonPrinter
         validateId(schemaId);
         validateVersion(schemaId, actingVersion);
 
-        bufferOffset += headerDecoder.encodedLength();
+        final int messageOffset = bufferOffset + headerDecoder.encodedLength();
 
         final List<Token> msgTokens = ir.getMessage(templateId);
 
         OtfMessageDecoder.decode(
             buffer,
-            bufferOffset,
+            messageOffset,
             actingVersion,
             blockLength,
             msgTokens,
