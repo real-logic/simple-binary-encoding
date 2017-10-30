@@ -222,13 +222,6 @@ public class IrGenerator
         if (field != null)
         {
             builder.version(field.sinceVersion());
-            builder.deprecated(field.deprecated());
-
-            final String description = field.description();
-            if (null != description && description.length() > 0)
-            {
-                builder.description(description);
-            }
         }
 
         tokenList.add(builder.build());
@@ -291,13 +284,6 @@ public class IrGenerator
         if (field != null)
         {
             builder.version(field.sinceVersion());
-            builder.deprecated(field.deprecated());
-
-            final String description = field.description();
-            if (null != description && description.length() > 0)
-            {
-                builder.description(description);
-            }
         }
 
         tokenList.add(builder.build());
@@ -350,13 +336,6 @@ public class IrGenerator
         if (field != null)
         {
             builder.version(field.sinceVersion());
-            builder.deprecated(field.deprecated());
-
-            final String description = field.description();
-            if (null != description && description.length() > 0)
-            {
-                builder.description(description);
-            }
         }
 
         tokenList.add(builder.build());
