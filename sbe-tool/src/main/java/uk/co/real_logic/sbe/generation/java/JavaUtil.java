@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.generation.java;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.generation.Generators;
+import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.util.ValidationUtil;
 
 import java.lang.reflect.Field;
@@ -248,5 +249,29 @@ public class JavaUtil
         }
 
         return literal;
+    }
+
+    /**
+     * Generate the Javadoc comment header for a class.
+     *
+     * @param indent     level for the comment.
+     * @param classToken for the type.
+     * @return a string representation of the Javadoc comment.
+     */
+    public static String generateClassJavadoc(final String indent, final Token classToken)
+    {
+        final String description = classToken.description();
+        if (null == description || description.length() == 0)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(indent).append("/**\n");
+        sb.append(indent).append(" * ").append(description).append('\n');
+        sb.append(indent).append(" */\n");
+
+        return sb.toString();
     }
 }
