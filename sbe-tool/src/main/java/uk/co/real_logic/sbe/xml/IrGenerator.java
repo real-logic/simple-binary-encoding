@@ -221,7 +221,7 @@ public class IrGenerator
 
         if (field != null)
         {
-            builder.version(field.sinceVersion());
+            builder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
         }
 
         tokenList.add(builder.build());
@@ -283,7 +283,7 @@ public class IrGenerator
 
         if (field != null)
         {
-            builder.version(field.sinceVersion());
+            builder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
         }
 
         tokenList.add(builder.build());
@@ -335,7 +335,7 @@ public class IrGenerator
 
         if (field != null)
         {
-            builder.version(field.sinceVersion());
+            builder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
         }
 
         tokenList.add(builder.build());
@@ -393,7 +393,7 @@ public class IrGenerator
 
         if (field != null && !(field.type() instanceof CompositeType))
         {
-            tokenBuilder.version(field.sinceVersion());
+            tokenBuilder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
             tokenBuilder.deprecated(field.deprecated());
 
             final String description = field.description();
