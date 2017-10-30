@@ -215,7 +215,7 @@ public class ExampleUsingGeneratedStubExtension
 
         final String cupHolderCount =
             car.cupHolderCount() == cupHolderCountNullValue() ? "null" : car.cupHolderCount() + "";
-        sb.append("\ncar.cutHolderCount=").append(cupHolderCount);
+        sb.append("\ncar.cupHolderCount=").append(cupHolderCount);
 
         for (final extension.CarDecoder.FuelFiguresDecoder fuelFigures : car.fuelFigures())
         {
