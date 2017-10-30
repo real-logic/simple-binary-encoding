@@ -223,7 +223,12 @@ public class IrGenerator
         {
             builder.version(field.sinceVersion());
             builder.deprecated(field.deprecated());
-            builder.description(field.description());
+
+            final String description = field.description();
+            if (null != description && description.length() > 0)
+            {
+                builder.description(description);
+            }
         }
 
         tokenList.add(builder.build());
@@ -287,7 +292,12 @@ public class IrGenerator
         {
             builder.version(field.sinceVersion());
             builder.deprecated(field.deprecated());
-            builder.description(field.description());
+
+            final String description = field.description();
+            if (null != description && description.length() > 0)
+            {
+                builder.description(description);
+            }
         }
 
         tokenList.add(builder.build());
@@ -341,7 +351,12 @@ public class IrGenerator
         {
             builder.version(field.sinceVersion());
             builder.deprecated(field.deprecated());
-            builder.description(field.description());
+
+            final String description = field.description();
+            if (null != description && description.length() > 0)
+            {
+                builder.description(description);
+            }
         }
 
         tokenList.add(builder.build());
@@ -401,7 +416,12 @@ public class IrGenerator
         {
             tokenBuilder.version(field.sinceVersion());
             tokenBuilder.deprecated(field.deprecated());
-            tokenBuilder.description(field.description());
+
+            final String description = field.description();
+            if (null != description && description.length() > 0)
+            {
+                tokenBuilder.description(description);
+            }
         }
 
         switch (type.presence())
