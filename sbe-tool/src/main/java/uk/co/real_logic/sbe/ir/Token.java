@@ -66,22 +66,6 @@ import static uk.co.real_logic.sbe.ir.Encoding.Presence.OPTIONAL;
 public class Token
 {
     /**
-     * Indicates how the version field should be interpreted.
-     */
-    public enum VersionContext
-    {
-        /**
-         * Indicates the version is for the template itself.
-         */
-        TEMPLATE_VERSION,
-
-        /**
-         * Indicates the field was introduced since this template version.
-         */
-        SINCE_TEMPLATE_VERSION
-    }
-
-    /**
      * Invalid ID value.
      */
     public static final int INVALID_ID = -1;
@@ -204,10 +188,9 @@ public class Token
     }
 
     /**
-     * The version context for this token.
+     * The version context for this token. This is the schema version in which the type was introduced.
      *
-     * @return version context for this token.
-     * @see Token#versionContext()
+     * @return version for this type.
      */
     public int version()
     {
@@ -232,23 +215,6 @@ public class Token
     public String applicableTypeName()
     {
         return null == referencedName ? name : referencedName;
-    }
-
-    /**
-     * The context in which the version field should be interpreted.
-     *
-     * @return context in which the version field should be interpreted.
-     */
-    public VersionContext versionContext()
-    {
-        if (signal == Signal.BEGIN_MESSAGE || signal == Signal.END_MESSAGE)
-        {
-            return VersionContext.TEMPLATE_VERSION;
-        }
-        else
-        {
-            return VersionContext.SINCE_TEMPLATE_VERSION;
-        }
     }
 
     /**
