@@ -514,7 +514,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    private int index;\n" +
             indent + "    private int offset;\n" +
             indent + "    private int blockLength;\n\n",
-            generateClassJavadoc(indent, groupToken),
+            generateTypeJavadoc(indent, groupToken),
             formatClassName(groupName),
             dimensionHeaderSize,
             decoderName(dimensionsClassName),
@@ -543,7 +543,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    private int count;\n" +
             indent + "    private int index;\n" +
             indent + "    private int offset;\n\n",
-            generateClassJavadoc(indent, groupToken),
+            generateTypeJavadoc(indent, groupToken),
             formatClassName(encoderName(groupName)),
             dimensionHeaderSize,
             dimensionsClassName,
@@ -1255,7 +1255,8 @@ public class JavaGenerator implements CodeGenerator
         {
             final Encoding encoding = token.encoding();
             final CharSequence constVal = generateLiteral(encoding.primitiveType(), encoding.constValue().toString());
-            sb.append(INDENT).append(token.name()).append('(').append(constVal).append("),\n");
+            sb.append(generateTypeJavadoc(INDENT, token));
+            sb.append(INDENT).append(token.name()).append('(').append(constVal).append("),\n\n");
         }
 
         final Token token = tokens.get(0);
@@ -1265,9 +1266,15 @@ public class JavaGenerator implements CodeGenerator
 
         if (shouldDecodeUnknownEnumValues)
         {
-            sb.append(INDENT).append("SBE_UNKNOWN").append('(').append(nullVal).append("),\n");
+            sb.append(INDENT).append("/**\n");
+            sb.append(INDENT).append(" * To be used to represent a not known value from a later version.\n");
+            sb.append(INDENT).append(" */\n");
+            sb.append(INDENT).append("SBE_UNKNOWN").append('(').append(nullVal).append("),\n\n");
         }
 
+        sb.append(INDENT).append("/**\n");
+        sb.append(INDENT).append(" * To be used to represent not present or null.\n");
+        sb.append(INDENT).append(" */\n");
         sb.append(INDENT).append("NULL_VAL").append('(').append(nullVal).append(");\n\n");
 
         return sb;
@@ -1445,7 +1452,7 @@ public class JavaGenerator implements CodeGenerator
             "@SuppressWarnings(\"all\")\n" +
             "public class %s%s\n" +
             "{\n",
-            generateClassJavadoc(BASE_INDENT, typeToken),
+            generateTypeJavadoc(BASE_INDENT, typeToken),
             className,
             implementsString);
     }
@@ -1472,7 +1479,7 @@ public class JavaGenerator implements CodeGenerator
     private static CharSequence generateEnumDeclaration(final String name, final Token typeToken)
     {
         return
-            generateClassJavadoc(BASE_INDENT, typeToken) +
+            generateTypeJavadoc(BASE_INDENT, typeToken) +
             "@javax.annotation.Generated(value = { \"uk.co.real_logic.sbe.generation.java.JavaGenerator\" })\n" +
             "public enum " + name + "\n{\n";
     }

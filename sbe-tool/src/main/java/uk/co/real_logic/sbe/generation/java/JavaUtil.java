@@ -252,26 +252,23 @@ public class JavaUtil
     }
 
     /**
-     * Generate the Javadoc comment header for a class.
+     * Generate the Javadoc comment header for a type.
      *
-     * @param indent     level for the comment.
-     * @param classToken for the type.
+     * @param indent    level for the comment.
+     * @param typeToken for the type.
      * @return a string representation of the Javadoc comment.
      */
-    public static String generateClassJavadoc(final String indent, final Token classToken)
+    public static String generateTypeJavadoc(final String indent, final Token typeToken)
     {
-        final String description = classToken.description();
+        final String description = typeToken.description();
         if (null == description || description.length() == 0)
         {
             return "";
         }
 
-        final StringBuilder sb = new StringBuilder();
-
-        sb.append(indent).append("/**\n");
-        sb.append(indent).append(" * ").append(description).append('\n');
-        sb.append(indent).append(" */\n");
-
-        return sb.toString();
+        return
+            indent + "/**\n" +
+            indent + " * " + description + '\n' +
+            indent + " */\n";
     }
 }
