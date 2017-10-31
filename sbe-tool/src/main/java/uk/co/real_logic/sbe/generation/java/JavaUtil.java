@@ -59,14 +59,13 @@ public class JavaUtil
         /**
          * Add separator to a generated StringBuilder
          *
-         * @param builder          the code generation builder to which information should be added
-         * @param indent           the current generated code indentation
-         * @param generatedBuilder the name of the generated StringBuilder to which separator should be added
+         * @param builder     the code generation builder to which information should be added
+         * @param indent      the current generated code indentation
+         * @param builderName of the generated StringBuilder to which separator should be added
          */
-        public void appendToGeneratedBuilder(
-            final StringBuilder builder, final String indent, final String generatedBuilder)
+        public void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String builderName)
         {
-            append(builder, indent, generatedBuilder + ".append('" + symbol + "');");
+            append(builder, indent, builderName + ".append('" + symbol + "');");
         }
 
         public String toString()
@@ -269,6 +268,52 @@ public class JavaUtil
         return
             indent + "/**\n" +
             indent + " * " + description + '\n' +
+            indent + " */\n";
+    }
+
+    /**
+     * Generate the Javadoc comment header for a bitset choice option decode method.
+     *
+     * @param indent      level for the comment.
+     * @param optionToken for the type.
+     * @return a string representation of the Javadoc comment.
+     */
+    public static String generateOptionDecodeJavadoc(final String indent, final Token optionToken)
+    {
+        final String description = optionToken.description();
+        if (null == description || description.length() == 0)
+        {
+            return "";
+        }
+
+        return
+            indent + "/**\n" +
+            indent + " * " + description + '\n' +
+            indent + " *\n" +
+            indent + " * @return true if " + optionToken.name() + " is set or false if not\n" +
+            indent + " */\n";
+    }
+
+    /**
+     * Generate the Javadoc comment header for a bitset choice option encode method.
+     *
+     * @param indent      level for the comment.
+     * @param optionToken for the type.
+     * @return a string representation of the Javadoc comment.
+     */
+    public static String generateOptionEncodeJavadoc(final String indent, final Token optionToken)
+    {
+        final String description = optionToken.description();
+        if (null == description || description.length() == 0)
+        {
+            return "";
+        }
+
+        return
+            indent + "/**\n" +
+            indent + " * " + description + '\n' +
+            indent + " *\n" +
+            indent + " * @param value true if " + optionToken.name() + " is set or false if not\n" +
             indent + " */\n";
     }
 }

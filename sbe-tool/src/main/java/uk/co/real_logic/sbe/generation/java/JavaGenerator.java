@@ -1178,14 +1178,16 @@ public class JavaGenerator implements CodeGenerator
 
                 return String.format(
                     "\n" +
-                    "    public boolean %1$s()\n" +
+                    "%1$s" +
+                    "    public boolean %2$s()\n" +
                     "    {\n" +
-                    "        return %2$s;\n" +
+                    "        return %3$s;\n" +
                     "    }\n\n" +
-                    "    public static boolean %1$s(final %3$s value)\n" +
+                    "    public static boolean %2$s(final %4$s value)\n" +
                     "    {\n" +
-                    "        return %4$s;\n" +
+                    "        return %5$s;\n" +
                     "    }\n",
+                    generateOptionDecodeJavadoc(INDENT, token),
                     choiceName,
                     generateChoiceGet(primitiveType, choiceBitIndex, byteOrderStr),
                     argType,
@@ -1209,15 +1211,17 @@ public class JavaGenerator implements CodeGenerator
 
                 return String.format(
                     "\n" +
-                    "    public %1$s %2$s(final boolean value)\n" +
+                    "%1$s" +
+                    "    public %2$s %3$s(final boolean value)\n" +
                     "    {\n" +
-                    "%3$s\n" +
+                    "%4$s\n" +
                     "        return this;\n" +
                     "    }\n\n" +
-                    "    public static %4$s %2$s(final %4$s bits, final boolean value)\n" +
+                    "    public static %5$s %3$s(final %5$s bits, final boolean value)\n" +
                     "    {\n" +
-                    "%5$s" +
+                    "%6$s" +
                     "    }\n",
+                    generateOptionEncodeJavadoc(INDENT, token),
                     bitSetClassName,
                     choiceName,
                     generateChoicePut(encoding.primitiveType(), choiceBitIndex, byteOrderStr),
