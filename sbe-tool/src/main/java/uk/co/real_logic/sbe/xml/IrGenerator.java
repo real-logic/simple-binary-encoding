@@ -161,7 +161,7 @@ public class IrGenerator
         {
             final Type type = field.type();
 
-            if (type == null)
+            if (null == type)
             {
                 addFieldSignal(field, Signal.BEGIN_GROUP);
                 add(field.dimensionType(), 0, field);
@@ -219,7 +219,7 @@ public class IrGenerator
                 .semanticType(semanticTypeOf(type, field))
                 .build());
 
-        if (field != null)
+        if (null != field)
         {
             builder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
         }
@@ -281,7 +281,7 @@ public class IrGenerator
             .description(type.description())
             .encoding(encodingBuilder.build());
 
-        if (field != null)
+        if (null != field)
         {
             builder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
         }
@@ -333,7 +333,7 @@ public class IrGenerator
                 .primitiveType(encodingType)
                 .build());
 
-        if (field != null)
+        if (null != field)
         {
             builder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
         }
@@ -391,16 +391,9 @@ public class IrGenerator
             .deprecated(type.deprecated())
             .offset(offset);
 
-        if (field != null && !(field.type() instanceof CompositeType))
+        if (null != field && !(field.type() instanceof CompositeType))
         {
             tokenBuilder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
-            tokenBuilder.deprecated(field.deprecated());
-
-            final String description = field.description();
-            if (null != description && description.length() > 0)
-            {
-                tokenBuilder.description(description);
-            }
         }
 
         switch (type.presence())
