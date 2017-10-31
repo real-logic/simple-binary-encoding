@@ -260,7 +260,7 @@ public class JavaUtil
     public static String generateTypeJavadoc(final String indent, final Token typeToken)
     {
         final String description = typeToken.description();
-        if (null == description || description.length() == 0)
+        if (null == description || description.isEmpty())
         {
             return "";
         }
@@ -281,7 +281,7 @@ public class JavaUtil
     public static String generateOptionDecodeJavadoc(final String indent, final Token optionToken)
     {
         final String description = optionToken.description();
-        if (null == description || description.length() == 0)
+        if (null == description || description.isEmpty())
         {
             return "";
         }
@@ -304,7 +304,7 @@ public class JavaUtil
     public static String generateOptionEncodeJavadoc(final String indent, final Token optionToken)
     {
         final String description = optionToken.description();
-        if (null == description || description.length() == 0)
+        if (null == description || description.isEmpty())
         {
             return "";
         }
@@ -314,6 +314,31 @@ public class JavaUtil
             indent + " * " + description + '\n' +
             indent + " *\n" +
             indent + " * @param value true if " + optionToken.name() + " is set or false if not\n" +
+            indent + " */\n";
+    }
+
+    /**
+     * Generate the Javadoc comment header for a bitset choice option decode method.
+     *
+     * @param indent        level for the comment.
+     * @param propertyToken for the property name.
+     * @param typeName      for the property type.
+     * @return a string representation of the Javadoc comment.
+     */
+    public static String generateFlyweightPropertyJavadoc(
+        final String indent, final Token propertyToken, final String typeName)
+    {
+        final String description = propertyToken.description();
+        if (null == description || description.isEmpty())
+        {
+            return "";
+        }
+
+        return
+            indent + "/**\n" +
+            indent + " * " + description + '\n' +
+            indent + " *\n" +
+            indent + " * @return " + typeName + " : " + description + "\n" +
             indent + " */\n";
     }
 }

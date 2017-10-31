@@ -560,7 +560,9 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
+            "%s" +
             indent + "    private final %s %s = new %s();\n",
+            generateFlyweightPropertyJavadoc(indent + INDENT, token, className),
             className,
             propertyName,
             className));
@@ -1078,12 +1080,12 @@ public class JavaGenerator implements CodeGenerator
 
                     case BEGIN_SET:
                         out.append(sb).append(generateBitSetProperty(
-                            true, DECODER, propertyName, encodingToken, BASE_INDENT, typeName));
+                            true, DECODER, propertyName, encodingToken, encodingToken, BASE_INDENT, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
                         out.append(sb).append(generateCompositeProperty(
-                            true, DECODER, propertyName, encodingToken, BASE_INDENT, typeName));
+                            true, DECODER, propertyName, encodingToken, encodingToken, BASE_INDENT, typeName));
                         break;
                 }
 
@@ -1124,12 +1126,12 @@ public class JavaGenerator implements CodeGenerator
 
                     case BEGIN_SET:
                         out.append(sb).append(generateBitSetProperty(
-                            true, ENCODER, propertyName, encodingToken, BASE_INDENT, typeName));
+                            true, ENCODER, propertyName, encodingToken, encodingToken, BASE_INDENT, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
                         out.append(sb).append(generateCompositeProperty(
-                            true, ENCODER, propertyName, encodingToken, BASE_INDENT, typeName));
+                            true, ENCODER, propertyName, encodingToken, encodingToken, BASE_INDENT, typeName));
                         break;
                 }
 
@@ -2241,11 +2243,13 @@ public class JavaGenerator implements CodeGenerator
                         break;
 
                     case BEGIN_SET:
-                        sb.append(generateBitSetProperty(false, ENCODER, propertyName, typeToken, indent, typeName));
+                        sb.append(generateBitSetProperty(
+                            false, ENCODER, propertyName, fieldToken, typeToken, indent, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
-                        sb.append(generateCompositeProperty(false, ENCODER, propertyName, typeToken, indent, typeName));
+                        sb.append(generateCompositeProperty(
+                            false, ENCODER, propertyName, fieldToken, typeToken, indent, typeName));
                         break;
                 }
             });
@@ -2281,11 +2285,13 @@ public class JavaGenerator implements CodeGenerator
                         break;
 
                     case BEGIN_SET:
-                        sb.append(generateBitSetProperty(false, DECODER, propertyName, typeToken, indent, typeName));
+                        sb.append(generateBitSetProperty(
+                            false, DECODER, propertyName, fieldToken, typeToken, indent, typeName));
                         break;
 
                     case BEGIN_COMPOSITE:
-                        sb.append(generateCompositeProperty(false, DECODER, propertyName, typeToken, indent, typeName));
+                        sb.append(generateCompositeProperty(
+                            false, DECODER, propertyName, fieldToken, typeToken, indent, typeName));
                         break;
                 }
             });
@@ -2438,7 +2444,8 @@ public class JavaGenerator implements CodeGenerator
         final boolean inComposite,
         final CodecType codecType,
         final String propertyName,
-        final Token token,
+        final Token propertyToken,
+        final Token bitsetToken,
         final String indent,
         final String bitSetName)
     {
@@ -2453,17 +2460,19 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
+            "%s" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
             "%s" +
             indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
+            generateFlyweightPropertyJavadoc(indent + INDENT, propertyToken, bitSetName),
             bitSetName,
             propertyName,
-            generatePropertyNotPresentCondition(inComposite, codecType, token.version(), indent),
+            generatePropertyNotPresentCondition(inComposite, codecType, bitsetToken.version(), indent),
             propertyName,
-            token.offset(),
+            bitsetToken.offset(),
             propertyName));
 
         return sb;
@@ -2473,7 +2482,8 @@ public class JavaGenerator implements CodeGenerator
         final boolean inComposite,
         final CodecType codecType,
         final String propertyName,
-        final Token token,
+        final Token propertyToken,
+        final Token compositeToken,
         final String indent,
         final String compositeName)
     {
@@ -2488,17 +2498,19 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
+            "%s" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
             "%s" +
             indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
+            generateFlyweightPropertyJavadoc(indent + INDENT, propertyToken, compositeName),
             compositeName,
             propertyName,
-            generatePropertyNotPresentCondition(inComposite, codecType, token.version(), indent),
+            generatePropertyNotPresentCondition(inComposite, codecType, compositeToken.version(), indent),
             propertyName,
-            token.offset(),
+            compositeToken.offset(),
             propertyName));
 
         return sb;
