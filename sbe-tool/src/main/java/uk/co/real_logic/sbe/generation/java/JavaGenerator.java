@@ -633,11 +633,13 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(String.format(
             "\n" +
-            indent + "    public %1$s %2$sCount(final int count)\n" +
+            "%1$s" +
+            indent + "    public %2$s %3$sCount(final int count)\n" +
             indent + "    {\n" +
-            indent + "        %2$s.wrap(parentMessage, buffer, count);\n" +
-            indent + "        return %2$s;\n" +
+            indent + "        %3$s.wrap(parentMessage, buffer, count);\n" +
+            indent + "        return %3$s;\n" +
             indent + "    }\n",
+            generateGroupEncodePropertyJavadoc(indent + INDENT, token, className),
             className,
             propertyName));
 

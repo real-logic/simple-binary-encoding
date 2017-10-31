@@ -318,7 +318,7 @@ public class JavaUtil
     }
 
     /**
-     * Generate the Javadoc comment header for a bitset choice option decode method.
+     * Generate the Javadoc comment header for flyweight property.
      *
      * @param indent        level for the comment.
      * @param propertyToken for the property name.
@@ -339,6 +339,32 @@ public class JavaUtil
             indent + " * " + description + '\n' +
             indent + " *\n" +
             indent + " * @return " + typeName + " : " + description + "\n" +
+            indent + " */\n";
+    }
+
+    /**
+     * Generate the Javadoc comment header for group encode property.
+     *
+     * @param indent        level for the comment.
+     * @param propertyToken for the property name.
+     * @param typeName      for the property type.
+     * @return a string representation of the Javadoc comment.
+     */
+    public static String generateGroupEncodePropertyJavadoc(
+        final String indent, final Token propertyToken, final String typeName)
+    {
+        final String description = propertyToken.description();
+        if (null == description || description.isEmpty())
+        {
+            return "";
+        }
+
+        return
+            indent + "/**\n" +
+            indent + " * " + description + "\n" +
+            indent + " *\n" +
+            indent + " * @param count of times the group will be encoded\n" +
+            indent + " * @return " + typeName + " : encoder for the group\n" +
             indent + " */\n";
     }
 }
