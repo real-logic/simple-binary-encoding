@@ -425,7 +425,14 @@ public class Message
                     return blockLength;
                 }
 
-                blockLength = field.computedOffset() + fieldLength;
+                if (field.presence() == Presence.CONSTANT)
+                {
+                    blockLength = field.computedOffset();
+                }
+                else
+                {
+                    blockLength = field.computedOffset() + fieldLength;
+                }
             }
         }
 
@@ -440,7 +447,7 @@ public class Message
             handleError(
                 node,
                 "specified blockLength provides insufficient space " +
-                computedBlockLength + " > " + specifiedBlockLength);
+                    computedBlockLength + " > " + specifiedBlockLength);
         }
     }
 }

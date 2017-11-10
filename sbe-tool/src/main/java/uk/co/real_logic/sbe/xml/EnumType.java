@@ -168,6 +168,11 @@ public class EnumType extends Type
      */
     public int encodedLength()
     {
+        if (presence() == Presence.CONSTANT)
+        {
+            return 0;
+        }
+
         return encodingType.size();
     }
 
