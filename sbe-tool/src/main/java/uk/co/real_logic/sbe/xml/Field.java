@@ -96,11 +96,34 @@ public class Field
 
         checkForValidName(node, name);
 
+        if (presence == Presence.CONSTANT && null != valueRef)
+        {
+            final String typeName = type == null ? null : type.name();
+
+            if (!(type instanceof EnumType))
+            {
+                handleError(node, "valueRef only valid for enum constants, type is " + typeName);
+            }
+
+            final int periodIndex = valueRef.indexOf('.');
+            if (periodIndex < 1 || periodIndex == (valueRef.length() - 1))
+            {
+                handleError(
+                    node, "valueRef format not valid for constant (enum-name.valid-value-name): " + valueRef);
+            }
+
+            final String valueRefType = valueRef.substring(0, periodIndex);
+            if (!valueRefType.equals(typeName))
+            {
+                handleError(node, "valueRef type " + valueRefType + " does not match " + typeName);
+            }
+        }
+
         if (type instanceof EnumType && presence == Presence.CONSTANT)
         {
             if (null == valueRef)
             {
-                handleError(node, "valueRef not set for constant Enum");
+                handleError(node, "valueRef not set for constant enum");
             }
             else
             {
@@ -114,7 +137,7 @@ public class Field
                 final String valueRefType = valueRef.substring(0, periodIndex);
                 if (!valueRefType.equals(type.name()))
                 {
-                    handleError(node, "valueRef for Enum name not found: " + valueRefType);
+                    handleError(node, "valueRef for enum name not found: " + valueRefType);
                 }
 
                 final String validValueName = valueRef.substring(periodIndex + 1);
