@@ -278,7 +278,7 @@ public class Message
             .type(fieldType)
             .build();
 
-        field.validate(node);
+        field.validate(node, typeByNameMap);
 
         return field;
     }
@@ -338,7 +338,7 @@ public class Message
             .variableLength(true)
             .build();
 
-        field.validate(node);
+        field.validate(node, typeByNameMap);
 
         return field;
     }

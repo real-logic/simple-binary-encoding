@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.xml;
 import org.w3c.dom.Node;
 
 import java.util.List;
+import java.util.Map;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
@@ -84,7 +85,7 @@ public class Field
         this.timeUnit = timeUnit;
     }
 
-    public void validate(final Node node)
+    public void validate(final Node node, final Map<String, Type> typeByNameMap)
     {
         if (type != null &&
             semanticType != null &&
@@ -96,33 +97,42 @@ public class Field
 
         checkForValidName(node, name);
 
+        if (null != valueRef)
+        {
+            validateValueRef(node, typeByNameMap);
+        }
+
         if (type instanceof EnumType && presence == Presence.CONSTANT)
         {
             if (null == valueRef)
             {
                 handleError(node, "valueRef not set for constant enum");
             }
-            else
+        }
+
+        if (null != valueRef && presence == Presence.CONSTANT)
+        {
+            final String valueRefType = valueRef.substring(0, valueRef.indexOf('.'));
+
+            if (!(type instanceof EnumType))
             {
-                final int periodIndex = valueRef.indexOf('.');
-                if (periodIndex < 1 || periodIndex == (valueRef.length() - 1))
+                if (type instanceof EncodedDataType)
                 {
-                    handleError(
-                        node, "valueRef format not valid for constant (enum-name.valid-value-name): " + valueRef);
-                }
+                    final EnumType enumType = (EnumType)typeByNameMap.get(valueRefType);
 
-                final String valueRefType = valueRef.substring(0, periodIndex);
-                if (!valueRefType.equals(type.name()))
-                {
-                    handleError(node, "valueRef for enum name not found: " + valueRefType);
+                    if (((EncodedDataType)type).primitiveType() != enumType.encodingType())
+                    {
+                        handleError(node, "valueRef does not match field type: " + valueRef);
+                    }
                 }
-
-                final String validValueName = valueRef.substring(periodIndex + 1);
-                final EnumType enumType = (EnumType)type;
-                if (null == enumType.getValidValue(validValueName))
+                else
                 {
-                    handleError(node, "valueRef for validValue name not found: " + validValueName);
+                    handleError(node, "valueRef does not match field type: " + valueRef);
                 }
+            }
+            else if (!valueRefType.equals(type.name()))
+            {
+                handleError(node, "valueRef for enum name not found: " + valueRefType);
             }
         }
     }
@@ -253,6 +263,38 @@ public class Field
             ", epoch='" + epoch + '\'' +
             ", timeUnit=" + timeUnit +
             '}';
+    }
+
+    private void validateValueRef(final Node node, final Map<String, Type> typeByNameMap)
+    {
+        final int periodIndex = valueRef.indexOf('.');
+        if (periodIndex < 1 || periodIndex == (valueRef.length() - 1))
+        {
+            handleError(
+                node, "valueRef format not valid for constant (enum-name.valid-value-name): " + valueRef);
+        }
+
+        final String valueRefType = valueRef.substring(0, periodIndex);
+        final Type valueType = typeByNameMap.get(valueRefType);
+        if (null == valueType)
+        {
+            handleError(node, "valueRef for enum name not found: " + valueRefType);
+        }
+
+        if (valueType instanceof EnumType)
+        {
+            final EnumType enumType = (EnumType)valueType;
+            final String validValueName = valueRef.substring(periodIndex + 1);
+
+            if (null == enumType.getValidValue(validValueName))
+            {
+                handleError(node, "valueRef for validValue name not found: " + validValueName);
+            }
+        }
+        else
+        {
+            handleError(node, "valueRef for is not of type enum: " + valueRefType);
+        }
     }
 
     public static class Builder
