@@ -22,7 +22,6 @@ import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +31,7 @@ import java.util.List;
 public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
-    private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
-
+    private MessageSchema schema;
     /**
      * Generate a complete {@link uk.co.real_logic.sbe.ir.Ir} for a given schema.
      *
@@ -43,6 +41,8 @@ public class IrGenerator
      */
     public Ir generate(final MessageSchema schema, final String namespace)
     {
+        this.schema = schema;
+
         final List<Token> headerTokens = generateForHeader(schema);
         final Ir ir = new Ir(
             schema.packageName(),
@@ -76,7 +76,6 @@ public class IrGenerator
     private List<Token> generateForMessage(final MessageSchema schema, final long messageId)
     {
         tokenList.clear();
-        byteOrder = schema.byteOrder();
 
         final Message msg = schema.getMessage(messageId);
 
@@ -91,7 +90,6 @@ public class IrGenerator
     {
         tokenList.clear();
 
-        byteOrder = schema.byteOrder();
         add(schema.messageHeader(), 0, null);
 
         return tokenList;
@@ -236,7 +234,7 @@ public class IrGenerator
 
             if (elementType instanceof EncodedDataType)
             {
-                add((EncodedDataType)elementType, offset, null);
+                add((EncodedDataType)elementType, offset);
             }
             else if (elementType instanceof EnumType)
             {
@@ -263,7 +261,7 @@ public class IrGenerator
         final Encoding.Builder encodingBuilder = new Encoding.Builder()
             .primitiveType(encodingType)
             .semanticType(semanticTypeOf(type, field))
-            .byteOrder(byteOrder);
+            .byteOrder(schema.byteOrder());
 
         if (type.presence() == Presence.OPTIONAL)
         {
@@ -307,7 +305,7 @@ public class IrGenerator
             .deprecated(value.deprecated())
             .description(value.description())
             .encoding(new Encoding.Builder()
-                .byteOrder(byteOrder)
+                .byteOrder(schema.byteOrder())
                 .primitiveType(encodingType)
                 .constValue(value.primitiveValue())
                 .build());
@@ -360,26 +358,19 @@ public class IrGenerator
             .deprecated(value.deprecated())
             .encoding(new Encoding.Builder()
                 .constValue(value.primitiveValue())
-                .byteOrder(byteOrder)
+                .byteOrder(schema.byteOrder())
                 .primitiveType(encodingType)
                 .build());
 
         tokenList.add(builder.build());
     }
 
-    private void add(final EncodedDataType type, final int offset, final Field field)
+    private void add(final EncodedDataType type, final int offset)
     {
         final Encoding.Builder encodingBuilder = new Encoding.Builder()
             .primitiveType(type.primitiveType())
-            .byteOrder(byteOrder)
-            .semanticType(semanticTypeOf(type, field))
+            .byteOrder(schema.byteOrder())
             .characterEncoding(type.characterEncoding());
-
-        if (null != field)
-        {
-            encodingBuilder.epoch(field.epoch());
-            encodingBuilder.timeUnit(field.timeUnit());
-        }
 
         final Token.Builder tokenBuilder = new Token.Builder()
             .signal(Signal.ENCODING)
@@ -390,11 +381,6 @@ public class IrGenerator
             .version(type.sinceVersion())
             .deprecated(type.deprecated())
             .offset(offset);
-
-        if (null != field && !(field.type() instanceof CompositeType))
-        {
-            tokenBuilder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
-        }
 
         switch (type.presence())
         {
@@ -423,6 +409,74 @@ public class IrGenerator
         final Token token = tokenBuilder.encoding(encodingBuilder.build()).build();
 
         tokenList.add(token);
+    }
+
+    private void add(final EncodedDataType type, final int offset, final Field field)
+    {
+        final Encoding.Builder encodingBuilder = new Encoding.Builder()
+            .primitiveType(type.primitiveType())
+            .byteOrder(schema.byteOrder())
+            .semanticType(semanticTypeOf(type, field))
+            .characterEncoding(type.characterEncoding())
+            .timeUnit(field.timeUnit())
+            .epoch(field.epoch());
+
+        final Token.Builder tokenBuilder = new Token.Builder()
+            .signal(Signal.ENCODING)
+            .name(type.name())
+            .referencedName(type.referencedName())
+            .size(type.encodedLength())
+            .description(type.description())
+            .version(type.sinceVersion())
+            .deprecated(type.deprecated())
+            .offset(offset);
+
+        if (field.type() instanceof CompositeType)
+        {
+            tokenBuilder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
+        }
+
+        switch (field.presence())
+        {
+            case REQUIRED:
+                encodingBuilder
+                    .presence(Encoding.Presence.REQUIRED)
+                    .minValue(type.minValue())
+                    .maxValue(type.maxValue());
+                break;
+
+            case OPTIONAL:
+                encodingBuilder
+                    .presence(Encoding.Presence.OPTIONAL)
+                    .minValue(type.minValue())
+                    .maxValue(type.maxValue())
+                    .nullValue(type.nullValue());
+                break;
+
+            case CONSTANT:
+                final String valueRef = field.valueRef();
+                tokenBuilder.size(0);
+                encodingBuilder
+                    .presence(Encoding.Presence.CONSTANT)
+                    .constValue(valueRef != null ? lookupValueRef(valueRef) : type.constVal());
+                break;
+        }
+
+        final Token token = tokenBuilder.encoding(encodingBuilder.build()).build();
+
+        tokenList.add(token);
+    }
+
+    private PrimitiveValue lookupValueRef(final String valueRef)
+    {
+        final int periodIndex = valueRef.indexOf('.');
+        final String valueRefType = valueRef.substring(0, periodIndex);
+        final String validValueName = valueRef.substring(periodIndex + 1);
+
+        final EnumType enumType = (EnumType)schema.getType(valueRefType);
+        final EnumType.ValidValue validValue = enumType.getValidValue(validValueName);
+
+        return validValue.primitiveValue();
     }
 
     private static String semanticTypeOf(final Type type, final Field field)

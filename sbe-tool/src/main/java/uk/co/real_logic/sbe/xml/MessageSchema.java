@@ -132,6 +132,17 @@ public class MessageSchema
     }
 
     /**
+     * Get the {@link Type} for a given name.
+     *
+     * @param typeName to lookup.
+     * @return the type if found otherwise null.
+     */
+    public Type getType(final String typeName)
+    {
+        return typeByNameMap.get(typeName);
+    }
+
+    /**
      * Get the {@link Collection} of {@link Message}s for this Schema.
      *
      * @return the {@link Collection} of {@link Message}s for this Schema.
