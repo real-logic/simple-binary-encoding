@@ -21,6 +21,11 @@ import uk.co.real_logic.sbe.PrimitiveValue;
 
 import org.w3c.dom.Node;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathException;
+import javax.xml.xpath.XPathFactory;
+
 import static uk.co.real_logic.sbe.xml.Presence.CONSTANT;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleError;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
@@ -41,6 +46,7 @@ public class EncodedDataType extends Type
     private final PrimitiveValue maxValue;
     private final PrimitiveValue nullValue;
     private final String characterEncoding;
+    private final String valueRef;
     private boolean varLen;
 
     /**
@@ -68,6 +74,20 @@ public class EncodedDataType extends Type
         final String lengthAttr = getAttributeValueOrNull(node, "length");
         length = Integer.parseInt(null == lengthAttr ? "1" : lengthAttr);
         varLen = Boolean.parseBoolean(getAttributeValue(node, "variableLength", "false"));
+        valueRef = getAttributeValueOrNull(node, "valueRef");
+
+        if (null != valueRef)
+        {
+            if (valueRef.indexOf('.') == -1)
+            {
+                handleError(node, "valueRef format not valid (enum-name.valid-value-name): " + valueRef);
+            }
+
+            if (presence() != CONSTANT)
+            {
+                handleError(node, "present must be constant when valueRef is set: " + valueRef);
+            }
+        }
 
         if (PrimitiveType.CHAR == primitiveType)
         {
@@ -81,22 +101,29 @@ public class EncodedDataType extends Type
 
         if (presence() == CONSTANT)
         {
-            if (node.getFirstChild() == null)
+            if (null == valueRef)
             {
-                handleError(node, "type has declared presence as \"constant\" but XML node has no data");
-                constValue = null;
-            }
-            else
-            {
-                final String nodeValue = node.getFirstChild().getNodeValue();
-                if (PrimitiveType.CHAR == primitiveType)
+                if (node.getFirstChild() == null)
                 {
-                    constValue = processConstantChar(node, lengthAttr, nodeValue);
+                    handleError(node, "type has declared presence as \"constant\" but XML node has no data");
+                    constValue = null;
                 }
                 else
                 {
-                    constValue = PrimitiveValue.parse(nodeValue, primitiveType);
+                    final String nodeValue = node.getFirstChild().getNodeValue();
+                    if (PrimitiveType.CHAR == primitiveType)
+                    {
+                        constValue = processConstantChar(node, lengthAttr, nodeValue);
+                    }
+                    else
+                    {
+                        constValue = PrimitiveValue.parse(nodeValue, primitiveType);
+                    }
                 }
+            }
+            else
+            {
+                constValue = lookupValueRef(node);
             }
         }
         else
@@ -123,6 +150,47 @@ public class EncodedDataType extends Type
         else
         {
             nullValue = null;
+        }
+    }
+
+    private PrimitiveValue lookupValueRef(final Node node)
+    {
+        try
+        {
+            final int periodIndex = valueRef.indexOf('.');
+            final String valueRefType = valueRef.substring(0, periodIndex);
+
+            final XPath xPath = XPathFactory.newInstance().newXPath();
+            final Node valueRefNode = (Node)xPath.compile("/messageSchema/types/enum[@name='" + valueRefType + "']")
+                .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
+
+            if (valueRefNode == null)
+            {
+                XmlSchemaParser.handleError(node, "valueRef not found: " + valueRefType);
+                return null;
+            }
+
+            final EnumType enumType = new EnumType(valueRefNode);
+            if (enumType.encodingType() != primitiveType)
+            {
+                handleError(node, "valueRef does not match this type: " + valueRef);
+                return null;
+            }
+
+            final String validValueName = valueRef.substring(periodIndex + 1);
+            final EnumType.ValidValue validValue = enumType.getValidValue(validValueName);
+
+            if (null == validValue)
+            {
+                handleError(node, "valueRef for validValue name not found: " + validValueName);
+                return null;
+            }
+
+            return validValue.primitiveValue();
+        }
+        catch (final XPathException ex)
+        {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -156,6 +224,7 @@ public class EncodedDataType extends Type
         this.maxValue = null;
         this.nullValue = null;
         characterEncoding = null;
+        valueRef = null;
     }
 
     /**
@@ -267,6 +336,16 @@ public class EncodedDataType extends Type
     public String characterEncoding()
     {
         return characterEncoding;
+    }
+
+    /**
+     * Get the value of the valueRef attribute.
+     *
+     * @return the value of the valueRef attribute.
+     */
+    public String valueRef()
+    {
+        return valueRef;
     }
 
     private PrimitiveValue processConstantChar(final Node node, final String lengthAttr, final String nodeValue)

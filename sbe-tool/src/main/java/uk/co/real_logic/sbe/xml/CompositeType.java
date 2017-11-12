@@ -101,7 +101,7 @@ public class CompositeType extends Type
      */
     public int encodedLength()
     {
-        int offset = 0;
+        int length = 0;
 
         for (final Type t : containedTypeByNameMap.values())
         {
@@ -112,13 +112,16 @@ public class CompositeType extends Type
 
             if (t.offsetAttribute() != -1)
             {
-                offset = t.offsetAttribute();
+                length = t.offsetAttribute();
             }
 
-            offset += t.encodedLength();
+            if (t.presence() != Presence.CONSTANT)
+            {
+                length += t.encodedLength();
+            }
         }
 
-        return offset;
+        return length;
     }
 
     /**

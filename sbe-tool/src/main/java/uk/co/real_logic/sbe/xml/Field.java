@@ -270,8 +270,7 @@ public class Field
         final int periodIndex = valueRef.indexOf('.');
         if (periodIndex < 1 || periodIndex == (valueRef.length() - 1))
         {
-            handleError(
-                node, "valueRef format not valid for constant (enum-name.valid-value-name): " + valueRef);
+            handleError(node, "valueRef format not valid (enum-name.valid-value-name): " + valueRef);
         }
 
         final String valueRefType = valueRef.substring(0, periodIndex);
