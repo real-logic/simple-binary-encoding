@@ -293,24 +293,23 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n\n",
             dimensionHeaderLength, blockLength, formatClassName(groupName)));
 
-        sb.append(
-            indent + "#if __cplusplus < 201103L\n" +
-            indent + "    template<class Func> inline void forEach(Func& func)\n" +
-            indent + "    {\n" +
-            indent + "        while (hasNext())\n" +
-            indent + "        {\n" +
-            indent + "            next(); func(*this);\n" +
-            indent + "        }\n" +
-            indent + "    }\n\n" +
-            indent + "#else\n" +
-            indent + "    template<class Func> inline void forEach(Func&& func)\n" +
-            indent + "    {\n" +
-            indent + "        while (hasNext())\n" +
-            indent + "        {\n" +
-            indent + "            next(); func(*this);\n" +
-            indent + "        }\n" +
-            indent + "    }\n\n" +
-            indent + "#endif\n\n");
+        sb.append(indent).append("#if __cplusplus < 201103L\n")
+            .append(indent).append("    template<class Func> inline void forEach(Func& func)\n")
+            .append(indent).append("    {\n")
+            .append(indent).append("        while (hasNext())\n")
+            .append(indent).append("        {\n")
+            .append(indent).append("            next(); func(*this);\n")
+            .append(indent).append("        }\n")
+            .append(indent).append("    }\n\n")
+            .append(indent).append("#else\n")
+            .append(indent).append("    template<class Func> inline void forEach(Func&& func)\n")
+            .append(indent).append("    {\n")
+            .append(indent).append("        while (hasNext())\n")
+            .append(indent).append("        {\n")
+            .append(indent).append("            next(); func(*this);\n")
+            .append(indent).append("        }\n")
+            .append(indent).append("    }\n\n")
+            .append(indent).append("#endif\n\n");
     }
 
     private static CharSequence generateGroupProperty(
@@ -668,7 +667,7 @@ public class CppGenerator implements CodeGenerator
                         "\n" +
                         "    static bool %1$s(const %2$s bits)\n" +
                         "    {\n" +
-                        "        return bits & (0x1L << %3$s);\n" +
+                        "        return bits & (static_cast<%2$s>(1) << %3$s);\n" +
                         "    }\n\n",
                         choiceName,
                         typeName,
@@ -678,7 +677,8 @@ public class CppGenerator implements CodeGenerator
                         "\n" +
                         "    static %2$s %1$s(const %2$s bits, const bool value)\n" +
                         "    {\n" +
-                        "        return value ? (bits | (0x1L << %3$s)) : (bits & ~(0x1L << %3$s));\n" +
+                        "        return value ?" +
+                            " (bits | (static_cast<%2$s>(1) << %3$s)) : (bits & ~(static_cast<%2$s>(1) << %3$s));\n" +
                         "    }\n\n",
                         choiceName,
                         typeName,
@@ -688,7 +688,7 @@ public class CppGenerator implements CodeGenerator
                         "    bool %1$s() const\n" +
                         "    {\n" +
                         "%2$s" +
-                        "        return %3$s(*((%4$s *)(m_buffer + m_offset))) & (0x1L << %5$s);\n" +
+                        "        return %3$s(*((%4$s *)(m_buffer + m_offset))) & (static_cast<%4$s>(1) << %5$s);\n" +
                         "    }\n\n",
                         choiceName,
                         generateChoiceNotPresentCondition(token.version(), BASE_INDENT),
@@ -700,7 +700,8 @@ public class CppGenerator implements CodeGenerator
                         "    %1$s &%2$s(const bool value)\n" +
                         "    {\n" +
                         "        %3$s bits = %4$s(*((%3$s *)(m_buffer + m_offset)));\n" +
-                        "        bits = value ? (bits | (0x1L << %5$s)) : (bits & ~(0x1L << %5$s));\n" +
+                        "        bits = value ?" +
+                            " (bits | (static_cast<%3$s>(1) << %5$s)) : (bits & ~(static_cast<%3$s>(1) << %5$s));\n" +
                         "        *((%3$s *)(m_buffer + m_offset)) = %4$s(bits);\n" +
                         "        return *this;\n" +
                         "    }\n",
