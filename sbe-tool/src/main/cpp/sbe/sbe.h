@@ -73,6 +73,39 @@ namespace sbe {
 #define SBE_NULLVALUE_UINT32 (std::numeric_limits<std::uint32_t>::max)()
 #define SBE_NULLVALUE_UINT64 (std::numeric_limits<std::uint64_t>::max)()
 
+// String functions such as stpncpy() may not be available on all platforms, so portable
+// alternatives are provided in the "sbe_util" namespace below. N.B. the code-generator currently
+// emits "using namespace sbe" directives in header files, which is generally considered bad
+// practice, so I prefix the inner namespace with "sbe_" to reduce the possibility of potential
+// conflicts in user code.
+namespace sbe_util {
+
+inline const char* stpnlen(const char* src, std::size_t n)
+{
+    const char* const end = src + n;
+    while (src != end && *src)
+        ++src;
+    return src;
+}
+
+inline std::size_t strnlen(const char* src, std::size_t n)
+{
+    return stpnlen(src, n) - src;
+}
+
+inline char* stpncpy(char* dst, const char* src, std::size_t n)
+{
+    const char* const end = dst + n;
+    while (dst != end && *src)
+        *dst++ = *src++;
+    char* const ret = dst;
+    while (dst != end)
+        *dst++ = '\0';
+    return ret;
+}
+
+}
+
 namespace MetaAttribute {
 
 enum Attribute

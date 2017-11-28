@@ -1079,7 +1079,7 @@ public class CppGenerator implements CodeGenerator
             token.arrayLength()));
 
         sb.append(String.format(
-            indent + "    const char *%1$s() const\n" +
+            indent + "    const char *%1$s() const SBE_NOEXCEPT\n" +
             indent + "    {\n" +
                               "%2$s" +
             indent + "        return (m_buffer + m_offset + %3$d);\n" +
@@ -1122,51 +1122,83 @@ public class CppGenerator implements CodeGenerator
             token.encoding().primitiveType().size(),
             formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())));
 
-        sb.append(String.format(
-            indent + "    std::uint64_t get%1$s(char *dst, const std::uint64_t length) const\n" +
-            indent + "    {\n" +
-            indent + "        if (length > %2$d)\n" +
-            indent + "        {\n" +
-            indent + "             throw std::runtime_error(\"length too large for get%1$s [E106]\");\n" +
-            indent + "        }\n\n" +
-                "%3$s" +
-            indent + "        std::memcpy(dst, m_buffer + m_offset + %4$d, sizeof(%5$s) * length);\n" +
-            indent + "        return length;\n" +
-            indent + "    }\n\n",
-            toUpperFirstChar(propertyName),
-            token.arrayLength(),
-            generateArrayFieldNotPresentCondition(token.version(), indent),
-            offset,
-            cppTypeName));
-
-        sb.append(String.format(
-            indent + "    %1$s &put%2$s(const char *src)\n" +
-            indent + "    {\n" +
-            indent + "        std::memcpy(m_buffer + m_offset + %3$d, src, sizeof(%4$s) * %5$d);\n" +
-            indent + "        return *this;\n" +
-            indent + "    }\n\n",
-            containingClassName,
-            toUpperFirstChar(propertyName),
-            offset,
-            cppTypeName,
-            token.arrayLength()));
-
-        if (token.encoding().primitiveType() == PrimitiveType.CHAR)
+        if (token.encoding().primitiveType() != PrimitiveType.CHAR)
         {
             sb.append(String.format(
-                indent + "    std::string get%1$sAsString() const\n" +
+                indent + "    std::uint64_t get%1$s(char *dst, const std::uint64_t length) const\n" +
                 indent + "    {\n" +
-                indent + "        std::string result(m_buffer + m_offset + %2$d, %3$d);\n" +
-                indent + "        return result;\n" +
+                indent + "        if (length > %2$d)\n" +
+                indent + "        {\n" +
+                indent + "             throw std::runtime_error(\"length too large for get%1$s [E106]\");\n" +
+                indent + "        }\n\n" +
+                    "%3$s" +
+                indent + "        std::memcpy(dst, m_buffer + m_offset + %4$d, sizeof(%5$s) * length);\n" +
+                indent + "        return length;\n" +
+                indent + "    }\n\n",
+                toUpperFirstChar(propertyName),
+                token.arrayLength(),
+                generateArrayFieldNotPresentCondition(token.version(), indent),
+                offset,
+                cppTypeName));
+
+            sb.append(String.format(
+                indent + "    %1$s &put%2$s(const char *src) SBE_NOEXCEPT\n" +
+                indent + "    {\n" +
+                indent + "        std::memcpy(m_buffer + m_offset + %3$d, src, sizeof(%4$s) * %5$d);\n" +
+                indent + "        return *this;\n" +
+                indent + "    }\n\n",
+                containingClassName,
+                toUpperFirstChar(propertyName),
+                offset,
+                cppTypeName,
+                token.arrayLength()));
+        }
+        else
+        {
+            sb.append(String.format(
+                indent + "    std::uint64_t get%1$s(char *dst, std::uint64_t length) const SBE_NOEXCEPT\n" +
+                indent + "    {\n" +
+                indent + "        std::uint64_t minlen = std::min<std::uint64_t>(length, %3$d);\n" +
+                indent + "        const char* src = m_buffer + m_offset + %2$d;\n" +
+                indent + "        const char* end = sbe_util::stpncpy(dst, src, minlen);\n" +
+                indent + "        if (length > %3$d)\n" +
+                indent + "        {\n" +
+                indent + "            dst[%3$d] = 0;\n" +
+                indent + "        }\n" +
+                indent + "        return end - dst;\n" +
                 indent + "    }\n\n",
                 toUpperFirstChar(propertyName),
                 offset,
                 token.arrayLength()));
 
             sb.append(String.format(
-                indent + "    %1$s &put%2$s(const std::string& str)\n" +
+                indent + "    %1$s &put%2$s(const char *src) SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
-                indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), %4$d);\n" +
+                indent + "        char* dst = m_buffer + m_offset + %3$d;\n" +
+                indent + "        sbe_util::stpncpy(dst, src, %4$d);\n" +
+                indent + "        return *this;\n" +
+                indent + "    }\n\n",
+                containingClassName,
+                toUpperFirstChar(propertyName),
+                offset,
+                token.arrayLength()));
+
+            sb.append(String.format(
+                indent + "    std::string get%1$sAsString() const\n" +
+                indent + "    {\n" +
+                indent + "        const char* src = m_buffer + m_offset + %2$d;\n" +
+                indent + "        const std::size_t n = sbe_util::strnlen(src, %3$d);\n" +
+                indent + "        return std::string(src, n);\n" +
+                indent + "    }\n\n",
+                toUpperFirstChar(propertyName),
+                offset,
+                token.arrayLength()));
+
+            sb.append(String.format(
+                indent + "    %1$s &put%2$s(const std::string& str) SBE_NOEXCEPT\n" +
+                indent + "    {\n" +
+                indent + "        char* dst = m_buffer + m_offset + %3$d;\n" +
+                indent + "        sbe_util::stpncpy(dst, str.c_str(), %4$d);\n" +
                 indent + "        return *this;\n" +
                 indent + "    }\n\n",
                 containingClassName,
