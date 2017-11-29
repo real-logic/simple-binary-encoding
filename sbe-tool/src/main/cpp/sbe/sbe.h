@@ -26,7 +26,8 @@
 #include <cstdint>
 #include <limits>
 
-namespace sbe {
+namespace sbe
+{
 
 /*
  * Define some byte ordering macros
@@ -73,7 +74,22 @@ namespace sbe {
 #define SBE_NULLVALUE_UINT32 (std::numeric_limits<std::uint32_t>::max)()
 #define SBE_NULLVALUE_UINT64 (std::numeric_limits<std::uint64_t>::max)()
 
-namespace MetaAttribute {
+typedef union sbe_float_as_uint_u
+{
+    float fp_value;
+    std::uint32_t uint_value;
+}
+sbe_float_as_uint_t;
+
+typedef union sbe_double_as_uint_u
+{
+    double fp_value;
+    std::uint64_t uint_value;
+}
+sbe_double_as_uint_t;
+
+namespace MetaAttribute
+{
 
 enum Attribute
 {
@@ -84,7 +100,6 @@ enum Attribute
 };
 
 }
-
 }
 
 #endif
