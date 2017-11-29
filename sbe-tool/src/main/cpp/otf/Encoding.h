@@ -57,6 +57,20 @@ enum class ByteOrder : int
         SBE_BIG_ENDIAN = 1
 };
 
+typedef union sbe_float_as_uint_u
+{
+    float fp_value;
+    std::uint32_t uint_value;
+}
+sbe_float_as_uint_t;
+
+typedef union sbe_double_as_uint_u
+{
+    double fp_value;
+    std::uint64_t uint_value;
+}
+sbe_double_as_uint_t;
+
 /// Constants used for representing primitive types
 enum class PrimitiveType : int
 {
@@ -102,53 +116,40 @@ inline std::size_t lengthOfType(PrimitiveType type)
     switch (type)
     {
         case PrimitiveType::CHAR:
-        {
             return 1;
-        }
+
         case PrimitiveType::INT8:
-        {
             return 1;
-        }
+
         case PrimitiveType::INT16:
-        {
             return 2;
-        }
+
         case PrimitiveType::INT32:
-        {
             return 4;
-        }
+
         case PrimitiveType::INT64:
-        {
             return 8;
-        }
+
         case PrimitiveType::UINT8:
-        {
             return 1;
-        }
+
         case PrimitiveType::UINT16:
-        {
             return 2;
-        }
+
         case PrimitiveType::UINT32:
-        {
             return 4;
-        }
+
         case PrimitiveType::UINT64:
-        {
             return 8;
-        }
+
         case PrimitiveType::FLOAT:
-        {
             return 4;
-        }
+
         case PrimitiveType::DOUBLE:
-        {
             return 8;
-        }
+
         default:
-        {
             return 0;
-        }
     }
 }
 
@@ -167,6 +168,7 @@ public:
         switch (type)
         {
             case PrimitiveType::CHAR:
+            {
                 if (valueLength > 1)
                 {
                     m_arrayValue = std::string(value, valueLength);
@@ -178,60 +180,103 @@ public:
                     m_size = 1;
                 }
                 break;
+            }
 
             case PrimitiveType::INT8:
-                m_value.asInt = *(std::int8_t *)value;
-                m_size = 1;
+            {
+                std::int8_t temp;
+                std::memcpy(&temp, value, sizeof(std::int8_t));
+                m_value.asInt = temp;
+                m_size = sizeof(std::int8_t);
                 break;
+            }
 
             case PrimitiveType::INT16:
-                m_value.asInt = *(std::int16_t *)value;
-                m_size = 2;
+            {
+                std::int16_t temp;
+                std::memcpy(&temp, value, sizeof(std::int16_t));
+                m_value.asInt = temp;
+                m_size = sizeof(std::int16_t);
                 break;
+            }
 
             case PrimitiveType::INT32:
-                m_value.asInt = *(std::int32_t *)value;
-                m_size = 4;
+            {
+                std::int32_t temp;
+                std::memcpy(&temp, value, sizeof(std::int32_t));
+                m_value.asInt = temp;
+                m_size = sizeof(std::int32_t);
                 break;
+            }
 
             case PrimitiveType::INT64:
-                m_value.asInt = *(std::int64_t *)value;
-                m_size = 8;
+            {
+                std::int64_t temp;
+                std::memcpy(&temp, value, sizeof(std::int64_t));
+                m_value.asInt = temp;
+                m_size = sizeof(std::int64_t);
                 break;
+            }
 
             case PrimitiveType::UINT8:
-                m_value.asUInt = *(std::uint8_t *)value;
-                m_size = 1;
+            {
+                std::uint8_t temp;
+                std::memcpy(&temp, value, sizeof(std::uint8_t));
+                m_value.asInt = temp;
+                m_size = sizeof(std::uint8_t);
                 break;
+            }
 
             case PrimitiveType::UINT16:
-                m_value.asUInt = *(std::uint16_t *)value;
-                m_size = 2;
+            {
+                std::uint16_t temp;
+                std::memcpy(&temp, value, sizeof(std::uint16_t));
+                m_value.asInt = temp;
+                m_size = sizeof(std::uint16_t);
                 break;
+            }
 
             case PrimitiveType::UINT32:
-                m_value.asUInt = *(std::uint32_t *)value;
-                m_size = 4;
+            {
+                std::uint32_t temp;
+                std::memcpy(&temp, value, sizeof(std::uint32_t));
+                m_value.asInt = temp;
+                m_size = sizeof(std::uint32_t);
                 break;
+            }
 
             case PrimitiveType::UINT64:
-                m_value.asUInt = *(std::uint64_t *)value;
-                m_size = 8;
+            {
+                std::uint64_t temp;
+                std::memcpy(&temp, value, sizeof(std::uint64_t));
+                m_value.asInt = temp;
+                m_size = sizeof(std::uint64_t);
                 break;
+            }
 
             case PrimitiveType::FLOAT:
-                m_value.asDouble = *(float *)value;
-                m_size = 4;
+            {
+                float temp;
+                std::memcpy(&temp, value, sizeof(float));
+                m_value.asDouble = temp;
+                m_size = sizeof(float);
                 break;
+            }
 
             case PrimitiveType::DOUBLE:
-                m_value.asDouble = *(double *)value;
-                m_size = 8;
+            {
+                double temp;
+                std::memcpy(&temp, value, sizeof(double));
+                m_value.asDouble = temp;
+                m_size = sizeof(double);
                 break;
+            }
 
             default:
+            {
                 m_type = PrimitiveType::NONE;
                 break;
+            }
         }
     }
 
@@ -314,52 +359,84 @@ public:
 
     static inline std::int8_t getInt8(const char *buffer)
     {
-        return *(std::int8_t *)buffer;
+        std::int8_t value;
+        std::memcpy(&value, buffer, sizeof(std::int8_t));
+
+        return value;
     }
 
     static inline std::int16_t getInt16(const char *buffer, const ByteOrder byteOrder)
     {
-        return SBE_OTF_BYTE_ORDER_16(byteOrder, *(std::int16_t *)buffer);
+        std::int16_t value;
+        std::memcpy(&value, buffer, sizeof(std::int16_t));
+
+        return SBE_OTF_BYTE_ORDER_16(byteOrder, value);
     }
 
     static inline std::int32_t getInt32(const char *buffer, const ByteOrder byteOrder)
     {
-        return SBE_OTF_BYTE_ORDER_32(byteOrder, *(std::int32_t *)buffer);
+        std::int32_t value;
+        std::memcpy(&value, buffer, sizeof(std::int32_t));
+
+        return SBE_OTF_BYTE_ORDER_32(byteOrder, value);
     }
 
     static inline std::int64_t getInt64(const char *buffer, const ByteOrder byteOrder)
     {
-        return SBE_OTF_BYTE_ORDER_64(byteOrder, *(std::int64_t *)buffer);
+        std::int64_t value;
+        std::memcpy(&value, buffer, sizeof(std::int64_t));
+
+        return SBE_OTF_BYTE_ORDER_64(byteOrder, value);
     }
 
     static inline std::uint8_t getUInt8(const char *buffer)
     {
-        return *(std::uint8_t *)buffer;
+        std::uint8_t value;
+        std::memcpy(&value, buffer, sizeof(std::uint8_t));
+
+        return value;
     }
 
     static inline std::uint16_t getUInt16(const char *buffer, const ByteOrder byteOrder)
     {
-        return SBE_OTF_BYTE_ORDER_16(byteOrder, *(std::uint16_t *)buffer);
+        std::uint16_t value;
+        std::memcpy(&value, buffer, sizeof(std::uint16_t));
+
+        return SBE_OTF_BYTE_ORDER_16(byteOrder, value);
     }
 
     static inline std::uint32_t getUInt32(const char *buffer, const ByteOrder byteOrder)
     {
-        return SBE_OTF_BYTE_ORDER_32(byteOrder, *(std::uint32_t *)buffer);
+        std::uint32_t value;
+        std::memcpy(&value, buffer, sizeof(std::uint32_t));
+
+        return SBE_OTF_BYTE_ORDER_32(byteOrder, value);
     }
 
     static inline std::uint64_t getUInt64(const char *buffer, const ByteOrder byteOrder)
     {
-        return SBE_OTF_BYTE_ORDER_64(byteOrder, *(std::uint64_t *)buffer);
+        std::uint64_t value;
+        std::memcpy(&value, buffer, sizeof(std::uint64_t));
+
+        return SBE_OTF_BYTE_ORDER_64(byteOrder, value);
     }
 
     static inline float getFloat(const char *buffer, const ByteOrder byteOrder)
     {
-        return SBE_OTF_BYTE_ORDER_32(byteOrder, *(float *)buffer);
+        sbe_float_as_uint_t value;
+        std::memcpy(&value, buffer, sizeof(float));
+        value.uint_value = SBE_OTF_BYTE_ORDER_32(byteOrder, value.uint_value);
+
+        return value.fp_value;
     }
 
     static inline double getDouble(const char *buffer, const ByteOrder byteOrder)
     {
-        return SBE_OTF_BYTE_ORDER_64(byteOrder, *(double *)buffer);
+        sbe_double_as_uint_t value;
+        std::memcpy(&value, buffer, sizeof(double));
+        value.uint_value = SBE_OTF_BYTE_ORDER_64(byteOrder, value.uint_value);
+
+        return value.fp_value;
     }
 
     static inline std::int64_t getInt(const PrimitiveType type, const ByteOrder byteOrder, const char *buffer)
@@ -368,14 +445,19 @@ public:
         {
             case PrimitiveType::CHAR:
                 return getChar(buffer);
+
             case PrimitiveType::INT8:
                 return getInt8(buffer);
+
             case PrimitiveType::INT16:
                 return getInt16(buffer, byteOrder);
+
             case PrimitiveType::INT32:
                 return getInt32(buffer, byteOrder);
+
             case PrimitiveType::INT64:
                 return getInt64(buffer, byteOrder);
+
             default:
                 throw std::runtime_error("incorrect type for Encoding::getInt");
         }
@@ -387,12 +469,16 @@ public:
         {
             case PrimitiveType::UINT8:
                 return getUInt8(buffer);
+
             case PrimitiveType::UINT16:
                 return getUInt16(buffer, byteOrder);
+
             case PrimitiveType::UINT32:
                 return getUInt32(buffer, byteOrder);
+
             case PrimitiveType::UINT64:
                 return getUInt64(buffer, byteOrder);
+
             default:
                 throw std::runtime_error("incorrect type for Encoding::getUInt");
         }
