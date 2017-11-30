@@ -3,6 +3,9 @@ package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.DirectBuffer;
 
+/**
+ * Message identifiers and length of message root
+ */
 @javax.annotation.Generated(value = { "uk.co.real_logic.sbe.generation.java.JavaGenerator" })
 @SuppressWarnings("all")
 public class MessageHeaderDecoder

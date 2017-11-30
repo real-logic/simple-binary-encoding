@@ -5,8 +5,14 @@ package uk.co.real_logic.sbe.ir.generated;
 public enum PresenceCodec
 {
     SBE_REQUIRED((short)0),
+
     SBE_OPTIONAL((short)1),
+
     SBE_CONSTANT((short)2),
+
+    /**
+     * To be used to represent not present or null.
+     */
     NULL_VAL((short)255);
 
     private final short value;

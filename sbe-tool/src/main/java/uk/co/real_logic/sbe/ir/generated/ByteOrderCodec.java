@@ -5,7 +5,12 @@ package uk.co.real_logic.sbe.ir.generated;
 public enum ByteOrderCodec
 {
     SBE_LITTLE_ENDIAN((short)0),
+
     SBE_BIG_ENDIAN((short)1),
+
+    /**
+     * To be used to represent not present or null.
+     */
     NULL_VAL((short)255);
 
     private final short value;

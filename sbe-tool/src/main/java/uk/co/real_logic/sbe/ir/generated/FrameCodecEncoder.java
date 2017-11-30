@@ -4,6 +4,9 @@ package uk.co.real_logic.sbe.ir.generated;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.DirectBuffer;
 
+/**
+ * Frame Header for start of encoding IR
+ */
 @javax.annotation.Generated(value = { "uk.co.real_logic.sbe.generation.java.JavaGenerator" })
 @SuppressWarnings("all")
 public class FrameCodecEncoder

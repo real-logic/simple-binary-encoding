@@ -5,22 +5,42 @@ package uk.co.real_logic.sbe.ir.generated;
 public enum SignalCodec
 {
     BEGIN_MESSAGE((short)1),
+
     END_MESSAGE((short)2),
+
     BEGIN_COMPOSITE((short)3),
+
     END_COMPOSITE((short)4),
+
     BEGIN_FIELD((short)5),
+
     END_FIELD((short)6),
+
     BEGIN_GROUP((short)7),
+
     END_GROUP((short)8),
+
     BEGIN_ENUM((short)9),
+
     VALID_VALUE((short)10),
+
     END_ENUM((short)11),
+
     BEGIN_SET((short)12),
+
     CHOICE((short)13),
+
     END_SET((short)14),
+
     BEGIN_VAR_DATA((short)15),
+
     END_VAR_DATA((short)16),
+
     ENCODING((short)17),
+
+    /**
+     * To be used to represent not present or null.
+     */
     NULL_VAL((short)255);
 
     private final short value;

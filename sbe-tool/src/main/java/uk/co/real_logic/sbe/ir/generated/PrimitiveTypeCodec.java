@@ -5,17 +5,32 @@ package uk.co.real_logic.sbe.ir.generated;
 public enum PrimitiveTypeCodec
 {
     NONE((short)0),
+
     CHAR((short)1),
+
     INT8((short)2),
+
     INT16((short)3),
+
     INT32((short)4),
+
     INT64((short)5),
+
     UINT8((short)6),
+
     UINT16((short)7),
+
     UINT32((short)8),
+
     UINT64((short)9),
+
     FLOAT((short)10),
+
     DOUBLE((short)11),
+
+    /**
+     * To be used to represent not present or null.
+     */
     NULL_VAL((short)255);
 
     private final short value;
