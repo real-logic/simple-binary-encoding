@@ -70,7 +70,6 @@ public class JavaGenerator implements CodeGenerator
         final boolean shouldGenerateInterfaces,
         final boolean shouldDecodeUnknownEnumValues,
         final OutputManager outputManager)
-        throws IOException
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
@@ -1522,6 +1521,10 @@ public class JavaGenerator implements CodeGenerator
         {
             sb.append(generatePrimitivePropertyEncodeMethods(containingClassName, propertyName, token, indent));
         }
+        else
+        {
+            sb.append(generateConstPropertyMethods(propertyName, token, indent));
+        }
 
         return sb;
     }
@@ -2802,7 +2805,7 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> tokens,
         final List<Token> groups,
         final List<Token> varData,
-        final String baseIndent) throws IOException
+        final String baseIndent)
     {
         final String indent = baseIndent + INDENT;
         final StringBuilder sb = new StringBuilder();
