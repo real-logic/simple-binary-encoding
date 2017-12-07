@@ -103,7 +103,6 @@ subprojects {
     apply plugin: 'signing'
     apply plugin: 'checkstyle'
     apply plugin: 'eclipse'
-    apply plugin: 'com.github.johnrengelman.shadow'
 
     group = sbeGroup
     version = sbeVersion
@@ -151,7 +150,6 @@ subprojects {
     signing {
         required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
         sign configurations.archives
-        sign configurations.shadow
     }
 
     install {
@@ -306,6 +304,11 @@ project(':sbe-all') {
     artifacts {
         archives sourcesJar
         archives javadocJar
+    }
+
+    signing {
+        required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.shadow
     }
 }
 
@@ -464,6 +467,11 @@ project(':sbe-benchmarks') {
     artifacts {
         archives sourcesJar
         archives javadocJar
+    }
+
+    signing {
+        required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.shadow
     }
 }
 
