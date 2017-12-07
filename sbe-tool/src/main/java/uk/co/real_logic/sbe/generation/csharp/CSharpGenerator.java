@@ -44,7 +44,6 @@ public class CSharpGenerator implements CodeGenerator
     private final OutputManager outputManager;
 
     public CSharpGenerator(final Ir ir, final OutputManager outputManager)
-        throws IOException
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
@@ -112,7 +111,7 @@ public class CSharpGenerator implements CodeGenerator
 
                 final List<Token> varData = new ArrayList<>();
                 collectVarData(messageBody, offset, varData);
-                out.append(generateVarData(className, varData, BASE_INDENT + INDENT));
+                out.append(generateVarData(varData, BASE_INDENT + INDENT));
 
                 out.append(INDENT + "}\n");
                 out.append("}\n");
@@ -150,7 +149,7 @@ public class CSharpGenerator implements CodeGenerator
 
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
-            sb.append(generateVarData(parentMessageClassName, varData, indent + INDENT + INDENT));
+            sb.append(generateVarData(varData, indent + INDENT + INDENT));
 
             sb.append(indent).append(INDENT + "}\n");
         }
@@ -228,8 +227,7 @@ public class CSharpGenerator implements CodeGenerator
         sb.append(
             indent + INDENT + "public int ActingBlockLength { get { return _blockLength; } }\n\n" +
             indent + INDENT + "public int Count { get { return _count; } }\n\n" +
-            indent + INDENT + "public bool HasNext { get { return (_index + 1) < _count; } }\n\n"
-        );
+            indent + INDENT + "public bool HasNext { get { return (_index + 1) < _count; } }\n\n");
 
         sb.append(String.format(
             indent + INDENT + "public %sGroup Next()\n" +
@@ -304,10 +302,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateVarData(
-            final String className,
-            final List<Token> tokens,
-            final String indent)
+    private CharSequence generateVarData(final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -333,7 +328,7 @@ public class CSharpGenerator implements CodeGenerator
 
                 sb.append(String.format(
                     "\n" +
-                        indent + "public const int %sHeaderSize = %d;\n",
+                    indent + "public const int %sHeaderSize = %d;\n",
                     propertyName,
                     sizeOfLengthField));
 
@@ -355,8 +350,7 @@ public class CSharpGenerator implements CodeGenerator
                     generateArrayFieldNotPresentCondition(token.version(), indent),
                     sizeOfLengthField,
                     lengthTypePrefix,
-                    byteOrderStr
-                ));
+                    byteOrderStr));
 
                 sb.append(String.format(
                     indent + "public int Set%1$s(byte[] src, int srcOffset, int length)\n" +
@@ -372,8 +366,7 @@ public class CSharpGenerator implements CodeGenerator
                     sizeOfLengthField,
                     lengthTypePrefix,
                     lengthCSharpType,
-                    byteOrderStr
-                ));
+                    byteOrderStr));
             }
         }
 
@@ -425,16 +418,14 @@ public class CSharpGenerator implements CodeGenerator
             out.append(generateFileHeader(ir.applicableNamespace()));
             out.append(generateClassDeclaration(compositeName));
             out.append(generateFixedFlyweightCode(tokens.get(0).encodedLength()));
-            out.append(generateCompositePropertyElements(
-                compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+            out.append(generateCompositePropertyElements(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append(INDENT + "}\n");
             out.append("}\n");
         }
     }
 
-    private CharSequence generateCompositePropertyElements(
-        final String containingClassName, final List<Token> tokens, final String indent)
+    private CharSequence generateCompositePropertyElements(final List<Token> tokens, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -519,7 +510,7 @@ public class CSharpGenerator implements CodeGenerator
             sb.setLength(sb.length() - 1);
         }
 
-        // Remove '_' but upcase between them
+        // Remove '_' but uppercase between them
         tokens = sb.toString().split("-");
         sb.setLength(0);
 
@@ -544,8 +535,7 @@ public class CSharpGenerator implements CodeGenerator
         return String.format(
             INDENT + "public sealed partial class %s\n" +
             INDENT + "{\n",
-            className
-        );
+            className);
     }
 
     private void generateMetaAttributeEnum() throws IOException
@@ -562,8 +552,7 @@ public class CSharpGenerator implements CodeGenerator
                 INDENT + INDENT + "SemanticType,\n" +
                 INDENT + INDENT + "Presence\n" +
                 INDENT + "}\n" +
-                "}\n"
-            );
+                "}\n");
         }
     }
 
@@ -585,25 +574,7 @@ public class CSharpGenerator implements CodeGenerator
         return result;
     }
 
-    private CharSequence generatePrimitivePropertyEncodings(final List<Token> tokens, final String indent)
-    {
-        final StringBuilder sb = new StringBuilder();
-
-        for (final Token token : tokens)
-        {
-            if (token.signal() == Signal.ENCODING)
-            {
-                sb.append(generatePrimitiveProperty(token.name(), token, indent));
-            }
-        }
-
-        return sb;
-    }
-
-    private CharSequence generatePrimitiveProperty(
-        final String propertyName,
-        final Token token,
-        final String indent)
+    private CharSequence generatePrimitiveProperty(final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 

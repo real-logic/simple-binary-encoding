@@ -137,8 +137,8 @@ public class RustGenerator implements CodeGenerator
         }
 
         final int numBytes = components.fields.stream()
-            .filter(t -> !t.isConstantEncoding())
-            .filter(t -> t.signal() == ENCODING || t.signal() == BEGIN_ENUM || t.signal() == BEGIN_SET)
+            .filter((t) -> !t.isConstantEncoding())
+            .filter((t) -> t.signal() == ENCODING || t.signal() == BEGIN_ENUM || t.signal() == BEGIN_SET)
             .mapToInt(Token::encodedLength)
             .sum();
 
@@ -274,8 +274,7 @@ public class RustGenerator implements CodeGenerator
         final String messageTypeName,
         final OutputManager outputManager,
         final String topType,
-        final Optional<FieldsRepresentationSummary>
-            fieldsRepresentationOptional,
+        final Optional<FieldsRepresentationSummary> fieldsRepresentationOptional,
         final RustCodecType codecType) throws IOException
     {
         if (!fieldsRepresentationOptional.isPresent())
@@ -735,7 +734,6 @@ public class RustGenerator implements CodeGenerator
         final String parentTypeName,
         final List<Token> groupsTokens,
         final Optional<GroupTreeNode> parent)
-
     {
         final int size = groupsTokens.size();
         final List<GroupTreeNode> groups = new ArrayList<>();

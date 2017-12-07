@@ -43,7 +43,6 @@ public class CppGenerator implements CodeGenerator
     private final OutputManager outputManager;
 
     public CppGenerator(final Ir ir, final OutputManager outputManager)
-        throws IOException
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");

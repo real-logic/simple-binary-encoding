@@ -45,7 +45,6 @@ public class GolangGenerator implements CodeGenerator
     private TreeSet<String> imports;
 
     public GolangGenerator(final Ir ir, final OutputManager outputManager)
-        throws IOException
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
@@ -89,7 +88,7 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
-    // MesssageHeader is special but the standard allows it to be
+    // MessageHeader is special but the standard allows it to be
     // pretty arbitrary after the first four fields.
     // All we need is the imports, type declaration, and encode/decode
     public void generateMessageHeaderStub() throws IOException
@@ -165,14 +164,13 @@ public class GolangGenerator implements CodeGenerator
                 final List<Token> varData = new ArrayList<>();
                 collectVarData(messageBody, i, varData);
 
-                generateFields(sb, typeName, fields, "");
+                generateFields(sb, typeName, fields);
                 generateGroups(sb, groups, typeName);
                 generateGroupProperties(sb, groups, typeName);
-                generateVarData(sb, typeName, varData, "");
+                generateVarData(sb, typeName, varData);
 
                 out.append(generateFileHeader(ir.namespaces()));
                 out.append(sb);
-
             }
         }
     }
@@ -202,6 +200,7 @@ public class GolangGenerator implements CodeGenerator
             this.imports.add("io/ioutil");
             return String.format("%1$s\tio.CopyN(ioutil.Discard, _r, %2$d)\n", indent, gap);
         }
+
         return "";
     }
 
@@ -482,7 +481,6 @@ public class GolangGenerator implements CodeGenerator
                 "\t\t}\n" +
                 "\t}\n",
                 varName));
-
         }
 
         // Fields that are an [n]byte may have a characterEncoding which
@@ -740,7 +738,7 @@ public class GolangGenerator implements CodeGenerator
                                 tokens.subList(i + 5, tokens.size() - 1),
                                 false, true));
 
-                    // Group gap blocklength handling
+                    // Group gap block length handling
                     encode.append(generateEncodeOffset(gap, "\t")).append("\t}\n");
                     decode.append(generateDecodeOffset(gap, "\t")).append("\t}\n");
 
@@ -791,6 +789,7 @@ public class GolangGenerator implements CodeGenerator
         // Close out the methods and append
         generateEncodeDecodeClose(encode, decode, rangeCheck, init);
         sb.append(encode).append(decode).append(rangeCheck).append(init).append(nested);
+
         return currentOffset;
     }
 
@@ -886,7 +885,6 @@ public class GolangGenerator implements CodeGenerator
             token.encodedLength() * 8,
             varName));
 
-        // Decode
         generateDecodeHeader(sb, varName, choiceName, false, false);
 
         sb.append(String.format(
@@ -937,7 +935,7 @@ public class GolangGenerator implements CodeGenerator
         final String blockLengthType = golangTypeName(ir.headerStructure().blockLengthType());
 
         // Messages, groups, and vardata are extensible so need to know
-        // working blocklength.
+        // working block length.
         // Messages mandate only 16 bits, otherwise let's be generous and
         // support the platform.
         if (isExtensible)
@@ -1273,7 +1271,6 @@ public class GolangGenerator implements CodeGenerator
         return gap;
     }
 
-
     // Recursively traverse groups to create the group properties
     private void generateGroupProperties(
         final StringBuilder sb,
@@ -1320,7 +1317,7 @@ public class GolangGenerator implements CodeGenerator
 
             final List<Token> fields = new ArrayList<>();
             i = collectFields(tokens, i, fields);
-            generateFields(sb, groupName, fields, prefix);
+            generateFields(sb, groupName, fields);
 
             final List<Token> groups = new ArrayList<>();
             i = collectGroups(tokens, i, groups);
@@ -1328,15 +1325,14 @@ public class GolangGenerator implements CodeGenerator
 
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
-            generateVarData(sb, formatTypeName(groupName), varData, prefix);
+            generateVarData(sb, formatTypeName(groupName), varData);
         }
     }
 
     private void generateVarData(
         final StringBuilder sb,
         final String typeName,
-        final List<Token> tokens,
-        final String prefix)
+        final List<Token> tokens)
     {
         for (int i = 0, size = tokens.size(); i < size;)
         {
@@ -1351,7 +1347,7 @@ public class GolangGenerator implements CodeGenerator
             final Token lengthToken = tokens.get(i + 2);
             final int lengthOfLengthField = lengthToken.encodedLength();
 
-            generateFieldMetaAttributeMethod(sb, typeName, token, prefix);
+            generateFieldMetaAttributeMethod(sb, typeName, token);
 
             generateVarDataDescriptors(
                 sb, token, typeName, propertyName, characterEncoding, lengthOfLengthField);
@@ -1598,6 +1594,7 @@ public class GolangGenerator implements CodeGenerator
                 .append(generateLiteral(token.encoding().primitiveType(), token.encoding().constValue().toString()));
             comma = ", ";
         }
+
         sb.append("}\n");
     }
 
@@ -1624,6 +1621,7 @@ public class GolangGenerator implements CodeGenerator
         }
 
         sb.append(")\n\n");
+
         return sb;
     }
 
@@ -1784,7 +1782,6 @@ public class GolangGenerator implements CodeGenerator
         sb.append(nested);
     }
 
-
     private void generateCompositePropertyElements(
         final StringBuilder sb,
         final String containingTypeName,
@@ -1818,6 +1815,7 @@ public class GolangGenerator implements CodeGenerator
                 default:
                     break;
             }
+
             i += tokens.get(i).componentTokenCount();
         }
     }
@@ -2076,7 +2074,7 @@ public class GolangGenerator implements CodeGenerator
     }
 
     // Used for groups which need to know the schema's definition
-    // of blocklength and version to check for extensions
+    // of block length and version to check for extensions
     private void generateExtensibilityMethods(
         final StringBuilder sb,
         final String typeName,
@@ -2099,8 +2097,7 @@ public class GolangGenerator implements CodeGenerator
     private void generateFields(
         final StringBuilder sb,
         final String containingTypeName,
-        final List<Token> tokens,
-        final String prefix)
+        final List<Token> tokens)
     {
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
@@ -2112,7 +2109,7 @@ public class GolangGenerator implements CodeGenerator
 
                 generateId(sb, containingTypeName, propertyName, signalToken);
                 generateSinceActingDeprecated(sb, containingTypeName, propertyName, signalToken);
-                generateFieldMetaAttributeMethod(sb, containingTypeName, signalToken, prefix);
+                generateFieldMetaAttributeMethod(sb, containingTypeName, signalToken);
 
                 switch (encodingToken.signal())
                 {
@@ -2140,8 +2137,7 @@ public class GolangGenerator implements CodeGenerator
     private static void generateFieldMetaAttributeMethod(
         final StringBuilder sb,
         final String containingTypeName,
-        final Token token,
-        final String prefix)
+        final Token token)
     {
         final Encoding encoding = token.encoding();
         final String epoch = encoding.epoch() == null ? "" : encoding.epoch();
