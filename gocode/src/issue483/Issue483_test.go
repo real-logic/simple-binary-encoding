@@ -22,6 +22,13 @@ func TestPresence(t *testing.T) {
 		t.Fail()
 	}
 
+	// Check contant value is set by init func
+	Issue483Init(issue483)
+	if issue483.Constant != 1 {
+		t.Log("Constant's value should be 1")
+		t.Fail()
+	}
+
 	if issue483.OptionalMetaAttribute(4) != "optional" {
 		t.Log("Optional attribute's presence should be 'optional'")
 		t.Fail()
