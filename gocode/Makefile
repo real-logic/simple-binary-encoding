@@ -17,7 +17,7 @@ all: example test # bench
 # use this one output file to check that dependency as it's simple
 DEP=src/simple/SbeMarshalling.go
 $(DEP): $(SBE_JAR)
-	(cd ..; gradlew generateGolangCodecs)
+	(cd ..; ./gradlew generateGolangCodecs)
 	(export GOPATH=$(GOPATH) && \
 	cd src/simple && \
 	go build && \
