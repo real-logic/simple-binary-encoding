@@ -791,7 +791,11 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        final int headerLength = %3$d;\n" +
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        final int dataLength = (int)%4$s;\n" +
-                indent + "        parentMessage.limit(limit + headerLength + dataLength);\n" +
+                indent + "        parentMessage.limit(limit + headerLength + dataLength);\n\n" +
+                indent + "        if (0 == dataLength)\n" +
+                indent + "        {\n" +
+                indent + "            return \"\";\n" +
+                indent + "        }\n\n" +
                 indent + "        final byte[] tmp = new byte[dataLength];\n" +
                 indent + "        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);\n\n" +
                 indent + "        final String value;\n" +
@@ -884,7 +888,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        final byte[] bytes;\n" +
                 indent + "        try\n" +
                 indent + "        {\n" +
-                indent + "            bytes = value.getBytes(\"%3$s\");\n" +
+                indent + "            bytes = value.isEmpty() ? new byte[0] : value.getBytes(\"%3$s\");\n" +
                 indent + "        }\n" +
                 indent + "        catch (final java.io.UnsupportedEncodingException ex)\n" +
                 indent + "        {\n" +
