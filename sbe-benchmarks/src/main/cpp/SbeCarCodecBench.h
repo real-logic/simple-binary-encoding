@@ -133,6 +133,11 @@ public:
         tmpChar = car.manufacturer();
         tmpChar = car.model();
 
+        (void)tmpInt;
+        (void)tmpChar;
+        (void)tmpDouble;
+        (void)tmpBool;
+
         return car.encodedLength();
     };
 
