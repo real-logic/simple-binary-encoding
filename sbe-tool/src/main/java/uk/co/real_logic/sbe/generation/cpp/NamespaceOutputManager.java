@@ -37,10 +37,8 @@ public class NamespaceOutputManager implements OutputManager
      *
      * @param baseDirName for the generated source code.
      * @param namespaceName     for the generated source code relative to the baseDirName.
-     * @throws IOException if an error occurs during output
      */
     public NamespaceOutputManager(final String baseDirName, final String namespaceName)
-        throws IOException
     {
         Verify.notNull(baseDirName, "baseDirName");
         Verify.notNull(namespaceName, "applicableNamespace");

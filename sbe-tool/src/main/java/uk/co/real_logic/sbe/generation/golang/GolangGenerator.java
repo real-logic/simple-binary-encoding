@@ -748,7 +748,6 @@ public class GolangGenerator implements CodeGenerator
                     if (isExtensible && !extensionStarted)
                     {
                         generateExtensionCheck(decode, varName);
-                        extensionStarted = true;
                     }
                     // Close out this group and unwind
                     generateEncodeDecodeClose(encode, decode, rangeCheck, init);

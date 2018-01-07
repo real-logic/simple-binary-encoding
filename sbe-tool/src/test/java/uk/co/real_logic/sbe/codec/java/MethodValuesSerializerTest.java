@@ -35,7 +35,7 @@ public class MethodValuesSerializerTest
         A, B
     }
 
-    static List<Class<?>> order = new ArrayList<>();
+    static final List<Class<?>> ORDER = new ArrayList<>();
 
     @GroupOrder({ X.Y.class, X.Z.class })
     static class X
@@ -44,7 +44,7 @@ public class MethodValuesSerializerTest
         {
             public boolean publicBoolean()
             {
-                order.add(Z.class);
+                ORDER.add(Z.class);
                 return true;
             }
         }
@@ -53,7 +53,7 @@ public class MethodValuesSerializerTest
         {
             public boolean publicBoolean()
             {
-                order.add(Y.class);
+                ORDER.add(Y.class);
                 return true;
             }
         }
@@ -143,6 +143,6 @@ public class MethodValuesSerializerTest
         final JsonElement got = serializer.serialize(new X());
 
         Assert.assertEquals(expected, got);
-        Assert.assertEquals(Arrays.asList(X.Y.class, X.Z.class), order);
+        Assert.assertEquals(Arrays.asList(X.Y.class, X.Z.class), ORDER);
     }
 }

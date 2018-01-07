@@ -409,25 +409,25 @@ public class JavaGeneratorTest
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldValidateMissingMutableBufferClass() throws IOException
+    public void shouldValidateMissingMutableBufferClass()
     {
         new JavaGenerator(ir, "dasdsads", BUFFER_NAME, false, false, false, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldValidateNotImplementedMutableBufferClass() throws IOException
+    public void shouldValidateNotImplementedMutableBufferClass()
     {
         new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, false, false, false, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldValidateMissingReadOnlyBufferClass() throws IOException
+    public void shouldValidateMissingReadOnlyBufferClass()
     {
         new JavaGenerator(ir, BUFFER_NAME, "dasdsads", false, false, false, outputManager);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldValidateNotImplementedReadOnlyBufferClass() throws IOException
+    public void shouldValidateNotImplementedReadOnlyBufferClass()
     {
         new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", false, false, false, outputManager);
     }
@@ -465,7 +465,7 @@ public class JavaGeneratorTest
         return clazz;
     }
 
-    private JavaGenerator generator() throws IOException
+    private JavaGenerator generator()
     {
         return new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, outputManager);
     }

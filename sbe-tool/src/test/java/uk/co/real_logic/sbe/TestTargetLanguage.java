@@ -19,8 +19,6 @@ import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
-import java.io.IOException;
-
 import static org.mockito.Mockito.mock;
 
 public class TestTargetLanguage implements TargetCodeGenerator
@@ -29,10 +27,11 @@ public class TestTargetLanguage implements TargetCodeGenerator
     public static Ir ir = null;
     public static String outputDir = "";
 
-    public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
+    public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
         TestTargetLanguage.ir = ir;
         TestTargetLanguage.outputDir = outputDir;
+
         return SINGLETON;
     }
 }

@@ -37,7 +37,6 @@ import uk.co.real_logic.sbe.xml.ParserOptions;
 import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -48,8 +47,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class CompositeElementsGenerationTest
@@ -223,7 +220,7 @@ public class CompositeElementsGenerationTest
         }
     }
 
-    private static Ir decodeIr(final ByteBuffer buffer) throws IOException
+    private static Ir decodeIr(final ByteBuffer buffer)
     {
         try (IrDecoder irDecoder = new IrDecoder(buffer))
         {

@@ -26,24 +26,24 @@ import java.util.Map;
  */
 public class CSharpUtil
 {
-    private static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
+    private static final Map<PrimitiveType, String> PRIMITIVE_TYPE_STRING_ENUM_MAP = new EnumMap<>(PrimitiveType.class);
 
-    /**
+    /*
      * http://msdn.microsoft.com/en-us/library/ms228360(v=vs.90).aspx
      */
     static
     {
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.CHAR, "byte");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT8, "sbyte");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT16, "short");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT32, "int");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT64, "long");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT8, "byte");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT16, "ushort");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT32, "uint");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT64, "ulong");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.FLOAT, "float");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.DOUBLE, "double");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.CHAR, "byte");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT8, "sbyte");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT16, "short");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT32, "int");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT64, "long");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT8, "byte");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT16, "ushort");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT32, "uint");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT64, "ulong");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.FLOAT, "float");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.DOUBLE, "double");
     }
 
     /**
@@ -54,7 +54,7 @@ public class CSharpUtil
      */
     public static String cSharpTypeName(final PrimitiveType primitiveType)
     {
-        return typeNameByPrimitiveTypeMap.get(primitiveType);
+        return PRIMITIVE_TYPE_STRING_ENUM_MAP.get(primitiveType);
     }
 
     /**

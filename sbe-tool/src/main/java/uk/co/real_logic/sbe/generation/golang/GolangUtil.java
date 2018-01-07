@@ -28,21 +28,21 @@ import java.util.Map;
  */
 public class GolangUtil
 {
-    private static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
+    private static final Map<PrimitiveType, String> PRIMITIVE_TYPE_STRING_ENUM_MAP = new EnumMap<>(PrimitiveType.class);
 
     static
     {
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.CHAR, "byte");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT8, "int8");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT16, "int16");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT32, "int32");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT64, "int64");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT8, "uint8");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT16, "uint16");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT32, "uint32");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT64, "uint64");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.FLOAT, "float32");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.DOUBLE, "float64");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.CHAR, "byte");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT8, "int8");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT16, "int16");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT32, "int32");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT64, "int64");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT8, "uint8");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT16, "uint16");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT32, "uint32");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT64, "uint64");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.FLOAT, "float32");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.DOUBLE, "float64");
     }
 
     /**
@@ -53,24 +53,25 @@ public class GolangUtil
      */
     public static String golangTypeName(final PrimitiveType primitiveType)
     {
-        return typeNameByPrimitiveTypeMap.get(primitiveType);
+        return PRIMITIVE_TYPE_STRING_ENUM_MAP.get(primitiveType);
     }
 
-    private static Map<PrimitiveType, String> marshalTypeByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
+    private static final Map<PrimitiveType, String> MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP =
+        new EnumMap<>(PrimitiveType.class);
 
     static
     {
-        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.CHAR, "Bytes");
-        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.INT8, "Int8");
-        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.INT16, "Int16");
-        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.INT32, "Int32");
-        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.INT64, "Int64");
-        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.UINT8, "Uint8");
-        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.UINT16, "Uint16");
-        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.UINT32, "Uint32");
-        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.UINT64, "Uint64");
-        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.FLOAT, "Float32");
-        marshalTypeByPrimitiveTypeMap.put(PrimitiveType.DOUBLE, "Float64");
+        MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.CHAR, "Bytes");
+        MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.INT8, "Int8");
+        MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.INT16, "Int16");
+        MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.INT32, "Int32");
+        MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.INT64, "Int64");
+        MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.UINT8, "Uint8");
+        MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.UINT16, "Uint16");
+        MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.UINT32, "Uint32");
+        MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.UINT64, "Uint64");
+        MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.FLOAT, "Float32");
+        MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.put(PrimitiveType.DOUBLE, "Float64");
     }
 
     /**
@@ -81,7 +82,7 @@ public class GolangUtil
      */
     public static String golangMarshalType(final PrimitiveType primitiveType)
     {
-        return marshalTypeByPrimitiveTypeMap.get(primitiveType);
+        return MARSHAL_TYPE_BY_PRIMITIVE_TYPE_MAP.get(primitiveType);
     }
 
     /**

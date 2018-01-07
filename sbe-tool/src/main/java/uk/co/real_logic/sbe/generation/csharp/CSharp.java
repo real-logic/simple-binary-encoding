@@ -19,11 +19,9 @@ import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
-import java.io.IOException;
-
 public class CSharp implements TargetCodeGenerator
 {
-    public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
+    public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
         return new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
     }

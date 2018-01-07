@@ -28,10 +28,10 @@ public class RustGeneratorTest
     private SingleStringOutputManager outputManager;
 
     @Rule
-    public TemporaryFolder folderRule = new TemporaryFolder();
+    public final TemporaryFolder folderRule = new TemporaryFolder();
 
     @Before
-    public void setUp() throws Exception
+    public void setUp()
     {
         outputManager = new SingleStringOutputManager();
     }
@@ -109,7 +109,7 @@ public class RustGeneratorTest
     }
 
     @Test
-    public void fullGenerateBasicTypes() throws IOException
+    public void fullGenerateBasicTypes()
     {
         final String generatedRust = fullGenerateForResource(outputManager, BASIC_TYPES_SCHEMA);
         assertContainsSharedImports(generatedRust);

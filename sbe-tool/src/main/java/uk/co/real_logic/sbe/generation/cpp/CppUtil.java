@@ -28,21 +28,21 @@ import java.util.Map;
  */
 public class CppUtil
 {
-    private static Map<PrimitiveType, String> typeNameByPrimitiveTypeMap = new EnumMap<>(PrimitiveType.class);
+    private static final Map<PrimitiveType, String> PRIMITIVE_TYPE_STRING_ENUM_MAP = new EnumMap<>(PrimitiveType.class);
 
     static
     {
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.CHAR, "char");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT8, "std::int8_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT16, "std::int16_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT32, "std::int32_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.INT64, "std::int64_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT8, "std::uint8_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT16, "std::uint16_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT32, "std::uint32_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.UINT64, "std::uint64_t");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.FLOAT, "float");
-        typeNameByPrimitiveTypeMap.put(PrimitiveType.DOUBLE, "double");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.CHAR, "char");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT8, "std::int8_t");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT16, "std::int16_t");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT32, "std::int32_t");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.INT64, "std::int64_t");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT8, "std::uint8_t");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT16, "std::uint16_t");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT32, "std::uint32_t");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.UINT64, "std::uint64_t");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.FLOAT, "float");
+        PRIMITIVE_TYPE_STRING_ENUM_MAP.put(PrimitiveType.DOUBLE, "double");
     }
 
     /**
@@ -53,7 +53,7 @@ public class CppUtil
      */
     public static String cppTypeName(final PrimitiveType primitiveType)
     {
-        return typeNameByPrimitiveTypeMap.get(primitiveType);
+        return PRIMITIVE_TYPE_STRING_ENUM_MAP.get(primitiveType);
     }
 
     /**

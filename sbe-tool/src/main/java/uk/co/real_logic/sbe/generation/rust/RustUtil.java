@@ -197,19 +197,19 @@ public class RustUtil
         Pure, Ref, Return, Self, Sizeof, Static, Struct, Super, Trait, True,
         Type, Typeof, Unsafe, Unsized, Use, Virtual, Where, While, Yield;
 
-        private static Set<String> lowerCaseNames = new HashSet<>();
+        private static final Set<String> LOWER_CASE_NAMES = new HashSet<>();
 
         static
         {
             Arrays.stream(ReservedKeyword.values())
                 .map(java.lang.Enum::name)
                 .map(String::toLowerCase)
-                .forEach(lowerCaseNames::add);
+                .forEach(LOWER_CASE_NAMES::add);
         }
 
         private static boolean anyMatch(final String v)
         {
-            return lowerCaseNames.contains(v.toLowerCase());
+            return LOWER_CASE_NAMES.contains(v.toLowerCase());
         }
     }
 }

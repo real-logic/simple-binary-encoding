@@ -152,7 +152,7 @@ public enum PrimitiveType
 
     /**
      * Used to hold a reference to the values array without having it defensively copied
-     * on every call to {@link PrimitiveType#values()}.
+     * on every call to {@link Enum} values().
      */
     static class Singleton
     {

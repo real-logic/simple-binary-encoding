@@ -2,7 +2,6 @@ package uk.co.real_logic.sbe.generation.rust;
 
 import org.agrona.generation.OutputManager;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
@@ -12,7 +11,7 @@ public class SingleStringOutputManager implements OutputManager
 {
     private final List<Map.Entry<String, StringWriter>> sections = new ArrayList<>();
 
-    public Writer createOutput(final String name) throws IOException
+    public Writer createOutput(final String name)
     {
         final StringWriter stringWriter = new StringWriter();
         sections.add(new AbstractMap.SimpleEntry<>(name, stringWriter));

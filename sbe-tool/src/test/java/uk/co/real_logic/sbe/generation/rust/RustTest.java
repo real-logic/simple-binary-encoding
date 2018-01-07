@@ -17,16 +17,16 @@ import static org.junit.Assert.assertNotNull;
 public class RustTest
 {
     @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test(expected = NullPointerException.class)
-    public void nullIRParamShouldTossNPE() throws IOException
+    public void nullIRParamShouldTossNPE()
     {
         new Rust().newInstance(null, temporaryFolder.toString());
     }
 
     @Test(expected = NullPointerException.class)
-    public void nullOutputDirParamShouldTossNPE() throws IOException
+    public void nullOutputDirParamShouldTossNPE()
     {
         new Rust().newInstance(minimalDummyIr(), null);
     }

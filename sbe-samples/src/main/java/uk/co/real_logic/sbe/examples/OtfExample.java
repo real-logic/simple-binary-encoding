@@ -114,7 +114,7 @@ public class OtfExample
         byteBuffer.position(encodedLength);
     }
 
-    private static Ir decodeIr(final ByteBuffer buffer) throws IOException
+    private static Ir decodeIr(final ByteBuffer buffer)
     {
         try (IrDecoder irDecoder = new IrDecoder(buffer))
         {

@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 public class RustFlatFileOutputManagerTest
 {
     @Rule
-    public TemporaryFolder folderRule = new TemporaryFolder();
+    public final TemporaryFolder folderRule = new TemporaryFolder();
 
     static final String PACKAGE_NAME = "uk.co.real_logic.test";
     static final String EXAMPLE_CLASS_NAME = "ExampleClassName";
