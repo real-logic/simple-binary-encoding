@@ -166,8 +166,7 @@ public class CSharpGenerator implements CodeGenerator
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
         final int dimensionHeaderLength = tokens.get(index + 1).encodedLength();
 
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + "public sealed partial class %1$sGroup\n" +
             indent + "{\n" +
             indent + INDENT + "private readonly %2$s _dimensions = new %2$s();\n" +
@@ -177,12 +176,12 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "private int _actingVersion;\n" +
             indent + INDENT + "private int _count;\n" +
             indent + INDENT + "private int _index;\n" +
-            indent + INDENT + "private int _offset;\n\n",
+            indent + INDENT + "private int _offset;\n",
             formatClassName(groupName),
             dimensionsClassName,
             parentMessageClassName));
 
-        sb.append(String.format(
+        sb.append(String.format("\n" +
             indent + INDENT + "public void WrapForDecode(%s parentMessage, DirectBuffer buffer, int actingVersion)\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "_parentMessage = parentMessage;\n" +
@@ -193,14 +192,14 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_actingVersion = actingVersion;\n" +
             indent + INDENT + INDENT + "_index = -1;\n" +
             indent + INDENT + INDENT + "_parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
-            indent + INDENT + "}\n\n",
+            indent + INDENT + "}\n",
             parentMessageClassName));
 
         final int blockLength = tokens.get(index).encodedLength();
         final String typeForBlockLength = cSharpTypeName(tokens.get(index + 2).encoding().primitiveType());
         final String typeForNumInGroup = cSharpTypeName(tokens.get(index + 3).encoding().primitiveType());
 
-        sb.append(String.format(
+        sb.append(String.format("\n" +
             indent + INDENT + "public void WrapForEncode(%1$s parentMessage, DirectBuffer buffer, int count)\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "_parentMessage = parentMessage;\n" +
@@ -212,13 +211,13 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_count = count;\n" +
             indent + INDENT + INDENT + "_blockLength = %3$d;\n" +
             indent + INDENT + INDENT + "parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
-            indent + INDENT + "}\n\n",
+            indent + INDENT + "}\n",
             parentMessageClassName,
             typeForBlockLength,
             blockLength,
             typeForNumInGroup));
 
-        sb.append(String.format(
+        sb.append(String.format("\n" +
             indent + INDENT + "public const int SbeBlockLength = %d;\n" +
             indent + INDENT + "public const int SbeHeaderSize = %d;\n",
             blockLength,
@@ -227,9 +226,9 @@ public class CSharpGenerator implements CodeGenerator
         sb.append(
             indent + INDENT + "public int ActingBlockLength { get { return _blockLength; } }\n\n" +
             indent + INDENT + "public int Count { get { return _count; } }\n\n" +
-            indent + INDENT + "public bool HasNext { get { return (_index + 1) < _count; } }\n\n");
+            indent + INDENT + "public bool HasNext { get { return (_index + 1) < _count; } }\n");
 
-        sb.append(String.format(
+        sb.append(String.format("\n" +
             indent + INDENT + "public %sGroup Next()\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "if (_index + 1 >= _count)\n" +
@@ -240,10 +239,10 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_parentMessage.Limit = _offset + _blockLength;\n" +
             indent + INDENT + INDENT + "++_index;\n\n" +
             indent + INDENT + INDENT + "return this;\n" +
-            indent + INDENT + "}\n\n",
+            indent + INDENT + "}\n",
             formatClassName(groupName)));
 
-        sb.append(
+        sb.append("\n" +
             indent + INDENT + "public System.Collections.IEnumerator GetEnumerator()\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "while (this.HasNext)\n" +
@@ -259,23 +258,20 @@ public class CSharpGenerator implements CodeGenerator
 
         final String className = CSharpUtil.formatClassName(groupName);
 
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + "private readonly %sGroup _%s = new %sGroup();\n",
             className,
             toLowerFirstChar(groupName),
             className));
 
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + "public const long %sId = %d;\n",
             toUpperFirstChar(groupName),
             token.id()));
 
         generateSinceActingDeprecated(sb, indent, toUpperFirstChar(groupName), token);
 
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + "public %1$sGroup %2$s\n" +
             indent + "{\n" +
             indent + INDENT + "get\n" +
@@ -288,8 +284,7 @@ public class CSharpGenerator implements CodeGenerator
             toUpperFirstChar(groupName),
             toLowerFirstChar(groupName)));
 
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + "public %1$sGroup %2$sCount(int count)\n" +
             indent + "{\n" +
             indent + INDENT + "_%3$s.WrapForEncode(_parentMessage, _buffer, count);\n" +
@@ -326,14 +321,12 @@ public class CSharpGenerator implements CodeGenerator
                 final ByteOrder byteOrder = lengthEncoding.byteOrder();
                 final String byteOrderStr = generateByteOrder(byteOrder, lengthEncoding.primitiveType().size());
 
-                sb.append(String.format(
-                    "\n" +
+                sb.append(String.format("\n" +
                     indent + "public const int %sHeaderSize = %d;\n",
                     propertyName,
                     sizeOfLengthField));
 
-                sb.append(String.format(
-                    "\n" +
+                sb.append(String.format("\n" +
                     indent + "public int Get%1$s(byte[] dst, int dstOffset, int length)\n" +
                     indent + "{\n" +
                     "%2$s" +
@@ -345,14 +338,14 @@ public class CSharpGenerator implements CodeGenerator
                     indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + dataLength;\n" +
                     indent + INDENT + "_buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
                     indent + INDENT + "return bytesCopied;\n" +
-                    indent + "}\n\n",
+                    indent + "}\n",
                     propertyName,
                     generateArrayFieldNotPresentCondition(token.version(), indent),
                     sizeOfLengthField,
                     lengthTypePrefix,
                     byteOrderStr));
 
-                sb.append(String.format(
+                sb.append(String.format("\n" +
                     indent + "public int Set%1$s(byte[] src, int srcOffset, int length)\n" +
                     indent + "{\n" +
                     indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
@@ -498,7 +491,6 @@ public class CSharpGenerator implements CodeGenerator
 
     private CharSequence generateFileHeader(final String packageName)
     {
-        // Preserve '.' but upcase between them
         String[] tokens = packageName.split("\\.");
         final StringBuilder sb = new StringBuilder();
         for (final String t : tokens)
@@ -510,7 +502,6 @@ public class CSharpGenerator implements CodeGenerator
             sb.setLength(sb.length() - 1);
         }
 
-        // Remove '_' but uppercase between them
         tokens = sb.toString().split("-");
         sb.setLength(0);
 
@@ -526,8 +517,7 @@ public class CSharpGenerator implements CodeGenerator
             "using Org.SbeTool.Sbe.Dll;\n\n" +
             "namespace %s\n" +
             "{\n",
-            sb
-        );
+            sb);
     }
 
     private CharSequence generateClassDeclaration(final String className)
@@ -648,8 +638,7 @@ public class CSharpGenerator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + "public %1$s %2$s\n" +
             indent + "{\n" +
             indent + INDENT + "get\n" +
@@ -742,13 +731,12 @@ public class CSharpGenerator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format(
-            "\n" +
-            indent + "public const int %sLength = %d;\n\n",
+        sb.append(String.format("\n" +
+            indent + "public const int %sLength = %d;\n",
             propName,
             fieldLength));
 
-        sb.append(String.format(
+        sb.append(String.format("\n" +
             indent + "public %1$s Get%2$s(int index)\n" +
             indent + "{\n" +
             indent + INDENT + "if (index < 0 || index >= %3$d)\n" +
@@ -757,7 +745,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "}\n\n" +
             "%4$s" +
             indent + INDENT + "return _buffer.%5$sGet%8$s(_offset + %6$d + (index * %7$d));\n" +
-            indent + "}\n\n",
+            indent + "}\n",
             typeName,
             propName,
             fieldLength,
@@ -767,7 +755,7 @@ public class CSharpGenerator implements CodeGenerator
             typeSize,
             byteOrderStr));
 
-        sb.append(String.format(
+        sb.append(String.format("\n" +
             indent + "public void Set%1$s(int index, %2$s value)\n" +
             indent + "{\n" +
             indent + INDENT + "if (index < 0 || index >= %3$d)\n" +
@@ -788,37 +776,37 @@ public class CSharpGenerator implements CodeGenerator
         {
             generateCharacterEncodingMethod(sb, propertyName, token.encoding().characterEncoding(), indent);
 
-            sb.append(String.format(
+            sb.append(String.format("\n" +
                 indent + "public int Get%1$s(byte[] dst, int dstOffset)\n" +
                 indent + "{\n" +
                 indent + INDENT + "const int length = %2$d;\n" +
                 indent + INDENT + "if (dstOffset < 0 || dstOffset > (dst.Length - length))\n" +
                 indent + INDENT + "{\n" +
                 indent + INDENT + INDENT + "throw new IndexOutOfRangeException(" +
-                    "\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
+                "\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
                 indent + INDENT + "}\n\n" +
                 "%3$s" +
                 indent + INDENT + "_buffer.GetBytes(_offset + %4$d, dst, dstOffset, length);\n" +
                 indent + INDENT + "return length;\n" +
-                indent + "}\n\n",
+                indent + "}\n",
                 propName,
                 fieldLength,
                 generateArrayFieldNotPresentCondition(token.version(), indent),
                 offset));
 
-            sb.append(String.format(
+            sb.append(String.format("\n" +
                 indent + "public void Set%1$s(byte[] src, int srcOffset)\n" +
                 indent + "{\n" +
                 indent + INDENT + "const int length = %2$d;\n" +
                 indent + INDENT + "if (srcOffset < 0 || srcOffset > src.Length)\n" +
                 indent + INDENT + "{\n" +
                 indent + INDENT + INDENT +
-                    "throw new IndexOutOfRangeException(\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
+                "throw new IndexOutOfRangeException(\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
                 indent + INDENT + "}\n\n" +
                 indent + INDENT + "if (src.Length > length)\n" +
                 indent + INDENT + "{\n" +
                 indent + INDENT + INDENT +
-                    "throw new ArgumentOutOfRangeException($\"src.Length={src.Length} is too large.\");\n" +
+                "throw new ArgumentOutOfRangeException($\"src.Length={src.Length} is too large.\");\n" +
                 indent + INDENT + "}\n\n" +
                 indent + INDENT + "_buffer.SetBytes(_offset + %3$d, src, srcOffset, src.Length - srcOffset);\n" +
                 indent + "}\n",
@@ -836,8 +824,7 @@ public class CSharpGenerator implements CodeGenerator
         final String encoding,
         final String indent)
     {
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + "public const string %sCharacterEncoding = \"%s\";\n\n",
             formatPropertyName(propertyName),
             encoding));
@@ -852,8 +839,7 @@ public class CSharpGenerator implements CodeGenerator
         {
             // ODE: we generate a property here because the constant could
             // become a field in a newer version of the protocol
-            return String.format(
-                "\n" +
+            return String.format("\n" +
                 indent + INDENT + "public %1$s %2$s { get { return %3$s; } }\n",
                 cSharpTypeName(token.encoding().primitiveType()),
                 toUpperFirstChar(propertyName),
@@ -1049,8 +1035,7 @@ public class CSharpGenerator implements CodeGenerator
 
     private void generateFieldIdMethod(final StringBuilder sb, final Token token, final String indent)
     {
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + "public const int %sId = %d;\n",
             CSharpUtil.formatPropertyName(token.name()),
             token.id()));
@@ -1066,8 +1051,7 @@ public class CSharpGenerator implements CodeGenerator
         final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
         final String presence = encoding.presence() == null ? "" : encoding.presence().toString().toLowerCase();
 
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + "public static string %sMetaAttribute(MetaAttribute metaAttribute)\n" +
             indent + "{\n" +
             indent + INDENT + "switch (metaAttribute)\n" +
@@ -1113,8 +1097,7 @@ public class CSharpGenerator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + INDENT + "public %1$s %2$s\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "get\n" +
@@ -1150,8 +1133,7 @@ public class CSharpGenerator implements CodeGenerator
         final String byteOrderStr = generateByteOrder(byteOrder, token.encoding().primitiveType().size());
         final String typeName = cSharpTypeName(token.encoding().primitiveType());
 
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + INDENT + "public %1$s %2$s\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "get\n" +
@@ -1183,14 +1165,12 @@ public class CSharpGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-            "\n" +
-            indent + INDENT + "private readonly %1$s _%2$s = new %3$s();\n",
+            "\n" +            indent + INDENT + "private readonly %1$s _%2$s = new %3$s();\n",
             compositeName,
             toLowerFirstChar(propertyName),
             compositeName));
 
-        sb.append(String.format(
-            "\n" +
+        sb.append(String.format("\n" +
             indent + INDENT + "public %1$s %2$s\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "get\n" +
@@ -1295,6 +1275,7 @@ public class CSharpGenerator implements CodeGenerator
                 {
                     literal = value + "d";
                 }
+                break;
         }
 
         return literal;

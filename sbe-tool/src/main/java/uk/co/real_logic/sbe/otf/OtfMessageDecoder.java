@@ -159,22 +159,18 @@ public class OtfMessageDecoder
             final boolean isPresent = token.version() <= actingVersion;
 
             final Token blockLengthToken = tokens.get(tokenIdx + 2);
-            final int blockLength = isPresent ?
-                Types.getInt(
-                    buffer,
-                    bufferOffset + blockLengthToken.offset(),
-                    blockLengthToken.encoding().primitiveType(),
-                    blockLengthToken.encoding().byteOrder()) :
-                0;
+            final int blockLength = isPresent ? Types.getInt(
+                buffer,
+                bufferOffset + blockLengthToken.offset(),
+                blockLengthToken.encoding().primitiveType(),
+                blockLengthToken.encoding().byteOrder()) : 0;
 
             final Token numInGroupToken = tokens.get(tokenIdx + 3);
-            final int numInGroup = isPresent ?
-                Types.getInt(
-                    buffer,
-                    bufferOffset + numInGroupToken.offset(),
-                    numInGroupToken.encoding().primitiveType(),
-                    numInGroupToken.encoding().byteOrder()) :
-                0;
+            final int numInGroup = isPresent ? Types.getInt(
+                buffer,
+                bufferOffset + numInGroupToken.offset(),
+                numInGroupToken.encoding().primitiveType(),
+                numInGroupToken.encoding().byteOrder()) : 0;
 
             final Token dimensionTypeComposite = tokens.get(tokenIdx + 1);
 
@@ -289,13 +285,11 @@ public class OtfMessageDecoder
             final boolean isPresent = token.version() <= actingVersion;
 
             final Token lengthToken = tokens.get(tokenIdx + 2);
-            final int length = isPresent ?
-                Types.getInt(
-                    buffer,
-                    bufferOffset + lengthToken.offset(),
-                    lengthToken.encoding().primitiveType(),
-                    lengthToken.encoding().byteOrder()) :
-                0;
+            final int length = isPresent ? Types.getInt(
+                buffer,
+                bufferOffset + lengthToken.offset(),
+                lengthToken.encoding().primitiveType(),
+                lengthToken.encoding().byteOrder()) : 0;
 
             final Token dataToken = tokens.get(tokenIdx + 3);
             if (isPresent)

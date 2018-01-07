@@ -42,8 +42,7 @@ public final class ReflectionUtil
         return (String)get(decoder, "manufacturer");
     }
 
-    static void setManufacturer(final Object encoder,
-                                final String value) throws Exception
+    static void setManufacturer(final Object encoder, final String value) throws Exception
     {
         encoder.getClass().getMethod("manufacturer", String.class).invoke(encoder, value);
     }

@@ -133,14 +133,14 @@ public class ExampleUsingGeneratedStub
             .next().speed(55).mpg(49.0f).usageDescription("Combined Cycle")
             .next().speed(75).mpg(40.0f).usageDescription("Highway Cycle");
 
-        final CarEncoder.PerformanceFiguresEncoder perfFigures = car.performanceFiguresCount(2);
-        perfFigures.next()
+        final CarEncoder.PerformanceFiguresEncoder figures = car.performanceFiguresCount(2);
+        figures.next()
             .octaneRating((short)95)
             .accelerationCount(3)
             .next().mph(30).seconds(4.0f)
             .next().mph(60).seconds(7.5f)
             .next().mph(100).seconds(12.2f);
-        perfFigures.next()
+        figures.next()
             .octaneRating((short)99)
             .accelerationCount(3)
             .next().mph(30).seconds(3.8f)

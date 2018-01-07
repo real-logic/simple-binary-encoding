@@ -39,23 +39,21 @@ public class CSharpNamespaceOutputManager implements OutputManager
      * Create a new {@link OutputManager} for generating C# source
      * files into a given package.
      *
-     * @param baseDirectoryName for the generated source code.
-     * @param packageName       for the generated source code relative to the baseDirectoryName.
-     * @throws IOException if an error occurs during output
+     * @param baseDirName for the generated source code.
+     * @param packageName       for the generated source code relative to the baseDirName.
      */
-    public CSharpNamespaceOutputManager(final String baseDirectoryName, final String packageName) throws IOException
+    public CSharpNamespaceOutputManager(final String baseDirName, final String packageName)
     {
-        Verify.notNull(baseDirectoryName, "baseDirectoryName");
+        Verify.notNull(baseDirName, "baseDirName");
         Verify.notNull(packageName, "packageName");
 
-        final String dirName =
-            (baseDirectoryName.endsWith("" + separatorChar) ? baseDirectoryName : baseDirectoryName + separatorChar) +
-                packageName.replace('.', '_');
+        final String dirName = baseDirName.endsWith("" + separatorChar) ? baseDirName : baseDirName + separatorChar;
+        final String packageDirName = dirName + packageName.replace('.', '_');
 
-        outputDir = new File(dirName);
+        outputDir = new File(packageDirName);
         if (!outputDir.exists() && !outputDir.mkdirs())
         {
-            throw new IllegalStateException("Unable to create directory: " + dirName);
+            throw new IllegalStateException("Unable to create directory: " + packageDirName);
         }
     }
 

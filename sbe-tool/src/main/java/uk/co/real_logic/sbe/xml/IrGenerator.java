@@ -32,6 +32,7 @@ public class IrGenerator
 {
     private final List<Token> tokenList = new ArrayList<>();
     private MessageSchema schema;
+
     /**
      * Generate a complete {@link uk.co.real_logic.sbe.ir.Ir} for a given schema.
      *
@@ -97,6 +98,10 @@ public class IrGenerator
 
     private void addMessageSignal(final Message msg, final Signal signal)
     {
+        final Encoding encoding = new Encoding.Builder()
+            .semanticType(msg.semanticType())
+            .build();
+
         final Token token = new Token.Builder()
             .signal(signal)
             .name(msg.name())
@@ -105,9 +110,7 @@ public class IrGenerator
             .id(msg.id())
             .version(msg.sinceVersion())
             .deprecated(msg.deprecated())
-            .encoding(new Encoding.Builder()
-                .semanticType(msg.semanticType())
-                .build())
+            .encoding(encoding)
             .build();
 
         tokenList.add(token);
@@ -204,6 +207,10 @@ public class IrGenerator
 
     private void add(final CompositeType type, final int currOffset, final Field field)
     {
+        final Encoding encoding = new Encoding.Builder()
+            .semanticType(semanticTypeOf(type, field))
+            .build();
+
         final Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_COMPOSITE)
             .name(type.name())
@@ -213,9 +220,7 @@ public class IrGenerator
             .version(type.sinceVersion())
             .deprecated(type.deprecated())
             .description(type.description())
-            .encoding(new Encoding.Builder()
-                .semanticType(semanticTypeOf(type, field))
-                .build());
+            .encoding(encoding);
 
         if (null != field)
         {
@@ -298,17 +303,19 @@ public class IrGenerator
 
     private void add(final EnumType.ValidValue value, final PrimitiveType encodingType)
     {
+        final Encoding encoding = new Encoding.Builder()
+            .byteOrder(schema.byteOrder())
+            .primitiveType(encodingType)
+            .constValue(value.primitiveValue())
+            .build();
+
         final Token.Builder builder = new Token.Builder()
             .signal(Signal.VALID_VALUE)
             .name(value.name())
             .version(value.sinceVersion())
             .deprecated(value.deprecated())
             .description(value.description())
-            .encoding(new Encoding.Builder()
-                .byteOrder(schema.byteOrder())
-                .primitiveType(encodingType)
-                .constValue(value.primitiveValue())
-                .build());
+            .encoding(encoding);
 
         tokenList.add(builder.build());
     }
@@ -316,6 +323,11 @@ public class IrGenerator
     private void add(final SetType type, final int offset, final Field field)
     {
         final PrimitiveType encodingType = type.encodingType();
+
+        final Encoding encoding = new Encoding.Builder()
+            .semanticType(semanticTypeOf(type, field))
+            .primitiveType(encodingType)
+            .build();
 
         final Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_SET)
@@ -326,10 +338,7 @@ public class IrGenerator
             .version(type.sinceVersion())
             .deprecated(type.deprecated())
             .description(type.description())
-            .encoding(new Encoding.Builder()
-                .semanticType(semanticTypeOf(type, field))
-                .primitiveType(encodingType)
-                .build());
+            .encoding(encoding);
 
         if (null != field)
         {
@@ -350,17 +359,19 @@ public class IrGenerator
 
     private void add(final SetType.Choice value, final PrimitiveType encodingType)
     {
+        final Encoding encoding = new Encoding.Builder()
+            .constValue(value.primitiveValue())
+            .byteOrder(schema.byteOrder())
+            .primitiveType(encodingType)
+            .build();
+
         final Token.Builder builder = new Token.Builder()
             .signal(Signal.CHOICE)
             .name(value.name())
             .description(value.description())
             .version(value.sinceVersion())
             .deprecated(value.deprecated())
-            .encoding(new Encoding.Builder()
-                .constValue(value.primitiveValue())
-                .byteOrder(schema.byteOrder())
-                .primitiveType(encodingType)
-                .build());
+            .encoding(encoding);
 
         tokenList.add(builder.build());
     }

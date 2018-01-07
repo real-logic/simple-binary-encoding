@@ -138,14 +138,14 @@ public class ExampleUsingGeneratedStubExtension
             .next().speed(55).mpg(49.0f).usageDescription("Combined Cycle")
             .next().speed(75).mpg(40.0f).usageDescription("Highway Cycle");
 
-        final baseline.CarEncoder.PerformanceFiguresEncoder perfFigures = car.performanceFiguresCount(2);
-        perfFigures.next()
+        final baseline.CarEncoder.PerformanceFiguresEncoder figures = car.performanceFiguresCount(2);
+        figures.next()
             .octaneRating((short)95)
             .accelerationCount(3)
             .next().mph(30).seconds(4.0f)
             .next().mph(60).seconds(7.5f)
             .next().mph(100).seconds(12.2f);
-        perfFigures.next()
+        figures.next()
             .octaneRating((short)99)
             .accelerationCount(3)
             .next().mph(30).seconds(3.8f)
@@ -235,13 +235,11 @@ public class ExampleUsingGeneratedStubExtension
             }
         }
 
-        sb.append("\ncar.manufacturer=").append(
-            new String(buffer, 0, car.getManufacturer(
-                buffer, 0, buffer.length), extension.CarEncoder.manufacturerCharacterEncoding()));
+        sb.append("\ncar.manufacturer=").append(new String(buffer, 0, car.getManufacturer(
+            buffer, 0, buffer.length), extension.CarEncoder.manufacturerCharacterEncoding()));
 
-        sb.append("\ncar.model=").append(
-            new String(buffer, 0, car.getModel(
-                buffer, 0, buffer.length), extension.CarEncoder.modelCharacterEncoding()));
+        sb.append("\ncar.model=").append(new String(buffer, 0, car.getModel(
+            buffer, 0, buffer.length), extension.CarEncoder.modelCharacterEncoding()));
 
         final UnsafeBuffer tempBuffer = new UnsafeBuffer(buffer);
         final int tempBufferLength = car.getActivationCode(tempBuffer, 0, tempBuffer.capacity());

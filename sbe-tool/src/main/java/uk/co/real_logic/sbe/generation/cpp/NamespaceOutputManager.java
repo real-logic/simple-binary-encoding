@@ -35,24 +35,23 @@ public class NamespaceOutputManager implements OutputManager
     /**
      * Create a new {@link OutputManager} for generating C++98 source files into a given package.
      *
-     * @param baseDirectoryName for the generated source code.
-     * @param namespaceName     for the generated source code relative to the baseDirectoryName.
+     * @param baseDirName for the generated source code.
+     * @param namespaceName     for the generated source code relative to the baseDirName.
      * @throws IOException if an error occurs during output
      */
-    public NamespaceOutputManager(final String baseDirectoryName, final String namespaceName)
+    public NamespaceOutputManager(final String baseDirName, final String namespaceName)
         throws IOException
     {
-        Verify.notNull(baseDirectoryName, "baseDirectoryName");
+        Verify.notNull(baseDirName, "baseDirName");
         Verify.notNull(namespaceName, "applicableNamespace");
 
-        final String dirName =
-            (baseDirectoryName.endsWith("" + separatorChar) ? baseDirectoryName : baseDirectoryName + separatorChar) +
-                namespaceName.replace('.', '_');
+        final String dirName = baseDirName.endsWith("" + separatorChar) ? baseDirName : baseDirName + separatorChar;
+        final String packageDirName = dirName + namespaceName.replace('.', '_');
 
-        outputDir = new File(dirName);
+        outputDir = new File(packageDirName);
         if (!outputDir.exists() && !outputDir.mkdirs())
         {
-            throw new IllegalStateException("Unable to create directory: " + dirName);
+            throw new IllegalStateException("Unable to create directory: " + packageDirName);
         }
     }
 

@@ -17,13 +17,13 @@ public class RustFlatFileOutputManager implements OutputManager
 {
     private final File outputFile;
 
-    RustFlatFileOutputManager(final String baseDirectoryName, final String packageName)
+    RustFlatFileOutputManager(final String baseDirName, final String packageName)
     {
-        Verify.notNull(baseDirectoryName, "baseDirectoryName");
+        Verify.notNull(baseDirName, "baseDirName");
         Verify.notNull(packageName, "packageName");
 
-        final String outputDirName = (baseDirectoryName.endsWith("" + separatorChar) ? baseDirectoryName :
-            baseDirectoryName + separatorChar);
+        final String outputDirName = baseDirName.endsWith("" + separatorChar) ?
+            baseDirName : baseDirName + separatorChar;
         final File outputDir = new File(outputDirName);
         final boolean outputDirAvailable = outputDir.exists() || outputDir.mkdirs();
         if (!outputDirAvailable)
@@ -32,7 +32,6 @@ public class RustFlatFileOutputManager implements OutputManager
         }
         this.outputFile = new File(outputDirName + packageName.replace('.', '_') + ".rs");
 
-        // Initialize the contents of the output file with a minimal header
         try (Writer writer = Files.newBufferedWriter(outputFile.toPath(), UTF_8))
         {
             writer.append("/// Generated code for SBE package ")

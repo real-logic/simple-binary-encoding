@@ -12,7 +12,7 @@ public class MessageComponents
     public final List<Token> varData;
 
     public MessageComponents(
-            final Token messageToken, final List<Token> fields, final List<Token> groups, final List<Token> varData)
+        final Token messageToken, final List<Token> fields, final List<Token> groups, final List<Token> varData)
     {
         this.messageToken = messageToken;
         this.fields = Collections.unmodifiableList(fields);
@@ -34,6 +34,7 @@ public class MessageComponents
 
         final List<Token> varData = new ArrayList<>();
         GenerationUtil.collectVarData(messageBody, i, varData);
+
         return new MessageComponents(msgToken, fields, groups, varData);
     }
 }

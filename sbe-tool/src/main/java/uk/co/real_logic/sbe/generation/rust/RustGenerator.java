@@ -72,9 +72,7 @@ public class RustGenerator implements CodeGenerator
         return headerStructure
             .tokens()
             .stream()
-            .filter((t) -> t.signal() == Signal.ENCODING ||
-                t.signal() == Signal.BEGIN_ENUM ||
-                t.signal() == Signal.BEGIN_SET)
+            .filter((t) -> t.signal() == ENCODING || t.signal() == BEGIN_ENUM || t.signal() == BEGIN_SET)
             .mapToInt(Token::encodedLength)
             .sum();
     }
@@ -149,15 +147,15 @@ public class RustGenerator implements CodeGenerator
     {
         for (final List<Token> tokens : ir.types())
         {
-            if (!tokens.isEmpty() && tokens.get(0).signal() == Signal.BEGIN_SET)
+            if (!tokens.isEmpty() && tokens.get(0).signal() == BEGIN_SET)
             {
                 generateSingleBitSet(tokens, outputManager);
             }
         }
     }
 
-    private static void generateSingleBitSet(final List<Token> tokens, final OutputManager outputManager) throws
-                                                                                                          IOException
+    private static void generateSingleBitSet(final List<Token> tokens, final OutputManager outputManager)
+        throws IOException
     {
         final Token beginToken = tokens.get(0);
         final String setType = formatTypeName(beginToken.applicableTypeName());
@@ -203,7 +201,6 @@ public class RustGenerator implements CodeGenerator
             }
             writer.append("}\n");
         }
-
     }
 
     private static void generateMessageEncoder(
@@ -214,7 +211,6 @@ public class RustGenerator implements CodeGenerator
         final int headerSize)
         throws IOException
     {
-
         final Token msgToken = components.messageToken;
         final String messageTypeName = formatTypeName(msgToken.name());
         final RustCodecType codecType = RustCodecType.Encoder;
@@ -305,7 +301,6 @@ public class RustGenerator implements CodeGenerator
         final String initialNextCoderType,
         final RustCodecType codecType) throws IOException
     {
-
         String nextCoderType = initialNextCoderType;
         for (int i = groupTreeNodes.size() - 1; i >= 0; i--)
         {
@@ -336,6 +331,7 @@ public class RustGenerator implements CodeGenerator
         {
             throw new IllegalArgumentException("Group cannot both lack a parent and be at the end of a parent group");
         }
+
         boolean atEndOfCurrentLevel = true;
         // TODO - either make this CodecType a param or collapse it
         final RustCodecType codecType = RustCodecType.Encoder;
@@ -384,9 +380,9 @@ public class RustGenerator implements CodeGenerator
         boolean atEndOfCurrentLevel = true;
         final String memberDecoderType = node.contextualName + "MemberDecoder";
         final String headerDecoderType = node.contextualName + "HeaderDecoder";
-        final String groupLevelNextDecoderType = format("Either<%s, %s>", withLifetime(memberDecoderType),
-            initialNextDecoderType.startsWith("Either") ? initialNextDecoderType :
-                withLifetime(initialNextDecoderType));
+        final String groupLevelNextDecoderType =
+            format("Either<%s, %s>", withLifetime(memberDecoderType), initialNextDecoderType.startsWith("Either") ?
+            initialNextDecoderType : withLifetime(initialNextDecoderType));
         String nextDecoderType = groupLevelNextDecoderType;
 
         if (!node.varData.isEmpty())
@@ -500,7 +496,8 @@ public class RustGenerator implements CodeGenerator
 
             if (node.hasFixedSizeMembers())
             {
-                appendFixedSizeMemberGroupEncoderMethods(afterGroupCoderType, node, atEndOfParent, out,
+                appendFixedSizeMemberGroupEncoderMethods(
+                    afterGroupCoderType, node, atEndOfParent, out,
                     rustCountType, contentProperty, fieldsType, scratchChain);
             }
 
@@ -617,9 +614,9 @@ public class RustGenerator implements CodeGenerator
             indent(out, 1, "fn after_member(mut self) -> %s {\n", groupLevelNextDecoderType);
             indent(out, 2).append("if self.index <= self.max_index {\n");
             indent(out, 3).append("Either::Left(self)\n");
-            indent(out, 2).append("} else {\n").append(INDENT).append(INDENT).append(INDENT).append(
-                format("Either::Right(%s)\n", atEndOfParent ? "self.parent.after_member()" :
-                    format("%s::wrap(self.%s)", initialNextDecoderType, contentProperty)));
+            indent(out, 2).append("} else {\n").append(INDENT).append(INDENT).append(INDENT)
+                .append(format("Either::Right(%s)\n", atEndOfParent ? "self.parent.after_member()" :
+                format("%s::wrap(self.%s)", initialNextDecoderType, contentProperty)));
             indent(out, 2).append("}\n").append(INDENT).append("}\n").append("}\n");
 
             appendStructHeader(out, withLifetime(headerDecoderType), false);
@@ -653,8 +650,8 @@ public class RustGenerator implements CodeGenerator
 
             if (node.hasFixedSizeMembers())
             {
-                appendFixedSizeMemberGroupDecoderMethods(initialNextDecoderType, node, atEndOfParent, out,
-                    contentProperty);
+                appendFixedSizeMemberGroupDecoderMethods(
+                    initialNextDecoderType, node, atEndOfParent, out, contentProperty);
             }
 
             out.append("}\n");
@@ -670,8 +667,8 @@ public class RustGenerator implements CodeGenerator
     {
         indent(out, 1, "pub fn %s_as_slice(mut self) -> CodecResult<(&%s [%s], %s)> {\n",
             formatMethodName(node.originalName), DATA_LIFETIME, node.contextualName + "Member",
-            initialNextDecoderType.startsWith("Either") ? initialNextDecoderType :
-                withLifetime(initialNextDecoderType));
+            initialNextDecoderType.startsWith("Either") ?
+            initialNextDecoderType : withLifetime(initialNextDecoderType));
         indent(out, 2, "%s.skip_bytes(%s)?; // Skip reading block length for now\n", toScratchChain(node),
             node.blockLengthType.size());
         indent(out, 2, "let count = *%s.read_type::<%s>(%s)?;\n",
@@ -993,6 +990,7 @@ public class RustGenerator implements CodeGenerator
                 {
                     throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + beginToken);
                 }
+
                 ++i;
                 final Token dimensionsToken = tokens.get(i);
                 final int headerTokenCount = dimensionsToken.componentTokenCount();
@@ -1022,13 +1020,13 @@ public class RustGenerator implements CodeGenerator
         {
             if (codecType == RustCodecType.Decoder)
             {
-                nextCoderType = summary.generateVarDataDecoder(messageTypeName, SCRATCH_DECODER_TYPE, 0,
-                    false, outputManager, nextCoderType);
+                nextCoderType = summary.generateVarDataDecoder(
+                    messageTypeName, SCRATCH_DECODER_TYPE, 0, false, outputManager, nextCoderType);
             }
             else if (codecType == RustCodecType.Encoder)
             {
-                nextCoderType = summary.generateVarDataEncoder(messageTypeName, SCRATCH_ENCODER_TYPE, 0,
-                    false, outputManager, nextCoderType);
+                nextCoderType = summary.generateVarDataEncoder(
+                    messageTypeName, SCRATCH_ENCODER_TYPE, 0, false, outputManager, nextCoderType);
             }
             else
             {
@@ -1039,8 +1037,8 @@ public class RustGenerator implements CodeGenerator
         return nextCoderType;
     }
 
-    static void appendImplWithLifetimeHeader(final Appendable appendable, final String typeName) throws
-                                                                                                 IOException
+    static void appendImplWithLifetimeHeader(final Appendable appendable, final String typeName)
+        throws IOException
     {
         appendable.append(format("impl<%s> %s<%s> {\n", DATA_LIFETIME, typeName, DATA_LIFETIME));
     }

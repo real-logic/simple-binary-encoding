@@ -32,8 +32,7 @@ enum RustCodecType
             final int numBytes) throws IOException
         {
             indent(appendable, 1, "pub fn %s(mut self) -> CodecResult<(&%s %s, %s)> {\n",
-                methodName, DATA_LIFETIME, representationType,
-                RustGenerator.withLifetime(nextCoderType));
+                methodName, DATA_LIFETIME, representationType, RustGenerator.withLifetime(nextCoderType));
             indent(appendable, 2, "let v = self.%s.read_type::<%s>(%s)?;\n",
                 RustCodecType.Decoder.scratchProperty(), representationType, numBytes);
             indent(appendable, 2, "Ok((v, %s::wrap(self.%s)))\n",
@@ -82,7 +81,7 @@ enum RustCodecType
                 methodName, representationType, RustGenerator.withLifetime(nextCoderType)));
             indent(appendable, 2)
                 .append(format("self.%s.write_type::<%s>(t, %s)?;\n",
-                    RustCodecType.Encoder.scratchProperty(), representationType, numBytes));
+                RustCodecType.Encoder.scratchProperty(), representationType, numBytes));
             indent(appendable, 2).append(format("Ok(%s::wrap(self.%s))\n",
                 nextCoderType, RustCodecType.Encoder.scratchProperty()));
             indent(appendable).append("}\n");
@@ -106,8 +105,11 @@ enum RustCodecType
 
     abstract String scratchType();
 
-    abstract void appendDirectCodeMethods(Appendable appendable, String methodName,
-        String representationType, String nextCoderType,
+    abstract void appendDirectCodeMethods(
+        Appendable appendable,
+        String methodName,
+        String representationType,
+        String nextCoderType,
         int numBytes) throws IOException;
 
     abstract String gerund();
@@ -130,6 +132,7 @@ enum RustCodecType
             appendWrapMethod(writer, doneTypeName);
             writer.append("}\n");
         }
+
         return doneTypeName;
     }
 

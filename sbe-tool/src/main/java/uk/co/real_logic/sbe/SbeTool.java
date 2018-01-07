@@ -261,13 +261,11 @@ public class SbeTool
     public static MessageSchema parseSchema(final String sbeSchemaFilename)
         throws Exception
     {
-        final ParserOptions.Builder optionsBuilder =
-            ParserOptions
-                .builder()
-                .xsdFilename(System.getProperty(VALIDATION_XSD))
-                .stopOnError(Boolean.parseBoolean(System.getProperty(VALIDATION_STOP_ON_ERROR)))
-                .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
-                .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
+        final ParserOptions.Builder optionsBuilder = ParserOptions.builder()
+            .xsdFilename(System.getProperty(VALIDATION_XSD))
+            .stopOnError(Boolean.parseBoolean(System.getProperty(VALIDATION_STOP_ON_ERROR)))
+            .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
+            .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
 
         try (InputStream in = new BufferedInputStream(Files.newInputStream(Paths.get(sbeSchemaFilename))))
         {

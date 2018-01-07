@@ -75,9 +75,9 @@ public class ConstantCharArrayTest
 
         final String expectedFour =
             "    public String sourceFour()\n" +
-                "    {\n" +
-                "        return \"GH\";\n" +
-                "    }";
+            "    {\n" +
+            "        return \"GH\";\n" +
+            "    }";
         assertThat(sources, containsString(expectedFour));
     }
 }

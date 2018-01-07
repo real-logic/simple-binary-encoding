@@ -35,24 +35,21 @@ public class GolangOutputManager implements OutputManager
     /**
      * Create a new {@link OutputManager} for generating golang source files into a given package.
      *
-     * @param baseDirectoryName for the generated source code.
-     * @param namespaceName     for the generated source code relative to the baseDirectoryName.
-     * @throws IOException if an error occurs during output
+     * @param baseDirName   for the generated source code.
+     * @param namespaceName for the generated source code relative to the baseDirName.
      */
-    public GolangOutputManager(final String baseDirectoryName, final String namespaceName)
-        throws IOException
+    public GolangOutputManager(final String baseDirName, final String namespaceName)
     {
-        Verify.notNull(baseDirectoryName, "baseDirectoryName");
+        Verify.notNull(baseDirName, "baseDirName");
         Verify.notNull(namespaceName, "applicableNamespace");
 
-        final String dirName =
-            (baseDirectoryName.endsWith("" + separatorChar) ? baseDirectoryName : baseDirectoryName + separatorChar) +
-                namespaceName.replace('.', '_');
+        final String dirName = baseDirName.endsWith("" + separatorChar) ? baseDirName : baseDirName + separatorChar;
+        final String packageDirName = dirName + namespaceName.replace('.', '_');
 
-        outputDir = new File(dirName);
+        outputDir = new File(packageDirName);
         if (!outputDir.exists() && !outputDir.mkdirs())
         {
-            throw new IllegalStateException("Unable to create directory: " + dirName);
+            throw new IllegalStateException("Unable to create directory: " + packageDirName);
         }
     }
 
@@ -62,7 +59,7 @@ public class GolangOutputManager implements OutputManager
      * The {@link java.io.Writer} should be closed once the caller has finished with it. The Writer is
      * buffer for efficient IO operations.
      *
-     * @param name the name of the C++ class.
+     * @param name the name of the golang class.
      * @return a {@link java.io.Writer} to which the source code should be written.
      */
     public Writer createOutput(final String name) throws IOException

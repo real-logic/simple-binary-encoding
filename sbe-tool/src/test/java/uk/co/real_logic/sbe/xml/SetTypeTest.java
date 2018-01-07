@@ -48,11 +48,11 @@ public class SetTypeTest
     {
         final String testXmlString =
             "<types>" +
-                "<set name=\"biOp\" encodingType=\"uint8\">" +
-                "    <choice name=\"Bit0\" description=\"Bit 0\">0</choice>" +
-                "    <choice name=\"Bit1\" description=\"Bit 1\">1</choice>" +
-                "</set>" +
-                "</types>";
+            "<set name=\"biOp\" encodingType=\"uint8\">" +
+            "    <choice name=\"Bit0\" description=\"Bit 0\">0</choice>" +
+            "    <choice name=\"Bit1\" description=\"Bit 1\">1</choice>" +
+            "</set>" +
+            "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
         final SetType e = (SetType)map.get("biOp");
@@ -70,13 +70,13 @@ public class SetTypeTest
     {
         final String testXmlString =
             "<types>" +
-                "<set name=\"listed\" encodingType=\"uint8\">" +
-                "    <choice name=\"Bit0\">0</choice>" +
-                "    <choice name=\"Bit1\">1</choice>" +
-                "    <choice name=\"Bit2\">2</choice>" +
-                "    <choice name=\"Bit3\">3</choice>" +
-                "</set>" +
-                "</types>";
+            "<set name=\"listed\" encodingType=\"uint8\">" +
+            "    <choice name=\"Bit0\">0</choice>" +
+            "    <choice name=\"Bit1\">1</choice>" +
+            "    <choice name=\"Bit2\">2</choice>" +
+            "    <choice name=\"Bit3\">3</choice>" +
+            "</set>" +
+            "</types>";
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/set", testXmlString);
         final SetType e = (SetType)map.get("listed");
@@ -86,21 +86,23 @@ public class SetTypeTest
         int foundBit0 = 0, foundBit1 = 0, foundBit2 = 0, foundBit3 = 0, count = 0;
         for (final SetType.Choice choice : e.choices())
         {
-            if (choice.name().equals("Bit0"))
+            switch (choice.name())
             {
-                foundBit0++;
-            }
-            else if (choice.name().equals("Bit1"))
-            {
-                foundBit1++;
-            }
-            else if (choice.name().equals("Bit2"))
-            {
-                foundBit2++;
-            }
-            else if (choice.name().equals("Bit3"))
-            {
-                foundBit3++;
+                case "Bit0":
+                    foundBit0++;
+                    break;
+
+                case "Bit1":
+                    foundBit1++;
+                    break;
+
+                case "Bit2":
+                    foundBit2++;
+                    break;
+
+                case "Bit3":
+                    foundBit3++;
+                    break;
             }
 
             count++;
@@ -119,11 +121,11 @@ public class SetTypeTest
     {
         final String testXmlString =
             "<types>" +
-                "<set name=\"biOp\" encodingType=\"char\">" +
-                "    <choice name=\"Bit0\">0</choice>" +
-                "    <choice name=\"Bit1\">1</choice>" +
-                "</set>" +
-                "</types>";
+            "<set name=\"biOp\" encodingType=\"char\">" +
+            "    <choice name=\"Bit0\">0</choice>" +
+            "    <choice name=\"Bit1\">1</choice>" +
+            "</set>" +
+            "</types>";
 
         parseTestXmlWithMap("/types/set", testXmlString);
     }
@@ -134,11 +136,11 @@ public class SetTypeTest
     {
         final String testXmlString =
             "<types>" +
-                "<set name=\"biOp\" encodingType=\"uint8\">" +
-                "    <choice name=\"Bit0\">0</choice>" +
-                "    <choice name=\"AnotherBit0\">0</choice>" +
-                "</set>" +
-                "</types>";
+            "<set name=\"biOp\" encodingType=\"uint8\">" +
+            "    <choice name=\"Bit0\">0</choice>" +
+            "    <choice name=\"AnotherBit0\">0</choice>" +
+            "</set>" +
+            "</types>";
 
         parseTestXmlWithMap("/types/set", testXmlString);
     }
@@ -149,11 +151,11 @@ public class SetTypeTest
     {
         final String testXmlString =
             "<types>" +
-                "<set name=\"biOp\" encodingType=\"uint8\">" +
-                "    <choice name=\"Bit0\">0</choice>" +
-                "    <choice name=\"Bit0\">1</choice>" +
-                "</set>" +
-                "</types>";
+            "<set name=\"biOp\" encodingType=\"uint8\">" +
+            "    <choice name=\"Bit0\">0</choice>" +
+            "    <choice name=\"Bit0\">1</choice>" +
+            "</set>" +
+            "</types>";
 
         parseTestXmlWithMap("/types/set", testXmlString);
     }
@@ -164,11 +166,11 @@ public class SetTypeTest
     {
         final String testXmlString =
             "<types>" +
-                "<set name=\"biOp\" encodingType=\"uint8\">" +
-                "    <choice name=\"Bit0\">0</choice>" +
-                "    <choice name=\"Bit100\">100</choice>" +
-                "</set>" +
-                "</types>";
+            "<set name=\"biOp\" encodingType=\"uint8\">" +
+            "    <choice name=\"Bit0\">0</choice>" +
+            "    <choice name=\"Bit100\">100</choice>" +
+            "</set>" +
+            "</types>";
 
         parseTestXmlWithMap("/types/set", testXmlString);
     }

@@ -40,10 +40,11 @@ public class PackageOutputManagerTest
         final Writer out = pom.createOutput(exampleClassName);
         out.close();
 
-        final String fullyQualifiedFilename =
-            (tempDirName.endsWith("" + File.separatorChar) ? tempDirName : tempDirName + File.separatorChar) +
-                packageName.replace('.', File.separatorChar) +
-                File.separatorChar + exampleClassName + ".java";
+        final String baseDirName = tempDirName.endsWith("" + File.separatorChar) ?
+            tempDirName : tempDirName + File.separatorChar;
+
+        final String fullyQualifiedFilename = baseDirName + packageName.replace('.', File.separatorChar) +
+            File.separatorChar + exampleClassName + ".java";
 
         final Path path = FileSystems.getDefault().getPath(fullyQualifiedFilename);
         final boolean exists = Files.exists(path);

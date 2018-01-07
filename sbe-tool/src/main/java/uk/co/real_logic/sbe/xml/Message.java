@@ -444,10 +444,10 @@ public class Message
     {
         if (0 != specifiedBlockLength && computedBlockLength > specifiedBlockLength)
         {
-            handleError(
-                node,
-                "specified blockLength provides insufficient space " +
-                    computedBlockLength + " > " + specifiedBlockLength);
+            final String msg = "specified blockLength provides insufficient space " +
+                computedBlockLength + " > " + specifiedBlockLength;
+
+            handleError(node, msg);
         }
     }
 }
