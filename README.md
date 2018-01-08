@@ -34,21 +34,6 @@ Example for Maven:
 </dependency>
 ```
 
-Directory Layout
-----------------
-Main source code
-
-    sbe-tool/src/main
-
-Unit tests
-
-    sbe-tool/src/test
-
-Samples of usage
-
-    sbe-samples/src/main
-
-
 Build
 -----
 
