@@ -415,7 +415,7 @@ public class TokenCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -502,7 +502,7 @@ public class TokenCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -589,7 +589,7 @@ public class TokenCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -676,7 +676,7 @@ public class TokenCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -763,7 +763,7 @@ public class TokenCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -850,7 +850,7 @@ public class TokenCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -937,7 +937,7 @@ public class TokenCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -1024,7 +1024,7 @@ public class TokenCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -1111,7 +1111,7 @@ public class TokenCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -1198,7 +1198,7 @@ public class TokenCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -1285,7 +1285,7 @@ public class TokenCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {

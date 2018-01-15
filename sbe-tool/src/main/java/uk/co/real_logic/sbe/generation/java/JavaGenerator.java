@@ -873,7 +873,8 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        final byte[] bytes;\n" +
                 indent + "        try\n" +
                 indent + "        {\n" +
-                indent + "            bytes = value.isEmpty() ? new byte[0] : value.getBytes(\"%3$s\");\n" +
+                indent + "            bytes = value.isEmpty() ?" +
+                " org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(\"%3$s\");\n" +
                 indent + "        }\n" +
                 indent + "        catch (final java.io.UnsupportedEncodingException ex)\n" +
                 indent + "        {\n" +
