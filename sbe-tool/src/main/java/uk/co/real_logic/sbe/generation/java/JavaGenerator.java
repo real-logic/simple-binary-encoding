@@ -2027,11 +2027,12 @@ public class JavaGenerator implements CodeGenerator
             bufferImplementation);
     }
 
-    private static CharSequence generateCompositeFlyweightCode(
+    private CharSequence generateCompositeFlyweightCode(
         final String className, final int size, final String bufferImplementation)
     {
         return String.format(
             "    public static final int ENCODED_LENGTH = %2$d;\n" +
+            "    public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.%4$s;\n\n" +
             "    private int offset;\n" +
             "    private %3$s buffer;\n\n" +
             "    public %1$s wrap(final %3$s buffer, final int offset)\n" +
@@ -2054,7 +2055,8 @@ public class JavaGenerator implements CodeGenerator
             "    }\n",
             className,
             size,
-            bufferImplementation);
+            bufferImplementation,
+            ir.byteOrder());
     }
 
     private CharSequence generateDecoderFlyweightCode(final String className, final Token token)
@@ -2098,7 +2100,8 @@ public class JavaGenerator implements CodeGenerator
             "    public static final %1$s BLOCK_LENGTH = %2$s;\n" +
             "    public static final %3$s TEMPLATE_ID = %4$s;\n" +
             "    public static final %5$s SCHEMA_ID = %6$s;\n" +
-            "    public static final %7$s SCHEMA_VERSION = %8$s;\n\n" +
+            "    public static final %7$s SCHEMA_VERSION = %8$s;\n" +
+            "    public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.%14$s;\n\n" +
             "    private final %9$s parentMessage = this;\n" +
             "    private %11$s buffer;\n" +
             "    protected int offset;\n" +
@@ -2158,7 +2161,8 @@ public class JavaGenerator implements CodeGenerator
             semanticType,
             bufferImplementation,
             wrapMethod,
-            actingFields);
+            actingFields,
+            ir.byteOrder());
     }
 
     private CharSequence generateEncoderFlyweightCode(final String className, final Token token)
