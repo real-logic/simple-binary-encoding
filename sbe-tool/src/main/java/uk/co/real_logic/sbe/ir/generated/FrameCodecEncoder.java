@@ -15,6 +15,7 @@ public class FrameCodecEncoder
     public static final int TEMPLATE_ID = 1;
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
+    public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.LITTLE_ENDIAN;
 
     private final FrameCodecEncoder parentMessage = this;
     private MutableDirectBuffer buffer;
@@ -254,7 +255,7 @@ public class FrameCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -341,7 +342,7 @@ public class FrameCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {
@@ -428,7 +429,7 @@ public class FrameCodecEncoder
         final byte[] bytes;
         try
         {
-            bytes = value.getBytes("UTF-8");
+            bytes = value.isEmpty() ? new byte[0] : value.getBytes("UTF-8");
         }
         catch (final java.io.UnsupportedEncodingException ex)
         {

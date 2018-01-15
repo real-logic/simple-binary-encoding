@@ -11,6 +11,8 @@ import org.agrona.MutableDirectBuffer;
 public class MessageHeaderEncoder
 {
     public static final int ENCODED_LENGTH = 8;
+    public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.LITTLE_ENDIAN;
+
     private int offset;
     private MutableDirectBuffer buffer;
 
