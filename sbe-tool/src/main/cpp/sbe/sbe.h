@@ -74,6 +74,26 @@ namespace sbe
 #define SBE_NULLVALUE_UINT32 (std::numeric_limits<std::uint32_t>::max)()
 #define SBE_NULLVALUE_UINT64 (std::numeric_limits<std::uint64_t>::max)()
 
+#if defined(_MSC_VER)
+#  if _MSC_VER >= 1911
+#    define SBE_CPLUSPLUS _MSVC_LANG
+#  elif _MSC_VER >= 1900
+#    define SBE_CPLUSPLUS 201103L
+#  else
+#    define SBE_CPLUSPLUS __cplusplus
+#  endif _MSC_VER >= 1900
+#else
+#  define SBE_CPLUSPLUS __cplusplus
+#endif //defined(_MSC_VER)
+
+#if SBE_CPLUSPLUS >= 201103L
+#  define SBE_CONSTEXPR constexpr
+#  define SBE_NOEXCEPT noexcept
+#else
+#  define SBE_CONSTEXPR
+#  define SBE_NOEXCEPT
+#endif
+
 typedef union sbe_float_as_uint_u
 {
     float fp_value;

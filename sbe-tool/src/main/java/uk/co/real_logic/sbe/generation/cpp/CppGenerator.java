@@ -293,7 +293,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n\n",
             dimensionHeaderLength, blockLength, formatClassName(groupName)));
 
-        sb.append(indent).append("#if __cplusplus < 201103L\n")
+        sb.append(indent).append("#if SBE_CPLUSPLUS < 201103L\n")
             .append(indent).append("    template<class Func> inline void forEach(Func& func)\n")
             .append(indent).append("    {\n")
             .append(indent).append("        while (hasNext())\n")
@@ -853,17 +853,6 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format(
             "#ifndef _%1$s_%2$s_H_\n" +
             "#define _%1$s_%2$s_H_\n\n" +
-            "#if defined(_MSC_VER)\n" +
-            "#  if _MSC_VER >= 1911\n" +
-            "#    define SBE_CPLUSPLUS _MSVC_LANG\n" +
-            "#  elif _MSC_VER >= 1900\n" +
-            "#    define SBE_CPLUSPLUS 201103L\n" +
-            "#  else\n" +
-            "#    define SBE_CPLUSPLUS __cplusplus\n" +
-            "#  endif _MSC_VER >= 1900\n" +
-            "#else\n" +
-            "#  define SBE_CPLUSPLUS __cplusplus\n" +
-            "#endif //defined(_MSC_VER)\n" +
             "#if defined(SBE_HAVE_CMATH)\n" +
             "/* cmath needed for std::numeric_limits<double>::quiet_NaN() */\n" +
             "#  include <cmath>\n" +
@@ -879,13 +868,6 @@ public class CppGenerator implements CodeGenerator
             "#  include <cstdint>\n" +
             "#  include <string>\n" +
             "#  include <cstring>\n" +
-            "#endif\n\n" +
-            "#if SBE_CPLUSPLUS >= 201103L\n" +
-            "#  define SBE_CONSTEXPR constexpr\n" +
-            "#  define SBE_NOEXCEPT noexcept\n" +
-            "#else\n" +
-            "#  define SBE_CONSTEXPR\n" +
-            "#  define SBE_NOEXCEPT\n" +
             "#endif\n\n" +
             "#include <sbe/sbe.h>\n\n",
             String.join("_", namespaces).toUpperCase(),
