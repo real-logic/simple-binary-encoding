@@ -853,6 +853,17 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format(
             "#ifndef _%1$s_%2$s_H_\n" +
             "#define _%1$s_%2$s_H_\n\n" +
+            "#if defined(_MSC_VER)\n" +
+            "#  if _MSC_VER >= 1911\n" +
+            "#    define SBE_CPLUSPLUS _MSVC_LANG\n" +
+            "#  elif _MSC_VER >= 1900\n" +
+            "#    define SBE_CPLUSPLUS 201103L\n" +
+            "#  else\n" +
+            "#    define SBE_CPLUSPLUS __cplusplus\n" +
+            "#  endif _MSC_VER >= 1900\n" +
+            "#else\n" +
+            "#  define SBE_CPLUSPLUS __cplusplus\n" +
+            "#endif //defined(_MSC_VER)\n" +
             "#if defined(SBE_HAVE_CMATH)\n" +
             "/* cmath needed for std::numeric_limits<double>::quiet_NaN() */\n" +
             "#  include <cmath>\n" +
@@ -864,12 +875,12 @@ public class CppGenerator implements CodeGenerator
             "#  define SBE_FLOAT_NAN NAN\n" +
             "#  define SBE_DOUBLE_NAN NAN\n" +
             "#endif\n\n" +
-            "#if __cplusplus >= 201103L\n" +
+            "#if SBE_CPLUSPLUS >= 201103L\n" +
             "#  include <cstdint>\n" +
             "#  include <string>\n" +
             "#  include <cstring>\n" +
             "#endif\n\n" +
-            "#if __cplusplus >= 201103L\n" +
+            "#if SBE_CPLUSPLUS >= 201103L\n" +
             "#  define SBE_CONSTEXPR constexpr\n" +
             "#  define SBE_NOEXCEPT noexcept\n" +
             "#else\n" +
@@ -1376,7 +1387,7 @@ public class CppGenerator implements CodeGenerator
             "        m_bufferLength(codec.m_bufferLength),\n" +
             "        m_offset(codec.m_offset),\n" +
             "        m_actingVersion(codec.m_actingVersion){}\n\n" +
-            "#if __cplusplus >= 201103L\n" +
+            "#if SBE_CPLUSPLUS >= 201103L\n" +
             "    %1$s(%1$s&& codec) :\n" +
             "        m_buffer(codec.m_buffer),\n" +
             "        m_bufferLength(codec.m_bufferLength),\n" +
@@ -1442,7 +1453,7 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        reset(codec);\n" +
             "    }\n\n" +
-            "#if __cplusplus >= 201103L\n" +
+            "#if SBE_CPLUSPLUS >= 201103L\n" +
             "    %1$s(%1$s&& codec)\n" +
             "    {\n" +
             "        reset(codec);\n" +
