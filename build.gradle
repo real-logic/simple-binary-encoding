@@ -487,6 +487,7 @@ task(generateRustCarExample, type: JavaExec) {
             'sbe.target.namespace': 'car_example_generated_codec')
     args = ['sbe-tool/src/test/resources/example-schema.xml']
 }
+
 task(generateCarExampleDataFile, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
