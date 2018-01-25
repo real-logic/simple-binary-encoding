@@ -555,8 +555,8 @@ task(generateGolangCodecTestBasic, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'gocode/src/basic',
-            'sbe.target.language': 'golang')
+        'sbe.output.dir': 'gocode/src/basic',
+        'sbe.target.language': 'golang')
     args = ['sbe-tool/src/test/resources/basic-types-schema.xml']
 }
 
@@ -582,9 +582,9 @@ task(generateGolangCodecsWithXSD, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'gocode/src',
-            'sbe.target.language': 'golang',
-            'sbe.validation.xsd': validationXsdPath)
+        'sbe.output.dir': 'gocode/src',
+        'sbe.target.language': 'golang',
+        'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/test/resources/group-with-data-schema.xml',
             'sbe-tool/src/test/resources/FixBinary.xml',
             'sbe-tool/src/test/resources/issue435.xml',
@@ -614,9 +614,9 @@ task(generateCSharpCodecs, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'csharp/sbe-generated',
-            'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
-            'sbe.validation.xsd': validationXsdPath)
+        'sbe.output.dir': 'csharp/sbe-generated',
+        'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
+        'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/test/resources/FixBinary.xml',
             'sbe-tool/src/test/resources/issue435.xml',
             'sbe-tool/src/test/resources/issue483.xml',
@@ -631,9 +631,9 @@ task(generateJavaIrCodecs, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'sbe-tool/src/main/java',
-            'sbe.target.language': 'Java',
-            'sbe.validation.xsd': validationXsdPath)
+        'sbe.output.dir': 'sbe-tool/src/main/java',
+        'sbe.target.language': 'Java',
+        'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 
@@ -641,9 +641,9 @@ task(generateCppIrCodecs, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'sbe-tool/src/main/cpp',
-            'sbe.target.language': 'cpp',
-            'sbe.validation.xsd': validationXsdPath)
+        'sbe.output.dir': 'sbe-tool/src/main/cpp',
+        'sbe.target.language': 'cpp',
+        'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 
@@ -651,9 +651,9 @@ task(generateGolangIrCodecs, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'sbe-tool/src/main/golang',
-            'sbe.target.language': 'golang',
-            'sbe.validation.xsd': validationXsdPath)
+        'sbe.output.dir': 'sbe-tool/src/main/golang',
+        'sbe.target.language': 'golang',
+        'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 
