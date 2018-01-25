@@ -91,6 +91,13 @@ def projectPom = {
     }
 }
 
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
 configurations {
     shadow
 }
@@ -106,11 +113,6 @@ subprojects {
 
     group = sbeGroup
     version = sbeVersion
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
 
     jar.enabled = true
 
@@ -168,12 +170,12 @@ project(':sbe-tool') {
 
     jar {
         manifest.attributes(
-                'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
-                'Specification-Title' : 'Simple Binary Encoding',
-                'Specification-Version' : '1.0',
-                'Implementation-Title' : 'SBE',
-                'Implementation-Version' : "${sbeVersion}",
-                'Implementation-Vendor' : 'Real Logic Limited'
+            'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
+            'Specification-Title' : 'Simple Binary Encoding',
+            'Specification-Version' : '1.0',
+            'Implementation-Title' : 'SBE',
+            'Implementation-Version' : "${sbeVersion}",
+            'Implementation-Vendor' : 'Real Logic Limited'
         )
     }
 
@@ -192,10 +194,10 @@ project(':sbe-tool') {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = sourceSets.main.runtimeClasspath
         systemProperties(
-                'sbe.output.dir': 'build/generated',
-                'sbe.target.language': 'Java',
-                'sbe.validation.stop.on.error': 'true',
-                'sbe.validation.xsd': validationXsdPath)
+            'sbe.output.dir': 'build/generated',
+            'sbe.target.language': 'Java',
+            'sbe.validation.stop.on.error': 'true',
+            'sbe.validation.xsd': validationXsdPath)
         args = ['src/test/resources/json-printer-test-schema.xml',
                 'src/test/resources/composite-elements-schema.xml']
     }
@@ -254,13 +256,12 @@ project(':sbe-all') {
     shadowJar {
         classifier = ''
         manifest.attributes(
-                'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
-                'Specification-Title' : 'Simple Binary Encoding',
-                'Specification-Version' : '1.0',
-                'Implementation-Title' : 'SBE',
-                'Implementation-Version' : "${sbeVersion}",
-                'Implementation-Vendor' : 'Real Logic Limited'
-        )
+            'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
+            'Specification-Title' : 'Simple Binary Encoding',
+            'Specification-Version' : '1.0',
+            'Implementation-Title' : 'SBE',
+            'Implementation-Version' : "${sbeVersion}",
+            'Implementation-Vendor' : 'Real Logic Limited')
     }
 
     uploadArchives {
@@ -334,11 +335,11 @@ project(':sbe-samples') {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
-                'sbe.output.dir': 'build/generated',
-                'sbe.target.language': 'Java',
-                'sbe.java.generate.interfaces': 'false',
-                'sbe.validation.stop.on.error': 'true',
-                'sbe.validation.xsd': validationXsdPath)
+            'sbe.output.dir': 'build/generated',
+            'sbe.target.language': 'Java',
+            'sbe.java.generate.interfaces': 'false',
+            'sbe.validation.stop.on.error': 'true',
+            'sbe.validation.xsd': validationXsdPath)
         args = ['src/main/resources/example-schema.xml',
                 'src/main/resources/example-extension-schema.xml']
     }
@@ -421,12 +422,12 @@ project(':sbe-benchmarks') {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
-                'sbe.output.dir': 'build/generated',
-                'sbe.target.language': 'Java',
-                'sbe.validation.stop.on.error': 'true',
-                'sbe.validation.xsd': validationXsdPath,
-                'sbe.java.encoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer',
-                'sbe.java.decoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer')
+            'sbe.output.dir': 'build/generated',
+            'sbe.target.language': 'Java',
+            'sbe.validation.stop.on.error': 'true',
+            'sbe.validation.xsd': validationXsdPath,
+            'sbe.java.encoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer',
+            'sbe.java.decoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer')
         args = ['src/main/resources/car.xml', 'src/main/resources/fix-message-samples.xml']
     }
 
@@ -482,9 +483,9 @@ task(generateRustCarExample, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'rust/car_example/src',
-            'sbe.target.language': 'uk.co.real_logic.sbe.generation.rust.Rust',
-            'sbe.target.namespace': 'car_example_generated_codec')
+        'sbe.output.dir': 'rust/car_example/src',
+        'sbe.target.language': 'uk.co.real_logic.sbe.generation.rust.Rust',
+        'sbe.target.namespace': 'car_example_generated_codec')
     args = ['sbe-tool/src/test/resources/example-schema.xml']
 }
 
@@ -530,8 +531,7 @@ if (cargo_exists()) {
 
 task generateRustCodecs {
     description = 'Generate rust test codecs'
-    dependsOn 'generateRustCarExample',
-            'generateCarExampleDataFile'
+    dependsOn 'generateRustCarExample', 'generateCarExampleDataFile'
 }
 
 /*
@@ -546,8 +546,8 @@ task(generateGolangCodecTestComposite, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'gocode/src',
-            'sbe.target.language': 'golang')
+        'sbe.output.dir': 'gocode/src',
+        'sbe.target.language': 'golang')
     args = ['sbe-tool/src/test/resources/composite-elements-schema-rc4.xml']
 }
 
@@ -564,8 +564,8 @@ task(generateGolangCodecTestGroup, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'gocode/src/group',
-            'sbe.target.language': 'golang')
+        'sbe.output.dir': 'gocode/src/group',
+        'sbe.target.language': 'golang')
     args = ['sbe-tool/src/test/resources/basic-group-schema.xml']
 }
 
@@ -573,8 +573,8 @@ task(generateGolangCodecTestVarData, type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'gocode/src/vardata',
-            'sbe.target.language': 'golang')
+        'sbe.output.dir': 'gocode/src/vardata',
+        'sbe.target.language': 'golang')
     args = ['sbe-tool/src/test/resources/basic-variable-length-schema.xml']
 }
 
@@ -604,10 +604,10 @@ task(generateGolangCodecsWithXSD, type: JavaExec) {
 task generateGolangCodecs {
     description = 'Generate golang test codecs'
     dependsOn 'generateGolangCodecTestVarData',
-            'generateGolangCodecTestGroup',
-            'generateGolangCodecTestBasic',
-            'generateGolangCodecTestComposite',
-            'generateGolangCodecsWithXSD'
+        'generateGolangCodecTestGroup',
+        'generateGolangCodecTestBasic',
+        'generateGolangCodecTestComposite',
+        'generateGolangCodecsWithXSD'
 }
 
 task(generateCSharpCodecs, type: JavaExec) {
@@ -664,20 +664,20 @@ task generateIrCodecs {
 
 task runBenchmarks(type: Exec) {
     commandLine 'java',
-            '-Dagrona.disable.bounds.checks=true',
-            '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
-            '-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
+        '-Dagrona.disable.bounds.checks=true',
+        '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
+        '-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
 }
 
 task uploadToMavenCentral {
     dependsOn 'sbe-tool:uploadArchives',
-            'sbe-samples:uploadArchives',
-            'sbe-benchmarks:uploadArchives',
-            'sbe-all:uploadArchives',
-            'sbe-all:uploadShadow'
+        'sbe-samples:uploadArchives',
+        'sbe-benchmarks:uploadArchives',
+        'sbe-all:uploadArchives',
+        'sbe-all:uploadShadow'
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.4'
+    gradleVersion = '4.5'
     distributionType = 'ALL'
 }
