@@ -164,7 +164,6 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 project(':sbe-tool') {
     dependencies {
         compile 'org.agrona:agrona:0.9.13'
-
         testCompile files('build/classes/java/generated')
     }
 
@@ -186,11 +185,9 @@ project(':sbe-tool') {
     compileGeneratedJava.dependsOn 'generateCodecs'
     compileGeneratedJava.classpath += sourceSets.main.runtimeClasspath
 
-    compileTestJava {
-        dependsOn 'compileGeneratedJava'
-    }
+    compileTestJava.dependsOn 'compileGeneratedJava'
 
-    task(generateCodecs, dependsOn: 'compileJava', type: JavaExec) {
+    task generateCodecs(dependsOn: 'compileJava', type: JavaExec) {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = sourceSets.main.runtimeClasspath
         systemProperties(
@@ -220,9 +217,18 @@ project(':sbe-tool') {
         }
     }
 
+    task copyCppFiles(type: Copy) {
+        from 'src/main/cpp/sbe'
+        from 'src/main/cpp/otf'
+        into 'build/generated/cpp/cpp'
+    }
+
     task sourcesJar(type: Jar) {
         classifier = 'sources'
         from sourceSets.main.allSource
+
+        dependsOn 'copyCppFiles'
+        from 'build/generated/cpp'
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -331,7 +337,7 @@ project(':sbe-samples') {
         dependsOn 'compileGeneratedJava'
     }
 
-    task(generateCodecs, type: JavaExec) {
+    task generateCodecs(type: JavaExec) {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
@@ -344,17 +350,17 @@ project(':sbe-samples') {
                 'src/main/resources/example-extension-schema.xml']
     }
 
-    task(runExampleUsingGeneratedStub, dependsOn: 'compileJava', type: JavaExec) {
+    task runExampleUsingGeneratedStub(dependsOn: 'compileJava', type: JavaExec) {
         classpath = sourceSets.main.runtimeClasspath
         main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
     }
 
-    task(runExampleUsingGeneratedStubExtension, dependsOn: 'compileJava', type: JavaExec) {
+    task runExampleUsingGeneratedStubExtension(dependsOn: 'compileJava', type: JavaExec) {
         classpath = sourceSets.main.runtimeClasspath
         main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
     }
 
-    task(runOtfExample, dependsOn: 'compileJava', type: JavaExec) {
+    task runOtfExample(dependsOn: 'compileJava', type: JavaExec) {
         classpath = sourceSets.main.runtimeClasspath
         main = 'uk.co.real_logic.sbe.examples.OtfExample'
     }
@@ -418,7 +424,7 @@ project(':sbe-benchmarks') {
         dependsOn 'compileGeneratedJava'
     }
 
-    task(generateCodecs, type: JavaExec) {
+    task generateCodecs(type: JavaExec) {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
@@ -479,7 +485,7 @@ project(':sbe-benchmarks') {
 /*
  * Rust codec targets used for testing and demonstration
  */
-task(generateRustCarExample, type: JavaExec) {
+task generateRustCarExample(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -489,7 +495,7 @@ task(generateRustCarExample, type: JavaExec) {
     args = ['sbe-tool/src/test/resources/example-schema.xml']
 }
 
-task(generateCarExampleDataFile, type: JavaExec) {
+task generateCarExampleDataFile(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -498,7 +504,7 @@ task(generateCarExampleDataFile, type: JavaExec) {
     standardOutput = new ByteArrayOutputStream()
 }
 
-task(runRustCarExample, type: Exec) {
+task runRustCarExample(type: Exec) {
     workingDir = './rust/car_example'
     executable = 'cargo'
     args = ['run']
@@ -542,7 +548,7 @@ task generateRustCodecs {
  *  *) Some of the test files need an additional output directory setting
  *     as they generate into the same directory and golang won't allow that.
  */
-task(generateGolangCodecTestComposite, type: JavaExec) {
+task generateGolangCodecTestComposite(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -551,7 +557,7 @@ task(generateGolangCodecTestComposite, type: JavaExec) {
     args = ['sbe-tool/src/test/resources/composite-elements-schema-rc4.xml']
 }
 
-task(generateGolangCodecTestBasic, type: JavaExec) {
+task generateGolangCodecTestBasic(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -560,7 +566,7 @@ task(generateGolangCodecTestBasic, type: JavaExec) {
     args = ['sbe-tool/src/test/resources/basic-types-schema.xml']
 }
 
-task(generateGolangCodecTestGroup, type: JavaExec) {
+task generateGolangCodecTestGroup(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -569,7 +575,7 @@ task(generateGolangCodecTestGroup, type: JavaExec) {
     args = ['sbe-tool/src/test/resources/basic-group-schema.xml']
 }
 
-task(generateGolangCodecTestVarData, type: JavaExec) {
+task generateGolangCodecTestVarData(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -578,7 +584,7 @@ task(generateGolangCodecTestVarData, type: JavaExec) {
     args = ['sbe-tool/src/test/resources/basic-variable-length-schema.xml']
 }
 
-task(generateGolangCodecsWithXSD, type: JavaExec) {
+task generateGolangCodecsWithXSD(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -610,7 +616,7 @@ task generateGolangCodecs {
         'generateGolangCodecsWithXSD'
 }
 
-task(generateCSharpCodecs, type: JavaExec) {
+task generateCSharpCodecs(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -627,7 +633,7 @@ task(generateCSharpCodecs, type: JavaExec) {
             'sbe-benchmarks/src/main/resources/fix-message-samples.xml']
 }
 
-task(generateJavaIrCodecs, type: JavaExec) {
+task generateJavaIrCodecs(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -637,7 +643,7 @@ task(generateJavaIrCodecs, type: JavaExec) {
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 
-task(generateCppIrCodecs, type: JavaExec) {
+task generateCppIrCodecs(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -647,7 +653,7 @@ task(generateCppIrCodecs, type: JavaExec) {
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 
-task(generateGolangIrCodecs, type: JavaExec) {
+task generateGolangIrCodecs(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
