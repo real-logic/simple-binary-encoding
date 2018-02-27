@@ -168,8 +168,16 @@ public class ExampleTokenListener implements TokenListener
         final String value;
         try
         {
-            buffer.getBytes(bufferIndex, tempBuffer, 0, length);
-            value = new String(tempBuffer, 0, length, typeToken.encoding().characterEncoding());
+            final String characterEncoding = typeToken.encoding().characterEncoding();
+            if (null == characterEncoding)
+            {
+                value = length + " bytes of raw data";
+            }
+            else
+            {
+                buffer.getBytes(bufferIndex, tempBuffer, 0, length);
+                value = new String(tempBuffer, 0, length, characterEncoding);
+            }
         }
         catch (final UnsupportedEncodingException ex)
         {
