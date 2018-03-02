@@ -697,7 +697,7 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         return String.format(
-            indent + INDENT + INDENT + "if (actingVersion < %d) return 0;\n\n",
+            indent + INDENT + INDENT + "if (_actingVersion < %d) return 0;\n\n",
             sinceVersion);
     }
 
@@ -711,7 +711,7 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         return String.format(
-            indent + INDENT + INDENT + "if (actingVersion < %d) return null;\n\n",
+            indent + INDENT + INDENT + "if (_actingVersion < %d) return null;\n\n",
             sinceVersion);
     }
 
