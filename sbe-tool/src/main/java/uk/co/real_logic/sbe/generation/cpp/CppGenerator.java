@@ -889,7 +889,6 @@ public class CppGenerator implements CodeGenerator
             sb.append("\n");
         }
 
-        sb.append("using namespace sbe;\n\n");
         sb.append("namespace ");
         sb.append(String.join(" {\nnamespace ", namespaces));
         sb.append(" {\n\n");
@@ -1042,7 +1041,7 @@ public class CppGenerator implements CodeGenerator
         if (primitiveType == PrimitiveType.FLOAT || primitiveType == PrimitiveType.DOUBLE)
         {
             final String stackUnion =
-                (primitiveType == PrimitiveType.FLOAT) ? "sbe_float_as_uint_t" : "sbe_double_as_uint_t";
+                (primitiveType == PrimitiveType.FLOAT) ? "::sbe::sbe_float_as_uint_t" : "::sbe::sbe_double_as_uint_t";
 
             sb.append(String.format(
                 indent + "        %1$s val;\n" +
@@ -1082,7 +1081,7 @@ public class CppGenerator implements CodeGenerator
         if (primitiveType == PrimitiveType.FLOAT || primitiveType == PrimitiveType.DOUBLE)
         {
             final String stackUnion =
-                (primitiveType == PrimitiveType.FLOAT) ? "sbe_float_as_uint_t" : "sbe_double_as_uint_t";
+                (primitiveType == PrimitiveType.FLOAT) ? "::sbe::sbe_float_as_uint_t" : "::sbe::sbe_double_as_uint_t";
 
             sb.append(String.format(
                 indent + "        %1$s val;\n" +
@@ -1662,15 +1661,15 @@ public class CppGenerator implements CodeGenerator
         final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
 
         sb.append(String.format("\n" +
-            indent + "    static const char *%sMetaAttribute(const MetaAttribute::Attribute metaAttribute)" +
+            indent + "    static const char *%sMetaAttribute(const ::sbe::MetaAttribute::Attribute metaAttribute)" +
             " SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        switch (metaAttribute)\n" +
             indent + "        {\n" +
-            indent + "            case MetaAttribute::EPOCH: return \"%s\";\n" +
-            indent + "            case MetaAttribute::TIME_UNIT: return \"%s\";\n" +
-            indent + "            case MetaAttribute::SEMANTIC_TYPE: return \"%s\";\n" +
-            indent + "            case MetaAttribute::PRESENCE: return \"%s\";\n" +
+            indent + "            case ::sbe::MetaAttribute::EPOCH: return \"%s\";\n" +
+            indent + "            case ::sbe::MetaAttribute::TIME_UNIT: return \"%s\";\n" +
+            indent + "            case ::sbe::MetaAttribute::SEMANTIC_TYPE: return \"%s\";\n" +
+            indent + "            case ::sbe::MetaAttribute::PRESENCE: return \"%s\";\n" +
             indent + "        }\n\n" +
             indent + "        return \"\";\n" +
             indent + "    }\n",
