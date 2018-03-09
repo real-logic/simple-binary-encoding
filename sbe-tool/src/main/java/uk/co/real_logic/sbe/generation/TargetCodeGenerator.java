@@ -17,8 +17,6 @@ package uk.co.real_logic.sbe.generation;
 
 import uk.co.real_logic.sbe.ir.Ir;
 
-import java.io.IOException;
-
 /**
  * Target a code generator for a given language.
  */
@@ -30,7 +28,6 @@ public interface TargetCodeGenerator
      * @param ir        describing the message schemas from which code should generated.
      * @param outputDir to which the generated code with be written.
      * @return a new instance of a {@link CodeGenerator} for the given target language.
-     * @throws IOException if an error occurs when dealing with the output directory.
      */
-    CodeGenerator newInstance(Ir ir, String outputDir) throws IOException;
+    CodeGenerator newInstance(Ir ir, String outputDir);
 }

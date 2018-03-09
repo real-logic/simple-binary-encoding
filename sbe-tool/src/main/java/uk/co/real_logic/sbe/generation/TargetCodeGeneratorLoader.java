@@ -23,15 +23,13 @@ import uk.co.real_logic.sbe.generation.golang.GolangOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
-import java.io.IOException;
-
 import static uk.co.real_logic.sbe.SbeTool.*;
 
 public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
 {
     JAVA()
     {
-        public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
+        public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new JavaGenerator(
                 ir,
@@ -46,7 +44,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
 
     CPP()
     {
-        public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
+        public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new CppGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
@@ -54,7 +52,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
 
     GOLANG()
     {
-        public CodeGenerator newInstance(final Ir ir, final String outputDir) throws IOException
+        public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new GolangGenerator(ir, new GolangOutputManager(outputDir, ir.applicableNamespace()));
         }
@@ -82,9 +80,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         }
         catch (final Exception ex)
         {
-            // do nothing and fall through
+            throw new IllegalArgumentException("No code generator for name: " + name, ex);
         }
-
-        throw new IllegalArgumentException("No code generator for name: " + name);
     }
 }
