@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2013-2018 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ namespace sbe
 #else
     #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))
 #endif
-   
+
 #define SBE_NULLVALUE_INT8 (std::numeric_limits<std::int8_t>::min)()
 #define SBE_NULLVALUE_INT16 (std::numeric_limits<std::int16_t>::min)()
 #define SBE_NULLVALUE_INT32 (std::numeric_limits<std::int32_t>::min)()

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2018 Real Logic Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package uk.co.real_logic.sbe.generation.rust;
 
 import org.agrona.Verify;
@@ -23,8 +38,8 @@ public class RustGenerator implements CodeGenerator
     private final Ir ir;
     private final OutputManager outputManager;
     static final String SCRATCH_ENCODER_TYPE = "ScratchEncoderData";
-    static final String SCRATCH_ENCODER_PROPERY = "scratch";
-    static final String SCRATCH_DECODER_PROPERY = SCRATCH_ENCODER_PROPERY;
+    static final String SCRATCH_ENCODER_PROPERTY = "scratch";
+    static final String SCRATCH_DECODER_PROPERTY = SCRATCH_ENCODER_PROPERTY;
     static final String SCRATCH_DECODER_TYPE = "ScratchDecoderData";
     static final String DATA_LIFETIME = "'d";
 
@@ -431,7 +446,7 @@ public class RustGenerator implements CodeGenerator
             }
             else
             {
-                contentProperty = SCRATCH_ENCODER_PROPERY;
+                contentProperty = SCRATCH_ENCODER_PROPERTY;
                 contentBearingType = withLifetime(SCRATCH_ENCODER_TYPE);
             }
             indent(out, 1, "%s: %s,\n", contentProperty, contentBearingType);
@@ -579,7 +594,7 @@ public class RustGenerator implements CodeGenerator
             }
             else
             {
-                contentProperty = SCRATCH_DECODER_PROPERY;
+                contentProperty = SCRATCH_DECODER_PROPERTY;
                 contentBearingType = withLifetime(SCRATCH_DECODER_TYPE);
             }
             indent(out, 1, "%s: %s,\n", contentProperty, contentBearingType);
@@ -701,7 +716,7 @@ public class RustGenerator implements CodeGenerator
         {
             builder.append(".parent");
         }
-        builder.append(format(".%s", SCRATCH_DECODER_PROPERY));
+        builder.append(format(".%s", SCRATCH_DECODER_PROPERTY));
 
         return builder.toString();
     }
@@ -944,7 +959,7 @@ public class RustGenerator implements CodeGenerator
             try (Writer writer = outputManager.createOutput(name + " variable-length data"))
             {
                 appendStructHeader(writer, withLifetime(decoderType), false);
-                final String contentPropertyName = groupDepth > 0 ? "parent" : SCRATCH_DECODER_PROPERY;
+                final String contentPropertyName = groupDepth > 0 ? "parent" : SCRATCH_DECODER_PROPERTY;
                 indent(writer, 1, "%s: %s,\n", contentPropertyName, withLifetime(contentType));
                 writer.append("}\n");
 
