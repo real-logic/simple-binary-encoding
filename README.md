@@ -1,6 +1,8 @@
 Simple Binary Encoding (SBE)
 ============================
 
+[![Javadocs](http://www.javadoc.io/badge/uk.co.real-logic/sbe-tool.svg)](http://www.javadoc.io/doc/uk.co.real-logic/sbe-tool)
+
 [SBE](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) is an OSI layer 6 presentation for 
 encoding and decoding binary application messages for low-latency financial applications. This repository contains 
 the reference implementations in Java, C++, Golang, and C#.
