@@ -4,7 +4,7 @@ SETLOCAL
 SET VERSION=1.0.7
 SET MSBUILD="c:/Program Files (x86)/Microsoft Visual Studio/2017/Community/MSBuild/15.0/Bin/msbuild.exe"
 SET MSTEST="c:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/MSTest.exe"
-SET COPYRIGHT="Copyright 2017 MarketFactory Inc. Copyright Adaptive 2014. All rights reserved."
+SET COPYRIGHT="Copyright (C) Bill Segall 2018, MarketFactory Inc 2017, Adaptive 2014. All rights reserved."
 SET CONFIGURATION="Release"
 
 REM Restore packages

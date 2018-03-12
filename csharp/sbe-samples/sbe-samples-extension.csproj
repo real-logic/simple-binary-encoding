@@ -9,7 +9,7 @@
     <OutputTypeEx>exe</OutputTypeEx>
     <RootNamespace>Org.SbeTool.Sbe.Example.Extension</RootNamespace>
     <AssemblyName>Org.SbeTool.Sbe.Example.Extension</AssemblyName>
-    <Copyright>Copyright © 2017 MarketFactory Inc. Copyright © Adaptive 2014. All rights reserved.</Copyright>
+    <Copyright>Copyright (C) Bill Segall 2018, MarketFactory Inc 2017, Adaptive 2014. All rights reserved.</Copyright>
     <Description />
     <Product>SBE</Product>
     <ApplicationIcon />
