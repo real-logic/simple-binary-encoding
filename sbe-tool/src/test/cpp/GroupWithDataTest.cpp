@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2013-2018 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 #include "group_with_data/TestMessage3.h"
 #include "group_with_data/TestMessage4.h"
 
-using namespace std;
+// using namespace std;
 using namespace group::with::data;
 
 static const std::uint32_t TAG_1 = 32;
