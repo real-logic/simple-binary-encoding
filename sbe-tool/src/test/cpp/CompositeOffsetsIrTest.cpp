@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2013-2018 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@
 #include "otf/OtfMessageDecoder.h"
 #include "otf/IrDecoder.h"
 
-using namespace std;
 using namespace composite::offsets::test;
-using namespace sbe::otf;
 
 static const char *SCHEMA_FILENAME = "composite-offsets-schema.sbeir";
 

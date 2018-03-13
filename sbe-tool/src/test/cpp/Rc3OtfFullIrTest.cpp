@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2013-2018 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@
 #include "otf/OtfHeaderDecoder.h"
 #include "otf/OtfMessageDecoder.h"
 
-using namespace std;
 using namespace code::generation::test;
 
 static const char *SCHEMA_FILENAME = "code-generation-schema.sbeir";
@@ -283,7 +282,7 @@ public:
 
     void onBeginMessage(Token& token)
     {
-        cout << m_eventNumber << ": Begin Message " << token.name() << " id " << token.fieldId() << "\n";
+        std::cout << m_eventNumber << ": Begin Message " << token.name() << " id " << token.fieldId() << "\n";
 
         EXPECT_EQ(EventNumber(m_eventNumber), EN_beginMessage);
         EXPECT_EQ(token.fieldId(), Car::sbeTemplateId());
@@ -292,7 +291,7 @@ public:
 
     void onEndMessage(Token& token)
     {
-        cout << m_eventNumber << ": End Message " << token.name() << "\n";
+        std::cout << m_eventNumber << ": End Message " << token.name() << "\n";
 
         EXPECT_EQ(EventNumber(m_eventNumber), EN_endMessage);
         EXPECT_EQ(token.fieldId(), Car::sbeTemplateId());
@@ -306,7 +305,7 @@ public:
         std::uint64_t actingVersion)
     {
         std::string name = (m_compositeLevel > 1) ? typeToken.name() : fieldToken.name();
-        cout << m_eventNumber << ": Encoding " <<  name << " offset " << typeToken.offset() << "\n";
+        std::cout << m_eventNumber << ": Encoding " <<  name << " offset " << typeToken.offset() << "\n";
 
         const Encoding& encoding = typeToken.encoding();
 
@@ -543,7 +542,7 @@ public:
         std::size_t toIndex,
         std::uint64_t actingVersion)
     {
-        cout << m_eventNumber << ": Enum " << determineName(fieldToken, tokens, fromIndex) << "\n";
+        std::cout << m_eventNumber << ": Enum " << determineName(fieldToken, tokens, fromIndex) << "\n";
 
         const Token& typeToken = tokens.at(fromIndex + 1);
         const Encoding& encoding = typeToken.encoding();
@@ -564,7 +563,7 @@ public:
                     const Token& token = tokens.at(i);
                     const std::uint64_t constValue = token.encoding().constValue().getAsUInt();
 
-                    cout << "    " << token.name() << " = " << constValue << "\n";
+                    std::cout << "    " << token.name() << " = " << constValue << "\n";
 
                     if (constValue == value)
                     {
@@ -589,7 +588,7 @@ public:
                     const Token& token = tokens.at(i);
                     const std::int64_t constValue = token.encoding().constValue().getAsUInt();
 
-                    cout << "    " << token.name() << " = " << constValue << "\n";
+                    std::cout << "    " << token.name() << " = " << constValue << "\n";
 
                     if (constValue == value)
                     {
@@ -617,7 +616,7 @@ public:
                     const Token& token = tokens.at(i);
                     const std::int64_t constValue = token.encoding().constValue().getAsInt();
 
-                    cout << "    " << token.name() << " = " << constValue << "\n";
+                    std::cout << "    " << token.name() << " = " << constValue << "\n";
 
                     if (constValue == value.getAsInt())
                     {
@@ -641,7 +640,7 @@ public:
                     const Token& token = tokens.at(i);
                     const std::int64_t constValue = token.encoding().constValue().getAsUInt();
 
-                    cout << "    " << token.name() << " = " << constValue << "\n";
+                    std::cout << "    " << token.name() << " = " << constValue << "\n";
 
                     if (constValue == value)
                     {
@@ -667,7 +666,7 @@ public:
         std::size_t toIndex,
         std::uint64_t actingVersion)
     {
-        cout << m_eventNumber << ": Bit Set " << fieldToken.name() << "\n";
+        std::cout << m_eventNumber << ": Bit Set " << fieldToken.name() << "\n";
 
         const Token& typeToken = tokens.at(fromIndex + 1);
         const Encoding& encoding = typeToken.encoding();
@@ -690,15 +689,15 @@ public:
 
                     if (constValue && value)
                     {
-                        cout << "    * ";
+                        std::cout << "    * ";
                         bitsSet++;
                     }
                     else
                     {
-                        cout << "      ";
+                        std::cout << "      ";
                     }
 
-                    cout << token.name() << " = " << constValue << "\n";
+                    std::cout << token.name() << " = " << constValue << "\n";
                 }
                 EXPECT_EQ(bitsSet, 2);
                 break;
@@ -719,7 +718,7 @@ public:
         m_compositeLevel++;
         std::string name = determineName(fieldToken, tokens, fromIndex);
 
-        cout << m_eventNumber << ": Begin Composite " << name << "\n";
+        std::cout << m_eventNumber << ": Begin Composite " << name << "\n";
 
         switch (EventNumber(m_eventNumber))
         {
@@ -749,7 +748,7 @@ public:
         std::string name = determineName(fieldToken, tokens, fromIndex);
         m_compositeLevel--;
 
-        cout << m_eventNumber << ": End Composite " << name << "\n";
+        std::cout << m_eventNumber << ": End Composite " << name << "\n";
 
         switch (EventNumber(m_eventNumber))
         {
@@ -774,7 +773,7 @@ public:
         Token& token,
         std::uint64_t numInGroup)
     {
-        cout << m_eventNumber << ": Group Header " << token.name() << " num " << numInGroup << "\n";
+        std::cout << m_eventNumber << ": Group Header " << token.name() << " num " << numInGroup << "\n";
 
         switch (EventNumber(m_eventNumber))
         {
@@ -815,7 +814,7 @@ public:
         std::uint64_t groupIndex,
         std::uint64_t numInGroup)
     {
-        cout << m_eventNumber << ": Begin Group " << token.name() << " " << groupIndex + 1 << "/" << numInGroup << "\n";
+        std::cout << m_eventNumber << ": Begin Group " << token.name() << " " << groupIndex + 1 << "/" << numInGroup << "\n";
 
         switch (EventNumber(m_eventNumber))
         {
@@ -908,7 +907,7 @@ public:
         std::uint64_t groupIndex,
         std::uint64_t numInGroup)
     {
-        cout << m_eventNumber << ": End Group " << token.name() << " " << groupIndex + 1 << "/" << numInGroup << "\n";
+        std::cout << m_eventNumber << ": End Group " << token.name() << " " << groupIndex + 1 << "/" << numInGroup << "\n";
 
         switch (EventNumber(m_eventNumber))
         {
@@ -1002,7 +1001,7 @@ public:
         std::uint64_t length,
         Token& typeToken)
     {
-        cout << m_eventNumber << ": Data " << fieldToken.name() << "\n";
+        std::cout << m_eventNumber << ": Data " << fieldToken.name() << "\n";
 
         switch (EventNumber(m_eventNumber))
         {

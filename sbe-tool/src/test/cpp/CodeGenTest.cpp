@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2013-2018 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 #include "code_generation_test/MessageHeader.h"
 #include "code_generation_test/Car.h"
 
-using namespace std;
 using namespace code::generation::test;
 
 static const std::size_t BUFFER_LEN = 2048;
