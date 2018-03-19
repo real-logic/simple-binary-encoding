@@ -372,6 +372,25 @@ public class JavaGeneratorTest
         assertThat(get(decoder, "vehicleCode"), is("R11R12"));
     }
 
+    @Test
+    public void shouldGeneratePutCharSequence() throws Exception
+    {
+        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
+        generator().generate();
+
+        final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
+        final Object decoder = getCarDecoder(buffer, encoder);
+
+        set(encoder, "vehicleCode", CharSequence.class, "R11");
+        assertThat(get(decoder, "vehicleCode"), is("R11"));
+
+        set(encoder, "vehicleCode", CharSequence.class, "");
+        assertThat(get(decoder, "vehicleCode"), is(""));
+
+        set(encoder, "vehicleCode", CharSequence.class, "R11R12");
+        assertThat(get(decoder, "vehicleCode"), is("R11R12"));
+    }
+
     private Class<?> getModelClass(final Object encoder) throws ClassNotFoundException
     {
         final String className = "Model";

@@ -837,11 +837,32 @@ public class JavaGenerator implements CodeGenerator
             byteOrderStr,
             indent);
 
-        if (null == characterEncoding)
+        if (null != characterEncoding)
         {
-            return;
+            generateCharArrayEncodeMethods(
+                sb,
+                propertyName,
+                sizeOfLengthField,
+                maxLengthValue,
+                lengthType,
+                byteOrderStr,
+                characterEncoding,
+                className,
+                indent);
         }
+    }
 
+    private void generateCharArrayEncodeMethods(
+        final StringBuilder sb,
+        final String propertyName,
+        final int sizeOfLengthField,
+        final int maxLengthValue,
+        final PrimitiveType lengthType,
+        final String byteOrderStr,
+        final String characterEncoding,
+        final String className,
+        final String indent)
+    {
         if (characterEncoding.contains("ASCII"))
         {
             sb.append(String.format("\n" +
@@ -857,6 +878,32 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        parentMessage.limit(limit + headerLength + length);\n" +
                 indent + "        %5$s;\n" +
                 indent + "        buffer.putStringWithoutLengthAscii(limit + headerLength, value);\n\n" +
+                indent + "        return this;\n" +
+                indent + "    }\n",
+                className,
+                formatPropertyName(propertyName),
+                maxLengthValue,
+                sizeOfLengthField,
+                generatePut(lengthType, "limit", "length", byteOrderStr)));
+
+            sb.append(String.format("\n" +
+                indent + "    public %1$s %2$s(final CharSequence value)\n" +
+                indent + "    {\n" +
+                indent + "        final int length = value.length();\n" +
+                indent + "        if (length > %3$d)\n" +
+                indent + "        {\n" +
+                indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
+                indent + "        }\n\n" +
+                indent + "        final int headerLength = %4$d;\n" +
+                indent + "        final int limit = parentMessage.limit();\n" +
+                indent + "        parentMessage.limit(limit + headerLength + length);\n" +
+                indent + "        %5$s;\n" +
+                indent + "        for (int i = 0; i < length; ++i)\n" +
+                indent + "        {\n" +
+                indent + "            final char charValue = value.charAt(i);\n" +
+                indent + "            final byte byteValue = charValue > 127 ? (byte)'?' : (byte)charValue;\n" +
+                indent + "            buffer.putByte(limit + headerLength + i, byteValue);\n" +
+                indent + "        }\n\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
                 className,
@@ -1851,6 +1898,32 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        for (int start = srcLength; start < length; ++start)\n" +
                 indent + "        {\n" +
                 indent + "            buffer.putByte(this.offset + %4$d + start, (byte)0);\n" +
+                indent + "        }\n\n" +
+                indent + "        return this;\n" +
+                indent + "    }\n",
+                formatClassName(containingClassName),
+                propertyName,
+                fieldLength,
+                offset));
+            sb.append(String.format("\n" +
+                indent + "    public %1$s %2$s(final CharSequence src)\n" +
+                indent + "    {\n" +
+                indent + "        final int length = %3$d;\n" +
+                indent + "        final int srcLength = src.length();\n" +
+                indent + "        if (srcLength > length)\n" +
+                indent + "        {\n" +
+                indent + "            throw new IndexOutOfBoundsException(" +
+                "\"CharSequence too large for copy: byte length=\" + srcLength);\n" +
+                indent + "        }\n\n" +
+                indent + "        for (int i = 0; i < srcLength; ++i)\n" +
+                indent + "        {\n" +
+                indent + "            final char charValue = src.charAt(i);\n" +
+                indent + "            final byte byteValue = charValue > 127 ? (byte)'?' : (byte)charValue;\n" +
+                indent + "            buffer.putByte(this.offset + %4$d + i, byteValue);\n" +
+                indent + "        }\n\n" +
+                indent + "        for (int i = srcLength; i < length; ++i)\n" +
+                indent + "        {\n" +
+                indent + "            buffer.putByte(this.offset + %4$d + i, (byte)0);\n" +
                 indent + "        }\n\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
