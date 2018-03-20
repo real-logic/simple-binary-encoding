@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   package="code.generation.test"
+                   id="1"
+                   version="4"
+                   description="Unit Test">
+    <types>
+        <composite name="messageHeader" description="Message identifiers and length of message root">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+            <type name="headerLength" primitiveType="uint16"/>
+
+            <type name="extraField" primitiveType="int32" sinceVersion="5"/>
+        </composite>
+        <composite name="groupSizeEncoding" description="Repeating group dimensions">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint8" semanticType="NumInGroup"/>
+        </composite>
+        <type name="AType" primitiveType="int32" sinceVersion="1"/>
+        <composite name="AComposite" sinceVersion="3">
+            <type name="value" primitiveType="int32"/>
+        </composite>
+    </types>
+    <!--
+        Version 0: schema created
+        Version 1: aType introduced and tag2 added to TestMessage1
+        Version 2: tag2 added to TestMessage2
+        Version 3: aComposite introduced and tag3 added to TestMessage1
+        Version 4: tag3 added to TestMessage2
+        Version 5: extraField is added to messageHeader
+    -->
+    <sbe:message name="TestMessage1" id="1">
+        <field name="tag1" id="1" type="int32"/>
+        <field name="tag2" id="2" type="AType" sinceVersion="1"/>
+        <field name="tag3" id="3" type="AComposite" sinceVersion="3"/>
+    </sbe:message>
+    <sbe:message name="TestMessage2" id="2">
+        <field name="tag1" id="1" type="int32"/>
+        <field name="tag2" id="2" type="AType" sinceVersion="2"/>
+        <field name="tag3" id="3" type="AComposite" sinceVersion="4"/>
+    </sbe:message>
+</sbe:messageSchema>

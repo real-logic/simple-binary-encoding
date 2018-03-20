@@ -1054,12 +1054,13 @@ public class JavaGenerator implements CodeGenerator
                 final StringBuilder sb = new StringBuilder();
                 generateEncodingOffsetMethod(sb, propertyName, encodingToken.offset(), BASE_INDENT);
                 generateEncodingLengthMethod(sb, propertyName, encodingToken.encodedLength(), BASE_INDENT);
+                generateFieldSinceVersionMethod(sb, encodingToken, BASE_INDENT);
 
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
                         out.append(sb).append(generatePrimitiveDecoder(
-                            true, encodingToken.name(), encodingToken, BASE_INDENT));
+                            true, encodingToken.name(), encodingToken, encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_ENUM:
@@ -1477,19 +1478,24 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitiveDecoder(
-        final boolean inComposite, final String propertyName, final Token token, final String indent)
+        final boolean inComposite,
+        final String propertyName,
+        final Token propertyToken,
+        final Token encodingToken,
+        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(generatePrimitiveFieldMetaData(propertyName, token, indent));
+        sb.append(generatePrimitiveFieldMetaData(propertyName, encodingToken, indent));
 
-        if (token.isConstantEncoding())
+        if (encodingToken.isConstantEncoding())
         {
-            sb.append(generateConstPropertyMethods(propertyName, token, indent));
+            sb.append(generateConstPropertyMethods(propertyName, encodingToken, indent));
         }
         else
         {
-            sb.append(generatePrimitivePropertyDecodeMethods(inComposite, propertyName, token, indent));
+            sb.append(generatePrimitivePropertyDecodeMethods(
+                inComposite, propertyName, propertyToken, encodingToken, indent));
         }
 
         return sb;
@@ -1515,11 +1521,16 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitivePropertyDecodeMethods(
-        final boolean inComposite, final String propertyName, final Token token, final String indent)
+        final boolean inComposite,
+        final String propertyName,
+        final Token propertyToken,
+        final Token encodingToken,
+        final String indent)
     {
-        return token.matchOnLength(
-            () -> generatePrimitivePropertyDecode(inComposite, propertyName, token, indent),
-            () -> generatePrimitiveArrayPropertyDecode(inComposite, propertyName, token, indent));
+        return encodingToken.matchOnLength(
+            () -> generatePrimitivePropertyDecode(inComposite, propertyName, propertyToken, encodingToken, indent),
+            () -> generatePrimitiveArrayPropertyDecode(
+                inComposite, propertyName, propertyToken, encodingToken, indent));
     }
 
     private CharSequence generatePrimitivePropertyEncodeMethods(
@@ -1570,12 +1581,16 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitivePropertyDecode(
-        final boolean inComposite, final String propertyName, final Token token, final String indent)
+        final boolean inComposite,
+        final String propertyName,
+        final Token propertyToken,
+        final Token encodingToken,
+        final String indent)
     {
-        final Encoding encoding = token.encoding();
+        final Encoding encoding = encodingToken.encoding();
         final String javaTypeName = javaTypeName(encoding.primitiveType());
 
-        final int offset = token.offset();
+        final int offset = encodingToken.offset();
         final String byteOrderStr = byteOrderString(encoding);
 
         return String.format(
@@ -1587,7 +1602,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n\n",
             javaTypeName,
             propertyName,
-            generateFieldNotPresentCondition(inComposite, token.version(), encoding, indent),
+            generateFieldNotPresentCondition(inComposite, propertyToken.version(), encoding, indent),
             generateGet(encoding.primitiveType(), "offset + " + offset, byteOrderStr));
     }
 
@@ -1676,13 +1691,17 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitiveArrayPropertyDecode(
-        final boolean inComposite, final String propertyName, final Token token, final String indent)
+        final boolean inComposite,
+        final String propertyName,
+        final Token propertyToken,
+        final Token encodingToken,
+        final String indent)
     {
-        final Encoding encoding = token.encoding();
+        final Encoding encoding = encodingToken.encoding();
         final String javaTypeName = javaTypeName(encoding.primitiveType());
-        final int offset = token.offset();
+        final int offset = encodingToken.offset();
         final String byteOrderStr = byteOrderString(encoding);
-        final int fieldLength = token.arrayLength();
+        final int fieldLength = encodingToken.arrayLength();
         final int typeSize = sizeOfPrimitive(encoding);
 
         final StringBuilder sb = new StringBuilder();
@@ -1703,7 +1722,7 @@ public class JavaGenerator implements CodeGenerator
             javaTypeName,
             propertyName,
             fieldLength,
-            generateFieldNotPresentCondition(inComposite, token.version(), encoding, indent),
+            generateFieldNotPresentCondition(inComposite, propertyToken.version(), encoding, indent),
             offset,
             typeSize,
             generateGet(encoding.primitiveType(), "pos", byteOrderStr)));
@@ -1727,7 +1746,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
                 fieldLength,
-                generateArrayFieldNotPresentCondition(token.version(), indent),
+                generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
                 offset));
 
             sb.append(String.format("\n" +
@@ -1741,7 +1760,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        return new String(dst, 0, end, %s);\n" +
                 indent + "    }\n\n",
                 formatPropertyName(propertyName),
-                generateStringNotPresentCondition(token.version(), indent),
+                generateStringNotPresentCondition(propertyToken.version(), indent),
                 fieldLength, offset,
                 fieldLength, fieldLength,
                 charset(encoding.characterEncoding())));
@@ -2259,7 +2278,7 @@ public class JavaGenerator implements CodeGenerator
                 switch (typeToken.signal())
                 {
                     case ENCODING:
-                        sb.append(generatePrimitiveDecoder(false, propertyName, typeToken, indent));
+                        sb.append(generatePrimitiveDecoder(false, propertyName, fieldToken, typeToken, indent));
                         break;
 
                     case BEGIN_ENUM:
@@ -2485,7 +2504,7 @@ public class JavaGenerator implements CodeGenerator
             generateFlyweightPropertyJavadoc(indent + INDENT, propertyToken, compositeName),
             compositeName,
             propertyName,
-            generatePropertyNotPresentCondition(inComposite, codecType, compositeToken.version(), indent),
+            generatePropertyNotPresentCondition(inComposite, codecType, propertyToken.version(), indent),
             propertyName,
             compositeToken.offset(),
             propertyName));
