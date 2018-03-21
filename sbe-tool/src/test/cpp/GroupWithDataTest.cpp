@@ -80,7 +80,7 @@ class GroupWithDataTest : public testing::Test
 {
 public:
 
-    virtual std::uint64_t encodeTestMessage1(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeTestMessage1(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_msg1.wrapForEncode(buffer, offset, bufferLength);
 
@@ -103,7 +103,7 @@ public:
         return m_msg1.encodedLength();
     }
 
-    virtual std::uint64_t encodeTestMessage2(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeTestMessage2(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_msg2.wrapForEncode(buffer, offset, bufferLength);
 
@@ -128,7 +128,7 @@ public:
         return m_msg2.encodedLength();
     }
 
-    virtual std::uint64_t encodeTestMessage3(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeTestMessage3(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_msg3.wrapForEncode(buffer, offset, bufferLength);
 
@@ -183,7 +183,7 @@ public:
         return m_msg3.encodedLength();
     }
 
-    virtual std::uint64_t encodeTestMessage4(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeTestMessage4(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_msg4.wrapForEncode(buffer, offset, bufferLength);
 

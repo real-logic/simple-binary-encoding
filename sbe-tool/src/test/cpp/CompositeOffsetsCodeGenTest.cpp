@@ -25,7 +25,7 @@ class CompositeOffsetsCodeGenTest : public testing::Test
 {
 public:
 
-    virtual std::uint64_t encodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_hdr.wrap(buffer, offset, 0, bufferLength)
             .blockLength(TestMessage1::sbeBlockLength())
@@ -36,7 +36,7 @@ public:
         return m_hdr.encodedLength();
     }
 
-    virtual std::uint64_t encodeMsg(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeMsg(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_msg.wrapForEncode(buffer, offset, bufferLength);
 

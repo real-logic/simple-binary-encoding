@@ -49,7 +49,7 @@ public:
         m_eventNumber = 0;
     }
 
-    virtual std::uint64_t encodeHdrAndMsg()
+    std::uint64_t encodeHdrAndMsg()
     {
         MessageHeader hdr;
         Msg msg;
@@ -75,7 +75,7 @@ public:
         return hdr.encodedLength() + msg.encodedLength();
     }
 
-    virtual void onBeginComposite(
+    void onBeginComposite(
         Token &fieldToken,
         std::vector<Token> &tokens,
         std::size_t fromIndex,
@@ -94,7 +94,7 @@ public:
         }
     }
 
-    virtual void onEndComposite(
+    void onEndComposite(
         Token &fieldToken,
         std::vector<Token> &tokens,
         std::size_t fromIndex,
@@ -113,7 +113,7 @@ public:
         }
     }
 
-    virtual void onEncoding(
+    void onEncoding(
         Token& fieldToken,
         const char *buffer,
         Token& typeToken,
@@ -145,7 +145,7 @@ public:
 
     }
 
-    virtual void onBitSet(
+    void onBitSet(
         Token& fieldToken,
         const char *buffer,
         std::vector<Token>& tokens,
@@ -174,7 +174,7 @@ public:
         }
     }
 
-    virtual void onEnum(
+    void onEnum(
         Token &fieldToken,
         const char *buffer,
         std::vector<Token> &tokens,
