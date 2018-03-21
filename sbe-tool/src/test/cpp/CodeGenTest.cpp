@@ -161,13 +161,13 @@ public:
         return car.encodedLength();
     }
 
-    virtual std::uint64_t encodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_hdr.wrap(buffer, offset, 0, bufferLength);
         return encodeHdr(m_hdr);
     }
 
-    virtual std::uint64_t encodeCar(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeCar(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_car.wrapForEncode(buffer, offset, bufferLength);
         return encodeCar(m_car);

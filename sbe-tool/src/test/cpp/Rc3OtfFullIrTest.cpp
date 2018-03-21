@@ -197,7 +197,7 @@ public:
         m_compositeLevel = 0;
     }
 
-    virtual std::string determineName(
+    std::string determineName(
         Token& fieldToken,
         std::vector<Token>& tokens,
         std::size_t fromIndex)
@@ -205,7 +205,7 @@ public:
         return (m_compositeLevel > 1) ? tokens.at(fromIndex).name() : fieldToken.name();
     }
 
-    virtual std::uint64_t encodeHdrAndCar()
+    std::uint64_t encodeHdrAndCar()
     {
         MessageHeader hdr;
         Car car;

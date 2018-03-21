@@ -38,7 +38,7 @@ public:
         m_eventNumber = 0;
     }
 
-    virtual std::uint64_t encodeHdrAndMsg()
+    std::uint64_t encodeHdrAndMsg()
     {
         MessageHeader hdr;
         TestMessage1 msg;
@@ -64,7 +64,7 @@ public:
         return hdr.encodedLength() + msg.encodedLength();
     }
 
-    virtual void onEncoding(
+    void onEncoding(
         Token& fieldToken,
         const char *buffer,
         Token& typeToken,
@@ -102,7 +102,7 @@ public:
 
     }
 
-    virtual void onGroupHeader(
+    void onGroupHeader(
         Token& token,
         std::uint64_t numInGroup)
     {
