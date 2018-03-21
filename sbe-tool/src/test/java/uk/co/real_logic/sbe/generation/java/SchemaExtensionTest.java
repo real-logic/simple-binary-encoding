@@ -64,118 +64,174 @@ public class SchemaExtensionTest
     public void testMessage1() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
-        final Object encoder = wrap(buffer, compile("TestMessage1Encoder").newInstance());
 
-        set(encoder, "tag1", int.class, 100);
-        set(encoder, "tag2", int.class, 200);
+        { // Encode
+            final Object encoder = wrap(buffer, compile("TestMessage1Encoder").newInstance());
 
-        final Object compositeEncoder = getACompositeEncoder(buffer, 8);
-        wrap(8, compositeEncoder, buffer, BUFFER_CLASS);
+            set(encoder, "tag1", int.class, 100);
+            set(encoder, "tag2", int.class, 200);
 
-        set(compositeEncoder, "value", int.class, 300);
+            final Object compositeEncoder = encoder.getClass().getMethod("tag3").invoke(encoder);
+            set(compositeEncoder, "value", int.class, 300);
 
-        final Object decoderVersion0 = getMessage1Decoder(buffer, 4, 0);
-        assertEquals(100, get(decoderVersion0, "tag1"));
-        assertEquals(Integer.MIN_VALUE, get(decoderVersion0, "tag2"));
-        assertNull(get(decoderVersion0, "tag3"));
+            final Object enumConstant = getAEnumConstant(encoder, "AEnum", 1);
+            set(encoder, "tag4", enumConstant.getClass(), enumConstant);
 
-        assertEquals(0, decoderVersion0.getClass().getMethod("tag1SinceVersion").invoke(null));
-        assertEquals(1, decoderVersion0.getClass().getMethod("tag2SinceVersion").invoke(null));
-        assertEquals(3, decoderVersion0.getClass().getMethod("tag3SinceVersion").invoke(null));
+            final Object setEncoder = encoder.getClass().getMethod("tag5").invoke(encoder);
+            set(setEncoder, "firstChoice", boolean.class, false);
+            set(setEncoder, "secondChoice", boolean.class, true);
+        }
 
-        final Object decoderVersion1 = getMessage1Decoder(buffer, 8, 1);
-        assertEquals(100, get(decoderVersion1, "tag1"));
-        assertEquals(200, get(decoderVersion1, "tag2"));
-        assertNull(get(decoderVersion1, "tag3"));
+        { // Decode version 0
+            final Object decoderVersion0 = getMessage1Decoder(buffer, 4, 0);
+            assertEquals(100, get(decoderVersion0, "tag1"));
+            assertEquals(Integer.MIN_VALUE, get(decoderVersion0, "tag2"));
+            assertNull(get(decoderVersion0, "tag3"));
+            assertNull(get(decoderVersion0, "tag4"));
+            assertNull(get(decoderVersion0, "tag5"));
 
-        final Object decoderVersion2 = getMessage1Decoder(buffer, 8, 2);
-        assertEquals(100, get(decoderVersion2, "tag1"));
-        assertEquals(200, get(decoderVersion2, "tag2"));
-        assertNull(get(decoderVersion1, "tag3"));
+            assertEquals(0, decoderVersion0.getClass().getMethod("tag1SinceVersion").invoke(null));
+            assertEquals(1, decoderVersion0.getClass().getMethod("tag2SinceVersion").invoke(null));
+            assertEquals(2, decoderVersion0.getClass().getMethod("tag3SinceVersion").invoke(null));
+            assertEquals(3, decoderVersion0.getClass().getMethod("tag4SinceVersion").invoke(null));
+            assertEquals(4, decoderVersion0.getClass().getMethod("tag5SinceVersion").invoke(null));
+        }
 
-        final Object decoderVersion3 = getMessage1Decoder(buffer, 12, 3);
-        assertEquals(100, get(decoderVersion3, "tag1"));
-        assertEquals(200, get(decoderVersion3, "tag2"));
-        final Object compositeDecoder3 = get(decoderVersion3, "tag3");
-        assertNotNull(compositeDecoder3);
-        assertEquals(300, get(compositeDecoder3, "value"));
+        { // Decode version 1
+            final Object decoderVersion1 = getMessage1Decoder(buffer, 8, 1);
+            assertEquals(100, get(decoderVersion1, "tag1"));
+            assertEquals(200, get(decoderVersion1, "tag2"));
+            assertNull(get(decoderVersion1, "tag3"));
+            assertNull(get(decoderVersion1, "tag4"));
+            assertNull(get(decoderVersion1, "tag5"));
+        }
 
-        final Object decoderVersion4 = getMessage1Decoder(buffer, 12, 4);
-        assertEquals(100, get(decoderVersion4, "tag1"));
-        assertEquals(200, get(decoderVersion4, "tag2"));
-        final Object compositeDecoder4 = get(decoderVersion4, "tag3");
-        assertNotNull(compositeDecoder4);
-        assertEquals(300, get(compositeDecoder4, "value"));
+        { // Decode version 2
+            final Object decoderVersion2 = getMessage1Decoder(buffer, 8, 2);
+            assertEquals(100, get(decoderVersion2, "tag1"));
+            assertEquals(200, get(decoderVersion2, "tag2"));
+            final Object compositeDecoder2 = get(decoderVersion2, "tag3");
+            assertNotNull(compositeDecoder2);
+            assertEquals(300, get(compositeDecoder2, "value"));
+            assertNull(get(decoderVersion2, "tag4"));
+            assertNull(get(decoderVersion2, "tag5"));
+        }
+
+        { // Decode version 3
+            final Object decoderVersion3 = getMessage1Decoder(buffer, 12, 3);
+            assertEquals(100, get(decoderVersion3, "tag1"));
+            assertEquals(200, get(decoderVersion3, "tag2"));
+            final Object compositeDecoder3 = get(decoderVersion3, "tag3");
+            assertNotNull(compositeDecoder3);
+            assertEquals(300, get(compositeDecoder3, "value"));
+            final Object enumConstant = getAEnumConstant(decoderVersion3, "AEnum", 1);
+            assertEquals(enumConstant, get(decoderVersion3, "tag4"));
+            assertNull(get(decoderVersion3, "tag5"));
+        }
+
+        { // Decode version 4
+            final Object decoderVersion4 = getMessage1Decoder(buffer, 12, 4);
+            assertEquals(100, get(decoderVersion4, "tag1"));
+            assertEquals(200, get(decoderVersion4, "tag2"));
+            final Object compositeDecoder4 = get(decoderVersion4, "tag3");
+            assertNotNull(compositeDecoder4);
+            assertEquals(300, get(compositeDecoder4, "value"));
+            final Object enumConstant = getAEnumConstant(decoderVersion4, "AEnum", 1);
+            assertEquals(enumConstant, get(decoderVersion4, "tag4"));
+            final Object setDecoder = get(decoderVersion4, "tag5");
+            assertNotNull(setDecoder);
+            assertEquals(false, get(setDecoder, "firstChoice"));
+            assertEquals(true, get(setDecoder, "secondChoice"));
+        }
     }
 
     @Test
     public void testMessage2() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
-        final Object encoder = wrap(buffer, compile("TestMessage2Encoder").newInstance());
 
-        set(encoder, "tag1", int.class, 100);
-        set(encoder, "tag2", int.class, 200);
+        { // Encode
+            final Object encoder = wrap(buffer, compile("TestMessage2Encoder").newInstance());
 
-        final Object compositeEncoder = getACompositeEncoder(buffer, 8);
-        set(compositeEncoder, "value", int.class, 300);
+            set(encoder, "tag1", int.class, 100);
+            set(encoder, "tag2", int.class, 200);
 
-        final Object decoderVersion0 = getMessage2Decoder(buffer, 4, 0);
-        assertEquals(100, get(decoderVersion0, "tag1"));
-        assertEquals(Integer.MIN_VALUE, get(decoderVersion0, "tag2"));
-        assertNull(get(decoderVersion0, "tag3"));
+            final Object compositeEncoder = encoder.getClass().getMethod("tag3").invoke(encoder);
+            set(compositeEncoder, "value", int.class, 300);
 
-        assertEquals(0, decoderVersion0.getClass().getMethod("tag1SinceVersion").invoke(null));
-        assertEquals(2, decoderVersion0.getClass().getMethod("tag2SinceVersion").invoke(null));
-        assertEquals(4, decoderVersion0.getClass().getMethod("tag3SinceVersion").invoke(null));
+            final Object enumConstant = getAEnumConstant(encoder, "AEnum", 1);
+            set(encoder, "tag4", enumConstant.getClass(), enumConstant);
 
-        final Object decoderVersion1 = getMessage2Decoder(buffer, 4, 1);
-        assertEquals(100, get(decoderVersion1, "tag1"));
-        assertEquals(Integer.MIN_VALUE, get(decoderVersion1, "tag2"));
-        assertNull(get(decoderVersion1, "tag3"));
+            final Object setEncoder = encoder.getClass().getMethod("tag5").invoke(encoder);
+            set(setEncoder, "firstChoice", boolean.class, false);
+            set(setEncoder, "secondChoice", boolean.class, true);
+        }
 
-        final Object decoderVersion2 = getMessage2Decoder(buffer, 8, 2);
-        assertEquals(100, get(decoderVersion2, "tag1"));
-        assertEquals(200, get(decoderVersion2, "tag2"));
-        assertNull(get(decoderVersion1, "tag3"));
+        { // Decode version 0
+            final Object decoderVersion0 = getMessage2Decoder(buffer, 4, 0);
+            assertEquals(100, get(decoderVersion0, "tag1"));
+            assertEquals(Integer.MIN_VALUE, get(decoderVersion0, "tag2"));
+            assertNull(get(decoderVersion0, "tag3"));
+            assertNull(get(decoderVersion0, "tag4"));
+            assertNull(get(decoderVersion0, "tag5"));
 
-        final Object decoderVersion3 = getMessage2Decoder(buffer, 8, 3);
-        assertEquals(100, get(decoderVersion3, "tag1"));
-        assertEquals(200, get(decoderVersion3, "tag2"));
-        assertNull(get(decoderVersion1, "tag3"));
+            assertEquals(0, decoderVersion0.getClass().getMethod("tag1SinceVersion").invoke(null));
+            assertEquals(2, decoderVersion0.getClass().getMethod("tag2SinceVersion").invoke(null));
+            assertEquals(1, decoderVersion0.getClass().getMethod("tag3SinceVersion").invoke(null));
+            assertEquals(4, decoderVersion0.getClass().getMethod("tag4SinceVersion").invoke(null));
+            assertEquals(3, decoderVersion0.getClass().getMethod("tag5SinceVersion").invoke(null));
+        }
 
-        final Object decoderVersion4 = getMessage2Decoder(buffer, 12, 4);
-        assertEquals(100, get(decoderVersion4, "tag1"));
-        assertEquals(200, get(decoderVersion4, "tag2"));
-        final Object compositeDecoder4 = get(decoderVersion4, "tag3");
-        assertNotNull(compositeDecoder4);
-        assertEquals(300, get(compositeDecoder4, "value"));
-    }
+        { // Decode version 1
+            final Object decoderVersion1 = getMessage2Decoder(buffer, 8, 1);
+            assertEquals(100, get(decoderVersion1, "tag1"));
+            assertEquals(Integer.MIN_VALUE, get(decoderVersion1, "tag2"));
+            final Object compositeDecoder2 = get(decoderVersion1, "tag3");
+            assertNotNull(compositeDecoder2);
+            assertEquals(300, get(compositeDecoder2, "value"));
+            assertNull(get(decoderVersion1, "tag4"));
+            assertNull(get(decoderVersion1, "tag5"));
+        }
 
-    @Test
-    public void testMessageHeader() throws Exception
-    {
-        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
-        final Object encoder = wrap(buffer, compile("MessageHeaderEncoder").newInstance());
+        { // Decode version 2
+            final Object decoderVersion2 = getMessage2Decoder(buffer, 8, 2);
+            assertEquals(100, get(decoderVersion2, "tag1"));
+            assertEquals(200, get(decoderVersion2, "tag2"));
+            final Object compositeDecoder2 = get(decoderVersion2, "tag3");
+            assertNotNull(compositeDecoder2);
+            assertEquals(300, get(compositeDecoder2, "value"));
+            assertNull(get(decoderVersion2, "tag4"));
+            assertNull(get(decoderVersion2, "tag5"));
+        }
 
-        set(encoder, "blockLength", int.class, 10);
-        set(encoder, "templateId", int.class, 1);
-        set(encoder, "schemaId", int.class, 1);
-        set(encoder, "version", int.class, 5);
-        set(encoder, "headerLength", int.class, 12);
-        set(encoder, "extraField", int.class, 100);
+        { // Decode version 3
+            final Object decoderVersion3 = getMessage2Decoder(buffer, 12, 3);
+            assertEquals(100, get(decoderVersion3, "tag1"));
+            assertEquals(200, get(decoderVersion3, "tag2"));
+            final Object compositeDecoder3 = get(decoderVersion3, "tag3");
+            assertNotNull(compositeDecoder3);
+            assertEquals(300, get(compositeDecoder3, "value"));
+            assertNull(get(decoderVersion3, "tag4"));
+            final Object setDecoder = get(decoderVersion3, "tag5");
+            assertNotNull(setDecoder);
+            assertEquals(false, get(setDecoder, "firstChoice"));
+            assertEquals(true, get(setDecoder, "secondChoice"));
+        }
 
-        final Object decoder = compile("MessageHeaderDecoder").newInstance();
-        wrap(0, decoder, buffer, READ_ONLY_BUFFER_CLASS);
-
-        assertEquals(10, get(decoder, "blockLength"));
-        assertEquals(1, get(decoder, "templateId"));
-        assertEquals(1, get(decoder, "schemaId"));
-        assertEquals(5, get(decoder, "version"));
-        assertEquals(12, get(decoder, "headerLength"));
-        assertEquals(100, get(decoder, "extraField"));
-
-        assertEquals(5, decoder.getClass().getMethod("extraFieldSinceVersion").invoke(null));
+        { // Decode version 4
+            final Object decoderVersion4 = getMessage2Decoder(buffer, 12, 4);
+            assertEquals(100, get(decoderVersion4, "tag1"));
+            assertEquals(200, get(decoderVersion4, "tag2"));
+            final Object compositeDecoder4 = get(decoderVersion4, "tag3");
+            assertNotNull(compositeDecoder4);
+            assertEquals(300, get(compositeDecoder4, "value"));
+            final Object enumConstant = getAEnumConstant(decoderVersion4, "AEnum", 1);
+            assertEquals(enumConstant, get(decoderVersion4, "tag4"));
+            final Object setDecoder = get(decoderVersion4, "tag5");
+            assertNotNull(setDecoder);
+            assertEquals(false, get(setDecoder, "firstChoice"));
+            assertEquals(true, get(setDecoder, "secondChoice"));
+        }
     }
 
     private JavaGenerator generator()
@@ -197,11 +253,11 @@ public class SchemaExtensionTest
         return wrap(buffer, decoder, blockLength, version);
     }
 
-    private Object getACompositeEncoder(final UnsafeBuffer buffer, final int offset) throws Exception
+    private Object getAEnumConstant(
+        final Object flyweight, final String enumClassName, final int constantIndex) throws Exception
     {
-        final Object encoder = compile("ACompositeEncoder").newInstance();
-        wrap(offset, encoder, buffer, BUFFER_CLASS);
-        return encoder;
+        final String fqClassName = ir.applicableNamespace() + "." + enumClassName;
+        return flyweight.getClass().getClassLoader().loadClass(fqClassName).getEnumConstants()[constantIndex];
     }
 
     private Class<?> compile(final String className) throws Exception

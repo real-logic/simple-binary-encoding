@@ -2410,7 +2410,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n\n",
                 enumName,
                 propertyName,
-                generatePropertyNotPresentCondition(inComposite, DECODER, token.version(), indent),
+                generatePropertyNotPresentCondition(inComposite, DECODER, signalToken.version(), indent),
                 enumName,
                 generateGet(encoding.primitiveType(), "offset + " + token.offset(), byteOrderString(encoding)));
         }
@@ -2468,7 +2468,7 @@ public class JavaGenerator implements CodeGenerator
             generateFlyweightPropertyJavadoc(indent + INDENT, propertyToken, bitSetName),
             bitSetName,
             propertyName,
-            generatePropertyNotPresentCondition(inComposite, codecType, bitsetToken.version(), indent),
+            generatePropertyNotPresentCondition(inComposite, codecType, propertyToken.version(), indent),
             propertyName,
             bitsetToken.offset(),
             propertyName));
