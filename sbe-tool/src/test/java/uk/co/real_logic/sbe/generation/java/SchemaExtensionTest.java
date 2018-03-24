@@ -30,6 +30,7 @@ import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.get;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.set;
@@ -87,7 +88,7 @@ public class SchemaExtensionTest
             assertEquals(100, get(decoderVersion0, "tag1"));
             assertEquals(Integer.MIN_VALUE, get(decoderVersion0, "tag2"));
             assertNull(get(decoderVersion0, "tag3"));
-            assertNull(get(decoderVersion0, "tag4"));
+            assertThat(get(decoderVersion0, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion0, "tag5"));
 
             assertEquals(0, decoderVersion0.getClass().getMethod("tag1SinceVersion").invoke(null));
@@ -102,7 +103,7 @@ public class SchemaExtensionTest
             assertEquals(100, get(decoderVersion1, "tag1"));
             assertEquals(200, get(decoderVersion1, "tag2"));
             assertNull(get(decoderVersion1, "tag3"));
-            assertNull(get(decoderVersion1, "tag4"));
+            assertThat(get(decoderVersion1, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion1, "tag5"));
         }
 
@@ -113,7 +114,7 @@ public class SchemaExtensionTest
             final Object compositeDecoder2 = get(decoderVersion2, "tag3");
             assertNotNull(compositeDecoder2);
             assertEquals(300, get(compositeDecoder2, "value"));
-            assertNull(get(decoderVersion2, "tag4"));
+            assertThat(get(decoderVersion2, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion2, "tag5"));
         }
 
@@ -172,7 +173,7 @@ public class SchemaExtensionTest
             assertEquals(100, get(decoderVersion0, "tag1"));
             assertEquals(Integer.MIN_VALUE, get(decoderVersion0, "tag2"));
             assertNull(get(decoderVersion0, "tag3"));
-            assertNull(get(decoderVersion0, "tag4"));
+            assertThat(get(decoderVersion0, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion0, "tag5"));
 
             assertEquals(0, decoderVersion0.getClass().getMethod("tag1SinceVersion").invoke(null));
@@ -189,7 +190,7 @@ public class SchemaExtensionTest
             final Object compositeDecoder2 = get(decoderVersion1, "tag3");
             assertNotNull(compositeDecoder2);
             assertEquals(300, get(compositeDecoder2, "value"));
-            assertNull(get(decoderVersion1, "tag4"));
+            assertThat(get(decoderVersion1, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion1, "tag5"));
         }
 
@@ -200,7 +201,7 @@ public class SchemaExtensionTest
             final Object compositeDecoder2 = get(decoderVersion2, "tag3");
             assertNotNull(compositeDecoder2);
             assertEquals(300, get(compositeDecoder2, "value"));
-            assertNull(get(decoderVersion2, "tag4"));
+            assertThat(get(decoderVersion2, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion2, "tag5"));
         }
 
@@ -211,7 +212,7 @@ public class SchemaExtensionTest
             final Object compositeDecoder3 = get(decoderVersion3, "tag3");
             assertNotNull(compositeDecoder3);
             assertEquals(300, get(compositeDecoder3, "value"));
-            assertNull(get(decoderVersion3, "tag4"));
+            assertThat(get(decoderVersion3, "tag4").toString(), is("NULL_VAL"));
             final Object setDecoder = get(decoderVersion3, "tag5");
             assertNotNull(setDecoder);
             assertEquals(false, get(setDecoder, "firstChoice"));

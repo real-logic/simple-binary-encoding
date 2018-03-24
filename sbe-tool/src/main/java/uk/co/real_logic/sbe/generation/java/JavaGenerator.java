@@ -1722,9 +1722,13 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private static CharSequence generatePropertyNotPresentCondition(
-        final boolean inComposite, final CodecType codecType, final int sinceVersion, final String indent)
+        final boolean inComposite,
+        final CodecType codecType,
+        final Token propertyToken,
+        final String enumName,
+        final String indent)
     {
-        if (inComposite || codecType == ENCODER || 0 == sinceVersion)
+        if (inComposite || codecType == ENCODER || 0 == propertyToken.version())
         {
             return "";
         }
@@ -1732,9 +1736,10 @@ public class JavaGenerator implements CodeGenerator
         return String.format(
             indent + "        if (parentMessage.actingVersion < %d)\n" +
             indent + "        {\n" +
-            indent + "            return null;\n" +
+            indent + "            return %s;\n" +
             indent + "        }\n\n",
-            sinceVersion);
+            propertyToken.version(),
+            enumName == null ? "null" : (enumName + ".NULL_VAL"));
     }
 
     private CharSequence generatePrimitiveArrayPropertyDecode(
@@ -2452,15 +2457,15 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateEnumDecoder(
         final boolean inComposite,
-        final Token signalToken,
+        final Token fieldToken,
         final String propertyName,
-        final Token token,
+        final Token typeToken,
         final String indent)
     {
-        final String enumName = formatClassName(token.applicableTypeName());
-        final Encoding encoding = token.encoding();
+        final String enumName = formatClassName(typeToken.applicableTypeName());
+        final Encoding encoding = typeToken.encoding();
 
-        if (token.isConstantEncoding())
+        if (typeToken.isConstantEncoding())
         {
             return String.format(
                 "\n" +
@@ -2470,7 +2475,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n\n",
                 enumName,
                 propertyName,
-                signalToken.encoding().constValue().toString());
+                fieldToken.encoding().constValue().toString());
         }
         else
         {
@@ -2483,9 +2488,9 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n\n",
                 enumName,
                 propertyName,
-                generatePropertyNotPresentCondition(inComposite, DECODER, signalToken.version(), indent),
+                generatePropertyNotPresentCondition(inComposite, DECODER, fieldToken, enumName, indent),
                 enumName,
-                generateGet(encoding.primitiveType(), "offset + " + token.offset(), byteOrderString(encoding)));
+                generateGet(encoding.primitiveType(), "offset + " + typeToken.offset(), byteOrderString(encoding)));
         }
     }
 
@@ -2541,7 +2546,7 @@ public class JavaGenerator implements CodeGenerator
             generateFlyweightPropertyJavadoc(indent + INDENT, propertyToken, bitSetName),
             bitSetName,
             propertyName,
-            generatePropertyNotPresentCondition(inComposite, codecType, propertyToken.version(), indent),
+            generatePropertyNotPresentCondition(inComposite, codecType, propertyToken, null, indent),
             propertyName,
             bitsetToken.offset(),
             propertyName));
@@ -2577,7 +2582,7 @@ public class JavaGenerator implements CodeGenerator
             generateFlyweightPropertyJavadoc(indent + INDENT, propertyToken, compositeName),
             compositeName,
             propertyName,
-            generatePropertyNotPresentCondition(inComposite, codecType, propertyToken.version(), indent),
+            generatePropertyNotPresentCondition(inComposite, codecType, propertyToken, null, indent),
             propertyName,
             compositeToken.offset(),
             propertyName));
