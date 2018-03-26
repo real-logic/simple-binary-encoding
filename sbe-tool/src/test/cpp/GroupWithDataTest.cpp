@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2013-2018 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 #include "group_with_data/TestMessage3.h"
 #include "group_with_data/TestMessage4.h"
 
-using namespace std;
+// using namespace std;
 using namespace group::with::data;
 
 static const std::uint32_t TAG_1 = 32;
@@ -80,7 +80,7 @@ class GroupWithDataTest : public testing::Test
 {
 public:
 
-    virtual std::uint64_t encodeTestMessage1(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeTestMessage1(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_msg1.wrapForEncode(buffer, offset, bufferLength);
 
@@ -103,7 +103,7 @@ public:
         return m_msg1.encodedLength();
     }
 
-    virtual std::uint64_t encodeTestMessage2(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeTestMessage2(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_msg2.wrapForEncode(buffer, offset, bufferLength);
 
@@ -128,7 +128,7 @@ public:
         return m_msg2.encodedLength();
     }
 
-    virtual std::uint64_t encodeTestMessage3(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeTestMessage3(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_msg3.wrapForEncode(buffer, offset, bufferLength);
 
@@ -183,7 +183,7 @@ public:
         return m_msg3.encodedLength();
     }
 
-    virtual std::uint64_t encodeTestMessage4(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeTestMessage4(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_msg4.wrapForEncode(buffer, offset, bufferLength);
 

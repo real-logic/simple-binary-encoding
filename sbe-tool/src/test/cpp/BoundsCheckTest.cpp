@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2013-2018 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 #include "code_generation_test/MessageHeader.h"
 #include "code_generation_test/Car.h"
 
-using namespace std;
 using namespace code::generation::test;
 
 #define SERIAL_NUMBER 1234u
@@ -45,7 +44,7 @@ class BoundsCheckTest : public testing::Test
 {
 public:
 
-    virtual std::uint64_t encodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_hdr.wrap(buffer, offset, 0, bufferLength)
             .blockLength(Car::sbeBlockLength())
@@ -56,7 +55,7 @@ public:
         return m_hdr.encodedLength();
     }
 
-    virtual std::uint64_t decodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t decodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_hdrDecoder.wrap(buffer, offset, 0, bufferLength);
 
@@ -68,7 +67,7 @@ public:
         return m_hdrDecoder.encodedLength();
     }
 
-    virtual std::uint64_t encodeCarRoot(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeCarRoot(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_car.wrapForEncode(buffer, offset, bufferLength)
             .serialNumber(SERIAL_NUMBER)
@@ -96,7 +95,7 @@ public:
         return m_car.encodedLength();
     }
 
-    virtual std::uint64_t encodeCarFuelFigures()
+    std::uint64_t encodeCarFuelFigures()
     {
         Car::FuelFigures& fuelFigures = m_car.fuelFiguresCount(3);
 
@@ -115,7 +114,7 @@ public:
         return m_car.encodedLength();
     }
 
-    virtual std::uint64_t encodeCarPerformanceFigures()
+    std::uint64_t encodeCarPerformanceFigures()
     {
         Car::PerformanceFigures &perfFigs = m_car.performanceFiguresCount(2);
 
@@ -136,7 +135,7 @@ public:
         return m_car.encodedLength();
     }
 
-    virtual std::uint64_t encodeCarManufacturerModelAndActivationCode()
+    std::uint64_t encodeCarManufacturerModelAndActivationCode()
     {
         m_car.putManufacturer(MANUFACTURER, static_cast<int>(strlen(MANUFACTURER)));
         m_car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
@@ -145,7 +144,7 @@ public:
         return m_car.encodedLength();
     }
 
-    virtual std::uint64_t decodeCarRoot(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength)
+    std::uint64_t decodeCarRoot(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength)
     {
         m_carDecoder.wrapForDecode(buffer, offset, Car::sbeBlockLength(), Car::sbeSchemaVersion(), bufferLength);
         EXPECT_EQ(m_carDecoder.serialNumber(), SERIAL_NUMBER);
@@ -179,7 +178,7 @@ public:
         return m_carDecoder.encodedLength();
     }
 
-    virtual std::uint64_t decodeCarFuelFigures()
+    std::uint64_t decodeCarFuelFigures()
     {
         char tmp[256];
         Car::FuelFigures &fuelFigures = m_carDecoder.fuelFigures();
@@ -209,7 +208,7 @@ public:
         return m_carDecoder.encodedLength();
     }
 
-    virtual std::uint64_t decodeCarPerformanceFigures()
+    std::uint64_t decodeCarPerformanceFigures()
     {
         Car::PerformanceFigures &performanceFigures = m_carDecoder.performanceFigures();
         EXPECT_EQ(performanceFigures.count(), 2u);
@@ -259,7 +258,7 @@ public:
         return m_carDecoder.encodedLength();
     }
 
-    virtual std::uint64_t decodeCarManufacturerModelAndActivationCode()
+    std::uint64_t decodeCarManufacturerModelAndActivationCode()
     {
         char tmp[256];
 

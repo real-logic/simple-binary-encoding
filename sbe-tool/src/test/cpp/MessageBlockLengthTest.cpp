@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2013-2018 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@
 #include "otf/OtfHeaderDecoder.h"
 #include "otf/OtfMessageDecoder.h"
 
-using namespace std;
 using namespace message::block::length::test;
-using namespace sbe::otf;
 
 class MessageBlockLengthIrTest : public testing::Test, public OtfMessageDecoder::BasicTokenListener
 {
@@ -38,7 +36,7 @@ public:
         m_eventNumber = 0;
     }
 
-    virtual std::uint64_t encodeHdrAndMsg()
+    std::uint64_t encodeHdrAndMsg()
     {
         MessageHeader hdr;
         MsgName msg;
@@ -68,7 +66,7 @@ public:
         return hdr.encodedLength() + msg.encodedLength();
     }
 
-    virtual void onEncoding(
+    void onEncoding(
         Token& fieldToken,
         const char *buffer,
         Token& typeToken,
@@ -112,7 +110,7 @@ public:
 
     }
 
-    virtual void onBitSet(
+    void onBitSet(
         Token& fieldToken,
         const char *buffer,
         std::vector<Token>& tokens,
@@ -136,7 +134,7 @@ public:
         }
     }
 
-    virtual void onGroupHeader(
+    void onGroupHeader(
         Token& token,
         std::uint64_t numInGroup)
     {

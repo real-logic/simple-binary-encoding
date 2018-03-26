@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2013-2018 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@
 #include "otf/OtfMessageDecoder.h"
 #include "otf/IrDecoder.h"
 
-using namespace std;
 using namespace composite::offsets::test;
-using namespace sbe::otf;
 
 static const char *SCHEMA_FILENAME = "composite-offsets-schema.sbeir";
 
@@ -40,7 +38,7 @@ public:
         m_eventNumber = 0;
     }
 
-    virtual std::uint64_t encodeHdrAndMsg()
+    std::uint64_t encodeHdrAndMsg()
     {
         MessageHeader hdr;
         TestMessage1 msg;
@@ -66,7 +64,7 @@ public:
         return hdr.encodedLength() + msg.encodedLength();
     }
 
-    virtual void onEncoding(
+    void onEncoding(
         Token& fieldToken,
         const char *buffer,
         Token& typeToken,
@@ -104,7 +102,7 @@ public:
 
     }
 
-    virtual void onGroupHeader(
+    void onGroupHeader(
         Token& token,
         std::uint64_t numInGroup)
     {

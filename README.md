@@ -11,7 +11,7 @@ Further details on the background and usage of SBE can be found on the
 [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
 
 An XSD for SBE specs can be found
-[here](https://github.com/real-logic/simple-binary-encoding/blob/master/sbe-tool/src/main/resources/fpl/sbe.xsd)
+[here](https://github.com/real-logic/simple-binary-encoding/blob/master/sbe-tool/src/main/resources/fpl/sbe.xsd). Please address questions about the specification to the [SBE FIX community](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding).
 
 For the latest version information and changes see the [Change Log](https://github.com/real-logic/simple-binary-encoding/wiki/Change-Log) with **downloads** at [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Csbe). 
 

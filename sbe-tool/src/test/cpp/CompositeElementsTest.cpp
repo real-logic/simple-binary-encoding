@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2013-2018 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@
 #include "otf/OtfHeaderDecoder.h"
 #include "otf/OtfMessageDecoder.h"
 
-using namespace std;
 using namespace composite::elements;
-using namespace sbe::otf;
 
 enum EventNumber
 {
@@ -51,7 +49,7 @@ public:
         m_eventNumber = 0;
     }
 
-    virtual std::uint64_t encodeHdrAndMsg()
+    std::uint64_t encodeHdrAndMsg()
     {
         MessageHeader hdr;
         Msg msg;
@@ -77,7 +75,7 @@ public:
         return hdr.encodedLength() + msg.encodedLength();
     }
 
-    virtual void onBeginComposite(
+    void onBeginComposite(
         Token &fieldToken,
         std::vector<Token> &tokens,
         std::size_t fromIndex,
@@ -96,7 +94,7 @@ public:
         }
     }
 
-    virtual void onEndComposite(
+    void onEndComposite(
         Token &fieldToken,
         std::vector<Token> &tokens,
         std::size_t fromIndex,
@@ -115,7 +113,7 @@ public:
         }
     }
 
-    virtual void onEncoding(
+    void onEncoding(
         Token& fieldToken,
         const char *buffer,
         Token& typeToken,
@@ -147,7 +145,7 @@ public:
 
     }
 
-    virtual void onBitSet(
+    void onBitSet(
         Token& fieldToken,
         const char *buffer,
         std::vector<Token>& tokens,
@@ -176,7 +174,7 @@ public:
         }
     }
 
-    virtual void onEnum(
+    void onEnum(
         Token &fieldToken,
         const char *buffer,
         std::vector<Token> &tokens,

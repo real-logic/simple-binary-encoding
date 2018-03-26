@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Real Logic Ltd.
+ * Copyright 2013-2018 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,13 @@
 #include "composite_offsets_test/MessageHeader.h"
 #include "composite_offsets_test/TestMessage1.h"
 
-using namespace std;
 using namespace composite::offsets::test;
 
 class CompositeOffsetsCodeGenTest : public testing::Test
 {
 public:
 
-    virtual std::uint64_t encodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_hdr.wrap(buffer, offset, 0, bufferLength)
             .blockLength(TestMessage1::sbeBlockLength())
@@ -37,7 +36,7 @@ public:
         return m_hdr.encodedLength();
     }
 
-    virtual std::uint64_t encodeMsg(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+    std::uint64_t encodeMsg(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         m_msg.wrapForEncode(buffer, offset, bufferLength);
 
