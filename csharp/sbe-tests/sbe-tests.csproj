@@ -5,7 +5,7 @@
     <RootNamespace>Org.SbeTool.Sbe.Tests</RootNamespace>
     <AssemblyName>Org.SbeTool.Sbe.UnitTests</AssemblyName>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Copyright>Copyright © 2017 MarketFactory Inc. Copyright © Adaptive 2014. All rights reserved.</Copyright>
+    <Copyright>Copyright (C) Bill Segall 2018, MarketFactory Inc 2017, Adaptive 2014. All rights reserved.</Copyright>
     <Description />
   </PropertyGroup>
 
@@ -24,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170517-02" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.1.17" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.1.17" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>

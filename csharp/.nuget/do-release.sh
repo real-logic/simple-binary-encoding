@@ -7,7 +7,7 @@ VERSIONTXT=`cat $ROOTDIR/../../version.txt`
 VERSION=${VERSIONTXT%-SNAPSHOT} # Seems to be what's used
 
 # Copy in the jar
-cp $ROOTDIR/../../sbe-tool/build/libs/sbe-tool-$VERSIONTXT-all.jar $ROOTDIR/sbe-tool-all.jar
+cp $ROOTDIR/../../sbe-tool/build/libs/sbe-tool-$VERSIONTXT.jar $ROOTDIR/sbe-tool-all.jar
 
 # Build the nuget package
 NUGET=$ROOTDIR/nuget.exe
