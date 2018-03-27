@@ -2,17 +2,16 @@
 <package>
   <metadata>
     <id>sbe-tool</id>
-    <version>0.1.7.1-alpha-2</version>
+    <version>0.1.7.9-alpha-2</version>
     <title>Simple Binary Encoding for .NET</title>
-    <authors>MarketFactory Inc, Adaptive Consulting</authors>
-    <owners>MarketFactory Inc, Adaptive Consulting</owners>
+    <authors>Bill Segall, MarketFactory Inc, Adaptive Consulting</authors>
+    <owners>Bill Segall, MarketFactory Inc, Adaptive Consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>https://github.com/real-logic/simple-binary-encoding</projectUrl>
-    <iconUrl>http://weareadaptive.com/assets/ico/favicon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>This package contains all you need to define SBE messages and generate C# encoders and decoders. See https://github.com/real-logic/simple-binary-encoding for more detailed instructions</description>
     <releaseNotes />
-    <copyright>Copyright (C) MarketFactory Inc 2017, Adaptive Consulting 2013</copyright>
+    <copyright>Copyright (C) Bill Segall 2018, MarketFactory Inc 2017, Adaptive Consulting 2013</copyright>
     <tags>SBE Marshaling Low Latency Simple Binary Encoding</tags>
   </metadata>
   <files>
