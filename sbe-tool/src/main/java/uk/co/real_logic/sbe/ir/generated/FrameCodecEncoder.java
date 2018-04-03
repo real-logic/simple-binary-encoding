@@ -118,8 +118,8 @@ public class FrameCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
+            case EPOCH: return "";
+            case TIME_UNIT: return "";
             case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
@@ -173,8 +173,8 @@ public class FrameCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
+            case EPOCH: return "";
+            case TIME_UNIT: return "";
             case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
@@ -228,8 +228,8 @@ public class FrameCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
+            case EPOCH: return "";
+            case TIME_UNIT: return "";
             case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }

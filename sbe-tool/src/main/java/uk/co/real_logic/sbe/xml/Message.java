@@ -273,8 +273,8 @@ public class Message
             .valueRef(getAttributeValueOrNull(node, "valueRef"))
             .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
             .deprecated(Integer.parseInt(getAttributeValue(node, "deprecated", "0")))
-            .epoch(getAttributeValue(node, "epoch", "unix"))
-            .timeUnit(getAttributeValue(node, "timeUnit", "nanosecond"))
+            .epoch(getAttributeValueOrNull(node, "epoch"))
+            .timeUnit(getAttributeValueOrNull(node, "timeUnit"))
             .type(fieldType)
             .build();
 
