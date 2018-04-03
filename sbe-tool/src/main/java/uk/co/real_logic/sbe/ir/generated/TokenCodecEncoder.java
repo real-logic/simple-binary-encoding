@@ -94,6 +94,16 @@ public class TokenCodecEncoder
         this.limit = limit;
     }
 
+    public static int tokenOffsetId()
+    {
+        return 11;
+    }
+
+    public static int tokenOffsetSinceVersion()
+    {
+        return 0;
+    }
+
     public static int tokenOffsetEncodingOffset()
     {
         return 0;
@@ -102,6 +112,19 @@ public class TokenCodecEncoder
     public static int tokenOffsetEncodingLength()
     {
         return 4;
+    }
+
+    public static String tokenOffsetMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
     }
 
     public static int tokenOffsetNullValue()
@@ -126,6 +149,16 @@ public class TokenCodecEncoder
     }
 
 
+    public static int tokenSizeId()
+    {
+        return 12;
+    }
+
+    public static int tokenSizeSinceVersion()
+    {
+        return 0;
+    }
+
     public static int tokenSizeEncodingOffset()
     {
         return 4;
@@ -134,6 +167,19 @@ public class TokenCodecEncoder
     public static int tokenSizeEncodingLength()
     {
         return 4;
+    }
+
+    public static String tokenSizeMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
     }
 
     public static int tokenSizeNullValue()
@@ -158,6 +204,16 @@ public class TokenCodecEncoder
     }
 
 
+    public static int fieldIdId()
+    {
+        return 13;
+    }
+
+    public static int fieldIdSinceVersion()
+    {
+        return 0;
+    }
+
     public static int fieldIdEncodingOffset()
     {
         return 8;
@@ -166,6 +222,19 @@ public class TokenCodecEncoder
     public static int fieldIdEncodingLength()
     {
         return 4;
+    }
+
+    public static String fieldIdMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
     }
 
     public static int fieldIdNullValue()
@@ -190,6 +259,16 @@ public class TokenCodecEncoder
     }
 
 
+    public static int tokenVersionId()
+    {
+        return 14;
+    }
+
+    public static int tokenVersionSinceVersion()
+    {
+        return 0;
+    }
+
     public static int tokenVersionEncodingOffset()
     {
         return 12;
@@ -198,6 +277,19 @@ public class TokenCodecEncoder
     public static int tokenVersionEncodingLength()
     {
         return 4;
+    }
+
+    public static String tokenVersionMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
     }
 
     public static int tokenVersionNullValue()
@@ -222,6 +314,16 @@ public class TokenCodecEncoder
     }
 
 
+    public static int componentTokenCountId()
+    {
+        return 15;
+    }
+
+    public static int componentTokenCountSinceVersion()
+    {
+        return 0;
+    }
+
     public static int componentTokenCountEncodingOffset()
     {
         return 16;
@@ -230,6 +332,19 @@ public class TokenCodecEncoder
     public static int componentTokenCountEncodingLength()
     {
         return 4;
+    }
+
+    public static String componentTokenCountMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
     }
 
     public static int componentTokenCountNullValue()
@@ -254,6 +369,16 @@ public class TokenCodecEncoder
     }
 
 
+    public static int signalId()
+    {
+        return 16;
+    }
+
+    public static int signalSinceVersion()
+    {
+        return 0;
+    }
+
     public static int signalEncodingOffset()
     {
         return 20;
@@ -264,10 +389,33 @@ public class TokenCodecEncoder
         return 1;
     }
 
+    public static String signalMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
+    }
+
     public TokenCodecEncoder signal(final SignalCodec value)
     {
         buffer.putByte(offset + 20, (byte)value.value());
         return this;
+    }
+
+    public static int primitiveTypeId()
+    {
+        return 17;
+    }
+
+    public static int primitiveTypeSinceVersion()
+    {
+        return 0;
     }
 
     public static int primitiveTypeEncodingOffset()
@@ -280,10 +428,33 @@ public class TokenCodecEncoder
         return 1;
     }
 
+    public static String primitiveTypeMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
+    }
+
     public TokenCodecEncoder primitiveType(final PrimitiveTypeCodec value)
     {
         buffer.putByte(offset + 21, (byte)value.value());
         return this;
+    }
+
+    public static int byteOrderId()
+    {
+        return 18;
+    }
+
+    public static int byteOrderSinceVersion()
+    {
+        return 0;
     }
 
     public static int byteOrderEncodingOffset()
@@ -296,10 +467,33 @@ public class TokenCodecEncoder
         return 1;
     }
 
+    public static String byteOrderMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
+    }
+
     public TokenCodecEncoder byteOrder(final ByteOrderCodec value)
     {
         buffer.putByte(offset + 22, (byte)value.value());
         return this;
+    }
+
+    public static int presenceId()
+    {
+        return 19;
+    }
+
+    public static int presenceSinceVersion()
+    {
+        return 0;
     }
 
     public static int presenceEncodingOffset()
@@ -312,10 +506,33 @@ public class TokenCodecEncoder
         return 1;
     }
 
+    public static String presenceMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
+    }
+
     public TokenCodecEncoder presence(final PresenceCodec value)
     {
         buffer.putByte(offset + 23, (byte)value.value());
         return this;
+    }
+
+    public static int deprecatedId()
+    {
+        return 30;
+    }
+
+    public static int deprecatedSinceVersion()
+    {
+        return 0;
     }
 
     public static int deprecatedEncodingOffset()
@@ -326,6 +543,19 @@ public class TokenCodecEncoder
     public static int deprecatedEncodingLength()
     {
         return 4;
+    }
+
+    public static String deprecatedMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "optional";
+        }
+
+        return "";
     }
 
     public static int deprecatedNullValue()

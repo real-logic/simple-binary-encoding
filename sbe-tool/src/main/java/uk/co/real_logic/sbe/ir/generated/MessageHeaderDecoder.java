@@ -49,6 +49,11 @@ public class MessageHeaderDecoder
         return 2;
     }
 
+    public static int blockLengthSinceVersion()
+    {
+        return 0;
+    }
+
     public static int blockLengthNullValue()
     {
         return 65535;
@@ -78,6 +83,11 @@ public class MessageHeaderDecoder
     public static int templateIdEncodingLength()
     {
         return 2;
+    }
+
+    public static int templateIdSinceVersion()
+    {
+        return 0;
     }
 
     public static int templateIdNullValue()
@@ -111,6 +121,11 @@ public class MessageHeaderDecoder
         return 2;
     }
 
+    public static int schemaIdSinceVersion()
+    {
+        return 0;
+    }
+
     public static int schemaIdNullValue()
     {
         return 65535;
@@ -140,6 +155,11 @@ public class MessageHeaderDecoder
     public static int versionEncodingLength()
     {
         return 2;
+    }
+
+    public static int versionSinceVersion()
+    {
+        return 0;
     }
 
     public static int versionNullValue()

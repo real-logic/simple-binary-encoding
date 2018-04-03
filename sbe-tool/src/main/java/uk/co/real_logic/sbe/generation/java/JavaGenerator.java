@@ -2308,8 +2308,11 @@ public class JavaGenerator implements CodeGenerator
                 final String propertyName = formatPropertyName(fieldToken.name());
                 final String typeName = formatClassName(encoderName(typeToken.name()));
 
+                generateFieldIdMethod(sb, fieldToken, indent);
+                generateFieldSinceVersionMethod(sb, fieldToken, indent);
                 generateEncodingOffsetMethod(sb, fieldToken.name(), fieldToken.offset(), indent);
                 generateEncodingLengthMethod(sb, fieldToken.name(), typeToken.encodedLength(), indent);
+                generateFieldMetaAttributeMethod(sb, fieldToken, indent);
 
                 switch (typeToken.signal())
                 {

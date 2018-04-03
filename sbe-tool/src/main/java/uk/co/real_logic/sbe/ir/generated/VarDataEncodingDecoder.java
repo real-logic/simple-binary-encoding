@@ -46,6 +46,11 @@ public class VarDataEncodingDecoder
         return 2;
     }
 
+    public static int lengthSinceVersion()
+    {
+        return 0;
+    }
+
     public static int lengthNullValue()
     {
         return 65535;
@@ -75,6 +80,11 @@ public class VarDataEncodingDecoder
     public static int varDataEncodingLength()
     {
         return -1;
+    }
+
+    public static int varDataSinceVersion()
+    {
+        return 0;
     }
 
     public static short varDataNullValue()

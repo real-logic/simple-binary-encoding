@@ -94,6 +94,16 @@ public class FrameCodecEncoder
         this.limit = limit;
     }
 
+    public static int irIdId()
+    {
+        return 1;
+    }
+
+    public static int irIdSinceVersion()
+    {
+        return 0;
+    }
+
     public static int irIdEncodingOffset()
     {
         return 0;
@@ -102,6 +112,19 @@ public class FrameCodecEncoder
     public static int irIdEncodingLength()
     {
         return 4;
+    }
+
+    public static String irIdMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
     }
 
     public static int irIdNullValue()
@@ -126,6 +149,16 @@ public class FrameCodecEncoder
     }
 
 
+    public static int irVersionId()
+    {
+        return 2;
+    }
+
+    public static int irVersionSinceVersion()
+    {
+        return 0;
+    }
+
     public static int irVersionEncodingOffset()
     {
         return 4;
@@ -134,6 +167,19 @@ public class FrameCodecEncoder
     public static int irVersionEncodingLength()
     {
         return 4;
+    }
+
+    public static String irVersionMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
     }
 
     public static int irVersionNullValue()
@@ -158,6 +204,16 @@ public class FrameCodecEncoder
     }
 
 
+    public static int schemaVersionId()
+    {
+        return 3;
+    }
+
+    public static int schemaVersionSinceVersion()
+    {
+        return 0;
+    }
+
     public static int schemaVersionEncodingOffset()
     {
         return 8;
@@ -166,6 +222,19 @@ public class FrameCodecEncoder
     public static int schemaVersionEncodingLength()
     {
         return 4;
+    }
+
+    public static String schemaVersionMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        switch (metaAttribute)
+        {
+            case EPOCH: return "unix";
+            case TIME_UNIT: return "nanosecond";
+            case SEMANTIC_TYPE: return "";
+            case PRESENCE: return "required";
+        }
+
+        return "";
     }
 
     public static int schemaVersionNullValue()
