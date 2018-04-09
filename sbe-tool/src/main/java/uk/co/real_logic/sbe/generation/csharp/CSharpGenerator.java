@@ -210,6 +210,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_index = -1;\n" +
             indent + INDENT + INDENT + "_count = count;\n" +
             indent + INDENT + INDENT + "_blockLength = %3$d;\n" +
+            indent + INDENT + INDENT + "_actingVersion = SchemaVersion;\n" +
             indent + INDENT + INDENT + "parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + INDENT + "}\n",
             parentMessageClassName,
