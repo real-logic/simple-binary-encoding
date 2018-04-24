@@ -236,6 +236,7 @@ public class RustGeneratorTest
         assertRustBuildable(rust, Optional.of(localResourceSchema));
     }
 
+    @Ignore
     @Test
     public void checkValidRustFromAllExampleSchema() throws IOException, InterruptedException
     {
