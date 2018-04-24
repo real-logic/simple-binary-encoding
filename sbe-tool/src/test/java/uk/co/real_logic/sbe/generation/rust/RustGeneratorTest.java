@@ -22,9 +22,9 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class RustGeneratorTest
 {
-    public static final String BROAD_USE_CASES_SCHEMA = "code-generation-schema";
-    public static final String BASIC_TYPES_SCHEMA = "basic-types-schema";
-    public static final String NESTED_GROUP_SCHEMA = "nested-group-schema";
+    private static final String BROAD_USE_CASES_SCHEMA = "code-generation-schema";
+    private static final String BASIC_TYPES_SCHEMA = "basic-types-schema";
+    private static final String NESTED_GROUP_SCHEMA = "nested-group-schema";
     private SingleStringOutputManager outputManager;
 
     @Rule
@@ -36,7 +36,7 @@ public class RustGeneratorTest
         outputManager = new SingleStringOutputManager();
     }
 
-    public static Ir generateIrForResource(final String localResourceName)
+    private static Ir generateIrForResource(final String localResourceName)
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final String xmlLocalResourceName = localResourceName.endsWith(".xml") ? localResourceName :
