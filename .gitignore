@@ -25,15 +25,8 @@ out
 .vs/
 
 # cmake
-CMakeFiles
-*.cmake
-lib
-gtest-prefix
-CMakeCache.txt
-Makefile
-binaries
+
 codecs
-Testing
 
 # cpp build linux
 cppbuild/CMakeCache.txt
@@ -66,7 +59,7 @@ gocode/pkg
 gocode/src/baseline/*.go
 !gocode/src/baseline/*_test.go
 gocode/src/baseline-bigendian/*.go
-!gocode/src/baseline/-bigendian/*_test.go
+!gocode/src/baseline-bigendian/*_test.go
 gocode/src/composite/*.go
 !gocode/src/composite/*_test.go
 gocode/src/composite_elements/*.go
