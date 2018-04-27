@@ -259,11 +259,11 @@ public class CppGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n" +
-            indent + "    std::uint64_t position() const\n" +
+            indent + "    std::uint64_t sbePosition() const\n" +
             indent + "    {\n" +
             indent + "        return *m_positionPtr;\n" +
             indent + "    }\n\n" +
-            indent + "    void position(const std::uint64_t position)\n" +
+            indent + "    void sbePosition(const std::uint64_t position)\n" +
             indent + "    {\n" +
             indent + "        if (SBE_BOUNDS_CHECK_EXPECT((position > m_bufferLength), false))\n" +
             indent + "        {\n" +
@@ -407,9 +407,9 @@ public class CppGenerator implements CodeGenerator
                 indent + "    {\n" +
                 "%2$s" +
                 indent + "         %4$s lengthFieldValue;\n" +
-                indent + "         std::memcpy(&lengthFieldValue, m_buffer + position(), sizeof(%4$s));\n" +
-                indent + "         const char *fieldPtr = (m_buffer + position() + %3$d);\n" +
-                indent + "         position(position() + %3$d + %5$s(lengthFieldValue));\n" +
+                indent + "         std::memcpy(&lengthFieldValue, m_buffer + sbePosition(), sizeof(%4$s));\n" +
+                indent + "         const char *fieldPtr = (m_buffer + sbePosition() + %3$d);\n" +
+                indent + "         sbePosition(sbePosition() + %3$d + %5$s(lengthFieldValue));\n" +
                 indent + "         return fieldPtr;\n" +
                 indent + "    }\n",
                 formatPropertyName(propertyName),
@@ -423,14 +423,14 @@ public class CppGenerator implements CodeGenerator
                 indent + "    {\n" +
                 "%2$s" +
                 indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
-                indent + "        std::uint64_t lengthPosition = position();\n" +
-                indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                indent + "        std::uint64_t lengthPosition = sbePosition();\n" +
+                indent + "        sbePosition(lengthPosition + lengthOfLengthField);\n" +
                 indent + "        %5$s lengthFieldValue;\n" +
                 indent + "        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(%5$s));\n" +
                 indent + "        std::uint64_t dataLength = %4$s(lengthFieldValue);\n" +
                 indent + "        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
-                indent + "        std::uint64_t pos = position();\n" +
-                indent + "        position(position() + dataLength);\n" +
+                indent + "        std::uint64_t pos = sbePosition();\n" +
+                indent + "        sbePosition(sbePosition() + dataLength);\n" +
                 indent + "        std::memcpy(dst, m_buffer + pos, bytesToCopy);\n" +
                 indent + "        return bytesToCopy;\n" +
                 indent + "    }\n",
@@ -444,12 +444,12 @@ public class CppGenerator implements CodeGenerator
                 indent + "    %5$s &put%1$s(const char *src, const %3$s length)\n" +
                 indent + "    {\n" +
                 indent + "        std::uint64_t lengthOfLengthField = %2$d;\n" +
-                indent + "        std::uint64_t lengthPosition = position();\n" +
+                indent + "        std::uint64_t lengthPosition = sbePosition();\n" +
                 indent + "        %3$s lengthFieldValue = %4$s(length);\n" +
-                indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                indent + "        sbePosition(lengthPosition + lengthOfLengthField);\n" +
                 indent + "        std::memcpy(m_buffer + lengthPosition, &lengthFieldValue, sizeof(%3$s));\n" +
-                indent + "        std::uint64_t pos = position();\n" +
-                indent + "        position(position() + length);\n" +
+                indent + "        std::uint64_t pos = sbePosition();\n" +
+                indent + "        sbePosition(sbePosition() + length);\n" +
                 indent + "        std::memcpy(m_buffer + pos, src, length);\n" +
                 indent + "        return *this;\n" +
                 indent + "    }\n",
@@ -464,14 +464,14 @@ public class CppGenerator implements CodeGenerator
                 indent + "    {\n" +
                 "%2$s" +
                 indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
-                indent + "        std::uint64_t lengthPosition = position();\n" +
-                indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                indent + "        std::uint64_t lengthPosition = sbePosition();\n" +
+                indent + "        sbePosition(lengthPosition + lengthOfLengthField);\n" +
                 indent + "        %5$s lengthFieldValue;\n" +
                 indent + "        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(%5$s));\n" +
                 indent + "        std::uint64_t dataLength = %4$s(lengthFieldValue);\n" +
-                indent + "        std::uint64_t pos = position();\n" +
+                indent + "        std::uint64_t pos = sbePosition();\n" +
                 indent + "        const std::string result(m_buffer + pos, dataLength);\n" +
-                indent + "        position(position() + dataLength);\n" +
+                indent + "        sbePosition(sbePosition() + dataLength);\n" +
                 indent + "        return result;\n" +
                 indent + "    }\n",
                 propertyName,
@@ -488,12 +488,12 @@ public class CppGenerator implements CodeGenerator
                 indent + "             throw std::runtime_error(\"std::string too long for length type [E109]\");\n" +
                 indent + "        }\n" +
                 indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
-                indent + "        std::uint64_t lengthPosition = position();\n" +
+                indent + "        std::uint64_t lengthPosition = sbePosition();\n" +
                 indent + "        %4$s lengthFieldValue = %5$s(static_cast<%4$s>(str.length()));\n" +
-                indent + "        position(lengthPosition + lengthOfLengthField);\n" +
+                indent + "        sbePosition(lengthPosition + lengthOfLengthField);\n" +
                 indent + "        std::memcpy(m_buffer + lengthPosition, &lengthFieldValue, sizeof(%4$s));\n" +
-                indent + "        std::uint64_t pos = position();\n" +
-                indent + "        position(position() + str.length());\n" +
+                indent + "        std::uint64_t pos = sbePosition();\n" +
+                indent + "        sbePosition(sbePosition() + str.length());\n" +
                 indent + "        std::memcpy(m_buffer + pos, str.c_str(), str.length());\n" +
                 indent + "        return *this;\n" +
                 indent + "    }\n",
@@ -565,7 +565,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    {\n" +
             "%2$s" +
             indent + "        %4$s length;\n" +
-            indent + "        std::memcpy(&length, m_buffer + position(), sizeof(%4$s));\n" +
+            indent + "        std::memcpy(&length, m_buffer + sbePosition(), sizeof(%4$s));\n" +
             indent + "        return %3$s(length);\n" +
             indent + "    }\n\n",
             toLowerFirstChar(propertyName),
@@ -1487,7 +1487,7 @@ public class CppGenerator implements CodeGenerator
             "        m_actingBlockLength = actingBlockLength;\n" +
             "        m_actingVersion = actingVersion;\n" +
             "        m_positionPtr = &m_position;\n" +
-            "        position(offset + m_actingBlockLength);\n" +
+            "        sbePosition(offset + m_actingBlockLength);\n" +
             "    }\n\n" +
             "    inline void reset(const %10$s& codec)\n" +
             "    {\n" +
@@ -1537,11 +1537,11 @@ public class CppGenerator implements CodeGenerator
             "        reset(buffer, offset, bufferLength, actingBlockLength, actingVersion);\n" +
             "        return *this;\n" +
             "    }\n\n" +
-            "    std::uint64_t position() const SBE_NOEXCEPT\n" +
+            "    std::uint64_t sbePosition() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_position;\n" +
             "    }\n\n" +
-            "    void position(const std::uint64_t position)\n" +
+            "    void sbePosition(const std::uint64_t position)\n" +
             "    {\n" +
             "        if (SBE_BOUNDS_CHECK_EXPECT((position > m_bufferLength), false))\n" +
             "        {\n" +
@@ -1551,7 +1551,7 @@ public class CppGenerator implements CodeGenerator
             "    }\n\n" +
             "    std::uint64_t encodedLength() const SBE_NOEXCEPT\n" +
             "    {\n" +
-            "        return position() - m_offset;\n" +
+            "        return sbePosition() - m_offset;\n" +
             "    }\n\n" +
             "    char *buffer() SBE_NOEXCEPT\n" +
             "    {\n" +
