@@ -76,7 +76,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
 
         try
         {
-            return (TargetCodeGenerator)Class.forName(name).newInstance();
+            return (TargetCodeGenerator)Class.forName(name).getConstructor().newInstance();
         }
         catch (final Exception ex)
         {
