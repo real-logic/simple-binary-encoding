@@ -1488,7 +1488,6 @@ public class JavaGenerator implements CodeGenerator
     {
         return String.format(
             "%s" +
-            "@javax.annotation.Generated(value = { \"uk.co.real_logic.sbe.generation.java.JavaGenerator\" })\n" +
             "@SuppressWarnings(\"all\")\n" +
             "public class %s%s\n" +
             "{\n",
@@ -1504,7 +1503,6 @@ public class JavaGenerator implements CodeGenerator
             out.append(String.format(
                 "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
                 "package %s;\n\n" +
-                "@javax.annotation.Generated(value = { \"uk.co.real_logic.sbe.generation.java.JavaGenerator\" })\n" +
                 "public enum MetaAttribute\n" +
                 "{\n" +
                 "    EPOCH,\n" +
@@ -1520,7 +1518,6 @@ public class JavaGenerator implements CodeGenerator
     {
         return
             generateTypeJavadoc(BASE_INDENT, typeToken) +
-            "@javax.annotation.Generated(value = { \"uk.co.real_logic.sbe.generation.java.JavaGenerator\" })\n" +
             "public enum " + name + "\n{\n";
     }
 

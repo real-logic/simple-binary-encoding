@@ -6,7 +6,6 @@ import org.agrona.MutableDirectBuffer;
 /**
  * Message identifiers and length of message root
  */
-@javax.annotation.Generated(value = { "uk.co.real_logic.sbe.generation.java.JavaGenerator" })
 @SuppressWarnings("all")
 public class MessageHeaderEncoder
 {

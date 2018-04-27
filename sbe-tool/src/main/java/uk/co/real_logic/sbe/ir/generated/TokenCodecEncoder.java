@@ -7,7 +7,6 @@ import org.agrona.DirectBuffer;
 /**
  * Codec for an IR Token
  */
-@javax.annotation.Generated(value = { "uk.co.real_logic.sbe.generation.java.JavaGenerator" })
 @SuppressWarnings("all")
 public class TokenCodecEncoder
 {
