@@ -67,7 +67,7 @@ public class SchemaExtensionTest
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
 
         { // Encode
-            final Object encoder = wrap(buffer, compile("TestMessage1Encoder").newInstance());
+            final Object encoder = wrap(buffer, compile("TestMessage1Encoder").getConstructor().newInstance());
 
             set(encoder, "tag1", int.class, 100);
             set(encoder, "tag2", int.class, 200);
@@ -152,7 +152,7 @@ public class SchemaExtensionTest
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
 
         { // Encode
-            final Object encoder = wrap(buffer, compile("TestMessage2Encoder").newInstance());
+            final Object encoder = wrap(buffer, compile("TestMessage2Encoder").getConstructor().newInstance());
 
             set(encoder, "tag1", int.class, 100);
             set(encoder, "tag2", int.class, 200);
@@ -243,14 +243,14 @@ public class SchemaExtensionTest
     private Object getMessage1Decoder(final UnsafeBuffer buffer, final int blockLength, final int version)
         throws Exception
     {
-        final Object decoder = compile("TestMessage1Decoder").newInstance();
+        final Object decoder = compile("TestMessage1Decoder").getConstructor().newInstance();
         return wrap(buffer, decoder, blockLength, version);
     }
 
     private Object getMessage2Decoder(final UnsafeBuffer buffer, final int blockLength, final int version)
         throws Exception
     {
-        final Object decoder = compile("TestMessage2Decoder").newInstance();
+        final Object decoder = compile("TestMessage2Decoder").getConstructor().newInstance();
         return wrap(buffer, decoder, blockLength, version);
     }
 
