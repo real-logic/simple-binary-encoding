@@ -32,7 +32,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.8.0</version>
+    <version>1.8.1</version>
 </dependency>
 ```
 
@@ -61,7 +61,7 @@ Jars for the executable, source, and javadoc for the various modules can be foun
 
 An example to execute a Jar from command line using the 'all' jar which includes the Agrona dependency:
 
-    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-1.7.10-SNAPSHOT.jar my_sbe_input.xml
+    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-1.8.1-SNAPSHOT.jar my_sbe_input.xml
 
 **Note:** The Jars in directory `build/libs` do not contain `META-INF/MANIFEST.MF` and the error *"no main manifest attribute"* will occur when trying to execute it.
 
