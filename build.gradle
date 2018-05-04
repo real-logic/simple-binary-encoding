@@ -424,8 +424,8 @@ project(':sbe-benchmarks') {
 
     dependencies {
         compile project(':sbe-tool')
-        compile 'org.openjdk.jmh:jmh-core:1.20'
-        annotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.20'
+        compile 'org.openjdk.jmh:jmh-core:1.21'
+        annotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
         compile files('build/classes/java/generated')
     }
 
