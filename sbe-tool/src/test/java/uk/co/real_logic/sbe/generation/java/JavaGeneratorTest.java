@@ -376,6 +376,55 @@ public class JavaGeneratorTest
     }
 
     @Test
+    public void shouldGenerateGetFixedLengthStringUsingAppendable() throws Exception
+    {
+        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
+        final StringBuilder result = new StringBuilder();
+        generator().generate();
+
+        final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
+        final Object decoder = getCarDecoder(buffer, encoder);
+
+        set(encoder, "vehicleCode", String.class, "R11");
+        get(decoder, "vehicleCode", result);
+        assertThat(result.toString(), is("R11"));
+
+        result.setLength(0);
+        set(encoder, "vehicleCode", String.class, "");
+        get(decoder, "vehicleCode", result);
+        assertThat(result.toString(), is(""));
+
+        result.setLength(0);
+        set(encoder, "vehicleCode", String.class, "R11R12");
+        get(decoder, "vehicleCode", result);
+        assertThat(result.toString(), is("R11R12"));
+    }
+
+    @Test
+    public void shouldGenerateGetVariableStringUsingAppendable() throws Exception
+    {
+        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
+        final StringBuilder result = new StringBuilder();
+        generator().generate();
+
+        final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
+        final Object decoder = getCarDecoder(buffer, encoder);
+        set(encoder, "color", String.class, "Red");
+        get(decoder, "color", result);
+        assertThat(result.toString(), is("Red"));
+
+        result.setLength(0);
+        set(encoder, "color", String.class, "");
+        get(decoder, "color", result);
+        assertThat(result.toString(), is(""));
+
+        result.setLength(0);
+        set(encoder, "color", String.class, "Red and Blue");
+        get(decoder, "color", result);
+        assertThat(result.toString(), is("Red and Blue"));
+    }
+
+    @Test
     public void shouldGeneratePutCharSequence() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);

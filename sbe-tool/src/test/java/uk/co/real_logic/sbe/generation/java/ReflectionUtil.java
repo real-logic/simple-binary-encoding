@@ -37,6 +37,11 @@ public final class ReflectionUtil
         return object.getClass().getMethod(fieldName).invoke(object);
     }
 
+    static void get(final Object object, final String fieldName, final Appendable arg) throws Exception
+    {
+        object.getClass().getMethod(fieldName, Appendable.class).invoke(object, arg);
+    }
+
     static String getManufacturer(final Object decoder) throws Exception
     {
         return (String)get(decoder, "manufacturer");
