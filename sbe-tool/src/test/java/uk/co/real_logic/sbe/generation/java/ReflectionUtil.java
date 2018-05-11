@@ -15,6 +15,8 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import uk.co.real_logic.sbe.generation.Generators;
+
 public final class ReflectionUtil
 {
     static int getSbeSchemaVersion(final Object encoder) throws Exception
@@ -35,6 +37,12 @@ public final class ReflectionUtil
     static Object get(final Object object, final String fieldName) throws Exception
     {
         return object.getClass().getMethod(fieldName).invoke(object);
+    }
+
+    static void get(final Object object, final String fieldName, final Appendable arg) throws Exception
+    {
+        final String methodName = "get" + Generators.toUpperFirstChar(fieldName);
+        object.getClass().getMethod(methodName, Appendable.class).invoke(object, arg);
     }
 
     static String getManufacturer(final Object decoder) throws Exception

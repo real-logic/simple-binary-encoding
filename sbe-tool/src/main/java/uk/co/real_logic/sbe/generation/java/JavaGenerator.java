@@ -801,6 +801,37 @@ public class JavaGenerator implements CodeGenerator
                 sizeOfLengthField,
                 generateGet(lengthType, "limit", byteOrderStr),
                 characterEncoding));
+
+            if (characterEncoding.contains("ASCII"))
+            {
+                sb.append(String.format("\n" +
+                    indent + "    public void get%1$s(final Appendable value)\n" +
+                    indent + "    {\n" +
+                    "%2$s" +
+                    indent + "        final int headerLength = %3$d;\n" +
+                    indent + "        final int limit = parentMessage.limit();\n" +
+                    indent + "        final int dataLength = (int)%4$s;\n" +
+                    indent + "        final int dataOffset = limit + headerLength;\n" +
+                    indent + "        parentMessage.limit(dataOffset + dataLength);\n" +
+                    indent + "        for (int i = 0; i < dataLength; ++i)\n" +
+                    indent + "        {\n" +
+                    indent + "            try\n" +
+                    indent + "            {\n" +
+                    indent + "                final int c = buffer.getByte(dataOffset + i) & 0xFF;\n" +
+                    indent + "                value.append(c > 127 ? '?' : (char)c);\n" +
+                    indent + "            }\n" +
+                    indent + "            catch (final java.io.IOException e)\n" +
+                    indent + "            {\n" +
+                    indent + "                throw new java.io.UncheckedIOException(e);\n" +
+                    indent + "            }\n" +
+                    indent + "        }\n" +
+                    indent + "    }\n",
+                    Generators.toUpperFirstChar(propertyName),
+                    generateStringNotPresentCondition(token.version(), indent),
+                    sizeOfLengthField,
+                    generateGet(lengthType, "limit", byteOrderStr),
+                    byteOrderStr));
+            }
         }
     }
 
@@ -1813,6 +1844,34 @@ public class JavaGenerator implements CodeGenerator
                 fieldLength, offset,
                 fieldLength, fieldLength,
                 charset(encoding.characterEncoding())));
+
+            if (encoding.characterEncoding().contains("ASCII"))
+            {
+                sb.append(String.format("\n" +
+                    indent + "    public void get%s(final Appendable value)\n" +
+                    indent + "    {\n" +
+                    "%s" +
+                    indent + "        for (int i = 0; i < %d ; ++i)\n" +
+                    indent + "        {\n" +
+                    indent + "            final int c = buffer.getByte(this.offset + %d + i) & 0xFF;\n" +
+                    indent + "            if (c == 0)\n" +
+                    indent + "            {\n" +
+                    indent + "                break;\n" +
+                    indent + "            }\n" +
+                    indent + "            try\n" +
+                    indent + "            {\n" +
+                    indent + "                value.append(c > 127 ? '?' : (char)c);\n" +
+                    indent + "            }\n" +
+                    indent + "            catch (final java.io.IOException e)\n" +
+                    indent + "            {\n" +
+                    indent + "                throw new java.io.UncheckedIOException(e);\n" +
+                    indent + "            }\n" +
+                    indent + "        }\n" +
+                    indent + "    }\n\n",
+                    Generators.toUpperFirstChar(propertyName),
+                    generateStringNotPresentCondition(propertyToken.version(), indent),
+                    fieldLength, offset));
+            }
         }
 
         return sb;
