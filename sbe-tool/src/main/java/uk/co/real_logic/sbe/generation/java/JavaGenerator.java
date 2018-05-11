@@ -805,7 +805,7 @@ public class JavaGenerator implements CodeGenerator
             if (characterEncoding.contains("ASCII"))
             {
                 sb.append(String.format("\n" +
-                    indent + "    public void %1$s(final Appendable value)\n" +
+                    indent + "    public void get%1$s(final Appendable value)\n" +
                     indent + "    {\n" +
                     "%2$s" +
                     indent + "        final int headerLength = %3$d;\n" +
@@ -826,7 +826,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "            }\n" +
                     indent + "        }\n" +
                     indent + "    }\n",
-                    formatPropertyName(propertyName),
+                    Generators.toUpperFirstChar(propertyName),
                     generateStringNotPresentCondition(token.version(), indent),
                     sizeOfLengthField,
                     generateGet(lengthType, "limit", byteOrderStr),
@@ -1848,7 +1848,7 @@ public class JavaGenerator implements CodeGenerator
             if (encoding.characterEncoding().contains("ASCII"))
             {
                 sb.append(String.format("\n" +
-                    indent + "    public void %s(final Appendable value)\n" +
+                    indent + "    public void get%s(final Appendable value)\n" +
                     indent + "    {\n" +
                     "%s" +
                     indent + "        for (int i = 0; i < %d ; ++i)\n" +
@@ -1868,7 +1868,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "            }\n" +
                     indent + "        }\n" +
                     indent + "    }\n\n",
-                    formatPropertyName(propertyName),
+                    Generators.toUpperFirstChar(propertyName),
                     generateStringNotPresentCondition(propertyToken.version(), indent),
                     fieldLength, offset));
             }
