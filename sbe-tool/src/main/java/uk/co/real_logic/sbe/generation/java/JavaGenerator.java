@@ -3077,7 +3077,7 @@ public class JavaGenerator implements CodeGenerator
             }
             else
             {
-                append(sb, indent, "builder.append(" + varDataName + "());");
+                append(sb, indent, "builder.append('\\'' + " + varDataName + "() + '\\'');");
             }
 
             lengthBeforeLastGeneratedSeparator = sb.length();
