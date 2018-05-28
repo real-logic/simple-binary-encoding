@@ -504,7 +504,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "public static class %2$s\n" +
             indent + "    implements Iterable<%2$s>, java.util.Iterator<%2$s>\n" +
             indent + "{\n" +
-            indent + "    private static final int HEADER_SIZE = %3$d;\n" +
+            indent + "    public static final int HEADER_SIZE = %3$d;\n" +
             indent + "    private final %4$s dimensions = new %4$s();\n" +
             indent + "    private %5$s parentMessage;\n" +
             indent + "    private %6$s buffer;\n" +
@@ -533,7 +533,7 @@ public class JavaGenerator implements CodeGenerator
             "%1$s" +
             indent + "public static class %2$s\n" +
             indent + "{\n" +
-            indent + "    private static final int HEADER_SIZE = %3$d;\n" +
+            indent + "    public static final int HEADER_SIZE = %3$d;\n" +
             indent + "    private final %4$s dimensions = new %4$s();\n" +
             indent + "    private %5$s parentMessage;\n" +
             indent + "    private %6$s buffer;\n" +
