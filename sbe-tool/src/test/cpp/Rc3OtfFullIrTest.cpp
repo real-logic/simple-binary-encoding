@@ -123,7 +123,7 @@ enum EventNumber
     EN_beginEngine,
     EN_engine_capacity,
     EN_engine_numCylinders,
-    EN_engine_maxRpms,
+    EN_engine_maxRpm,
     EN_engine_manufacturerCode,
     EN_engine_fuel,
     EN_beginBooster,
@@ -368,7 +368,7 @@ public:
                 break;
             }
 
-            case EN_engine_maxRpms:
+            case EN_engine_maxRpm:
             {
                 EXPECT_TRUE(typeToken.isConstantEncoding());
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT16);
