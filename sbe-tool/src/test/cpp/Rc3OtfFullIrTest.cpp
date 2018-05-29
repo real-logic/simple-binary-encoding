@@ -48,6 +48,7 @@ constexpr std::uint8_t fieldIdPerfAccSeconds = 17;
 constexpr std::uint8_t fieldIdManufacturer = 18;
 constexpr std::uint8_t fieldIdModel = 19;
 constexpr std::uint8_t fieldIdActivationCode = 20;
+constexpr std::uint8_t fieldIdColor = 21;
 
 constexpr std::uint32_t SERIAL_NUMBER = 1234;
 constexpr std::uint16_t MODEL_YEAR = 2013;
@@ -65,12 +66,14 @@ constexpr const char *FUEL_FIGURES_3_USAGE_DESCRIPTION = "Highway Cycle";
 constexpr const char *MANUFACTURER = "Honda";
 constexpr const char *MODEL = "Civic VTi";
 constexpr const char *ACTIVATION_CODE = "deadbeef";
+constexpr const char *COLOR = "red";
 
 static const int VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
 static const int MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
 constexpr std::size_t MANUFACTURER_LENGTH = 5;
 constexpr std::size_t MODEL_LENGTH = 9;
 constexpr std::size_t ACTIVATION_CODE_LENGTH = 8;
+constexpr std::size_t COLOR_LENGTH = 3;
 constexpr std::size_t PERFORMANCE_FIGURES_COUNT = 2;
 constexpr std::size_t FUEL_FIGURES_COUNT = 3;
 constexpr std::size_t ACCELERATION_COUNT = 3;
@@ -101,7 +104,7 @@ constexpr float perf2cSeconds = 11.8f;
 constexpr std::uint16_t engineCapacity = 2000;
 constexpr std::uint8_t engineNumCylinders = 4;
 
-constexpr std::uint64_t encodedCarAndHdrLength = 191 + 8;
+constexpr std::uint64_t encodedCarAndHdrLength = 198 + 8;
 
 // This enum represents the expected events that
 // will be received during the decoding process.
@@ -180,6 +183,7 @@ enum EventNumber
     EN_manufacturer,
     EN_model,
     EN_activationCode,
+    EN_color,
     EN_endMessage
 };
 
@@ -276,6 +280,7 @@ public:
         car.putManufacturer(MANUFACTURER, static_cast<int>(strlen(MANUFACTURER)));
         car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
         car.putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
+        car.putColor(COLOR, static_cast<int>(strlen(COLOR)));
 
         return hdr.encodedLength() + car.encodedLength();
     }
@@ -318,6 +323,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), static_cast<std::uint64_t>(SERIAL_NUMBER));
                 break;
             }
+
             case EN_modelYear:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdModelYear);
@@ -325,6 +331,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), static_cast<std::uint64_t>(MODEL_YEAR));
                 break;
             }
+
             case EN_someNumbers:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdSomeNumbers);
@@ -337,6 +344,7 @@ public:
                 }
                 break;
             }
+
             case EN_vehicleCode:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdVehicleCode);
@@ -345,18 +353,21 @@ public:
                 EXPECT_EQ(std::string(buffer, VEHICLE_CODE_LENGTH), std::string(VEHICLE_CODE, VEHICLE_CODE_LENGTH));
                 break;
             }
+
             case EN_engine_capacity:
             {
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT16);
                 EXPECT_EQ(encoding.getAsUInt(buffer), static_cast<std::uint64_t>(engineCapacity));
                 break;
             }
+
             case EN_engine_numCylinders:
             {
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT8);
                 EXPECT_EQ(encoding.getAsUInt(buffer), static_cast<std::uint64_t>(engineNumCylinders));
                 break;
             }
+
             case EN_engine_maxRpms:
             {
                 EXPECT_TRUE(typeToken.isConstantEncoding());
@@ -364,6 +375,7 @@ public:
                 EXPECT_EQ(encoding.constValue().getAsUInt(), static_cast<std::uint64_t>(9000));
                 break;
             }
+
             case EN_engine_manufacturerCode:
             {
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
@@ -371,6 +383,7 @@ public:
                 EXPECT_EQ(std::string(buffer, MANUFACTURER_CODE_LENGTH), std::string(MANUFACTURER_CODE, MANUFACTURER_CODE_LENGTH));
                 break;
             }
+
             case EN_engine_fuel:
             {
                 EXPECT_TRUE(typeToken.isConstantEncoding());
@@ -381,12 +394,14 @@ public:
                 EXPECT_EQ(std::string(value.getArray(), value.size()), std::string("Petrol"));
                 break;
             }
+
             case EN_engine_booster_horsePower:
             {
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT8);
                 EXPECT_EQ(encoding.getAsUInt(buffer), static_cast<std::uint64_t>(200));
                 break;
             }
+
             case EN_fuelFigures1_speed:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdFuelSpeed);
@@ -394,6 +409,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), fuel1Speed);
                 break;
             }
+
             case EN_fuelFigures1_mpg:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdFuelMpg);
@@ -401,6 +417,7 @@ public:
                 EXPECT_EQ(encoding.getAsDouble(buffer), fuel1Mpg);
                 break;
             }
+
             case EN_fuelFigures2_speed:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdFuelSpeed);
@@ -408,6 +425,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), fuel2Speed);
                 break;
             }
+
             case EN_fuelFigures2_mpg:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdFuelMpg);
@@ -415,6 +433,7 @@ public:
                 EXPECT_EQ(encoding.getAsDouble(buffer), fuel2Mpg);
                 break;
             }
+
             case EN_fuelFigures3_speed:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdFuelSpeed);
@@ -422,6 +441,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), fuel3Speed);
                 break;
             }
+
             case EN_fuelFigures3_mpg:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdFuelMpg);
@@ -429,6 +449,7 @@ public:
                 EXPECT_EQ(encoding.getAsDouble(buffer), fuel3Mpg);
                 break;
             }
+
             case EN_performanceFigures1_octaneRating:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfOctaneRating);
@@ -436,6 +457,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), perf1Octane);
                 break;
             }
+
             case EN_performanceFigures1_acceleration1_mph:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccMph);
@@ -443,6 +465,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), perf1aMph);
                 break;
             }
+
             case EN_performanceFigures1_acceleration1_seconds:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccSeconds);
@@ -450,6 +473,7 @@ public:
                 EXPECT_EQ(encoding.getAsDouble(buffer), perf1aSeconds);
                 break;
             }
+
             case EN_performanceFigures1_acceleration2_mph:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccMph);
@@ -457,6 +481,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), perf1bMph);
                 break;
             }
+
             case EN_performanceFigures1_acceleration2_seconds:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccSeconds);
@@ -464,6 +489,7 @@ public:
                 EXPECT_EQ(encoding.getAsDouble(buffer), perf1bSeconds);
                 break;
             }
+
             case EN_performanceFigures1_acceleration3_mph:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccMph);
@@ -471,6 +497,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), perf1cMph);
                 break;
             }
+
             case EN_performanceFigures1_acceleration3_seconds:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccSeconds);
@@ -478,6 +505,7 @@ public:
                 EXPECT_EQ(encoding.getAsDouble(buffer), perf1cSeconds);
                 break;
             }
+
             case EN_performanceFigures2_octaneRating:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfOctaneRating);
@@ -485,6 +513,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), perf2Octane);
                 break;
             }
+
             case EN_performanceFigures2_acceleration1_mph:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccMph);
@@ -492,6 +521,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), perf2aMph);
                 break;
             }
+
             case EN_performanceFigures2_acceleration1_seconds:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccSeconds);
@@ -499,6 +529,7 @@ public:
                 EXPECT_EQ(encoding.getAsDouble(buffer), perf2aSeconds);
                 break;
             }
+
             case EN_performanceFigures2_acceleration2_mph:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccMph);
@@ -506,6 +537,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), perf2bMph);
                 break;
             }
+
             case EN_performanceFigures2_acceleration2_seconds:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccSeconds);
@@ -513,6 +545,7 @@ public:
                 EXPECT_EQ(encoding.getAsDouble(buffer), perf2bSeconds);
                 break;
             }
+
             case EN_performanceFigures2_acceleration3_mph:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccMph);
@@ -520,6 +553,7 @@ public:
                 EXPECT_EQ(encoding.getAsUInt(buffer), perf2cMph);
                 break;
             }
+
             case EN_performanceFigures2_acceleration3_seconds:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdPerfAccSeconds);
@@ -527,6 +561,7 @@ public:
                 EXPECT_EQ(encoding.getAsDouble(buffer), perf2cSeconds);
                 break;
             }
+
             default:
                 FAIL() << "unknown Encoding event number " << m_eventNumber;
         }
@@ -574,6 +609,7 @@ public:
                 EXPECT_TRUE(found);
                 break;
             }
+
             case EN_code:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdCode);
@@ -599,6 +635,7 @@ public:
                 EXPECT_TRUE(found);
                 break;
             }
+
             case EN_discountedModel:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdDiscountedModel);
@@ -627,6 +664,7 @@ public:
                 EXPECT_TRUE(found);
                 break;
             }
+
             case EN_engine_booster_boostType:
             {
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
@@ -651,6 +689,7 @@ public:
                 EXPECT_TRUE(found);
                 break;
             }
+
             default:
                 FAIL() << "unknown Enum event number " << m_eventNumber;
         }
@@ -702,6 +741,7 @@ public:
                 EXPECT_EQ(bitsSet, 2);
                 break;
             }
+
             default:
                 FAIL() << "unknown BitSet event number " << m_eventNumber;
         }
@@ -727,11 +767,13 @@ public:
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdEngine);
                 break;
             }
+
             case EN_beginBooster:
             {
                 EXPECT_EQ(tokens.at(fromIndex).name(), "booster");
                 break;
             }
+
             default:
                 FAIL() << "unknown BeginComposite event number " << m_eventNumber;
         }
@@ -757,11 +799,13 @@ public:
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdEngine);
                 break;
             }
+
             case EN_endBooster:
             {
                 EXPECT_EQ(tokens.at(fromIndex).name(), "booster");
                 break;
             }
+
             default:
                 FAIL() << "unknown BeginComposite event number " << m_eventNumber;
         }
@@ -783,24 +827,28 @@ public:
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
+
             case EN_groupPerformanceFigures:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerformanceFigures);
                 EXPECT_EQ(numInGroup, PERFORMANCE_FIGURES_COUNT);
                 break;
             }
+
             case EN_performanceFigures1_groupAcceleration1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             case EN_performanceFigures2_groupAcceleration1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             default:
                 FAIL() << "unknown GroupHeader event number " << m_eventNumber;
         }
@@ -825,6 +873,7 @@ public:
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
+
             case EN_beginFuelFigures2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdFuelFigures);
@@ -832,6 +881,7 @@ public:
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
+
             case EN_beginFuelFigures3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdFuelFigures);
@@ -839,6 +889,7 @@ public:
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
+
             case EN_beginPerformanceFigures1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerformanceFigures);
@@ -846,6 +897,7 @@ public:
                 EXPECT_EQ(numInGroup, PERFORMANCE_FIGURES_COUNT);
                 break;
             }
+
             case EN_performanceFigures1_beginAcceleration1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -853,6 +905,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             case EN_performanceFigures1_beginAcceleration2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -860,6 +913,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             case EN_performanceFigures1_beginAcceleration3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -867,6 +921,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             case EN_beginPerformanceFigures2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerformanceFigures);
@@ -874,6 +929,7 @@ public:
                 EXPECT_EQ(numInGroup, PERFORMANCE_FIGURES_COUNT);
                 break;
             }
+
             case EN_performanceFigures2_beginAcceleration1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -881,6 +937,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             case EN_performanceFigures2_beginAcceleration2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -888,6 +945,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             case EN_performanceFigures2_beginAcceleration3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -895,6 +953,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             default:
                 FAIL() << "unknown BeginGroup event number " << m_eventNumber;
         }
@@ -918,6 +977,7 @@ public:
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
+
             case EN_endFuelFigures2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdFuelFigures);
@@ -925,6 +985,7 @@ public:
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
+
             case EN_endFuelFigures3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdFuelFigures);
@@ -932,6 +993,7 @@ public:
                 EXPECT_EQ(numInGroup, FUEL_FIGURES_COUNT);
                 break;
             }
+
             case EN_endPerformanceFigures1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerformanceFigures);
@@ -939,6 +1001,7 @@ public:
                 EXPECT_EQ(numInGroup, PERFORMANCE_FIGURES_COUNT);
                 break;
             }
+
             case EN_performanceFigures1_endAcceleration1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -946,6 +1009,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             case EN_performanceFigures1_endAcceleration2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -953,6 +1017,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             case EN_performanceFigures1_endAcceleration3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -960,6 +1025,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             case EN_endPerformanceFigures2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerformanceFigures);
@@ -967,6 +1033,7 @@ public:
                 EXPECT_EQ(numInGroup, PERFORMANCE_FIGURES_COUNT);
                 break;
             }
+
             case EN_performanceFigures2_endAcceleration1:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -974,6 +1041,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             case EN_performanceFigures2_endAcceleration2:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -981,6 +1049,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             case EN_performanceFigures2_endAcceleration3:
             {
                 EXPECT_EQ(token.fieldId(), fieldIdPerfAcceleration);
@@ -988,6 +1057,7 @@ public:
                 EXPECT_EQ(numInGroup, ACCELERATION_COUNT);
                 break;
             }
+
             default:
                 FAIL() << "unknown EndGroup event number " << m_eventNumber;
         }
@@ -1012,6 +1082,7 @@ public:
                 EXPECT_EQ(std::string(buffer, length), FUEL_FIGURES_1_USAGE_DESCRIPTION);
                 break;
             }
+
             case EN_fuelFigures2_usageDescription:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdFuelUsageDescription);
@@ -1019,6 +1090,7 @@ public:
                 EXPECT_EQ(std::string(buffer, length), FUEL_FIGURES_2_USAGE_DESCRIPTION);
                 break;
             }
+
             case EN_fuelFigures3_usageDescription:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdFuelUsageDescription);
@@ -1026,6 +1098,7 @@ public:
                 EXPECT_EQ(std::string(buffer, length), FUEL_FIGURES_3_USAGE_DESCRIPTION);
                 break;
             }
+
             case EN_manufacturer:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdManufacturer);
@@ -1033,6 +1106,7 @@ public:
                 EXPECT_EQ(std::string(buffer, MANUFACTURER_LENGTH), MANUFACTURER);
                 break;
             }
+
             case EN_model:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdModel);
@@ -1040,6 +1114,7 @@ public:
                 EXPECT_EQ(std::string(buffer, MODEL_LENGTH), MODEL);
                 break;
             }
+
             case EN_activationCode:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdActivationCode);
@@ -1047,6 +1122,15 @@ public:
                 EXPECT_EQ(std::string(buffer, ACTIVATION_CODE_LENGTH), ACTIVATION_CODE);
                 break;
             }
+
+            case EN_color:
+            {
+                EXPECT_EQ(fieldToken.fieldId(), fieldIdColor);
+                EXPECT_EQ(length, COLOR_LENGTH);
+                EXPECT_EQ(std::string(buffer, COLOR_LENGTH), COLOR);
+                break;
+            }
+
             default:
                 FAIL() << "unknown Data event number " << m_eventNumber;
         }
