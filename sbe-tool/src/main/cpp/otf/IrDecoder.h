@@ -70,7 +70,6 @@ public:
         }
 
         m_length = static_cast<std::uint64_t>(fileSize);
-        std::cout << "IR Filename " << filename << " length " << m_length << std::endl;
         if (m_length == 0)
         {
             return -1;
@@ -151,7 +150,7 @@ protected:
         FILE *fptr = ::fopen(filename, "rb");
         std::uint64_t remaining = length;
 
-        if (fptr == NULL)
+        if (NULL == fptr)
         {
             return -1;
         }
@@ -184,17 +183,15 @@ private:
         using namespace uk::co::real_logic::sbe::ir::generated;
 
         FrameCodec frame;
-        std::uint64_t offset = 0, tmpLen = 0;
+        std::uint64_t offset = 0;
         char tmp[256];
 
         frame.wrapForDecode(m_buffer.get(), offset, frame.sbeBlockLength(), frame.sbeSchemaVersion(), m_length);
 
-        tmpLen = frame.getPackageName(tmp, sizeof(tmp));
-        std::cout << "Reading IR package=\"" << std::string(tmp, tmpLen) << "\" id=" << frame.irId() << "\n";
+        frame.getPackageName(tmp, sizeof(tmp));
 
         if (frame.irVersion() != 0)
         {
-            std::cerr << "unknown SBE IR version: " << frame.irVersion() << "\n";
             return -1;
         }
 
@@ -219,7 +216,7 @@ private:
         return 0;
     }
 
-    std::uint64_t decodeAndAddToken(std::shared_ptr<std::vector<Token>> tokens, std::uint64_t offset)
+    std::uint64_t decodeAndAddToken(std::shared_ptr<std::vector<Token>>& tokens, std::uint64_t offset)
     {
         using namespace uk::co::real_logic::sbe::ir::generated;
 
@@ -293,18 +290,11 @@ private:
 
             Token& token = m_headerTokens->back();
 
-            if (token.signal() == Signal::BEGIN_COMPOSITE)
-            {
-                std::cout << " Header name=\"" << token.name() << "\"";
-            }
-
             if (token.signal() == Signal::END_COMPOSITE)
             {
                 break;
             }
         }
-
-        std::cout << " length " << size << std::endl;
 
         return size;
     }
@@ -321,20 +311,11 @@ private:
 
             Token& token = tokensForMessage->back();
 
-            if (token.signal() == Signal::BEGIN_MESSAGE)
-            {
-                std::cout << " Message name=\"" << token.name() << "\"";
-                std::cout << " id=\"" << token.fieldId() << "\"";
-                std::cout << " version=\"" << token.tokenVersion() << "\"";
-            }
-
             if (token.signal() == Signal::END_MESSAGE)
             {
                 break;
             }
         }
-
-        std::cout << " length " << size << std::endl;
 
         m_messages.push_back(tokensForMessage);
 
