@@ -55,7 +55,6 @@ public class JsonPrinter
         validateVersion(schemaId, actingVersion);
 
         final int messageOffset = bufferOffset + headerDecoder.encodedLength();
-
         final List<Token> msgTokens = ir.getMessage(templateId);
 
         OtfMessageDecoder.decode(
@@ -71,8 +70,7 @@ public class JsonPrinter
     {
         if (schemaId != ir.id())
         {
-            throw new IllegalArgumentException(
-                String.format("Required schema id %d but was actually %d", ir.id(), schemaId));
+            throw new IllegalArgumentException("Required schema id " + ir.id() + " but was " + schemaId);
         }
     }
 
@@ -81,7 +79,7 @@ public class JsonPrinter
         if (actingVersion > ir.version())
         {
             throw new IllegalArgumentException(
-                String.format("Required schema id %d but was actually %d", ir.id(), schemaId));
+                "Required schema version " + actingVersion + " but was " + ir.version() + " for schema id " + schemaId);
         }
     }
 
