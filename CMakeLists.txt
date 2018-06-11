@@ -31,6 +31,7 @@ endif()
 
 option(SBE_TESTS "Enable tests" ${STANDALONE_BUILD})
 option(SBE_BUILD_SAMPLES "Enable building the sample projects" ${STANDALONE_BUILD})
+option(SBE_BUILD_BENCHMARKS "Enable building the benchmarks" ${STANDALONE_BUILD})
 
 unset(STANDALONE_BUILD)
 
@@ -118,6 +119,8 @@ if(SBE_BUILD_SAMPLES)
    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/cpp)
 endif()
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/cpp)
+if(SBE_BUILD_BENCHMARKS)
+   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/cpp)
+endif()
 
 add_dependencies(sbe ir_codecs)
