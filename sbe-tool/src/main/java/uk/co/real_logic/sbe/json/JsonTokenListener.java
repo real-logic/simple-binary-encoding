@@ -29,7 +29,6 @@ import static uk.co.real_logic.sbe.PrimitiveType.CHAR;
 
 public class JsonTokenListener implements TokenListener
 {
-    private final byte[] tempBuffer = new byte[1024];
     private final StringBuilder output;
     private int indentation = 0;
 
@@ -125,6 +124,7 @@ public class JsonTokenListener implements TokenListener
             property(fieldToken);
             doubleQuote();
 
+            final byte[] tempBuffer = new byte[length];
             buffer.getBytes(bufferIndex, tempBuffer, 0, length);
             output.append(new String(tempBuffer, 0, length, typeToken.encoding().characterEncoding()));
 
@@ -158,14 +158,25 @@ public class JsonTokenListener implements TokenListener
     private void appendEncodingAsString(
         final DirectBuffer buffer, final int index, final Token typeToken, final int actingVersion)
     {
+        final Encoding encoding = typeToken.encoding();
         final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, actingVersion);
         if (null != constOrNotPresentValue)
         {
+            if (encoding.primitiveType() == CHAR)
+            {
+                doubleQuote();
+            }
+
             output.append(constOrNotPresentValue.toString());
+
+            if (encoding.primitiveType() == CHAR)
+            {
+                doubleQuote();
+            }
+
             return;
         }
 
-        final Encoding encoding = typeToken.encoding();
         final int elementSize = encoding.primitiveType().size();
 
         final int size = typeToken.arrayLength();

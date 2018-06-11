@@ -63,7 +63,7 @@ public class JsonPrinterTest extends EncodedCarTestBase
             "    \"numCylinders\": 4,\n" +
             "    \"maxRpm\": 9000,\n" +
             "    \"manufacturerCode\": \"123\",\n" +
-            "    \"fuel\": Petrol,\n" +
+            "    \"fuel\": \"Petrol\",\n" +
             "    \"fuelFigures\": [\n" +
             "    {\n" +
             "        \"speed\": 30,\n" +
