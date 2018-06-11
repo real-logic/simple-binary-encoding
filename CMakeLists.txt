@@ -33,12 +33,12 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 ExternalProject_Add(
-	gtest
-	URL ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/lib/gtest-1.7.0.zip
-	URL_MD5 2d6ec8ccdf5c46b05ba54a9fd1d130d7
-	INSTALL_COMMAND ""
-	LOG_CONFIGURE ON
-	LOG_BUILD ON
+    gtest
+    URL ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/lib/gtest-1.7.0.zip
+    URL_MD5 2d6ec8ccdf5c46b05ba54a9fd1d130d7
+    INSTALL_COMMAND ""
+    LOG_CONFIGURE ON
+    LOG_BUILD ON
 )
 
 ExternalProject_Get_Property(gtest source_dir)
@@ -55,16 +55,16 @@ if(UNIX)
 endif()
 
 if(APPLE)
-	# -Wall doesn't enable everything we want to see
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-compare")
-	add_definitions(-DDarwin)
+    # -Wall doesn't enable everything we want to see
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-compare")
+    add_definitions(-DDarwin)
 elseif(MSVC)
-	add_definitions(-DWIN32)
+    add_definitions(-DWIN32)
 
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /Od /Zi")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 else()
-	add_definitions(-D_GNU_SOURCE)
+    add_definitions(-D_GNU_SOURCE)
 endif()
 
 set(LIBPREFIX "${CMAKE_STATIC_LIBRARY_PREFIX}")
@@ -75,9 +75,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 
 set(SBE_JAR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs/sbe-all-${SBE_VERSION_TXT}.jar")
 if(EXISTS "${SBE_JAR}")
-	message("latest SBE jar found: ${SBE_JAR}")
+    message("latest SBE jar found: ${SBE_JAR}")
 else()
-	message(FATAL_ERROR "could not find latest SBE jar in ${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs")
+    message(FATAL_ERROR "could not find latest SBE jar in ${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs")
 endif()
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
@@ -86,9 +86,9 @@ set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/r
 set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/resources")
 
 include_directories(
-	${GTEST_SOURCE_DIR}/include
-	${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp
-	${CODEC_TARGET_DIR}
+    ${GTEST_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp
+    ${CODEC_TARGET_DIR}
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp)
