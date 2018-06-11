@@ -25,30 +25,42 @@ project("sbe" VERSION "${SBE_VERSION_NUMERIC}")
 include(ExternalProject)
 include(CheckLibraryExists)
 
-enable_testing()
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+   set(STANDALONE_BUILD TRUE)
+endif()
+
+option(SBE_TESTS "Enable tests" ${STANDALONE_BUILD})
+
+unset(STANDALONE_BUILD)
+
+if(SBE_TESTS)
+    enable_testing()
+endif()
 
 # default built type is Release
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build" FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
-set(SBE_THIRDPARTY_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/thirdparty")
+if(SBE_TESTS)
+    set(SBE_THIRDPARTY_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/thirdparty")
 
-ExternalProject_Add(
-    gtest
-    URL ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/lib/gtest-1.7.0.zip
-    URL_MD5 2d6ec8ccdf5c46b05ba54a9fd1d130d7
-    PREFIX "${SBE_THIRDPARTY_BINARY_DIR}/gtest"
-    BUILD_BYPRODUCTS "${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX};${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    INSTALL_COMMAND ""
-    LOG_CONFIGURE ON
-    LOG_BUILD ON
-)
+    ExternalProject_Add(
+        gtest
+        URL ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/lib/gtest-1.7.0.zip
+        URL_MD5 2d6ec8ccdf5c46b05ba54a9fd1d130d7
+        PREFIX "${SBE_THIRDPARTY_BINARY_DIR}/gtest"
+        BUILD_BYPRODUCTS "${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX};${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        INSTALL_COMMAND ""
+        LOG_CONFIGURE ON
+        LOG_BUILD ON
+    )
 
-ExternalProject_Get_Property(gtest source_dir)
-set(GTEST_SOURCE_DIR ${source_dir})
-ExternalProject_Get_Property(gtest binary_dir)
-set(GTEST_BINARY_DIR ${binary_dir})
+    ExternalProject_Get_Property(gtest source_dir)
+    set(GTEST_SOURCE_DIR ${source_dir})
+    ExternalProject_Get_Property(gtest binary_dir)
+    set(GTEST_BINARY_DIR ${binary_dir})
+endif()
 
 find_package(Threads)
 
@@ -96,7 +108,11 @@ include_directories(
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/cpp)
+
+if(SBE_TESTS)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/cpp)
+endif()
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/cpp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/cpp)
 
