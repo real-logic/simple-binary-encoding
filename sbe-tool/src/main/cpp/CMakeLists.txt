@@ -14,17 +14,43 @@
 # limitations under the License.
 #
 
+file(GLOB_RECURSE CODECS
+    "uk_co_real_logic_sbe_ir_generated/*.h"
+)
+
 find_package(Java REQUIRED)
 
-add_custom_target(
-        ir_codecs
+if(NOT(CODECS))
+    execute_process(
+        COMMAND
+            ${Java_JAVA_EXECUTABLE}
+            "-Dsbe.output.dir=${CMAKE_CURRENT_SOURCE_DIR}"
+            "-Dsbe.target.language=CPP"
+            "-jar" "${SBE_JAR}"
+            "../resources/sbe-ir.xml"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+
+    file(GLOB_RECURSE CODECS
+        "uk_co_real_logic_sbe_ir_generated/*.h"
+    )
+endif()
+
+add_custom_command(OUTPUT ${CODECS}
+    COMMAND
         ${Java_JAVA_EXECUTABLE}
         "-Dsbe.output.dir=${CMAKE_CURRENT_SOURCE_DIR}"
         "-Dsbe.target.language=CPP"
         "-jar" "${SBE_JAR}"
         "../resources/sbe-ir.xml"
-        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        COMMENT "Generate IR codecs"
+    DEPENDS ${SBE_JAR} sbe-jar "../resources/sbe-ir.xml"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    COMMENT "Generate IR codecs"
+)
+
+add_custom_target(
+        ir_codecs
+        DEPENDS ${CODECS}
 )
 
 set(HEADERS
