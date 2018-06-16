@@ -37,3 +37,5 @@ set(HEADERS
 )
 
 add_library(sbe STATIC ${HEADERS} dummy.cpp)
+
+add_dependencies(sbe ir_codecs)

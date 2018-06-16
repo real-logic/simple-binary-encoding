@@ -122,5 +122,3 @@ endif()
 if(SBE_BUILD_BENCHMARKS)
    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/cpp)
 endif()
-
-add_dependencies(sbe ir_codecs)
