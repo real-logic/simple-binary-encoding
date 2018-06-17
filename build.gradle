@@ -545,10 +545,10 @@ def cargo_exists() {
     }
 }
 
-if (cargo_exists()) {
+if (cargo_exists() && !project.hasProperty('sbe.skipRust')) {
     test.dependsOn('runRustCarExample')
 } else {
-    println 'Skipping Rust integration test due to absent cargo command'
+    println 'Skipping Rust integration test due to absent cargo command or sbe.skipRust property'
 }
 
 task generateRustCodecs {
