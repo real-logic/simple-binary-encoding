@@ -68,6 +68,33 @@ public class JsonTokenListener implements TokenListener
         final int toIndex,
         final int actingVersion)
     {
+        final Token typeToken = tokens.get(fromIndex + 1);
+        final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, actingVersion);
+
+        String value = null;
+        if (fieldToken.isConstantEncoding())
+        {
+            final String refValue = fieldToken.encoding().constValue().toString();
+            final int indexOfDot = refValue.indexOf('.');
+            value = -1 == indexOfDot ? refValue : refValue.substring(indexOfDot + 1);
+        }
+        else
+        {
+            for (int i = fromIndex + 1; i < toIndex; i++)
+            {
+                if (encodedValue == tokens.get(i).encoding().constValue().longValue())
+                {
+                    value = tokens.get(i).name();
+                    break;
+                }
+            }
+        }
+
+        property(fieldToken);
+        doubleQuote();
+        output.append(value);
+        doubleQuote();
+        next();
     }
 
     public void onBitSet(
@@ -217,21 +244,6 @@ public class JsonTokenListener implements TokenListener
         output.setLength(output.length() - 2);
     }
 
-    private static PrimitiveValue constOrNotPresentValue(final Token token, final int actingVersion)
-    {
-        final Encoding encoding = token.encoding();
-        if (token.isConstantEncoding())
-        {
-            return encoding.constValue();
-        }
-        else if (token.isOptionalEncoding() && actingVersion < token.version())
-        {
-            return encoding.applicableNullValue();
-        }
-
-        return null;
-    }
-
     private void indent()
     {
         for (int i = 0; i < indentation; i++)
@@ -264,5 +276,32 @@ public class JsonTokenListener implements TokenListener
         {
             next();
         }
+    }
+
+    private static PrimitiveValue constOrNotPresentValue(final Token token, final int actingVersion)
+    {
+        final Encoding encoding = token.encoding();
+        if (token.isConstantEncoding())
+        {
+            return encoding.constValue();
+        }
+        else if (token.isOptionalEncoding() && actingVersion < token.version())
+        {
+            return encoding.applicableNullValue();
+        }
+
+        return null;
+    }
+
+    private static long readEncodingAsLong(
+        final DirectBuffer buffer, final int bufferIndex, final Token typeToken, final int actingVersion)
+    {
+        final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, actingVersion);
+        if (null != constOrNotPresentValue)
+        {
+            return constOrNotPresentValue.longValue();
+        }
+
+        return Types.getLong(buffer, bufferIndex, typeToken.encoding());
     }
 }

@@ -57,6 +57,8 @@ public class JsonPrinterTest extends EncodedCarTestBase
             "{\n" +
             "    \"serialNumber\": 1234,\n" +
             "    \"modelYear\": 2013,\n" +
+            "    \"available\": \"T\",\n" +
+            "    \"code\": \"A\",\n" +
             "    \"someNumbers\": [0, 1, 2, 3, 4],\n" +
             "    \"vehicleCode\": \"abcdef\",\n" +
             "    \"capacity\": 2000,\n" +
