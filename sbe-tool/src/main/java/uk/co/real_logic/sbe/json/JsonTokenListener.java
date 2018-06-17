@@ -31,6 +31,7 @@ public class JsonTokenListener implements TokenListener
 {
     private final StringBuilder output;
     private int indentation = 0;
+    private int compositeLevel = 0;
 
     public JsonTokenListener(final StringBuilder output)
     {
@@ -54,7 +55,7 @@ public class JsonTokenListener implements TokenListener
         final Token typeToken,
         final int actingVersion)
     {
-        property(fieldToken);
+        property(compositeLevel > 0 ? typeToken.name() : fieldToken.name());
         appendEncodingAsString(buffer, bufferIndex, typeToken, actingVersion);
         next();
     }
@@ -90,7 +91,7 @@ public class JsonTokenListener implements TokenListener
             }
         }
 
-        property(fieldToken);
+        property(determineName(0, fieldToken, tokens, fromIndex));
         doubleQuote();
         output.append(value);
         doubleQuote();
@@ -109,7 +110,7 @@ public class JsonTokenListener implements TokenListener
         final Token typeToken = tokens.get(fromIndex + 1);
         final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, actingVersion);
 
-        property(fieldToken);
+        property(determineName(0, fieldToken, tokens, fromIndex));
 
         output.append("{ ");
         for (int i = fromIndex + 1; i < toIndex; i++)
@@ -134,16 +135,23 @@ public class JsonTokenListener implements TokenListener
     public void onBeginComposite(
         final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
+        ++compositeLevel;
+
+        property(determineName(1, fieldToken, tokens, fromIndex));
+        output.append('\n');
+        startObject();
     }
 
     public void onEndComposite(
         final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
+        --compositeLevel;
+        endObject();
     }
 
     public void onGroupHeader(final Token token, final int numInGroup)
     {
-        property(token);
+        property(token.name());
         output.append("[\n");
     }
 
@@ -171,7 +179,7 @@ public class JsonTokenListener implements TokenListener
     {
         try
         {
-            property(fieldToken);
+            property(fieldToken.name());
             doubleQuote();
 
             final byte[] tempBuffer = new byte[length];
@@ -197,11 +205,11 @@ public class JsonTokenListener implements TokenListener
         output.append(",\n");
     }
 
-    private void property(final Token token)
+    private void property(final String name)
     {
         indent();
         doubleQuote();
-        output.append(token.name());
+        output.append(name);
         output.append("\": ");
     }
 
@@ -298,6 +306,19 @@ public class JsonTokenListener implements TokenListener
         if (indentation > 0)
         {
             next();
+        }
+    }
+
+    private String determineName(
+        final int thresholdLevel, final Token fieldToken, final List<Token> tokens, final int fromIndex)
+    {
+        if (compositeLevel > thresholdLevel)
+        {
+            return tokens.get(fromIndex).name();
+        }
+        else
+        {
+            return fieldToken.name();
         }
     }
 

@@ -42,10 +42,10 @@ public class JsonPrinterTest extends EncodedCarTestBase
     @Test
     public void exampleMessagePrintedAsJson() throws Exception
     {
-        final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocateDirect(SCHEMA_BUFFER_CAPACITY);
+        final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocate(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);
 
-        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
         encodedSchemaBuffer.flip();
@@ -62,11 +62,14 @@ public class JsonPrinterTest extends EncodedCarTestBase
             "    \"someNumbers\": [0, 1, 2, 3, 4],\n" +
             "    \"vehicleCode\": \"abcdef\",\n" +
             "    \"extras\": { \"sunRoof\": false, \"sportsPack\": true, \"cruiseControl\": true },\n" +
-            "    \"capacity\": 2000,\n" +
-            "    \"numCylinders\": 4,\n" +
-            "    \"maxRpm\": 9000,\n" +
-            "    \"manufacturerCode\": \"123\",\n" +
-            "    \"fuel\": \"Petrol\",\n" +
+            "    \"engine\": \n" +
+            "    {\n" +
+            "        \"capacity\": 2000,\n" +
+            "        \"numCylinders\": 4,\n" +
+            "        \"maxRpm\": 9000,\n" +
+            "        \"manufacturerCode\": \"123\",\n" +
+            "        \"fuel\": \"Petrol\"\n" +
+            "    },\n" +
             "    \"fuelFigures\": [\n" +
             "    {\n" +
             "        \"speed\": 30,\n" +
