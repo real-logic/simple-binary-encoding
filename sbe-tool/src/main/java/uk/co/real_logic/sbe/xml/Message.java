@@ -395,6 +395,10 @@ public class Message
                 {
                     variableLengthBlock = true;
                 }
+                else
+                {
+                    field.computedBlockLength(size);
+                }
 
                 if (!variableLengthBlock)
                 {

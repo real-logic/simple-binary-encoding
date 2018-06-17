@@ -80,12 +80,21 @@ public class ExampleTokenListener implements TokenListener
         final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, actingVersion);
 
         String value = null;
-        for (int i = beginIndex + 1; i < endIndex; i++)
+        if (fieldToken.isConstantEncoding())
         {
-            if (encodedValue == tokens.get(i).encoding().constValue().longValue())
+            final String refValue = fieldToken.encoding().constValue().toString();
+            final int indexOfDot = refValue.indexOf('.');
+            value = -1 == indexOfDot ? refValue : refValue.substring(indexOfDot + 1);
+        }
+        else
+        {
+            for (int i = beginIndex + 1; i < endIndex; i++)
             {
-                value = tokens.get(i).name();
-                break;
+                if (encodedValue == tokens.get(i).encoding().constValue().longValue())
+                {
+                    value = tokens.get(i).name();
+                    break;
+                }
             }
         }
 

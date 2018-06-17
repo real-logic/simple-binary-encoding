@@ -35,10 +35,10 @@ public class ValueRefsTest
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
 
-        assertThat(ir.getMessage(1).get(2).encodedLength(), is(8));
-        assertThat(ir.getMessage(2).get(2).encodedLength(), is(0));
-        assertThat(ir.getMessage(3).get(2).encodedLength(), is(0));
-        assertThat(ir.getMessage(4).get(2).encodedLength(), is(0));
-        assertThat(ir.getMessage(5).get(2).encodedLength(), is(0));
+        assertThat(ir.getMessage(1).get(1).encodedLength(), is(8));
+        assertThat(ir.getMessage(2).get(1).encodedLength(), is(0));
+        assertThat(ir.getMessage(3).get(1).encodedLength(), is(0));
+        assertThat(ir.getMessage(4).get(1).encodedLength(), is(0));
+        assertThat(ir.getMessage(5).get(1).encodedLength(), is(0));
     }
 }

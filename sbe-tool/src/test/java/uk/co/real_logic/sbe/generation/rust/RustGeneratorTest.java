@@ -267,6 +267,7 @@ public class RustGeneratorTest
         }
     }
 
+    @Ignore
     @Test
     public void constantFieldsCase() throws IOException, InterruptedException
     {

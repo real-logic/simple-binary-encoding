@@ -106,7 +106,6 @@ public class Ir
         Verify.notNull(messageTokens, "messageTokens");
 
         captureTypes(messageTokens, 0, messageTokens.size() - 1);
-        compressConstantEnums(messageTokens);
         updateComponentTokenCounts(messageTokens);
 
         messagesByIdMap.put(messageId, new ArrayList<>(messageTokens));
@@ -263,41 +262,6 @@ public class Ir
                 final int componentTokenCount = (i - beginIndex) + 1;
                 tokens.get(beginIndex).componentTokenCount(componentTokenCount);
                 token.componentTokenCount(componentTokenCount);
-            }
-        }
-    }
-
-    private static void compressConstantEnums(final List<Token> tokens)
-    {
-        final Iterator<Token> iter = tokens.iterator();
-        while (iter.hasNext())
-        {
-            final Token token = iter.next();
-            if (Signal.BEGIN_FIELD == token.signal() && token.isConstantEncoding())
-            {
-                Token nextToken = iter.next();
-                if (Signal.BEGIN_ENUM == nextToken.signal())
-                {
-                    final String valueRef = token.encoding().constValue().toString();
-                    nextToken.encodedLength(0);
-
-                    while (true)
-                    {
-                        nextToken = iter.next();
-                        nextToken.encodedLength(0);
-                        nextToken.encoding().presence(Encoding.Presence.CONSTANT);
-
-                        if (Signal.END_ENUM == nextToken.signal())
-                        {
-                            break;
-                        }
-
-                        if (!valueRef.endsWith(nextToken.name()))
-                        {
-                            iter.remove();
-                        }
-                    }
-                }
             }
         }
     }

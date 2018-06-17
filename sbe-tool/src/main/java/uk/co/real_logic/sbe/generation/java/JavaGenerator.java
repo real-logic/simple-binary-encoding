@@ -2524,7 +2524,7 @@ public class JavaGenerator implements CodeGenerator
         final String enumName = formatClassName(typeToken.applicableTypeName());
         final Encoding encoding = typeToken.encoding();
 
-        if (typeToken.isConstantEncoding())
+        if (fieldToken.isConstantEncoding())
         {
             return String.format(
                 "\n" +

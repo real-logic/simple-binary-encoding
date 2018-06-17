@@ -118,7 +118,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(1).signal(), is(Signal.BEGIN_FIELD));
         assertThat(tokens.get(1).name(), is("Tag40001"));
         assertThat(valueOf(tokens.get(1).id()), is(valueOf(40001)));
-        assertThat(valueOf(tokens.get(1).encodedLength()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(1).encodedLength()), is(valueOf(4)));
         assertThat(valueOf(tokens.get(1).offset()), is(valueOf(0)));
 
         /* assert all elements of node 2 */
@@ -134,7 +134,7 @@ public class BasicXmlIrGenerationTest
         assertThat(tokens.get(3).signal(), is(Signal.END_FIELD));
         assertThat(tokens.get(3).name(), is("Tag40001"));
         assertThat(valueOf(tokens.get(3).id()), is(valueOf(40001)));
-        assertThat(valueOf(tokens.get(3).encodedLength()), is(valueOf(0)));
+        assertThat(valueOf(tokens.get(3).encodedLength()), is(valueOf(4)));
         assertThat(valueOf(tokens.get(3).offset()), is(valueOf(0)));
 
         /* assert all elements of node 4 */

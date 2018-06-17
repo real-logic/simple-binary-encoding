@@ -30,7 +30,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class EncodedIrTest
 {
-    private static final int CAPACITY = 8192;
+    private static final int CAPACITY = 1024 * 16;
 
     @Test
     public void shouldEncodeIr()
@@ -155,7 +155,7 @@ public class EncodedIrTest
     }
 
     @Test
-    public void shouldDecodeCorrectMessages()
+    public void shouldDecodeCorrectMessagesAndTypes()
         throws Exception
     {
         final MessageSchema schema = parse(TestUtil.getLocalResource(
@@ -177,6 +177,20 @@ public class EncodedIrTest
             final List<Token> tokens = ir.getMessage(decodedTokenList.get(0).id());
 
             assertThat(decodedTokenList.size(), is(tokens.size()));
+            for (int i = 0, size = decodedTokenList.size(); i < size; i++)
+            {
+                assertEqual(decodedTokenList.get(i), tokens.get(i));
+            }
+        }
+
+        assertThat(decodedIr.types().size(), is(ir.types().size()));
+        for (final List<Token> decodedTokenList : decodedIr.types())
+        {
+            final Token t = decodedTokenList.get(0);
+            final String name = t.referencedName() != null ? t.referencedName() : t.name();
+            final List<Token> tokens = ir.getType(name);
+
+            assertThat(name + " token count", decodedTokenList.size(), is(tokens.size()));
             for (int i = 0, size = decodedTokenList.size(); i < size; i++)
             {
                 assertEqual(decodedTokenList.get(i), tokens.get(i));
