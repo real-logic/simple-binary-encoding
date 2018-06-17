@@ -61,6 +61,7 @@ public class JsonPrinterTest extends EncodedCarTestBase
             "    \"code\": \"A\",\n" +
             "    \"someNumbers\": [0, 1, 2, 3, 4],\n" +
             "    \"vehicleCode\": \"abcdef\",\n" +
+            "    \"extras\": { \"sunRoof\": false, \"sportsPack\": true, \"cruiseControl\": true },\n" +
             "    \"capacity\": 2000,\n" +
             "    \"numCylinders\": 4,\n" +
             "    \"maxRpm\": 9000,\n" +

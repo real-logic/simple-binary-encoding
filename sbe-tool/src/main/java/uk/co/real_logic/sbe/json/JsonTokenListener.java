@@ -106,6 +106,29 @@ public class JsonTokenListener implements TokenListener
         final int toIndex,
         final int actingVersion)
     {
+        final Token typeToken = tokens.get(fromIndex + 1);
+        final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, actingVersion);
+
+        property(fieldToken);
+
+        output.append("{ ");
+        for (int i = fromIndex + 1; i < toIndex; i++)
+        {
+            output.append('"').append(tokens.get(i).name()).append("\": ");
+
+            final long bitPosition = tokens.get(i).encoding().constValue().longValue();
+            final boolean flag = (encodedValue & (1L << bitPosition)) != 0;
+
+            output.append(Boolean.toString(flag));
+
+            if (i < (toIndex - 1))
+            {
+                output.append(", ");
+            }
+        }
+        output.append(" }");
+
+        next();
     }
 
     public void onBeginComposite(
