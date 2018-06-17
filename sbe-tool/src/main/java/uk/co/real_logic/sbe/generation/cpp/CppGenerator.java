@@ -1712,7 +1712,7 @@ public class CppGenerator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
 
-        if (token.isConstantEncoding())
+        if (signalToken.isConstantEncoding())
         {
             final String constValue = signalToken.encoding().constValue().toString();
 

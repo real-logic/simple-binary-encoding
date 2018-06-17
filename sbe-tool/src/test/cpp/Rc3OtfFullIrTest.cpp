@@ -640,28 +640,9 @@ public:
             {
                 EXPECT_EQ(fieldToken.fieldId(), fieldIdDiscountedModel);
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
-                EXPECT_EQ(encoding.presence(), Presence::SBE_CONSTANT);
-                EXPECT_TRUE(typeToken.isConstantEncoding());
-                EXPECT_EQ(typeToken.encodedLength(), 0);
-
-                const PrimitiveValue value = encoding.constValue();
-
-                EXPECT_EQ(value.getAsInt(), static_cast<std::int64_t>('C'));
-                bool found = false;
-                for (size_t i = fromIndex + 1; i < toIndex; i++)
-                {
-                    const Token& token = tokens.at(i);
-                    const std::int64_t constValue = token.encoding().constValue().getAsInt();
-
-                    std::cout << "    " << token.name() << " = " << constValue << "\n";
-
-                    if (constValue == value.getAsInt())
-                    {
-                        EXPECT_EQ(token.name(), std::string("C"));
-                        found = true;
-                    }
-                }
-                EXPECT_TRUE(found);
+                EXPECT_TRUE(fieldToken.isConstantEncoding());
+                EXPECT_EQ(fieldToken.encodedLength(), 0);
+                EXPECT_EQ(std::string(fieldToken.encoding().constValue().getArray()), std::string("Model.C"));
                 break;
             }
 
