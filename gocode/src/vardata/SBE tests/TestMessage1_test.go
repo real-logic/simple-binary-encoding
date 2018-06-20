@@ -13,13 +13,13 @@ func TestEncodeDecodeTestMessage1(t *testing.T) {
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(m, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage1 = *new(TestMessage1)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 

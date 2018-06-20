@@ -47,17 +47,17 @@ func TestEncodeDecode(t *testing.T) {
 	t.Log("Cap() = ", sbuf.Cap(), "Len() = ", sbuf.Len())
 
 	if in != out {
-		t.Logf("in != out\n%s\n%s", in, out)
+		t.Logf("in != out\n%v\n%v", in, out)
 		t.Fail()
 	}
 
 	// SinceVersion and Deprecated checkeds
 	if in.U64SinceVersion() != 1 {
-		t.Logf("in.U64Deprecated() should be 1 and is", in.U64SinceVersion())
+		t.Log("in.U64Deprecated() should be 1 and is", in.U64SinceVersion())
 		t.Fail()
 	}
 	if in.U64Deprecated() != 2 {
-		t.Logf("in.U64Deprecated() should be 2 and is", in.U64Deprecated())
+		t.Log("in.U64Deprecated() should be 2 and is", in.U64Deprecated())
 		t.Fail()
 	}
 }

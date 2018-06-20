@@ -49,15 +49,15 @@ func TestEncodeDecode(t *testing.T) {
 
 	// Sanity checks
 	if buf.Len() != 0 {
-		t.Logf("buffer not drained")
+		t.Log("buffer not drained")
 		t.Fail()
 	}
 	if in != out {
-		t.Logf("in != out\n%s\n%s", in, out)
+		t.Logf("in != out\n%v\n%v", in, out)
 		t.Fail()
 	}
 	if hdr.S != s {
-		t.Logf("hdr.S != s (%s != %s)", hdr.S, s)
+		t.Logf("hdr.S != s (%v != %v)", hdr.S, s)
 		t.Fail()
 	}
 }

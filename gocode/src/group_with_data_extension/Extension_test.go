@@ -57,13 +57,13 @@ func TestEncodeDecodeNewtoNew(t *testing.T) {
 	in := makeTestMessage3Extension()
 
 	if err := in.Encode(m, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage3 = *new(TestMessage3)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
@@ -79,7 +79,7 @@ func TestEncodeDecodeNewtoNew(t *testing.T) {
 			t.Fail()
 		}
 		if !bytes.Equal(in.Entries[i].VarDataField, out.Entries[i].VarDataField) {
-			t.Logf("in.Entries[%d].VarDataField != out.Entries[%d].VarDataField", i, i, in.Entries[i].VarDataField, out.Entries[i].VarDataField)
+			t.Logf("in.Entries[%d].VarDataField (%v) != out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField, out.Entries[i].VarDataField)
 			fmt.Printf("%+v\n%+v\n", in, out)
 			t.Fail()
 		}
@@ -114,13 +114,13 @@ func TestEncodeDecodeNewToOld(t *testing.T) {
 	in := makeTestMessage3Extension()
 
 	if err := in.Encode(min, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out group_with_data.TestMessage3 = *new(group_with_data.TestMessage3)
 	if err := out.Decode(mout, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
@@ -136,7 +136,7 @@ func TestEncodeDecodeNewToOld(t *testing.T) {
 			t.Fail()
 		}
 		if !bytes.Equal(in.Entries[i].VarDataField, out.Entries[i].VarDataField) {
-			t.Logf("in.Entries[%d].VarDataField != out.Entries[%d].VarDataField", i, i, in.Entries[i].VarDataField, out.Entries[i].VarDataField)
+			t.Logf("in.Entries[%d].VarDataField (%v) != out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField, out.Entries[i].VarDataField)
 			// fmt.Printf("%+v\n%+v\n", in, out)
 			t.Fail()
 		}
@@ -167,13 +167,13 @@ func TestEncodeDecodeOldToNew(t *testing.T) {
 	in := makeTestMessage3Original()
 
 	if err := in.Encode(min, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage3 = *new(TestMessage3)
 	if err := out.Decode(mout, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
@@ -189,7 +189,7 @@ func TestEncodeDecodeOldToNew(t *testing.T) {
 			t.Fail()
 		}
 		if !bytes.Equal(in.Entries[i].VarDataField, out.Entries[i].VarDataField) {
-			t.Logf("in.Entries[%d].VarDataField != out.Entries[%d].VarDataField", i, i, in.Entries[i].VarDataField, out.Entries[i].VarDataField)
+			t.Logf("in.Entries[%d].VarDataField (%v) != out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField, out.Entries[i].VarDataField)
 			// fmt.Printf("%+v\n%+v\n", in, out)
 			t.Fail()
 		}
@@ -201,7 +201,7 @@ func TestEncodeDecodeOldToNew(t *testing.T) {
 		}
 
 		if math.MinInt64 != out.Entries[0].NestedEntries[0].InnerExtension {
-			t.Logf("0 != out.Entries[0].NestedEntries[0].InnerExtension", out.Entries[0].NestedEntries[0].InnerExtension)
+			t.Logf("0 != out.Entries[0].NestedEntries[0].InnerExtension (%v)", out.Entries[0].NestedEntries[0].InnerExtension)
 			// fmt.Printf("%+v\n%+v\n\n", in, out)
 			t.Fail()
 		}

@@ -32,7 +32,7 @@ func BenchmarkEncodeFuelFigures(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if err := car.FuelFigures[0].Encode(m, buf); err != nil {
-			b.Logf("Encoding Error", err)
+			b.Log("Encoding Error", err)
 			b.Fail()
 		}
 		buf.Reset()
@@ -78,7 +78,7 @@ func BenchmarkEncodeStrict(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if err := car.Encode(m, buf, true); err != nil {
-			b.Logf("Encoding Error", err)
+			b.Log("Encoding Error", err)
 			b.Fail()
 		}
 		buf.Reset()
@@ -94,7 +94,7 @@ func BenchmarkEncodeLax(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		if err := car.Encode(m, buf, false); err != nil {
-			b.Logf("Encoding Error", err)
+			b.Log("Encoding Error", err)
 			b.Fail()
 		}
 		buf.Reset()
@@ -119,7 +119,7 @@ func BenchmarkDecodeStrict(b *testing.B) {
 	var buf = new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
 		if err := car.Encode(m, buf, true); err != nil {
-			b.Logf("Encoding Error", err)
+			b.Log("Encoding Error", err)
 			b.Fail()
 		}
 	}
@@ -127,7 +127,7 @@ func BenchmarkDecodeStrict(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if err := car.Decode(m, buf, car.SbeSchemaVersion(), car.SbeBlockLength(), true); err != nil {
-			b.Logf("Decoding Error", err)
+			b.Log("Decoding Error", err)
 			b.Fail()
 		}
 	}
@@ -139,7 +139,7 @@ func BenchmarkDecodeLax(b *testing.B) {
 	var buf = new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
 		if err := car.Encode(m, buf, false); err != nil {
-			b.Logf("Encoding Error", err)
+			b.Log("Encoding Error", err)
 			b.Fail()
 		}
 	}
@@ -147,7 +147,7 @@ func BenchmarkDecodeLax(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if err := car.Decode(m, buf, car.SbeSchemaVersion(), car.SbeBlockLength(), false); err != nil {
-			b.Logf("Decoding Error", err)
+			b.Log("Decoding Error", err)
 			b.Fail()
 		}
 	}
@@ -158,7 +158,7 @@ func xBenchmarkDecodeLaxBufio(b *testing.B) {
 	var buf = new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
 		if err := car.Encode(m, buf, false); err != nil {
-			b.Logf("Encoding Error", err)
+			b.Log("Encoding Error", err)
 			b.Fail()
 		}
 	}
@@ -167,7 +167,7 @@ func xBenchmarkDecodeLaxBufio(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if err := car.Decode(m, buf2, car.SbeSchemaVersion(), car.SbeBlockLength(), false); err != nil {
-			b.Logf("Decoding Error", err)
+			b.Log("Decoding Error", err)
 			b.Fail()
 		}
 	}
@@ -198,7 +198,7 @@ func BenchmarkPipe(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		hdr.Decode(m, r)
 		if err := c.Decode(m, r, hdr.Version, hdr.BlockLength, false); err != nil {
-			b.Logf("Failed to decode car", err)
+			b.Log("Failed to decode car", err)
 			b.Fail()
 		}
 	}
@@ -233,7 +233,7 @@ func BenchmarkPipeBufio(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		hdr.Decode(m, r)
 		if err := c.Decode(m, buf, hdr.Version, hdr.BlockLength, false); err != nil {
-			b.Logf("Failed to decode car", err)
+			b.Log("Failed to decode car", err)
 			b.Fail()
 		}
 	}
