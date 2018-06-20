@@ -57,7 +57,6 @@ var car = baseline.Car{
 	model,
 	activationCode}
 
-
 func mainReader(doDecode bool, iterations int) {
 	raw, err := net.Dial("tcp", addr)
 	conn := bufio.NewReader(raw)
@@ -86,7 +85,7 @@ func mainReader(doDecode bool, iterations int) {
 			// fmt.Println(h)
 			if err := car.Decode(m, conn, h.Version, h.BlockLength, false); err != nil {
 				fmt.Println("Read failed:", err.Error(), i)
-				break;
+				break
 			}
 			// fmt.Println(car)
 		}
@@ -134,7 +133,7 @@ func mainWriter(doEncode bool, iterations int) {
 					fmt.Println("Encode failed", err.Error())
 				}
 			}
-			
+
 		}
 		conn.Flush()
 		raw.Close()
@@ -143,7 +142,7 @@ func mainWriter(doEncode bool, iterations int) {
 }
 
 func main() {
-	var reader, writer, encode, decode  bool
+	var reader, writer, encode, decode bool
 	var iterations int
 	flag.BoolVar(&reader, "reader", false, "Become a reader")
 	flag.BoolVar(&writer, "writer", false, "Become a writer")
@@ -159,7 +158,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if (reader) {
+	if reader {
 		mainReader(decode, iterations)
 	} else {
 		mainWriter(encode, iterations)

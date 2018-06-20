@@ -16,18 +16,18 @@ func TestEncodeDecodeMsg(t *testing.T) {
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(m, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out Msg = *new(Msg)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
 	if in != out {
-		t.Logf("in != out\n", in, out)
+		t.Log("in != out\n", in, out)
 		t.Fail()
 	}
 
@@ -46,7 +46,7 @@ func TestEncodeDecodeMsg2(t *testing.T) {
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(m, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 	if int(in.SbeBlockLength()) != buf.Len() {
@@ -56,12 +56,12 @@ func TestEncodeDecodeMsg2(t *testing.T) {
 
 	var out Msg2 = *new(Msg2)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
 	if in != out {
-		t.Logf("in != out\n", in, out)
+		t.Log("in != out\n", in, out)
 		t.Fail()
 	}
 
@@ -78,18 +78,18 @@ func TestEncodeDecodeMsg3(t *testing.T) {
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(m, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out Msg3 = *new(Msg3)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
 	if in != out {
-		t.Logf("in != out\n", in, out)
+		t.Log("in != out\n", in, out)
 		t.Fail()
 	}
 

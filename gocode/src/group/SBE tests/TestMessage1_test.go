@@ -19,13 +19,13 @@ func TestEncodeDecodeTestMessage1(t *testing.T) {
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(m, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage1 = *new(TestMessage1)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
@@ -34,7 +34,7 @@ func TestEncodeDecodeTestMessage1(t *testing.T) {
 	t.Logf("len=%d, cap=%d, out=%v\n", len(out.Entries), cap(out.Entries), out.Entries)
 
 	if in.Tag1 != out.Tag1 {
-		t.Logf("in != out:\n", in, out)
+		t.Log("in != out:\n", in, out)
 		t.Fail()
 	}
 	if len(in.Entries) != len(out.Entries) {

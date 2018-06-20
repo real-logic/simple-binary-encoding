@@ -449,7 +449,7 @@ public class GolangGenerator implements CodeGenerator
                 "\t\tfor idx := 0; idx < %2$s; idx++ {\n" +
                 "\t\t\tif %1$s[idx] < %1$sMinValue() || %1$s[idx] > %1$sMaxValue() {\n" +
                 "\t\t\t\treturn fmt.Errorf(\"Range check failed on %1$s[%%d] " +
-                "(%%d < %%d > %%d)\", idx, %1$sMinValue(), %1$s[idx], %1$sMaxValue())\n" +
+                "(%%v < %%v > %%v)\", idx, %1$sMinValue(), %1$s[idx], %1$sMaxValue())\n" +
                 "\t\t\t}\n" +
                 "\t\t}\n" +
                 "\t}\n",
@@ -475,7 +475,7 @@ public class GolangGenerator implements CodeGenerator
                 "\tif %1$sInActingVersion(actingVersion) {\n" +
                 check +
                 "\t\t\treturn fmt.Errorf(\"Range check failed on %1$s " +
-                "(%%d < %%d > %%d)\", %1$sMinValue(), %1$s, %1$sMaxValue())\n" +
+                "(%%v < %%v > %%v)\", %1$sMinValue(), %1$s, %1$sMaxValue())\n" +
                 "\t\t}\n" +
                 "\t}\n",
                 varName));

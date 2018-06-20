@@ -51,7 +51,7 @@ func TestEncodeDecode(t *testing.T) {
 	t.Log("Cap() = ", cbuf.Cap(), "Len() = \n", cbuf.Len())
 
 	if in != out {
-		t.Logf("in != out\n%s\n%s", in, out)
+		t.Logf("in != out\n%v\n%v", in, out)
 		t.Fail()
 	}
 }

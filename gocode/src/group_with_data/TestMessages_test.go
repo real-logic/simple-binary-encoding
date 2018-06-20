@@ -19,13 +19,13 @@ func TestEncodeDecodeTestMessage1(t *testing.T) {
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(m, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage1 = *new(TestMessage1)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
@@ -33,19 +33,19 @@ func TestEncodeDecodeTestMessage1(t *testing.T) {
 	// fmt.Printf("%+v\n", out)
 
 	if in.Tag1 != out.Tag1 {
-		t.Logf("in.Tag1 != out.Tag1")
+		t.Log("in.Tag1 != out.Tag1")
 		t.Fail()
 	}
 	if in.Entries[0].TagGroup1 != out.Entries[0].TagGroup1 {
-		t.Logf("in.Entries[0].TagGroup1 != out.Entries[0].TagGroup1")
+		t.Log("in.Entries[0].TagGroup1 != out.Entries[0].TagGroup1")
 		t.Fail()
 	}
 	if in.Entries[0].TagGroup2 != out.Entries[0].TagGroup2 {
-		t.Logf("in.Entries[0].TagGroup2 != out.Entries[0].TagGroup2")
+		t.Log("in.Entries[0].TagGroup2 != out.Entries[0].TagGroup2")
 		t.Fail()
 	}
 	if !bytes.Equal(in.Entries[0].VarDataField, out.Entries[0].VarDataField) {
-		t.Logf("in.Entries[0].VarDataField != out.Entries[0].VarDataField", in.Entries[0].VarDataField, out.Entries[0].VarDataField)
+		t.Log("in.Entries[0].VarDataField != out.Entries[0].VarDataField", in.Entries[0].VarDataField, out.Entries[0].VarDataField)
 		t.Fail()
 	}
 	return
@@ -67,13 +67,13 @@ func TestEncodeDecodeTestMessage2(t *testing.T) {
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(m, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage2 = *new(TestMessage2)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
@@ -81,25 +81,25 @@ func TestEncodeDecodeTestMessage2(t *testing.T) {
 	// fmt.Printf("%+v\n", out)
 
 	if in.Tag1 != out.Tag1 {
-		t.Logf("in.Tag1 != out.Tag1")
+		t.Log("in.Tag1 != out.Tag1")
 		t.Fail()
 	}
 
 	for i := 0; i < len(in.Entries); i++ {
 		if in.Entries[0].TagGroup1 != out.Entries[0].TagGroup1 {
-			t.Logf("in.Entries[0].TagGroup1 != out.Entries[0].TagGroup1")
+			t.Log("in.Entries[0].TagGroup1 != out.Entries[0].TagGroup1")
 			t.Fail()
 		}
 		if in.Entries[0].TagGroup2 != out.Entries[0].TagGroup2 {
-			t.Logf("in.Entries[0].TagGroup2 != out.Entries[0].TagGroup2")
+			t.Log("in.Entries[0].TagGroup2 != out.Entries[0].TagGroup2")
 			t.Fail()
 		}
 		if !bytes.Equal(in.Entries[i].VarDataField1, out.Entries[i].VarDataField1) {
-			t.Logf("in.Entries[%d].VarDataField != out.Entries[%d].VarDataField", i, i, in.Entries[i].VarDataField1, out.Entries[i].VarDataField1)
+			t.Logf("in.Entries[%d].VarDataField (%v)!= out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField1, out.Entries[i].VarDataField1)
 			t.Fail()
 		}
 		if !bytes.Equal(in.Entries[i].VarDataField2, out.Entries[i].VarDataField2) {
-			t.Logf("in.Entries[%d].VarDataField != out.Entries[%d].VarDataField", i, i, in.Entries[i].VarDataField2, out.Entries[i].VarDataField2)
+			t.Logf("in.Entries[%d].VarDataField (%v) != out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField2, out.Entries[i].VarDataField2)
 			t.Fail()
 		}
 	}
@@ -125,13 +125,13 @@ func TestEncodeDecodeTestMessage3(t *testing.T) {
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(m, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage3 = *new(TestMessage3)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
@@ -139,27 +139,27 @@ func TestEncodeDecodeTestMessage3(t *testing.T) {
 	// fmt.Printf("%+v\n", out)
 
 	if in.Tag1 != out.Tag1 {
-		t.Logf("in.Tag1 != out.Tag1")
+		t.Log("in.Tag1 != out.Tag1")
 		t.Fail()
 	}
 
 	for i := 0; i < len(in.Entries); i++ {
 		if in.Entries[0].TagGroup1 != out.Entries[0].TagGroup1 {
-			t.Logf("in.Entries[0].TagGroup1 != out.Entries[0].TagGroup1")
+			t.Log("in.Entries[0].TagGroup1 != out.Entries[0].TagGroup1")
 			t.Fail()
 		}
 		if !bytes.Equal(in.Entries[i].VarDataField, out.Entries[i].VarDataField) {
-			t.Logf("in.Entries[%d].VarDataField != out.Entries[%d].VarDataField", i, i, in.Entries[i].VarDataField, out.Entries[i].VarDataField)
+			t.Logf("in.Entries[%d].VarDataField (%v) != out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField, out.Entries[i].VarDataField)
 			t.Fail()
 		}
 
 		if in.Entries[0].NestedEntries[0].TagGroup2 != out.Entries[0].NestedEntries[0].TagGroup2 {
-			t.Logf("if in.Entries[0].NestedEntries[0].TagGroup2 != out.Entries[0].NestedEntries[0].TagGroup2")
+			t.Log("if in.Entries[0].NestedEntries[0].TagGroup2 != out.Entries[0].NestedEntries[0].TagGroup2")
 			t.Fail()
 		}
 
 		if !bytes.Equal(in.Entries[0].NestedEntries[0].VarDataFieldNested, out.Entries[0].NestedEntries[0].VarDataFieldNested) {
-			t.Logf("in.Entries[0].NestedEntries[0].VarDataFieldNested != out.Entries[0].NestedEntries[0].VarDataFieldNested")
+			t.Log("in.Entries[0].NestedEntries[0].VarDataFieldNested != out.Entries[0].NestedEntries[0].VarDataFieldNested")
 			t.Fail()
 		}
 
@@ -182,13 +182,13 @@ func TestEncodeDecodeTestMessage4(t *testing.T) {
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(m, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out TestMessage4 = *new(TestMessage4)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
@@ -202,11 +202,11 @@ func TestEncodeDecodeTestMessage4(t *testing.T) {
 
 	for i := 0; i < len(in.Entries); i++ {
 		if !bytes.Equal(in.Entries[i].VarDataField1, out.Entries[i].VarDataField1) {
-			t.Logf("in.Entries[%d].VarDataField != out.Entries[%d].VarDataField", i, i, in.Entries[i].VarDataField1, out.Entries[i].VarDataField1)
+			t.Logf("in.Entries[%d].VarDataField (%v)!= out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField1, out.Entries[i].VarDataField1)
 			t.Fail()
 		}
 		if !bytes.Equal(in.Entries[i].VarDataField2, out.Entries[i].VarDataField2) {
-			t.Logf("in.Entries[%d].VarDataField != out.Entries[%d].VarDataField", i, i, in.Entries[i].VarDataField2, out.Entries[i].VarDataField2)
+			t.Logf("in.Entries[%d].VarDataField (%v) != out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField2, out.Entries[i].VarDataField2)
 			t.Fail()
 		}
 	}

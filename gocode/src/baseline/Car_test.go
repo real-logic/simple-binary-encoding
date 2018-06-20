@@ -49,61 +49,61 @@ func TestEncodeDecodeCar(t *testing.T) {
 
 	var buf = new(bytes.Buffer)
 	if err := in.Encode(m, buf, true); err != nil {
-		t.Logf("Encoding Error", err)
+		t.Log("Encoding Error", err)
 		t.Fail()
 	}
 
 	var out Car = *new(Car)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
-		t.Logf("Decoding Error", err)
+		t.Log("Decoding Error", err)
 		t.Fail()
 	}
 
 	if in.SerialNumber != out.SerialNumber {
-		t.Logf("in.SerialNumber != out.SerialNumber:\n", in.SerialNumber, out.SerialNumber)
+		t.Log("in.SerialNumber != out.SerialNumber:\n", in.SerialNumber, out.SerialNumber)
 		t.Fail()
 	}
 	if in.ModelYear != out.ModelYear {
-		t.Logf("in.ModelYear != out.ModelYear:\n", in.ModelYear, out.ModelYear)
+		t.Log("in.ModelYear != out.ModelYear:\n", in.ModelYear, out.ModelYear)
 		t.Fail()
 	}
 	if in.Available != out.Available {
-		t.Logf("in.Available != out.Available:\n", in.Available, out.Available)
+		t.Log("in.Available != out.Available:\n", in.Available, out.Available)
 		t.Fail()
 	}
 	if in.Code != out.Code {
-		t.Logf("in.Code != out.Code:\n", in.Code, out.Code)
+		t.Log("in.Code != out.Code:\n", in.Code, out.Code)
 		t.Fail()
 	}
 	if in.SomeNumbers != out.SomeNumbers {
-		t.Logf("in.SomeNumbers != out.SomeNumbers:\n", in.SomeNumbers, out.SomeNumbers)
+		t.Log("in.SomeNumbers != out.SomeNumbers:\n", in.SomeNumbers, out.SomeNumbers)
 		t.Fail()
 	}
 	if in.VehicleCode != out.VehicleCode {
-		t.Logf("in.VehicleCode != out.VehicleCode:\n", in.VehicleCode, out.VehicleCode)
+		t.Log("in.VehicleCode != out.VehicleCode:\n", in.VehicleCode, out.VehicleCode)
 		t.Fail()
 	}
 	if in.Extras != out.Extras {
-		t.Logf("in.Extras != out.Extras:\n", in.Extras, out.Extras)
+		t.Log("in.Extras != out.Extras:\n", in.Extras, out.Extras)
 		t.Fail()
 	}
 
 	// DiscountedModel is constant
 	if Model.C != out.DiscountedModel {
-		t.Logf("in.DiscountedModel != out.DiscountedModel:\n", in.DiscountedModel, out.DiscountedModel)
+		t.Log("in.DiscountedModel != out.DiscountedModel:\n", in.DiscountedModel, out.DiscountedModel)
 		t.Fail()
 	}
 
 	// Engine has two constant values which should come back filled in
 	if in.Engine == out.Engine {
-		t.Logf("in.Engine == out.Engine (and they should be different):\n", in.Engine, out.Engine)
+		t.Log("in.Engine == out.Engine (and they should be different):\n", in.Engine, out.Engine)
 		t.Fail()
 	}
 
 	copy(in.Engine.Fuel[:], "Petrol")
 	in.Engine.MaxRpm = 9000
 	if in.Engine != out.Engine {
-		t.Logf("in.Engine != out.Engine:\n", in.Engine, out.Engine)
+		t.Log("in.Engine != out.Engine:\n", in.Engine, out.Engine)
 		t.Fail()
 	}
 
@@ -122,7 +122,7 @@ func TestDecodeJavaBuffer(t *testing.T) {
 
 	var hdr SbeGoMessageHeader
 	if err := hdr.Decode(m, buf); err != nil {
-		t.Logf("Failed to decode message header", err)
+		t.Log("Failed to decode message header", err)
 		t.Fail()
 	}
 
@@ -133,7 +133,7 @@ func TestDecodeJavaBuffer(t *testing.T) {
 	// fmt.Println("bytes: ", buf.Len())
 	var c Car
 	if err := c.Decode(m, buf, hdr.Version, hdr.BlockLength, true); err != nil {
-		t.Logf("Failed to decode car", err)
+		t.Log("Failed to decode car", err)
 		t.Fail()
 	}
 	// fmt.Println(c)
