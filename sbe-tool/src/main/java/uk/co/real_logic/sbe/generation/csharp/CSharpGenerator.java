@@ -197,23 +197,32 @@ public class CSharpGenerator implements CodeGenerator
 
         final int blockLength = tokens.get(index).encodedLength();
         final String typeForBlockLength = cSharpTypeName(tokens.get(index + 2).encoding().primitiveType());
-        final String typeForNumInGroup = cSharpTypeName(tokens.get(index + 3).encoding().primitiveType());
+        final Token numInGroupToken = tokens.get(index + 3);
+        final String typeForNumInGroup = cSharpTypeName(numInGroupToken.encoding().primitiveType());
 
         sb.append(String.format("\n" +
             indent + INDENT + "public void WrapForEncode(%1$s parentMessage, DirectBuffer buffer, int count)\n" +
             indent + INDENT + "{\n" +
+            indent + INDENT + INDENT + "if (count < %2$d || count > %3$d)\n" +
+            indent + INDENT + INDENT + "{\n" +
+            indent + INDENT + INDENT + INDENT + "throw new ArgumentOutOfRangeException(\"count\",\n" +
+            indent + INDENT + INDENT + INDENT + INDENT + "\"Outside allowed range: count=\" + count +\n" +
+            indent + INDENT + INDENT + INDENT + INDENT + "\", min=%2$d, max=%3$d\");\n" +
+            indent + INDENT + INDENT + "}\n\n" +
             indent + INDENT + INDENT + "_parentMessage = parentMessage;\n" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);\n" +
-            indent + INDENT + INDENT + "_dimensions.BlockLength = (%2$s)%3$d;\n" +
-            indent + INDENT + INDENT + "_dimensions.NumInGroup = (%4$s)count;\n" +
+            indent + INDENT + INDENT + "_dimensions.BlockLength = (%4$s)%5$d;\n" +
+            indent + INDENT + INDENT + "_dimensions.NumInGroup = (%6$s)count;\n" +
             indent + INDENT + INDENT + "_index = -1;\n" +
             indent + INDENT + INDENT + "_count = count;\n" +
-            indent + INDENT + INDENT + "_blockLength = %3$d;\n" +
+            indent + INDENT + INDENT + "_blockLength = %5$d;\n" +
             indent + INDENT + INDENT + "_actingVersion = SchemaVersion;\n" +
             indent + INDENT + INDENT + "parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + INDENT + "}\n",
             parentMessageClassName,
+            numInGroupToken.encoding().applicableMinValue().longValue(),
+            numInGroupToken.encoding().applicableMaxValue().longValue(),
             typeForBlockLength,
             blockLength,
             typeForNumInGroup));
