@@ -437,7 +437,7 @@ public class CSharpGenerator implements CodeGenerator
             final Token token = tokens.get(i);
             final String propertyName = formatPropertyName(token.name());
 
-            // FIXME: do I need to pass classname down here for diambiguation
+            // FIXME: do I need to pass classname down here for disambiguation
             switch (token.signal())
             {
                 case ENCODING:
@@ -616,12 +616,10 @@ public class CSharpGenerator implements CodeGenerator
         final Token token,
         final String indent)
     {
-        final StringBuilder sb = new StringBuilder();
-
         final PrimitiveType primitiveType = token.encoding().primitiveType();
         final String typeName = cSharpTypeName(primitiveType);
 
-        sb.append(String.format(
+        return String.format(
             "\n" +
             indent + "public const %1$s %2$sNullValue = %3$s;\n" +
             indent + "public const %1$s %2$sMinValue = %4$s;\n" +
@@ -630,9 +628,7 @@ public class CSharpGenerator implements CodeGenerator
             toUpperFirstChar(propertyName),
             generateLiteral(primitiveType, token.encoding().applicableNullValue().toString()),
             generateLiteral(primitiveType, token.encoding().applicableMinValue().toString()),
-            generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())));
-
-        return sb;
+            generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString()));
     }
 
     private CharSequence generateSingleValueProperty(
@@ -646,9 +642,7 @@ public class CSharpGenerator implements CodeGenerator
         final ByteOrder byteOrder = token.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, token.encoding().primitiveType().size());
 
-        final StringBuilder sb = new StringBuilder();
-
-        sb.append(String.format("\n" +
+        return String.format("\n" +
             indent + "public %1$s %2$s\n" +
             indent + "{\n" +
             indent + INDENT + "get\n" +
@@ -666,9 +660,7 @@ public class CSharpGenerator implements CodeGenerator
             generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
             typePrefix,
             offset,
-            byteOrderStr));
-
-        return sb;
+            byteOrderStr);
     }
 
     private CharSequence generateFieldNotPresentCondition(
@@ -1105,9 +1097,7 @@ public class CSharpGenerator implements CodeGenerator
         final ByteOrder byteOrder = token.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, token.encoding().primitiveType().size());
 
-        final StringBuilder sb = new StringBuilder();
-
-        sb.append(String.format("\n" +
+        return  String.format("\n" +
             indent + INDENT + "public %1$s %2$s\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "get\n" +
@@ -1127,15 +1117,11 @@ public class CSharpGenerator implements CodeGenerator
             typePrefix,
             offset,
             byteOrderStr,
-            enumUnderlyingType));
-
-        return sb;
+            enumUnderlyingType);
     }
 
-    private Object generateBitSetProperty(final String propertyName, final Token token, final String indent)
+    private String generateBitSetProperty(final String propertyName, final Token token, final String indent)
     {
-        final StringBuilder sb = new StringBuilder();
-
         final String bitSetName = formatClassName(token.applicableTypeName());
         final int offset = token.offset();
         final String typePrefix = toUpperFirstChar(token.encoding().primitiveType().primitiveName());
@@ -1143,7 +1129,7 @@ public class CSharpGenerator implements CodeGenerator
         final String byteOrderStr = generateByteOrder(byteOrder, token.encoding().primitiveType().size());
         final String typeName = cSharpTypeName(token.encoding().primitiveType());
 
-        sb.append(String.format("\n" +
+        return String.format("\n" +
             indent + INDENT + "public %1$s %2$s\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "get\n" +
@@ -1163,9 +1149,7 @@ public class CSharpGenerator implements CodeGenerator
             typePrefix,
             offset,
             byteOrderStr,
-            typeName));
-
-        return sb;
+            typeName);
     }
 
     private Object generateCompositeProperty(final String propertyName, final Token token, final String indent)
