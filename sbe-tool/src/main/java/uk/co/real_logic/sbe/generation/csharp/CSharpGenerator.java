@@ -181,6 +181,16 @@ public class CSharpGenerator implements CodeGenerator
             dimensionsClassName,
             parentMessageClassName));
 
+        final Token numInGroupToken = tokens.get(index + 3);
+        final boolean isIntCastSafe = isRepresentableByInt32(numInGroupToken.encoding());
+
+        if (!isIntCastSafe)
+        {
+            throw new IllegalArgumentException(String.format(
+                    "%s.numInGroup - cannot be represented safely by an int. Please constrain the maxValue.",
+                    groupName));
+        }
+
         sb.append(String.format("\n" +
             indent + INDENT + "public void WrapForDecode(%s parentMessage, DirectBuffer buffer, int actingVersion)\n" +
             indent + INDENT + "{\n" +
@@ -188,7 +198,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);\n" +
             indent + INDENT + INDENT + "_blockLength = _dimensions.BlockLength;\n" +
-            indent + INDENT + INDENT + "_count = _dimensions.NumInGroup;\n" +
+            indent + INDENT + INDENT + "_count = (int) _dimensions.NumInGroup;\n" + // cast safety checked above
             indent + INDENT + INDENT + "_actingVersion = actingVersion;\n" +
             indent + INDENT + INDENT + "_index = -1;\n" +
             indent + INDENT + INDENT + "_parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
@@ -197,7 +207,6 @@ public class CSharpGenerator implements CodeGenerator
 
         final int blockLength = tokens.get(index).encodedLength();
         final String typeForBlockLength = cSharpTypeName(tokens.get(index + 2).encoding().primitiveType());
-        final Token numInGroupToken = tokens.get(index + 3);
         final String typeForNumInGroup = cSharpTypeName(numInGroupToken.encoding().primitiveType());
 
         sb.append(String.format("\n" +
@@ -233,6 +242,11 @@ public class CSharpGenerator implements CodeGenerator
             blockLength,
             dimensionHeaderLength));
 
+        generateGroupEnumerator(sb, groupName, indent);
+    }
+
+    private void generateGroupEnumerator(final StringBuilder sb, final String groupName, final String indent)
+    {
         sb.append(
             indent + INDENT + "public int ActingBlockLength { get { return _blockLength; } }\n\n" +
             indent + INDENT + "public int Count { get { return _count; } }\n\n" +
@@ -260,6 +274,13 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + INDENT + "yield return this.Next();\n" +
             indent + INDENT + INDENT + "}\n" +
             indent + INDENT + "}\n");
+    }
+
+    private boolean isRepresentableByInt32(final Encoding encoding)
+    {
+        // These min and max values are the same in .NET
+        return encoding.applicableMinValue().longValue() >= Integer.MIN_VALUE &&
+                encoding.applicableMaxValue().longValue() <= Integer.MAX_VALUE;
     }
 
     private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)
