@@ -133,11 +133,7 @@ public class RustGenerator implements CodeGenerator
         final MessageComponents components,
         final OutputManager outputManager) throws IOException
     {
-        final List<NamedToken> namedFieldTokens = NamedToken.gatherNamedFieldTokens(components.fields);
-        if (namedFieldTokens.isEmpty())
-        {
-            return Optional.empty();
-        }
+        final List<NamedToken> namedFieldTokens = NamedToken.gatherNamedNonConstantFieldTokens(components.fields);
 
         final String representationStruct = messageTypeName + "Fields";
         try (Writer writer = outputManager.createOutput(messageTypeName + " Fixed-size Fields"))
@@ -149,12 +145,36 @@ public class RustGenerator implements CodeGenerator
             generateConstantAccessorImpl(writer, representationStruct, components.fields);
         }
 
-        final int numBytes = components.fields.stream()
-            .filter((t) -> !t.isConstantEncoding())
-            .filter((t) -> t.signal() == ENCODING || t.signal() == BEGIN_ENUM || t.signal() == BEGIN_SET)
-            .mapToInt(Token::encodedLength)
-            .sum();
-
+        // Compute the total static size in bytes of the fields representation
+        int numBytes = 0;
+        for (int i = 0, size = components.fields.size(); i < size;)
+        {
+            final Token fieldToken = components.fields.get(i);
+            if (fieldToken.signal() == Signal.BEGIN_FIELD)
+            {
+                final int fieldEnd = i + fieldToken.componentTokenCount();
+                if (!fieldToken.isConstantEncoding())
+                {
+                    for (int j = i; j < fieldEnd; j++)
+                    {
+                        final Token t = components.fields.get(j);
+                        if (t.isConstantEncoding())
+                        {
+                            continue;
+                        }
+                        if (t.signal() == ENCODING || t.signal() == BEGIN_ENUM || t.signal() == BEGIN_SET)
+                        {
+                            numBytes += t.encodedLength();
+                        }
+                    }
+                }
+                i += fieldToken.componentTokenCount();
+            }
+            else
+            {
+                throw new IllegalStateException("field tokens must include bounding BEGIN_FIELD and END_FIELD tokens");
+            }
+        }
         return Optional.of(new FieldsRepresentationSummary(representationStruct, numBytes));
     }
 
@@ -847,7 +867,7 @@ public class RustGenerator implements CodeGenerator
             this.blockLengthType = blockLengthType;
             this.blockLength = blockLength;
             this.rawFields = fields;
-            this.simpleNamedFields = NamedToken.gatherNamedFieldTokens(fields);
+            this.simpleNamedFields = NamedToken.gatherNamedNonConstantFieldTokens(fields);
             this.varData = varData;
 
             parent.ifPresent((p) -> p.addChild(this));
@@ -927,7 +947,7 @@ public class RustGenerator implements CodeGenerator
                 indent(writer, 3).append("return Err(CodecErr::SliceIsLongerThanAllowedBySchema)\n");
                 indent(writer, 2).append("}\n");
                 indent(writer, 2).append("// Write data length\n");
-                indent(writer, 2, "%s.write_type::<%s>(&(l as %s), %s); // group length\n",
+                indent(writer, 2, "%s.write_type::<%s>(&(l as %s), %s)?; // group length\n",
                     toScratchChain(groupDepth), rustTypeName(this.lengthType), rustTypeName(this.lengthType),
                     this.lengthType.size());
                 indent(writer, 2).append(format("%s.write_slice_without_count::<%s>(s, %s)?;\n",
@@ -1548,22 +1568,27 @@ public class RustGenerator implements CodeGenerator
 
                 case BEGIN_ENUM:
                     final String enumType = formatTypeName(signalToken.applicableTypeName());
-                    String enumValue = null;
+                    final String rawConstValueName = fieldToken.encoding().constValue().toString();
+                    final int indexOfDot = rawConstValueName.indexOf('.');
+                    final String constValueName = -1 == indexOfDot ?
+                        rawConstValueName : rawConstValueName.substring(indexOfDot + 1);
+                    boolean foundMatchingValueName = false;
                     for (int j = i; j < unfilteredFields.size(); j++)
                     {
                         final Token searchAhead = unfilteredFields.get(j);
-                        if (searchAhead.signal() == VALID_VALUE)
+                        if (searchAhead.signal() == VALID_VALUE && searchAhead.name().equals(constValueName))
                         {
-                            enumValue = searchAhead.name();
+                            foundMatchingValueName = true;
                             break;
                         }
                     }
-                    if (enumValue == null)
+                    if (!foundMatchingValueName)
                     {
-                        throw new IllegalStateException("Found a constant enum field with incomplete token content");
+                        throw new IllegalStateException(format("Found a constant enum field that requested value %s, " +
+                                "which is not an available enum option.", rawConstValueName));
                     }
                     constantRustTypeName = enumType;
-                    constantRustExpression = enumType + "::" + enumValue;
+                    constantRustExpression = enumType + "::" + constValueName;
                     break;
 
                 case BEGIN_SET:
