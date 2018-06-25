@@ -175,6 +175,7 @@ public class RustGenerator implements CodeGenerator
                 throw new IllegalStateException("field tokens must include bounding BEGIN_FIELD and END_FIELD tokens");
             }
         }
+
         return Optional.of(new FieldsRepresentationSummary(representationStruct, numBytes));
     }
 
@@ -265,7 +266,6 @@ public class RustGenerator implements CodeGenerator
         final int headerSize)
         throws IOException
     {
-
         final Token msgToken = components.messageToken;
         final String messageTypeName = formatTypeName(msgToken.name());
         final RustCodecType codecType = RustCodecType.Decoder;
@@ -352,6 +352,7 @@ public class RustGenerator implements CodeGenerator
                 throw new IllegalArgumentException(format("Unknown CodecType %s", codecType));
             }
         }
+
         return nextCoderType;
     }
 
@@ -671,6 +672,7 @@ public class RustGenerator implements CodeGenerator
             indent(out, 2).append("if count > 0 {\n");
             indent(out, 3, "Ok(Either::Left(%s::new(self.%s, count)))\n",
                 memberDecoderType, contentProperty).append(INDENT).append(INDENT).append("} else {\n");
+
             if (atEndOfParent)
             {
                 indent(out, 3).append("Ok(Either::Right(self.parent.after_member()))\n");
@@ -1202,7 +1204,6 @@ public class RustGenerator implements CodeGenerator
             generateEncoderScratchSliceMethods(writer);
 
             writer.append("}\n");
-
         }
     }
 
@@ -1249,7 +1250,7 @@ public class RustGenerator implements CodeGenerator
         indent(writer).append("}\n");
     }
 
-    static void generateDecoderScratchStruct(final OutputManager outputManager) throws IOException
+    private static void generateDecoderScratchStruct(final OutputManager outputManager) throws IOException
     {
         try (Writer writer = outputManager.createOutput("Scratch Decoder Data Wrapper - codec internal use only"))
         {
@@ -1376,6 +1377,7 @@ public class RustGenerator implements CodeGenerator
         final String originalTypeName = beginToken.applicableTypeName();
         final String formattedTypeName = formatTypeName(originalTypeName);
         final SplitCompositeTokens splitTokens = SplitCompositeTokens.splitInnerTokens(tokens);
+
         try (Writer writer = outputManager.createOutput(formattedTypeName))
         {
             appendStructHeader(writer, formattedTypeName, true);
@@ -1421,7 +1423,6 @@ public class RustGenerator implements CodeGenerator
 
             appendable.append(",\n");
         }
-
     }
 
     private void generateMessageHeaderDefault(
@@ -1433,6 +1434,7 @@ public class RustGenerator implements CodeGenerator
         final HeaderStructure header = ir.headerStructure();
         final String messageTypeName = formatTypeName(messageToken.name());
         final String wrapperName = messageTypeName + "MessageHeader";
+
         try (Writer writer = outputManager.createOutput(messageTypeName + " specific Message Header "))
         {
             appendStructHeader(writer, wrapperName, true);
@@ -1476,7 +1478,6 @@ public class RustGenerator implements CodeGenerator
 
             writer.append("}\n");
         }
-
     }
 
     private static void appendStructHeader(
@@ -1541,6 +1542,7 @@ public class RustGenerator implements CodeGenerator
                 i += componentTokenCount;
                 continue;
             }
+
             final String constantRustTypeName;
             final String constantRustExpression;
             switch (signalToken.signal())
@@ -1553,16 +1555,15 @@ public class RustGenerator implements CodeGenerator
                         constantRustTypeName = "&'static str";
                         // TODO - proper string escaping
                         constantRustExpression = "\"" + rawValue + "\"";
-
                     }
                     else
                     {
-                        final String constantRustPrimitiveType = RustUtil.rustTypeName(signalToken.encoding()
-                            .primitiveType());
-                        constantRustTypeName = getRustTypeForPrimitivePossiblyArray(signalToken,
-                            constantRustPrimitiveType);
-                        constantRustExpression = generateRustLiteral(signalToken.encoding().primitiveType(),
-                            rawValue);
+                        final String constantRustPrimitiveType = RustUtil.rustTypeName(
+                            signalToken.encoding().primitiveType());
+                        constantRustTypeName = getRustTypeForPrimitivePossiblyArray(
+                            signalToken, constantRustPrimitiveType);
+                        constantRustExpression = generateRustLiteral(
+                            signalToken.encoding().primitiveType(), rawValue);
                     }
                     break;
 
