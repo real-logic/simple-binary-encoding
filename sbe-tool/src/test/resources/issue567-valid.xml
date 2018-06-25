@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
-                   package="issue567Invalid"
+                   package="issue567Valid"
                    id="567"
                    version="0"
                    semanticVersion="5.2"
@@ -15,7 +15,7 @@
         </composite>
         <composite name="groupSizeEncoding" description="Repeating group dimensions">
             <type name="blockLength" primitiveType="uint16"/>
-            <type name="numInGroup" primitiveType="uint32"/>
+            <type name="numInGroup" primitiveType="uint32" maxValue="2147483647" />
         </composite>
         <composite name="varStringEncoding">
             <type name="length" primitiveType="uint32" maxValue="1073741824"/>
