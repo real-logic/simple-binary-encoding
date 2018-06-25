@@ -43,10 +43,16 @@ public class NamedToken
         return typeToken;
     }
 
-    public static List<NamedToken> gatherNamedFieldTokens(final List<Token> fields)
+    public static List<NamedToken> gatherNamedNonConstantFieldTokens(final List<Token> fields)
     {
         final List<NamedToken> namedTokens = new ArrayList<>();
-        forEachField(fields, (f, t) -> namedTokens.add(new NamedToken(f.name(), t)));
+        forEachField(fields, (f, t) ->
+        {
+            if (!f.isConstantEncoding())
+            {
+                namedTokens.add(new NamedToken(f.name(), t));
+            }
+        });
 
         return namedTokens;
     }

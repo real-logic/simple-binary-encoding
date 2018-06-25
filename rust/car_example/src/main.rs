@@ -46,6 +46,7 @@ impl std::convert::From<CodecErr> for IoError {
 fn decode_car_and_assert_expected_content(buffer: &[u8]) -> CodecResult<()> {
     let (h, dec_fields) = start_decoding_car(&buffer).header()?;
     assert_eq!(49u16, h.block_length);
+    assert_eq!(h.block_length as usize, ::std::mem::size_of::<CarFields>());
     assert_eq!(1u16, h.template_id);
     assert_eq!(1u16, h.schema_id);
     assert_eq!(0u16, h.version);
@@ -67,6 +68,11 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> CodecResult<()> {
     assert!(fields.extras.get_cruise_control());
     assert!(fields.extras.get_sports_pack());
     assert!(!fields.extras.get_sun_roof());
+    assert_eq!(2000, fields.engine.capacity);
+    assert_eq!(4, fields.engine.num_cylinders);
+    assert_eq!(BoostType::NITROUS, fields.engine.booster.boost_type);
+    assert_eq!(200, fields.engine.booster.horse_power);
+    println!("Static-length fields all match the expected values");
 
     let dec_perf_figures_header = match dec_fuel_figures_header.fuel_figures_individually()? {
         Either::Left(mut dec_ff_members) => {

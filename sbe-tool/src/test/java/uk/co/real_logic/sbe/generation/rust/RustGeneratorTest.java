@@ -133,6 +133,11 @@ public class RustGeneratorTest
     {
         final String generatedRust = fullGenerateForResource(outputManager, "example-schema");
         assertContainsSharedImports(generatedRust);
+        assertContains(generatedRust,
+            "pub fn car_fields(mut self) -> CodecResult<(&'d CarFields, CarFuelFiguresHeaderDecoder<'d>)> {\n" +
+            "    let v = self.scratch.read_type::<CarFields>(49)?;\n" +
+            "    Ok((v, CarFuelFiguresHeaderDecoder::wrap(self.scratch)))\n" +
+            "  }");
         final String expectedBooleanTypeDeclaration =
             "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
             "#[repr(u8)]\n" +
@@ -236,7 +241,6 @@ public class RustGeneratorTest
         assertRustBuildable(rust, Optional.of(localResourceSchema));
     }
 
-    @Ignore
     @Test
     public void checkValidRustFromAllExampleSchema() throws IOException, InterruptedException
     {
@@ -267,7 +271,36 @@ public class RustGeneratorTest
         }
     }
 
-    @Ignore
+    @Test
+    public void constantEnumFields() throws IOException, InterruptedException
+    {
+        final String rust = fullGenerateForResource(outputManager, "constant-enum-fields");
+        assertContainsSharedImports(rust);
+        final String expectedCharTypeDeclaration =
+            "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
+            "#[repr(i8)]\n" +
+            "pub enum Model {\n" +
+            "  A = 65i8,\n" +
+            "  B = 66i8,\n" +
+            "  C = 67i8,\n" +
+            "}\n";
+        assertContains(rust, expectedCharTypeDeclaration);
+        assertContains(rust, "pub struct ConstantEnumsFields {\n}");
+        assertContains(rust, "impl ConstantEnumsFields {");
+        assertContains(rust, "  pub fn c() -> Model {\n" +
+            "    Model::C\n  }");
+        assertContains(rust, "impl ConstantEnumsFMember {");
+        assertContains(rust, "  pub fn k() -> Model {\n" +
+            "    Model::C\n  }");
+        assertContains(rust,
+            "pub fn constant_enums_fields(mut self) -> " +
+            "CodecResult<(&'d ConstantEnumsFields, ConstantEnumsFHeaderDecoder<'d>)> {\n" +
+            "    let v = self.scratch.read_type::<ConstantEnumsFields>(0)?;\n" +
+            "    Ok((v, ConstantEnumsFHeaderDecoder::wrap(self.scratch)))\n" +
+            "  }");
+        assertRustBuildable(rust, Optional.of("constant-enum-fields"));
+    }
+
     @Test
     public void constantFieldsCase() throws IOException, InterruptedException
     {
