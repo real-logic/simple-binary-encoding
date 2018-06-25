@@ -280,7 +280,7 @@ public class CSharpGenerator implements CodeGenerator
     {
         // These min and max values are the same in .NET
         return encoding.applicableMinValue().longValue() >= Integer.MIN_VALUE &&
-                encoding.applicableMaxValue().longValue() <= Integer.MAX_VALUE;
+            encoding.applicableMaxValue().longValue() <= Integer.MAX_VALUE;
     }
 
     private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)
