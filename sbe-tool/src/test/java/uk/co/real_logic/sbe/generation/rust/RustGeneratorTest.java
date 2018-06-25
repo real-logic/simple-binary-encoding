@@ -189,7 +189,7 @@ public class RustGeneratorTest
         final ProcessBuilder builder = new ProcessBuilder("cargo", "check");
         builder.directory(folder);
         final Process process = builder.start();
-        process.waitFor(20, TimeUnit.SECONDS);
+        process.waitFor(30, TimeUnit.SECONDS);
         final boolean success = process.exitValue() == 0;
 
         if (!success)
@@ -217,10 +217,10 @@ public class RustGeneratorTest
         {
             final ProcessBuilder builder = new ProcessBuilder("cargo", "-v");
             final Process process = builder.start();
-            process.waitFor(20, TimeUnit.SECONDS);
+            process.waitFor(5, TimeUnit.SECONDS);
             return process.exitValue() == 0;
         }
-        catch (final IOException | InterruptedException ignore)
+        catch (final IOException | InterruptedException | IllegalThreadStateException ignore)
         {
             return false;
         }
