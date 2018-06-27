@@ -2,9 +2,9 @@
 <ns2:messageSchema xmlns:ns2="http://fixprotocol.io/2016/sbe"
                    package="mktdata"
                    id="1"
-                   version="6"
+                   version="8"
                    semanticVersion="FIX5SP2"
-                   description="20150109"
+                   description="20160701"
                    byteOrder="littleEndian">
     <types>
         <type name="Asset" description="Asset" length="6" primitiveType="char" semanticType="String"/>
