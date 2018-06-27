@@ -11,5 +11,9 @@
   <ItemGroup>
     <ProjectReference Include="..\sbe-dll\sbe-dll.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="issue560\" />
+  </ItemGroup>
   
 </Project>

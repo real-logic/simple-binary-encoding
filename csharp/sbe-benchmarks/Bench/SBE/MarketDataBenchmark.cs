@@ -32,8 +32,7 @@ namespace Org.SbeTool.Sbe.Benchmarks
             mdIncGrp.MdUpdateAction = MDUpdateAction.NEW;
             mdIncGrp.RptSeq = 1;
             mdIncGrp.AggressorSide = Side.BUY;
-            mdIncGrp.MdEntryType = MDEntryType.BID;
-
+            
             mdIncGrp.Next();
             mdIncGrp.TradeId = 1234L;
             mdIncGrp.SecurityId = 56789L;
@@ -43,8 +42,7 @@ namespace Org.SbeTool.Sbe.Benchmarks
             mdIncGrp.MdUpdateAction = MDUpdateAction.NEW;
             mdIncGrp.RptSeq = 1;
             mdIncGrp.AggressorSide = Side.SELL;
-            mdIncGrp.MdEntryType = MDEntryType.OFFER;
-
+            
             return marketData.Size;
         }
 

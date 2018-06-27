@@ -466,7 +466,7 @@ public class CSharpGenerator implements CodeGenerator
                     break;
 
                 case BEGIN_ENUM:
-                    sb.append(generateEnumProperty(propertyName, token, indent));
+                    sb.append(generateEnumProperty(propertyName, token, null, indent));
                     break;
 
                 case BEGIN_SET:
@@ -1039,7 +1039,7 @@ public class CSharpGenerator implements CodeGenerator
                         break;
 
                     case BEGIN_ENUM:
-                        sb.append(generateEnumProperty(propertyName, encodingToken, indent));
+                        sb.append(generateEnumProperty(propertyName, encodingToken, signalToken, indent));
                         break;
 
                     case BEGIN_SET:
@@ -1109,7 +1109,11 @@ public class CSharpGenerator implements CodeGenerator
             enumName);
     }
 
-    private CharSequence generateEnumProperty(final String propertyName, final Token token, final String indent)
+    private CharSequence generateEnumProperty(
+        final String propertyName,
+        final Token token,
+        final Token signalToken,
+        final String indent)
     {
         final String enumName = formatClassName(token.applicableTypeName());
         final String typePrefix = toUpperFirstChar(token.encoding().primitiveType().primitiveName());
@@ -1118,27 +1122,46 @@ public class CSharpGenerator implements CodeGenerator
         final ByteOrder byteOrder = token.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, token.encoding().primitiveType().size());
 
-        return  String.format("\n" +
-            indent + INDENT + "public %1$s %2$s\n" +
-            indent + INDENT + "{\n" +
-            indent + INDENT + INDENT + "get\n" +
-            indent + INDENT + INDENT + "{\n" +
-            "%3$s" +
-            indent + INDENT + INDENT + INDENT + "return (%4$s)_buffer.%5$sGet%7$s(_offset + %6$d);\n" +
-            indent + INDENT + INDENT + "}\n" +
-            indent + INDENT + INDENT + "set\n" +
-            indent + INDENT + INDENT + "{\n" +
-            indent + INDENT + INDENT + INDENT + "_buffer.%5$sPut%7$s(_offset + %6$d, (%8$s)value);\n" +
-            indent + INDENT + INDENT + "}\n" +
-            indent + INDENT + "}\n\n",
-            enumName,
-            toUpperFirstChar(propertyName),
-            generateEnumFieldNotPresentCondition(token.version(), enumName, indent),
-            enumName,
-            typePrefix,
-            offset,
-            byteOrderStr,
-            enumUnderlyingType);
+        if (signalToken != null && signalToken.isConstantEncoding())
+        {
+            final String constValue = signalToken.encoding().constValue().toString();
+
+            return String.format("\n" +
+                indent + INDENT + "public %1$s %2$s\n" +
+                indent + INDENT + "{\n" +
+                indent + INDENT + INDENT + "get\n" +
+                indent + INDENT + INDENT + "{\n" +
+                indent + INDENT + INDENT + INDENT + "return %3$s;\n" +
+                indent + INDENT + INDENT + "}\n" +
+                indent + INDENT + "}\n\n",
+                enumName,
+                toUpperFirstChar(propertyName),
+                constValue);
+        }
+        else
+        {
+            return  String.format("\n" +
+                indent + INDENT + "public %1$s %2$s\n" +
+                indent + INDENT + "{\n" +
+                indent + INDENT + INDENT + "get\n" +
+                indent + INDENT + INDENT + "{\n" +
+                "%3$s" +
+                indent + INDENT + INDENT + INDENT + "return (%4$s)_buffer.%5$sGet%7$s(_offset + %6$d);\n" +
+                indent + INDENT + INDENT + "}\n" +
+                indent + INDENT + INDENT + "set\n" +
+                indent + INDENT + INDENT + "{\n" +
+                indent + INDENT + INDENT + INDENT + "_buffer.%5$sPut%7$s(_offset + %6$d, (%8$s)value);\n" +
+                indent + INDENT + INDENT + "}\n" +
+                indent + INDENT + "}\n\n",
+                enumName,
+                toUpperFirstChar(propertyName),
+                generateEnumFieldNotPresentCondition(token.version(), enumName, indent),
+                enumName,
+                typePrefix,
+                offset,
+                byteOrderStr,
+                enumUnderlyingType);
+        }
     }
 
     private String generateBitSetProperty(final String propertyName, final Token token, final String indent)
