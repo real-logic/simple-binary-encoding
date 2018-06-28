@@ -2,7 +2,7 @@ Overview
 ========
 
 There is a [user guide](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide) for people who wish
-to use the csharp generator.  This document is to assist developers working on the the SBE C# generator itself.
+to use the C# generator.  This document is to assist developers working on the the SBE C# generator itself.
 
 
 Environment
@@ -11,7 +11,7 @@ Java and gradlew are used to build the generator.
 
 git bash and shell scripts are used for scripting.
 
-The csharp code is built using Visual Studio Community 2017.
+The C# code is built using Visual Studio Community 2017.
 
 Code Layout
 -----------
