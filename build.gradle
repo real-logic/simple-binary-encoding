@@ -701,7 +701,7 @@ task uploadToMavenCentral {
         'sbe-all:uploadShadow'
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.7'
+wrapper {
+    gradleVersion = '4.8.1'
     distributionType = 'ALL'
 }
