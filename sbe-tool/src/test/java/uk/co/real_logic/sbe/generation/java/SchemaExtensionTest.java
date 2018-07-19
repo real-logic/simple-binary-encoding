@@ -61,6 +61,7 @@ public class SchemaExtensionTest
         generator().generate();
     }
 
+    @SuppressWarnings("MethodLength")
     @Test
     public void testMessage1() throws Exception
     {
@@ -81,6 +82,8 @@ public class SchemaExtensionTest
             final Object setEncoder = encoder.getClass().getMethod("tag5").invoke(encoder);
             set(setEncoder, "firstChoice", boolean.class, false);
             set(setEncoder, "secondChoice", boolean.class, true);
+
+            set(encoder, "tag6", String.class, "This is some variable length data");
         }
 
         { // Decode version 0
@@ -90,12 +93,16 @@ public class SchemaExtensionTest
             assertNull(get(decoderVersion0, "tag3"));
             assertThat(get(decoderVersion0, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion0, "tag5"));
+            final StringBuilder tag6Value = new StringBuilder();
+            get(decoderVersion0, "tag6", tag6Value);
+            assertThat(tag6Value.length(), is(0));
 
             assertEquals(0, decoderVersion0.getClass().getMethod("tag1SinceVersion").invoke(null));
             assertEquals(1, decoderVersion0.getClass().getMethod("tag2SinceVersion").invoke(null));
             assertEquals(2, decoderVersion0.getClass().getMethod("tag3SinceVersion").invoke(null));
             assertEquals(3, decoderVersion0.getClass().getMethod("tag4SinceVersion").invoke(null));
             assertEquals(4, decoderVersion0.getClass().getMethod("tag5SinceVersion").invoke(null));
+            assertEquals(5, decoderVersion0.getClass().getMethod("tag6SinceVersion").invoke(null));
         }
 
         { // Decode version 1
@@ -105,6 +112,9 @@ public class SchemaExtensionTest
             assertNull(get(decoderVersion1, "tag3"));
             assertThat(get(decoderVersion1, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion1, "tag5"));
+            final StringBuilder tag6Value = new StringBuilder();
+            get(decoderVersion1, "tag6", tag6Value);
+            assertThat(tag6Value.length(), is(0));
         }
 
         { // Decode version 2
@@ -116,6 +126,9 @@ public class SchemaExtensionTest
             assertEquals(300, get(compositeDecoder2, "value"));
             assertThat(get(decoderVersion2, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion2, "tag5"));
+            final StringBuilder tag6Value = new StringBuilder();
+            get(decoderVersion2, "tag6", tag6Value);
+            assertThat(tag6Value.length(), is(0));
         }
 
         { // Decode version 3
@@ -128,6 +141,9 @@ public class SchemaExtensionTest
             final Object enumConstant = getAEnumConstant(decoderVersion3, "AEnum", 1);
             assertEquals(enumConstant, get(decoderVersion3, "tag4"));
             assertNull(get(decoderVersion3, "tag5"));
+            final StringBuilder tag6Value = new StringBuilder();
+            get(decoderVersion3, "tag6", tag6Value);
+            assertThat(tag6Value.length(), is(0));
         }
 
         { // Decode version 4
@@ -143,6 +159,27 @@ public class SchemaExtensionTest
             assertNotNull(setDecoder);
             assertEquals(false, get(setDecoder, "firstChoice"));
             assertEquals(true, get(setDecoder, "secondChoice"));
+            final StringBuilder tag6Value = new StringBuilder();
+            get(decoderVersion4, "tag6", tag6Value);
+            assertThat(tag6Value.length(), is(0));
+        }
+
+        { // Decode version 5
+            final Object decoderVersion5 = getMessage1Decoder(buffer, 14, 5);
+            assertEquals(100, get(decoderVersion5, "tag1"));
+            assertEquals(200, get(decoderVersion5, "tag2"));
+            final Object compositeDecoder4 = get(decoderVersion5, "tag3");
+            assertNotNull(compositeDecoder4);
+            assertEquals(300, get(compositeDecoder4, "value"));
+            final Object enumConstant = getAEnumConstant(decoderVersion5, "AEnum", 1);
+            assertEquals(enumConstant, get(decoderVersion5, "tag4"));
+            final Object setDecoder = get(decoderVersion5, "tag5");
+            assertNotNull(setDecoder);
+            assertEquals(false, get(setDecoder, "firstChoice"));
+            assertEquals(true, get(setDecoder, "secondChoice"));
+            final StringBuilder tag6Value = new StringBuilder();
+            get(decoderVersion5, "tag6", tag6Value);
+            assertThat(tag6Value.toString(), is("This is some variable length data"));
         }
     }
 

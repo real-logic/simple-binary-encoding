@@ -827,7 +827,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "        }\n" +
                     indent + "    }\n",
                     Generators.toUpperFirstChar(propertyName),
-                    generateStringNotPresentCondition(token.version(), indent),
+                    generateStringNotPresentConditionForAppendable(token.version(), indent),
                     sizeOfLengthField,
                     generateGet(lengthType, "limit", byteOrderStr),
                     byteOrderStr));
@@ -1730,6 +1730,22 @@ public class JavaGenerator implements CodeGenerator
             indent + "        if (parentMessage.actingVersion < %d)\n" +
             indent + "        {\n" +
             indent + "            return 0;\n" +
+            indent + "        }\n\n",
+            sinceVersion);
+    }
+
+    private static CharSequence generateStringNotPresentConditionForAppendable(
+        final int sinceVersion, final String indent)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            indent + "        if (parentMessage.actingVersion < %d)\n" +
+            indent + "        {\n" +
+            indent + "            return;\n" +
             indent + "        }\n\n",
             sinceVersion);
     }
