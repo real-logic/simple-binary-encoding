@@ -2744,7 +2744,7 @@ public class JavaGenerator implements CodeGenerator
     private String generateNoChoicesSet(final PrimitiveType type)
     {
         return String.format(
-                "\n    public boolean noChoicesSet()\n" +
+                "\n    public boolean isEmpty()\n" +
                 "    {\n" +
                 "        return %1$s;\n" +
                 "    }\n", generateChoiceUnsetInner(type));
