@@ -584,14 +584,23 @@ public class CppGenerator implements CodeGenerator
             out.append(generateClassDeclaration(bitSetName));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).encodedLength()));
 
-            out.append(String.format("\n" +
+            out.append(String.format(
                 "    %1$s &clear()\n" +
                 "    {\n" +
                 "        %2$s zero = 0;\n" +
                 "        std::memcpy(m_buffer + m_offset, &zero, sizeof(%2$s));\n" +
                 "        return *this;\n" +
-                "    }\n\n",
+                "    }\n",
                 bitSetName,
+                cppTypeName(tokens.get(0).encoding().primitiveType())));
+
+            out.append(String.format("\n" +
+                "    bool isEmpty() const\n" +
+                "    {\n" +
+                "        %1$s val;\n" +
+                "        std::memcpy(&val, m_buffer + m_offset, sizeof(%1$s));\n" +
+                "        return 0 == val;\n" +
+                "    }\n",
                 cppTypeName(tokens.get(0).encoding().primitiveType())));
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
