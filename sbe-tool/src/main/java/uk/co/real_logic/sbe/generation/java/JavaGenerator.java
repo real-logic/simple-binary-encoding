@@ -1052,6 +1052,7 @@ public class JavaGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(decoderName))
         {
             generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer);
+            out.append(generateNoChoicesSet(token.encoding().primitiveType()));
             out.append(generateChoiceDecoders(messageBody));
             out.append(generateChoiceDisplay(messageBody));
             out.append("}\n");
@@ -2735,6 +2736,34 @@ public class JavaGenerator implements CodeGenerator
 
             case DOUBLE:
                 return "buffer.putDouble(" + index + ", " + value + byteOrder + ")";
+        }
+
+        throw new IllegalArgumentException("primitive type not supported: " + type);
+    }
+
+    private String generateNoChoicesSet(final PrimitiveType type)
+    {
+        return String.format(
+                "\n    public boolean noChoicesSet()\n" +
+                "    {\n" +
+                "        return %1$s;\n" +
+                "    }\n", generateChoiceUnsetInner(type));
+    }
+
+    private String generateChoiceUnsetInner(PrimitiveType type) {
+        switch (type)
+        {
+            case UINT8:
+                return "0 == buffer.getByte(offset)";
+
+            case UINT16:
+                return "0 == buffer.getShort(offset)";
+
+            case UINT32:
+                return "0 == buffer.getInt(offset)";
+
+            case UINT64:
+                return "0 == buffer.getLong(offset)";
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
