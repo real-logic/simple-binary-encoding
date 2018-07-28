@@ -1052,7 +1052,7 @@ public class JavaGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(decoderName))
         {
             generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer);
-            out.append(generateNoChoicesSet(token.encoding().primitiveType()));
+            out.append(generateChoiceIsEmpty(token.encoding().primitiveType()));
             out.append(generateChoiceDecoders(messageBody));
             out.append(generateChoiceDisplay(messageBody));
             out.append("}\n");
@@ -2741,16 +2741,17 @@ public class JavaGenerator implements CodeGenerator
         throw new IllegalArgumentException("primitive type not supported: " + type);
     }
 
-    private String generateNoChoicesSet(final PrimitiveType type)
+    private String generateChoiceIsEmpty(final PrimitiveType type)
     {
-        return String.format(
-                "\n    public boolean isEmpty()\n" +
-                "    {\n" +
-                "        return %1$s;\n" +
-                "    }\n", generateChoiceUnsetInner(type));
+        return "\n" +
+            "    public boolean isEmpty()\n" +
+            "    {\n" +
+            "        return " + generateChoiceIsEmptyInner(type) + ";\n" +
+            "    }\n";
     }
 
-    private String generateChoiceUnsetInner(PrimitiveType type) {
+    private String generateChoiceIsEmptyInner(final PrimitiveType type)
+    {
         switch (type)
         {
             case UINT8:
