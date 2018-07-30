@@ -185,11 +185,11 @@ project(':sbe-tool') {
     jar {
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
-            'Specification-Title' : 'Simple Binary Encoding',
-            'Specification-Version' : '1.0',
-            'Implementation-Title' : 'SBE',
-            'Implementation-Version' : "${sbeVersion}",
-            'Implementation-Vendor' : 'Real Logic Limited'
+            'Specification-Title': 'Simple Binary Encoding',
+            'Specification-Version': '1.0',
+            'Implementation-Title': 'SBE',
+            'Implementation-Version': "${sbeVersion}",
+            'Implementation-Vendor': 'Real Logic Limited'
         )
     }
 
@@ -278,11 +278,11 @@ project(':sbe-all') {
         classifier = ''
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
-            'Specification-Title' : 'Simple Binary Encoding',
-            'Specification-Version' : '1.0',
-            'Implementation-Title' : 'SBE',
-            'Implementation-Version' : "${sbeVersion}",
-            'Implementation-Vendor' : 'Real Logic Limited')
+            'Specification-Title': 'Simple Binary Encoding',
+            'Specification-Version': '1.0',
+            'Implementation-Title': 'SBE',
+            'Implementation-Version': "${sbeVersion}",
+            'Implementation-Vendor': 'Real Logic Limited')
     }
 
     uploadArchives {
@@ -531,15 +531,12 @@ task runRustCarExample(type: Exec) {
 def cargo_exists() {
     try {
         def result = project.exec {
-            executable 'cargo'
-            args '-v'
-            standardOutput = new ByteArrayOutputStream()
-            errorOutput = new ByteArrayOutputStream()
+            executable = 'cargo'
+            args = '-v'
         }
         return result.exitValue == 0
     }
-    catch (Exception ignore)
-    {
+    catch (Exception ignore) {
         return false
     }
 }
