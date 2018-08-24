@@ -196,8 +196,14 @@ project(':sbe-tool') {
         generated.java.srcDir 'build/generated'
     }
 
-    compileGeneratedJava.dependsOn 'generateCodecs'
-    compileGeneratedJava.classpath += sourceSets.main.runtimeClasspath
+    compileGeneratedJava {
+        dependsOn 'generateCodecs'
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+        options.encoding = 'UTF-8'
+        options.deprecation = true
+        classpath += sourceSets.main.runtimeClasspath
+    }
 
     compileTestJava.dependsOn 'compileGeneratedJava'
 
@@ -344,8 +350,14 @@ project(':sbe-samples') {
         generated.java.srcDir 'build/generated'
     }
 
-    compileGeneratedJava.dependsOn 'generateCodecs'
-    compileGeneratedJava.classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+    compileGeneratedJava {
+        dependsOn 'generateCodecs'
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+        options.encoding = 'UTF-8'
+        options.deprecation = true
+        classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+    }
 
     compileJava {
         dependsOn 'compileGeneratedJava'
@@ -431,8 +443,14 @@ project(':sbe-benchmarks') {
         generated.java.srcDir 'build/generated'
     }
 
-    compileGeneratedJava.dependsOn 'generateCodecs'
-    compileGeneratedJava.classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+    compileGeneratedJava {
+        dependsOn 'generateCodecs'
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+        options.encoding = 'UTF-8'
+        options.deprecation = true
+        classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+    }
 
     compileJava {
         dependsOn 'compileGeneratedJava'
