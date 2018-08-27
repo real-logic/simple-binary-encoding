@@ -520,7 +520,7 @@ public class CppGenerator implements CodeGenerator
         final String lengthCppType,
         final String indent)
     {
-        sb.append(String.format("\n"  +
+        sb.append(String.format("\n" +
             indent + "    static const char *%1$sCharacterEncoding() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return \"%2$s\";\n" +

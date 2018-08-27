@@ -305,12 +305,9 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
-    private void generateDecodePrimitive(
-        final StringBuilder sb,
-        final String varName,
-        final Token token)
+    private void generateDecodePrimitive(final StringBuilder sb, final String varName, final Token token)
     {
-        final PrimitiveType primitiveType =  token.encoding().primitiveType();
+        final PrimitiveType primitiveType = token.encoding().primitiveType();
         final String marshalType = golangMarshalType(primitiveType);
 
         // Complexity lurks here
@@ -788,13 +785,10 @@ public class GolangGenerator implements CodeGenerator
         return currentOffset;
     }
 
-    private void generateEnumEncodeDecode(
-        final StringBuilder sb,
-        final String enumName,
-        final Token token)
+    private void generateEnumEncodeDecode(final StringBuilder sb, final String enumName, final Token token)
     {
         final char varName = Character.toLowerCase(enumName.charAt(0));
-        final String typeName =  golangTypeName(token.encoding().primitiveType());
+        final String typeName = golangTypeName(token.encoding().primitiveType());
         final String marshalType;
 
         // The enum type might be char (golang byte) which we encode
@@ -805,7 +799,7 @@ public class GolangGenerator implements CodeGenerator
         }
         else
         {
-            marshalType =  golangMarshalType(token.encoding().primitiveType());
+            marshalType = golangMarshalType(token.encoding().primitiveType());
         }
 
         // Encode
@@ -859,10 +853,7 @@ public class GolangGenerator implements CodeGenerator
             enumName));
     }
 
-    private void generateChoiceEncodeDecode(
-        final StringBuilder sb,
-        final String choiceName,
-        final Token token)
+    private void generateChoiceEncodeDecode(final StringBuilder sb, final String choiceName, final Token token)
     {
         final char varName = Character.toLowerCase(choiceName.charAt(0));
 

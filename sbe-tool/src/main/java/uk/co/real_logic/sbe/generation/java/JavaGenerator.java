@@ -347,7 +347,7 @@ public class JavaGenerator implements CodeGenerator
             sb, groupToken, groupName, parentMessageClassName, indent, dimensionsClassName, dimensionHeaderLen);
 
         sb.append(String.format(
-            indent + "    public void wrap(\n"  +
+            indent + "    public void wrap(\n" +
             indent + "        final %s parentMessage, final %s buffer)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
@@ -3169,7 +3169,7 @@ public class JavaGenerator implements CodeGenerator
                     else
                     {
                         Separators.BEGIN_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
-                        append(sb, indent, "if (" +  fieldName + "Length() > 0)");
+                        append(sb, indent, "if (" + fieldName + "Length() > 0)");
                         append(sb, indent, "{");
                         append(sb, indent, "    for (int i = 0; i < " + fieldName + "Length(); i++)");
                         append(sb, indent, "    {");

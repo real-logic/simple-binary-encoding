@@ -1140,7 +1140,7 @@ public class CSharpGenerator implements CodeGenerator
         }
         else
         {
-            return  String.format("\n" +
+            return String.format("\n" +
                 indent + INDENT + "public %1$s %2$s\n" +
                 indent + INDENT + "{\n" +
                 indent + INDENT + INDENT + "get\n" +
@@ -1202,8 +1202,8 @@ public class CSharpGenerator implements CodeGenerator
         final int offset = token.offset();
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format(
-            "\n" +            indent + INDENT + "private readonly %1$s _%2$s = new %3$s();\n",
+        sb.append(String.format("\n" +
+            indent + INDENT + "private readonly %1$s _%2$s = new %3$s();\n",
             compositeName,
             toLowerFirstChar(propertyName),
             compositeName));
