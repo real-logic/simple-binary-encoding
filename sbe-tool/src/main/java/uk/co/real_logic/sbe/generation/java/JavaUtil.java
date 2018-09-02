@@ -168,7 +168,6 @@ public class JavaUtil
         return Generators.toUpperFirstChar(value);
     }
 
-
     /**
      * Shortcut to append a line of generated code
      *

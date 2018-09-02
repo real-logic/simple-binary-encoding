@@ -1561,17 +1561,18 @@ public class JavaGenerator implements CodeGenerator
         final String indent)
     {
         final StringBuilder sb = new StringBuilder();
+        final String formattedPropertyName = formatPropertyName(propertyName);
 
-        sb.append(generatePrimitiveFieldMetaData(propertyName, encodingToken, indent));
+        sb.append(generatePrimitiveFieldMetaData(formattedPropertyName, encodingToken, indent));
 
         if (encodingToken.isConstantEncoding())
         {
-            sb.append(generateConstPropertyMethods(propertyName, encodingToken, indent));
+            sb.append(generateConstPropertyMethods(formattedPropertyName, encodingToken, indent));
         }
         else
         {
             sb.append(generatePrimitivePropertyDecodeMethods(
-                inComposite, propertyName, propertyToken, encodingToken, indent));
+                inComposite, formattedPropertyName, propertyToken, encodingToken, indent));
         }
 
         return sb;
@@ -1581,16 +1582,18 @@ public class JavaGenerator implements CodeGenerator
         final String containingClassName, final String propertyName, final Token token, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
+        final String formattedPropertyName = formatPropertyName(propertyName);
 
-        sb.append(generatePrimitiveFieldMetaData(propertyName, token, indent));
+        sb.append(generatePrimitiveFieldMetaData(formattedPropertyName, token, indent));
 
         if (!token.isConstantEncoding())
         {
-            sb.append(generatePrimitivePropertyEncodeMethods(containingClassName, propertyName, token, indent));
+            sb.append(generatePrimitivePropertyEncodeMethods(
+                containingClassName, formattedPropertyName, token, indent));
         }
         else
         {
-            sb.append(generateConstPropertyMethods(propertyName, token, indent));
+            sb.append(generateConstPropertyMethods(formattedPropertyName, token, indent));
         }
 
         return sb;
@@ -2383,8 +2386,8 @@ public class JavaGenerator implements CodeGenerator
 
                 generateFieldIdMethod(sb, fieldToken, indent);
                 generateFieldSinceVersionMethod(sb, fieldToken, indent);
-                generateEncodingOffsetMethod(sb, fieldToken.name(), fieldToken.offset(), indent);
-                generateEncodingLengthMethod(sb, fieldToken.name(), typeToken.encodedLength(), indent);
+                generateEncodingOffsetMethod(sb, propertyName, fieldToken.offset(), indent);
+                generateEncodingLengthMethod(sb, propertyName, typeToken.encodedLength(), indent);
                 generateFieldMetaAttributeMethod(sb, fieldToken, indent);
 
                 switch (typeToken.signal())
@@ -2425,8 +2428,8 @@ public class JavaGenerator implements CodeGenerator
 
                 generateFieldIdMethod(sb, fieldToken, indent);
                 generateFieldSinceVersionMethod(sb, fieldToken, indent);
-                generateEncodingOffsetMethod(sb, fieldToken.name(), fieldToken.offset(), indent);
-                generateEncodingLengthMethod(sb, fieldToken.name(), typeToken.encodedLength(), indent);
+                generateEncodingOffsetMethod(sb, propertyName, fieldToken.offset(), indent);
+                generateEncodingLengthMethod(sb, propertyName, typeToken.encodedLength(), indent);
                 generateFieldMetaAttributeMethod(sb, fieldToken, indent);
 
                 switch (typeToken.signal())
