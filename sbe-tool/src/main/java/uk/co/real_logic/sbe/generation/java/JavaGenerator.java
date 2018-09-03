@@ -1627,6 +1627,7 @@ public class JavaGenerator implements CodeGenerator
 
         final PrimitiveType primitiveType = token.encoding().primitiveType();
         final String javaTypeName = javaTypeName(primitiveType);
+        final String formattedPropertyName = formatPropertyName(propertyName);
 
         sb.append(String.format("\n" +
             indent + "    public static %s %sNullValue()\n" +
@@ -1634,7 +1635,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return %s;\n" +
             indent + "    }\n",
             javaTypeName,
-            propertyName,
+            formattedPropertyName,
             generateLiteral(primitiveType, token.encoding().applicableNullValue().toString())));
 
         sb.append(String.format("\n" +
@@ -1643,7 +1644,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return %s;\n" +
             indent + "    }\n",
             javaTypeName,
-            propertyName,
+            formattedPropertyName,
             generateLiteral(primitiveType, token.encoding().applicableMinValue().toString())));
 
         sb.append(String.format(
@@ -1653,7 +1654,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return %s;\n" +
             indent + "    }\n",
             javaTypeName,
-            propertyName,
+            formattedPropertyName,
             generateLiteral(primitiveType, token.encoding().applicableMaxValue().toString())));
 
         return sb;
@@ -1680,7 +1681,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return %s;\n" +
             indent + "    }\n\n",
             javaTypeName,
-            propertyName,
+            formatPropertyName(propertyName),
             generateFieldNotPresentCondition(inComposite, propertyToken.version(), encoding, indent),
             generateGet(encoding.primitiveType(), "offset + " + offset, byteOrderStr));
     }
@@ -1701,7 +1702,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return this;\n" +
             indent + "    }\n\n",
             formatClassName(containingClassName),
-            propertyName,
+            formatPropertyName(propertyName),
             javaTypeName,
             generatePut(encoding.primitiveType(), "offset + " + offset, "value", byteOrderStr));
     }
@@ -1859,7 +1860,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        for (; end < %d && dst[end] != 0; ++end);\n\n" +
                 indent + "        return new String(dst, 0, end, %s);\n" +
                 indent + "    }\n\n",
-                formatPropertyName(propertyName),
+                propertyName,
                 generateStringNotPresentCondition(propertyToken.version(), indent),
                 fieldLength, offset,
                 fieldLength, fieldLength,
@@ -1905,7 +1906,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        return %d;\n" +
             indent + "    }\n\n",
-            propertyName,
+            formatPropertyName(propertyName),
             fieldLength));
     }
 
@@ -2083,6 +2084,7 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateConstPropertyMethods(
         final String propertyName, final Token token, final String indent)
     {
+        final String formattedPropertyName = formatPropertyName(propertyName);
         final Encoding encoding = token.encoding();
         if (encoding.primitiveType() != PrimitiveType.CHAR)
         {
@@ -2092,7 +2094,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        return %s;\n" +
                 indent + "    }\n",
                 javaTypeName(encoding.primitiveType()),
-                propertyName,
+                formattedPropertyName,
                 generateLiteral(encoding.primitiveType(), encoding.constValue().toString()));
         }
 
@@ -2109,7 +2111,7 @@ public class JavaGenerator implements CodeGenerator
             propertyName.toUpperCase(),
             values));
 
-        generateArrayLengthMethod(propertyName, indent, constBytes.length, sb);
+        generateArrayLengthMethod(formattedPropertyName, indent, constBytes.length, sb);
 
         sb.append(String.format(
             indent + "    public %s %s(final int index)\n" +
@@ -2117,7 +2119,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return %s_VALUE[index];\n" +
             indent + "    }\n\n",
             javaTypeName,
-            propertyName,
+            formattedPropertyName,
             propertyName.toUpperCase()));
 
         sb.append(String.format(
@@ -2138,7 +2140,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    {\n" +
                 indent + "        return \"%s\";\n" +
                 indent + "    }\n\n",
-                propertyName,
+                formattedPropertyName,
                 encoding.constValue()));
         }
         else
@@ -2148,7 +2150,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    {\n" +
                 indent + "        return (byte)%s;\n" +
                 indent + "    }\n\n",
-                propertyName,
+                formattedPropertyName,
                 encoding.constValue()));
         }
 
