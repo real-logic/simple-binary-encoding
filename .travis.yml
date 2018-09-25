@@ -1,10 +1,17 @@
 
 language: cpp
 
-sudo: false
+jdk: oraclejdk8
 
 matrix:
   include:
+
+  # Java linux build
+  - language: java
+    jdk: oraclejdk8
+    os: linux
+    script:
+      - ./gradlew
 
   # clang-4
   - env: COMPILER=clang++-4.0
@@ -19,6 +26,11 @@ matrix:
         sources:
         - ubuntu-toolchain-r-test
         - llvm-toolchain-trusty-4.0
+    before_script:
+      - export CXX=$COMPILER
+      - ./gradlew
+    script:
+      - ./cppbuild/cppbuild
 
   # clang-5
   - env: COMPILER=clang++-5.0
@@ -33,6 +45,11 @@ matrix:
         sources:
         - ubuntu-toolchain-r-test
         - llvm-toolchain-trusty-5.0
+    before_script:
+      - export CXX=$COMPILER
+      - ./gradlew
+    script:
+      - ./cppbuild/cppbuild
 
   # clang-6
   - env: COMPILER=clang++-6.0
@@ -47,6 +64,11 @@ matrix:
         sources:
         - ubuntu-toolchain-r-test
         - llvm-toolchain-trusty-6.0
+    before_script:
+      - export CXX=$COMPILER
+      - ./gradlew
+    script:
+      - ./cppbuild/cppbuild
 
   # gcc-5
   - env: COMPILER=g++-5
@@ -59,6 +81,11 @@ matrix:
         - libsparsehash-dev
         sources:
         - ubuntu-toolchain-r-test
+    before_script:
+      - export CXX=$COMPILER
+      - ./gradlew
+    script:
+      - ./cppbuild/cppbuild
 
   # gcc-6
   - env: COMPILER=g++-6
@@ -71,6 +98,11 @@ matrix:
         - libsparsehash-dev
         sources:
         - ubuntu-toolchain-r-test
+    before_script:
+      - export CXX=$COMPILER
+      - ./gradlew
+    script:
+      - ./cppbuild/cppbuild
 
   # gcc-7
   - env: COMPILER=g++-7
@@ -83,6 +115,11 @@ matrix:
         - libsparsehash-dev
         sources:
         - ubuntu-toolchain-r-test
+    before_script:
+      - export CXX=$COMPILER
+      - ./gradlew
+    script:
+      - ./cppbuild/cppbuild
 
   # gcc-8
   - env: COMPILER=g++-8
@@ -95,19 +132,18 @@ matrix:
         - libsparsehash-dev
         sources:
         - ubuntu-toolchain-r-test
+    before_script:
+      - export CXX=$COMPILER
+      - ./gradlew
+    script:
+      - ./cppbuild/cppbuild
 
-before_script:
-- export CXX=$COMPILER
-- ./gradlew
 
 before_cache:
-- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 
 cache:
   directories:
-  - $HOME/.gradle/caches/
-  - $HOME/.gradle/wrapper/
-
-script:
-- ./cppbuild/cppbuild
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
