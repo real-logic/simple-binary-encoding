@@ -2,6 +2,8 @@ language: cpp
 
 jdk: oraclejdk8
 
+sudo: false
+
 matrix:
   include:
 
