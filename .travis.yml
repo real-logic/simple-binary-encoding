@@ -7,7 +7,8 @@ matrix:
   include:
 
   # Java linux build
-  - language: java
+  - name: "Java 8"
+    language: java
     jdk: oraclejdk8
     os: linux
     script:
