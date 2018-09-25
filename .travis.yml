@@ -1,5 +1,104 @@
 
+language: cpp
+
 sudo: false
+
+matrix:
+  include:
+
+  # clang-4
+  - env: COMPILER=clang++-4.0
+    compiler: clang
+    os: linux
+    addons:
+      apt:
+        packages:
+        - clang-4.0
+        - libstdc++-6-dev
+        - libsparsehash-dev
+        sources:
+        - ubuntu-toolchain-r-test
+        - llvm-toolchain-trusty-4.0
+
+  # clang-5
+  - env: COMPILER=clang++-5.0
+    compiler: clang
+    os: linux
+    addons:
+      apt:
+        packages:
+        - clang-5.0
+        - libstdc++-7-dev
+        - libsparsehash-dev
+        sources:
+        - ubuntu-toolchain-r-test
+        - llvm-toolchain-trusty-5.0
+
+  # clang-6
+  - env: COMPILER=clang++-6.0
+    compiler: clang
+    os: linux
+    addons:
+      apt:
+        packages:
+        - clang-6.0
+        - libstdc++-7-dev
+        - libsparsehash-dev
+        sources:
+        - ubuntu-toolchain-r-test
+        - llvm-toolchain-trusty-6.0
+
+  # gcc-5
+  - env: COMPILER=g++-5
+    compiler: gcc
+    os: linux
+    addons:
+      apt:
+        packages:
+        - g++-5
+        - libsparsehash-dev
+        sources:
+        - ubuntu-toolchain-r-test
+
+  # gcc-6
+  - env: COMPILER=g++-6
+    compiler: gcc
+    os: linux
+    addons:
+      apt:
+        packages:
+        - g++-6
+        - libsparsehash-dev
+        sources:
+        - ubuntu-toolchain-r-test
+
+  # gcc-7
+  - env: COMPILER=g++-7
+    compiler: gcc
+    os: linux
+    addons:
+      apt:
+        packages:
+        - g++-7
+        - libsparsehash-dev
+        sources:
+        - ubuntu-toolchain-r-test
+
+  # gcc-8
+  - env: COMPILER=g++-8
+    compiler: gcc
+    os: linux
+    addons:
+      apt:
+        packages:
+        - g++-8
+        - libsparsehash-dev
+        sources:
+        - ubuntu-toolchain-r-test
+
+before_script:
+- export CXX=$COMPILER
+- ./gradlew
 
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -10,109 +109,5 @@ cache:
   - $HOME/.gradle/caches/
   - $HOME/.gradle/wrapper/
 
-matrix:
-  include:
-
-    # clang-4
-    - language: cpp
-    - env: COMPILER=clang++-4.0
-      compiler: clang
-      os: linux
-      addons:
-        apt:
-          packages:
-            - clang-4.0
-            - libstdc++-6-dev
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-4.0
-
-    # clang-5
-    - language: cpp
-    - env: COMPILER=clang++-5.0
-      compiler: clang
-      os: linux
-      addons:
-        apt:
-          packages:
-            - clang-5.0
-            - libstdc++-7-dev
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-5.0
-
-    # clang-6
-    - language: cpp
-    - env: COMPILER=clang++-6.0
-      compiler: clang
-      os: linux
-      addons:
-        apt:
-          packages:
-            - clang-6.0
-            - libstdc++-7-dev
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-6.0
-
-    # gcc-5
-    - language: cpp
-    - env: COMPILER=g++-5
-      compiler: gcc
-      os: linux
-      addons:
-        apt:
-          packages:
-            - g++-5
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
-
-    # gcc-6
-    - language: cpp
-    - env: COMPILER=g++-6
-      compiler: gcc
-      os: linux
-      addons:
-        apt:
-          packages:
-            - g++-6
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
-
-    # gcc-7
-    - language: cpp
-    - env: COMPILER=g++-7
-      compiler: gcc
-      os: linux
-      addons:
-        apt:
-          packages:
-            - g++-7
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
-
-    # gcc-8
-    - language: cpp
-    - env: COMPILER=g++-8
-      compiler: gcc
-      os: linux
-      addons:
-        apt:
-          packages:
-            - g++-8
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
-
-before_script:
-  - export CXX=$COMPILER
-  - ./gradlew
-
 script:
-  - ./cppbuild/cppbuild
+- ./cppbuild/cppbuild
