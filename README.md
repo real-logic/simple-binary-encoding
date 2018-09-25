@@ -69,6 +69,7 @@ An example to execute a Jar from command line using the 'all' jar which includes
 
 **Note:** The Jars in directory `build/libs` do not contain `META-INF/MANIFEST.MF` and the error *"no main manifest attribute"* will occur when trying to execute it.
 
+
 C++ Build using CMake
 ---------------------
 NOTE: Linux, Mac OS, and Windows only for the moment. See
@@ -91,6 +92,7 @@ If you are comfortable with using CMake, then a full clean, build, and test look
     $ cmake --build . --clean-first
     $ ctest
 
+
 Golang Build
 ------------
 
@@ -111,6 +113,7 @@ documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Golang-
 
 Developers wishing to enhance the golang generator should see the [developer
 documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/gocode/README.md)
+
 
 C# Build
 --------
