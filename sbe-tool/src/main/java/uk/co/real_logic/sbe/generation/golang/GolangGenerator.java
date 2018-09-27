@@ -1358,7 +1358,7 @@ public class GolangGenerator implements CodeGenerator
         generateSinceActingDeprecated(sb, typeName, propertyName, token);
         sb.append(String.format(
             "\nfunc (%1$s) %2$sCharacterEncoding() string {\n" +
-            "\treturn \"%4$s\"\n" +
+            "\treturn \"%3$s\"\n" +
             "}\n" +
             "\nfunc (%1$s) %2$sHeaderLength() uint64 {\n" +
             "\treturn %4$s\n" +
@@ -1607,9 +1607,8 @@ public class GolangGenerator implements CodeGenerator
         return sb;
     }
 
-    private String generateFromTemplate(
-        final CharSequence[] namespaces,
-        final String templateName) throws IOException
+    private String generateFromTemplate(final CharSequence[] namespaces, final String templateName)
+        throws IOException
     {
         final String jarFile = "golang/templates/" + templateName + ".go";
         final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(jarFile);
@@ -1824,7 +1823,7 @@ public class GolangGenerator implements CodeGenerator
 
         // MaxValue
         sb.append(String.format(
-            "\nfunc (*%1$s) %1$sMaxValue() %3$s {\n" +
+            "\nfunc (*%1$s) %2$sMaxValue() %3$s {\n" +
             "\treturn %4$s\n" +
             "}\n",
             typeName,
@@ -2023,7 +2022,7 @@ public class GolangGenerator implements CodeGenerator
             "\treturn %3$s\n" +
             "}\n" +
             "\nfunc (*%1$s) SbeTemplateId() (templateId %4$s) {\n" +
-            "\treturn %6$s\n" +
+            "\treturn %5$s\n" +
             "}\n" +
             "\nfunc (*1$s) SbeSchemaId() (schemaId %6$s) {\n" +
             "\treturn %7$s\n" +
