@@ -21,7 +21,7 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '2.0.4' apply false
+    id 'com.github.johnrengelman.shadow' version '4.0.0' apply false
 }
 
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
@@ -703,7 +703,7 @@ task runBenchmarks(type: Exec) {
     commandLine 'java',
         '-Dagrona.disable.bounds.checks=true',
         '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
-        '-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
+        '-w', '1s', '-r', '1s','-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
 }
 
 task uploadToMavenCentral {
