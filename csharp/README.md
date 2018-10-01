@@ -13,8 +13,24 @@ git bash and shell scripts are used for scripting.
 
 The C# code is built using Visual Studio Community 2017.
 
+The code, samples, tests and nuget package can be built/run using the [dotnet core sdk](https://www.microsoft.com/net/download):
+
+* On windows, having the legacy .NET Framework installed as part of the OS, only the dotnet sdk needs to be installed to allow for compiling the SDK style projects
+* On Mac/Linux, the Mono framework is also required for producing release nuget packages / .NET Framework compatible DLLs.
+
+## Release Notes
+
+### 0.1.8.1-beta-2
+
+C# Span support has been added to the code generation, and a set of corresponding utilities added to sbe-dll `DirectBuffer`. It is now possible to copy to/from a `Span<byte>` where previously only `byte[]` types were supported. This introduces a dependency on the [`System.Memory`](https://www.nuget.org/packages/System.Memory/) nuget package both for sbe-dll and generated code produced by sbe-tool.
+
+### 0.1.8.1-beta-1
+
+First beta release of the new SBE C# bindings and supporting sbe-tool / sbe-dll nuget packages.
+
 Code Layout
 -----------
+
 The Java code that performs the generation of C# code is
 [here](https://github.com/real-logic/simple-binary-encoding/tree/master/sbe-tool/src/main/java/uk/co/real_logic/sbe/generation/csharp).
 
@@ -30,7 +46,9 @@ solution](https://github.com/real-logic/simple-binary-encoding/blob/master/cshar
  * sbe-benchmarks (for performance testing and tuning)
  * sbe-example-car (sample code based on the Car example)
  * sbe-example-extension (sample code based on the Car extension)
- 
+
+The project can be built either through the various .NET Core supporting IDEs such as Visual Studio 2017, JetBrains Rider, and Visual Studio Code as well as through the .NET Core SDK, using the `dotnet build` / `dotnet test` commands.
+
 Roadmap
 -------
 The csharp generator is as of March 2018 a beta release. The current roadmap contains: 
