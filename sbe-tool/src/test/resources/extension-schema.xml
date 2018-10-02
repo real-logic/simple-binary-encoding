@@ -2,7 +2,7 @@
 <sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
                    package="code.generation.test"
                    id="1"
-                   version="4"
+                   version="5"
                    description="Unit Test">
     <types>
         <composite name="messageHeader" description="Message identifiers and length of message root">
@@ -19,6 +19,10 @@
         <composite name="AComposite" sinceVersion="1">
             <type name="value" primitiveType="int32"/>
         </composite>
+        <composite name="varDataEncoding" semanticType="Length" sinceVersion="5">
+            <type name="length" primitiveType="uint8" semanticType="Length"/>
+            <type name="varData" primitiveType="char" semanticType="data"/>
+        </composite>
         <enum name="AEnum" encodingType="uint8" sinceVersion="3">
             <validValue name="FirstValue">0</validValue>
             <validValue name="SecondValue">1</validValue>
@@ -34,6 +38,7 @@
         Version 2: tag3 added to TestMessage1, tag2 added to TestMessage2
         Version 3: AEnum, ASet introduced; tag4 added to TestMessage1, tag5 added to TestMessage2
         Version 4: tag5 added to TestMessage1, tag4 added to TestMessage2
+        Version 5: tag6 added to TestMessage1
     -->
     <sbe:message name="TestMessage1" id="1">
         <field name="tag1" id="1" type="int32"/>
@@ -41,6 +46,7 @@
         <field name="tag3" id="3" type="AComposite" sinceVersion="2"/>
         <field name="tag4" id="4" type="AEnum" sinceVersion="3"/>
         <field name="tag5" id="5" type="ASet" sinceVersion="4"/>
+        <data name="tag6" type="varDataEncoding" id="6" sinceVersion="5"/>
     </sbe:message>
     <sbe:message name="TestMessage2" id="2">
         <field name="tag1" id="1" type="int32"/>

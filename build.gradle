@@ -21,7 +21,7 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '2.0.4' apply false
+    id 'com.github.johnrengelman.shadow' version '4.0.0' apply false
 }
 
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
@@ -123,17 +123,15 @@ subprojects {
     jar.enabled = true
 
     dependencies {
-        checkstyle 'com.puppycrawl.tools:checkstyle:8.10.1'
+        checkstyle 'com.puppycrawl.tools:checkstyle:8.12'
 
         testCompile 'junit:junit:4.12'
-        testCompile 'org.mockito:mockito-core:2.19.0'
+        testCompile 'org.mockito:mockito-core:2.22.0'
         testCompile 'org.hamcrest:hamcrest-library:1.3'
-        testCompile 'com.google.code.gson:gson:2.8.5'
     }
 
     checkstyle {
-        configFile = new File(rootDir, 'config/checkstyle/checkstyle.xml')
-        toolVersion = '8.10.1'
+        toolVersion = '8.12'
     }
 
     compileJava {
@@ -179,18 +177,18 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
-        compile 'org.agrona:agrona:0.9.18'
+        compile 'org.agrona:agrona:0.9.24'
         testCompile files('build/classes/java/generated')
     }
 
     jar {
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
-            'Specification-Title' : 'Simple Binary Encoding',
-            'Specification-Version' : '1.0',
-            'Implementation-Title' : 'SBE',
-            'Implementation-Version' : "${sbeVersion}",
-            'Implementation-Vendor' : 'Real Logic Limited'
+            'Specification-Title': 'Simple Binary Encoding',
+            'Specification-Version': '1.0',
+            'Implementation-Title': 'SBE',
+            'Implementation-Version': "${sbeVersion}",
+            'Implementation-Vendor': 'Real Logic Limited'
         )
     }
 
@@ -198,8 +196,14 @@ project(':sbe-tool') {
         generated.java.srcDir 'build/generated'
     }
 
-    compileGeneratedJava.dependsOn 'generateCodecs'
-    compileGeneratedJava.classpath += sourceSets.main.runtimeClasspath
+    compileGeneratedJava {
+        dependsOn 'generateCodecs'
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+        options.encoding = 'UTF-8'
+        options.deprecation = true
+        classpath += sourceSets.main.runtimeClasspath
+    }
 
     compileTestJava.dependsOn 'compileGeneratedJava'
 
@@ -279,11 +283,11 @@ project(':sbe-all') {
         classifier = ''
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
-            'Specification-Title' : 'Simple Binary Encoding',
-            'Specification-Version' : '1.0',
-            'Implementation-Title' : 'SBE',
-            'Implementation-Version' : "${sbeVersion}",
-            'Implementation-Vendor' : 'Real Logic Limited')
+            'Specification-Title': 'Simple Binary Encoding',
+            'Specification-Version': '1.0',
+            'Implementation-Title': 'SBE',
+            'Implementation-Version': "${sbeVersion}",
+            'Implementation-Vendor': 'Real Logic Limited')
     }
 
     uploadArchives {
@@ -346,8 +350,14 @@ project(':sbe-samples') {
         generated.java.srcDir 'build/generated'
     }
 
-    compileGeneratedJava.dependsOn 'generateCodecs'
-    compileGeneratedJava.classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+    compileGeneratedJava {
+        dependsOn 'generateCodecs'
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+        options.encoding = 'UTF-8'
+        options.deprecation = true
+        classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+    }
 
     compileJava {
         dependsOn 'compileGeneratedJava'
@@ -433,8 +443,14 @@ project(':sbe-benchmarks') {
         generated.java.srcDir 'build/generated'
     }
 
-    compileGeneratedJava.dependsOn 'generateCodecs'
-    compileGeneratedJava.classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+    compileGeneratedJava {
+        dependsOn 'generateCodecs'
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+        options.encoding = 'UTF-8'
+        options.deprecation = true
+        classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+    }
 
     compileJava {
         dependsOn 'compileGeneratedJava'
@@ -532,15 +548,12 @@ task runRustCarExample(type: Exec) {
 def cargo_exists() {
     try {
         def result = project.exec {
-            executable 'cargo'
-            args '-v'
-            standardOutput = new ByteArrayOutputStream()
-            errorOutput = new ByteArrayOutputStream()
+            executable = 'cargo'
+            args = '-v'
         }
         return result.exitValue == 0
     }
-    catch (Exception ignore)
-    {
+    catch (Exception ignore) {
         return false
     }
 }
@@ -690,7 +703,7 @@ task runBenchmarks(type: Exec) {
     commandLine 'java',
         '-Dagrona.disable.bounds.checks=true',
         '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
-        '-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
+        '-w', '1s', '-r', '1s','-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
 }
 
 task uploadToMavenCentral {
@@ -701,7 +714,7 @@ task uploadToMavenCentral {
         'sbe-all:uploadShadow'
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.7'
+wrapper {
+    gradleVersion = '4.10.1'
     distributionType = 'ALL'
 }

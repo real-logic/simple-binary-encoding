@@ -224,16 +224,16 @@ public class RustGenerator implements CodeGenerator
 
                 indent(writer, 1, "pub fn get_%s(&self) -> bool {\n", choiceName);
                 indent(writer, 2, "0 != self.0 & (1 << %s)\n", choiceBitIndex);
-                indent(writer, 1, "}\n", choiceName);
+                indent(writer, 1, "}\n");
 
                 indent(writer, 1, "pub fn set_%s(&mut self, value: bool) -> &mut Self {\n", choiceName);
-                indent(writer, 2, "self.0 = if value {\n", choiceBitIndex);
+                indent(writer, 2, "self.0 = if value {\n");
                 indent(writer, 3, "self.0 | (1 << %s)\n", choiceBitIndex);
                 indent(writer, 2, "} else {\n");
                 indent(writer, 3, "self.0 & !(1 << %s)\n", choiceBitIndex);
                 indent(writer, 2, "};\n");
                 indent(writer, 2, "self\n");
-                indent(writer, 1, "}\n", choiceName);
+                indent(writer, 1, "}\n");
             }
             writer.append("}\n");
         }

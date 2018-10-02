@@ -3,7 +3,7 @@
         "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
     <module name="SuppressionFilter">
-        <property name="file" value="config/checkstyle/suppress.xml"/>
+        <property name="file" value="config/checkstyle/suppressions.xml"/>
     </module>
 
     <module name="SuppressWarningsFilter"/>
@@ -87,6 +87,8 @@
         <module name="WhitespaceAround">
             <property name="allowEmptyLambdas" value="true"/>
         </module>
+
+        <module name="SingleSpaceSeparator"/>
 
         <module name="OperatorWrap">
             <property name="option" value="eol"/>

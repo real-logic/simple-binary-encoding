@@ -14,9 +14,11 @@
 # limitations under the License.
 #
 
+find_package(Java REQUIRED)
+
 add_custom_target(
         ir_codecs
-        java
+        ${Java_JAVA_EXECUTABLE}
         "-Dsbe.output.dir=${CMAKE_CURRENT_SOURCE_DIR}"
         "-Dsbe.target.language=CPP"
         "-jar" "${SBE_JAR}"

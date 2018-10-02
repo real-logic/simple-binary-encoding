@@ -161,7 +161,8 @@ public:
         m_type = type;
         if (0 == valueLength)
         {
-            type = PrimitiveType::NONE;
+            m_type = PrimitiveType::NONE;
+            m_size = 0;
             return;
         }
 
@@ -275,6 +276,7 @@ public:
             default:
             {
                 m_type = PrimitiveType::NONE;
+                m_size = 0;
                 break;
             }
         }

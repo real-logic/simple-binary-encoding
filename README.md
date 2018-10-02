@@ -2,6 +2,10 @@ Simple Binary Encoding (SBE)
 ============================
 
 [![Javadocs](http://www.javadoc.io/badge/uk.co.real-logic/sbe-tool.svg)](http://www.javadoc.io/doc/uk.co.real-logic/sbe-tool)
+[![Build Status](https://travis-ci.org/real-logic/simple-binary-encoding.svg?branch=master)](https://travis-ci.org/real-logic/simple-binary-encoding)
+[![GitHub](https://img.shields.io/github/license/real-logic/simple-binary-encoding.svg)](https://github.com/real-logic/simple-binary-encoding/blob/master/LICENSE)
+[![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/real-logic/simple-binary-encoding.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/real-logic/simple-binary-encoding/context:java)
+[![Total Alerts](https://img.shields.io/lgtm/alerts/g/real-logic/simple-binary-encoding.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/real-logic/simple-binary-encoding/alerts)
 
 [SBE](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) is an OSI layer 6 presentation for 
 encoding and decoding binary application messages for low-latency financial applications. This repository contains 
@@ -32,7 +36,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.8.1</version>
+    <version>1.8.8</version>
 </dependency>
 ```
 
@@ -61,9 +65,10 @@ Jars for the executable, source, and javadoc for the various modules can be foun
 
 An example to execute a Jar from command line using the 'all' jar which includes the Agrona dependency:
 
-    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-1.8.1-SNAPSHOT.jar my_sbe_input.xml
+    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-1.8.9-SNAPSHOT.jar my_sbe_input.xml
 
 **Note:** The Jars in directory `build/libs` do not contain `META-INF/MANIFEST.MF` and the error *"no main manifest attribute"* will occur when trying to execute it.
+
 
 C++ Build using CMake
 ---------------------
@@ -87,6 +92,7 @@ If you are comfortable with using CMake, then a full clean, build, and test look
     $ cmake --build . --clean-first
     $ ctest
 
+
 Golang Build
 ------------
 
@@ -108,9 +114,10 @@ documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Golang-
 Developers wishing to enhance the golang generator should see the [developer
 documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/gocode/README.md)
 
+
 C# Build
 --------
-As of May 2017, the csharp build is considered a preview release. API stability is not yet guaranteed. User and Developer guides are not yet released or are incomplete.
+As of May 2017, the CSharp build is considered a preview release. API stability is not yet guaranteed. User and Developer guides are not yet released or are incomplete.
 
 First build using Gradle to generate the SBE jar and then use it to
 generate the C# code used for testing and the examples.
@@ -122,9 +129,9 @@ You can then use the [Visual Studio 2017 Community solution](https://github.com/
 example. This solution also builds some tests which can be run via the provided
 [runtests.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/runtests.sh) script.
 
-Users of csharp generated code should see the [user documentation (coming)](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide).
+Users of CSharp generated code should see the [user documentation (coming)](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide).
 
-Developers wishing to enhance the csharp generator should see the [developer documentation (coming)](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/README.md)
+Developers wishing to enhance the CSharp generator should see the [developer documentation (coming)](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/README.md)
 
 
 License (See LICENSE file for full license)

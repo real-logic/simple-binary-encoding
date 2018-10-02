@@ -382,7 +382,7 @@ public class JavaGeneratorTest
         final StringBuilder result = new StringBuilder();
         generator().generate();
 
-        final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
+        final Object encoder = wrap(buffer, compileCarEncoder().getDeclaredConstructor().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
         set(encoder, "vehicleCode", String.class, "R11");
@@ -407,7 +407,7 @@ public class JavaGeneratorTest
         final StringBuilder result = new StringBuilder();
         generator().generate();
 
-        final Object encoder = wrap(buffer, compileCarEncoder().newInstance());
+        final Object encoder = wrap(buffer, compileCarEncoder().getDeclaredConstructor().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
         set(encoder, "color", String.class, "Red");
         get(decoder, "color", result);

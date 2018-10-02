@@ -143,7 +143,6 @@ public class GolangGenerator implements CodeGenerator
             {
                 final StringBuilder sb = new StringBuilder();
 
-                // Initialize the imports
                 imports = new TreeSet<>();
                 this.imports.add("io");
 
@@ -305,12 +304,9 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
-    private void generateDecodePrimitive(
-        final StringBuilder sb,
-        final String varName,
-        final Token token)
+    private void generateDecodePrimitive(final StringBuilder sb, final String varName, final Token token)
     {
-        final PrimitiveType primitiveType =  token.encoding().primitiveType();
+        final PrimitiveType primitiveType = token.encoding().primitiveType();
         final String marshalType = golangMarshalType(primitiveType);
 
         // Complexity lurks here
@@ -553,9 +549,9 @@ public class GolangGenerator implements CodeGenerator
         final Boolean isMessage,
         final Boolean isExtensible)
     {
-        generateEncodeHeader(encode, varName, typeName, isMessage);
+        generateEncodeHeader(encode, varName, typeName, isMessage, false);
         generateDecodeHeader(decode, varName, typeName, isMessage, isExtensible);
-        generateRangeCheckHeader(rangeCheck, varName, typeName);
+        generateRangeCheckHeader(rangeCheck, varName, typeName, false);
         generateInitHeader(init, varName, typeName);
     }
 
@@ -788,13 +784,10 @@ public class GolangGenerator implements CodeGenerator
         return currentOffset;
     }
 
-    private void generateEnumEncodeDecode(
-        final StringBuilder sb,
-        final String enumName,
-        final Token token)
+    private void generateEnumEncodeDecode(final StringBuilder sb, final String enumName, final Token token)
     {
         final char varName = Character.toLowerCase(enumName.charAt(0));
-        final String typeName =  golangTypeName(token.encoding().primitiveType());
+        final String typeName = golangTypeName(token.encoding().primitiveType());
         final String marshalType;
 
         // The enum type might be char (golang byte) which we encode
@@ -805,11 +798,11 @@ public class GolangGenerator implements CodeGenerator
         }
         else
         {
-            marshalType =  golangMarshalType(token.encoding().primitiveType());
+            marshalType = golangMarshalType(token.encoding().primitiveType());
         }
 
         // Encode
-        generateEncodeHeader(sb, varName, enumName + "Enum", false);
+        generateEncodeHeader(sb, varName, enumName + "Enum", false, true);
         sb.append(String.format(
             "\tif err := _m.Write%1$s(_w, %2$s(%3$s)); err != nil {\n" +
             "\t\treturn err\n" +
@@ -835,7 +828,7 @@ public class GolangGenerator implements CodeGenerator
         // struct to check which are legitimate
         imports.add("fmt");
         imports.add("reflect");
-        generateRangeCheckHeader(sb, varName, enumName + "Enum");
+        generateRangeCheckHeader(sb, varName, enumName + "Enum", true);
 
         // For enums we can add new fields so if we're decoding a
         // newer version then the content is definitionally ok.
@@ -859,15 +852,12 @@ public class GolangGenerator implements CodeGenerator
             enumName));
     }
 
-    private void generateChoiceEncodeDecode(
-        final StringBuilder sb,
-        final String choiceName,
-        final Token token)
+    private void generateChoiceEncodeDecode(final StringBuilder sb, final String choiceName, final Token token)
     {
         final char varName = Character.toLowerCase(choiceName.charAt(0));
 
         // Encode
-        generateEncodeHeader(sb, varName, choiceName, false);
+        generateEncodeHeader(sb, varName, choiceName, false, false);
 
         sb.append(String.format(
             "\tvar wireval uint%1$d = 0\n" +
@@ -902,7 +892,8 @@ public class GolangGenerator implements CodeGenerator
         final StringBuilder sb,
         final char varName,
         final String typeName,
-        final Boolean isMessage)
+        final Boolean isMessage,
+        final Boolean isEnum)
     {
         // Only messages get the rangeCheck flag
         String messageArgs = "";
@@ -912,11 +903,12 @@ public class GolangGenerator implements CodeGenerator
         }
 
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) Encode(_m *SbeGoMarshaller, _w io.Writer" +
+            "\nfunc (%1$s %3$s%2$s) Encode(_m *SbeGoMarshaller, _w io.Writer" +
             messageArgs +
             ") error {\n",
             varName,
-            typeName));
+            typeName,
+            (isEnum ? "" : "*")));
     }
 
     private void generateDecodeHeader(
@@ -962,12 +954,14 @@ public class GolangGenerator implements CodeGenerator
     private void generateRangeCheckHeader(
         final StringBuilder sb,
         final char varName,
-        final String typeName)
+        final String typeName,
+        final boolean isEnum)
     {
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) RangeCheck(actingVersion uint16, schemaVersion uint16) error {\n",
+            "\nfunc (%1$s %3$s%2$s) RangeCheck(actingVersion uint16, schemaVersion uint16) error {\n",
             varName,
-            typeName));
+            typeName,
+            (isEnum ? "" : "*")));
     }
 
     private void generateInitHeader(
@@ -1096,7 +1090,8 @@ public class GolangGenerator implements CodeGenerator
             "\tif err := %1$s.%2$s.Encode(_m, _w); err != nil {\n" +
             "\t\treturn err\n" +
             "\t}\n",
-            varName, propertyName));
+            varName,
+            propertyName));
 
         decode.append(String.format(
             "\tif %1$s.%2$sInActingVersion(actingVersion) {\n" +
@@ -1104,7 +1099,8 @@ public class GolangGenerator implements CodeGenerator
             "\t\t\treturn err\n" +
             "\t\t}\n" +
             "\t}\n",
-            varName, propertyName));
+            varName,
+            propertyName));
 
         return token.encodedLength() + gap;
     }
@@ -1359,17 +1355,14 @@ public class GolangGenerator implements CodeGenerator
         final String characterEncoding,
         final Integer lengthOfLengthField)
     {
-        final char varName = Character.toLowerCase(typeName.charAt(0));
-
         generateSinceActingDeprecated(sb, typeName, propertyName, token);
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) %3$sCharacterEncoding() string {\n" +
-            "\treturn \"%4$s\"\n" +
+            "\nfunc (%1$s) %2$sCharacterEncoding() string {\n" +
+            "\treturn \"%3$s\"\n" +
             "}\n" +
-            "\nfunc (%1$s %2$s) %3$sHeaderLength() uint64 {\n" +
-            "\treturn %5$s\n" +
+            "\nfunc (%1$s) %2$sHeaderLength() uint64 {\n" +
+            "\treturn %4$s\n" +
             "}\n",
-            varName,
             typeName,
             propertyName,
             characterEncoding,
@@ -1380,12 +1373,10 @@ public class GolangGenerator implements CodeGenerator
     {
         final Token choiceToken = tokens.get(0);
         final String choiceName = formatTypeName(choiceToken.applicableTypeName());
-        final char varName = Character.toLowerCase(choiceName.charAt(0));
         final StringBuilder sb = new StringBuilder();
 
         try (Writer out = outputManager.createOutput(choiceName))
         {
-            // Initialize the imports
             imports = new TreeSet<>();
             imports.add("io");
 
@@ -1399,10 +1390,9 @@ public class GolangGenerator implements CodeGenerator
 
             // EncodedLength
             sb.append(String.format(
-                "\nfunc (%1$s %2$s) EncodedLength() int64 {\n" +
-                "\treturn %3$s\n" +
+                "\nfunc (%1$s) EncodedLength() int64 {\n" +
+                "\treturn %2$s\n" +
                 "}\n",
-                varName,
                 choiceName,
                 choiceToken.encodedLength()));
 
@@ -1419,13 +1409,11 @@ public class GolangGenerator implements CodeGenerator
     {
         final Token enumToken = tokens.get(0);
         final String enumName = formatTypeName(tokens.get(0).applicableTypeName());
-        final char varName = Character.toLowerCase(enumName.charAt(0));
 
         final StringBuilder sb = new StringBuilder();
 
         try (Writer out = outputManager.createOutput(enumName))
         {
-            // Initialize the imports
             imports = new TreeSet<>();
             imports.add("io");
 
@@ -1440,10 +1428,9 @@ public class GolangGenerator implements CodeGenerator
 
             // EncodedLength
             sb.append(String.format(
-                "\nfunc (%1$s %2$sEnum) EncodedLength() int64 {\n" +
-                "\treturn %3$s\n" +
+                "\nfunc (*%1$sEnum) EncodedLength() int64 {\n" +
+                "\treturn %2$s\n" +
                 "}\n",
-                varName,
                 enumName,
                 enumToken.encodedLength()));
 
@@ -1466,7 +1453,6 @@ public class GolangGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(compositeName))
         {
-            // Initialize the imports
             imports = new TreeSet<>();
             imports.add("io");
 
@@ -1507,7 +1493,8 @@ public class GolangGenerator implements CodeGenerator
         sb.append(String.format(
             "type %1$sEnum %2$s\n" +
             "type %1$sValues struct {\n",
-            enumName, golangType));
+            enumName,
+            golangType));
 
         for (final Token token : tokens)
         {
@@ -1620,9 +1607,8 @@ public class GolangGenerator implements CodeGenerator
         return sb;
     }
 
-    private String generateFromTemplate(
-        final CharSequence[] namespaces,
-        final String templateName) throws IOException
+    private String generateFromTemplate(final CharSequence[] namespaces, final String templateName)
+        throws IOException
     {
         final String jarFile = "golang/templates/" + templateName + ".go";
         final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(jarFile);
@@ -1827,10 +1813,9 @@ public class GolangGenerator implements CodeGenerator
 
         // MinValue
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) %3$sMinValue() %4$s {\n" +
-            "\treturn %5$s\n" +
+            "\nfunc (*%1$s) %2$sMinValue() %3$s {\n" +
+            "\treturn %4$s\n" +
             "}\n",
-            Character.toLowerCase(typeName.charAt(0)),
             typeName,
             propertyName,
             golangTypeName,
@@ -1838,10 +1823,9 @@ public class GolangGenerator implements CodeGenerator
 
         // MaxValue
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) %3$sMaxValue() %4$s {\n" +
-            "\treturn %5$s\n" +
+            "\nfunc (*%1$s) %2$sMaxValue() %3$s {\n" +
+            "\treturn %4$s\n" +
             "}\n",
-            Character.toLowerCase(typeName.charAt(0)),
             typeName,
             propertyName,
             golangTypeName,
@@ -1849,10 +1833,9 @@ public class GolangGenerator implements CodeGenerator
 
         // NullValue
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) %3$sNullValue() %4$s {\n" +
-            "\treturn %5$s\n" +
+            "\nfunc (*%1$s) %2$sNullValue() %3$s {\n" +
+            "\treturn %4$s\n" +
             "}\n",
-            Character.toLowerCase(typeName.charAt(0)),
             typeName,
             propertyName,
             golangTypeName,
@@ -1868,7 +1851,7 @@ public class GolangGenerator implements CodeGenerator
         if (token.encoding().primitiveType() == CHAR && token.arrayLength() > 1)
         {
             sb.append(String.format(
-                "\nfunc (%1$s %2$s) %3$sCharacterEncoding() string {\n" +
+                "\nfunc (%1$s *%2$s) %3$sCharacterEncoding() string {\n" +
                 "\treturn \"%4$s\"\n" +
                 "}\n",
                 Character.toLowerCase(typeName.charAt(0)),
@@ -1885,10 +1868,9 @@ public class GolangGenerator implements CodeGenerator
         final Token token)
     {
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) %3$sId() uint16 {\n" +
-            "\treturn %4$s\n" +
+            "\nfunc (*%1$s) %2$sId() uint16 {\n" +
+            "\treturn %3$s\n" +
             "}\n",
-            Character.toLowerCase(typeName.charAt(0)),
             typeName,
             propertyName,
             token.id()));
@@ -1901,13 +1883,13 @@ public class GolangGenerator implements CodeGenerator
         final Token token)
     {
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) %3$sSinceVersion() uint16 {\n" +
+            "\nfunc (*%2$s) %3$sSinceVersion() uint16 {\n" +
             "\treturn %4$s\n" +
             "}\n" +
-            "\nfunc (%1$s %2$s) %3$sInActingVersion(actingVersion uint16) bool {\n" +
+            "\nfunc (%1$s *%2$s) %3$sInActingVersion(actingVersion uint16) bool {\n" +
             "\treturn actingVersion >= %1$s.%3$sSinceVersion()\n" +
             "}\n" +
-            "\nfunc (%1$s %2$s) %3$sDeprecated() uint16 {\n" +
+            "\nfunc (*%2$s) %3$sDeprecated() uint16 {\n" +
             "\treturn %5$s\n" +
             "}\n",
             Character.toLowerCase(typeName.charAt(0)),
@@ -2014,10 +1996,9 @@ public class GolangGenerator implements CodeGenerator
         final int size)
     {
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) EncodedLength() int64 {\n" +
-            "\treturn %3$s\n" +
+            "\nfunc (*%1$s) EncodedLength() int64 {\n" +
+            "\treturn %2$s\n" +
             "}\n",
-            Character.toLowerCase(typeName.charAt(0)),
             typeName,
             size));
     }
@@ -2037,22 +2018,21 @@ public class GolangGenerator implements CodeGenerator
         generateEncodeDecode(sb, typeName, tokens, true, true);
 
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) SbeBlockLength() (blockLength %3$s) {\n" +
-            "\treturn %4$s\n" +
+            "\nfunc (*%1$s) SbeBlockLength() (blockLength %2$s) {\n" +
+            "\treturn %3$s\n" +
             "}\n" +
-            "\nfunc (%1$s %2$s) SbeTemplateId() (templateId %5$s) {\n" +
-            "\treturn %6$s\n" +
+            "\nfunc (*%1$s) SbeTemplateId() (templateId %4$s) {\n" +
+            "\treturn %5$s\n" +
             "}\n" +
-            "\nfunc (%1$s %2$s) SbeSchemaId() (schemaId %7$s) {\n" +
-            "\treturn %8$s\n" +
+            "\nfunc (*1$s) SbeSchemaId() (schemaId %6$s) {\n" +
+            "\treturn %7$s\n" +
             "}\n" +
-            "\nfunc (%1$s %2$s) SbeSchemaVersion() (schemaVersion %9$s) {\n" +
-            "\treturn %10$s\n" +
+            "\nfunc (*%1$s) SbeSchemaVersion() (schemaVersion %8$s) {\n" +
+            "\treturn %9$s\n" +
             "}\n" +
-            "\nfunc (%1$s %2$s) SbeSemanticType() (semanticType []byte) {\n" +
-            "\treturn []byte(\"%11$s\")\n" +
+            "\nfunc (*%1$s) SbeSemanticType() (semanticType []byte) {\n" +
+            "\treturn []byte(\"%10$s\")\n" +
             "}\n",
-            Character.toLowerCase(typeName.charAt(0)),
             typeName,
             blockLengthType,
             generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.encodedLength())),
@@ -2073,13 +2053,12 @@ public class GolangGenerator implements CodeGenerator
         final Token token)
     {
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) SbeBlockLength() (blockLength uint) {\n" +
-            "\treturn %3$s\n" +
+            "\nfunc (*%1$s) SbeBlockLength() (blockLength uint) {\n" +
+            "\treturn %2$s\n" +
             "}\n" +
-            "\nfunc (%1$s %2$s) SbeSchemaVersion() (schemaVersion %4$s) {\n" +
-            "\treturn %5$s\n" +
+            "\nfunc (*%1$s) SbeSchemaVersion() (schemaVersion %3$s) {\n" +
+            "\treturn %4$s\n" +
             "}\n",
-            Character.toLowerCase(typeName.charAt(0)),
             typeName,
             generateLiteral(ir.headerStructure().blockLengthType(), Integer.toString(token.encodedLength())),
             golangTypeName(ir.headerStructure().schemaVersionType()),
@@ -2138,22 +2117,20 @@ public class GolangGenerator implements CodeGenerator
         final String presence = encoding.presence() == null ? "" : encoding.presence().toString().toLowerCase();
 
         sb.append(String.format(
-            "\nfunc (%1$s %2$s) %3$sMetaAttribute(meta int) string {\n" +
+            "\nfunc (*%1$s) %3$sMetaAttribute(meta int) string {\n" +
             "\tswitch meta {\n" +
             "\tcase 1:\n" +
-            "\t\treturn \"%4$s\"\n" +
+            "\t\treturn \"%2$s\"\n" +
             "\tcase 2:\n" +
-            "\t\treturn \"%5$s\"\n" +
+            "\t\treturn \"%3$s\"\n" +
             "\tcase 3:\n" +
-            "\t\treturn \"%6$s\"\n" +
+            "\t\treturn \"%4$s\"\n" +
             "\tcase 4:\n" +
-            "\t\treturn \"%7$s\"\n" +
+            "\t\treturn \"%5$s\"\n" +
             "\t}\n" +
             "\treturn \"\"\n" +
             "}\n",
-            Character.toLowerCase(containingTypeName.charAt(0)),
             containingTypeName,
-            toUpperFirstChar(token.name()),
             epoch,
             timeUnit,
             semanticType,

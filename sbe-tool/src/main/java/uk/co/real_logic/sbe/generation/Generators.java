@@ -56,6 +56,11 @@ public class Generators
      */
     public static String toUpperFirstChar(final String s)
     {
+        if (Character.isUpperCase(s.charAt(0)))
+        {
+            return s;
+        }
+
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
@@ -67,6 +72,11 @@ public class Generators
      */
     public static String toLowerFirstChar(final String s)
     {
+        if (Character.isLowerCase(s.charAt(0)))
+        {
+            return s;
+        }
+
         return Character.toLowerCase(s.charAt(0)) + s.substring(1);
     }
 }
