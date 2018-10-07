@@ -7,10 +7,30 @@ sudo: false
 matrix:
   include:
 
-  # Java linux build
-  - name: "Java 8"
+  - name: "Oracle Java 8"
     language: java
     jdk: oraclejdk8
+    os: linux
+    script:
+    - ./gradlew
+
+  - name: "Oracle Java 11"
+    language: java
+    jdk: oraclejdk11
+    os: linux
+    script:
+    - ./gradlew
+
+  - name: "OpenJDK 8"
+    language: java
+    jdk: openjdk8
+    os: linux
+    script:
+    - ./gradlew
+
+  - name: "OpenJDK 11"
+    language: java
+    jdk: openjdk11
     os: linux
     script:
     - ./gradlew
