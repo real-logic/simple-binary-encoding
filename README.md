@@ -67,8 +67,6 @@ An example to execute a Jar from command line using the 'all' jar which includes
 
     java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-1.8.10-SNAPSHOT.jar my_sbe_input.xml
 
-**Note:** The Jars in directory `build/libs` do not contain `META-INF/MANIFEST.MF` and the error *"no main manifest attribute"* will occur when trying to execute it.
-
 
 C++ Build using CMake
 ---------------------
