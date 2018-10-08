@@ -28,6 +28,7 @@ defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
+def sbeJavaVersion = '1.8'
 
 group = sbeGroup
 version = sbeVersion
@@ -135,15 +136,15 @@ subprojects {
     }
 
     compileJava {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility = sbeJavaVersion
+        targetCompatibility = sbeJavaVersion
         options.encoding = 'UTF-8'
         options.deprecation = true
     }
 
     compileTestJava {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility = sbeJavaVersion
+        targetCompatibility = sbeJavaVersion
         options.encoding = 'UTF-8'
         options.deprecation = true
     }
@@ -198,8 +199,8 @@ project(':sbe-tool') {
 
     compileGeneratedJava {
         dependsOn 'generateCodecs'
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility = sbeJavaVersion
+        targetCompatibility = sbeJavaVersion
         options.encoding = 'UTF-8'
         options.deprecation = true
         classpath += sourceSets.main.runtimeClasspath
@@ -352,8 +353,8 @@ project(':sbe-samples') {
 
     compileGeneratedJava {
         dependsOn 'generateCodecs'
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility = sbeJavaVersion
+        targetCompatibility = sbeJavaVersion
         options.encoding = 'UTF-8'
         options.deprecation = true
         classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
@@ -531,7 +532,7 @@ task generateCarExampleDataFile(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.encoding.filename': 'rust/car_example/car_example_data.sbe')
+        'sbe.encoding.filename': 'rust/car_example/car_example_data.sbe')
     args = []
     standardOutput = new ByteArrayOutputStream()
 }
