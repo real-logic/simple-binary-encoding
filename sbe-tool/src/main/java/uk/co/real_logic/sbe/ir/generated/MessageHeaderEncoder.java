@@ -9,6 +9,8 @@ import org.agrona.MutableDirectBuffer;
 @SuppressWarnings("all")
 public class MessageHeaderEncoder
 {
+    public static final int SCHEMA_ID = 1;
+    public static final int SCHEMA_VERSION = 0;
     public static final int ENCODED_LENGTH = 8;
     public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.LITTLE_ENDIAN;
 
@@ -36,6 +38,16 @@ public class MessageHeaderEncoder
     public int encodedLength()
     {
         return ENCODED_LENGTH;
+    }
+
+    public int sbeSchemaId()
+    {
+        return SCHEMA_ID;
+    }
+
+    public int sbeSchemaVersion()
+    {
+        return SCHEMA_VERSION;
     }
 
     public static int blockLengthEncodingOffset()

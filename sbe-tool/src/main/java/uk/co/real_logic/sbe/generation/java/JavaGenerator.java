@@ -1089,7 +1089,7 @@ public class JavaGenerator implements CodeGenerator
     {
         out.append(generateFileHeader(ir.applicableNamespace(), fqBuffer));
         out.append(generateDeclaration(typeName, implementsString, token));
-        out.append(generateCompositeFlyweightCode(typeName, token.encodedLength(), buffer));
+        out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
@@ -2173,40 +2173,15 @@ public class JavaGenerator implements CodeGenerator
         return values;
     }
 
-    private static CharSequence generateFixedFlyweightCode(
+    private CharSequence generateFixedFlyweightCode(
         final String className, final int size, final String bufferImplementation)
     {
-        return String.format(
-            "    public static final int ENCODED_LENGTH = %2$d;\n" +
-            "    private %3$s buffer;\n" +
-            "    private int offset;\n\n" +
-            "    public %1$s wrap(final %3$s buffer, final int offset)\n" +
-            "    {\n" +
-            "        this.buffer = buffer;\n" +
-            "        this.offset = offset;\n\n" +
-            "        return this;\n" +
-            "    }\n\n" +
-            "    public %3$s buffer()\n" +
-            "    {\n" +
-            "        return buffer;\n" +
-            "    }\n\n" +
-            "    public int offset()\n" +
-            "    {\n" +
-            "        return offset;\n" +
-            "    }\n\n" +
-            "    public int encodedLength()\n" +
-            "    {\n" +
-            "        return ENCODED_LENGTH;\n" +
-            "    }\n",
-            className,
-            size,
-            bufferImplementation);
-    }
+        final String schemaIdType = javaTypeName(ir.headerStructure().schemaIdType());
+        final String schemaVersionType = javaTypeName(ir.headerStructure().schemaVersionType());
 
-    private CharSequence generateCompositeFlyweightCode(
-        final String className, final int size, final String bufferImplementation)
-    {
         return String.format(
+            "    public static final %5$s SCHEMA_ID = %6$s;\n" +
+            "    public static final %7$s SCHEMA_VERSION = %8$s;\n" +
             "    public static final int ENCODED_LENGTH = %2$d;\n" +
             "    public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.%4$s;\n\n" +
             "    private int offset;\n" +
@@ -2228,11 +2203,23 @@ public class JavaGenerator implements CodeGenerator
             "    public int encodedLength()\n" +
             "    {\n" +
             "        return ENCODED_LENGTH;\n" +
+            "    }\n\n" +
+            "    public %5$s sbeSchemaId()\n" +
+            "    {\n" +
+            "        return SCHEMA_ID;\n" +
+            "    }\n\n" +
+            "    public %7$s sbeSchemaVersion()\n" +
+            "    {\n" +
+            "        return SCHEMA_VERSION;\n" +
             "    }\n",
             className,
             size,
             bufferImplementation,
-            ir.byteOrder());
+            ir.byteOrder(),
+            schemaIdType,
+            generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
+            schemaVersionType,
+            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())));
     }
 
     private CharSequence generateDecoderFlyweightCode(final String className, final Token token)
