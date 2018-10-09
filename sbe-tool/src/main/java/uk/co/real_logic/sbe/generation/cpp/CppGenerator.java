@@ -1748,9 +1748,26 @@ public class CppGenerator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
 
+        sb.append(String.format("\n" +
+            indent + "    static SBE_CONSTEXPR std::size_t %1$sEncodingLength() SBE_NOEXCEPT\n" +
+            indent + "    {\n" +
+            indent + "        return %2$d;\n" +
+            indent + "    }\n",
+            propertyName,
+            signalToken.encodedLength()));
+
         if (signalToken.isConstantEncoding())
         {
             final String constValue = signalToken.encoding().constValue().toString();
+
+            sb.append(String.format("\n" +
+                indent + "    static SBE_CONSTEXPR %1$s::Value %2$sConstValue() SBE_NOEXCEPT\n" +
+                indent + "    {\n" +
+                indent + "        return %1$s::Value::%3$s;\n" +
+                indent + "    }\n",
+                enumName,
+                propertyName,
+                constValue.substring(constValue.indexOf(".") + 1)));
 
             sb.append(String.format("\n" +
                 indent + "    %1$s::Value %2$s() const SBE_NOEXCEPT\n" +
@@ -1793,14 +1810,6 @@ public class CppGenerator implements CodeGenerator
                 typeName,
                 offset,
                 formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())));
-
-            sb.append(String.format("\n" +
-                indent + "    static SBE_CONSTEXPR std::size_t %1$sEncodingLength() SBE_NOEXCEPT\n" +
-                indent + "    {\n" +
-                indent + "        return %2$d;\n" +
-                indent + "    }\n",
-                propertyName,
-                token.encoding().primitiveType().size()));
         }
 
         return sb;
