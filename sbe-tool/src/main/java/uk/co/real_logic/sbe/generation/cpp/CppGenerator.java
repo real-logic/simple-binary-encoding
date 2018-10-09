@@ -925,25 +925,28 @@ public class CppGenerator implements CodeGenerator
 
         for (int i = 0; i < tokens.size();)
         {
-            final Token token = tokens.get(i);
-            final String propertyName = formatPropertyName(token.name());
+            final Token fieldToken = tokens.get(i);
+            final String propertyName = formatPropertyName(fieldToken.name());
 
-            switch (token.signal())
+            generateFieldMetaAttributeMethod(sb, fieldToken, indent);
+            generateFieldCommonMethods(indent, sb, fieldToken, fieldToken, propertyName);
+
+            switch (fieldToken.signal())
             {
                 case ENCODING:
-                    sb.append(generatePrimitiveProperty(containingClassName, propertyName, token, indent));
+                    sb.append(generatePrimitiveProperty(containingClassName, propertyName, fieldToken, indent));
                     break;
 
                 case BEGIN_ENUM:
-                    sb.append(generateEnumProperty(containingClassName, token, propertyName, token, indent));
+                    sb.append(generateEnumProperty(containingClassName, fieldToken, propertyName, fieldToken, indent));
                     break;
 
                 case BEGIN_SET:
-                    sb.append(generateBitsetProperty(propertyName, token, indent));
+                    sb.append(generateBitsetProperty(propertyName, fieldToken, indent));
                     break;
 
                 case BEGIN_COMPOSITE:
-                    sb.append(generateCompositeProperty(propertyName, token, indent));
+                    sb.append(generateCompositeProperty(propertyName, fieldToken, indent));
                     break;
             }
 
@@ -1614,42 +1617,8 @@ public class CppGenerator implements CodeGenerator
                 final Token encodingToken = tokens.get(i + 1);
                 final String propertyName = formatPropertyName(signalToken.name());
 
-                sb.append(String.format("\n" +
-                    indent + "    static SBE_CONSTEXPR std::uint16_t %1$sId() SBE_NOEXCEPT\n" +
-                    indent + "    {\n" +
-                    indent + "        return %2$d;\n" +
-                    indent + "    }\n",
-                    propertyName,
-                    signalToken.id()));
-
-                sb.append(String.format("\n" +
-                    indent + "    static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
-                    indent + "    {\n" +
-                    indent + "         return %2$d;\n" +
-                    indent + "    }\n\n" +
-                    indent + "    bool %1$sInActingVersion() SBE_NOEXCEPT\n" +
-                    indent + "    {\n" +
-                    indent + "#if defined(__clang__)\n" +
-                    indent + "#pragma clang diagnostic push\n" +
-                    indent + "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
-                    indent + "#endif\n" +
-                    indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
-                    indent + "#if defined(__clang__)\n" +
-                    indent + "#pragma clang diagnostic pop\n" +
-                    indent + "#endif\n" +
-                    indent + "    }\n",
-                    propertyName,
-                    signalToken.version()));
-
-                sb.append(String.format("\n" +
-                    indent + "    static SBE_CONSTEXPR std::size_t %1$sEncodingOffset() SBE_NOEXCEPT\n" +
-                    indent + "    {\n" +
-                    indent + "         return %2$d;\n" +
-                    indent + "    }\n\n",
-                    propertyName,
-                    encodingToken.offset()));
-
                 generateFieldMetaAttributeMethod(sb, signalToken, indent);
+                generateFieldCommonMethods(indent, sb, signalToken, encodingToken, propertyName);
 
                 switch (encodingToken.signal())
                 {
@@ -1674,6 +1643,49 @@ public class CppGenerator implements CodeGenerator
         }
 
         return sb;
+    }
+
+    private void generateFieldCommonMethods(
+        final String indent,
+        final StringBuilder sb,
+        final Token fieldToken,
+        final Token encodingToken,
+        final String propertyName)
+    {
+        sb.append(String.format("\n" +
+            indent + "    static SBE_CONSTEXPR std::uint16_t %1$sId() SBE_NOEXCEPT\n" +
+            indent + "    {\n" +
+            indent + "        return %2$d;\n" +
+            indent + "    }\n",
+            propertyName,
+            fieldToken.id()));
+
+        sb.append(String.format("\n" +
+            indent + "    static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
+            indent + "    {\n" +
+            indent + "         return %2$d;\n" +
+            indent + "    }\n\n" +
+            indent + "    bool %1$sInActingVersion() SBE_NOEXCEPT\n" +
+            indent + "    {\n" +
+            indent + "#if defined(__clang__)\n" +
+            indent + "#pragma clang diagnostic push\n" +
+            indent + "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
+            indent + "#endif\n" +
+            indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
+            indent + "#if defined(__clang__)\n" +
+            indent + "#pragma clang diagnostic pop\n" +
+            indent + "#endif\n" +
+            indent + "    }\n",
+            propertyName,
+            fieldToken.version()));
+
+        sb.append(String.format("\n" +
+            indent + "    static SBE_CONSTEXPR std::size_t %1$sEncodingOffset() SBE_NOEXCEPT\n" +
+            indent + "    {\n" +
+            indent + "         return %2$d;\n" +
+            indent + "    }\n",
+            propertyName,
+            encodingToken.offset()));
     }
 
     private static void generateFieldMetaAttributeMethod(
