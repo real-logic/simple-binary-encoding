@@ -34,6 +34,13 @@ public class BasicSchemaFileTest
     }
 
     @Test
+    public void shouldHandleConstantHeaderField()
+        throws Exception
+    {
+        parse(TestUtil.getLocalResource("basic-schema-constant-header-field.xml"), ParserOptions.DEFAULT);
+    }
+
+    @Test
     public void shouldHandleBasicFileWithGroup()
         throws Exception
     {
