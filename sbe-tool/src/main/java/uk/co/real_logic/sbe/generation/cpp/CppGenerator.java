@@ -1353,8 +1353,11 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private static CharSequence generateFixedFlyweightCode(final String className, final int size)
+    private CharSequence generateFixedFlyweightCode(final String className, final int size)
     {
+        final String schemaIdType = cppTypeName(ir.headerStructure().schemaIdType());
+        final String schemaVersionType = cppTypeName(ir.headerStructure().schemaVersionType());
+
         return String.format(
             "private:\n" +
             "    char *m_buffer;\n" +
@@ -1428,9 +1431,21 @@ public class CppGenerator implements CodeGenerator
             "    std::uint64_t bufferLength() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_bufferLength;\n" +
-            "    }\n\n",
+            "    }\n\n" +
+            "    static SBE_CONSTEXPR %3$s sbeSchemaId() SBE_NOEXCEPT\n" +
+            "    {\n" +
+            "        return %4$s;\n" +
+            "    }\n\n" +
+            "    static SBE_CONSTEXPR %5$s sbeSchemaVersion() SBE_NOEXCEPT\n" +
+            "    {\n" +
+            "        return %6$s;\n" +
+            "    }\n",
             className,
-            size);
+            size,
+            schemaIdType,
+            generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
+            schemaVersionType,
+            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())));
     }
 
     private static CharSequence generateConstructorsAndOperators(final String className)
