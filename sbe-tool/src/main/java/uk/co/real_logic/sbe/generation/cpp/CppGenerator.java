@@ -1032,7 +1032,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        return %2$d;\n" +
             indent + "    }\n",
             propertyName,
-            token.encoding().primitiveType().size()));
+            token.encoding().primitiveType().size() * token.arrayLength()));
 
         return sb;
     }
