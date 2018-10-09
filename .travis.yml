@@ -92,23 +92,6 @@ matrix:
     script:
     - ./cppbuild/cppbuild
 
-  # gcc-5
-  - env: COMPILER=g++-5
-    compiler: gcc
-    os: linux
-    addons:
-      apt:
-        packages:
-        - g++-5
-        - libsparsehash-dev
-        sources:
-        - ubuntu-toolchain-r-test
-    before_script:
-    - export CXX=$COMPILER
-    - ./gradlew
-    script:
-    - ./cppbuild/cppbuild
-
   # gcc-6
   - env: COMPILER=g++-6
     compiler: gcc
