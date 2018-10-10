@@ -2340,19 +2340,42 @@ public class JavaGenerator implements CodeGenerator
             "    }\n\n",
             className,
             mutableBuffer);
-
-        final String wrapAndApplyHeaderMethod = String.format(
+        final String indent = "            ";
+        String wrapAndApplyHeaderMethodFmtString =
             "    public %1$s wrapAndApplyHeader(\n" +
             "        final %2$s buffer, final int offset, final %3$s headerEncoder)\n" +
             "    {\n" +
             "        headerEncoder\n" +
-            "            .wrap(buffer, offset)\n" +
-            "            .blockLength(BLOCK_LENGTH)\n" +
-            "            .templateId(TEMPLATE_ID)\n" +
-            "            .schemaId(SCHEMA_ID)\n" +
-            "            .version(SCHEMA_VERSION);\n\n" +
+            "            .wrap(buffer, offset)";
+        for (final Token headerToken : ir.headerStructure().tokens())
+        {
+            if (!headerToken.isConstantEncoding())
+            {
+                final String fieldName = headerToken.name();
+                switch (fieldName)
+                {
+                    case "blockLength":
+                        wrapAndApplyHeaderMethodFmtString += '\n' + indent + ".blockLength(BLOCK_LENGTH)";
+                        break;
+                    case "templateId":
+                        wrapAndApplyHeaderMethodFmtString += '\n' + indent + ".templateId(TEMPLATE_ID)";
+                        break;
+                    case "schemaId":
+                        wrapAndApplyHeaderMethodFmtString += '\n' + indent + ".schemaId(SCHEMA_ID)";
+                        break;
+                    case "version":
+                        wrapAndApplyHeaderMethodFmtString += '\n' + indent + ".version(SCHEMA_VERSION)";
+                        break;
+                }
+            }
+        }
+
+
+        wrapAndApplyHeaderMethodFmtString += ";\n" +
             "        return wrap(buffer, offset + %3$s.ENCODED_LENGTH);\n" +
-            "    }\n\n",
+            "    }\n\n";
+        final String wrapAndApplyHeaderMethod = String.format(
+            wrapAndApplyHeaderMethodFmtString,
             className,
             mutableBuffer,
             formatClassName(ir.headerStructure().tokens().get(0).applicableTypeName() + "Encoder"));
