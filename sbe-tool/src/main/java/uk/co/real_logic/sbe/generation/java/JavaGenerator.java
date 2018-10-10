@@ -2269,7 +2269,7 @@ public class JavaGenerator implements CodeGenerator
             "    private %11$s buffer;\n" +
             "    protected int offset;\n" +
             "    protected int limit;\n" +
-                "%13$s" +
+            "%13$s" +
             "\n" +
             "    public %1$s sbeBlockLength()\n" +
             "    {\n" +
@@ -2340,48 +2340,49 @@ public class JavaGenerator implements CodeGenerator
             "    }\n\n",
             className,
             mutableBuffer);
-        final String indent = "            ";
-        String wrapAndApplyHeaderMethodFmtString =
+
+        final StringBuilder builder = new StringBuilder(
             "    public %1$s wrapAndApplyHeader(\n" +
             "        final %2$s buffer, final int offset, final %3$s headerEncoder)\n" +
             "    {\n" +
             "        headerEncoder\n" +
-            "            .wrap(buffer, offset)";
+            "            .wrap(buffer, offset)");
+
         for (final Token headerToken : ir.headerStructure().tokens())
         {
             if (!headerToken.isConstantEncoding())
             {
-                final String fieldName = headerToken.name();
-                switch (fieldName)
+                switch (headerToken.name())
                 {
                     case "blockLength":
-                        wrapAndApplyHeaderMethodFmtString += '\n' + indent + ".blockLength(BLOCK_LENGTH)";
+                        builder.append("\n            .blockLength(BLOCK_LENGTH)");
                         break;
+
                     case "templateId":
-                        wrapAndApplyHeaderMethodFmtString += '\n' + indent + ".templateId(TEMPLATE_ID)";
+                        builder.append("\n            .templateId(TEMPLATE_ID)");
                         break;
+
                     case "schemaId":
-                        wrapAndApplyHeaderMethodFmtString += '\n' + indent + ".schemaId(SCHEMA_ID)";
+                        builder.append("\n            .schemaId(SCHEMA_ID)");
                         break;
+
                     case "version":
-                        wrapAndApplyHeaderMethodFmtString += '\n' + indent + ".version(SCHEMA_VERSION)";
+                        builder.append("\n            .version(SCHEMA_VERSION)");
                         break;
                 }
             }
         }
 
+        builder.append(";\n\n        return wrap(buffer, offset + %3$s.ENCODED_LENGTH);\n" + "    }\n\n");
 
-        wrapAndApplyHeaderMethodFmtString += ";\n" +
-            "        return wrap(buffer, offset + %3$s.ENCODED_LENGTH);\n" +
-            "    }\n\n";
-        final String wrapAndApplyHeaderMethod = String.format(
-            wrapAndApplyHeaderMethodFmtString,
+        final String wrapAndApplyMethod = String.format(
+            builder.toString(),
             className,
             mutableBuffer,
             formatClassName(ir.headerStructure().tokens().get(0).applicableTypeName() + "Encoder"));
 
         return generateFlyweightCode(
-            CodecType.ENCODER, className, token, wrapMethod + wrapAndApplyHeaderMethod, mutableBuffer);
+            CodecType.ENCODER, className, token, wrapMethod + wrapAndApplyMethod, mutableBuffer);
     }
 
     private CharSequence generateEncoderFields(
