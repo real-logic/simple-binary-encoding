@@ -310,6 +310,15 @@ public class FrameCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapPackageName(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String packageName()
     {
         final int headerLength = 2;
@@ -401,6 +410,15 @@ public class FrameCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapNamespaceName(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String namespaceName()
     {
         final int headerLength = 2;
@@ -490,6 +508,15 @@ public class FrameCodecDecoder
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
+    }
+
+    public void wrapSemanticVersion(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
     }
 
     public String semanticVersion()

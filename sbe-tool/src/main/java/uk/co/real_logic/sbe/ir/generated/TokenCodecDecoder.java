@@ -628,6 +628,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapName(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String name()
     {
         final int headerLength = 2;
@@ -717,6 +726,15 @@ public class TokenCodecDecoder
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
+    }
+
+    public void wrapConstValue(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
     }
 
     public String constValue()
@@ -810,6 +828,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapMinValue(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String minValue()
     {
         final int headerLength = 2;
@@ -899,6 +926,15 @@ public class TokenCodecDecoder
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
+    }
+
+    public void wrapMaxValue(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
     }
 
     public String maxValue()
@@ -992,6 +1028,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapNullValue(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String nullValue()
     {
         final int headerLength = 2;
@@ -1081,6 +1126,15 @@ public class TokenCodecDecoder
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
+    }
+
+    public void wrapCharacterEncoding(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
     }
 
     public String characterEncoding()
@@ -1174,6 +1228,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapEpoch(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String epoch()
     {
         final int headerLength = 2;
@@ -1263,6 +1326,15 @@ public class TokenCodecDecoder
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
+    }
+
+    public void wrapTimeUnit(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
     }
 
     public String timeUnit()
@@ -1356,6 +1428,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapSemanticType(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String semanticType()
     {
         final int headerLength = 2;
@@ -1447,6 +1528,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapDescription(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String description()
     {
         final int headerLength = 2;
@@ -1536,6 +1626,15 @@ public class TokenCodecDecoder
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
 
         return bytesCopied;
+    }
+
+    public void wrapReferencedName(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
     }
 
     public String referencedName()

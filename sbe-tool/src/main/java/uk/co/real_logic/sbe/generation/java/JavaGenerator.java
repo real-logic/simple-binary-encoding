@@ -769,6 +769,20 @@ public class JavaGenerator implements CodeGenerator
             byteOrderStr,
             indent);
 
+        sb.append(String.format("\n" +
+            indent + "    public void wrap%s(final %s wrapBuffer)\n" +
+            indent + "    {\n" +
+            indent + "        final int headerLength = %d;\n" +
+            indent + "        final int limit = parentMessage.limit();\n" +
+            indent + "        final int dataLength = (int)%s;\n" +
+            indent + "        parentMessage.limit(limit + headerLength + dataLength);\n" +
+            indent + "        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);\n" +
+            indent + "    }\n",
+            propertyName,
+            readOnlyBuffer,
+            sizeOfLengthField,
+            generateGet(lengthType, "limit", byteOrderStr)));
+
         if (null != characterEncoding)
         {
             sb.append(String.format("\n" +
