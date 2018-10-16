@@ -95,8 +95,27 @@ set(SBE_JAR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs/sbe-all-${SBE_VERSIO
 if(EXISTS "${SBE_JAR}")
     message("latest SBE jar found: ${SBE_JAR}")
 else()
-    message(FATAL_ERROR "could not find latest SBE jar in ${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs")
+    message("Generating SBE jar")
+    execute_process(
+        COMMAND ./gradlew build -x check -x javadoc --info --stacktrace :sbe-all:build
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
 endif()
+
+file(GLOB_RECURSE SBE_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/java/*.java"
+)
+
+add_custom_command(OUTPUT ${SBE_JAR}
+    COMMAND ./gradlew build -x check -x javadoc --info --stacktrace :sbe-all:build
+    DEPENDS ${SBE_SOURCES}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating SBE jar"
+)
+
+add_custom_target(sbe-jar
+   DEPENDS ${SBE_JAR}
+)
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/resources")
