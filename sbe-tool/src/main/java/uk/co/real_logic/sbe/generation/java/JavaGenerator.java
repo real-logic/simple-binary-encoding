@@ -749,7 +749,7 @@ public class JavaGenerator implements CodeGenerator
         final String characterEncoding,
         final String indent)
     {
-        generateDataTypedDecoder(
+        generateVarDataTypedDecoder(
             sb,
             token,
             propertyName,
@@ -759,7 +759,7 @@ public class JavaGenerator implements CodeGenerator
             byteOrderStr,
             indent);
 
-        generateDataTypedDecoder(
+        generateVarDataTypedDecoder(
             sb,
             token,
             propertyName,
@@ -769,19 +769,7 @@ public class JavaGenerator implements CodeGenerator
             byteOrderStr,
             indent);
 
-        sb.append(String.format("\n" +
-            indent + "    public void wrap%s(final %s wrapBuffer)\n" +
-            indent + "    {\n" +
-            indent + "        final int headerLength = %d;\n" +
-            indent + "        final int limit = parentMessage.limit();\n" +
-            indent + "        final int dataLength = (int)%s;\n" +
-            indent + "        parentMessage.limit(limit + headerLength + dataLength);\n" +
-            indent + "        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);\n" +
-            indent + "    }\n",
-            propertyName,
-            readOnlyBuffer,
-            sizeOfLengthField,
-            generateGet(lengthType, "limit", byteOrderStr)));
+        generateVarDataWrapDecoder(sb, token, propertyName, sizeOfLengthField, lengthType, byteOrderStr, indent);
 
         if (null != characterEncoding)
         {
@@ -847,6 +835,32 @@ public class JavaGenerator implements CodeGenerator
                     byteOrderStr));
             }
         }
+    }
+
+    private void generateVarDataWrapDecoder(
+        final StringBuilder sb,
+        final Token token,
+        final String propertyName,
+        final int sizeOfLengthField,
+        final PrimitiveType lengthType,
+        final String byteOrderStr,
+        final String indent)
+    {
+        sb.append(String.format("\n" +
+            indent + "    public void wrap%s(final %s wrapBuffer)\n" +
+            indent + "    {\n" +
+            "%s" +
+            indent + "        final int headerLength = %d;\n" +
+            indent + "        final int limit = parentMessage.limit();\n" +
+            indent + "        final int dataLength = (int)%s;\n" +
+            indent + "        parentMessage.limit(limit + headerLength + dataLength);\n" +
+            indent + "        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);\n" +
+            indent + "    }\n",
+            propertyName,
+            readOnlyBuffer,
+            generateVarWrapFieldNotPresentCondition(token.version(), indent),
+            sizeOfLengthField,
+            generateGet(lengthType, "limit", byteOrderStr)));
     }
 
     private void generateDataEncodeMethods(
@@ -993,7 +1007,7 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private void generateDataTypedDecoder(
+    private void generateVarDataTypedDecoder(
         final StringBuilder sb,
         final Token token,
         final String propertyName,
@@ -1719,6 +1733,21 @@ public class JavaGenerator implements CodeGenerator
             formatPropertyName(propertyName),
             javaTypeName,
             generatePut(encoding.primitiveType(), "offset + " + offset, "value", byteOrderStr));
+    }
+
+    private CharSequence generateVarWrapFieldNotPresentCondition(final int sinceVersion, final String indent)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            indent + "        if (parentMessage.actingVersion < %d)\n" +
+            indent + "        {\n" +
+            indent + "            wrapBuffer.wrap(buffer, offset, 0);\n" +
+            indent + "        }\n\n",
+            sinceVersion);
     }
 
     private CharSequence generateFieldNotPresentCondition(
