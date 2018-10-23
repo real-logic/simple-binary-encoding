@@ -1427,7 +1427,7 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        return m_offset;\n" +
             "    }\n\n" +
-            "    char *buffer() SBE_NOEXCEPT\n" +
+            "    const char * buffer() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
@@ -1580,7 +1580,7 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        return sbePosition() - m_offset;\n" +
             "    }\n\n" +
-            "    char *buffer() SBE_NOEXCEPT\n" +
+            "    const char * buffer() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
@@ -1697,7 +1697,7 @@ public class CppGenerator implements CodeGenerator
         final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
 
         sb.append(String.format("\n" +
-            indent + "    static const char *%sMetaAttribute(const ::sbe::MetaAttribute::Attribute metaAttribute)" +
+            indent + "    static const char * %sMetaAttribute(const ::sbe::MetaAttribute::Attribute metaAttribute)" +
             " SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        switch (metaAttribute)\n" +
