@@ -531,8 +531,7 @@ task generateRustCarExample(type: JavaExec) {
 task generateCarExampleDataFile(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
-    systemProperties(
-        'sbe.encoding.filename': 'rust/car_example/car_example_data.sbe')
+    systemProperties('sbe.encoding.filename': 'rust/car_example/car_example_data.sbe')
     args = []
     standardOutput = new ByteArrayOutputStream()
 }
