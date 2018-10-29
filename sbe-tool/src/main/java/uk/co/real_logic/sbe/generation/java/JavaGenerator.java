@@ -47,10 +47,11 @@ public class JavaGenerator implements CodeGenerator
     private static final String META_ATTRIBUTE_ENUM = "MetaAttribute";
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
-    private static final String GEN_COMPOSITE_DECODER_FLYWEIGHT = "CompositeDecoderFlyweight";
-    private static final String GEN_COMPOSITE_ENCODER_FLYWEIGHT = "CompositeEncoderFlyweight";
-    private static final String GEN_MESSAGE_DECODER_FLYWEIGHT = "MessageDecoderFlyweight";
-    private static final String GEN_MESSAGE_ENCODER_FLYWEIGHT = "MessageEncoderFlyweight";
+    private static final String FLYWEIGHT = "Flyweight";
+    private static final String COMPOSITE_DECODER_FLYWEIGHT = "CompositeDecoderFlyweight";
+    private static final String COMPOSITE_ENCODER_FLYWEIGHT = "CompositeEncoderFlyweight";
+    private static final String MESSAGE_DECODER_FLYWEIGHT = "MessageDecoderFlyweight";
+    private static final String MESSAGE_ENCODER_FLYWEIGHT = "MessageEncoderFlyweight";
 
     private final Ir ir;
     private final OutputManager outputManager;
@@ -194,7 +195,7 @@ public class JavaGenerator implements CodeGenerator
         final Token msgToken) throws IOException
     {
         final String className = formatClassName(encoderName(msgToken.name()));
-        final String implementsString = implementsInterface(GEN_MESSAGE_ENCODER_FLYWEIGHT);
+        final String implementsString = implementsInterface(MESSAGE_ENCODER_FLYWEIGHT);
 
         try (Writer out = outputManager.createOutput(className))
         {
@@ -225,7 +226,7 @@ public class JavaGenerator implements CodeGenerator
         final Token msgToken) throws IOException
     {
         final String className = formatClassName(decoderName(msgToken.name()));
-        final String implementsString = implementsInterface(GEN_MESSAGE_DECODER_FLYWEIGHT);
+        final String implementsString = implementsInterface(MESSAGE_DECODER_FLYWEIGHT);
 
         try (Writer out = outputManager.createOutput(className))
         {
@@ -1076,10 +1077,11 @@ public class JavaGenerator implements CodeGenerator
         final String decoderName = decoderName(bitSetName);
         final String encoderName = encoderName(bitSetName);
         final List<Token> messageBody = getMessageBody(tokens);
+        final String implementsString = implementsInterface(FLYWEIGHT);
 
         try (Writer out = outputManager.createOutput(decoderName))
         {
-            generateFixedFlyweightHeader(token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer);
+            generateFixedFlyweightHeader(token, decoderName, implementsString, out, readOnlyBuffer, fqReadOnlyBuffer);
             out.append(generateChoiceIsEmpty(token.encoding().primitiveType()));
             out.append(generateChoiceDecoders(messageBody));
             out.append(generateChoiceDisplay(messageBody));
@@ -1088,7 +1090,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(encoderName))
         {
-            generateFixedFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer);
+            generateFixedFlyweightHeader(token, encoderName, implementsString, out, mutableBuffer, fqMutableBuffer);
             out.append(generateChoiceClear(encoderName, token));
             out.append(generateChoiceEncoders(encoderName, messageBody));
             out.append("}\n");
@@ -1098,12 +1100,13 @@ public class JavaGenerator implements CodeGenerator
     private void generateFixedFlyweightHeader(
         final Token token,
         final String typeName,
+        final String implementsString,
         final Writer out,
         final String buffer,
         final String fqBuffer) throws IOException
     {
         out.append(generateFileHeader(ir.applicableNamespace(), fqBuffer));
-        out.append(generateDeclaration(typeName, "", token));
+        out.append(generateDeclaration(typeName, implementsString, token));
         out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
     }
 
@@ -1148,7 +1151,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(decoderName))
         {
-            final String implementsString = implementsInterface(GEN_COMPOSITE_DECODER_FLYWEIGHT);
+            final String implementsString = implementsInterface(COMPOSITE_DECODER_FLYWEIGHT);
             generateCompositeFlyweightHeader(
                 token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, implementsString);
 
@@ -1196,7 +1199,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(encoderName))
         {
-            final String implementsString = implementsInterface(GEN_COMPOSITE_ENCODER_FLYWEIGHT);
+            final String implementsString = implementsInterface(COMPOSITE_ENCODER_FLYWEIGHT);
             generateCompositeFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer, implementsString);
 
             for (int i = 1, end = tokens.size() - 1; i < end;)
