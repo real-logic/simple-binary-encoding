@@ -1431,6 +1431,10 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
+            "    char * buffer() SBE_NOEXCEPT\n" +
+            "    {\n" +
+            "        return m_buffer;\n" +
+            "    }\n\n" +
             "    std::uint64_t bufferLength() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_bufferLength;\n" +
@@ -1580,7 +1584,11 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        return sbePosition() - m_offset;\n" +
             "    }\n\n" +
-            "    const char * buffer() SBE_NOEXCEPT\n" +
+            "    const char * buffer() const SBE_NOEXCEPT\n" +
+            "    {\n" +
+            "        return m_buffer;\n" +
+            "    }\n\n" +
+            "    char * buffer() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
