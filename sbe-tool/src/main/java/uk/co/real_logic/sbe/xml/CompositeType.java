@@ -167,6 +167,16 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "\"blockLength\" must be unsigned type");
         }
+        else
+        {
+            if (blockLengthType.primitiveType() != UINT8 && blockLengthType.primitiveType() != UINT16)
+            {
+                XmlSchemaParser.handleWarning(node, "\"blockLength\" should be UINT8 or UINT16");
+            }
+
+            final PrimitiveValue blockLengthTypeMaxValue = blockLengthType.maxValue();
+            validateMaxValue(node, blockLengthType.primitiveType(), blockLengthTypeMaxValue);
+        }
 
         if (numInGroupType == null)
         {
@@ -176,25 +186,26 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "\"numInGroup\" must be unsigned type");
         }
-        else if (numInGroupType.primitiveType() != UINT8 && numInGroupType.primitiveType() != UINT16)
-        {
-            XmlSchemaParser.handleWarning(node, "\"numInGroup\" should be UINT8 or UINT16");
-        }
         else
         {
-            final PrimitiveValue maxValue = numInGroupType.maxValue();
-            validateMaxValue(node, numInGroupType.primitiveType(), maxValue);
-
-            final PrimitiveValue minValue = numInGroupType.minValue();
-            if (null != minValue)
+            if (numInGroupType.primitiveType() != UINT8 && numInGroupType.primitiveType() != UINT16)
             {
-                final long max = maxValue != null ?
-                    maxValue.longValue() : numInGroupType.primitiveType().maxValue().longValue();
+                XmlSchemaParser.handleWarning(node, "\"numInGroup\" should be UINT8 or UINT16");
+            }
 
-                if (minValue.longValue() > max)
+            final PrimitiveValue numInGroupMaxValue = numInGroupType.maxValue();
+            validateMaxValue(node, numInGroupType.primitiveType(), numInGroupMaxValue);
+
+            final PrimitiveValue numInGroupMinValue = numInGroupType.minValue();
+            if (null != numInGroupMinValue)
+            {
+                final long max = numInGroupMaxValue != null ?
+                    numInGroupMaxValue.longValue() : numInGroupType.primitiveType().maxValue().longValue();
+
+                if (numInGroupMinValue.longValue() > max)
                 {
                     XmlSchemaParser.handleError(node, String.format(
-                        "\"numInGroup\" minValue=%s greater than maxValue=%d", minValue, max));
+                        "\"numInGroup\" minValue=%s greater than maxValue=%d", numInGroupMinValue, max));
                 }
             }
         }

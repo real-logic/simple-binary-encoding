@@ -354,7 +354,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        this.parentMessage = parentMessage;\n" +
             indent + "        this.buffer = buffer;\n" +
             indent + "        dimensions.wrap(buffer, parentMessage.limit());\n" +
-            indent + "        blockLength = dimensions.blockLength();\n" +
+            indent + "        blockLength = (int)dimensions.blockLength();\n" +
             indent + "        count = (int)dimensions.numInGroup();\n" +
             indent + "        index = -1;\n" +
             indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
