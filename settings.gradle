@@ -1,2 +1,4 @@
 include 'sbe-tool', 'sbe-samples', 'sbe-benchmarks', 'sbe-all'
 rootProject.name = 'sbe'
+enableFeaturePreview('IMPROVED_POM_SUPPORT')
+
