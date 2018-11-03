@@ -20,8 +20,8 @@ buildscript {
 }
 
 plugins {
-    id 'java-library'
-    id 'com.github.johnrengelman.shadow' version '4.0.1' apply false
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '4.0.2' apply false
 }
 
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
@@ -29,7 +29,6 @@ defaultTasks 'clean', 'build', 'shadowJar', 'install'
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
 def sbeJavaVersion = '1.8'
-def agronaVersion = '0.9.26'
 
 group = sbeGroup
 version = sbeVersion
@@ -49,7 +48,7 @@ def projectPom = {
     name = 'sbe'
     packaging = 'pom'
     description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages' +
-            ' in binary format for low-latency applications'
+        ' in binary format for low-latency applications'
     url = 'https://github.com/real-logic/simple-binary-encoding'
 
     scm {
@@ -113,7 +112,7 @@ configurations {
 jar.enabled = false
 
 subprojects {
-    apply plugin: 'java-library'
+    apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'signing'
     apply plugin: 'checkstyle'
@@ -127,9 +126,11 @@ subprojects {
     dependencies {
         checkstyle 'com.puppycrawl.tools:checkstyle:8.14'
 
-        testImplementation 'junit:junit:4.12'
-        testImplementation 'org.mockito:mockito-core:2.23.0'
-        testImplementation 'org.hamcrest:hamcrest-library:1.3'
+        compile 'org.agrona:agrona:0.9.26'
+
+        testCompile 'junit:junit:4.12'
+        testCompile 'org.mockito:mockito-core:2.23.0'
+        testCompile 'org.hamcrest:hamcrest-library:1.3'
     }
 
     checkstyle {
@@ -179,8 +180,7 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
-        api "org.agrona:agrona:${agronaVersion}"
-        testImplementation files('build/classes/java/generated')
+        testCompile files('build/classes/java/generated')
     }
 
     jar {
@@ -190,8 +190,7 @@ project(':sbe-tool') {
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
             'Implementation-Version': "${sbeVersion}",
-            'Implementation-Vendor': 'Real Logic Limited'
-        )
+            'Implementation-Vendor': 'Real Logic Limited')
     }
 
     sourceSets {
@@ -268,8 +267,7 @@ project(':sbe-all') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        api "org.agrona:agrona:${agronaVersion}"
-        api project(':sbe-tool')
+        compile project(':sbe-tool')
     }
 
     task sourcesJar(type: Jar) {
@@ -277,12 +275,17 @@ project(':sbe-all') {
         from project(':sbe-tool').sourceSets.main.allSource
     }
 
+    javadoc {
+        source += project(':sbe-tool').sourceSets.main.allJava
+    }
+
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
-        from project(':sbe-tool').javadoc.destinationDir
+        from javadoc.destinationDir
     }
 
     shadowJar {
+        classifier = ''
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
             'Specification-Title': 'Simple Binary Encoding',
@@ -343,8 +346,8 @@ project(':sbe-all') {
 
 project(':sbe-samples') {
     dependencies {
-        implementation project(':sbe-tool')
-        implementation files('build/classes/java/generated')
+        compile project(':sbe-tool')
+        compile files('build/classes/java/generated')
     }
 
     sourceSets {
@@ -434,10 +437,10 @@ project(':sbe-benchmarks') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        implementation project(':sbe-tool')
-        implementation 'org.openjdk.jmh:jmh-core:1.21'
+        compile 'org.openjdk.jmh:jmh-core:1.21'
         annotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
-        implementation files('build/classes/java/generated')
+        compile project(':sbe-tool')
+        compile files('build/classes/java/generated')
     }
 
     sourceSets {
