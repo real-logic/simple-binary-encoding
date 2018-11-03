@@ -282,7 +282,6 @@ project(':sbe-all') {
     }
 
     shadowJar {
-        classifier = ''
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
             'Specification-Title': 'Simple Binary Encoding',
