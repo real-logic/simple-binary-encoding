@@ -21,7 +21,7 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '4.0.2' apply false
+    id 'com.github.johnrengelman.shadow' version '4.0.1' apply false
 }
 
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
@@ -29,6 +29,7 @@ defaultTasks 'clean', 'build', 'shadowJar', 'install'
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
 def sbeJavaVersion = '1.8'
+def agronaVersion = '0.9.26'
 
 group = sbeGroup
 version = sbeVersion
@@ -179,7 +180,7 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
-        api 'org.agrona:agrona:0.9.26'
+        api "org.agrona:agrona:${agronaVersion}"
         testImplementation files('build/classes/java/generated')
     }
 
@@ -268,7 +269,8 @@ project(':sbe-all') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        implementation project(':sbe-tool')
+        api "org.agrona:agrona:${agronaVersion}"
+        api project(':sbe-tool')
     }
 
     task sourcesJar(type: Jar) {
@@ -343,7 +345,6 @@ project(':sbe-all') {
 project(':sbe-samples') {
     dependencies {
         implementation project(':sbe-tool')
-
         implementation files('build/classes/java/generated')
     }
 
