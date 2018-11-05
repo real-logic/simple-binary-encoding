@@ -2024,7 +2024,7 @@ public class GolangGenerator implements CodeGenerator
             "\nfunc (*%1$s) SbeTemplateId() (templateId %4$s) {\n" +
             "\treturn %5$s\n" +
             "}\n" +
-            "\nfunc (*1$s) SbeSchemaId() (schemaId %6$s) {\n" +
+            "\nfunc (*%1$s) SbeSchemaId() (schemaId %6$s) {\n" +
             "\treturn %7$s\n" +
             "}\n" +
             "\nfunc (*%1$s) SbeSchemaVersion() (schemaVersion %8$s) {\n" +
