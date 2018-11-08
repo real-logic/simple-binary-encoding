@@ -184,7 +184,18 @@ public class CompositeType extends Type
         }
         else if (!isUnsigned(numInGroupType.primitiveType()))
         {
-            XmlSchemaParser.handleError(node, "\"numInGroup\" must be unsigned type");
+            XmlSchemaParser.handleWarning(node, "\"numInGroup\" should be unsigned type");
+            final PrimitiveValue numInGroupMinValue = numInGroupType.minValue();
+            if (null == numInGroupMinValue)
+            {
+                XmlSchemaParser.handleError(node, "\"numInGroup\" minValue must be set for signed types");
+            }
+            else if (numInGroupMinValue.longValue() < 0)
+            {
+                XmlSchemaParser.handleError(node, String.format(
+                    "\"numInGroup\" minValue=%s must be greater than zero " +
+                    "for signed \"numInGroup\" types", numInGroupMinValue));
+            }
         }
         else
         {
