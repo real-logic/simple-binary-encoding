@@ -235,6 +235,7 @@ public class RustGenerator implements CodeGenerator
                 indent(writer, 2, "self\n");
                 indent(writer, 1, "}\n");
             }
+
             writer.append("}\n");
         }
     }

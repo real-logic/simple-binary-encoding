@@ -393,12 +393,13 @@ public class CppGenerator implements CodeGenerator
             }
 
             final String propertyName = toUpperFirstChar(token.name());
-            final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
-            final Token lengthToken = tokens.get(i + 2);
+            final Token lengthToken = Generators.findFirst("length", tokens, i);
+            final Token varDataToken = Generators.findFirst("varData", tokens, i);
+            final String characterEncoding = varDataToken.encoding().characterEncoding();
             final int lengthOfLengthField = lengthToken.encodedLength();
             final String lengthCppType = cppTypeName(lengthToken.encoding().primitiveType());
-            final String lengthByteOrderStr =
-                formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType());
+            final String lengthByteOrderStr = formatByteOrderEncoding(
+                lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType());
 
             generateFieldMetaAttributeMethod(sb, token, indent);
 

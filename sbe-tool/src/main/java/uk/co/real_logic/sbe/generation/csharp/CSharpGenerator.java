@@ -340,12 +340,13 @@ public class CSharpGenerator implements CodeGenerator
             {
                 generateFieldIdMethod(sb, token, indent);
 
-                final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
+                final Token varDataToken = Generators.findFirst("varData", tokens, i);
+                final String characterEncoding = varDataToken.encoding().characterEncoding();
                 generateCharacterEncodingMethod(sb, token.name(), characterEncoding, indent);
                 generateFieldMetaAttributeMethod(sb, token, indent);
 
                 final String propertyName = toUpperFirstChar(token.name());
-                final Token lengthToken = tokens.get(i + 2);
+                final Token lengthToken = Generators.findFirst("length", tokens, i);
                 final int sizeOfLengthField = lengthToken.encodedLength();
                 final Encoding lengthEncoding = lengthToken.encoding();
                 final String lengthCSharpType = cSharpTypeName(lengthEncoding.primitiveType());

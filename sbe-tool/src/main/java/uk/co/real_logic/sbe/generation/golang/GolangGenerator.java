@@ -100,7 +100,6 @@ public class GolangGenerator implements CodeGenerator
             final StringBuilder sb = new StringBuilder();
             final List<Token> tokens = ir.headerStructure().tokens();
 
-            // Initialize the imports
             imports = new TreeSet<>();
             imports.add("io");
 
@@ -570,7 +569,7 @@ public class GolangGenerator implements CodeGenerator
 
 
     // Newer messages and groups can add extra properties before the variable
-    // length elements (groups and vardata). We read past the difference
+    // length elements (groups and varData). We read past the difference
     // between the message's blockLength and our (older) schema's blockLength
     private void generateExtensionCheck(
         final StringBuilder sb,
@@ -922,7 +921,7 @@ public class GolangGenerator implements CodeGenerator
         String decodeArgs = "";
         final String blockLengthType = golangTypeName(ir.headerStructure().blockLengthType());
 
-        // Messages, groups, and vardata are extensible so need to know
+        // Messages, groups, and varData are extensible so need to know
         // working block length.
         // Messages mandate only 16 bits, otherwise let's be generous and
         // support the platform.
@@ -1336,14 +1335,13 @@ public class GolangGenerator implements CodeGenerator
             }
 
             final String propertyName = toUpperFirstChar(token.name());
-            final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
-            final Token lengthToken = tokens.get(i + 2);
+            final Token lengthToken = Generators.findFirst("length", tokens, i);
             final int lengthOfLengthField = lengthToken.encodedLength();
+            final Token varDataToken = Generators.findFirst("varData", tokens, i);
+            final String characterEncoding = varDataToken.encoding().characterEncoding();
 
             generateFieldMetaAttributeMethod(sb, typeName, token);
-
-            generateVarDataDescriptors(
-                sb, token, typeName, propertyName, characterEncoding, lengthOfLengthField);
+            generateVarDataDescriptors(sb, token, typeName, propertyName, characterEncoding, lengthOfLengthField);
 
             i += token.componentTokenCount();
         }
