@@ -19,6 +19,7 @@ import org.agrona.Verify;
 import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
+import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Signal;
@@ -152,7 +153,8 @@ public class CppGenerator implements CodeGenerator
             }
 
             final String groupName = groupToken.name();
-            final String cppTypeForNumInGroup = cppTypeName(tokens.get(i + 3).encoding().primitiveType());
+            final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, i);
+            final String cppTypeForNumInGroup = cppTypeName(numInGroupToken.encoding().primitiveType());
 
             generateGroupClassHeader(sb, groupName, tokens, i, indent + INDENT);
 
@@ -183,8 +185,9 @@ public class CppGenerator implements CodeGenerator
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
         final int dimensionHeaderLength = tokens.get(index + 1).encodedLength();
         final int blockLength = tokens.get(index).encodedLength();
-        final Token numInGroupToken = tokens.get(index + 3);
-        final String cppTypeForBlockLength = cppTypeName(tokens.get(index + 2).encoding().primitiveType());
+        final Token blockLengthToken = Generators.findFirst("blockLength", tokens, index);
+        final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, index);
+        final String cppTypeForBlockLength = cppTypeName(blockLengthToken.encoding().primitiveType());
         final String cppTypeForNumInGroup = cppTypeName(numInGroupToken.encoding().primitiveType());
 
         sb.append(String.format("\n" +

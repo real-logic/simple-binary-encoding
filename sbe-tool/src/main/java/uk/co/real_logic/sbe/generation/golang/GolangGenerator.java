@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.generation.golang;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import org.agrona.generation.OutputManager;
+import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.*;
 import org.agrona.Verify;
 
@@ -1123,7 +1124,6 @@ public class GolangGenerator implements CodeGenerator
         encode.append(generateEncodeOffset(gap, ""));
         decode.append(generateDecodeOffset(gap, ""));
 
-        // Write the group header (blocklength and numingroup)
         final String golangTypeForLength = golangTypeName(tokens.get(2).encoding().primitiveType());
         final String golangTypeForLengthMarshal = golangMarshalType(tokens.get(2).encoding().primitiveType());
         final String golangTypeForData = golangTypeName(tokens.get(3).encoding().primitiveType());
@@ -1177,10 +1177,12 @@ public class GolangGenerator implements CodeGenerator
         final char varName = Character.toLowerCase(typeName.charAt(0));
         final Token signalToken = tokens.get(0);
         final String propertyName = formatPropertyName(signalToken.name());
-        final String blockLengthType = golangTypeName(tokens.get(2).encoding().primitiveType());
-        final String blockLengthMarshalType = golangMarshalType(tokens.get(2).encoding().primitiveType());
-        final String numInGroupType = golangTypeName(tokens.get(3).encoding().primitiveType());
-        final String numInGroupMarshalType = golangMarshalType(tokens.get(3).encoding().primitiveType());
+        final Token blockLengthToken = Generators.findFirst("blockLength", tokens, 0);
+        final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, 0);
+        final String blockLengthType = golangTypeName(blockLengthToken.encoding().primitiveType());
+        final String blockLengthMarshalType = golangMarshalType(blockLengthToken.encoding().primitiveType());
+        final String numInGroupType = golangTypeName(numInGroupToken.encoding().primitiveType());
+        final String numInGroupMarshalType = golangMarshalType(numInGroupToken.encoding().primitiveType());
 
         // Offset handling
         final int gap = Math.max(signalToken.offset() - currentOffset, 0);

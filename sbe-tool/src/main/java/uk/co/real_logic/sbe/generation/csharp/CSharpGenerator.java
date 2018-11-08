@@ -20,6 +20,7 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import org.agrona.generation.OutputManager;
+import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.*;
 import org.agrona.Verify;
 
@@ -181,14 +182,14 @@ public class CSharpGenerator implements CodeGenerator
             dimensionsClassName,
             parentMessageClassName));
 
-        final Token numInGroupToken = tokens.get(index + 3);
+        final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, index);
         final boolean isIntCastSafe = isRepresentableByInt32(numInGroupToken.encoding());
 
         if (!isIntCastSafe)
         {
             throw new IllegalArgumentException(String.format(
-                    "%s.numInGroup - cannot be represented safely by an int. Please constrain the maxValue.",
-                    groupName));
+                "%s.numInGroup - cannot be represented safely by an int. Please constrain the maxValue.",
+                groupName));
         }
 
         sb.append(String.format("\n" +

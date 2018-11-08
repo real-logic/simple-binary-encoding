@@ -79,4 +79,26 @@ public class Generators
 
         return Character.toLowerCase(s.charAt(0)) + s.substring(1);
     }
+
+    /**
+     * Find the first token with a given name from an index inclusive.
+     *
+     * @param name   to search for.
+     * @param tokens to search.
+     * @param index  from which to search.
+     * @return first found {@link Token} or throw a {@link IllegalStateException} if not found.
+     */
+    public static Token findFirst(final String name, final List<Token> tokens, final int index)
+    {
+        for (int i = index, size = tokens.size(); i < size; i++)
+        {
+            final Token token = tokens.get(i);
+            if (token.name().equals(name))
+            {
+                return token;
+            }
+        }
+
+        throw new IllegalStateException("name not found: " + name);
+    }
 }

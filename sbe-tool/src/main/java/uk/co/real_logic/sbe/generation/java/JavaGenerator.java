@@ -430,9 +430,9 @@ public class JavaGenerator implements CodeGenerator
             sb, groupToken, groupName, parentMessageClassName, ind, dimensionsClassName, dimensionHeaderSize);
 
         final int blockLength = tokens.get(index).encodedLength();
-        final Token blockLengthToken = tokens.stream().filter(t -> "blockLength".equals(t.name())).findFirst().get();
+        final Token blockLengthToken = Generators.findFirst("blockLength", tokens, index);
+        final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, index);
         final String javaTypeForBlockLength = primitiveTypeName(blockLengthToken);
-        final Token numInGroupToken = tokens.stream().filter(t -> "numInGroup".equals(t.name())).findFirst().get();
         final String javaTypeForNumInGroup = primitiveTypeName(numInGroupToken);
 
         sb.append(String.format(
