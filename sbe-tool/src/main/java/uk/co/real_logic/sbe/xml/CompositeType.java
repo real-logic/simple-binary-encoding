@@ -175,7 +175,7 @@ public class CompositeType extends Type
             }
 
             final PrimitiveValue blockLengthTypeMaxValue = blockLengthType.maxValue();
-            validateMaxValue(node, blockLengthType.primitiveType(), blockLengthTypeMaxValue);
+            validateGroupMaxValue(node, blockLengthType.primitiveType(), blockLengthTypeMaxValue);
         }
 
         if (numInGroupType == null)
@@ -194,7 +194,7 @@ public class CompositeType extends Type
             }
 
             final PrimitiveValue numInGroupMaxValue = numInGroupType.maxValue();
-            validateMaxValue(node, numInGroupType.primitiveType(), numInGroupMaxValue);
+            validateGroupMaxValue(node, numInGroupType.primitiveType(), numInGroupMaxValue);
 
             final PrimitiveValue numInGroupMinValue = numInGroupType.minValue();
             if (null != numInGroupMinValue)
@@ -237,7 +237,7 @@ public class CompositeType extends Type
                 XmlSchemaParser.handleWarning(node, "\"length\" should be UINT8, UINT16, or UINT32");
             }
 
-            validateMaxValue(node, primitiveType, lengthType.maxValue());
+            validateGroupMaxValue(node, primitiveType, lengthType.maxValue());
         }
 
         if ("optional".equals(getAttributeValueOrNull(node, "presence")))
@@ -252,7 +252,7 @@ public class CompositeType extends Type
         }
     }
 
-    private static void validateMaxValue(
+    private static void validateGroupMaxValue(
         final Node node, final PrimitiveType primitiveType, final PrimitiveValue value)
     {
         if (null != value)
