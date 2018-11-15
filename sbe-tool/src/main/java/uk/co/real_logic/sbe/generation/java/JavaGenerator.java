@@ -352,7 +352,10 @@ public class JavaGenerator implements CodeGenerator
             indent + "        final %s parentMessage, final %s buffer)\n" +
             indent + "    {\n" +
             indent + "        this.parentMessage = parentMessage;\n" +
-            indent + "        this.buffer = buffer;\n" +
+            indent + "        if (buffer != this.buffer)\n" +
+            indent + "        {\n" +
+            indent + "            this.buffer = buffer;\n" +
+            indent + "        }\n" +
             indent + "        dimensions.wrap(buffer, parentMessage.limit());\n" +
             indent + "        blockLength = (int)dimensions.blockLength();\n" +
             indent + "        count = (int)dimensions.numInGroup();\n" +
@@ -444,7 +447,10 @@ public class JavaGenerator implements CodeGenerator
             ind + "            throw new IllegalArgumentException(\"count outside allowed range: count=\" + count);\n" +
             ind + "        }\n\n" +
             ind + "        this.parentMessage = parentMessage;\n" +
-            ind + "        this.buffer = buffer;\n" +
+            ind + "        if (buffer != this.buffer)\n" +
+            ind + "        {\n" +
+            ind + "            this.buffer = buffer;\n" +
+            ind + "        }\n" +
             ind + "        dimensions.wrap(buffer, parentMessage.limit());\n" +
             ind + "        dimensions.blockLength((%5$s)%6$d);\n" +
             ind + "        dimensions.numInGroup((%7$s)count);\n" +
@@ -2236,7 +2242,10 @@ public class JavaGenerator implements CodeGenerator
             "    private %3$s buffer;\n\n" +
             "    public %1$s wrap(final %3$s buffer, final int offset)\n" +
             "    {\n" +
-            "        this.buffer = buffer;\n" +
+            "        if (buffer != this.buffer)\n" +
+            "        {\n" +
+            "            this.buffer = buffer;\n" +
+            "        }\n" +
             "        this.offset = offset;\n\n" +
             "        return this;\n" +
             "    }\n\n" +
@@ -2276,7 +2285,10 @@ public class JavaGenerator implements CodeGenerator
             "    public %1$s wrap(\n" +
             "        final %2$s buffer, final int offset, final int actingBlockLength, final int actingVersion)\n" +
             "    {\n" +
-            "        this.buffer = buffer;\n" +
+            "        if (buffer != this.buffer)\n" +
+            "        {\n" +
+            "            this.buffer = buffer;\n" +
+            "        }\n" +
             "        this.offset = offset;\n" +
             "        this.actingBlockLength = actingBlockLength;\n" +
             "        this.actingVersion = actingVersion;\n" +
@@ -2381,7 +2393,10 @@ public class JavaGenerator implements CodeGenerator
         final String wrapMethod = String.format(
             "    public %1$s wrap(final %2$s buffer, final int offset)\n" +
             "    {\n" +
-            "        this.buffer = buffer;\n" +
+            "        if (buffer != this.buffer)\n" +
+            "        {\n" +
+            "            this.buffer = buffer;\n" +
+            "        }\n" +
             "        this.offset = offset;\n" +
             "        limit(offset + BLOCK_LENGTH);\n\n" +
             "        return this;\n" +

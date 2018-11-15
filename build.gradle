@@ -702,7 +702,7 @@ task generateIrCodecs {
     dependsOn 'generateJavaIrCodecs', 'generateCppIrCodecs', 'generateGolangIrCodecs'
 }
 
-task runBenchmarks(type: Exec) {
+task runJavaBenchmarks(type: Exec) {
     commandLine 'java',
         '-Dagrona.disable.bounds.checks=true',
         '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
