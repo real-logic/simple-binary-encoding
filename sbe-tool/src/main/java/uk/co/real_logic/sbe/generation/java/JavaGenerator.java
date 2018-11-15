@@ -534,7 +534,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "{\n" +
             indent + "    public static final int HEADER_SIZE = %3$d;\n" +
             indent + "    private final %4$s dimensions = new %4$s();\n" +
-            indent + "    private %5$s parentMessage;\n" +
+            indent + "    private final %5$s parentMessage;\n" +
             indent + "    private %6$s buffer;\n" +
             indent + "    private int count;\n" +
             indent + "    private int index;\n" +
