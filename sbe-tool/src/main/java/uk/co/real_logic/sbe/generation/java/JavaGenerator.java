@@ -368,11 +368,12 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            this.buffer = buffer;\n" +
             indent + "        }\n" +
-            indent + "        dimensions.wrap(buffer, parentMessage.limit());\n" +
+            indent + "        final int limit = parentMessage.limit();\n" +
+            indent + "        dimensions.wrap(buffer, limit);\n" +
             indent + "        blockLength = (int)dimensions.blockLength();\n" +
             indent + "        count = (int)dimensions.numInGroup();\n" +
             indent + "        index = -1;\n" +
-            indent + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
+            indent + "        parentMessage.limit(limit + HEADER_SIZE);\n" +
             indent + "    }\n\n",
             readOnlyBuffer));
 
@@ -468,12 +469,13 @@ public class JavaGenerator implements CodeGenerator
             ind + "        {\n" +
             ind + "            this.buffer = buffer;\n" +
             ind + "        }\n\n" +
-            ind + "        dimensions.wrap(buffer, parentMessage.limit());\n" +
+            ind + "        final int limit = parentMessage.limit();\n" +
+            ind + "        dimensions.wrap(buffer, limit);\n" +
             ind + "        dimensions.blockLength((%5$s)%6$d);\n" +
             ind + "        dimensions.numInGroup((%7$s)count);\n" +
             ind + "        index = -1;\n" +
             ind + "        this.count = count;\n" +
-            ind + "        parentMessage.limit(parentMessage.limit() + HEADER_SIZE);\n" +
+            ind + "        parentMessage.limit(limit + HEADER_SIZE);\n" +
             ind + "    }\n\n",
             parentMessageClassName,
             mutableBuffer,
