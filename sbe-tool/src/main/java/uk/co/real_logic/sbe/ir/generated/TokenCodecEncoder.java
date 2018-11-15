@@ -58,7 +58,10 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder wrap(final MutableDirectBuffer buffer, final int offset)
     {
-        this.buffer = buffer;
+        if (buffer != this.buffer)
+        {
+            this.buffer = buffer;
+        }
         this.offset = offset;
         limit(offset + BLOCK_LENGTH);
 

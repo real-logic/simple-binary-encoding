@@ -19,7 +19,10 @@ public class MessageHeaderEncoder
 
     public MessageHeaderEncoder wrap(final MutableDirectBuffer buffer, final int offset)
     {
-        this.buffer = buffer;
+        if (buffer != this.buffer)
+        {
+            this.buffer = buffer;
+        }
         this.offset = offset;
 
         return this;
