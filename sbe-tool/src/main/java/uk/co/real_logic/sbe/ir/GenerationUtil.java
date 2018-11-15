@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.ir;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -25,10 +26,6 @@ import static java.util.stream.Collectors.joining;
  */
 public final class GenerationUtil
 {
-    private GenerationUtil()
-    {
-    }
-
     public static int collectFields(final List<Token> tokens, final int index, final List<Token> fields)
     {
         return collect(Signal.BEGIN_FIELD, tokens, index, fields);
@@ -71,12 +68,6 @@ public final class GenerationUtil
         return tokens.subList(1, tokens.size() - 1);
     }
 
-    public static CharSequence concatEncodingTokens(
-        final List<Token> tokens, final Function<Token, CharSequence> mapper)
-    {
-        return concatTokens(tokens, Signal.ENCODING, mapper);
-    }
-
     public static CharSequence concatTokens(
         final List<Token> tokens, final Signal signal, final Function<Token, CharSequence> mapper)
     {
@@ -104,5 +95,29 @@ public final class GenerationUtil
         }
 
         return result;
+    }
+
+    public static List<String> findSubGroupNames(final List<Token> tokens)
+    {
+        final ArrayList<String> groupNames = new ArrayList<>();
+        int level = 0;
+
+        for (final Token token : tokens)
+        {
+            if (token.signal() == Signal.BEGIN_GROUP)
+            {
+                if (level++ == 0)
+                {
+                    groupNames.add(token.name());
+                }
+            }
+
+            if (token.signal() == Signal.END_GROUP)
+            {
+                level--;
+            }
+        }
+
+        return groupNames;
     }
 }
