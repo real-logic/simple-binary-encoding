@@ -351,6 +351,19 @@ public class JavaGenerator implements CodeGenerator
         final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
         final int dimensionHeaderLen = tokens.get(index + 1).encodedLength();
 
+        final Token blockLengthToken = Generators.findFirst("blockLength", tokens, index);
+        final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, index);
+
+        final PrimitiveType blockLengthType = blockLengthToken.encoding().primitiveType();
+        final String blockLengthOffset = "limit + " + blockLengthToken.offset();
+        final String blockLengthGet = generateGet(
+            blockLengthType, blockLengthOffset, byteOrderString(blockLengthToken.encoding()));
+
+        final PrimitiveType numInGroupType = numInGroupToken.encoding().primitiveType();
+        final String numInGroupOffset = "limit + " + numInGroupToken.offset();
+        final String numInGroupGet = generateGet(
+            numInGroupType, numInGroupOffset, byteOrderString(numInGroupToken.encoding()));
+
         generateGroupDecoderClassDeclaration(
             sb,
             groupToken,
@@ -358,7 +371,6 @@ public class JavaGenerator implements CodeGenerator
             parentMessageClassName,
             findSubGroupNames(subGroupTokens),
             indent,
-            dimensionsClassName,
             dimensionHeaderLen);
 
         sb.append(String.format(
@@ -368,14 +380,15 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            this.buffer = buffer;\n" +
             indent + "        }\n" +
-            indent + "        final int limit = parentMessage.limit();\n" +
-            indent + "        dimensions.wrap(buffer, limit);\n" +
-            indent + "        blockLength = (int)dimensions.blockLength();\n" +
-            indent + "        count = (int)dimensions.numInGroup();\n" +
             indent + "        index = -1;\n" +
+            indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        parentMessage.limit(limit + HEADER_SIZE);\n" +
+            indent + "        blockLength = (int)%s;\n" +
+            indent + "        count = (int)%s;\n" +
             indent + "    }\n\n",
-            readOnlyBuffer));
+            readOnlyBuffer,
+            blockLengthGet,
+            numInGroupGet));
 
         final int blockLength = tokens.get(index).encodedLength();
 
@@ -439,7 +452,6 @@ public class JavaGenerator implements CodeGenerator
         final String ind)
     {
         final Token groupToken = tokens.get(index);
-        final String dimensionsClassName = formatClassName(encoderName(tokens.get(index + 1).name()));
         final int dimensionHeaderSize = tokens.get(index + 1).encodedLength();
 
         generateGroupEncoderClassDeclaration(
@@ -449,14 +461,23 @@ public class JavaGenerator implements CodeGenerator
             parentMessageClassName,
             findSubGroupNames(subGroupTokens),
             ind,
-            dimensionsClassName,
             dimensionHeaderSize);
 
         final int blockLength = tokens.get(index).encodedLength();
         final Token blockLengthToken = Generators.findFirst("blockLength", tokens, index);
         final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, index);
-        final String javaTypeForBlockLength = primitiveTypeName(blockLengthToken);
-        final String javaTypeForNumInGroup = primitiveTypeName(numInGroupToken);
+
+        final PrimitiveType blockLengthType = blockLengthToken.encoding().primitiveType();
+        final String blockLengthOffset = "limit + " + blockLengthToken.offset();
+        final String blockLengthValue = "(" + primitiveTypeName(blockLengthToken) + ")" + blockLength;
+        final String blockLengthPut = generatePut(
+            blockLengthType, blockLengthOffset, blockLengthValue, byteOrderString(blockLengthToken.encoding()));
+
+        final PrimitiveType numInGroupType = numInGroupToken.encoding().primitiveType();
+        final String numInGroupOffset = "limit + " + numInGroupToken.offset();
+        final String numInGroupValue = "(" + primitiveTypeName(numInGroupToken) + ")count";
+        final String numInGroupPut = generatePut(
+            numInGroupType, numInGroupOffset, numInGroupValue, byteOrderString(numInGroupToken.encoding()));
 
         sb.append(String.format(
             ind + "    public void wrap(final %2$s buffer, final int count)\n" +
@@ -469,21 +490,19 @@ public class JavaGenerator implements CodeGenerator
             ind + "        {\n" +
             ind + "            this.buffer = buffer;\n" +
             ind + "        }\n\n" +
-            ind + "        final int limit = parentMessage.limit();\n" +
-            ind + "        dimensions.wrap(buffer, limit);\n" +
-            ind + "        dimensions.blockLength((%5$s)%6$d);\n" +
-            ind + "        dimensions.numInGroup((%7$s)count);\n" +
             ind + "        index = -1;\n" +
             ind + "        this.count = count;\n" +
+            ind + "        final int limit = parentMessage.limit();\n" +
             ind + "        parentMessage.limit(limit + HEADER_SIZE);\n" +
+            ind + "        %5$s;\n" +
+            ind + "        %6$s;\n" +
             ind + "    }\n\n",
             parentMessageClassName,
             mutableBuffer,
             numInGroupToken.encoding().applicableMinValue().longValue(),
             numInGroupToken.encoding().applicableMaxValue().longValue(),
-            javaTypeForBlockLength,
-            blockLength,
-            javaTypeForNumInGroup));
+            blockLengthPut,
+            numInGroupPut));
 
         sb.append(ind).append("    public static int sbeHeaderSize()\n")
           .append(ind).append("    {\n")
@@ -524,7 +543,6 @@ public class JavaGenerator implements CodeGenerator
         final String parentMessageClassName,
         final List<String> subGroupNames,
         final String indent,
-        final String dimensionsClassName,
         final int dimensionHeaderSize)
     {
         final String className = formatClassName(groupName);
@@ -535,9 +553,8 @@ public class JavaGenerator implements CodeGenerator
             indent + "    implements Iterable<%2$s>, java.util.Iterator<%2$s>\n" +
             indent + "{\n" +
             indent + "    public static final int HEADER_SIZE = %3$d;\n" +
-            indent + "    private final %4$s dimensions = new %4$s();\n" +
-            indent + "    private final %5$s parentMessage;\n" +
-            indent + "    private %6$s buffer;\n" +
+            indent + "    private final %4$s parentMessage;\n" +
+            indent + "    private %5$s buffer;\n" +
             indent + "    private int count;\n" +
             indent + "    private int index;\n" +
             indent + "    private int offset;\n" +
@@ -545,7 +562,6 @@ public class JavaGenerator implements CodeGenerator
             generateTypeJavadoc(indent, groupToken),
             className,
             dimensionHeaderSize,
-            decoderName(dimensionsClassName),
             parentMessageClassName,
             readOnlyBuffer));
 
@@ -582,7 +598,6 @@ public class JavaGenerator implements CodeGenerator
         final String parentMessageClassName,
         final List<String> subGroupNames,
         final String indent,
-        final String dimensionsClassName,
         final int dimensionHeaderSize)
     {
         final String className = formatClassName(encoderName(groupName));
@@ -592,16 +607,14 @@ public class JavaGenerator implements CodeGenerator
             indent + "public static class %2$s\n" +
             indent + "{\n" +
             indent + "    public static final int HEADER_SIZE = %3$d;\n" +
-            indent + "    private final %4$s dimensions = new %4$s();\n" +
-            indent + "    private final %5$s parentMessage;\n" +
-            indent + "    private %6$s buffer;\n" +
+            indent + "    private final %4$s parentMessage;\n" +
+            indent + "    private %5$s buffer;\n" +
             indent + "    private int count;\n" +
             indent + "    private int index;\n" +
             indent + "    private int offset;\n",
             generateTypeJavadoc(indent, groupToken),
             className,
             dimensionHeaderSize,
-            dimensionsClassName,
             parentMessageClassName,
             mutableBuffer));
 
