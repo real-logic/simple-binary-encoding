@@ -360,16 +360,21 @@ public class CSharpGenerator implements CodeGenerator
                     sizeOfLengthField));
 
                 sb.append(String.format("\n" +
-                    indent + "public int Get%1$s(byte[] dst, int dstOffset, int length)\n" +
+                    indent + "public int Get%1$s(byte[] dst, int dstOffset, int length) =>\n" +
+                    indent + INDENT + "Get%1$s(new Span<byte>(dst, dstOffset, length));\n",
+                    propertyName));
+
+                sb.append(String.format("\n" +
+                    indent + "public int Get%1$s(Span<byte> dst)\n" +
                     indent + "{\n" +
                     "%2$s" +
                     indent + INDENT + "const int sizeOfLengthField = %3$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                     indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
                     indent + INDENT + "int dataLength = (int)_buffer.%4$sGet%5$s(limit);\n" +
-                    indent + INDENT + "int bytesCopied = Math.Min(length, dataLength);\n" +
+                    indent + INDENT + "int bytesCopied = Math.Min(dst.Length, dataLength);\n" +
                     indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + dataLength;\n" +
-                    indent + INDENT + "_buffer.GetBytes(limit + sizeOfLengthField, dst, dstOffset, bytesCopied);\n\n" +
+                    indent + INDENT + "_buffer.GetBytes(limit + sizeOfLengthField, dst.Slice(0, bytesCopied));\n\n" +
                     indent + INDENT + "return bytesCopied;\n" +
                     indent + "}\n",
                     propertyName,
@@ -379,14 +384,19 @@ public class CSharpGenerator implements CodeGenerator
                     byteOrderStr));
 
                 sb.append(String.format("\n" +
-                    indent + "public int Set%1$s(byte[] src, int srcOffset, int length)\n" +
+                    indent + "public int Set%1$s(byte[] src, int srcOffset, int length) =>\n" +
+                    indent + INDENT + "Set%1$s(new ReadOnlySpan<byte>(src, srcOffset, length));\n",
+                    propertyName));
+
+                sb.append(String.format("\n" +
+                    indent + "public int Set%1$s(ReadOnlySpan<byte> src)\n" +
                     indent + "{\n" +
                     indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
-                    indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + length;\n" +
-                    indent + INDENT + "_buffer.%3$sPut%5$s(limit, (%4$s)length);\n" +
-                    indent + INDENT + "_buffer.SetBytes(limit + sizeOfLengthField, src, srcOffset, length);\n\n" +
-                    indent + INDENT + "return length;\n" +
+                    indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + src.Length;\n" +
+                    indent + INDENT + "_buffer.%3$sPut%5$s(limit, (%4$s)src.Length);\n" +
+                    indent + INDENT + "_buffer.SetBytes(limit + sizeOfLengthField, src);\n\n" +
+                    indent + INDENT + "return src.Length;\n" +
                     indent + "}\n",
                     propertyName,
                     sizeOfLengthField,
@@ -758,44 +768,30 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(String.format("\n" +
             indent + "public const int %sLength = %d;\n",
-            propName,
-            fieldLength));
+            propName, fieldLength));
 
         sb.append(String.format("\n" +
             indent + "public %1$s Get%2$s(int index)\n" +
             indent + "{\n" +
-            indent + INDENT + "if (index < 0 || index >= %3$d)\n" +
-            indent + INDENT + "{\n" +
+            indent + INDENT + "if (index < 0 || index >= %3$d) {\n" +
             indent + INDENT + INDENT + "throw new IndexOutOfRangeException(\"index out of range: index=\" + index);\n" +
             indent + INDENT + "}\n\n" +
             "%4$s" +
             indent + INDENT + "return _buffer.%5$sGet%8$s(_offset + %6$d + (index * %7$d));\n" +
             indent + "}\n",
-            typeName,
-            propName,
-            fieldLength,
+            typeName, propName, fieldLength,
             generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
-            typePrefix,
-            offset,
-            typeSize,
-            byteOrderStr));
+            typePrefix, offset, typeSize, byteOrderStr));
 
         sb.append(String.format("\n" +
             indent + "public void Set%1$s(int index, %2$s value)\n" +
             indent + "{\n" +
-            indent + INDENT + "if (index < 0 || index >= %3$d)\n" +
-            indent + INDENT + "{\n" +
+            indent + INDENT + "if (index < 0 || index >= %3$d) {\n" +
             indent + INDENT + INDENT + "throw new IndexOutOfRangeException(\"index out of range: index=\" + index);\n" +
             indent + INDENT + "}\n\n" +
             indent + INDENT + "_buffer.%4$sPut%7$s(_offset + %5$d + (index * %6$d), value);\n" +
             indent + "}\n",
-            propName,
-            typeName,
-            fieldLength,
-            typePrefix,
-            offset,
-            typeSize,
-            byteOrderStr));
+            propName, typeName, fieldLength, typePrefix, offset, typeSize, byteOrderStr));
 
         if (token.encoding().primitiveType() == PrimitiveType.CHAR)
         {
@@ -805,39 +801,43 @@ public class CSharpGenerator implements CodeGenerator
                 indent + "public int Get%1$s(byte[] dst, int dstOffset)\n" +
                 indent + "{\n" +
                 indent + INDENT + "const int length = %2$d;\n" +
-                indent + INDENT + "if (dstOffset < 0 || dstOffset > (dst.Length - length))\n" +
-                indent + INDENT + "{\n" +
-                indent + INDENT + INDENT + "throw new IndexOutOfRangeException(" +
-                "\"dstOffset out of range for copy: offset=\" + dstOffset);\n" +
+                "%3$s" +
+                indent + INDENT + "return Get%1$s(new Span<byte>(dst, dstOffset, length));\n" +
+                indent + "}\n",
+                propName, fieldLength, generateArrayFieldNotPresentCondition(token.version(), indent), offset));
+
+            sb.append(String.format("\n" +
+                indent + "public int Get%1$s(Span<byte> dst)\n" +
+                indent + "{\n" +
+                indent + INDENT + "const int length = %2$d;\n" +
+                indent + INDENT + "if (dst.Length < length) {\n" +
+                indent + INDENT + INDENT +
+                "throw new ArgumentOutOfRangeException($\"dst.Length={dst.Length} is too large.\");\n" +
                 indent + INDENT + "}\n\n" +
                 "%3$s" +
-                indent + INDENT + "_buffer.GetBytes(_offset + %4$d, dst, dstOffset, length);\n" +
+                indent + INDENT + "_buffer.GetBytes(_offset + %4$d, dst);\n" +
                 indent + INDENT + "return length;\n" +
                 indent + "}\n",
-                propName,
-                fieldLength,
-                generateArrayFieldNotPresentCondition(token.version(), indent),
-                offset));
+                propName, fieldLength, generateArrayFieldNotPresentCondition(token.version(), indent), offset));
 
             sb.append(String.format("\n" +
                 indent + "public void Set%1$s(byte[] src, int srcOffset)\n" +
                 indent + "{\n" +
+                indent + INDENT + "Set%1$s(new ReadOnlySpan<byte>(src, srcOffset, src.Length - srcOffset));\n" +
+                indent + "}\n",
+                propName, fieldLength, offset));
+
+            sb.append(String.format("\n" +
+                indent + "public void Set%1$s(ReadOnlySpan<byte> src)\n" +
+                indent + "{\n" +
                 indent + INDENT + "const int length = %2$d;\n" +
-                indent + INDENT + "if (srcOffset < 0 || srcOffset > src.Length)\n" +
-                indent + INDENT + "{\n" +
-                indent + INDENT + INDENT +
-                "throw new IndexOutOfRangeException(\"srcOffset out of range for copy: offset=\" + srcOffset);\n" +
-                indent + INDENT + "}\n\n" +
-                indent + INDENT + "if (src.Length > length)\n" +
-                indent + INDENT + "{\n" +
+                indent + INDENT + "if (src.Length > length) {\n" +
                 indent + INDENT + INDENT +
                 "throw new ArgumentOutOfRangeException($\"src.Length={src.Length} is too large.\");\n" +
                 indent + INDENT + "}\n\n" +
-                indent + INDENT + "_buffer.SetBytes(_offset + %3$d, src, srcOffset, src.Length - srcOffset);\n" +
+                indent + INDENT + "_buffer.SetBytes(_offset + %3$d, src);\n" +
                 indent + "}\n",
-                propName,
-                fieldLength,
-                offset));
+                propName, fieldLength, offset));
         }
 
         return sb;

@@ -1,0 +1,26 @@
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  
+  <PropertyGroup>
+    <!-- When compiling .NET SDK 2.0 projects targeting .NET 4.x on Mono using 'dotnet build' you -->
+    <!-- have to teach MSBuild where the Mono copy of the reference asssemblies is -->
+    <TargetIsMono Condition="$(TargetFramework.StartsWith('net4')) and '$(OS)' == 'Unix'">true</TargetIsMono>
+
+    <!-- Look in the standard install locations -->
+    <MonoBasePath Condition="'$(MonoBasePath)' == '' AND '$(TargetIsMono)' == 'true' AND EXISTS('/Library/Frameworks/Mono.framework/Versions/Current/lib/mono')">/Library/Frameworks/Mono.framework/Versions/Current/lib/mono</MonoBasePath>
+    <MonoBasePath Condition="'$(MonoBasePath)' == '' AND '$(TargetIsMono)' == 'true' AND EXISTS('/usr/lib/mono')">/usr/lib/mono</MonoBasePath>
+    <MonoBasePath Condition="'$(MonoBasePath)' == '' AND '$(TargetIsMono)' == 'true' AND EXISTS('/usr/local/lib/mono')">/usr/local/lib/mono</MonoBasePath>
+
+    <!-- If we found Mono reference assemblies, then use them -->
+    <FrameworkPathOverride Condition="'$(MonoBasePath)' != '' AND '$(TargetFramework)' == 'net45'">$(MonoBasePath)/4.5-api</FrameworkPathOverride>
+    <FrameworkPathOverride Condition="'$(MonoBasePath)' != '' AND '$(TargetFramework)' == 'net451'">$(MonoBasePath)/4.5.1-api</FrameworkPathOverride>
+    <FrameworkPathOverride Condition="'$(MonoBasePath)' != '' AND '$(TargetFramework)' == 'net452'">$(MonoBasePath)/4.5.2-api</FrameworkPathOverride>
+    <FrameworkPathOverride Condition="'$(MonoBasePath)' != '' AND '$(TargetFramework)' == 'net46'">$(MonoBasePath)/4.6-api</FrameworkPathOverride>
+    <FrameworkPathOverride Condition="'$(MonoBasePath)' != '' AND '$(TargetFramework)' == 'net461'">$(MonoBasePath)/4.6.1-api</FrameworkPathOverride>
+    <FrameworkPathOverride Condition="'$(MonoBasePath)' != '' AND '$(TargetFramework)' == 'net462'">$(MonoBasePath)/4.6.2-api</FrameworkPathOverride>
+    <FrameworkPathOverride Condition="'$(MonoBasePath)' != '' AND '$(TargetFramework)' == 'net47'">$(MonoBasePath)/4.7-api</FrameworkPathOverride>
+    <FrameworkPathOverride Condition="'$(MonoBasePath)' != '' AND '$(TargetFramework)' == 'net471'">$(MonoBasePath)/4.7.1-api</FrameworkPathOverride>
+    <EnableFrameworkPathOverride Condition="'$(MonoBasePath)' != ''">true</EnableFrameworkPathOverride>
+
+    <!-- Add the Facades directory.  Not sure how else to do this. Necessary at least for .NET 4.5 -->
+    <AssemblySearchPaths Condition="'$(MonoBasePath)' != ''">$(FrameworkPathOverride)/Facades;$(AssemblySearchPaths)</AssemblySearchPaths>
+  </PropertyGroup>
+</Project> 
