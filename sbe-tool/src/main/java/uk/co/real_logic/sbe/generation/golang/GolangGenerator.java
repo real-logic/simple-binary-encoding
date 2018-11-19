@@ -22,6 +22,7 @@ import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.*;
 import org.agrona.Verify;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -1444,9 +1445,7 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
-    private void generateComposite(
-        final List<Token> tokens,
-        final String namePrefix) throws IOException
+    private void generateComposite(final List<Token> tokens, final String namePrefix) throws IOException
     {
         final String compositeName = namePrefix + formatTypeName(tokens.get(0).applicableTypeName());
         final StringBuilder sb = new StringBuilder();
@@ -1580,14 +1579,12 @@ public class GolangGenerator implements CodeGenerator
         sb.append("}\n");
     }
 
-    private String namespacesToPackageName(
-        final CharSequence[] namespaces)
+    private String namespacesToPackageName(final CharSequence[] namespaces)
     {
         return String.join("_", namespaces).toLowerCase().replace('.', '_').replace(' ', '_').replace('-', '_');
     }
 
-    private StringBuilder generateFileHeader(
-        final CharSequence[] namespaces)
+    private StringBuilder generateFileHeader(final CharSequence[] namespaces)
     {
         final StringBuilder sb = new StringBuilder();
         sb.append("// Generated SBE (Simple Binary Encoding) message codec\n\n");
@@ -1611,17 +1608,19 @@ public class GolangGenerator implements CodeGenerator
         throws IOException
     {
         final String jarFile = "golang/templates/" + templateName + ".go";
-        final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(jarFile);
-        final Scanner s = new Scanner(inputStream).useDelimiter("\\A");
-        final String template = s.hasNext() ? s.next() : "";
-        inputStream.close();
+        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(jarFile))
+        {
+            final Scanner scanner = new Scanner(new BufferedInputStream(inputStream)).useDelimiter("\\A");
+            if (!scanner.hasNext())
+            {
+                return "";
+            }
 
-        return String.format(template, namespacesToPackageName(namespaces));
+            return String.format(scanner.next(), namespacesToPackageName(namespaces));
+        }
     }
 
-    private static void generateTypeDeclaration(
-        final StringBuilder sb,
-        final String typeName)
+    private static void generateTypeDeclaration(final StringBuilder sb, final String typeName)
     {
         sb.append(String.format("type %s struct {\n", typeName));
     }
