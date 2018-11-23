@@ -1607,10 +1607,16 @@ public class GolangGenerator implements CodeGenerator
     private String generateFromTemplate(final CharSequence[] namespaces, final String templateName)
         throws IOException
     {
-        final String jarFile = "golang/templates/" + templateName + ".go";
-        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(jarFile))
+        final String templateFileName = "golang/templates/" + templateName + ".go";
+        final InputStream stream = getClass().getClassLoader().getResourceAsStream(templateFileName);
+        if (null == stream)
         {
-            final Scanner scanner = new Scanner(new BufferedInputStream(inputStream)).useDelimiter("\\A");
+            return "";
+        }
+
+        try (InputStream in = new BufferedInputStream(stream))
+        {
+            final Scanner scanner = new Scanner(in).useDelimiter("\\A");
             if (!scanner.hasNext())
             {
                 return "";
