@@ -21,7 +21,7 @@ import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,14 +128,7 @@ public class IrGenerator
         {
             final String valueRef = field.valueRef();
             final byte[] bytes;
-            try
-            {
-                bytes = valueRef.getBytes("UTF-8");
-            }
-            catch (final UnsupportedEncodingException ex)
-            {
-                throw new RuntimeException(ex);
-            }
+            bytes = valueRef.getBytes(StandardCharsets.UTF_8);
 
             encodingBuilder.constValue(new PrimitiveValue(bytes, "UTF-8", valueRef.length()));
             encodingBuilder.primitiveType(PrimitiveType.CHAR);

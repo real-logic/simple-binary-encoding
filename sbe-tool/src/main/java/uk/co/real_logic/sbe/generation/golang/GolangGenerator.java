@@ -686,7 +686,7 @@ public class GolangGenerator implements CodeGenerator
                     encode.append(generateEncodeOffset(gap, ""));
                     decode.append(generateDecodeOffset(gap, ""));
                     currentOffset += signalToken.encodedLength() + gap;
-                    final String primitive = Character.toString(varName) + "." + propertyName;
+                    final String primitive = varName + "." + propertyName;
 
                     // Encode of a constant is a nullop and we want to
                     // initialize constant values.
@@ -1044,7 +1044,7 @@ public class GolangGenerator implements CodeGenerator
                 gap = encodingToken.offset() - currentOffset;
                 encode.append(generateEncodeOffset(gap, ""));
                 decode.append(generateDecodeOffset(gap, ""));
-                final String primitive = Character.toString(varName) + "." + propertyName;
+                final String primitive = varName + "." + propertyName;
 
                 // Encode of a constant is a nullop and we want to
                 // initialize constant values.

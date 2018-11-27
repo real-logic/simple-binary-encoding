@@ -1254,14 +1254,12 @@ public class CSharpGenerator implements CodeGenerator
             return "";
         }
 
-        switch (byteOrder.toString())
+        if ("BIG_ENDIAN".equals(byteOrder.toString()))
         {
-            case "BIG_ENDIAN":
-                return "BigEndian";
-
-            default:
-                return "LittleEndian";
+            return "BigEndian";
         }
+
+        return "LittleEndian";
     }
 
     private String generateLiteral(final PrimitiveType type, final String value)

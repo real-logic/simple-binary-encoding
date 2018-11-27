@@ -417,7 +417,7 @@ public class PrimitiveValue
      */
     public boolean equals(final Object value)
     {
-        if (null != value && value instanceof PrimitiveValue)
+        if (value instanceof PrimitiveValue)
         {
             final PrimitiveValue rhs = (PrimitiveValue)value;
 
