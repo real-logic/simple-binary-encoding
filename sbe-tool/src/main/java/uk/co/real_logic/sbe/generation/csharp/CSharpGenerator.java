@@ -773,7 +773,8 @@ public class CSharpGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "public %1$s Get%2$s(int index)\n" +
             indent + "{\n" +
-            indent + INDENT + "if (index < 0 || index >= %3$d) {\n" +
+            indent + INDENT + "if (index < 0 || index >= %3$d)\n" +
+            indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "throw new IndexOutOfRangeException(\"index out of range: index=\" + index);\n" +
             indent + INDENT + "}\n\n" +
             "%4$s" +
@@ -786,7 +787,8 @@ public class CSharpGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "public void Set%1$s(int index, %2$s value)\n" +
             indent + "{\n" +
-            indent + INDENT + "if (index < 0 || index >= %3$d) {\n" +
+            indent + INDENT + "if (index < 0 || index >= %3$d)\n" +
+            indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "throw new IndexOutOfRangeException(\"index out of range: index=\" + index);\n" +
             indent + INDENT + "}\n\n" +
             indent + INDENT + "_buffer.%4$sPut%7$s(_offset + %5$d + (index * %6$d), value);\n" +
@@ -810,7 +812,8 @@ public class CSharpGenerator implements CodeGenerator
                 indent + "public int Get%1$s(Span<byte> dst)\n" +
                 indent + "{\n" +
                 indent + INDENT + "const int length = %2$d;\n" +
-                indent + INDENT + "if (dst.Length < length) {\n" +
+                indent + INDENT + "if (dst.Length < length)\n" +
+                indent + INDENT + "{\n" +
                 indent + INDENT + INDENT +
                 "throw new ArgumentOutOfRangeException($\"dst.Length={dst.Length} is too large.\");\n" +
                 indent + INDENT + "}\n\n" +
@@ -831,7 +834,8 @@ public class CSharpGenerator implements CodeGenerator
                 indent + "public void Set%1$s(ReadOnlySpan<byte> src)\n" +
                 indent + "{\n" +
                 indent + INDENT + "const int length = %2$d;\n" +
-                indent + INDENT + "if (src.Length > length) {\n" +
+                indent + INDENT + "if (src.Length > length)\n" +
+                indent + INDENT + "{\n" +
                 indent + INDENT + INDENT +
                 "throw new ArgumentOutOfRangeException($\"src.Length={src.Length} is too large.\");\n" +
                 indent + INDENT + "}\n\n" +
