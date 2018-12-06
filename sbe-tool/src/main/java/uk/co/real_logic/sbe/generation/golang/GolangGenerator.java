@@ -1341,7 +1341,7 @@ public class GolangGenerator implements CodeGenerator
             final Token varDataToken = Generators.findFirst("varData", tokens, i);
             final String characterEncoding = varDataToken.encoding().characterEncoding();
 
-            generateFieldMetaAttributeMethod(sb, typeName, token);
+            generateFieldMetaAttributeMethod(sb, typeName, propertyName, token);
             generateVarDataDescriptors(sb, token, typeName, propertyName, characterEncoding, lengthOfLengthField);
 
             i += token.componentTokenCount();
@@ -2085,7 +2085,7 @@ public class GolangGenerator implements CodeGenerator
 
                 generateId(sb, containingTypeName, propertyName, signalToken);
                 generateSinceActingDeprecated(sb, containingTypeName, propertyName, signalToken);
-                generateFieldMetaAttributeMethod(sb, containingTypeName, signalToken);
+                generateFieldMetaAttributeMethod(sb, containingTypeName, propertyName, signalToken);
 
                 switch (encodingToken.signal())
                 {
@@ -2113,6 +2113,7 @@ public class GolangGenerator implements CodeGenerator
     private static void generateFieldMetaAttributeMethod(
         final StringBuilder sb,
         final String containingTypeName,
+        final String propertyName,
         final Token token)
     {
         final Encoding encoding = token.encoding();
@@ -2122,20 +2123,21 @@ public class GolangGenerator implements CodeGenerator
         final String presence = encoding.presence() == null ? "" : encoding.presence().toString().toLowerCase();
 
         sb.append(String.format(
-            "\nfunc (*%1$s) %3$sMetaAttribute(meta int) string {\n" +
+            "\nfunc (*%1$s) %2$sMetaAttribute(meta int) string {\n" +
             "\tswitch meta {\n" +
             "\tcase 1:\n" +
-            "\t\treturn \"%2$s\"\n" +
-            "\tcase 2:\n" +
             "\t\treturn \"%3$s\"\n" +
-            "\tcase 3:\n" +
+            "\tcase 2:\n" +
             "\t\treturn \"%4$s\"\n" +
-            "\tcase 4:\n" +
+            "\tcase 3:\n" +
             "\t\treturn \"%5$s\"\n" +
+            "\tcase 4:\n" +
+            "\t\treturn \"%6$s\"\n" +
             "\t}\n" +
             "\treturn \"\"\n" +
             "}\n",
             containingTypeName,
+            propertyName,
             epoch,
             timeUnit,
             semanticType,
