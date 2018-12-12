@@ -27,6 +27,81 @@ public class ValidationUtil
 {
     private static final Pattern PATTERN = Pattern.compile("\\.");
 
+    private static final Set<String> C_KEYWORDS = new HashSet<>(Arrays.asList(
+        "auto", "_Alignas", "_Alignof", "_Atomic", "bool",
+        "_Bool", "break", "case", "_Complex",
+        "char", "const", "continue", "default",
+        "do", "double", "else", "enum", "extern", "false",
+        "float", "for", "_Generic", "goto", "if", "_Imaginary", "inline",
+        "int", "long", "_Noreturn", "register", "restrict", "return", "short",
+        "signed", "sizeof", "static", "_Static_assert",
+        "struct", "switch", "_Thread_local", "true", "typedef", "union",
+        "unsigned", "void", "volatile", "wchar_t", "while"));
+
+    /**
+     * Check value for validity of usage as a C identifier. A programmatic variable
+     * must have all elements be a letter or digit or '_'. The first character must not be a digit.
+     * And must not be a C keyword.
+     * <p>
+     * http://en.cppreference.com/w/cpp/keyword
+     *
+     * @param value to check
+     * @return true for validity as a C name. false if not.
+     */
+    public static boolean isSbeCName(final String value)
+    {
+        if (possibleCKeyword(value))
+        {
+            if (isCKeyword(value))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isCKeyword(final String token)
+    {
+        return C_KEYWORDS.contains(token);
+    }
+
+    private static boolean possibleCKeyword(final String value)
+    {
+        for (int i = 0, size = value.length(); i < size; i++)
+        {
+            final char c = value.charAt(i);
+
+            if (i == 0 && isSbeCIdentifierStart(c))
+            {
+                continue;
+            }
+
+            if (isSbeCIdentifierPart(c))
+            {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean isSbeCIdentifierStart(final char c)
+    {
+        return Character.isLetter(c) || c == '_';
+    }
+
+    private static boolean isSbeCIdentifierPart(final char c)
+    {
+        return Character.isLetterOrDigit(c) || c == '_';
+    }
+
     private static final Set<String> CPP_KEYWORDS = new HashSet<>(Arrays.asList(
         "alignas", "and", "and_eq", "asm", "auto",
         "bitand", "bitor", "bool", "break", "case",
