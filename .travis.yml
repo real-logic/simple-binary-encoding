@@ -29,6 +29,48 @@ matrix:
       os: linux
       script: ./gradlew
 
+    - env: COMPILER=g++-6
+      language: cpp
+      compiler: gcc
+      os: linux
+      addons:
+        apt:
+          packages:
+            - g++-6
+            - libsparsehash-dev
+          sources:
+            - ubuntu-toolchain-r-test
+      before_script: ./gradlew
+      script: ./cppbuild/cppbuild
+
+    - env: COMPILER=g++-7
+      language: cpp
+      compiler: gcc
+      os: linux
+      addons:
+        apt:
+          packages:
+            - g++-7
+            - libsparsehash-dev
+          sources:
+            - ubuntu-toolchain-r-test
+      before_script: ./gradlew
+      script: ./cppbuild/cppbuild
+
+    - env: COMPILER=g++-8
+      language: cpp
+      compiler: gcc
+      os: linux
+      addons:
+        apt:
+          packages:
+            - g++-8
+            - libsparsehash-dev
+          sources:
+            - ubuntu-toolchain-r-test
+      before_script: ./gradlew
+      script: ./cppbuild/cppbuild
+
     - env: COMPILER=clang++-4.0
       language: cpp
       compiler: clang
@@ -77,48 +119,12 @@ matrix:
       before_script: ./gradlew
       script: ./cppbuild/cppbuild
 
-    - env: COMPILER=g++-6
-      language: cpp
-      compiler: gcc
-      os: linux
-      addons:
-        apt:
-          packages:
-            - g++-6
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
+    - env: COMPILER=clang++
+      language: c++
+      compiler: clang
+      os: osx
       before_script: ./gradlew
       script: ./cppbuild/cppbuild
-
-    - env: COMPILER=g++-7
-      language: cpp
-      compiler: gcc
-      os: linux
-      addons:
-        apt:
-          packages:
-            - g++-7
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
-      before_script: ./gradlew
-      script: ./cppbuild/cppbuild
-
-    - env: COMPILER=g++-8
-      language: cpp
-      compiler: gcc
-      os: linux
-      addons:
-        apt:
-          packages:
-            - g++-8
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
-      before_script: ./gradlew
-      script: ./cppbuild/cppbuild
-
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
