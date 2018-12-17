@@ -25,26 +25,44 @@ project("sbe" VERSION "${SBE_VERSION_NUMERIC}")
 include(ExternalProject)
 include(CheckLibraryExists)
 
-enable_testing()
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+   set(STANDALONE_BUILD TRUE)
+endif()
+
+option(SBE_TESTS "Enable tests" ${STANDALONE_BUILD})
+option(SBE_BUILD_SAMPLES "Enable building the sample projects" ${STANDALONE_BUILD})
+option(SBE_BUILD_BENCHMARKS "Enable building the benchmarks" ${STANDALONE_BUILD})
+
+unset(STANDALONE_BUILD)
+
+if(SBE_TESTS)
+    enable_testing()
+endif()
 
 # default built type is Release
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build" FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
-ExternalProject_Add(
-	gtest
-	URL ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/lib/gtest-1.7.0.zip
-	URL_MD5 2d6ec8ccdf5c46b05ba54a9fd1d130d7
-	INSTALL_COMMAND ""
-	LOG_CONFIGURE ON
-	LOG_BUILD ON
-)
+if(SBE_TESTS)
+    set(SBE_THIRDPARTY_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/thirdparty")
 
-ExternalProject_Get_Property(gtest source_dir)
-set(GTEST_SOURCE_DIR ${source_dir})
-ExternalProject_Get_Property(gtest binary_dir)
-set(GTEST_BINARY_DIR ${binary_dir})
+    ExternalProject_Add(
+        gtest
+        URL ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/lib/gtest-1.7.0.zip
+        URL_MD5 2d6ec8ccdf5c46b05ba54a9fd1d130d7
+        PREFIX "${SBE_THIRDPARTY_BINARY_DIR}/gtest"
+        BUILD_BYPRODUCTS "${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX};${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        INSTALL_COMMAND ""
+        LOG_CONFIGURE ON
+        LOG_BUILD ON
+    )
+
+    ExternalProject_Get_Property(gtest source_dir)
+    set(GTEST_SOURCE_DIR ${source_dir})
+    ExternalProject_Get_Property(gtest binary_dir)
+    set(GTEST_BINARY_DIR ${binary_dir})
+endif()
 
 find_package(Threads)
 
@@ -55,16 +73,16 @@ if(UNIX)
 endif()
 
 if(APPLE)
-	# -Wall doesn't enable everything we want to see
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-compare")
-	add_definitions(-DDarwin)
+    # -Wall doesn't enable everything we want to see
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-compare")
+    add_definitions(-DDarwin)
 elseif(MSVC)
-	add_definitions(-DWIN32)
+    add_definitions(-DWIN32)
 
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /Od /Zi")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 else()
-	add_definitions(-D_GNU_SOURCE)
+    add_definitions(-D_GNU_SOURCE)
 endif()
 
 set(LIBPREFIX "${CMAKE_STATIC_LIBRARY_PREFIX}")
@@ -75,10 +93,29 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 
 set(SBE_JAR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs/sbe-all-${SBE_VERSION_TXT}.jar")
 if(EXISTS "${SBE_JAR}")
-	message("latest SBE jar found: ${SBE_JAR}")
+    message("latest SBE jar found: ${SBE_JAR}")
 else()
-	message(FATAL_ERROR "could not find latest SBE jar in ${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs")
+    message("Generating SBE jar")
+    execute_process(
+        COMMAND ./gradlew build -x check -x javadoc --info --stacktrace :sbe-all:build
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
 endif()
+
+file(GLOB_RECURSE SBE_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/java/*.java"
+)
+
+add_custom_command(OUTPUT ${SBE_JAR}
+    COMMAND ./gradlew build -x check -x javadoc --info --stacktrace :sbe-all:build
+    DEPENDS ${SBE_SOURCES}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating SBE jar"
+)
+
+add_custom_target(sbe-jar
+   DEPENDS ${SBE_JAR}
+)
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/resources")
@@ -86,14 +123,21 @@ set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/r
 set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/resources")
 
 include_directories(
-	${GTEST_SOURCE_DIR}/include
-	${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp
-	${CODEC_TARGET_DIR}
+    ${GTEST_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp
+    ${CODEC_TARGET_DIR}
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/cpp)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/cpp)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/cpp)
 
-add_dependencies(sbe ir_codecs)
+if(SBE_TESTS)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/cpp)
+endif()
+
+if(SBE_BUILD_SAMPLES)
+   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/cpp)
+endif()
+
+if(SBE_BUILD_BENCHMARKS)
+   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/cpp)
+endif()
