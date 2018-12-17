@@ -49,12 +49,12 @@ add_custom_command(OUTPUT ${CODECS}
 )
 
 add_custom_target(
-        ir_codecs
-        DEPENDS ${CODECS}
+    ir_codecs
+    DEPENDS ${CODECS}
 )
 
 set(HEADERS
-        sbe/sbe.h
+    sbe/sbe.h
     otf/IrDecoder.h
     otf/Token.h
     otf/Encoding.h

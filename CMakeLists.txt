@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2017 Real Logic Ltd.
+# Copyright 2013-2018 Real Logic Ltd.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ file(GLOB_RECURSE SBE_SOURCES
 )
 
 add_custom_command(OUTPUT ${SBE_JAR}
-    COMMAND ./gradlew build -x check -x javadoc --info --stacktrace :sbe-all:build
+    COMMAND ./gradlew build -x check -x javadoc :sbe-all:build
     DEPENDS ${SBE_SOURCES}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Generating SBE jar"
