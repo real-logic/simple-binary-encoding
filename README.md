@@ -74,10 +74,6 @@ NOTE: Linux, Mac OS, and Windows only for the moment. See
 [FAQ](https://github.com/real-logic/simple-binary-encoding/wiki/Frequently-Asked-Questions).
 Windows builds have been tested with Visual Studio Express 12.
 
-First build using Gradle to generate the SBE jar.
-
-    $ ./gradlew
-
 For convenience, a script is provided that does a full clean, build, and test of all targets as a Release build.
 
     $ ./cppbuild/cppbuild
