@@ -38,7 +38,7 @@ set(SBE_MD_SCHEMA ${CODEC_PERF_SCHEMA_DIR}/fix-message-samples.xml)
 
 add_custom_command(
     OUTPUT ${GENERATED_CODECS}
-    DEPENDS ${SBE_CAR_SCHEMA} ${SBE_MD_SCHEMA}
+    DEPENDS ${SBE_CAR_SCHEMA} ${SBE_MD_SCHEMA} sbe-jar ${SBE_JAR}
     COMMAND ${Java_JAVA_EXECUTABLE} -Dsbe.output.dir=${CODEC_TARGET_DIR} -Dsbe.target.language="cpp" -jar ${SBE_JAR} ${SBE_CAR_SCHEMA} ${SBE_MD_SCHEMA}
 )
 add_custom_target(perf_codecs DEPENDS ${GENERATED_CODECS})
