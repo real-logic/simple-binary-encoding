@@ -40,7 +40,6 @@ matrix:
             - libsparsehash-dev
           sources:
             - ubuntu-toolchain-r-test
-      before_script: ./gradlew
       script: ./cppbuild/cppbuild
 
     - env: COMPILER=g++-7
@@ -54,7 +53,6 @@ matrix:
             - libsparsehash-dev
           sources:
             - ubuntu-toolchain-r-test
-      before_script: ./gradlew
       script: ./cppbuild/cppbuild
 
     - env: COMPILER=g++-8
@@ -68,7 +66,6 @@ matrix:
             - libsparsehash-dev
           sources:
             - ubuntu-toolchain-r-test
-      before_script: ./gradlew
       script: ./cppbuild/cppbuild
 
     - env: COMPILER=clang++-4.0
@@ -84,7 +81,6 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-trusty-4.0
-      before_script: ./gradlew
       script: ./cppbuild/cppbuild
 
     - env: COMPILER=clang++-5.0
@@ -100,7 +96,6 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-trusty-5.0
-      before_script: ./gradlew
       script: ./cppbuild/cppbuild
 
     - env: COMPILER=clang++-6.0
@@ -116,14 +111,12 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-trusty-6.0
-      before_script: ./gradlew
       script: ./cppbuild/cppbuild
 
     - env: COMPILER=clang++
       language: c++
       compiler: clang
       os: osx
-      before_script: ./gradlew
       script: ./cppbuild/cppbuild
 
 before_cache:
