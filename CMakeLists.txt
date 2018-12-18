@@ -97,7 +97,7 @@ if(EXISTS "${SBE_JAR}")
 else()
     message("Generating SBE jar")
     execute_process(
-        COMMAND ./gradlew build -x check -x javadoc --info --stacktrace :sbe-all:build
+        COMMAND ./gradlew build -x test -x check -x javadoc --info --stacktrace :sbe-all:build
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif()
