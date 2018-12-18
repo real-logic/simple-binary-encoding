@@ -107,22 +107,22 @@ public:
      * All elements must be unsigned integers according to Specification
      */
 
-    std::uint64_t getTemplateId(const char *headerBuffer)
+    std::uint64_t getTemplateId(const char *headerBuffer) const
     {
         return Encoding::getUInt(m_templateIdType, m_templateIdByteOrder, headerBuffer + m_templateIdOffset);
     }
 
-    std::uint64_t getSchemaId(const char *headerBuffer)
+    std::uint64_t getSchemaId(const char *headerBuffer) const
     {
         return Encoding::getUInt(m_schemaIdType, m_schemaIdByteOrder, headerBuffer + m_schemaIdOffset);
     }
 
-    std::uint64_t getSchemaVersion(const char *headerBuffer)
+    std::uint64_t getSchemaVersion(const char *headerBuffer) const
     {
         return Encoding::getUInt(m_schemaVersionType, m_schemaVersionByteOrder, headerBuffer + m_schemaVersionOffset);
     }
 
-    std::uint64_t getBlockLength(const char *headerBuffer)
+    std::uint64_t getBlockLength(const char *headerBuffer) const
     {
         return Encoding::getUInt(m_blockLengthType, m_blockLengthByteOrder, headerBuffer + m_blockLengthOffset);
     }

@@ -281,8 +281,7 @@ std::size_t decodeData(
 
         // TODO: is length always unsigned according to spec?
         std::uint64_t dataLength = isPresent ?
-            lengthToken.encoding().getAsUInt(buffer + bufferIndex + lengthToken.offset())
-            : 0;
+            lengthToken.encoding().getAsUInt(buffer + bufferIndex + lengthToken.offset()) : 0;
 
         if (isPresent)
         {
@@ -336,11 +335,9 @@ std::pair<size_t, size_t> decodeGroups(
         Token& numInGroupToken = tokens->at(tokenIndex + 3);
 
         std::uint64_t blockLength = isPresent ?
-            blockLengthToken.encoding().getAsUInt(buffer + bufferIndex + blockLengthToken.offset())
-            : 0;
+            blockLengthToken.encoding().getAsUInt(buffer + bufferIndex + blockLengthToken.offset()) : 0;
         std::uint64_t numInGroup = isPresent ?
-            numInGroupToken.encoding().getAsUInt(buffer + bufferIndex + numInGroupToken.offset())
-            : 0;
+            numInGroupToken.encoding().getAsUInt(buffer + bufferIndex + numInGroupToken.offset()) : 0;
 
         if (isPresent)
         {
@@ -360,15 +357,15 @@ std::pair<size_t, size_t> decodeGroups(
                 throw std::runtime_error("length too short for group blockLength");
             }
 
-            size_t afterFieldsIndex =
-                decodeFields(buffer, bufferIndex, length, actingVersion, tokens, beginFieldsIndex, numTokens, listener);
+            size_t afterFieldsIndex = decodeFields(
+                buffer, bufferIndex, length, actingVersion, tokens, beginFieldsIndex, numTokens, listener);
             bufferIndex += blockLength;
 
-            std::pair<size_t, size_t> groupsResult =
-                decodeGroups(buffer, bufferIndex, length, actingVersion, tokens, afterFieldsIndex, numTokens, listener);
+            std::pair<size_t, size_t> groupsResult = decodeGroups(
+                buffer, bufferIndex, length, actingVersion, tokens, afterFieldsIndex, numTokens, listener);
 
-            bufferIndex =
-                decodeData(buffer, groupsResult.first, length, tokens, groupsResult.second, numTokens, actingVersion, listener);
+            bufferIndex = decodeData(
+                buffer, groupsResult.first, length, tokens, groupsResult.second, numTokens, actingVersion, listener);
 
             listener.onEndGroup(token, i, numInGroup);
         }
@@ -403,11 +400,11 @@ std::size_t decode(
 
     size_t bufferIndex = blockLength;
 
-    std::pair<size_t, size_t> groupResult =
-        decodeGroups(buffer, bufferIndex, length, actingVersion, msgTokens, tokenIndex, numTokens, listener);
+    std::pair<size_t, size_t> groupResult = decodeGroups(
+        buffer, bufferIndex, length, actingVersion, msgTokens, tokenIndex, numTokens, listener);
 
-    bufferIndex =
-        decodeData(buffer, groupResult.first, length, msgTokens, groupResult.second, numTokens, actingVersion, listener);
+    bufferIndex = decodeData(
+        buffer, groupResult.first, length, msgTokens, groupResult.second, numTokens, actingVersion, listener);
 
     listener.onEndMessage(msgTokens->at(numTokens - 1));
 
