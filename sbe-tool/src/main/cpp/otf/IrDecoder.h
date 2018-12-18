@@ -150,7 +150,7 @@ protected:
         FILE *fptr = ::fopen(filename, "rb");
         std::uint64_t remaining = length;
 
-        if (NULL == fptr)
+        if (nullptr == fptr)
         {
             return -1;
         }

@@ -173,15 +173,19 @@ static void decodeComposite(
             case Signal::BEGIN_COMPOSITE:
                 decodeComposite(fieldToken, buffer, bufferIndex + offset, length, tokens, i, nextFieldIndex - 1, actingVersion, listener);
                 break;
+
             case Signal::BEGIN_ENUM:
                 listener.onEnum(fieldToken, buffer + bufferIndex + offset, *tokens.get(), i, nextFieldIndex - 1, actingVersion);
                 break;
+
             case Signal::BEGIN_SET:
                 listener.onBitSet(fieldToken, buffer + bufferIndex + offset, *tokens.get(), i, nextFieldIndex - 1, actingVersion);
                 break;
+
             case Signal::ENCODING:
                 listener.onEncoding(token, buffer + bufferIndex + offset, token, actingVersion);
                 break;
+
             default:
                 throw std::runtime_error("incorrect signal type in decodeComposite");
         }
@@ -223,15 +227,19 @@ static size_t decodeFields(
                 decodeComposite<TokenListener>(
                     fieldToken, buffer, offset, length, tokens, tokenIndex, nextFieldIndex - 2, actingVersion, listener);
                 break;
+
             case Signal::BEGIN_ENUM:
                 listener.onEnum(fieldToken, buffer + offset, *tokens.get(), tokenIndex, nextFieldIndex - 2, actingVersion);
                 break;
+
             case Signal::BEGIN_SET:
                 listener.onBitSet(fieldToken, buffer + offset, *tokens.get(), tokenIndex, nextFieldIndex - 2, actingVersion);
                 break;
+
             case Signal::ENCODING:
                 listener.onEncoding(fieldToken, buffer + offset, typeToken, actingVersion);
                 break;
+
             default:
                 throw std::runtime_error("incorrect signal type in decodeFields");
         }
@@ -247,7 +255,7 @@ std::size_t decodeData(
     const char *buffer,
     std::size_t bufferIndex,
     const std::size_t length,
-    std::shared_ptr<std::vector<Token>> tokens,
+    const std::shared_ptr<std::vector<Token>>& tokens,
     std::size_t tokenIndex,
     const std::size_t numTokens,
     std::uint64_t actingVersion,

@@ -156,9 +156,9 @@ inline std::size_t lengthOfType(PrimitiveType type)
 class PrimitiveValue
 {
 public:
-    PrimitiveValue(PrimitiveType type, std::size_t valueLength, const char *value)
+    PrimitiveValue(PrimitiveType type, std::size_t valueLength, const char *value) :
+        m_type(type)
     {
-        m_type = type;
         if (0 == valueLength)
         {
             m_type = PrimitiveType::NONE;
