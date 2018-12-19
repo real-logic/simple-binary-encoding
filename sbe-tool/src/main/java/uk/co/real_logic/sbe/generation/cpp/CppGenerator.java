@@ -222,6 +222,9 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n",
             dimensionHeaderLength));
 
+        final long minCount = numInGroupToken.encoding().applicableMinValue().longValue();
+        final String minCheck = minCount > 0 ? "count < " + minCount + " || " : "";
+
         sb.append(String.format("\n" +
             indent + "    inline void wrapForEncode(char *buffer, const %3$s count," +
             " std::uint64_t *pos, const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
@@ -230,7 +233,7 @@ public class CppGenerator implements CodeGenerator
             indent + "#pragma GCC diagnostic push\n" +
             indent + "#pragma GCC diagnostic ignored \"-Wtype-limits\"\n" +
             indent + "#endif\n" +
-            indent + "        if (count < %5$d || count > %6$d)\n" +
+            indent + "        if (%5$scount > %6$d)\n" +
             indent + "        {\n" +
             indent + "            throw std::runtime_error(\"count outside of allowed range [E110]\");\n" +
             indent + "        }\n" +
@@ -250,7 +253,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        *m_positionPtr = *m_positionPtr + %4$d;\n" +
             indent + "    }\n",
             cppTypeForBlockLength, blockLength, cppTypeForNumInGroup, dimensionHeaderLength,
-            numInGroupToken.encoding().applicableMinValue().longValue(),
+            minCheck,
             numInGroupToken.encoding().applicableMaxValue().longValue()));
 
         sb.append(String.format("\n" +
@@ -301,7 +304,8 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("    {\n")
             .append(indent).append("        while (hasNext())\n")
             .append(indent).append("        {\n")
-            .append(indent).append("            next(); func(*this);\n")
+            .append(indent).append("            next();\n")
+            .append(indent).append("            func(*this);\n")
             .append(indent).append("        }\n")
             .append(indent).append("    }\n\n")
             .append(indent).append("#else\n")
@@ -309,7 +313,8 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("    {\n")
             .append(indent).append("        while (hasNext())\n")
             .append(indent).append("        {\n")
-            .append(indent).append("            next(); func(*this);\n")
+            .append(indent).append("            next();\n")
+            .append(indent).append("            func(*this);\n")
             .append(indent).append("        }\n")
             .append(indent).append("    }\n\n")
             .append(indent).append("#endif\n\n");
