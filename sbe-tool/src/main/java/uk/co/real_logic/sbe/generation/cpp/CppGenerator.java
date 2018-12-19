@@ -439,7 +439,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        std::uint64_t dataLength = %4$s(lengthFieldValue);\n" +
                 indent + "        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
                 indent + "        std::uint64_t pos = sbePosition();\n" +
-                indent + "        sbePosition(sbePosition() + dataLength);\n" +
+                indent + "        sbePosition(pos + dataLength);\n" +
                 indent + "        std::memcpy(dst, m_buffer + pos, bytesToCopy);\n" +
                 indent + "        return bytesToCopy;\n" +
                 indent + "    }\n",
@@ -458,7 +458,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        sbePosition(lengthPosition + lengthOfLengthField);\n" +
                 indent + "        std::memcpy(m_buffer + lengthPosition, &lengthFieldValue, sizeof(%3$s));\n" +
                 indent + "        std::uint64_t pos = sbePosition();\n" +
-                indent + "        sbePosition(sbePosition() + length);\n" +
+                indent + "        sbePosition(pos + length);\n" +
                 indent + "        std::memcpy(m_buffer + pos, src, length);\n" +
                 indent + "        return *this;\n" +
                 indent + "    }\n",
@@ -480,7 +480,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        std::uint64_t dataLength = %4$s(lengthFieldValue);\n" +
                 indent + "        std::uint64_t pos = sbePosition();\n" +
                 indent + "        const std::string result(m_buffer + pos, dataLength);\n" +
-                indent + "        sbePosition(sbePosition() + dataLength);\n" +
+                indent + "        sbePosition(pos + dataLength);\n" +
                 indent + "        return result;\n" +
                 indent + "    }\n",
                 propertyName,
@@ -502,7 +502,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        sbePosition(lengthPosition + lengthOfLengthField);\n" +
                 indent + "        std::memcpy(m_buffer + lengthPosition, &lengthFieldValue, sizeof(%4$s));\n" +
                 indent + "        std::uint64_t pos = sbePosition();\n" +
-                indent + "        sbePosition(sbePosition() + str.length());\n" +
+                indent + "        sbePosition(pos + str.length());\n" +
                 indent + "        std::memcpy(m_buffer + pos, str.c_str(), str.length());\n" +
                 indent + "        return *this;\n" +
                 indent + "    }\n",
