@@ -1451,11 +1451,11 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        reset(buffer, 0, bufferLength, actingBlockLength, actingVersion);\n" +
             "    }\n\n" +
-            "    %1$s(const %1$s& codec)\n" +
+            "    %1$s(const %1$s& codec) SBE_NOEXCEPT\n" +
             "    {\n" +
             "        reset(codec);\n" +
             "    }\n\n" +
-            "    %1$s& operator=(const %1$s& codec)\n" +
+            "    %1$s& operator=(const %1$s& codec) SBE_NOEXCEPT\n" +
             "    {\n" +
             "        reset(codec);\n" +
             "        return *this;\n" +
@@ -1492,7 +1492,7 @@ public class CppGenerator implements CodeGenerator
             "        m_positionPtr = &m_position;\n" +
             "        sbePosition(offset + m_actingBlockLength);\n" +
             "    }\n\n" +
-            "    inline void reset(const %10$s& codec)\n" +
+            "    inline void reset(const %10$s& codec) SBE_NOEXCEPT\n" +
             "    {\n" +
             "        m_buffer = codec.m_buffer;\n" +
             "        m_offset = codec.m_offset;\n" +
