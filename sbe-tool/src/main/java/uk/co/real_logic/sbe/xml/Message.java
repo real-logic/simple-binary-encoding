@@ -461,4 +461,20 @@ public class Message
             handleError(node, msg);
         }
     }
+
+    public String toString()
+    {
+        return "Message{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", description='" + description + '\'' +
+            ", sinceVersion=" + sinceVersion +
+            ", deprecated=" + deprecated +
+            ", blockLength=" + blockLength +
+            ", fieldList=" + fieldList +
+            ", semanticType='" + semanticType + '\'' +
+            ", computedBlockLength=" + computedBlockLength +
+            ", typeByNameMap=" + typeByNameMap +
+            '}';
+    }
 }

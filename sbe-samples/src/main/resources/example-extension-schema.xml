@@ -1,32 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   xmlns:xi="http://www.w3.org/2001/XInclude"
                    package="extension"
                    id="1"
                    version="1"
                    semanticVersion="5.2"
                    description="Example schema with extension"
                    byteOrder="littleEndian">
-    <types>
-        <type name="cupHolderCount_t" primitiveType="uint8" presence="optional" sinceVersion="1"/>
-        <composite name="messageHeader" description="Message identifiers and length of message root">
-            <type name="blockLength" primitiveType="uint16"/>
-            <type name="templateId" primitiveType="uint16"/>
-            <type name="schemaId" primitiveType="uint16"/>
-            <type name="version" primitiveType="uint16"/>
-        </composite>
-        <composite name="groupSizeEncoding" description="Repeating group dimensions">
-            <type name="blockLength" primitiveType="uint16"/>
-            <type name="numInGroup" primitiveType="uint16"/>
-        </composite>
-        <composite name="varStringEncoding">
-            <type name="length" primitiveType="uint32" maxValue="1073741824"/>
-            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
-        </composite>
-        <composite name="varDataEncoding">
-            <type name="length" primitiveType="uint32" maxValue="1073741824"/>
-            <type name="varData" primitiveType="uint8" length="0"/>
-        </composite>
-    </types>
+    <xi:include href="src/main/resources/common-types.xml"/>
     <types>
         <type name="ModelYear" primitiveType="uint16"/>
         <type name="VehicleCode" primitiveType="char" length="6" characterEncoding="ASCII"/>
@@ -66,6 +47,7 @@
             <choice name="sportsPack">1</choice>
             <choice name="cruiseControl">2</choice>
         </set>
+        <type name="cupHolderCount_t" primitiveType="uint8" presence="optional" sinceVersion="1"/>
     </types>
     <sbe:message name="Car" id="1" description="Description of a basic Car">
         <field name="serialNumber" id="1" type="uint64"/>

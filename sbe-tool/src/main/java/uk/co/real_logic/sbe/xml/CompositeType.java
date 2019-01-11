@@ -414,7 +414,8 @@ public class CompositeType extends Type
                 final String refName = XmlSchemaParser.getAttributeValue(subTypeNode, "name");
                 final String refTypeName = XmlSchemaParser.getAttributeValue(subTypeNode, "type");
                 final int refOffset = Integer.parseInt(XmlSchemaParser.getAttributeValue(subTypeNode, "offset", "-1"));
-                final Node refTypeNode = (Node)xPath.compile("/messageSchema/types/*[@name='" + refTypeName + "']")
+                final Node refTypeNode = (Node)xPath.compile(
+                    "/*[local-name() = 'messageSchema']/types/*[@name='" + refTypeName + "']")
                     .evaluate(subTypeNode.getOwnerDocument(), XPathConstants.NODE);
 
                 if (refTypeNode == null)
@@ -455,5 +456,13 @@ public class CompositeType extends Type
         }
 
         return type;
+    }
+
+    public String toString()
+    {
+        return "CompositeType{" +
+            "compositesPath=" + compositesPath +
+            ", containedTypeByNameMap=" + containedTypeByNameMap +
+            '}';
     }
 }

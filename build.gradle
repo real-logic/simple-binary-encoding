@@ -375,6 +375,7 @@ project(':sbe-samples') {
             'sbe.target.language': 'Java',
             'sbe.java.generate.interfaces': 'true',
             'sbe.validation.stop.on.error': 'true',
+            'sbe.xinclude.aware': 'true',
             'sbe.validation.xsd': validationXsdPath)
         args = ['src/main/resources/example-schema.xml',
                 'src/main/resources/example-extension-schema.xml']

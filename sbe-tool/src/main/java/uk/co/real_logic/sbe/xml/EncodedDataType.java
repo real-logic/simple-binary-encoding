@@ -161,7 +161,8 @@ public class EncodedDataType extends Type
             final String valueRefType = valueRef.substring(0, periodIndex);
 
             final XPath xPath = XPathFactory.newInstance().newXPath();
-            final Node valueRefNode = (Node)xPath.compile("/messageSchema/types/enum[@name='" + valueRefType + "']")
+            final Node valueRefNode = (Node)xPath.compile(
+                "/*[local-name() = 'messageSchema']/types/enum[@name='" + valueRefType + "']")
                 .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
 
             if (valueRefNode == null)
@@ -383,5 +384,20 @@ public class EncodedDataType extends Type
         }
 
         return primitiveValue;
+    }
+
+    public String toString()
+    {
+        return "EncodedDataType{" +
+            "primitiveType=" + primitiveType +
+            ", length=" + length +
+            ", constValue=" + constValue +
+            ", minValue=" + minValue +
+            ", maxValue=" + maxValue +
+            ", nullValue=" + nullValue +
+            ", characterEncoding='" + characterEncoding + '\'' +
+            ", valueRef='" + valueRef + '\'' +
+            ", varLen=" + varLen +
+            '}';
     }
 }

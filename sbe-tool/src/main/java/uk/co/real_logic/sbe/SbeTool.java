@@ -66,6 +66,7 @@ import java.nio.file.Paths;
  * </li>
  * <li><b>sbe.keyword.append.token</b>: Token to be appended to keywords.</li>
  * <li><b>sbe.decode.unknown.enum.values</b>: Support unknown decoded enum values.</li>
+ * <li><b>sbe.xinclude.aware</b>: Is XInclude supported for the schema. Defaults to false.</li>
  * </ul>
  */
 public class SbeTool
@@ -86,22 +87,22 @@ public class SbeTool
     public static final String JAVA_DEFAULT_DECODING_BUFFER_TYPE = DirectBuffer.class.getName();
 
     /**
-     * Boolean system property to control throwing exceptions on all errors
+     * Boolean system property to control throwing exceptions on all errors.
      */
     public static final String VALIDATION_STOP_ON_ERROR = "sbe.validation.stop.on.error";
 
     /**
-     * Boolean system property to control whether to consider warnings fatal and treat them as errors
+     * Boolean system property to control whether to consider warnings fatal and treat them as errors.
      */
     public static final String VALIDATION_WARNINGS_FATAL = "sbe.validation.warnings.fatal";
 
     /**
-     * System property to hold XSD to validate message specification against
+     * System property to hold XSD to validate message specification against.
      */
     public static final String VALIDATION_XSD = "sbe.validation.xsd";
 
     /**
-     * Boolean system property to control suppressing output on all errors and warnings
+     * Boolean system property to control suppressing output on all errors and warnings.
      */
     public static final String VALIDATION_SUPPRESS_OUTPUT = "sbe.validation.suppress.output";
 
@@ -109,6 +110,11 @@ public class SbeTool
      * Boolean system property to turn on or off generation of stubs. Defaults to true.
      */
     public static final String GENERATE_STUBS = "sbe.generate.stubs";
+
+    /**
+     * Boolean system property to control is XInclude is supported. Defaults to false.
+     */
+    public static final String XINCLUDE_AWARE = "sbe.xinclude.aware";
 
     /**
      * Target language for generated code.
@@ -121,7 +127,7 @@ public class SbeTool
     public static final String GENERATE_IR = "sbe.generate.ir";
 
     /**
-     * Output directory for generated code
+     * Output directory for generated code.
      */
     public static final String OUTPUT_DIR = "sbe.output.dir";
 
@@ -141,12 +147,12 @@ public class SbeTool
     public static final String JAVA_GENERATE_INTERFACES = "sbe.java.generate.interfaces";
 
     /**
-     * Specifies the name of the Java mutable buffer to wrap
+     * Specifies the name of the Java mutable buffer to wrap.
      */
     public static final String JAVA_ENCODING_BUFFER_TYPE = "sbe.java.encoding.buffer.type";
 
     /**
-     * Specifies the name of the Java read only buffer to wrap
+     * Specifies the name of the Java read only buffer to wrap.
      */
     public static final String JAVA_DECODING_BUFFER_TYPE = "sbe.java.decoding.buffer.type";
 
@@ -245,9 +251,16 @@ public class SbeTool
     public static void validateAgainstSchema(final String sbeSchemaFilename, final String xsdFilename)
         throws Exception
     {
+        final ParserOptions.Builder optionsBuilder = ParserOptions.builder()
+            .xsdFilename(System.getProperty(VALIDATION_XSD))
+            .xIncludeAware(Boolean.parseBoolean(System.getProperty(XINCLUDE_AWARE)))
+            .stopOnError(Boolean.parseBoolean(System.getProperty(VALIDATION_STOP_ON_ERROR)))
+            .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
+            .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
+
         try (InputStream in = new BufferedInputStream(Files.newInputStream(Paths.get(sbeSchemaFilename))))
         {
-            XmlSchemaParser.validate(xsdFilename, in);
+            XmlSchemaParser.validate(xsdFilename, in, optionsBuilder.build());
         }
     }
 
@@ -263,6 +276,7 @@ public class SbeTool
     {
         final ParserOptions.Builder optionsBuilder = ParserOptions.builder()
             .xsdFilename(System.getProperty(VALIDATION_XSD))
+            .xIncludeAware(Boolean.parseBoolean(System.getProperty(XINCLUDE_AWARE)))
             .stopOnError(Boolean.parseBoolean(System.getProperty(VALIDATION_STOP_ON_ERROR)))
             .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
             .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));

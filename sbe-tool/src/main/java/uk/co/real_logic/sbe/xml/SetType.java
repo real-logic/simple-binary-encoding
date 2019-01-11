@@ -177,6 +177,15 @@ public class SetType extends Type
         return false;
     }
 
+    public String toString()
+    {
+        return "SetType{" +
+            "encodingType=" + encodingType +
+            ", choiceByPrimitiveValueMap=" + choiceByPrimitiveValueMap +
+            ", choiceByNameMap=" + choiceByNameMap +
+            '}';
+    }
+
     /**
      * Holder for valid values for EnumType
      */
@@ -260,6 +269,17 @@ public class SetType extends Type
         public int deprecated()
         {
             return deprecated;
+        }
+
+        public String toString()
+        {
+            return "Choice{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", value=" + value +
+                ", sinceVersion=" + sinceVersion +
+                ", deprecated=" + deprecated +
+                '}';
         }
     }
 }

@@ -223,6 +223,16 @@ public class EnumType extends Type
         return false;
     }
 
+    public String toString()
+    {
+        return "EnumType{" +
+            "encodingType=" + encodingType +
+            ", nullValue=" + nullValue +
+            ", validValueByPrimitiveValueMap=" + validValueByPrimitiveValueMap +
+            ", validValueByNameMap=" + validValueByNameMap +
+            '}';
+    }
+
     /**
      * Class to hold valid values for EnumType
      */
@@ -299,6 +309,17 @@ public class EnumType extends Type
         public int deprecated()
         {
             return deprecated;
+        }
+
+        public String toString()
+        {
+            return "ValidValue{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", value=" + value +
+                ", sinceVersion=" + sinceVersion +
+                ", deprecated=" + deprecated +
+                '}';
         }
     }
 }
