@@ -623,6 +623,7 @@ task generateGolangCodecsWithXSD(type: JavaExec) {
     systemProperties(
         'sbe.output.dir': 'gocode/src',
         'sbe.target.language': 'golang',
+        'sbe.xinclude.aware': 'true',
         'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/test/resources/group-with-data-schema.xml',
             'sbe-tool/src/test/resources/FixBinary.xml',
@@ -656,6 +657,7 @@ task generateCSharpCodecs(type: JavaExec) {
     systemProperties(
         'sbe.output.dir': 'csharp/sbe-generated',
         'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
+        'sbe.xinclude.aware': 'true',
         'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/test/resources/FixBinary.xml',
             'sbe-tool/src/test/resources/issue435.xml',
