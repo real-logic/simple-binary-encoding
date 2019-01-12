@@ -7,11 +7,7 @@
                    semanticVersion="5.2"
                    description="Example schema"
                    byteOrder="littleEndian">
-    <xi:include href="common-types.xml">
-        <xi:fallback>
-            <xi:include href="../../../../../../sbe-samples/src/main/resources/common-types.xml"/>
-        </xi:fallback>
-    </xi:include>
+    <xi:include href="common-types.xml"/>
     <types>
         <type name="ModelYear" primitiveType="uint16"/>
         <type name="VehicleCode" primitiveType="char" length="6" characterEncoding="ASCII"/>
