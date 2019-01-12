@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Real Logic Ltd.
+ * Copyright 2013-2019 Real Logic Ltd.
  * Copyright (C) 2017 MarketFactory, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
