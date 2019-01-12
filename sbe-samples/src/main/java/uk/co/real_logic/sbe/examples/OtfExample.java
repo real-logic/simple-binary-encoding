@@ -93,7 +93,7 @@ public class OtfExample
 
     private static void encodeSchema(final ByteBuffer byteBuffer) throws Exception
     {
-        final Path path = Paths.get("src/main/resources/example-schema.xml");
+        final Path path = Paths.get("example-schema.xml");
         try (InputStream in = new BufferedInputStream(Files.newInputStream(path)))
         {
             final MessageSchema schema = XmlSchemaParser.parse(in, ParserOptions.DEFAULT);

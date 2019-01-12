@@ -7,7 +7,7 @@
                    semanticVersion="5.2"
                    description="Example schema with extension"
                    byteOrder="littleEndian">
-    <xi:include href="src/main/resources/common-types.xml"/>
+    <xi:include href="common-types.xml"/>
     <types>
         <type name="ModelYear" primitiveType="uint16"/>
         <type name="VehicleCode" primitiveType="char" length="6" characterEncoding="ASCII"/>
