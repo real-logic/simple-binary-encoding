@@ -619,7 +619,7 @@ task generateGolangCodecTestVarData(type: JavaExec) {
     args = ['sbe-tool/src/test/resources/basic-variable-length-schema.xml']
 }
 
-task generateGolangCodecsWithXSD(type: JavaExec) {
+task generateGolangCodecsWithXsd(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -639,9 +639,19 @@ task generateGolangCodecsWithXSD(type: JavaExec) {
             'gocode/resources/example-composite.xml',
             'gocode/resources/example-extension-2-schema.xml',
             'gocode/resources/group-with-data-extension-schema.xml',
-            'gocode/resources/simple.xml',
-            'sbe-samples/src/main/resources/example-schema.xml',
-            'sbe-samples/src/main/resources/example-extension-schema.xml']
+            'gocode/resources/simple.xml']
+}
+
+task generateGolangCodecsWithXsdAndIncludes(type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    workingDir = 'sbe-samples/src/main/resources'
+    systemProperties(
+        'sbe.output.dir': '../../../../gocode/src',
+        'sbe.target.language': 'golang',
+        'sbe.xinclude.aware': 'true',
+        'sbe.validation.xsd': validationXsdPath)
+    args = ['example-schema.xml', 'example-extension-schema.xml']
 }
 
 task generateGolangCodecs {
@@ -650,10 +660,11 @@ task generateGolangCodecs {
         'generateGolangCodecTestGroup',
         'generateGolangCodecTestBasic',
         'generateGolangCodecTestComposite',
-        'generateGolangCodecsWithXSD'
+        'generateGolangCodecsWithXsd',
+        'generateGolangCodecsWithXsdAndIncludes'
 }
 
-task generateCSharpCodecs(type: JavaExec) {
+task generateCSharpCodecsBase(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -667,9 +678,24 @@ task generateCSharpCodecs(type: JavaExec) {
             'sbe-tool/src/test/resources/issue560.xml',
             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
-            'sbe-samples/src/main/resources/example-schema.xml',
-            'sbe-samples/src/main/resources/example-extension-schema.xml',
             'sbe-benchmarks/src/main/resources/fix-message-samples.xml']
+}
+
+task generateCSharpCodecsWithIncludes(type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    workingDir = 'sbe-samples/src/main/resources'
+    systemProperties(
+        'sbe.output.dir': '../../../../csharp/sbe-generated',
+        'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
+        'sbe.xinclude.aware': 'true',
+        'sbe.validation.xsd': validationXsdPath)
+    args = ['example-schema.xml', 'example-extension-schema.xml']
+}
+
+task generateCSharpCodecs {
+    description = 'Generate CSharp test codecs'
+    dependsOn 'generateCSharpCodecsBase', 'generateCSharpCodecsWithIncludes'
 }
 
 task generateJavaIrCodecs(type: JavaExec) {
