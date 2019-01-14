@@ -58,7 +58,10 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder wrap(final MutableDirectBuffer buffer, final int offset)
     {
-        this.buffer = buffer;
+        if (buffer != this.buffer)
+        {
+            this.buffer = buffer;
+        }
         this.offset = offset;
         limit(offset + BLOCK_LENGTH);
 
@@ -95,7 +98,7 @@ public class TokenCodecEncoder
 
     public static int tokenOffsetId()
     {
-        return 11;
+        return 1;
     }
 
     public static int tokenOffsetSinceVersion()
@@ -150,7 +153,7 @@ public class TokenCodecEncoder
 
     public static int tokenSizeId()
     {
-        return 12;
+        return 2;
     }
 
     public static int tokenSizeSinceVersion()
@@ -205,7 +208,7 @@ public class TokenCodecEncoder
 
     public static int fieldIdId()
     {
-        return 13;
+        return 3;
     }
 
     public static int fieldIdSinceVersion()
@@ -260,7 +263,7 @@ public class TokenCodecEncoder
 
     public static int tokenVersionId()
     {
-        return 14;
+        return 4;
     }
 
     public static int tokenVersionSinceVersion()
@@ -315,7 +318,7 @@ public class TokenCodecEncoder
 
     public static int componentTokenCountId()
     {
-        return 15;
+        return 5;
     }
 
     public static int componentTokenCountSinceVersion()
@@ -370,7 +373,7 @@ public class TokenCodecEncoder
 
     public static int signalId()
     {
-        return 16;
+        return 6;
     }
 
     public static int signalSinceVersion()
@@ -409,7 +412,7 @@ public class TokenCodecEncoder
 
     public static int primitiveTypeId()
     {
-        return 17;
+        return 7;
     }
 
     public static int primitiveTypeSinceVersion()
@@ -448,7 +451,7 @@ public class TokenCodecEncoder
 
     public static int byteOrderId()
     {
-        return 18;
+        return 8;
     }
 
     public static int byteOrderSinceVersion()
@@ -487,7 +490,7 @@ public class TokenCodecEncoder
 
     public static int presenceId()
     {
-        return 19;
+        return 9;
     }
 
     public static int presenceSinceVersion()
@@ -526,7 +529,7 @@ public class TokenCodecEncoder
 
     public static int deprecatedId()
     {
-        return 30;
+        return 10;
     }
 
     public static int deprecatedSinceVersion()
@@ -581,7 +584,7 @@ public class TokenCodecEncoder
 
     public static int nameId()
     {
-        return 20;
+        return 11;
     }
 
     public static String nameCharacterEncoding()
@@ -668,7 +671,7 @@ public class TokenCodecEncoder
 
     public static int constValueId()
     {
-        return 21;
+        return 12;
     }
 
     public static String constValueCharacterEncoding()
@@ -755,7 +758,7 @@ public class TokenCodecEncoder
 
     public static int minValueId()
     {
-        return 22;
+        return 13;
     }
 
     public static String minValueCharacterEncoding()
@@ -842,7 +845,7 @@ public class TokenCodecEncoder
 
     public static int maxValueId()
     {
-        return 23;
+        return 14;
     }
 
     public static String maxValueCharacterEncoding()
@@ -929,7 +932,7 @@ public class TokenCodecEncoder
 
     public static int nullValueId()
     {
-        return 24;
+        return 15;
     }
 
     public static String nullValueCharacterEncoding()
@@ -1016,7 +1019,7 @@ public class TokenCodecEncoder
 
     public static int characterEncodingId()
     {
-        return 25;
+        return 16;
     }
 
     public static String characterEncodingCharacterEncoding()
@@ -1103,7 +1106,7 @@ public class TokenCodecEncoder
 
     public static int epochId()
     {
-        return 26;
+        return 17;
     }
 
     public static String epochCharacterEncoding()
@@ -1190,7 +1193,7 @@ public class TokenCodecEncoder
 
     public static int timeUnitId()
     {
-        return 27;
+        return 18;
     }
 
     public static String timeUnitCharacterEncoding()
@@ -1277,7 +1280,7 @@ public class TokenCodecEncoder
 
     public static int semanticTypeId()
     {
-        return 28;
+        return 19;
     }
 
     public static String semanticTypeCharacterEncoding()
@@ -1364,7 +1367,7 @@ public class TokenCodecEncoder
 
     public static int descriptionId()
     {
-        return 29;
+        return 20;
     }
 
     public static String descriptionCharacterEncoding()
@@ -1451,7 +1454,7 @@ public class TokenCodecEncoder
 
     public static int referencedNameId()
     {
-        return 30;
+        return 21;
     }
 
     public static String referencedNameCharacterEncoding()

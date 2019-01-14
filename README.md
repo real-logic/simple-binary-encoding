@@ -36,7 +36,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.8.8</version>
+    <version>1.10.2</version>
 </dependency>
 ```
 
@@ -65,9 +65,7 @@ Jars for the executable, source, and javadoc for the various modules can be foun
 
 An example to execute a Jar from command line using the 'all' jar which includes the Agrona dependency:
 
-    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-1.8.9-SNAPSHOT.jar my_sbe_input.xml
-
-**Note:** The Jars in directory `build/libs` do not contain `META-INF/MANIFEST.MF` and the error *"no main manifest attribute"* will occur when trying to execute it.
+    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-1.10.3-SNAPSHOT.jar my_sbe_input.xml
 
 
 C++ Build using CMake
@@ -75,10 +73,6 @@ C++ Build using CMake
 NOTE: Linux, Mac OS, and Windows only for the moment. See
 [FAQ](https://github.com/real-logic/simple-binary-encoding/wiki/Frequently-Asked-Questions).
 Windows builds have been tested with Visual Studio Express 12.
-
-First build using Gradle to generate the SBE jar.
-
-    $ ./gradlew
 
 For convenience, a script is provided that does a full clean, build, and test of all targets as a Release build.
 
@@ -119,8 +113,7 @@ C# Build
 --------
 As of May 2017, the CSharp build is considered a preview release. API stability is not yet guaranteed. User and Developer guides are not yet released or are incomplete.
 
-First build using Gradle to generate the SBE jar and then use it to
-generate the C# code used for testing and the examples.
+First build using Gradle to generate the SBE jar and then use it to generate the C# code used for testing and the examples.
 
     $ ./gradlew
     $ ./gradlew generateCSharpCodecs
@@ -136,7 +129,7 @@ Developers wishing to enhance the CSharp generator should see the [developer doc
 
 License (See LICENSE file for full license)
 -------------------------------------------
-Copyright 2014-2018 Real Logic Limited  
+Copyright 2014-2019 Real Logic Limited  
 Copyright 2017 MarketFactory Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");

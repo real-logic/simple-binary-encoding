@@ -75,26 +75,26 @@
     </sbe:message>
 
     <sbe:message name="TokenCodec" id="2" description="Codec for an IR Token">
-        <field name="tokenOffset" id="11" type="int32"/>
-        <field name="tokenSize" id="12" type="int32"/>
-        <field name="fieldId" id="13" type="int32"/>
-        <field name="tokenVersion" id="14" type="int32"/>
-        <field name="componentTokenCount" id="15" type="int32"/>
-        <field name="signal" id="16" type="SignalCodec"/>
-        <field name="primitiveType" id="17" type="PrimitiveTypeCodec"/>
-        <field name="byteOrder" id="18" type="ByteOrderCodec"/>
-        <field name="presence" id="19" type="PresenceCodec"/>
-        <field name="deprecated" id="30" type="deprecatedVersionType"/>
-        <data name="name" id="20" type="varDataEncoding"/>
-        <data name="constValue" id="21" type="varDataEncoding"/>
-        <data name="minValue" id="22" type="varDataEncoding"/>
-        <data name="maxValue" id="23" type="varDataEncoding"/>
-        <data name="nullValue" id="24" type="varDataEncoding"/>
-        <data name="characterEncoding" id="25" type="varDataEncoding"/>
-        <data name="epoch" id="26" type="varDataEncoding"/>
-        <data name="timeUnit" id="27" type="varDataEncoding"/>
-        <data name="semanticType" id="28" type="varDataEncoding"/>
-        <data name="description" id="29" type="varDataEncoding"/>
-        <data name="referencedName" id="30" type="varDataEncoding"/>
+        <field name="tokenOffset" id="1" type="int32"/>
+        <field name="tokenSize" id="2" type="int32"/>
+        <field name="fieldId" id="3" type="int32"/>
+        <field name="tokenVersion" id="4" type="int32"/>
+        <field name="componentTokenCount" id="5" type="int32"/>
+        <field name="signal" id="6" type="SignalCodec"/>
+        <field name="primitiveType" id="7" type="PrimitiveTypeCodec"/>
+        <field name="byteOrder" id="8" type="ByteOrderCodec"/>
+        <field name="presence" id="9" type="PresenceCodec"/>
+        <field name="deprecated" id="10" type="deprecatedVersionType"/>
+        <data name="name" id="11" type="varDataEncoding"/>
+        <data name="constValue" id="12" type="varDataEncoding"/>
+        <data name="minValue" id="13" type="varDataEncoding"/>
+        <data name="maxValue" id="14" type="varDataEncoding"/>
+        <data name="nullValue" id="15" type="varDataEncoding"/>
+        <data name="characterEncoding" id="16" type="varDataEncoding"/>
+        <data name="epoch" id="17" type="varDataEncoding"/>
+        <data name="timeUnit" id="18" type="varDataEncoding"/>
+        <data name="semanticType" id="19" type="varDataEncoding"/>
+        <data name="description" id="20" type="varDataEncoding"/>
+        <data name="referencedName" id="21" type="varDataEncoding"/>
     </sbe:message>
 </sbe:messageSchema>

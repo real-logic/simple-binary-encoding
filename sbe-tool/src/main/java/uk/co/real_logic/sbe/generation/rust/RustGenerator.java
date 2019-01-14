@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Real Logic Ltd.
+ * Copyright 2013-2019 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -235,6 +235,7 @@ public class RustGenerator implements CodeGenerator
                 indent(writer, 2, "self\n");
                 indent(writer, 1, "}\n");
             }
+
             writer.append("}\n");
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Real Logic Ltd.
+ * Copyright 2013-2019 Real Logic Ltd.
  * Copyright 2017 MarketFactory Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -138,7 +138,7 @@ public class ErrorHandlerTest
         throws Exception
     {
         exceptionRule.expect(IllegalStateException.class);
-        exceptionRule.expectMessage("had 11 errors");
+        exceptionRule.expectMessage("had 13 errors");
 
         final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
@@ -180,12 +180,6 @@ public class ErrorHandlerTest
 
         parse(TestUtil.getLocalResource("error-handler-invalid-name.xml"), options);
     }
-
-    /*
-     * TODO:
-     * left over entry count and length field (warning)
-     * dup field id? (not currently tracked)
-     */
 
     private static void parseTestXmlAddToMap(
         final Map<String, Type> map, final String xPathExpr, final String xml, final ErrorHandler handler)

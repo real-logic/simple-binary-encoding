@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Real Logic Ltd.
+ * Copyright 2013-2019 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,42 +30,72 @@ namespace otf {
 class OtfHeaderDecoder
 {
 public:
-    OtfHeaderDecoder(std::shared_ptr<std::vector<Token>> tokens) :
-        m_tokens(tokens)
+    explicit OtfHeaderDecoder(const std::shared_ptr<std::vector<Token>>& tokens)
     {
         m_encodedLength = tokens->at(0).encodedLength();
+
+        Token* blockLengthToken = nullptr;
+        Token* templateIdToken = nullptr;
+        Token* schemaIdToken = nullptr;
+        Token* versionToken = nullptr;
 
         std::for_each(tokens->begin(), tokens->end(), [&](Token& token)
         {
             const std::string& name = token.name();
-            const Encoding& encoding = token.encoding();
 
             if (name == "blockLength")
             {
-                m_blockLengthOffset = token.offset();
-                m_blockLengthType = encoding.primitiveType();
-                m_blockLengthByteOrder = encoding.byteOrder();
+                blockLengthToken = &token;
             }
             else if (name == "templateId")
             {
-                m_templateIdOffset = token.offset();
-                m_templateIdType = encoding.primitiveType();
-                m_templateIdByteOrder = encoding.byteOrder();
+                templateIdToken = &token;
             }
             else if (name == "schemaId")
             {
-                m_schemaIdOffset = token.offset();
-                m_schemaIdType = encoding.primitiveType();
-                m_schemaIdByteOrder = encoding.byteOrder();
+                schemaIdToken = &token;
             }
             else if (name == "version")
             {
-                m_schemaVersionOffset = token.offset();
-                m_schemaVersionType = encoding.primitiveType();
-                m_schemaVersionByteOrder = encoding.byteOrder();
+                versionToken = &token;
             }
-
         });
+
+        if (nullptr == blockLengthToken)
+        {
+            throw std::runtime_error("blockLength token not found");
+        }
+
+        m_blockLengthOffset = blockLengthToken->offset();
+        m_blockLengthType = blockLengthToken->encoding().primitiveType();
+        m_blockLengthByteOrder = blockLengthToken->encoding().byteOrder();
+
+        if (nullptr == templateIdToken)
+        {
+            throw std::runtime_error("templateId token not found");
+        }
+
+        m_templateIdOffset = templateIdToken->offset();
+        m_templateIdType = templateIdToken->encoding().primitiveType();
+        m_templateIdByteOrder = templateIdToken->encoding().byteOrder();
+
+        if (nullptr == schemaIdToken)
+        {
+            throw std::runtime_error("schemaId token not found");
+        }
+
+        m_schemaIdOffset = schemaIdToken->offset();
+        m_schemaIdType = schemaIdToken->encoding().primitiveType();
+        m_schemaIdByteOrder = schemaIdToken->encoding().byteOrder();
+
+        if (nullptr == versionToken)
+        {
+            throw std::runtime_error("version token not found");
+        }
+
+        m_schemaVersionOffset = versionToken->offset();
+        m_schemaVersionType = versionToken->encoding().primitiveType();
+        m_schemaVersionByteOrder = versionToken->encoding().byteOrder();
     }
 
     inline std::uint32_t encodedLength() const
@@ -74,31 +104,30 @@ public:
     }
 
     /*
-     * All elements must be unsigned integers according to RC3
+     * All elements must be unsigned integers according to Specification
      */
 
-    std::uint64_t getTemplateId(const char *headerBuffer)
+    std::uint64_t getTemplateId(const char *headerBuffer) const
     {
         return Encoding::getUInt(m_templateIdType, m_templateIdByteOrder, headerBuffer + m_templateIdOffset);
     }
 
-    std::uint64_t getSchemaId(const char *headerBuffer)
+    std::uint64_t getSchemaId(const char *headerBuffer) const
     {
         return Encoding::getUInt(m_schemaIdType, m_schemaIdByteOrder, headerBuffer + m_schemaIdOffset);
     }
 
-    std::uint64_t getSchemaVersion(const char *headerBuffer)
+    std::uint64_t getSchemaVersion(const char *headerBuffer) const
     {
         return Encoding::getUInt(m_schemaVersionType, m_schemaVersionByteOrder, headerBuffer + m_schemaVersionOffset);
     }
 
-    std::uint64_t getBlockLength(const char *headerBuffer)
+    std::uint64_t getBlockLength(const char *headerBuffer) const
     {
         return Encoding::getUInt(m_blockLengthType, m_blockLengthByteOrder, headerBuffer + m_blockLengthOffset);
     }
 
 private:
-    std::shared_ptr<std::vector<Token>> m_tokens;
     std::int32_t m_encodedLength;
     std::int32_t m_blockLengthOffset;
     std::int32_t m_templateIdOffset;

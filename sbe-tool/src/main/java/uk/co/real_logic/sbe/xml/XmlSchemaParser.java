@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Real Logic Ltd.
+ * Copyright 2013-2019 Real Logic Ltd.
  * Copyright 2017 MarketFactory Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,27 +49,46 @@ public class XmlSchemaParser
      */
     public static final String ERROR_HANDLER_KEY = "SbeErrorHandler";
 
-    public static final String TYPE_XPATH_EXPR = "/messageSchema/types/" + EncodedDataType.ENCODED_DATA_TYPE;
-    public static final String COMPOSITE_XPATH_EXPR = "/messageSchema/types/" + CompositeType.COMPOSITE_TYPE;
-    public static final String ENUM_XPATH_EXPR = "/messageSchema/types/" + EnumType.ENUM_TYPE;
-    public static final String SET_XPATH_EXPR = "/messageSchema/types/" + SetType.SET_TYPE;
-    public static final String MESSAGE_SCHEMA_XPATH_EXPR = "/messageSchema";
-    public static final String MESSAGE_XPATH_EXPR = "/messageSchema/message";
+    public static final String TYPE_XPATH_EXPR =
+        "/*[local-name() = 'messageSchema']/types/" + EncodedDataType.ENCODED_DATA_TYPE;
+
+    public static final String COMPOSITE_XPATH_EXPR =
+        "/*[local-name() = 'messageSchema']/types/" + CompositeType.COMPOSITE_TYPE;
+
+    public static final String ENUM_XPATH_EXPR =
+        "/*[local-name() = 'messageSchema']/types/" + EnumType.ENUM_TYPE;
+
+    public static final String SET_XPATH_EXPR =
+        "/*[local-name() = 'messageSchema']/types/" + SetType.SET_TYPE;
+
+    public static final String MESSAGE_SCHEMA_XPATH_EXPR =
+        "/*[local-name() = 'messageSchema']";
+
+    public static final String MESSAGE_XPATH_EXPR =
+        "//*[local-name() = 'message']";
 
     /**
      * Validate the document against a given schema. Error will be written to {@link java.lang.System#err}
      *
      * @param xsdFilename schema to validate against.
      * @param in          document to be validated.
+     * @param options     to be applied during parsing.
      * @throws Exception if an error occurs when parsing the document or schema.
      */
-    public static void validate(final String xsdFilename, final InputStream in) throws Exception
+    public static void validate(final String xsdFilename, final InputStream in, final ParserOptions options)
+        throws Exception
     {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
         factory.setSchema(schemaFactory.newSchema(new File(xsdFilename)));
         factory.setNamespaceAware(true);
+
+        if (options.xIncludeAware())
+        {
+            factory.setXIncludeAware(true);
+            factory.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris", false);
+        }
 
         factory.newDocumentBuilder().parse(in);
     }
@@ -88,6 +107,13 @@ public class XmlSchemaParser
     {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
+        if (options.xIncludeAware())
+        {
+            factory.setNamespaceAware(true);
+            factory.setXIncludeAware(true);
+            factory.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris", false);
+        }
+
         final Document document = factory.newDocumentBuilder().parse(in);
         final XPath xPath = XPathFactory.newInstance().newXPath();
 
@@ -95,16 +121,13 @@ public class XmlSchemaParser
         document.setUserData(ERROR_HANDLER_KEY, errorHandler, null);
 
         final Map<String, Type> typeByNameMap = findTypes(document, xPath);
-
         errorHandler.checkIfShouldExit();
 
         final Map<Long, Message> messageByIdMap = findMessages(document, xPath, typeByNameMap);
-
         errorHandler.checkIfShouldExit();
 
         final Node schemaNode = (Node)xPath.compile(MESSAGE_SCHEMA_XPATH_EXPR).evaluate(document, XPathConstants.NODE);
         final MessageSchema messageSchema = new MessageSchema(schemaNode, typeByNameMap, messageByIdMap);
-
         errorHandler.checkIfShouldExit();
 
         return messageSchema;
@@ -220,7 +243,7 @@ public class XmlSchemaParser
      */
     public static String getAttributeValue(final Node elementNode, final String attrName)
     {
-        final Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
+        final Node attrNode = elementNode.getAttributes().getNamedItemNS(null, attrName);
 
         if (attrNode == null || "".equals(attrNode.getNodeValue()))
         {
@@ -241,7 +264,7 @@ public class XmlSchemaParser
      */
     public static String getAttributeValue(final Node elementNode, final String attrName, final String defValue)
     {
-        final Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
+        final Node attrNode = elementNode.getAttributes().getNamedItemNS(null, attrName);
 
         if (attrNode == null)
         {
@@ -265,7 +288,7 @@ public class XmlSchemaParser
             return null;
         }
 
-        final Node attrNode = elementNode.getAttributes().getNamedItem(attrName);
+        final Node attrNode = elementNode.getAttributes().getNamedItemNS(null, attrName);
         if (null == attrNode)
         {
             return null;

@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2017 Real Logic Ltd.
+# Copyright 2013-2019 Real Logic Ltd.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ set(GENERATED_CODECS
 add_custom_command(
     OUTPUT ${GENERATED_CODECS}
     DEPENDS ${CODE_GENERATION_SCHEMA} ${CODE_GENERATION_SCHEMA_CPP} ${COMPOSITE_OFFSETS_SCHEMA} ${MESSAGE_BLOCK_LENGTH_TEST}
+            sbe-jar ${SBE_JAR}
     COMMAND ${Java_JAVA_EXECUTABLE}
         -Dsbe.output.dir=${CODEC_TARGET_DIR} -Dsbe.generate.ir="true" -Dsbe.target.language="cpp" -jar ${SBE_JAR}
         ${CODE_GENERATION_SCHEMA}

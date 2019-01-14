@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Real Logic Ltd.
+ * Copyright 2013-2019 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import org.agrona.collections.IntHashSet;
 import org.agrona.collections.ObjectHashSet;
 import uk.co.real_logic.sbe.ir.Token;
 
@@ -75,7 +76,7 @@ public class Message
         semanticType = getAttributeValueOrNull(messageNode, "semanticType");                // optional
         this.typeByNameMap = typeByNameMap;
 
-        fieldList = parseFieldsAndGroups(messageNode);
+        fieldList = parseMembers(messageNode);
         computeAndValidateOffsets(messageNode, fieldList, blockLength);
 
         computedBlockLength = computeMessageRootBlockLength(fieldList);
@@ -162,14 +163,15 @@ public class Message
         return blockLength > computedBlockLength ? blockLength : computedBlockLength;
     }
 
-    private List<Field> parseFieldsAndGroups(final Node node) throws XPathExpressionException
+    private List<Field> parseMembers(final Node node) throws XPathExpressionException
     {
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, NODESET);
         boolean groupEncountered = false, dataEncountered = false;
 
         final ObjectHashSet<String> distinctNames = new ObjectHashSet<>();
-        final List<Field> fieldList = new ArrayList<>();
+        final IntHashSet distinctIds = new IntHashSet();
+        final ArrayList<Field> fieldList = new ArrayList<>();
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
@@ -204,6 +206,11 @@ public class Message
 
                 default:
                     throw new IllegalStateException("Unknown node name: " + nodeName);
+            }
+
+            if (!distinctIds.add(field.id()))
+            {
+                handleError(node, "duplicate id found: " + field.id());
             }
 
             if (!distinctNames.add(field.name()))
@@ -248,7 +255,7 @@ public class Message
 
         XmlSchemaParser.checkForValidName(node, field.name());
 
-        field.groupFields(parseFieldsAndGroups(node)); // recursive call
+        field.groupFields(parseMembers(node)); // recursive call
 
         return field;
     }
@@ -453,5 +460,21 @@ public class Message
 
             handleError(node, msg);
         }
+    }
+
+    public String toString()
+    {
+        return "Message{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", description='" + description + '\'' +
+            ", sinceVersion=" + sinceVersion +
+            ", deprecated=" + deprecated +
+            ", blockLength=" + blockLength +
+            ", fieldList=" + fieldList +
+            ", semanticType='" + semanticType + '\'' +
+            ", computedBlockLength=" + computedBlockLength +
+            ", typeByNameMap=" + typeByNameMap +
+            '}';
     }
 }

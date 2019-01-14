@@ -61,7 +61,10 @@ public class TokenCodecDecoder
     public TokenCodecDecoder wrap(
         final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
     {
-        this.buffer = buffer;
+        if (buffer != this.buffer)
+        {
+            this.buffer = buffer;
+        }
         this.offset = offset;
         this.actingBlockLength = actingBlockLength;
         this.actingVersion = actingVersion;
@@ -87,7 +90,7 @@ public class TokenCodecDecoder
 
     public static int tokenOffsetId()
     {
-        return 11;
+        return 1;
     }
 
     public static int tokenOffsetSinceVersion()
@@ -141,7 +144,7 @@ public class TokenCodecDecoder
 
     public static int tokenSizeId()
     {
-        return 12;
+        return 2;
     }
 
     public static int tokenSizeSinceVersion()
@@ -195,7 +198,7 @@ public class TokenCodecDecoder
 
     public static int fieldIdId()
     {
-        return 13;
+        return 3;
     }
 
     public static int fieldIdSinceVersion()
@@ -249,7 +252,7 @@ public class TokenCodecDecoder
 
     public static int tokenVersionId()
     {
-        return 14;
+        return 4;
     }
 
     public static int tokenVersionSinceVersion()
@@ -303,7 +306,7 @@ public class TokenCodecDecoder
 
     public static int componentTokenCountId()
     {
-        return 15;
+        return 5;
     }
 
     public static int componentTokenCountSinceVersion()
@@ -357,7 +360,7 @@ public class TokenCodecDecoder
 
     public static int signalId()
     {
-        return 16;
+        return 6;
     }
 
     public static int signalSinceVersion()
@@ -396,7 +399,7 @@ public class TokenCodecDecoder
 
     public static int primitiveTypeId()
     {
-        return 17;
+        return 7;
     }
 
     public static int primitiveTypeSinceVersion()
@@ -435,7 +438,7 @@ public class TokenCodecDecoder
 
     public static int byteOrderId()
     {
-        return 18;
+        return 8;
     }
 
     public static int byteOrderSinceVersion()
@@ -474,7 +477,7 @@ public class TokenCodecDecoder
 
     public static int presenceId()
     {
-        return 19;
+        return 9;
     }
 
     public static int presenceSinceVersion()
@@ -513,7 +516,7 @@ public class TokenCodecDecoder
 
     public static int deprecatedId()
     {
-        return 30;
+        return 10;
     }
 
     public static int deprecatedSinceVersion()
@@ -567,7 +570,7 @@ public class TokenCodecDecoder
 
     public static int nameId()
     {
-        return 20;
+        return 11;
     }
 
     public static int nameSinceVersion()
@@ -628,6 +631,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapName(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String name()
     {
         final int headerLength = 2;
@@ -658,7 +670,7 @@ public class TokenCodecDecoder
 
     public static int constValueId()
     {
-        return 21;
+        return 12;
     }
 
     public static int constValueSinceVersion()
@@ -719,6 +731,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapConstValue(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String constValue()
     {
         final int headerLength = 2;
@@ -749,7 +770,7 @@ public class TokenCodecDecoder
 
     public static int minValueId()
     {
-        return 22;
+        return 13;
     }
 
     public static int minValueSinceVersion()
@@ -810,6 +831,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapMinValue(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String minValue()
     {
         final int headerLength = 2;
@@ -840,7 +870,7 @@ public class TokenCodecDecoder
 
     public static int maxValueId()
     {
-        return 23;
+        return 14;
     }
 
     public static int maxValueSinceVersion()
@@ -901,6 +931,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapMaxValue(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String maxValue()
     {
         final int headerLength = 2;
@@ -931,7 +970,7 @@ public class TokenCodecDecoder
 
     public static int nullValueId()
     {
-        return 24;
+        return 15;
     }
 
     public static int nullValueSinceVersion()
@@ -992,6 +1031,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapNullValue(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String nullValue()
     {
         final int headerLength = 2;
@@ -1022,7 +1070,7 @@ public class TokenCodecDecoder
 
     public static int characterEncodingId()
     {
-        return 25;
+        return 16;
     }
 
     public static int characterEncodingSinceVersion()
@@ -1083,6 +1131,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapCharacterEncoding(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String characterEncoding()
     {
         final int headerLength = 2;
@@ -1113,7 +1170,7 @@ public class TokenCodecDecoder
 
     public static int epochId()
     {
-        return 26;
+        return 17;
     }
 
     public static int epochSinceVersion()
@@ -1174,6 +1231,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapEpoch(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String epoch()
     {
         final int headerLength = 2;
@@ -1204,7 +1270,7 @@ public class TokenCodecDecoder
 
     public static int timeUnitId()
     {
-        return 27;
+        return 18;
     }
 
     public static int timeUnitSinceVersion()
@@ -1265,6 +1331,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapTimeUnit(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String timeUnit()
     {
         final int headerLength = 2;
@@ -1295,7 +1370,7 @@ public class TokenCodecDecoder
 
     public static int semanticTypeId()
     {
-        return 28;
+        return 19;
     }
 
     public static int semanticTypeSinceVersion()
@@ -1356,6 +1431,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapSemanticType(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String semanticType()
     {
         final int headerLength = 2;
@@ -1386,7 +1470,7 @@ public class TokenCodecDecoder
 
     public static int descriptionId()
     {
-        return 29;
+        return 20;
     }
 
     public static int descriptionSinceVersion()
@@ -1447,6 +1531,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapDescription(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String description()
     {
         final int headerLength = 2;
@@ -1477,7 +1570,7 @@ public class TokenCodecDecoder
 
     public static int referencedNameId()
     {
-        return 30;
+        return 21;
     }
 
     public static int referencedNameSinceVersion()
@@ -1538,6 +1631,15 @@ public class TokenCodecDecoder
         return bytesCopied;
     }
 
+    public void wrapReferencedName(final DirectBuffer wrapBuffer)
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        parentMessage.limit(limit + headerLength + dataLength);
+        wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
+    }
+
     public String referencedName()
     {
         final int headerLength = 2;
@@ -1595,97 +1697,97 @@ public class TokenCodecDecoder
         }
         builder.append(BLOCK_LENGTH);
         builder.append("):");
-        //Token{signal=BEGIN_FIELD, name='tokenOffset', referencedName='null', description='null', id=11, version=0, deprecated=0, encodedLength=4, offset=0, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        //Token{signal=BEGIN_FIELD, name='tokenOffset', referencedName='null', description='null', id=1, version=0, deprecated=0, encodedLength=4, offset=0, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         //Token{signal=ENCODING, name='int32', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=4, offset=0, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("tokenOffset=");
         builder.append(tokenOffset());
         builder.append('|');
-        //Token{signal=BEGIN_FIELD, name='tokenSize', referencedName='null', description='null', id=12, version=0, deprecated=0, encodedLength=4, offset=4, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        //Token{signal=BEGIN_FIELD, name='tokenSize', referencedName='null', description='null', id=2, version=0, deprecated=0, encodedLength=4, offset=4, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         //Token{signal=ENCODING, name='int32', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=4, offset=4, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("tokenSize=");
         builder.append(tokenSize());
         builder.append('|');
-        //Token{signal=BEGIN_FIELD, name='fieldId', referencedName='null', description='null', id=13, version=0, deprecated=0, encodedLength=4, offset=8, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        //Token{signal=BEGIN_FIELD, name='fieldId', referencedName='null', description='null', id=3, version=0, deprecated=0, encodedLength=4, offset=8, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         //Token{signal=ENCODING, name='int32', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=4, offset=8, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("fieldId=");
         builder.append(fieldId());
         builder.append('|');
-        //Token{signal=BEGIN_FIELD, name='tokenVersion', referencedName='null', description='null', id=14, version=0, deprecated=0, encodedLength=4, offset=12, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        //Token{signal=BEGIN_FIELD, name='tokenVersion', referencedName='null', description='null', id=4, version=0, deprecated=0, encodedLength=4, offset=12, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         //Token{signal=ENCODING, name='int32', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=4, offset=12, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("tokenVersion=");
         builder.append(tokenVersion());
         builder.append('|');
-        //Token{signal=BEGIN_FIELD, name='componentTokenCount', referencedName='null', description='null', id=15, version=0, deprecated=0, encodedLength=4, offset=16, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        //Token{signal=BEGIN_FIELD, name='componentTokenCount', referencedName='null', description='null', id=5, version=0, deprecated=0, encodedLength=4, offset=16, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         //Token{signal=ENCODING, name='int32', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=4, offset=16, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("componentTokenCount=");
         builder.append(componentTokenCount());
         builder.append('|');
-        //Token{signal=BEGIN_FIELD, name='signal', referencedName='null', description='null', id=16, version=0, deprecated=0, encodedLength=1, offset=20, componentTokenCount=21, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        //Token{signal=BEGIN_FIELD, name='signal', referencedName='null', description='null', id=6, version=0, deprecated=0, encodedLength=1, offset=20, componentTokenCount=21, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         //Token{signal=BEGIN_ENUM, name='SignalCodec', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=1, offset=20, componentTokenCount=19, encoding=Encoding{presence=REQUIRED, primitiveType=UINT8, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("signal=");
         builder.append(signal());
         builder.append('|');
-        //Token{signal=BEGIN_FIELD, name='primitiveType', referencedName='null', description='null', id=17, version=0, deprecated=0, encodedLength=1, offset=21, componentTokenCount=16, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        //Token{signal=BEGIN_FIELD, name='primitiveType', referencedName='null', description='null', id=7, version=0, deprecated=0, encodedLength=1, offset=21, componentTokenCount=16, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         //Token{signal=BEGIN_ENUM, name='PrimitiveTypeCodec', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=1, offset=21, componentTokenCount=14, encoding=Encoding{presence=REQUIRED, primitiveType=UINT8, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("primitiveType=");
         builder.append(primitiveType());
         builder.append('|');
-        //Token{signal=BEGIN_FIELD, name='byteOrder', referencedName='null', description='null', id=18, version=0, deprecated=0, encodedLength=1, offset=22, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        //Token{signal=BEGIN_FIELD, name='byteOrder', referencedName='null', description='null', id=8, version=0, deprecated=0, encodedLength=1, offset=22, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         //Token{signal=BEGIN_ENUM, name='ByteOrderCodec', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=1, offset=22, componentTokenCount=4, encoding=Encoding{presence=REQUIRED, primitiveType=UINT8, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("byteOrder=");
         builder.append(byteOrder());
         builder.append('|');
-        //Token{signal=BEGIN_FIELD, name='presence', referencedName='null', description='null', id=19, version=0, deprecated=0, encodedLength=1, offset=23, componentTokenCount=7, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        //Token{signal=BEGIN_FIELD, name='presence', referencedName='null', description='null', id=9, version=0, deprecated=0, encodedLength=1, offset=23, componentTokenCount=7, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         //Token{signal=BEGIN_ENUM, name='PresenceCodec', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=1, offset=23, componentTokenCount=5, encoding=Encoding{presence=REQUIRED, primitiveType=UINT8, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("presence=");
         builder.append(presence());
         builder.append('|');
-        //Token{signal=BEGIN_FIELD, name='deprecated', referencedName='null', description='null', id=30, version=0, deprecated=0, encodedLength=4, offset=24, componentTokenCount=3, encoding=Encoding{presence=OPTIONAL, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
+        //Token{signal=BEGIN_FIELD, name='deprecated', referencedName='null', description='null', id=10, version=0, deprecated=0, encodedLength=4, offset=24, componentTokenCount=3, encoding=Encoding{presence=OPTIONAL, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         //Token{signal=ENCODING, name='deprecatedVersionType', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=4, offset=24, componentTokenCount=1, encoding=Encoding{presence=OPTIONAL, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=0, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("deprecated=");
         builder.append(deprecated());
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='name', referencedName='null', description='null', id=20, version=0, deprecated=0, encodedLength=0, offset=28, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=BEGIN_VAR_DATA, name='name', referencedName='null', description='null', id=11, version=0, deprecated=0, encodedLength=0, offset=28, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("name=");
         builder.append('\'' + name() + '\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='constValue', referencedName='null', description='null', id=21, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=BEGIN_VAR_DATA, name='constValue', referencedName='null', description='null', id=12, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("constValue=");
         builder.append('\'' + constValue() + '\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='minValue', referencedName='null', description='null', id=22, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=BEGIN_VAR_DATA, name='minValue', referencedName='null', description='null', id=13, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("minValue=");
         builder.append('\'' + minValue() + '\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='maxValue', referencedName='null', description='null', id=23, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=BEGIN_VAR_DATA, name='maxValue', referencedName='null', description='null', id=14, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("maxValue=");
         builder.append('\'' + maxValue() + '\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='nullValue', referencedName='null', description='null', id=24, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=BEGIN_VAR_DATA, name='nullValue', referencedName='null', description='null', id=15, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("nullValue=");
         builder.append('\'' + nullValue() + '\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='characterEncoding', referencedName='null', description='null', id=25, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=BEGIN_VAR_DATA, name='characterEncoding', referencedName='null', description='null', id=16, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("characterEncoding=");
         builder.append('\'' + characterEncoding() + '\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='epoch', referencedName='null', description='null', id=26, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=BEGIN_VAR_DATA, name='epoch', referencedName='null', description='null', id=17, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("epoch=");
         builder.append('\'' + epoch() + '\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='timeUnit', referencedName='null', description='null', id=27, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=BEGIN_VAR_DATA, name='timeUnit', referencedName='null', description='null', id=18, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("timeUnit=");
         builder.append('\'' + timeUnit() + '\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='semanticType', referencedName='null', description='null', id=28, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=BEGIN_VAR_DATA, name='semanticType', referencedName='null', description='null', id=19, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("semanticType=");
         builder.append('\'' + semanticType() + '\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='description', referencedName='null', description='null', id=29, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=BEGIN_VAR_DATA, name='description', referencedName='null', description='null', id=20, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("description=");
         builder.append('\'' + description() + '\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='referencedName', referencedName='null', description='null', id=30, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
+        //Token{signal=BEGIN_VAR_DATA, name='referencedName', referencedName='null', description='null', id=21, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("referencedName=");
         builder.append('\'' + referencedName() + '\'');
 

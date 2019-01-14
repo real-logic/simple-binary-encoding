@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Real Logic Ltd.
+ * Copyright 2013-2019 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,14 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '4.0.0' apply false
+    id 'com.github.johnrengelman.shadow' version '4.0.3' apply false
 }
 
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
+def sbeJavaVersion = '1.8'
 
 group = sbeGroup
 version = sbeVersion
@@ -47,7 +48,7 @@ def projectPom = {
     name = 'sbe'
     packaging = 'pom'
     description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages' +
-            ' in binary format for low-latency applications'
+        ' in binary format for low-latency applications'
     url = 'https://github.com/real-logic/simple-binary-encoding'
 
     scm {
@@ -123,27 +124,29 @@ subprojects {
     jar.enabled = true
 
     dependencies {
-        checkstyle 'com.puppycrawl.tools:checkstyle:8.12'
+        checkstyle 'com.puppycrawl.tools:checkstyle:8.16'
+
+        compile 'org.agrona:agrona:0.9.29'
 
         testCompile 'junit:junit:4.12'
-        testCompile 'org.mockito:mockito-core:2.22.0'
+        testCompile 'org.mockito:mockito-core:2.23.4'
         testCompile 'org.hamcrest:hamcrest-library:1.3'
     }
 
     checkstyle {
-        toolVersion = '8.12'
+        toolVersion = '8.16'
     }
 
     compileJava {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility = sbeJavaVersion
+        targetCompatibility = sbeJavaVersion
         options.encoding = 'UTF-8'
         options.deprecation = true
     }
 
     compileTestJava {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility = sbeJavaVersion
+        targetCompatibility = sbeJavaVersion
         options.encoding = 'UTF-8'
         options.deprecation = true
     }
@@ -158,7 +161,7 @@ subprojects {
     javadoc {
         title = '<h1>Simple Binary Encoding</h1>'
         options.bottom = '<i>Copyright &#169; 2014-2018 Real Logic Ltd. All Rights Reserved.</i>'
-        if (JavaVersion.current() == JavaVersion.VERSION_1_10) {
+        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_10.ordinal()) {
             options.addBooleanOption 'html5', true
         }
     }
@@ -177,7 +180,6 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
-        compile 'org.agrona:agrona:0.9.24'
         testCompile files('build/classes/java/generated')
     }
 
@@ -188,8 +190,7 @@ project(':sbe-tool') {
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
             'Implementation-Version': "${sbeVersion}",
-            'Implementation-Vendor': 'Real Logic Limited'
-        )
+            'Implementation-Vendor': 'Real Logic Limited')
     }
 
     sourceSets {
@@ -198,8 +199,8 @@ project(':sbe-tool') {
 
     compileGeneratedJava {
         dependsOn 'generateCodecs'
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility = sbeJavaVersion
+        targetCompatibility = sbeJavaVersion
         options.encoding = 'UTF-8'
         options.deprecation = true
         classpath += sourceSets.main.runtimeClasspath
@@ -274,9 +275,13 @@ project(':sbe-all') {
         from project(':sbe-tool').sourceSets.main.allSource
     }
 
+    javadoc {
+        source += project(':sbe-tool').sourceSets.main.allJava
+    }
+
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
-        from project(':sbe-tool').javadoc.destinationDir
+        from javadoc.destinationDir
     }
 
     shadowJar {
@@ -342,7 +347,6 @@ project(':sbe-all') {
 project(':sbe-samples') {
     dependencies {
         compile project(':sbe-tool')
-
         compile files('build/classes/java/generated')
     }
 
@@ -352,8 +356,8 @@ project(':sbe-samples') {
 
     compileGeneratedJava {
         dependsOn 'generateCodecs'
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility = sbeJavaVersion
+        targetCompatibility = sbeJavaVersion
         options.encoding = 'UTF-8'
         options.deprecation = true
         classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
@@ -364,16 +368,18 @@ project(':sbe-samples') {
     }
 
     task generateCodecs(type: JavaExec) {
+        workingDir = 'src/main/resources'
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
-            'sbe.output.dir': 'build/generated',
+            'sbe.output.dir': '../../../build/generated',
             'sbe.target.language': 'Java',
-            'sbe.java.generate.interfaces': 'false',
+            'sbe.java.generate.interfaces': 'true',
             'sbe.validation.stop.on.error': 'true',
+            'sbe.xinclude.aware': 'true',
             'sbe.validation.xsd': validationXsdPath)
-        args = ['src/main/resources/example-schema.xml',
-                'src/main/resources/example-extension-schema.xml']
+        args = ['example-schema.xml',
+                'example-extension-schema.xml']
     }
 
     task runExampleUsingGeneratedStub(dependsOn: 'compileJava', type: JavaExec) {
@@ -389,6 +395,7 @@ project(':sbe-samples') {
     task runOtfExample(dependsOn: 'compileJava', type: JavaExec) {
         classpath = sourceSets.main.runtimeClasspath
         main = 'uk.co.real_logic.sbe.examples.OtfExample'
+        workingDir = 'src/main/resources'
     }
 
     task runJavaExamples {
@@ -433,9 +440,9 @@ project(':sbe-benchmarks') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile project(':sbe-tool')
         compile 'org.openjdk.jmh:jmh-core:1.21'
         annotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
+        compile project(':sbe-tool')
         compile files('build/classes/java/generated')
     }
 
@@ -530,8 +537,7 @@ task generateRustCarExample(type: JavaExec) {
 task generateCarExampleDataFile(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
-    systemProperties(
-            'sbe.encoding.filename': 'rust/car_example/car_example_data.sbe')
+    systemProperties('sbe.encoding.filename': 'rust/car_example/car_example_data.sbe')
     args = []
     standardOutput = new ByteArrayOutputStream()
 }
@@ -613,12 +619,13 @@ task generateGolangCodecTestVarData(type: JavaExec) {
     args = ['sbe-tool/src/test/resources/basic-variable-length-schema.xml']
 }
 
-task generateGolangCodecsWithXSD(type: JavaExec) {
+task generateGolangCodecsWithXsd(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src',
         'sbe.target.language': 'golang',
+        'sbe.xinclude.aware': 'true',
         'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/test/resources/group-with-data-schema.xml',
             'sbe-tool/src/test/resources/FixBinary.xml',
@@ -632,9 +639,19 @@ task generateGolangCodecsWithXSD(type: JavaExec) {
             'gocode/resources/example-composite.xml',
             'gocode/resources/example-extension-2-schema.xml',
             'gocode/resources/group-with-data-extension-schema.xml',
-            'gocode/resources/simple.xml',
-            'sbe-samples/src/main/resources/example-schema.xml',
-            'sbe-samples/src/main/resources/example-extension-schema.xml']
+            'gocode/resources/simple.xml']
+}
+
+task generateGolangCodecsWithXsdAndIncludes(type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    workingDir = 'sbe-samples/src/main/resources'
+    systemProperties(
+        'sbe.output.dir': '../../../../gocode/src',
+        'sbe.target.language': 'golang',
+        'sbe.xinclude.aware': 'true',
+        'sbe.validation.xsd': validationXsdPath)
+    args = ['example-schema.xml', 'example-extension-schema.xml']
 }
 
 task generateGolangCodecs {
@@ -643,15 +660,17 @@ task generateGolangCodecs {
         'generateGolangCodecTestGroup',
         'generateGolangCodecTestBasic',
         'generateGolangCodecTestComposite',
-        'generateGolangCodecsWithXSD'
+        'generateGolangCodecsWithXsd',
+        'generateGolangCodecsWithXsdAndIncludes'
 }
 
-task generateCSharpCodecs(type: JavaExec) {
+task generateCSharpCodecsBase(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'csharp/sbe-generated',
         'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
+        'sbe.xinclude.aware': 'true',
         'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/test/resources/FixBinary.xml',
             'sbe-tool/src/test/resources/issue435.xml',
@@ -659,9 +678,24 @@ task generateCSharpCodecs(type: JavaExec) {
             'sbe-tool/src/test/resources/issue560.xml',
             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
-            'sbe-samples/src/main/resources/example-schema.xml',
-            'sbe-samples/src/main/resources/example-extension-schema.xml',
             'sbe-benchmarks/src/main/resources/fix-message-samples.xml']
+}
+
+task generateCSharpCodecsWithIncludes(type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    workingDir = 'sbe-samples/src/main/resources'
+    systemProperties(
+        'sbe.output.dir': '../../../../csharp/sbe-generated',
+        'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
+        'sbe.xinclude.aware': 'true',
+        'sbe.validation.xsd': validationXsdPath)
+    args = ['example-schema.xml', 'example-extension-schema.xml']
+}
+
+task generateCSharpCodecs {
+    description = 'Generate CSharp test codecs'
+    dependsOn 'generateCSharpCodecsBase', 'generateCSharpCodecsWithIncludes'
 }
 
 task generateJavaIrCodecs(type: JavaExec) {
@@ -699,7 +733,7 @@ task generateIrCodecs {
     dependsOn 'generateJavaIrCodecs', 'generateCppIrCodecs', 'generateGolangIrCodecs'
 }
 
-task runBenchmarks(type: Exec) {
+task runJavaBenchmarks(type: Exec) {
     commandLine 'java',
         '-Dagrona.disable.bounds.checks=true',
         '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
@@ -715,6 +749,6 @@ task uploadToMavenCentral {
 }
 
 wrapper {
-    gradleVersion = '4.10.1'
+    gradleVersion = '4.10.3'
     distributionType = 'ALL'
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Real Logic Ltd.
+ * Copyright 2013-2019 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.agrona.concurrent.UnsafeBuffer;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
 import static extension.CarEncoder.cupHolderCountNullValue;
@@ -211,7 +212,7 @@ public class ExampleUsingGeneratedStubExtension
         sb.append("\ncar.engine.booster.horsePower=").append(engine.booster().horsePower());
 
         sb.append("\ncar.engine.fuel=").append(
-            new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), "ASCII"));
+            new String(buffer, 0, engine.getFuel(buffer, 0, buffer.length), StandardCharsets.US_ASCII));
 
         final String cupHolderCount =
             car.cupHolderCount() == cupHolderCountNullValue() ? "null" : car.cupHolderCount() + "";

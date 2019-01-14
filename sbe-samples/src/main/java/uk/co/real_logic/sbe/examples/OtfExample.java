@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Real Logic Ltd.
+ * Copyright 2013-2019 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class OtfExample
 
     private static void encodeSchema(final ByteBuffer byteBuffer) throws Exception
     {
-        final Path path = Paths.get("src/main/resources/example-schema.xml");
+        final Path path = Paths.get("example-schema.xml");
         try (InputStream in = new BufferedInputStream(Files.newInputStream(path)))
         {
             final MessageSchema schema = XmlSchemaParser.parse(in, ParserOptions.DEFAULT);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Real Logic Ltd.
+ * Copyright 2013-2019 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,9 +156,9 @@ inline std::size_t lengthOfType(PrimitiveType type)
 class PrimitiveValue
 {
 public:
-    PrimitiveValue(PrimitiveType type, std::size_t valueLength, const char *value)
+    PrimitiveValue(PrimitiveType type, std::size_t valueLength, const char *value) :
+        m_type(type)
     {
-        m_type = type;
         if (0 == valueLength)
         {
             m_type = PrimitiveType::NONE;

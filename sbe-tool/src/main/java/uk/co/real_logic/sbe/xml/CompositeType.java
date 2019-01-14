@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Real Logic Ltd.
+ * Copyright 2013-2019 Real Logic Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,6 +167,16 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "\"blockLength\" must be unsigned type");
         }
+        else
+        {
+            if (blockLengthType.primitiveType() != UINT8 && blockLengthType.primitiveType() != UINT16)
+            {
+                XmlSchemaParser.handleWarning(node, "\"blockLength\" should be UINT8 or UINT16");
+            }
+
+            final PrimitiveValue blockLengthTypeMaxValue = blockLengthType.maxValue();
+            validateGroupMaxValue(node, blockLengthType.primitiveType(), blockLengthTypeMaxValue);
+        }
 
         if (numInGroupType == null)
         {
@@ -174,27 +184,39 @@ public class CompositeType extends Type
         }
         else if (!isUnsigned(numInGroupType.primitiveType()))
         {
-            XmlSchemaParser.handleError(node, "\"numInGroup\" must be unsigned type");
-        }
-        else if (numInGroupType.primitiveType() != UINT8 && numInGroupType.primitiveType() != UINT16)
-        {
-            XmlSchemaParser.handleWarning(node, "\"numInGroup\" should be UINT8 or UINT16");
+            XmlSchemaParser.handleWarning(node, "\"numInGroup\" should be unsigned type");
+            final PrimitiveValue numInGroupMinValue = numInGroupType.minValue();
+            if (null == numInGroupMinValue)
+            {
+                XmlSchemaParser.handleError(node, "\"numInGroup\" minValue must be set for signed types");
+            }
+            else if (numInGroupMinValue.longValue() < 0)
+            {
+                XmlSchemaParser.handleError(node, String.format(
+                    "\"numInGroup\" minValue=%s must be greater than zero " +
+                    "for signed \"numInGroup\" types", numInGroupMinValue));
+            }
         }
         else
         {
-            final PrimitiveValue maxValue = numInGroupType.maxValue();
-            validateMaxValue(node, numInGroupType.primitiveType(), maxValue);
-
-            final PrimitiveValue minValue = numInGroupType.minValue();
-            if (null != minValue)
+            if (numInGroupType.primitiveType() != UINT8 && numInGroupType.primitiveType() != UINT16)
             {
-                final long max = maxValue != null ?
-                    maxValue.longValue() : numInGroupType.primitiveType().maxValue().longValue();
+                XmlSchemaParser.handleWarning(node, "\"numInGroup\" should be UINT8 or UINT16");
+            }
 
-                if (minValue.longValue() > max)
+            final PrimitiveValue numInGroupMaxValue = numInGroupType.maxValue();
+            validateGroupMaxValue(node, numInGroupType.primitiveType(), numInGroupMaxValue);
+
+            final PrimitiveValue numInGroupMinValue = numInGroupType.minValue();
+            if (null != numInGroupMinValue)
+            {
+                final long max = numInGroupMaxValue != null ?
+                    numInGroupMaxValue.longValue() : numInGroupType.primitiveType().maxValue().longValue();
+
+                if (numInGroupMinValue.longValue() > max)
                 {
                     XmlSchemaParser.handleError(node, String.format(
-                        "\"numInGroup\" minValue=%s greater than maxValue=%d", minValue, max));
+                        "\"numInGroup\" minValue=%s greater than maxValue=%d", numInGroupMinValue, max));
                 }
             }
         }
@@ -226,7 +248,7 @@ public class CompositeType extends Type
                 XmlSchemaParser.handleWarning(node, "\"length\" should be UINT8, UINT16, or UINT32");
             }
 
-            validateMaxValue(node, primitiveType, lengthType.maxValue());
+            validateGroupMaxValue(node, primitiveType, lengthType.maxValue());
         }
 
         if ("optional".equals(getAttributeValueOrNull(node, "presence")))
@@ -241,7 +263,7 @@ public class CompositeType extends Type
         }
     }
 
-    private static void validateMaxValue(
+    private static void validateGroupMaxValue(
         final Node node, final PrimitiveType primitiveType, final PrimitiveValue value)
     {
         if (null != value)
@@ -392,7 +414,8 @@ public class CompositeType extends Type
                 final String refName = XmlSchemaParser.getAttributeValue(subTypeNode, "name");
                 final String refTypeName = XmlSchemaParser.getAttributeValue(subTypeNode, "type");
                 final int refOffset = Integer.parseInt(XmlSchemaParser.getAttributeValue(subTypeNode, "offset", "-1"));
-                final Node refTypeNode = (Node)xPath.compile("/messageSchema/types/*[@name='" + refTypeName + "']")
+                final Node refTypeNode = (Node)xPath.compile(
+                    "/*[local-name() = 'messageSchema']/types/*[@name='" + refTypeName + "']")
                     .evaluate(subTypeNode.getOwnerDocument(), XPathConstants.NODE);
 
                 if (refTypeNode == null)
@@ -433,5 +456,13 @@ public class CompositeType extends Type
         }
 
         return type;
+    }
+
+    public String toString()
+    {
+        return "CompositeType{" +
+            "compositesPath=" + compositesPath +
+            ", containedTypeByNameMap=" + containedTypeByNameMap +
+            '}';
     }
 }

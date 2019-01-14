@@ -18,9 +18,11 @@ package uk.co.real_logic.sbe.generation.golang;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import org.agrona.generation.OutputManager;
+import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.*;
 import org.agrona.Verify;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -99,7 +101,6 @@ public class GolangGenerator implements CodeGenerator
             final StringBuilder sb = new StringBuilder();
             final List<Token> tokens = ir.headerStructure().tokens();
 
-            // Initialize the imports
             imports = new TreeSet<>();
             imports.add("io");
 
@@ -569,7 +570,7 @@ public class GolangGenerator implements CodeGenerator
 
 
     // Newer messages and groups can add extra properties before the variable
-    // length elements (groups and vardata). We read past the difference
+    // length elements (groups and varData). We read past the difference
     // between the message's blockLength and our (older) schema's blockLength
     private void generateExtensionCheck(
         final StringBuilder sb,
@@ -685,7 +686,7 @@ public class GolangGenerator implements CodeGenerator
                     encode.append(generateEncodeOffset(gap, ""));
                     decode.append(generateDecodeOffset(gap, ""));
                     currentOffset += signalToken.encodedLength() + gap;
-                    final String primitive = Character.toString(varName) + "." + propertyName;
+                    final String primitive = varName + "." + propertyName;
 
                     // Encode of a constant is a nullop and we want to
                     // initialize constant values.
@@ -921,7 +922,7 @@ public class GolangGenerator implements CodeGenerator
         String decodeArgs = "";
         final String blockLengthType = golangTypeName(ir.headerStructure().blockLengthType());
 
-        // Messages, groups, and vardata are extensible so need to know
+        // Messages, groups, and varData are extensible so need to know
         // working block length.
         // Messages mandate only 16 bits, otherwise let's be generous and
         // support the platform.
@@ -1043,7 +1044,7 @@ public class GolangGenerator implements CodeGenerator
                 gap = encodingToken.offset() - currentOffset;
                 encode.append(generateEncodeOffset(gap, ""));
                 decode.append(generateDecodeOffset(gap, ""));
-                final String primitive = Character.toString(varName) + "." + propertyName;
+                final String primitive = varName + "." + propertyName;
 
                 // Encode of a constant is a nullop and we want to
                 // initialize constant values.
@@ -1123,7 +1124,6 @@ public class GolangGenerator implements CodeGenerator
         encode.append(generateEncodeOffset(gap, ""));
         decode.append(generateDecodeOffset(gap, ""));
 
-        // Write the group header (blocklength and numingroup)
         final String golangTypeForLength = golangTypeName(tokens.get(2).encoding().primitiveType());
         final String golangTypeForLengthMarshal = golangMarshalType(tokens.get(2).encoding().primitiveType());
         final String golangTypeForData = golangTypeName(tokens.get(3).encoding().primitiveType());
@@ -1177,10 +1177,12 @@ public class GolangGenerator implements CodeGenerator
         final char varName = Character.toLowerCase(typeName.charAt(0));
         final Token signalToken = tokens.get(0);
         final String propertyName = formatPropertyName(signalToken.name());
-        final String blockLengthType = golangTypeName(tokens.get(2).encoding().primitiveType());
-        final String blockLengthMarshalType = golangMarshalType(tokens.get(2).encoding().primitiveType());
-        final String numInGroupType = golangTypeName(tokens.get(3).encoding().primitiveType());
-        final String numInGroupMarshalType = golangMarshalType(tokens.get(3).encoding().primitiveType());
+        final Token blockLengthToken = Generators.findFirst("blockLength", tokens, 0);
+        final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, 0);
+        final String blockLengthType = golangTypeName(blockLengthToken.encoding().primitiveType());
+        final String blockLengthMarshalType = golangMarshalType(blockLengthToken.encoding().primitiveType());
+        final String numInGroupType = golangTypeName(numInGroupToken.encoding().primitiveType());
+        final String numInGroupMarshalType = golangMarshalType(numInGroupToken.encoding().primitiveType());
 
         // Offset handling
         final int gap = Math.max(signalToken.offset() - currentOffset, 0);
@@ -1334,14 +1336,13 @@ public class GolangGenerator implements CodeGenerator
             }
 
             final String propertyName = toUpperFirstChar(token.name());
-            final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
-            final Token lengthToken = tokens.get(i + 2);
+            final Token lengthToken = Generators.findFirst("length", tokens, i);
             final int lengthOfLengthField = lengthToken.encodedLength();
+            final Token varDataToken = Generators.findFirst("varData", tokens, i);
+            final String characterEncoding = varDataToken.encoding().characterEncoding();
 
-            generateFieldMetaAttributeMethod(sb, typeName, token);
-
-            generateVarDataDescriptors(
-                sb, token, typeName, propertyName, characterEncoding, lengthOfLengthField);
+            generateFieldMetaAttributeMethod(sb, typeName, propertyName, token);
+            generateVarDataDescriptors(sb, token, typeName, propertyName, characterEncoding, lengthOfLengthField);
 
             i += token.componentTokenCount();
         }
@@ -1444,9 +1445,7 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
-    private void generateComposite(
-        final List<Token> tokens,
-        final String namePrefix) throws IOException
+    private void generateComposite(final List<Token> tokens, final String namePrefix) throws IOException
     {
         final String compositeName = namePrefix + formatTypeName(tokens.get(0).applicableTypeName());
         final StringBuilder sb = new StringBuilder();
@@ -1580,14 +1579,12 @@ public class GolangGenerator implements CodeGenerator
         sb.append("}\n");
     }
 
-    private String namespacesToPackageName(
-        final CharSequence[] namespaces)
+    private String namespacesToPackageName(final CharSequence[] namespaces)
     {
         return String.join("_", namespaces).toLowerCase().replace('.', '_').replace(' ', '_').replace('-', '_');
     }
 
-    private StringBuilder generateFileHeader(
-        final CharSequence[] namespaces)
+    private StringBuilder generateFileHeader(final CharSequence[] namespaces)
     {
         final StringBuilder sb = new StringBuilder();
         sb.append("// Generated SBE (Simple Binary Encoding) message codec\n\n");
@@ -1610,18 +1607,26 @@ public class GolangGenerator implements CodeGenerator
     private String generateFromTemplate(final CharSequence[] namespaces, final String templateName)
         throws IOException
     {
-        final String jarFile = "golang/templates/" + templateName + ".go";
-        final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(jarFile);
-        final Scanner s = new Scanner(inputStream).useDelimiter("\\A");
-        final String template = s.hasNext() ? s.next() : "";
-        inputStream.close();
+        final String templateFileName = "golang/templates/" + templateName + ".go";
+        final InputStream stream = getClass().getClassLoader().getResourceAsStream(templateFileName);
+        if (null == stream)
+        {
+            return "";
+        }
 
-        return String.format(template, namespacesToPackageName(namespaces));
+        try (InputStream in = new BufferedInputStream(stream))
+        {
+            final Scanner scanner = new Scanner(in).useDelimiter("\\A");
+            if (!scanner.hasNext())
+            {
+                return "";
+            }
+
+            return String.format(scanner.next(), namespacesToPackageName(namespaces));
+        }
     }
 
-    private static void generateTypeDeclaration(
-        final StringBuilder sb,
-        final String typeName)
+    private static void generateTypeDeclaration(final StringBuilder sb, final String typeName)
     {
         sb.append(String.format("type %s struct {\n", typeName));
     }
@@ -2024,7 +2029,7 @@ public class GolangGenerator implements CodeGenerator
             "\nfunc (*%1$s) SbeTemplateId() (templateId %4$s) {\n" +
             "\treturn %5$s\n" +
             "}\n" +
-            "\nfunc (*1$s) SbeSchemaId() (schemaId %6$s) {\n" +
+            "\nfunc (*%1$s) SbeSchemaId() (schemaId %6$s) {\n" +
             "\treturn %7$s\n" +
             "}\n" +
             "\nfunc (*%1$s) SbeSchemaVersion() (schemaVersion %8$s) {\n" +
@@ -2080,7 +2085,7 @@ public class GolangGenerator implements CodeGenerator
 
                 generateId(sb, containingTypeName, propertyName, signalToken);
                 generateSinceActingDeprecated(sb, containingTypeName, propertyName, signalToken);
-                generateFieldMetaAttributeMethod(sb, containingTypeName, signalToken);
+                generateFieldMetaAttributeMethod(sb, containingTypeName, propertyName, signalToken);
 
                 switch (encodingToken.signal())
                 {
@@ -2108,6 +2113,7 @@ public class GolangGenerator implements CodeGenerator
     private static void generateFieldMetaAttributeMethod(
         final StringBuilder sb,
         final String containingTypeName,
+        final String propertyName,
         final Token token)
     {
         final Encoding encoding = token.encoding();
@@ -2117,20 +2123,21 @@ public class GolangGenerator implements CodeGenerator
         final String presence = encoding.presence() == null ? "" : encoding.presence().toString().toLowerCase();
 
         sb.append(String.format(
-            "\nfunc (*%1$s) %3$sMetaAttribute(meta int) string {\n" +
+            "\nfunc (*%1$s) %2$sMetaAttribute(meta int) string {\n" +
             "\tswitch meta {\n" +
             "\tcase 1:\n" +
-            "\t\treturn \"%2$s\"\n" +
-            "\tcase 2:\n" +
             "\t\treturn \"%3$s\"\n" +
-            "\tcase 3:\n" +
+            "\tcase 2:\n" +
             "\t\treturn \"%4$s\"\n" +
-            "\tcase 4:\n" +
+            "\tcase 3:\n" +
             "\t\treturn \"%5$s\"\n" +
+            "\tcase 4:\n" +
+            "\t\treturn \"%6$s\"\n" +
             "\t}\n" +
             "\treturn \"\"\n" +
             "}\n",
             containingTypeName,
+            propertyName,
             epoch,
             timeUnit,
             semanticType,

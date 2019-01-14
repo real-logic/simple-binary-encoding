@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// This file provides a simple bespoke marhalling layer for the
+// This file provides a simple bespoke marshalling layer for the
 // standard binary encoding golang backend and is part of:
 //
 // https://github.com/real-logic/simple-binary-encoding

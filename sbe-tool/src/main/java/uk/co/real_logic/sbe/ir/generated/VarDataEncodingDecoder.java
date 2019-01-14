@@ -6,6 +6,8 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public class VarDataEncodingDecoder
 {
+    public static final int SCHEMA_ID = 1;
+    public static final int SCHEMA_VERSION = 0;
     public static final int ENCODED_LENGTH = -1;
     public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.LITTLE_ENDIAN;
 
@@ -14,7 +16,10 @@ public class VarDataEncodingDecoder
 
     public VarDataEncodingDecoder wrap(final DirectBuffer buffer, final int offset)
     {
-        this.buffer = buffer;
+        if (buffer != this.buffer)
+        {
+            this.buffer = buffer;
+        }
         this.offset = offset;
 
         return this;
@@ -33,6 +38,16 @@ public class VarDataEncodingDecoder
     public int encodedLength()
     {
         return ENCODED_LENGTH;
+    }
+
+    public int sbeSchemaId()
+    {
+        return SCHEMA_ID;
+    }
+
+    public int sbeSchemaVersion()
+    {
+        return SCHEMA_VERSION;
     }
 
     public static int lengthEncodingOffset()
