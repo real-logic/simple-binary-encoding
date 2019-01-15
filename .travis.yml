@@ -9,12 +9,6 @@ matrix:
       os: linux
       script: ./gradlew
 
-    - name: "Oracle Java 11"
-      language: java
-      jdk: oraclejdk11
-      os: linux
-      script: ./gradlew
-
     - name: "OpenJDK 8"
       language: java
       jdk: openjdk8
@@ -31,7 +25,7 @@ matrix:
       language: cpp
       compiler: gcc
       os: linux
-      jdk: oraclejdk8
+      jdk: openjdk8
       addons:
         apt:
           packages:
@@ -45,7 +39,7 @@ matrix:
       language: cpp
       compiler: gcc
       os: linux
-      jdk: oraclejdk8
+      jdk: openjdk8
       addons:
         apt:
           packages:
@@ -59,7 +53,7 @@ matrix:
       language: cpp
       compiler: gcc
       os: linux
-      jdk: oraclejdk8
+      jdk: openjdk8
       addons:
         apt:
           packages:
@@ -73,7 +67,7 @@ matrix:
       language: cpp
       compiler: clang
       os: linux
-      jdk: oraclejdk8
+      jdk: openjdk8
       addons:
         apt:
           packages:
@@ -89,7 +83,7 @@ matrix:
       language: cpp
       compiler: clang
       os: linux
-      jdk: oraclejdk8
+      jdk: openjdk8
       addons:
         apt:
           packages:
@@ -105,7 +99,7 @@ matrix:
       language: cpp
       compiler: clang
       os: linux
-      jdk: oraclejdk8
+      jdk: openjdk8
       addons:
         apt:
           packages:
@@ -121,7 +115,7 @@ matrix:
       language: c++
       compiler: clang
       os: osx
-      jdk: oraclejdk8
+      jdk: openjdk8
       script: ./cppbuild/cppbuild
 
 before_cache:
