@@ -1222,14 +1222,16 @@ public class CppGenerator implements CodeGenerator
             indent);
 
         sb.append(String.format("\n" +
-            indent + "    void %1$s(const std::uint64_t index, const %2$s value)\n" +
+            indent + "    %1$s %2$s(const std::uint64_t index, const %3$s value)\n" +
             indent + "    {\n" +
-            indent + "        if (index >= %3$d)\n" +
+            indent + "        if (index >= %4$d)\n" +
             indent + "        {\n" +
-            indent + "            throw std::runtime_error(\"index out of range for %1$s [E105]\");\n" +
+            indent + "            throw std::runtime_error(\"index out of range for %2$s [E105]\");\n" +
             indent + "        }\n\n" +
-            "%4$s" +
+            "%5$s" +
+            indent + "        return *this;\n" +
             indent + "    }\n",
+            containingClassName,
             propertyName,
             cppTypeName,
             token.arrayLength(),
