@@ -348,7 +348,6 @@ public class JavaGenerator implements CodeGenerator
         final String indent)
     {
         final Token groupToken = tokens.get(index);
-        final String dimensionsClassName = formatClassName(tokens.get(index + 1).name());
         final int dimensionHeaderLen = tokens.get(index + 1).encodedLength();
 
         final Token blockLengthToken = Generators.findFirst("blockLength", tokens, index);
@@ -2079,15 +2078,17 @@ public class JavaGenerator implements CodeGenerator
         generateArrayLengthMethod(propertyName, indent, fieldLength, sb);
 
         sb.append(String.format(
-            indent + "    public void %s(final int index, final %s value)\n" +
+            indent + "    public %s %s(final int index, final %s value)\n" +
             indent + "    {\n" +
             indent + "        if (index < 0 || index >= %d)\n" +
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
             indent + "        final int pos = this.offset + %d + (index * %d);\n" +
-            indent + "        %s;\n" +
+            indent + "        %s;\n\n" +
+            indent + "        return this;\n" +
             indent + "    }\n",
+            formatClassName(containingClassName),
             propertyName,
             javaTypeName,
             fieldLength,
