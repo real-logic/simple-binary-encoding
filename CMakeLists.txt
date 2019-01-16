@@ -129,10 +129,7 @@ set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/r
 set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/resources")
 
 include_directories(
-    ${GTEST_SOURCE_DIR}/googletest/include
-    ${GTEST_SOURCE_DIR}/googlemock/include
     ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp
-    ${CODEC_TARGET_DIR}
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp)
