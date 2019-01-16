@@ -45,8 +45,10 @@ add_custom_target(perf_codecs DEPENDS ${GENERATED_CODECS})
 
 add_executable(benchlet-sbe-car-runner ${SRCS_BENCHLET_MAIN} CarBench.cpp)
 target_include_directories(benchlet-sbe-car-runner PRIVATE ${CODEC_TARGET_DIR})
+target_link_libraries(benchlet-sbe-car-runner sbe)
 add_executable(benchlet-sbe-md-runner ${SRCS_BENCHLET_MAIN} MarketDataBench.cpp)
 target_include_directories(benchlet-sbe-md-runner PRIVATE ${CODEC_TARGET_DIR})
+target_link_libraries(benchlet-sbe-md-runner sbe)
 add_dependencies(benchlet-sbe-md-runner perf_codecs)
 add_dependencies(benchlet-sbe-car-runner perf_codecs)
 

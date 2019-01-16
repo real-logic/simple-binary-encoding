@@ -63,5 +63,6 @@ set(HEADERS
 )
 
 add_library(sbe STATIC ${HEADERS} dummy.cpp)
+target_include_directories(sbe PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_dependencies(sbe ir_codecs)
