@@ -121,6 +121,7 @@ add_custom_target(sbe-jar
 )
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set(CXX_CODEC_TARGET_DIR "${CODEC_TARGET_DIR}/cpp")
 set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/resources")
 set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/resources")
 set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/resources")

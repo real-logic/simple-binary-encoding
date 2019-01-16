@@ -17,7 +17,7 @@
 find_package(Java REQUIRED)
 
 set(GENERATED_CODECS
-    ${CODEC_TARGET_DIR}/baseline
+    ${CXX_CODEC_TARGET_DIR}/baseline
 )
 
 set(EXAMPLES_SCHEMA ${CODEC_EXAMPLES_SCHEMA_DIR}/example-schema.xml)
@@ -26,15 +26,15 @@ add_custom_command(
     OUTPUT ${GENERATED_CODECS}
     WORKING_DIRECTORY ${CODEC_EXAMPLES_SCHEMA_DIR}
     DEPENDS ${EXAMPLES_SCHEMA} sbe-jar ${SBE_JAR}
-    COMMAND ${Java_JAVA_EXECUTABLE} -Dsbe.output.dir=${CODEC_TARGET_DIR} -Dsbe.generate.ir=true -Dsbe.target.language=cpp -Dsbe.xinclude.aware=true -jar ${SBE_JAR} ${EXAMPLES_SCHEMA}
+    COMMAND ${Java_JAVA_EXECUTABLE} -Dsbe.output.dir=${CXX_CODEC_TARGET_DIR} -Dsbe.generate.ir=true -Dsbe.target.language=cpp -Dsbe.xinclude.aware=true -jar ${SBE_JAR} ${EXAMPLES_SCHEMA}
 )
 add_custom_target(examples_codecs DEPENDS ${GENERATED_CODECS})
 
 add_executable(GeneratedStubExample GeneratedStubExample.cpp)
-target_include_directories(GeneratedStubExample PRIVATE ${CODEC_TARGET_DIR})
+target_include_directories(GeneratedStubExample PRIVATE ${CXX_CODEC_TARGET_DIR})
 target_link_libraries(GeneratedStubExample sbe)
 add_executable(OtfExample OtfExample.cpp)
-target_include_directories(OtfExample PRIVATE ${CODEC_TARGET_DIR})
+target_include_directories(OtfExample PRIVATE ${CXX_CODEC_TARGET_DIR})
 target_link_libraries(OtfExample sbe)
 
 add_dependencies(GeneratedStubExample examples_codecs)
