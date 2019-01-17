@@ -1030,7 +1030,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append(String.format("\n" +
                 indent + "    public %1$s %2$s(final String value)\n" +
                 indent + "    {\n" +
-                indent + "        final int length = value.length();\n" +
+                indent + "        final int length = null == value ? 0 : value.length();\n" +
                 indent + "        if (length > %3$d)\n" +
                 indent + "        {\n" +
                 indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
@@ -1051,7 +1051,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append(String.format("\n" +
                 indent + "    public %1$s %2$s(final CharSequence value)\n" +
                 indent + "    {\n" +
-                indent + "        final int length = value.length();\n" +
+                indent + "        final int length = null == value ? 0 : value.length();\n" +
                 indent + "        if (length > %3$d)\n" +
                 indent + "        {\n" +
                 indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
@@ -1082,7 +1082,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        final byte[] bytes;\n" +
                 indent + "        try\n" +
                 indent + "        {\n" +
-                indent + "            bytes = value.isEmpty() ?" +
+                indent + "            bytes = null == value || value.isEmpty() ?" +
                 " org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(\"%3$s\");\n" +
                 indent + "        }\n" +
                 indent + "        catch (final java.io.UnsupportedEncodingException ex)\n" +
@@ -2139,7 +2139,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public %1$s %2$s(final String src)\n" +
                 indent + "    {\n" +
                 indent + "        final int length = %3$d;\n" +
-                indent + "        final int srcLength = src.length();\n" +
+                indent + "        final int srcLength = null == src ? 0 : src.length();\n" +
                 indent + "        if (srcLength > length)\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
@@ -2160,7 +2160,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public %1$s %2$s(final CharSequence src)\n" +
                 indent + "    {\n" +
                 indent + "        final int length = %3$d;\n" +
-                indent + "        final int srcLength = src.length();\n" +
+                indent + "        final int srcLength = null == src ? 0 : src.length();\n" +
                 indent + "        if (srcLength > length)\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
@@ -2189,7 +2189,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public %s %s(final String src)\n" +
                 indent + "    {\n" +
                 indent + "        final int length = %d;\n" +
-                indent + "        final byte[] bytes = src.getBytes(%s);\n" +
+                indent + "        final byte[] bytes = null == src ? new byte[0] : src.getBytes(%s);\n" +
                 indent + "        if (bytes.length > length)\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
