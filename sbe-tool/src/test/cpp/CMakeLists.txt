@@ -14,11 +14,6 @@
 # limitations under the License.
 #
 
-set(GTEST_LIBS
-    ${GTEST_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${LIBPREFIX}gtest${LIBSUFFIX}
-    ${GTEST_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${LIBPREFIX}gtest_main${LIBSUFFIX}
-)
-
 function(sbe_test name)
     add_executable("${name}" "${name}.cpp")
     target_link_libraries("${name}" sbe ${GTEST_LIBS} ${CMAKE_THREAD_LIBS_INIT})

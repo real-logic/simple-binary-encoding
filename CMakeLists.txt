@@ -49,10 +49,10 @@ if(SBE_TESTS)
 
     ExternalProject_Add(
         gtest
-        URL ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/lib/gtest-1.7.0.zip
-        URL_MD5 2d6ec8ccdf5c46b05ba54a9fd1d130d7
+        URL ${CMAKE_CURRENT_SOURCE_DIR}/cppbuild/googletest-release-1.8.0.zip
+        URL_MD5 adfafc8512ab65fd3cf7955ef0100ff5
         PREFIX "${SBE_THIRDPARTY_BINARY_DIR}/gtest"
-        BUILD_BYPRODUCTS "${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX};${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        BUILD_BYPRODUCTS "${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX};${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}"
         INSTALL_COMMAND ""
         LOG_CONFIGURE ON
         LOG_BUILD ON
@@ -62,6 +62,11 @@ if(SBE_TESTS)
     set(GTEST_SOURCE_DIR ${source_dir})
     ExternalProject_Get_Property(gtest binary_dir)
     set(GTEST_BINARY_DIR ${binary_dir})
+
+    set(GTEST_LIBS
+        ${GTEST_BINARY_DIR}/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}
+        ${GTEST_BINARY_DIR}/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock_main${CMAKE_STATIC_LIBRARY_SUFFIX}
+    )
 endif()
 
 find_package(Threads)
@@ -123,7 +128,8 @@ set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/r
 set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/resources")
 
 include_directories(
-    ${GTEST_SOURCE_DIR}/include
+    ${GTEST_SOURCE_DIR}/googletest/include
+    ${GTEST_SOURCE_DIR}/googlemock/include
     ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp
     ${CODEC_TARGET_DIR}
 )
