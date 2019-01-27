@@ -1179,8 +1179,10 @@ public class GolangGenerator implements CodeGenerator
         final String propertyName = formatPropertyName(signalToken.name());
         final Token blockLengthToken = Generators.findFirst("blockLength", tokens, 0);
         final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, 0);
+        final int blockLengthOffset = blockLengthToken.offset();
         final String blockLengthType = golangTypeName(blockLengthToken.encoding().primitiveType());
         final String blockLengthMarshalType = golangMarshalType(blockLengthToken.encoding().primitiveType());
+        final int numInGroupOffset = numInGroupToken.offset();
         final String numInGroupType = golangTypeName(numInGroupToken.encoding().primitiveType());
         final String numInGroupMarshalType = golangMarshalType(numInGroupToken.encoding().primitiveType());
 
@@ -1189,16 +1191,32 @@ public class GolangGenerator implements CodeGenerator
         encode.append(generateEncodeOffset(gap, ""));
         decode.append(generateDecodeOffset(gap, ""));
 
-        // Write/Read the group header
-        encode.append(String.format(
-            "\n\tvar %7$sBlockLength %1$s = %2$d\n" +
-            "\tvar %7$sNumInGroup %3$s = %3$s(len(%4$s.%5$s))\n" +
+        // Write block length
+        final String encBlockLengthTmpl =
+            "\tvar %7$sBlockLength %1$s = %2$d\n" +
             "\tif err := _m.Write%6$s(_w, %7$sBlockLength); err != nil {\n" +
             "\t\treturn err\n" +
-            "\t}\n" +
+            "\t}\n";
+
+        // Write number of elements in group
+        final String encNumInGroupTmpl =
+            "\tvar %7$sNumInGroup %3$s = %3$s(len(%4$s.%5$s))\n" +
             "\tif err := _m.Write%8$s(_w, %7$sNumInGroup); err != nil {\n" +
             "\t\treturn err\n" +
-            "\t}\n",
+            "\t}\n";
+
+        // Order write based on offset
+        String encGrpMetaTmpl = "\n";
+        if (blockLengthOffset < numInGroupOffset)
+        {
+            encGrpMetaTmpl = encBlockLengthTmpl + encNumInGroupTmpl;
+        }
+        else
+        {
+            encGrpMetaTmpl = encNumInGroupTmpl + encBlockLengthTmpl;
+        }
+
+        encode.append(String.format(encGrpMetaTmpl,
             blockLengthType,
             signalToken.encodedLength(),
             numInGroupType,
@@ -1208,7 +1226,7 @@ public class GolangGenerator implements CodeGenerator
             propertyName,
             numInGroupMarshalType));
 
-        // Write/Read the group itself
+        // Write the group itself
         encode.append(String.format(
             "\tfor _, prop := range %1$s.%2$s {\n" +
             "\t\tif err := prop.Encode(_m, _w); err != nil {\n" +
@@ -1217,18 +1235,10 @@ public class GolangGenerator implements CodeGenerator
             varName,
             toUpperFirstChar(signalToken.name())));
 
-        // Read length/num
+        // Check version
         decode.append(String.format(
             "\n" +
-            "\tif %1$s.%2$sInActingVersion(actingVersion) {\n" +
-            "\t\tvar %2$sBlockLength %3$s\n" +
-            "\t\tvar %2$sNumInGroup %4$s\n" +
-            "\t\tif err := _m.Read%5$s(_r, &%2$sBlockLength); err != nil {\n" +
-            "\t\t\treturn err\n" +
-            "\t\t}\n" +
-            "\t\tif err := _m.Read%6$s(_r, &%2$sNumInGroup); err != nil {\n" +
-            "\t\t\treturn err\n" +
-            "\t\t}\n",
+            "\tif %1$s.%2$sInActingVersion(actingVersion) {\n",
             varName,
             propertyName,
             blockLengthType,
@@ -1236,7 +1246,39 @@ public class GolangGenerator implements CodeGenerator
             blockLengthMarshalType,
             numInGroupMarshalType));
 
-        // Read num elements
+        // Read block length
+        final String decBlockLengthTmpl =
+            "\t\tvar %2$sBlockLength %3$s\n" +
+            "\t\tif err := _m.Read%5$s(_r, &%2$sBlockLength); err != nil {\n" +
+            "\t\t\treturn err\n" +
+            "\t\t}\n";
+
+        // Read number of elements in group
+        final String decNumInGroupTmpl =
+            "\t\tvar %2$sNumInGroup %4$s\n" +
+            "\t\tif err := _m.Read%6$s(_r, &%2$sNumInGroup); err != nil {\n" +
+            "\t\t\treturn err\n" +
+            "\t\t}\n";
+
+        // Order read based on offset
+        String decGrpMetaTmpl = "\n";
+        if (blockLengthOffset < numInGroupOffset)
+        {
+            decGrpMetaTmpl = decBlockLengthTmpl + decNumInGroupTmpl;
+        }
+        else
+        {
+            decGrpMetaTmpl = decNumInGroupTmpl + decBlockLengthTmpl;
+        }
+        decode.append(String.format(decGrpMetaTmpl,
+            varName,
+            propertyName,
+            blockLengthType,
+            numInGroupType,
+            blockLengthMarshalType,
+            numInGroupMarshalType));
+
+        // Read the group itself
         decode.append(String.format(
             "\t\tif cap(%1$c.%2$s) < int(%2$sNumInGroup) {\n" +
             "\t\t\t%1$s.%2$s = make([]%3$s%2$s, %2$sNumInGroup)\n" +
