@@ -1455,17 +1455,6 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        reset(codec);\n" +
             "    }\n\n" +
-            "#if __cplusplus >= 201103L\n" +
-            "    %1$s(%1$s&& codec)\n" +
-            "    {\n" +
-            "        reset(codec);\n" +
-            "    }\n\n" +
-            "    %1$s& operator=(%1$s&& codec)\n" +
-            "    {\n" +
-            "        reset(codec);\n" +
-            "        return *this;\n" +
-            "    }\n\n" +
-            "#endif\n\n" +
             "    %1$s& operator=(const %1$s& codec)\n" +
             "    {\n" +
             "        reset(codec);\n" +
