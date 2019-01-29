@@ -857,7 +857,6 @@ public class GolangGenerator implements CodeGenerator
     {
         final char varName = Character.toLowerCase(choiceName.charAt(0));
 
-        // Encode
         generateEncodeHeader(sb, varName, choiceName, false, false);
 
         sb.append(String.format(
@@ -1191,14 +1190,12 @@ public class GolangGenerator implements CodeGenerator
         encode.append(generateEncodeOffset(gap, ""));
         decode.append(generateDecodeOffset(gap, ""));
 
-        // Write block length
         final String encBlockLengthTmpl =
             "\tvar %7$sBlockLength %1$s = %2$d\n" +
             "\tif err := _m.Write%6$s(_w, %7$sBlockLength); err != nil {\n" +
             "\t\treturn err\n" +
             "\t}\n";
 
-        // Write number of elements in group
         final String encNumInGroupTmpl =
             "\tvar %7$sNumInGroup %3$s = %3$s(len(%4$s.%5$s))\n" +
             "\tif err := _m.Write%8$s(_w, %7$sNumInGroup); err != nil {\n" +
@@ -1206,15 +1203,8 @@ public class GolangGenerator implements CodeGenerator
             "\t}\n";
 
         // Order write based on offset
-        String encGrpMetaTmpl = "\n";
-        if (blockLengthOffset < numInGroupOffset)
-        {
-            encGrpMetaTmpl = encBlockLengthTmpl + encNumInGroupTmpl;
-        }
-        else
-        {
-            encGrpMetaTmpl = encNumInGroupTmpl + encBlockLengthTmpl;
-        }
+        final String encGrpMetaTmpl = blockLengthOffset < numInGroupOffset ?
+            encBlockLengthTmpl + encNumInGroupTmpl : encNumInGroupTmpl + encBlockLengthTmpl;
 
         encode.append(String.format(encGrpMetaTmpl,
             blockLengthType,
@@ -1235,43 +1225,28 @@ public class GolangGenerator implements CodeGenerator
             varName,
             toUpperFirstChar(signalToken.name())));
 
-        // Check version
         decode.append(String.format(
             "\n" +
             "\tif %1$s.%2$sInActingVersion(actingVersion) {\n",
             varName,
-            propertyName,
-            blockLengthType,
-            numInGroupType,
-            blockLengthMarshalType,
-            numInGroupMarshalType));
+            propertyName));
 
-        // Read block length
         final String decBlockLengthTmpl =
-            "\t\tvar %2$sBlockLength %3$s\n" +
-            "\t\tif err := _m.Read%5$s(_r, &%2$sBlockLength); err != nil {\n" +
+            "\t\tvar %1$sBlockLength %2$s\n" +
+            "\t\tif err := _m.Read%4$s(_r, &%1$sBlockLength); err != nil {\n" +
             "\t\t\treturn err\n" +
             "\t\t}\n";
 
-        // Read number of elements in group
         final String decNumInGroupTmpl =
-            "\t\tvar %2$sNumInGroup %4$s\n" +
-            "\t\tif err := _m.Read%6$s(_r, &%2$sNumInGroup); err != nil {\n" +
+            "\t\tvar %1$sNumInGroup %3$s\n" +
+            "\t\tif err := _m.Read%5$s(_r, &%1$sNumInGroup); err != nil {\n" +
             "\t\t\treturn err\n" +
             "\t\t}\n";
 
-        // Order read based on offset
-        String decGrpMetaTmpl = "\n";
-        if (blockLengthOffset < numInGroupOffset)
-        {
-            decGrpMetaTmpl = decBlockLengthTmpl + decNumInGroupTmpl;
-        }
-        else
-        {
-            decGrpMetaTmpl = decNumInGroupTmpl + decBlockLengthTmpl;
-        }
+        final String decGrpMetaTmpl = blockLengthOffset < numInGroupOffset ?
+            decBlockLengthTmpl + decNumInGroupTmpl : decNumInGroupTmpl + decBlockLengthTmpl;
+
         decode.append(String.format(decGrpMetaTmpl,
-            varName,
             propertyName,
             blockLengthType,
             numInGroupType,
@@ -1818,15 +1793,10 @@ public class GolangGenerator implements CodeGenerator
             final String propertyName = formatPropertyName(token.name());
 
             // Write {Min,Max,Null}Value
-            switch (token.signal())
+            if (token.signal() == Signal.ENCODING)
             {
-                case ENCODING:
-                    generateMinMaxNull(sb, containingTypeName, propertyName, token);
-                    generateCharacterEncoding(sb, containingTypeName, propertyName, token);
-                    break;
-
-                default:
-                    break;
+                generateMinMaxNull(sb, containingTypeName, propertyName, token);
+                generateCharacterEncoding(sb, containingTypeName, propertyName, token);
             }
 
             switch (token.signal())
@@ -1837,6 +1807,7 @@ public class GolangGenerator implements CodeGenerator
                 case BEGIN_COMPOSITE:
                     generateSinceActingDeprecated(sb, containingTypeName, propertyName, token);
                     break;
+
                 default:
                     break;
             }
