@@ -1180,7 +1180,17 @@ public class CppGenerator implements CodeGenerator
             token.arrayLength()));
 
         sb.append(String.format("\n" +
-            indent + "    const char *%1$s() const\n" +
+            indent + "    const char *%1$s() const SBE_NOEXCEPT\n" +
+            indent + "    {\n" +
+            "%2$s" +
+            indent + "        return (m_buffer + m_offset + %3$d);\n" +
+            indent + "    }\n",
+            propertyName,
+            generateTypeFieldNotPresentCondition(token.version(), indent),
+            offset));
+
+        sb.append(String.format("\n" +
+            indent + "    char *%1$s() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             "%2$s" +
             indent + "        return (m_buffer + m_offset + %3$d);\n" +
@@ -1196,7 +1206,7 @@ public class CppGenerator implements CodeGenerator
             indent);
 
         sb.append(String.format("\n" +
-            indent + "    %1$s %2$s(const std::uint64_t index) const\n" +
+            indent + "    %1$s %2$s(std::uint64_t index) const\n" +
             indent + "    {\n" +
             indent + "        if (index >= %3$d)\n" +
             indent + "        {\n" +
@@ -1218,7 +1228,7 @@ public class CppGenerator implements CodeGenerator
             indent);
 
         sb.append(String.format("\n" +
-            indent + "    %1$s %2$s(const std::uint64_t index, const %3$s value)\n" +
+            indent + "    %1$s %2$s(std::uint64_t index, %3$s value)\n" +
             indent + "    {\n" +
             indent + "        if (index >= %4$d)\n" +
             indent + "        {\n" +
@@ -1234,7 +1244,7 @@ public class CppGenerator implements CodeGenerator
             storeValue));
 
         sb.append(String.format("\n" +
-            indent + "    std::uint64_t get%1$s(char *dst, const std::uint64_t length) const\n" +
+            indent + "    std::uint64_t get%1$s(char *dst, std::uint64_t length) const\n" +
             indent + "    {\n" +
             indent + "        if (length > %2$d)\n" +
             indent + "        {\n" +
@@ -1251,7 +1261,7 @@ public class CppGenerator implements CodeGenerator
             cppTypeName));
 
         sb.append(String.format("\n" +
-            indent + "    %1$s &put%2$s(const char *src)\n" +
+            indent + "    %1$s &put%2$s(const char *src) SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        std::memcpy(m_buffer + m_offset + %3$d, src, sizeof(%4$s) * %5$d);\n" +
             indent + "        return *this;\n" +
@@ -1275,11 +1285,31 @@ public class CppGenerator implements CodeGenerator
                 token.arrayLength()));
 
             sb.append(String.format("\n" +
-                indent + "    %1$s &put%2$s(const std::string& str)\n" +
+                indent + "    #if __cplusplus >= 201703L\n" +
+                indent + "    std::string_view get%1$sAsStringView() const SBE_NOEXCEPT\n" +
+                indent + "    {\n" +
+                indent + "        std::string_view result(m_buffer + m_offset + %2$d, %3$d);\n" +
+                indent + "        return result;\n" +
+                indent + "    }\n" +
+                indent + "    #endif\n",
+                toUpperFirstChar(propertyName),
+                offset,
+                token.arrayLength()));
+
+            sb.append(String.format("\n" +
+                indent + "    #if __cplusplus >= 201703L\n" +
+                indent + "    %1$s &put%2$s(std::string_view str) SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
                 indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), %4$d);\n" +
                 indent + "        return *this;\n" +
-                indent + "    }\n",
+                indent + "    }\n" +
+                indent + "    #else\n" +
+                indent + "    %1$s &put%2$s(const std::string& str) SBE_NOEXCEPT\n" +
+                indent + "    {\n" +
+                indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), %4$d);\n" +
+                indent + "        return *this;\n" +
+                indent + "    }\n" +
+                indent + "    #endif\n",
                 containingClassName,
                 toUpperFirstChar(propertyName),
                 offset,
