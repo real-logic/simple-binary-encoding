@@ -1298,14 +1298,22 @@ public class CppGenerator implements CodeGenerator
 
             sb.append(String.format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
-                indent + "    %1$s &put%2$s(std::string_view str) SBE_NOEXCEPT\n" +
+                indent + "    %1$s &put%2$s(std::string_view str)\n" +
                 indent + "    {\n" +
+                indent + "        if (SBE_BOUNDS_CHECK_EXPECT((str.size() < %4$d), false))\n" +
+                indent + "        {\n" +
+                indent + "            throw std::runtime_error(\"string too short for put%2$s [E111]\");\n" +
+                indent + "        }\n" +
                 indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), %4$d);\n" +
                 indent + "        return *this;\n" +
                 indent + "    }\n" +
                 indent + "    #else\n" +
-                indent + "    %1$s &put%2$s(const std::string& str) SBE_NOEXCEPT\n" +
+                indent + "    %1$s &put%2$s(const std::string& str)\n" +
                 indent + "    {\n" +
+                indent + "        if (SBE_BOUNDS_CHECK_EXPECT((str.size() < %4$d), false))\n" +
+                indent + "        {\n" +
+                indent + "            throw std::runtime_error(\"string too short for put%2$s [E111]\");\n" +
+                indent + "        }\n" +
                 indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), %4$d);\n" +
                 indent + "        return *this;\n" +
                 indent + "    }\n" +
