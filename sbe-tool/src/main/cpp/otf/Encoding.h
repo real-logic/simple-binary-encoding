@@ -343,14 +343,14 @@ public:
         m_presence(presence),
         m_primitiveType(type),
         m_byteOrder(byteOrder),
-        m_minValue(minValue),
-        m_maxValue(maxValue),
-        m_nullValue(nullValue),
-        m_constValue(constValue),
-        m_characterEncoding(characterEncoding),
-        m_epoch(epoch),
-        m_timeUnit(timeUnit),
-        m_semanticType(semanticType)
+        m_minValue(std::move(minValue)),
+        m_maxValue(std::move(maxValue)),
+        m_nullValue(std::move(nullValue)),
+        m_constValue(std::move(constValue)),
+        m_characterEncoding(std::move(characterEncoding)),
+        m_epoch(std::move(epoch)),
+        m_timeUnit(std::move(timeUnit)),
+        m_semanticType(std::move(semanticType))
     {
     }
 

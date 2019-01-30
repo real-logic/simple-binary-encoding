@@ -1374,9 +1374,9 @@ public class CppGenerator implements CodeGenerator
 
         return String.format(
             "private:\n" +
-            "    char *m_buffer;\n" +
+            "    char *m_buffer = nullptr;\n" +
             "    std::uint64_t m_bufferLength;\n" +
-            "    std::uint64_t m_offset;\n" +
+            "    std::uint64_t m_offset = 0;\n" +
             "    std::uint64_t m_actingVersion;\n\n" +
             "    inline void reset(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength," +
             " const std::uint64_t actingVersion)\n" +
@@ -1391,38 +1391,10 @@ public class CppGenerator implements CodeGenerator
             "        m_actingVersion = actingVersion;\n" +
             "    }\n\n" +
             "public:\n" +
-            "    %1$s() : m_buffer(nullptr), m_offset(0) {}\n\n" +
+            "    %1$s() = default;\n\n" +
             "    %1$s(char *buffer, const std::uint64_t bufferLength, const std::uint64_t actingVersion)\n" +
             "    {\n" +
             "        reset(buffer, 0, bufferLength, actingVersion);\n" +
-            "    }\n\n" +
-            "    %1$s(const %1$s& codec) :\n" +
-            "        m_buffer(codec.m_buffer),\n" +
-            "        m_bufferLength(codec.m_bufferLength),\n" +
-            "        m_offset(codec.m_offset),\n" +
-            "        m_actingVersion(codec.m_actingVersion){}\n\n" +
-            "#if __cplusplus >= 201103L\n" +
-            "    %1$s(%1$s&& codec) :\n" +
-            "        m_buffer(codec.m_buffer),\n" +
-            "        m_bufferLength(codec.m_bufferLength),\n" +
-            "        m_offset(codec.m_offset),\n" +
-            "        m_actingVersion(codec.m_actingVersion){}\n\n" +
-            "    %1$s& operator=(%1$s&& codec) SBE_NOEXCEPT\n" +
-            "    {\n" +
-            "        m_buffer = codec.m_buffer;\n" +
-            "        m_bufferLength = codec.m_bufferLength;\n" +
-            "        m_offset = codec.m_offset;\n" +
-            "        m_actingVersion = codec.m_actingVersion;\n" +
-            "        return *this;\n" +
-            "    }\n\n" +
-            "#endif\n\n" +
-            "    %1$s& operator=(const %1$s& codec) SBE_NOEXCEPT\n" +
-            "    {\n" +
-            "        m_buffer = codec.m_buffer;\n" +
-            "        m_bufferLength = codec.m_bufferLength;\n" +
-            "        m_offset = codec.m_offset;\n" +
-            "        m_actingVersion = codec.m_actingVersion;\n" +
-            "        return *this;\n" +
             "    }\n\n" +
             "    %1$s &wrap(char *buffer, const std::uint64_t offset, const std::uint64_t actingVersion," +
             " const std::uint64_t bufferLength)\n" +
@@ -1469,7 +1441,7 @@ public class CppGenerator implements CodeGenerator
     private static CharSequence generateConstructorsAndOperators(final String className)
     {
         return String.format(
-            "    %1$s() : m_buffer(nullptr), m_bufferLength(0), m_offset(0) {}\n\n" +
+            "    %1$s() = default;\n\n" +
             "    %1$s(char *buffer, const std::uint64_t bufferLength)\n" +
             "    {\n" +
             "        reset(buffer, 0, bufferLength, sbeBlockLength(), sbeSchemaVersion());\n" +
@@ -1479,22 +1451,11 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        reset(buffer, 0, bufferLength, actingBlockLength, actingVersion);\n" +
             "    }\n\n" +
-            "    %1$s(const %1$s& codec)\n" +
+            "    %1$s(const %1$s& codec) SBE_NOEXCEPT\n" +
             "    {\n" +
             "        reset(codec);\n" +
             "    }\n\n" +
-            "#if __cplusplus >= 201103L\n" +
-            "    %1$s(%1$s&& codec)\n" +
-            "    {\n" +
-            "        reset(codec);\n" +
-            "    }\n\n" +
-            "    %1$s& operator=(%1$s&& codec)\n" +
-            "    {\n" +
-            "        reset(codec);\n" +
-            "        return *this;\n" +
-            "    }\n\n" +
-            "#endif\n\n" +
-            "    %1$s& operator=(const %1$s& codec)\n" +
+            "    %1$s& operator=(const %1$s& codec) SBE_NOEXCEPT\n" +
             "    {\n" +
             "        reset(codec);\n" +
             "        return *this;\n" +
@@ -1512,10 +1473,10 @@ public class CppGenerator implements CodeGenerator
 
         return String.format(
             "private:\n" +
-            "    char *m_buffer;\n" +
-            "    std::uint64_t m_bufferLength;\n" +
+            "    char *m_buffer = nullptr;\n" +
+            "    std::uint64_t m_bufferLength = 0;\n" +
             "    std::uint64_t *m_positionPtr;\n" +
-            "    std::uint64_t m_offset;\n" +
+            "    std::uint64_t m_offset = 0;\n" +
             "    std::uint64_t m_position;\n" +
             "    std::uint64_t m_actingBlockLength;\n" +
             "    std::uint64_t m_actingVersion;\n\n" +
@@ -1531,7 +1492,7 @@ public class CppGenerator implements CodeGenerator
             "        m_positionPtr = &m_position;\n" +
             "        sbePosition(offset + m_actingBlockLength);\n" +
             "    }\n\n" +
-            "    inline void reset(const %10$s& codec)\n" +
+            "    inline void reset(const %10$s& codec) SBE_NOEXCEPT\n" +
             "    {\n" +
             "        m_buffer = codec.m_buffer;\n" +
             "        m_offset = codec.m_offset;\n" +

@@ -86,9 +86,9 @@ public:
         m_encodedLength(encodedLength),
         m_componentTokenCount(componentTokenCount),
         m_signal(signal),
-        m_name(name),
-        m_description(description),
-        m_encoding(encoding)
+        m_name(std::move(name)),
+        m_description(std::move(description)),
+        m_encoding(std::move(encoding))
     {
     }
 
