@@ -288,7 +288,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    inline %3$s &next()\n" +
             indent + "    {\n" +
             indent + "        m_offset = *m_positionPtr;\n" +
-            indent + "        if (SBE_BOUNDS_CHECK_EXPECT(( (m_offset + m_blockLength) > m_bufferLength ), false))\n" +
+            indent + "        if (SBE_BOUNDS_CHECK_EXPECT(((m_offset + m_blockLength) > m_bufferLength), false))\n" +
             indent + "        {\n" +
             indent + "            throw std::runtime_error(\"" +
             "buffer too short to support next group index [E108]\");\n" +
@@ -437,7 +437,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        %5$s lengthFieldValue;\n" +
                 indent + "        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(%5$s));\n" +
                 indent + "        std::uint64_t dataLength = %4$s(lengthFieldValue);\n" +
-                indent + "        std::uint64_t bytesToCopy = (length < dataLength) ? length : dataLength;\n" +
+                indent + "        std::uint64_t bytesToCopy = length < dataLength ? length : dataLength;\n" +
                 indent + "        std::uint64_t pos = sbePosition();\n" +
                 indent + "        sbePosition(pos + dataLength);\n" +
                 indent + "        std::memcpy(dst, m_buffer + pos, bytesToCopy);\n" +
@@ -1091,7 +1091,6 @@ public class CppGenerator implements CodeGenerator
     private CharSequence generateStoreValue(
         final PrimitiveType primitiveType,
         final String offsetStr,
-        final String valueStr,
         final ByteOrder byteOrder,
         final String indent)
     {
@@ -1101,16 +1100,15 @@ public class CppGenerator implements CodeGenerator
 
         if (primitiveType == PrimitiveType.FLOAT || primitiveType == PrimitiveType.DOUBLE)
         {
-            final String stackUnion =
-                (primitiveType == PrimitiveType.FLOAT) ? "::sbe::sbe_float_as_uint_t" : "::sbe::sbe_double_as_uint_t";
+            final String stackUnion = primitiveType == PrimitiveType.FLOAT ?
+                "::sbe::sbe_float_as_uint_t" : "::sbe::sbe_double_as_uint_t";
 
             sb.append(String.format(
                 indent + "        %1$s val;\n" +
-                indent + "        val.fp_value = %2$s;\n" +
-                indent + "        val.uint_value = %3$s(val.uint_value);\n" +
-                indent + "        std::memcpy(m_buffer + m_offset + %4$s, &val, sizeof(%5$s));\n",
+                indent + "        val.fp_value = value;\n" +
+                indent + "        val.uint_value = %2$s(val.uint_value);\n" +
+                indent + "        std::memcpy(m_buffer + m_offset + %3$s, &val, sizeof(%4$s));\n",
                 stackUnion,
-                valueStr,
                 byteOrderStr,
                 offsetStr,
                 cppTypeName));
@@ -1118,11 +1116,10 @@ public class CppGenerator implements CodeGenerator
         else
         {
             sb.append(String.format(
-                indent + "        %1$s val = %2$s(%3$s);\n" +
-                indent + "        std::memcpy(m_buffer + m_offset + %4$s, &val, sizeof(%1$s));\n",
+                indent + "        %1$s val = %2$s(value);\n" +
+                indent + "        std::memcpy(m_buffer + m_offset + %3$s, &val, sizeof(%1$s));\n",
                 cppTypeName,
                 byteOrderStr,
-                valueStr,
                 offsetStr));
         }
 
@@ -1149,7 +1146,7 @@ public class CppGenerator implements CodeGenerator
             generateLoadValue(primitiveType, Integer.toString(offset), token.encoding().byteOrder(), indent)));
 
         final CharSequence storeValue = generateStoreValue(
-            primitiveType, Integer.toString(offset), "value", token.encoding().byteOrder(), indent);
+            primitiveType, Integer.toString(offset), token.encoding().byteOrder(), indent);
 
         sb.append(String.format("\n" +
             indent + "    %1$s &%2$s(const %3$s value)\n" +
@@ -1217,7 +1214,6 @@ public class CppGenerator implements CodeGenerator
         final CharSequence storeValue = generateStoreValue(
             primitiveType,
             String.format("%d + (index * %d)", offset, primitiveType.size()),
-            "value",
             token.encoding().byteOrder(),
             indent);
 
