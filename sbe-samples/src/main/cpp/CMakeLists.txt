@@ -31,7 +31,10 @@ add_custom_command(
 add_custom_target(examples_codecs DEPENDS ${GENERATED_CODECS})
 
 add_executable(GeneratedStubExample GeneratedStubExample.cpp)
+target_include_directories(GeneratedStubExample PRIVATE ${CODEC_TARGET_DIR})
+target_link_libraries(GeneratedStubExample sbe)
 add_executable(OtfExample OtfExample.cpp)
+target_include_directories(OtfExample PRIVATE ${CODEC_TARGET_DIR})
 target_link_libraries(OtfExample sbe)
 
 add_dependencies(GeneratedStubExample examples_codecs)

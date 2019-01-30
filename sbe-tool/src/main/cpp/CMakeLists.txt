@@ -62,6 +62,7 @@ set(HEADERS
     otf/OtfHeaderDecoder.h
 )
 
-add_library(sbe STATIC ${HEADERS} dummy.cpp)
+add_library(sbe INTERFACE)
+target_include_directories(sbe INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_dependencies(sbe ir_codecs)

@@ -16,6 +16,10 @@
 
 function(sbe_test name)
     add_executable("${name}" "${name}.cpp")
+    target_include_directories("${name}"
+        PRIVATE ${GTEST_SOURCE_DIR}/googletest/include
+        PRIVATE ${CODEC_TARGET_DIR}
+    )
     target_link_libraries("${name}" sbe ${GTEST_LIBS} ${CMAKE_THREAD_LIBS_INIT})
     add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY ${CODEC_TARGET_DIR})
     add_dependencies(${name} gtest)

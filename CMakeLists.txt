@@ -52,7 +52,8 @@ if(SBE_TESTS)
         URL ${CMAKE_CURRENT_SOURCE_DIR}/cppbuild/googletest-release-1.8.0.zip
         URL_MD5 adfafc8512ab65fd3cf7955ef0100ff5
         PREFIX "${SBE_THIRDPARTY_BINARY_DIR}/gtest"
-        BUILD_BYPRODUCTS "${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX};${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        CMAKE_ARGS -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER};-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+        BUILD_BYPRODUCTS "${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX};${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock_main${CMAKE_STATIC_LIBRARY_SUFFIX}"
         INSTALL_COMMAND ""
         LOG_CONFIGURE ON
         LOG_BUILD ON
@@ -126,13 +127,6 @@ set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(CODEC_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/resources")
 set(CODEC_PERF_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/resources")
 set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/resources")
-
-include_directories(
-    ${GTEST_SOURCE_DIR}/googletest/include
-    ${GTEST_SOURCE_DIR}/googlemock/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp
-    ${CODEC_TARGET_DIR}
-)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp)
 
