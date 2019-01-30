@@ -1298,17 +1298,35 @@ public class CppGenerator implements CodeGenerator
 
             sb.append(String.format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
-                indent + "    %1$s &put%2$s(std::string_view str) SBE_NOEXCEPT\n" +
+                indent + "    %1$s &put%2$s(std::string_view str)\n" +
                 indent + "    {\n" +
-                indent + "        size_t length = str.length() < %4$d ? str.length() : %4$d;\n" +
+                indent + "        const size_t srcLength = str.length();\n" +
+                indent + "        if (srcLength > %4$d)\n" +
+                indent + "        {\n" +
+                indent + "             throw std::runtime_error(\"string too large for put%2$s [E106]\");\n" +
+                indent + "        }\n\n" +
+                indent + "        size_t length = srcLength < %4$d ? srcLength : %4$d;\n" +
                 indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), length);\n" +
+                indent + "        for (size_t start = srcLength; start < length; ++start)\n" +
+                indent + "        {\n" +
+                indent + "            m_buffer[m_offset + %3$d + start] = 0;\n" +
+                indent + "        }\n\n" +
                 indent + "        return *this;\n" +
                 indent + "    }\n" +
                 indent + "    #else\n" +
-                indent + "    %1$s &put%2$s(const std::string& str) SBE_NOEXCEPT\n" +
+                indent + "    %1$s &put%2$s(const std::string& str)\n" +
                 indent + "    {\n" +
-                indent + "        size_t length = str.length() < %4$d ? str.length() : %4$d;\n" +
+                indent + "        const size_t srcLength = str.length();\n" +
+                indent + "        if (srcLength > %4$d)\n" +
+                indent + "        {\n" +
+                indent + "             throw std::runtime_error(\"string too large for put%2$s [E106]\");\n" +
+                indent + "        }\n\n" +
+                indent + "        size_t length = srcLength < %4$d ? srcLength : %4$d;\n" +
                 indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), length);\n" +
+                indent + "        for (size_t start = srcLength; start < length; ++start)\n" +
+                indent + "        {\n" +
+                indent + "            m_buffer[m_offset + %3$d + start] = 0;\n" +
+                indent + "        }\n\n" +
                 indent + "        return *this;\n" +
                 indent + "    }\n" +
                 indent + "    #endif\n",
