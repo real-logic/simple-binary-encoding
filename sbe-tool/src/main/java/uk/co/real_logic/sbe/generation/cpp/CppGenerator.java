@@ -1300,13 +1300,15 @@ public class CppGenerator implements CodeGenerator
                 indent + "    #if __cplusplus >= 201703L\n" +
                 indent + "    %1$s &put%2$s(std::string_view str) SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
-                indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), %4$d);\n" +
+                indent + "        size_t length = str.length() < %4$d ? str.length() : %4$d;\n" +
+                indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), length);\n" +
                 indent + "        return *this;\n" +
                 indent + "    }\n" +
                 indent + "    #else\n" +
                 indent + "    %1$s &put%2$s(const std::string& str) SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
-                indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), %4$d);\n" +
+                indent + "        size_t length = str.length() < %4$d ? str.length() : %4$d;\n" +
+                indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), length);\n" +
                 indent + "        return *this;\n" +
                 indent + "    }\n" +
                 indent + "    #endif\n",
