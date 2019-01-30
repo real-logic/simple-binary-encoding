@@ -323,7 +323,7 @@ public class CompositeType extends Type
         }
         else if (templateIdType.primitiveType() != UINT16)
         {
-            XmlSchemaParser.handleWarning(node, "\"templateId\" must be UINT16");
+            XmlSchemaParser.handleWarning(node, "\"templateId\" should be UINT16");
         }
 
         if (schemaIdType == null)
@@ -332,7 +332,7 @@ public class CompositeType extends Type
         }
         else if (schemaIdType.primitiveType() != UINT16)
         {
-            XmlSchemaParser.handleWarning(node, "\"schemaId\" must be UINT16");
+            XmlSchemaParser.handleWarning(node, "\"schemaId\" should be UINT16");
         }
 
         if (versionType == null)
@@ -341,7 +341,7 @@ public class CompositeType extends Type
         }
         else if (versionType.primitiveType() != UINT16)
         {
-            XmlSchemaParser.handleWarning(node, "\"version\" must be UINT16");
+            XmlSchemaParser.handleWarning(node, "\"version\" should be UINT16");
         }
     }
 
