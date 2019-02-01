@@ -2,11 +2,11 @@
 <package>
   <metadata>
     <id>sbe-tool</id>
-    <version>0.1.8.1-beta-1</version>
+    <version>0.1.12.1-beta-1</version>
     <title>Simple Binary Encoding for .NET</title>
     <authors>Bill Segall, MarketFactory Inc, Adaptive Consulting</authors>
     <owners>Bill Segall, MarketFactory Inc, Adaptive Consulting</owners>
-    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <license type="expression">Apache-2.0</license>
     <projectUrl>https://github.com/real-logic/simple-binary-encoding</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>This package contains all you need to define SBE messages and generate C# encoders and decoders. See https://github.com/real-logic/simple-binary-encoding for more detailed instructions</description>
