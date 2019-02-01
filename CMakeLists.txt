@@ -81,7 +81,7 @@ endif()
 find_package(Threads)
 
 if(UNIX)
-    add_compile_options(-g -Wall -Wpedantic -Wextra -Wno-unused-parameter)
+    add_compile_options(-Wall -Wpedantic -Wextra -Wno-unused-parameter)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast")
 endif()
