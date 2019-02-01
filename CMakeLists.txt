@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 
-cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
-cmake_policy(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.1.3 FATAL_ERROR)
+cmake_policy(VERSION 3.1.3)
 
 file(STRINGS version.txt SBE_VERSION_TXT LIMIT_COUNT 1 REGEX "^[0-9]+(\\.[0-9]+)+")
 string(REGEX REPLACE "^([0-9]+(\\.[0-9]+)+).*$" "\\1" SBE_VERSION_NUMERIC "${SBE_VERSION_TXT}")
@@ -43,6 +43,14 @@ endif()
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build" FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
+
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+   set(CMAKE_CXX_STANDARD 11)
+endif()
+
+if(NOT DEFINED CMAKE_CXX_EXTENSIONS)
+   set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
 
 if(SBE_TESTS)
     set(SBE_THIRDPARTY_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/thirdparty")
@@ -73,14 +81,12 @@ endif()
 find_package(Threads)
 
 if(UNIX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fexceptions -g -Wall -Wpedantic -Wextra -Wno-unused-parameter")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast")
+    add_compile_options(-Wall -Wpedantic -Wextra -Wno-unused-parameter)
 endif()
 
 if(APPLE)
     # -Wall doesn't enable everything we want to see
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-compare")
+    add_compile_options(-Wsign-compare)
     add_definitions(-DDarwin)
 elseif(MSVC)
     add_definitions(-DWIN32)
@@ -98,15 +104,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/binaries")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 
 set(SBE_JAR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs/sbe-all-${SBE_VERSION_TXT}.jar")
-if(EXISTS "${SBE_JAR}")
-    message("latest SBE jar found: ${SBE_JAR}")
-else()
-    message("Generating SBE jar")
-    execute_process(
-        COMMAND ./gradlew build -x test -x check -x javadoc :sbe-all:build
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-endif()
 
 file(GLOB_RECURSE SBE_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/java/*.java"

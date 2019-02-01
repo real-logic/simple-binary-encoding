@@ -14,27 +14,18 @@
 # limitations under the License.
 #
 
-file(GLOB_RECURSE CODECS
-    "uk_co_real_logic_sbe_ir_generated/*.h"
+set(CODECS
+    uk_co_real_logic_sbe_ir_generated/ByteOrderCodec.h
+    uk_co_real_logic_sbe_ir_generated/FrameCodec.h
+    uk_co_real_logic_sbe_ir_generated/MessageHeader.h
+    uk_co_real_logic_sbe_ir_generated/PresenceCodec.h
+    uk_co_real_logic_sbe_ir_generated/PrimitiveTypeCodec.h
+    uk_co_real_logic_sbe_ir_generated/SignalCodec.h
+    uk_co_real_logic_sbe_ir_generated/TokenCodec.h
+    uk_co_real_logic_sbe_ir_generated/VarDataEncoding.h
 )
 
 find_package(Java REQUIRED)
-
-if(NOT(CODECS))
-    execute_process(
-        COMMAND
-            ${Java_JAVA_EXECUTABLE}
-            "-Dsbe.output.dir=${CMAKE_CURRENT_SOURCE_DIR}"
-            "-Dsbe.target.language=CPP"
-            "-jar" "${SBE_JAR}"
-            "../resources/sbe-ir.xml"
-        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    )
-
-    file(GLOB_RECURSE CODECS
-        "uk_co_real_logic_sbe_ir_generated/*.h"
-    )
-endif()
 
 add_custom_command(OUTPUT ${CODECS}
     COMMAND
