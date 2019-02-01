@@ -81,14 +81,14 @@ endif()
 find_package(Threads)
 
 if(UNIX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wpedantic -Wextra -Wno-unused-parameter")
+    add_compile_options(-g -Wall -Wpedantic -Wextra -Wno-unused-parameter)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast")
 endif()
 
 if(APPLE)
     # -Wall doesn't enable everything we want to see
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-compare")
+    add_compile_options(-Wsign-compare)
     add_definitions(-DDarwin)
 elseif(MSVC)
     add_definitions(-DWIN32)
