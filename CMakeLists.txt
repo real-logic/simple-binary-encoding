@@ -104,15 +104,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/binaries")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 
 set(SBE_JAR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-all/build/libs/sbe-all-${SBE_VERSION_TXT}.jar")
-if(EXISTS "${SBE_JAR}")
-    message("latest SBE jar found: ${SBE_JAR}")
-else()
-    message("Generating SBE jar")
-    execute_process(
-        COMMAND ./gradlew build -x test -x check -x javadoc :sbe-all:build
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-endif()
 
 file(GLOB_RECURSE SBE_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/java/*.java"
