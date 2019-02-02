@@ -190,7 +190,9 @@ project(':sbe-tool') {
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
             'Implementation-Version': "${sbeVersion}",
-            'Implementation-Vendor': 'Real Logic Limited')
+            'Implementation-Vendor': 'Real Logic Limited',
+            'Automatic-Module-Name': 'uk.co.real_logic.sbe.tool'
+        )
     }
 
     sourceSets {
@@ -292,7 +294,9 @@ project(':sbe-all') {
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
             'Implementation-Version': "${sbeVersion}",
-            'Implementation-Vendor': 'Real Logic Limited')
+            'Implementation-Vendor': 'Real Logic Limited',
+            'Automatic-Module-Name': 'uk.co.real_logic.sbe.all'
+        )
     }
 
     uploadArchives {
