@@ -43,8 +43,7 @@
 
 using namespace sbe::otf;
 
-namespace sbe {
-namespace otf {
+namespace sbe { namespace otf {
 
 class IrDecoder
 {
@@ -158,7 +157,7 @@ protected:
         int fd = fileno(fptr);
         while (remaining > 0)
         {
-            long sz = ::read(fd, buffer + (length - remaining), (4098 < remaining) ? 4098 : remaining);
+            long sz = ::read(fd, buffer + (length - remaining), 4098 < remaining ? 4098 : remaining);
             remaining -= sz;
             if (sz < 0)
             {
@@ -168,7 +167,7 @@ protected:
 
         fclose(fptr);
 
-        return (remaining == 0) ? 0 : -1;
+        return remaining == 0 ? 0 : -1;
     }
 
 private:
@@ -272,8 +271,7 @@ private:
             type, presence, byteOrder, minValue, maxValue, nullValue, constValue,
             characterEncoding, epoch, timeUnit, semanticType);
 
-        Token token(
-            tokenOffset, id, version, tokenSize, componentTokenCount, signal, name, description, encoding);
+        Token token(tokenOffset, id, version, tokenSize, componentTokenCount, signal, name, description, encoding);
 
         tokens->push_back(token);
 

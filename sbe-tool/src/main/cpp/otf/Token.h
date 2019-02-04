@@ -21,8 +21,7 @@
 
 #include "Encoding.h"
 
-namespace sbe {
-namespace otf {
+namespace sbe { namespace otf {
 
 /// Constants used for holding Token signals
 enum class Signal : int
@@ -78,8 +77,7 @@ public:
         Signal signal,
         std::string name,
         std::string description,
-        Encoding encoding)
-        :
+        Encoding encoding) :
         m_offset(offset),
         m_fieldId(fieldId),
         m_version(version),
