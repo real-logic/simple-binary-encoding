@@ -490,6 +490,29 @@ public class CppGenerator implements CodeGenerator
                 lengthCppType));
 
             sb.append(String.format("\n" +
+                indent + "    #if __cplusplus >= 201703L\n" +
+                indent + "    const std::string_view get%1$sAsStringView()\n" +
+                indent + "    {\n" +
+                "%2$s" +
+                indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
+                indent + "        std::uint64_t lengthPosition = sbePosition();\n" +
+                indent + "        sbePosition(lengthPosition + lengthOfLengthField);\n" +
+                indent + "        %5$s lengthFieldValue;\n" +
+                indent + "        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(%5$s));\n" +
+                indent + "        std::uint64_t dataLength = %4$s(lengthFieldValue);\n" +
+                indent + "        std::uint64_t pos = sbePosition();\n" +
+                indent + "        const std::string_view result(m_buffer + pos, dataLength);\n" +
+                indent + "        sbePosition(pos + dataLength);\n" +
+                indent + "        return result;\n" +
+                indent + "    }\n" +
+                indent + "    #endif\n",
+                propertyName,
+                generateStringViewNotPresentCondition(token.version(), BASE_INDENT),
+                lengthOfLengthField,
+                lengthByteOrderStr,
+                lengthCppType));
+
+            sb.append(String.format("\n" +
                 indent + "    %1$s &put%2$s(const std::string& str)\n" +
                 indent + "    {\n" +
                 indent + "        if (str.length() > %6$d)\n" +
@@ -840,6 +863,21 @@ public class CppGenerator implements CodeGenerator
             indent + "        if (m_actingVersion < %1$d)\n" +
             indent + "        {\n" +
             indent + "            return std::string(\"\");\n" +
+            indent + "        }\n\n",
+            sinceVersion);
+    }
+
+    private static CharSequence generateStringViewNotPresentCondition(final int sinceVersion, final String indent)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            indent + "        if (m_actingVersion < %1$d)\n" +
+            indent + "        {\n" +
+            indent + "            return std::string_view(\"\");\n" +
             indent + "        }\n\n",
             sinceVersion);
     }
