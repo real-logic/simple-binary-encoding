@@ -132,7 +132,7 @@ public class CppGenerator implements CodeGenerator
                 collectVarData(messageBody, i, varData);
 
                 final StringBuilder sb = new StringBuilder();
-                out.append(generateFields(className, fields, BASE_INDENT));
+                out.append(generateFields(className, fields, BASE_INDENT, false));
                 generateGroups(sb, groups, BASE_INDENT);
                 out.append(sb);
                 out.append(generateVarData(className, varData, BASE_INDENT));
@@ -164,7 +164,7 @@ public class CppGenerator implements CodeGenerator
 
             final List<Token> fields = new ArrayList<>();
             i = collectFields(tokens, i, fields);
-            sb.append(generateFields(formatClassName(groupName), fields, indent + INDENT));
+            sb.append(generateFields(formatClassName(groupName), fields, indent + INDENT, false));
 
             final List<Token> groups = new ArrayList<>();
             i = collectGroups(tokens, i, groups);
@@ -976,7 +976,7 @@ public class CppGenerator implements CodeGenerator
             final String propertyName = formatPropertyName(fieldToken.name());
 
             generateFieldMetaAttributeMethod(sb, fieldToken, indent);
-            generateFieldCommonMethods(indent, sb, fieldToken, fieldToken, propertyName);
+            generateFieldCommonMethods(indent, sb, fieldToken, fieldToken, propertyName, true);
 
             switch (fieldToken.signal())
             {
@@ -1669,7 +1669,8 @@ public class CppGenerator implements CodeGenerator
             generateConstructorsAndOperators(className));
     }
 
-    private CharSequence generateFields(final String containingClassName, final List<Token> tokens, final String indent)
+    private CharSequence generateFields(
+        final String containingClassName, final List<Token> tokens, final String indent, final boolean inComposite)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1682,7 +1683,7 @@ public class CppGenerator implements CodeGenerator
                 final String propertyName = formatPropertyName(signalToken.name());
 
                 generateFieldMetaAttributeMethod(sb, signalToken, indent);
-                generateFieldCommonMethods(indent, sb, signalToken, encodingToken, propertyName);
+                generateFieldCommonMethods(indent, sb, signalToken, encodingToken, propertyName, inComposite);
 
                 switch (encodingToken.signal())
                 {
@@ -1714,15 +1715,19 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb,
         final Token fieldToken,
         final Token encodingToken,
-        final String propertyName)
+        final String propertyName,
+        final boolean inComposite)
     {
-        sb.append(String.format("\n" +
-            indent + "    static SBE_CONSTEXPR std::uint16_t %1$sId() SBE_NOEXCEPT\n" +
-            indent + "    {\n" +
-            indent + "        return %2$d;\n" +
-            indent + "    }\n",
-            propertyName,
-            fieldToken.id()));
+        if (!inComposite)
+        {
+            sb.append(String.format("\n" +
+                indent + "    static SBE_CONSTEXPR std::uint16_t %1$sId() SBE_NOEXCEPT\n" +
+                indent + "    {\n" +
+                indent + "        return %2$d;\n" +
+                indent + "    }\n",
+                propertyName,
+                fieldToken.id()));
+        }
 
         sb.append(String.format("\n" +
             indent + "    static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
