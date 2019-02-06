@@ -53,9 +53,17 @@ public:
     {
     }
 
-    int decode(char *buffer, std::uint64_t length)
+    int decode(char *irBuffer, std::uint64_t length)
     {
         m_length = length;
+        if (m_length == 0)
+        {
+            return -1;
+        }
+        std::unique_ptr<char[]> buffer(new char[m_length]);
+        m_buffer = std::move(buffer);
+        std::memcpy(m_buffer.get(), irBuffer, m_length);
+
         return decodeIr();
     }
 
@@ -81,7 +89,7 @@ public:
             return -1;
         }
 
-        return decode(m_buffer.get(), m_length);
+        return decodeIr();
     }
 
     std::shared_ptr<std::vector<Token>> header()
