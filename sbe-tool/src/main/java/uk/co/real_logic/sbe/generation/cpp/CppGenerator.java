@@ -932,7 +932,55 @@ public class CppGenerator implements CodeGenerator
             "#  define SBE_CONSTEXPR\n" +
             "#  define SBE_NOEXCEPT\n" +
             "#endif\n\n" +
-            "#include <sbe/sbe.h>\n\n",
+            "#if !defined(__STDC_LIMIT_MACROS)\n" +
+            "#  define __STDC_LIMIT_MACROS 1\n" +
+            "#endif\n" +
+            "#include <string.h>\n" +
+            "#include <stdint.h>\n" +
+            "#include <limits.h>\n" +
+            "#include <stdexcept>\n" +
+            "#include <cstdint>\n" +
+            "#include <limits>\n\n" +
+            "#if defined(WIN32) || defined(_WIN32)\n" +
+            "#  define SBE_BIG_ENDIAN_ENCODE_16(v) _byteswap_ushort(v)\n" +
+            "#  define SBE_BIG_ENDIAN_ENCODE_32(v) _byteswap_ulong(v)\n" +
+            "#  define SBE_BIG_ENDIAN_ENCODE_64(v) _byteswap_uint64(v)\n" +
+            "#  define SBE_LITTLE_ENDIAN_ENCODE_16(v) (v)\n" +
+            "#  define SBE_LITTLE_ENDIAN_ENCODE_32(v) (v)\n" +
+            "#  define SBE_LITTLE_ENDIAN_ENCODE_64(v) (v)\n" +
+            "#elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__\n" +
+            "#  define SBE_BIG_ENDIAN_ENCODE_16(v) __builtin_bswap16(v)\n" +
+            "#  define SBE_BIG_ENDIAN_ENCODE_32(v) __builtin_bswap32(v)\n" +
+            "#  define SBE_BIG_ENDIAN_ENCODE_64(v) __builtin_bswap64(v)\n" +
+            "#  define SBE_LITTLE_ENDIAN_ENCODE_16(v) (v)\n" +
+            "#  define SBE_LITTLE_ENDIAN_ENCODE_32(v) (v)\n" +
+            "#  define SBE_LITTLE_ENDIAN_ENCODE_64(v) (v)\n" +
+            "#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__\n" +
+            "#  define SBE_LITTLE_ENDIAN_ENCODE_16(v) __builtin_bswap16(v)\n" +
+            "#  define SBE_LITTLE_ENDIAN_ENCODE_32(v) __builtin_bswap32(v)\n" +
+            "#  define SBE_LITTLE_ENDIAN_ENCODE_64(v) __builtin_bswap64(v)\n" +
+            "#  define SBE_BIG_ENDIAN_ENCODE_16(v) (v)\n" +
+            "#  define SBE_BIG_ENDIAN_ENCODE_32(v) (v)\n" +
+            "#  define SBE_BIG_ENDIAN_ENCODE_64(v) (v)\n" +
+            "#else\n" +
+            "#  error \"Byte Ordering of platform not determined. " +
+            "Set __BYTE_ORDER__ manually before including this file.\"\n" +
+            "#endif\n\n" +
+            "#if defined(SBE_NO_BOUNDS_CHECK)\n" +
+            "#  define SBE_BOUNDS_CHECK_EXPECT(exp,c) (false)\n" +
+            "#elif defined(_MSC_VER)\n" +
+            "#  define SBE_BOUNDS_CHECK_EXPECT(exp,c) (exp)\n" +
+            "#else\n" +
+            "#  define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))\n" +
+            "#endif\n\n" +
+            "#define SBE_NULLVALUE_INT8 (std::numeric_limits<std::int8_t>::min)()\n" +
+            "#define SBE_NULLVALUE_INT16 (std::numeric_limits<std::int16_t>::min)()\n" +
+            "#define SBE_NULLVALUE_INT32 (std::numeric_limits<std::int32_t>::min)()\n" +
+            "#define SBE_NULLVALUE_INT64 (std::numeric_limits<std::int64_t>::min)()\n" +
+            "#define SBE_NULLVALUE_UINT8 (std::numeric_limits<std::uint8_t>::max)()\n" +
+            "#define SBE_NULLVALUE_UINT16 (std::numeric_limits<std::uint16_t>::max)()\n" +
+            "#define SBE_NULLVALUE_UINT32 (std::numeric_limits<std::uint32_t>::max)()\n" +
+            "#define SBE_NULLVALUE_UINT64 (std::numeric_limits<std::uint64_t>::max)()\n\n",
             String.join("_", namespaces).toUpperCase(),
             className.toUpperCase()));
 
@@ -1100,7 +1148,7 @@ public class CppGenerator implements CodeGenerator
         if (primitiveType == PrimitiveType.FLOAT || primitiveType == PrimitiveType.DOUBLE)
         {
             final String stackUnion =
-                (primitiveType == PrimitiveType.FLOAT) ? "::sbe::sbe_float_as_uint_t" : "::sbe::sbe_double_as_uint_t";
+                (primitiveType == PrimitiveType.FLOAT) ? "union sbe_float_as_uint_u" : "union sbe_double_as_uint_u";
 
             sb.append(String.format(
                 indent + "        %1$s val;\n" +
@@ -1139,7 +1187,7 @@ public class CppGenerator implements CodeGenerator
         if (primitiveType == PrimitiveType.FLOAT || primitiveType == PrimitiveType.DOUBLE)
         {
             final String stackUnion = primitiveType == PrimitiveType.FLOAT ?
-                "::sbe::sbe_float_as_uint_t" : "::sbe::sbe_double_as_uint_t";
+                "union sbe_float_as_uint_u" : "union sbe_double_as_uint_u";
 
             sb.append(String.format(
                 indent + "        %1$s val;\n" +
@@ -1475,6 +1523,20 @@ public class CppGenerator implements CodeGenerator
             "        m_actingVersion = actingVersion;\n" +
             "    }\n\n" +
             "public:\n" +
+            "     enum MetaAttribute\n" +
+            "     {\n" +
+            "          EPOCH, TIME_UNIT, SEMANTIC_TYPE, PRESENCE\n" +
+            "     };\n\n" +
+            "     union sbe_float_as_uint_u\n" +
+            "     {\n" +
+            "         float fp_value;\n" +
+            "         std::uint32_t uint_value;\n" +
+            "     };\n\n" +
+            "     union sbe_double_as_uint_u\n" +
+            "     {\n" +
+            "         double fp_value;\n" +
+            "         std::uint64_t uint_value;\n" +
+            "     };\n\n" +
             "    %1$s() = default;\n\n" +
             "    %1$s(char *buffer, const std::uint64_t bufferLength, const std::uint64_t actingVersion)\n" +
             "    {\n" +
@@ -1587,6 +1649,20 @@ public class CppGenerator implements CodeGenerator
             "        m_position = codec.m_position;\n" +
             "    }\n\n" +
             "public:\n\n" +
+            "     enum MetaAttribute\n" +
+            "     {\n" +
+            "          EPOCH, TIME_UNIT, SEMANTIC_TYPE, PRESENCE\n" +
+            "     };\n\n" +
+            "     union sbe_float_as_uint_u\n" +
+            "     {\n" +
+            "         float fp_value;\n" +
+            "         std::uint32_t uint_value;\n" +
+            "     };\n\n" +
+            "     union sbe_double_as_uint_u\n" +
+            "     {\n" +
+            "         double fp_value;\n" +
+            "         std::uint64_t uint_value;\n" +
+            "     };\n\n" +
             "%11$s" +
             "    static SBE_CONSTEXPR %1$s sbeBlockLength() SBE_NOEXCEPT\n" +
             "    {\n" +
@@ -1766,15 +1842,15 @@ public class CppGenerator implements CodeGenerator
         final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
 
         sb.append(String.format("\n" +
-            indent + "    static const char * %sMetaAttribute(const ::sbe::MetaAttribute::Attribute metaAttribute)" +
+            indent + "    static const char * %sMetaAttribute(const MetaAttribute metaAttribute)" +
             " SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        switch (metaAttribute)\n" +
             indent + "        {\n" +
-            indent + "            case ::sbe::MetaAttribute::EPOCH: return \"%s\";\n" +
-            indent + "            case ::sbe::MetaAttribute::TIME_UNIT: return \"%s\";\n" +
-            indent + "            case ::sbe::MetaAttribute::SEMANTIC_TYPE: return \"%s\";\n" +
-            indent + "            case ::sbe::MetaAttribute::PRESENCE: return \"%s\";\n" +
+            indent + "            case MetaAttribute::EPOCH: return \"%s\";\n" +
+            indent + "            case MetaAttribute::TIME_UNIT: return \"%s\";\n" +
+            indent + "            case MetaAttribute::SEMANTIC_TYPE: return \"%s\";\n" +
+            indent + "            case MetaAttribute::PRESENCE: return \"%s\";\n" +
             indent + "        }\n\n" +
             indent + "        return \"\";\n" +
             indent + "    }\n",

@@ -45,7 +45,6 @@ add_custom_target(
 )
 
 set(HEADERS
-    sbe/sbe.h
     otf/IrDecoder.h
     otf/Token.h
     otf/Encoding.h
