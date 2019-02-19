@@ -937,7 +937,6 @@ public class CppGenerator implements CodeGenerator
             "#endif\n" +
             "#include <string.h>\n" +
             "#include <stdint.h>\n" +
-            "#include <limits.h>\n" +
             "#include <stdexcept>\n" +
             "#include <cstdint>\n" +
             "#include <limits>\n\n" +
