@@ -935,12 +935,10 @@ public class CppGenerator implements CodeGenerator
             "#if !defined(__STDC_LIMIT_MACROS)\n" +
             "#  define __STDC_LIMIT_MACROS 1\n" +
             "#endif\n" +
-            "#include <string.h>\n" +
-            "#include <stdint.h>\n" +
-            "#include <limits.h>\n" +
-            "#include <stdexcept>\n" +
             "#include <cstdint>\n" +
-            "#include <limits>\n\n" +
+            "#include <cstring>\n" +
+            "#include <limits>\n" +
+            "#include <stdexcept>\n\n" +
             "#if defined(WIN32) || defined(_WIN32)\n" +
             "#  define SBE_BIG_ENDIAN_ENCODE_16(v) _byteswap_ushort(v)\n" +
             "#  define SBE_BIG_ENDIAN_ENCODE_32(v) _byteswap_ulong(v)\n" +
