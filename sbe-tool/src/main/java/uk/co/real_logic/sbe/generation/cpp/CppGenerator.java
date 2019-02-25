@@ -1267,7 +1267,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    const char *%1$s() const SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             "%2$s" +
-            indent + "        return (m_buffer + m_offset + %3$d);\n" +
+            indent + "        return m_buffer + m_offset + %3$d;\n" +
             indent + "    }\n",
             propertyName,
             generateTypeFieldNotPresentCondition(token.version(), indent),
@@ -1277,7 +1277,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    char *%1$s() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             "%2$s" +
-            indent + "        return (m_buffer + m_offset + %3$d);\n" +
+            indent + "        return m_buffer + m_offset + %3$d;\n" +
             indent + "    }\n",
             propertyName,
             generateTypeFieldNotPresentCondition(token.version(), indent),
@@ -1391,7 +1391,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        }\n\n" +
                 indent + "        size_t length = srcLength < %4$d ? srcLength : %4$d;\n" +
                 indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.data(), length);\n" +
-                indent + "        for (size_t start = srcLength; start < length; ++start)\n" +
+                indent + "        for (size_t start = srcLength; start < %4$d; ++start)\n" +
                 indent + "        {\n" +
                 indent + "            m_buffer[m_offset + %3$d + start] = 0;\n" +
                 indent + "        }\n\n" +
@@ -1407,7 +1407,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        }\n\n" +
                 indent + "        size_t length = srcLength < %4$d ? srcLength : %4$d;\n" +
                 indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), length);\n" +
-                indent + "        for (size_t start = srcLength; start < length; ++start)\n" +
+                indent + "        for (size_t start = srcLength; start < %4$d; ++start)\n" +
                 indent + "        {\n" +
                 indent + "            m_buffer[m_offset + %3$d + start] = 0;\n" +
                 indent + "        }\n\n" +
