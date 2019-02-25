@@ -2038,7 +2038,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "        }\n" +
                     indent + "    }\n\n",
                     Generators.toUpperFirstChar(propertyName),
-                    generateStringNotPresentCondition(propertyToken.version(), indent),
+                    generateStringNotPresentConditionForAppendable(propertyToken.version(), indent),
                     fieldLength, offset));
             }
         }
