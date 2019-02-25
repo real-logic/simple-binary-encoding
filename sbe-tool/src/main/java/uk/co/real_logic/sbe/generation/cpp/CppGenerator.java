@@ -1521,20 +1521,20 @@ public class CppGenerator implements CodeGenerator
             "        m_actingVersion = actingVersion;\n" +
             "    }\n\n" +
             "public:\n" +
-            "     enum MetaAttribute\n" +
-            "     {\n" +
-            "          EPOCH, TIME_UNIT, SEMANTIC_TYPE, PRESENCE\n" +
-            "     };\n\n" +
-            "     union sbe_float_as_uint_u\n" +
-            "     {\n" +
-            "         float fp_value;\n" +
-            "         std::uint32_t uint_value;\n" +
-            "     };\n\n" +
-            "     union sbe_double_as_uint_u\n" +
-            "     {\n" +
-            "         double fp_value;\n" +
-            "         std::uint64_t uint_value;\n" +
-            "     };\n\n" +
+            "    enum MetaAttribute\n" +
+            "    {\n" +
+            "        EPOCH, TIME_UNIT, SEMANTIC_TYPE, PRESENCE\n" +
+            "    };\n\n" +
+            "    union sbe_float_as_uint_u\n" +
+            "    {\n" +
+            "        float fp_value;\n" +
+            "        std::uint32_t uint_value;\n" +
+            "    };\n\n" +
+            "    union sbe_double_as_uint_u\n" +
+            "    {\n" +
+            "        double fp_value;\n" +
+            "        std::uint64_t uint_value;\n" +
+            "    };\n\n" +
             "    %1$s() = default;\n\n" +
             "    %1$s(char *buffer, const std::uint64_t bufferLength, const std::uint64_t actingVersion)\n" +
             "    {\n" +
@@ -1647,20 +1647,20 @@ public class CppGenerator implements CodeGenerator
             "        m_position = codec.m_position;\n" +
             "    }\n\n" +
             "public:\n\n" +
-            "     enum MetaAttribute\n" +
-            "     {\n" +
-            "          EPOCH, TIME_UNIT, SEMANTIC_TYPE, PRESENCE\n" +
-            "     };\n\n" +
-            "     union sbe_float_as_uint_u\n" +
-            "     {\n" +
-            "         float fp_value;\n" +
-            "         std::uint32_t uint_value;\n" +
-            "     };\n\n" +
-            "     union sbe_double_as_uint_u\n" +
-            "     {\n" +
-            "         double fp_value;\n" +
-            "         std::uint64_t uint_value;\n" +
-            "     };\n\n" +
+            "    enum MetaAttribute\n" +
+            "    {\n" +
+            "        EPOCH, TIME_UNIT, SEMANTIC_TYPE, PRESENCE\n" +
+            "    };\n\n" +
+            "    union sbe_float_as_uint_u\n" +
+            "    {\n" +
+            "        float fp_value;\n" +
+            "        std::uint32_t uint_value;\n" +
+            "    };\n\n" +
+            "    union sbe_double_as_uint_u\n" +
+            "    {\n" +
+            "        double fp_value;\n" +
+            "        std::uint64_t uint_value;\n" +
+            "    };\n\n" +
             "%11$s" +
             "    static SBE_CONSTEXPR %1$s sbeBlockLength() SBE_NOEXCEPT\n" +
             "    {\n" +
