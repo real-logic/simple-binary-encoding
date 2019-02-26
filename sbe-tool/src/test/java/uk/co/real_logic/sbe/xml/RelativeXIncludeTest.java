@@ -30,12 +30,12 @@ public class RelativeXIncludeTest
     public void shouldParseFileInSubDir()
         throws Exception
     {
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL testResource = classLoader.getResource("sub/basic-schema.xml");
-        InputStream inStream = testResource.openStream();
-        InputSource is = new InputSource(inStream);
+        final ClassLoader classLoader = getClass().getClassLoader();
+        final URL testResource = classLoader.getResource("sub/basic-schema.xml");
+        final InputStream inStream = testResource.openStream();
+        final InputSource is = new InputSource(inStream);
 
-        File file = new File(testResource.getFile());
+        final File file = new File(testResource.getFile());
         is.setSystemId(file.toPath().toAbsolutePath().getParent().toUri().toString());
         parse(is, ParserOptions.DEFAULT);
     }
