@@ -139,7 +139,7 @@ public class XmlSchemaParser
      * {@link #parse(org.xml.sax.InputSource, uk.co.real_logic.sbe.xml.ParserOptions) }.
      * <p>Note: this method does not the the {@link InputSource#setSystemId(java.lang.String) } property, however. It is recommended to use the
      * {@link #parse(org.xml.sax.InputSource, uk.co.real_logic.sbe.xml.ParserOptions) } method directly.</p>
-     * 
+     *
      * <p>
      * Exceptions are passed back up for any problems.
      *
