@@ -32,7 +32,9 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.xml.sax.InputSource;
 
 /**
  * A tool for running the SBE parser, validator, and code generator.
@@ -281,9 +283,16 @@ public class SbeTool
             .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
             .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
 
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(Paths.get(sbeSchemaFilename))))
+        final Path filePath = Paths.get(sbeSchemaFilename);
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(filePath)))
         {
-            return XmlSchemaParser.parse(in, optionsBuilder.build());
+            final InputSource inputSource = new InputSource(in);
+            final Path parentPath = filePath.toAbsolutePath().getParent();
+            if (parentPath != null)
+            {
+                inputSource.setSystemId(filePath.toUri().toString());
+            }
+            return XmlSchemaParser.parse(inputSource, optionsBuilder.build());
         }
     }
 

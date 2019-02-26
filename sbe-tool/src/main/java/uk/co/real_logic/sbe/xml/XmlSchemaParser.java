@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
+import org.xml.sax.InputSource;
 
 import static uk.co.real_logic.sbe.PrimitiveType.*;
 import static uk.co.real_logic.sbe.xml.Presence.REQUIRED;
@@ -94,16 +95,16 @@ public class XmlSchemaParser
     }
 
     /**
-     * Take an {@link InputStream} and parse it generating map of template ID to Message objects, types, and schema.
+     * Take an {@link InputSource} and parse it generating map of template ID to Message objects, types, and schema.
      * <p>
      * Exceptions are passed back up for any problems.
      *
-     * @param in      stream from which schema is read.
+     * @param is      inputSource from which schema is read. Ideally it will have the systemId property set to resolve relative references
      * @param options to be applied during parsing.
      * @return {@link MessageSchema} encoding for the schema.
      * @throws Exception on parsing error.
      */
-    public static MessageSchema parse(final InputStream in, final ParserOptions options) throws Exception
+    public static MessageSchema parse(final InputSource is, final ParserOptions options) throws Exception
     {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -114,7 +115,7 @@ public class XmlSchemaParser
             factory.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris", false);
         }
 
-        final Document document = factory.newDocumentBuilder().parse(in);
+        final Document document = factory.newDocumentBuilder().parse(is);
         final XPath xPath = XPathFactory.newInstance().newXPath();
 
         final ErrorHandler errorHandler = new ErrorHandler(options);
@@ -131,6 +132,25 @@ public class XmlSchemaParser
         errorHandler.checkIfShouldExit();
 
         return messageSchema;
+    }
+
+    /**
+     * Wraps an {@link InputStream} into an {@link InputSource} and delegates to
+     * {@link #parse(org.xml.sax.InputSource, uk.co.real_logic.sbe.xml.ParserOptions) }.
+     * <p>Note: this method does not the the {@link InputSource#setSystemId(java.lang.String) } property, however. It is recommended to use the
+     * {@link #parse(org.xml.sax.InputSource, uk.co.real_logic.sbe.xml.ParserOptions) } method directly.</p>
+     * 
+     * <p>
+     * Exceptions are passed back up for any problems.
+     *
+     * @param in      stream from which schema is read.
+     * @param options to be applied during parsing.
+     * @return {@link MessageSchema} encoding for the schema.
+     * @throws Exception on parsing error.
+     */
+    public static MessageSchema parse(final InputStream in, final ParserOptions options) throws Exception
+    {
+        return parse(new InputSource(in), options);
     }
 
     /**
