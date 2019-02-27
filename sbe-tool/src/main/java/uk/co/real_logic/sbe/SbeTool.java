@@ -260,9 +260,17 @@ public class SbeTool
             .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
             .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
 
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(Paths.get(sbeSchemaFilename))))
+        final Path filePath = Paths.get(sbeSchemaFilename);
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(filePath)))
         {
-            XmlSchemaParser.validate(xsdFilename, in, optionsBuilder.build());
+            final InputSource inputSource = new InputSource(in);
+            final Path parentPath = filePath.toAbsolutePath().getParent();
+            if (parentPath != null)
+            {
+                inputSource.setSystemId(parentPath.toUri().toString());
+            }
+
+            XmlSchemaParser.validate(xsdFilename, inputSource, optionsBuilder.build());
         }
     }
 
@@ -290,8 +298,9 @@ public class SbeTool
             final Path parentPath = filePath.toAbsolutePath().getParent();
             if (parentPath != null)
             {
-                inputSource.setSystemId(filePath.toUri().toString());
+                inputSource.setSystemId(parentPath.toUri().toString());
             }
+
             return XmlSchemaParser.parse(inputSource, optionsBuilder.build());
         }
     }

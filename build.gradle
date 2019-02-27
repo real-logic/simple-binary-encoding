@@ -372,18 +372,16 @@ project(':sbe-samples') {
     }
 
     task generateCodecs(type: JavaExec) {
-        workingDir = 'src/main/resources'
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
-            'sbe.output.dir': '../../../build/generated',
+            'sbe.output.dir': 'build/generated',
             'sbe.target.language': 'Java',
             'sbe.java.generate.interfaces': 'true',
             'sbe.validation.stop.on.error': 'true',
             'sbe.xinclude.aware': 'true',
             'sbe.validation.xsd': validationXsdPath)
-        args = ['example-schema.xml',
-                'example-extension-schema.xml']
+        args = ['src/main/resources/example-schema.xml', 'src/main/resources/example-extension-schema.xml']
     }
 
     task runExampleUsingGeneratedStub(dependsOn: 'compileJava', type: JavaExec) {
@@ -709,8 +707,6 @@ task generateCSharpCodecs {
     dependsOn 'generateCSharpCodecsTests',
         'generateCSharpCodecsWithXIncludes'
 }
-
-
 
 task generateJavaIrCodecs(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'

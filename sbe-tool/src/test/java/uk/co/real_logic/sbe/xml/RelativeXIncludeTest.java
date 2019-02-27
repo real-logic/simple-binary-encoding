@@ -32,12 +32,10 @@ public class RelativeXIncludeTest
     {
         final ClassLoader classLoader = getClass().getClassLoader();
         final URL testResource = classLoader.getResource("sub/basic-schema.xml");
-        final InputStream inStream = testResource.openStream();
-        final InputSource is = new InputSource(inStream);
+        final InputSource is = new InputSource(testResource.openStream());
 
         final File file = new File(testResource.getFile());
         is.setSystemId(file.toPath().toAbsolutePath().getParent().toUri().toString());
         parse(is, ParserOptions.DEFAULT);
     }
-
 }

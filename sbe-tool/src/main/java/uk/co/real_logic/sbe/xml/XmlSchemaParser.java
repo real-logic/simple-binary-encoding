@@ -72,11 +72,12 @@ public class XmlSchemaParser
      * Validate the document against a given schema. Error will be written to {@link java.lang.System#err}
      *
      * @param xsdFilename schema to validate against.
-     * @param in          document to be validated.
+     * @param is          source from which schema is read. Ideally it will have the systemId property set to resolve
+     *                    relative references.
      * @param options     to be applied during parsing.
      * @throws Exception if an error occurs when parsing the document or schema.
      */
-    public static void validate(final String xsdFilename, final InputStream in, final ParserOptions options)
+    public static void validate(final String xsdFilename, final InputSource is, final ParserOptions options)
         throws Exception
     {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -91,15 +92,32 @@ public class XmlSchemaParser
             factory.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris", false);
         }
 
-        factory.newDocumentBuilder().parse(in);
+        factory.newDocumentBuilder().parse(is);
+    }
+
+    /**
+     * Wraps the {@link InputStream} into an {@link InputSource} and delegates to
+     * {@link #validate(String, InputSource, ParserOptions)}.
+     * <p>
+     * <b>Note:</b> this method does not set the {@link InputSource#setSystemId(java.lang.String)} property.
+     * However, it is recommended to use the {@link #validate(String, InputSource, ParserOptions)}  method directly.
+     *
+     * @param xsdFilename schema to validate against.
+     * @param in          document to be validated.
+     * @param options     to be applied during parsing.
+     * @throws Exception if an error occurs when parsing the document or schema.
+     */
+    public static void validate(final String xsdFilename, final InputStream in, final ParserOptions options)
+        throws Exception
+    {
+        validate(xsdFilename, new InputSource(in), options);
     }
 
     /**
      * Take an {@link InputSource} and parse it generating map of template ID to Message objects, types, and schema.
-     * <p>
-     * Exceptions are passed back up for any problems.
      *
-     * @param is      inputSource from which schema is read. Ideally it will have the systemId property set to resolve relative references
+     * @param is      source from which schema is read. Ideally it will have the systemId property set to resolve
+     *                relative references.
      * @param options to be applied during parsing.
      * @return {@link MessageSchema} encoding for the schema.
      * @throws Exception on parsing error.
@@ -135,13 +153,11 @@ public class XmlSchemaParser
     }
 
     /**
-     * Wraps an {@link InputStream} into an {@link InputSource} and delegates to
-     * {@link #parse(org.xml.sax.InputSource, uk.co.real_logic.sbe.xml.ParserOptions) }.
-     * <p>Note: this method does not the the {@link InputSource#setSystemId(java.lang.String) } property, however. It is recommended to use the
-     * {@link #parse(org.xml.sax.InputSource, uk.co.real_logic.sbe.xml.ParserOptions) } method directly.</p>
-     *
+     * Wraps the {@link InputStream} into an {@link InputSource} and delegates to
+     * {@link #parse(InputSource, ParserOptions)}.
      * <p>
-     * Exceptions are passed back up for any problems.
+     * <b>Note:</b> this method does not set the {@link InputSource#setSystemId(java.lang.String)} property.
+     * However, it is recommended to use the {@link #parse(InputSource, ParserOptions)} method directly.
      *
      * @param in      stream from which schema is read.
      * @param options to be applied during parsing.
