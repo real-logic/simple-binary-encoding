@@ -16,7 +16,6 @@
 package uk.co.real_logic.sbe.xml;
 
 import java.io.File;
-import java.io.InputStream;
 import java.net.URL;
 
 import org.junit.Test;
