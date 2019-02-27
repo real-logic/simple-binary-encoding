@@ -18,9 +18,11 @@ package uk.co.real_logic.sbe.xml;
 import java.io.File;
 import java.net.URL;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import org.xml.sax.InputSource;
+
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class RelativeXIncludeTest
@@ -29,12 +31,14 @@ public class RelativeXIncludeTest
     public void shouldParseFileInSubDir()
         throws Exception
     {
-        final ClassLoader classLoader = getClass().getClassLoader();
-        final URL testResource = classLoader.getResource("sub/basic-schema.xml");
-        final InputSource is = new InputSource(testResource.openStream());
+        final URL testResource = getClass().getClassLoader().getResource("sub/basic-schema.xml");
+        Assert.assertNotNull(testResource);
 
+        final InputSource is = new InputSource(testResource.openStream());
         final File file = new File(testResource.getFile());
         is.setSystemId(file.toPath().toAbsolutePath().getParent().toUri().toString());
-        parse(is, ParserOptions.DEFAULT);
+        final MessageSchema messageSchema = parse(is, ParserOptions.DEFAULT);
+
+        Assert.assertNotNull(messageSchema.getType("Symbol"));
     }
 }
