@@ -229,10 +229,8 @@ public class SbeTool
             {
                 final File inputFile = new File(fileName);
                 final String inputFilename = inputFile.getName();
-
                 final int nameEnd = inputFilename.lastIndexOf('.');
                 final String namePart = inputFilename.substring(0, nameEnd);
-
                 final File fullPath = new File(outputDirName, namePart + ".sbeir");
 
                 try (IrEncoder irEncoder = new IrEncoder(fullPath.getAbsolutePath(), ir))
@@ -246,9 +244,9 @@ public class SbeTool
     /**
      * Validate the SBE Schema against the XSD.
      *
-     * @param sbeSchemaFilename to be validated
-     * @param xsdFilename       XSD against which to validate
-     * @throws Exception if an error occurs while validating
+     * @param sbeSchemaFilename to be validated.
+     * @param xsdFilename       XSD against which to validate.
+     * @throws Exception if an error occurs while validating.
      */
     public static void validateAgainstSchema(final String sbeSchemaFilename, final String xsdFilename)
         throws Exception
@@ -276,7 +274,7 @@ public class SbeTool
     /**
      * Parse the message schema specification.
      *
-     * @param sbeSchemaFilename file containing the SBE specification for the
+     * @param sbeSchemaFilename file containing the SBE specification to be parsed.
      * @return the parsed {@link MessageSchema} for the specification found in the file.
      * @throws Exception if an error occurs when parsing the specification.
      */
