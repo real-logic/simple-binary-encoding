@@ -260,14 +260,13 @@ public class SbeTool
             .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
             .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
 
-        final Path filePath = Paths.get(sbeSchemaFilename);
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(filePath)))
+        final Path path = Paths.get(sbeSchemaFilename);
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(path)))
         {
             final InputSource inputSource = new InputSource(in);
-            final Path parentPath = filePath.toAbsolutePath().getParent();
-            if (parentPath != null)
+            if (path.toAbsolutePath().getParent() != null)
             {
-                inputSource.setSystemId(parentPath.toUri().toString());
+                inputSource.setSystemId(path.toUri().toString());
             }
 
             XmlSchemaParser.validate(xsdFilename, inputSource, optionsBuilder.build());
@@ -291,14 +290,13 @@ public class SbeTool
             .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
             .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
 
-        final Path filePath = Paths.get(sbeSchemaFilename);
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(filePath)))
+        final Path path = Paths.get(sbeSchemaFilename);
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(path)))
         {
             final InputSource inputSource = new InputSource(in);
-            final Path parentPath = filePath.toAbsolutePath().getParent();
-            if (parentPath != null)
+            if (path.toAbsolutePath().getParent() != null)
             {
-                inputSource.setSystemId(parentPath.toUri().toString());
+                inputSource.setSystemId(path.toUri().toString());
             }
 
             return XmlSchemaParser.parse(inputSource, optionsBuilder.build());
