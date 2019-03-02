@@ -22,6 +22,7 @@ buildscript {
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '4.0.4' apply false
+    id "io.freefair.javadoc-links" version "3.1.4"
 }
 
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
@@ -117,7 +118,8 @@ subprojects {
     apply plugin: 'signing'
     apply plugin: 'checkstyle'
     apply plugin: 'eclipse'
-
+    apply plugin: 'io.freefair.javadoc-links'
+    
     group = sbeGroup
     version = sbeVersion
 
@@ -161,6 +163,7 @@ subprojects {
     javadoc {
         title = '<h1>Simple Binary Encoding</h1>'
         options.bottom = '<i>Copyright &#169; 2014-2019 Real Logic Ltd. All Rights Reserved.</i>'
+        options.links('http://docs.oracle.com/javase/8/docs/api/')
         if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_10.ordinal()) {
             options.addBooleanOption 'html5', true
         }
