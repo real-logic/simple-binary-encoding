@@ -32,7 +32,7 @@ public class TargetCodeGeneratorTest
     }
 
     @Test
-    public void shouldLoadAndInstatiateNonStandardTargetLanguage() throws Exception
+    public void shouldLoadAndInstantiateNonStandardTargetLanguage() throws Exception
     {
         final Ir ir = mock(Ir.class);
         final String outputDir = ".";
