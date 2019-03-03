@@ -110,7 +110,7 @@ file(GLOB_RECURSE SBE_SOURCES
 )
 
 add_custom_command(OUTPUT ${SBE_JAR}
-    COMMAND ./gradlew build -x test -x check -x javadoc :sbe-all:build
+    COMMAND ./gradlew -x test -x check -x javadoc
     DEPENDS ${SBE_SOURCES}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Generating SBE jar"

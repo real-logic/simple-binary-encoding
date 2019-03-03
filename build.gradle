@@ -250,7 +250,7 @@ project(':sbe-tool') {
     }
 
     task sourcesJar(type: Jar) {
-        classifier = 'sources'
+        archiveClassifier = 'sources'
         from sourceSets.main.allSource
 
         dependsOn 'copyCppFiles'
@@ -258,7 +258,7 @@ project(':sbe-tool') {
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
         from javadoc.destinationDir
     }
 
@@ -276,7 +276,7 @@ project(':sbe-all') {
     }
 
     task sourcesJar(type: Jar) {
-        classifier = 'sources'
+        archiveClassifier = 'sources'
         from project(':sbe-tool').sourceSets.main.allSource
     }
 
@@ -285,12 +285,12 @@ project(':sbe-all') {
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
         from javadoc.destinationDir
     }
 
     shadowJar {
-        classifier = ''
+        archiveClassifier = ''
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
             'Specification-Title': 'Simple Binary Encoding',
@@ -426,12 +426,12 @@ project(':sbe-samples') {
     }
 
     task sourcesJar(type: Jar) {
-        classifier = 'sources'
+        archiveClassifier = 'sources'
         from sourceSets.main.allSource
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
         from javadoc.destinationDir
     }
 
@@ -482,8 +482,8 @@ project(':sbe-benchmarks') {
     }
 
     shadowJar {
-        archiveName = 'sbe-benchmarks.jar'
-        classifier = 'benchmarks'
+        archiveFileName = 'sbe-benchmarks.jar'
+        archiveClassifier = 'benchmarks'
         manifest.attributes('Main-Class': 'org.openjdk.jmh.Main')
     }
 
@@ -506,12 +506,12 @@ project(':sbe-benchmarks') {
     }
 
     task sourcesJar(type: Jar) {
-        classifier = 'sources'
+        archiveClassifier = 'sources'
         from sourceSets.main.allSource
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
         from javadoc.destinationDir
     }
 
