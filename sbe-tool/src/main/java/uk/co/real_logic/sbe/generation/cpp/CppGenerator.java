@@ -1361,7 +1361,10 @@ public class CppGenerator implements CodeGenerator
             sb.append(String.format("\n" +
                 indent + "    std::string get%1$sAsString() const\n" +
                 indent + "    {\n" +
-                indent + "        std::string result(m_buffer + m_offset + %2$d, %3$d);\n" +
+                indent + "        const char *buffer = m_buffer + m_offset + %2$d;\n" +
+                indent + "        size_t length = 0;\n\n" +
+                indent + "        for (; length < %3$d && *(buffer + length) != '\\0'; ++length);\n" +
+                indent + "        std::string result(buffer, length);\n\n" +
                 indent + "        return result;\n" +
                 indent + "    }\n",
                 toUpperFirstChar(propertyName),
@@ -1372,7 +1375,10 @@ public class CppGenerator implements CodeGenerator
                 indent + "    #if __cplusplus >= 201703L\n" +
                 indent + "    std::string_view get%1$sAsStringView() const SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
-                indent + "        std::string_view result(m_buffer + m_offset + %2$d, %3$d);\n" +
+                indent + "        const char *buffer = m_buffer + m_offset + %2$d;\n" +
+                indent + "        size_t length = 0;\n\n" +
+                indent + "        for (; length < %3$d && *(buffer + length) != '\\0'; ++length);\n" +
+                indent + "        std::string_view result(buffer, length);\n\n" +
                 indent + "        return result;\n" +
                 indent + "    }\n" +
                 indent + "    #endif\n",
