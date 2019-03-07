@@ -626,16 +626,15 @@ task generateGolangCodecTestVarData(type: JavaExec) {
 }
 
 task generateGolangCodecsWithXIncludes(type: JavaExec) {
-    workingDir = 'sbe-samples/src/main/resources'
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-        'sbe.output.dir': '../../../../gocode/src',
+        'sbe.output.dir': 'gocode/src',
         'sbe.target.language': 'golang',
         'sbe.xinclude.aware': 'true',
         'sbe.validation.xsd': validationXsdPath)
-    args = ['example-schema.xml',
-            'example-extension-schema.xml']
+    args = ['sbe-samples/src/main/resources/example-schema.xml',
+            'sbe-samples/src/main/resources/example-extension-schema.xml']
 }
 
 task generateGolangCodecsWithXSD(type: JavaExec) {
@@ -676,16 +675,15 @@ task generateGolangCodecs {
  * multiple targets as XInclude forces us to change working dir
  */
 task generateCSharpCodecsWithXIncludes(type: JavaExec) {
-    workingDir = 'sbe-samples/src/main/resources'
     main = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-        'sbe.output.dir': '../../../../csharp/sbe-generated',
+        'sbe.output.dir': 'csharp/sbe-generated',
         'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
         'sbe.xinclude.aware': 'true',
         'sbe.validation.xsd': validationXsdPath)
-    args = ['example-schema.xml',
-            'example-extension-schema.xml']
+    args = ['sbe-samples/src/main/resources/example-schema.xml',
+            'sbe-samples/src/main/resources/example-extension-schema.xml']
 }
 
 task generateCSharpCodecsTests(type: JavaExec) {
