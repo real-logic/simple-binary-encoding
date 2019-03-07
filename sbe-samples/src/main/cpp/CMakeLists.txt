@@ -24,7 +24,6 @@ set(EXAMPLES_SCHEMA ${CODEC_EXAMPLES_SCHEMA_DIR}/example-schema.xml)
 
 add_custom_command(
     OUTPUT ${GENERATED_CODECS}
-    WORKING_DIRECTORY ${CODEC_EXAMPLES_SCHEMA_DIR}
     DEPENDS ${EXAMPLES_SCHEMA} sbe-jar ${SBE_JAR}
     COMMAND ${Java_JAVA_EXECUTABLE} -Dsbe.output.dir=${CODEC_TARGET_DIR} -Dsbe.generate.ir=true -Dsbe.target.language=cpp -Dsbe.xinclude.aware=true -jar ${SBE_JAR} ${EXAMPLES_SCHEMA}
 )
