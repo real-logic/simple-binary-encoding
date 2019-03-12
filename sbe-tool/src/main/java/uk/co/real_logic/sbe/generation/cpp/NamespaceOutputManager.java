@@ -35,8 +35,8 @@ public class NamespaceOutputManager implements OutputManager
     /**
      * Create a new {@link OutputManager} for generating C++98 source files into a given package.
      *
-     * @param baseDirName for the generated source code.
-     * @param namespaceName     for the generated source code relative to the baseDirName.
+     * @param baseDirName   for the generated source code.
+     * @param namespaceName for the generated source code relative to the baseDirName.
      */
     public NamespaceOutputManager(final String baseDirName, final String namespaceName)
     {
@@ -61,6 +61,7 @@ public class NamespaceOutputManager implements OutputManager
      *
      * @param name the name of the C++ class.
      * @return a {@link java.io.Writer} to which the source code should be written.
+     * @throws IOException if an issue occurs when creating the file.
      */
     public Writer createOutput(final String name) throws IOException
     {

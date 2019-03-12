@@ -33,10 +33,13 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
 /**
- * SBE encodedDataType
+ * SBE simple encoded data type.
  */
 public class EncodedDataType extends Type
 {
+    /**
+     * SBE schema type.
+     */
     public static final String ENCODED_DATA_TYPE = "type";
 
     private final PrimitiveType primitiveType;
@@ -248,6 +251,11 @@ public class EncodedDataType extends Type
         return varLen;
     }
 
+    /**
+     * Set if the type is variable length or not.
+     *
+     * @param variableLength true if variable length.
+     */
     public void variableLength(final boolean variableLength)
     {
         this.varLen = variableLength;
@@ -289,7 +297,6 @@ public class EncodedDataType extends Type
      * @return value of the constant for this type
      */
     public PrimitiveValue constVal()
-        throws IllegalArgumentException
     {
         if (presence() != CONSTANT)
         {

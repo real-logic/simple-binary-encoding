@@ -36,10 +36,13 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
 /**
- * SBE compositeType.
+ * SBE compositeType which is a composite of other composites, sets, enums, or simple types.
  */
 public class CompositeType extends Type
 {
+    /**
+     * SBE schema composite type.
+     */
     public static final String COMPOSITE_TYPE = "composite";
     public static final String SUB_TYPES_EXP = "type|enum|set|composite|ref";
 

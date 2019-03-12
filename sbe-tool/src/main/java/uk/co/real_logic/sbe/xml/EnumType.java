@@ -36,10 +36,13 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
 /**
- * SBE enumType
+ * SBE enum type for representing an enumeration of values.
  */
 public class EnumType extends Type
 {
+    /**
+     * SBE schema enum type.
+     */
     public static final String ENUM_TYPE = "enum";
 
     private final PrimitiveType encodingType;

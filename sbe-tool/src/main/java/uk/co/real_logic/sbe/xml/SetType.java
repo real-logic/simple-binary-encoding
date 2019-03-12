@@ -31,10 +31,13 @@ import java.util.Map;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
- * SBE setType representing a bitset of options.
+ * SBE set tpe representing a bitset of options.
  */
 public class SetType extends Type
 {
+    /**
+     * SBE schema set type.
+     */
     public static final String SET_TYPE = "set";
 
     private final PrimitiveType encodingType;
@@ -172,6 +175,11 @@ public class SetType extends Type
         return choiceByNameMap.values();
     }
 
+    /**
+     * Always false.
+     *
+     * {@inheritDoc}
+     */
     public boolean isVariableLength()
     {
         return false;
@@ -187,7 +195,7 @@ public class SetType extends Type
     }
 
     /**
-     * Holder for valid values for EnumType
+     * Holder for valid values for SBE schema enum type.
      */
     public static class Choice
     {
@@ -259,7 +267,6 @@ public class SetType extends Type
         {
             return sinceVersion;
         }
-
 
         /**
          * Version in which {@link Choice} was deprecated. Only valid if greater than zero.
