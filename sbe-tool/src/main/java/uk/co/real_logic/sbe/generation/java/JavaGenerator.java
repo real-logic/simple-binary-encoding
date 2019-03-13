@@ -2326,8 +2326,8 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateFixedFlyweightCode(
         final String className, final int size, final String bufferImplementation)
     {
-        final String schemaIdType = javaTypeName(ir.headerStructure().schemaIdType());
-        final String schemaVersionType = javaTypeName(ir.headerStructure().schemaVersionType());
+        final String schemaIdType = shouldGenerateInterfaces ? "int" : javaTypeName(ir.headerStructure().schemaIdType());
+        final String schemaVersionType = shouldGenerateInterfaces ? "int" : javaTypeName(ir.headerStructure().schemaVersionType());
 
         return String.format(
             "    public static final %5$s SCHEMA_ID = %6$s;\n" +
@@ -2405,10 +2405,10 @@ public class JavaGenerator implements CodeGenerator
         final String bufferImplementation)
     {
         final HeaderStructure headerStructure = ir.headerStructure();
-        final String blockLengthType = javaTypeName(headerStructure.blockLengthType());
-        final String templateIdType = javaTypeName(headerStructure.templateIdType());
-        final String schemaIdType = javaTypeName(headerStructure.schemaIdType());
-        final String schemaVersionType = javaTypeName(headerStructure.schemaVersionType());
+        final String blockLengthType = shouldGenerateInterfaces ? "int" : javaTypeName(headerStructure.blockLengthType());
+        final String templateIdType = shouldGenerateInterfaces ? "int" : javaTypeName(headerStructure.templateIdType());
+        final String schemaIdType = shouldGenerateInterfaces ? "int" : javaTypeName(headerStructure.schemaIdType());
+        final String schemaVersionType = shouldGenerateInterfaces ? "int" : javaTypeName(headerStructure.schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
         final String actingFields = codecType == CodecType.ENCODER ?
             "" :
