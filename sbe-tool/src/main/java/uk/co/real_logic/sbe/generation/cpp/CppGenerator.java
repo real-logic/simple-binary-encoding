@@ -1591,6 +1591,10 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        return m_bufferLength;\n" +
             "    }\n\n" +
+            "    std::uint64_t actingVersion() const SBE_NOEXCEPT\n" +
+            "    {\n" +
+            "        return m_actingVersion;\n" +
+            "    }\n\n" +
             "    static SBE_CONSTEXPR %3$s sbeSchemaId() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %4$s;\n" +
