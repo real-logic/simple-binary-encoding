@@ -86,6 +86,8 @@ If you are comfortable with using CMake, then a full clean, build, and test look
     $ cmake --build . --clean-first
     $ ctest
 
+__Note__: A C generator is included with the C++ build. And is built with the C++ build. CurrentLY, the C generator is a work
+in progress.
 
 Golang Build
 ------------
