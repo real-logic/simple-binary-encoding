@@ -1702,7 +1702,7 @@ public class CppGenerator implements CodeGenerator
             "        reset(buffer, offset, bufferLength, sbeBlockLength(), sbeSchemaVersion());\n" +
             "        return *this;\n" +
             "    }\n\n" +
-            "    %10$s &wrapAndApplyHeader( " +
+            "    %10$s &wrapAndApplyHeader(" +
             "char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength)\n" +
             "    {\n" +
             "        MessageHeader hdr(buffer + offset, bufferLength, sbeSchemaVersion());\n\n" +
