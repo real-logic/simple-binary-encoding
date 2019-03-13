@@ -86,7 +86,7 @@ If you are comfortable with using CMake, then a full clean, build, and test look
     $ cmake --build . --clean-first
     $ ctest
 
-__Note__: A C generator is included with the C++ build. And is built with the C++ build. CurrentLY, the C generator is a work
+__Note__: A C generator is included with the C++ build. And is built with the C++ build. Currently, the C generator is a work
 in progress.
 
 Golang Build
@@ -120,9 +120,7 @@ First build using Gradle to generate the SBE jar and then use it to generate the
     $ ./gradlew
     $ ./gradlew generateCSharpCodecs
 
-You can then use the [Visual Studio 2017 Community solution](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharp.sln) to build and explore the
-example. This solution also builds some tests which can be run via the provided
-[runtests.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/runtests.sh) script.
+You can then use the [Visual Studio 2017 Community solution](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharp.sln) to build and explore the example. This solution also builds some tests which can be run via the provided [runtests.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/runtests.sh) script.
 
 Users of CSharp generated code should see the [user documentation (coming)](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide).
 
