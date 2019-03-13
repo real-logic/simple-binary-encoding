@@ -521,7 +521,7 @@ TEST_P(HeaderBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfHeader
 INSTANTIATE_TEST_CASE_P(
     HeaderLengthTest,
     HeaderBoundsCheckTest,
-    ::testing::Range(0, static_cast<int>(encodedHdrSz), 1));
+    ::testing::Range(0, static_cast<int>(encodedHdrSz), 1), );
 
 class MessageBoundsCheckTest : public BoundsCheckTest, public ::testing::WithParamInterface<int>
 {
@@ -565,4 +565,4 @@ TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfMessa
 INSTANTIATE_TEST_CASE_P(
     MessageLengthTest,
     MessageBoundsCheckTest,
-    ::testing::Range(0, static_cast<int>(encodedCarSz), 1));
+    ::testing::Range(0, static_cast<int>(encodedCarSz), 1), );
