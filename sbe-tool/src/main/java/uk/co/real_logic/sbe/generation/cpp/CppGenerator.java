@@ -1560,6 +1560,12 @@ public class CppGenerator implements CodeGenerator
             "        %1$s(buffer, 0, bufferLength, actingVersion)\n" +
             "    {\n" +
             "    }\n\n" +
+            "    %1$s(\n" +
+            "        char *buffer,\n" +
+            "        const std::uint64_t bufferLength) :\n" +
+            "        %1$s(buffer, 0, bufferLength, sbeSchemaVersion())\n" +
+            "    {\n" +
+            "    }\n\n" +
             "    %1$s &wrap(char *buffer, const std::uint64_t offset, const std::uint64_t actingVersion," +
             " const std::uint64_t bufferLength)\n" +
             "    {\n" +
