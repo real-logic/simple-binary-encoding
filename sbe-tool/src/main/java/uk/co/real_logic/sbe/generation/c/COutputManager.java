@@ -46,6 +46,7 @@ public class COutputManager implements OutputManager
      *
      * @param name the name of the C struct.
      * @return a {@link java.io.Writer} to which the source code should be written.
+     * @throws IOException if an issue occurs when creating the file.
      */
     public Writer createOutput(final String name) throws IOException
     {
