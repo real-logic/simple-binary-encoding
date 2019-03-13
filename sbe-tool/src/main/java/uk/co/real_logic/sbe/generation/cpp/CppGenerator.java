@@ -203,6 +203,10 @@ public class CppGenerator implements CodeGenerator
             indent + "    std::uint64_t m_offset;\n" +
             indent + "    std::uint64_t m_actingVersion;\n" +
             indent + "    %2$s m_dimensions;\n\n" +
+            indent + "    std::uint64_t *sbePositionPtr() SBE_NOEXCEPT\n" +
+            indent + "    {\n" +
+            indent + "        return m_positionPtr;\n" +
+            indent + "    }\n\n" +
             indent + "public:\n",
             formatClassName(groupName), dimensionsClassName));
 
@@ -346,7 +350,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "    inline %1$s &%2$s()\n" +
             indent + "    {\n" +
-            indent + "        m_%2$s.wrapForDecode(m_buffer, m_positionPtr, m_actingVersion, m_bufferLength);\n" +
+            indent + "        m_%2$s.wrapForDecode(m_buffer, sbePositionPtr(), m_actingVersion, m_bufferLength);\n" +
             indent + "        return m_%2$s;\n" +
             indent + "    }\n",
             className,
@@ -356,7 +360,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    %1$s &%2$sCount(const %3$s count)\n" +
             indent + "    {\n" +
             indent + "        m_%2$s.wrapForEncode(" +
-            "m_buffer, count, m_positionPtr, m_actingVersion, m_bufferLength);\n" +
+            "m_buffer, count, sbePositionPtr(), m_actingVersion, m_bufferLength);\n" +
             indent + "        return m_%2$s;\n" +
             indent + "    }\n",
             className,
@@ -1625,7 +1629,6 @@ public class CppGenerator implements CodeGenerator
             "private:\n" +
             "    char *m_buffer = nullptr;\n" +
             "    std::uint64_t m_bufferLength = 0;\n" +
-            "    std::uint64_t *m_positionPtr;\n" +
             "    std::uint64_t m_offset = 0;\n" +
             "    std::uint64_t m_position;\n" +
             "    std::uint64_t m_actingBlockLength;\n" +
@@ -1639,7 +1642,6 @@ public class CppGenerator implements CodeGenerator
             "        m_bufferLength = bufferLength;\n" +
             "        m_actingBlockLength = actingBlockLength;\n" +
             "        m_actingVersion = actingVersion;\n" +
-            "        m_positionPtr = &m_position;\n" +
             "        sbePosition(offset + m_actingBlockLength);\n" +
             "    }\n\n" +
             "    inline void reset(const %10$s& codec) SBE_NOEXCEPT\n" +
@@ -1649,8 +1651,11 @@ public class CppGenerator implements CodeGenerator
             "        m_bufferLength = codec.m_bufferLength;\n" +
             "        m_actingBlockLength = codec.m_actingBlockLength;\n" +
             "        m_actingVersion = codec.m_actingVersion;\n" +
-            "        m_positionPtr = &m_position;\n" +
             "        m_position = codec.m_position;\n" +
+            "    }\n\n" +
+            "    inline std::uint64_t *sbePositionPtr() SBE_NOEXCEPT\n" +
+            "    {\n" +
+            "        return &m_position;\n" +
             "    }\n\n" +
             "public:\n\n" +
             "    enum MetaAttribute\n" +
