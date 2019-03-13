@@ -1714,7 +1714,7 @@ public class CppGenerator implements CodeGenerator
             "        reset(\n" +
             "            buffer + offset + MessageHeader::encodedLength(),\n" +
             "            0,\n" +
-            "            bufferLength,\n" +
+            "            bufferLength - MessageHeader::encodedLength(),\n" +
             "            sbeBlockLength()\n," +
             "            sbeSchemaVersion());\n" +
             "        return *this;\n" +
