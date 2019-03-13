@@ -1711,8 +1711,12 @@ public class CppGenerator implements CodeGenerator
             "            .templateId(sbeTemplateId())\n" +
             "            .schemaId(sbeSchemaId())\n" +
             "            .version(sbeSchemaVersion());\n\n" +
-            "        reset(buffer + offset + MessageHeader::encodedLength(), 0, bufferLength, sbeBlockLength(), " +
-            "sbeSchemaVersion());\n" +
+            "        reset(\n" +
+            "            buffer + offset + MessageHeader::encodedLength(),\n" +
+            "            0,\n" +
+            "            bufferLength,\n" +
+            "            sbeBlockLength()\n," +
+            "            sbeSchemaVersion());\n" +
             "        return *this;\n" +
             "    }\n\n" +
             "    %10$s &wrapForDecode(\n" +
