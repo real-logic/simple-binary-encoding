@@ -18,10 +18,10 @@ function(sbe_test name)
     add_executable("${name}" "${name}.cpp")
     target_include_directories("${name}"
         PRIVATE ${GTEST_SOURCE_DIR}/googletest/include
-        PRIVATE ${CODEC_TARGET_DIR}
+        PRIVATE ${CXX_CODEC_TARGET_DIR}
     )
     target_link_libraries("${name}" sbe ${GTEST_LIBS} ${CMAKE_THREAD_LIBS_INIT})
-    add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY ${CODEC_TARGET_DIR})
+    add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY ${CXX_CODEC_TARGET_DIR})
     add_dependencies(${name} gtest)
     if(${ARGC} GREATER 1)
         add_dependencies(${name} ${ARGV1})
@@ -37,7 +37,7 @@ set(GROUP_WITH_DATA_SCHEMA ${CODEC_SCHEMA_DIR}/group-with-data-schema.xml)
 set(COMPOSITE_ELEMENTS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-elements-schema.xml)
 
 set(GENERATED_CODECS
-    ${CODEC_TARGET_DIR}
+    ${CXX_CODEC_TARGET_DIR}
 )
 
 add_custom_command(
@@ -45,7 +45,7 @@ add_custom_command(
     DEPENDS ${CODE_GENERATION_SCHEMA} ${CODE_GENERATION_SCHEMA_CPP} ${COMPOSITE_OFFSETS_SCHEMA} ${MESSAGE_BLOCK_LENGTH_TEST}
             sbe-jar ${SBE_JAR}
     COMMAND ${Java_JAVA_EXECUTABLE}
-        -Dsbe.output.dir=${CODEC_TARGET_DIR} -Dsbe.generate.ir="true" -Dsbe.target.language="cpp" -jar ${SBE_JAR}
+        -Dsbe.output.dir=${CXX_CODEC_TARGET_DIR} -Dsbe.generate.ir="true" -Dsbe.target.language="cpp" -jar ${SBE_JAR}
         ${CODE_GENERATION_SCHEMA}
         ${COMPOSITE_OFFSETS_SCHEMA}
         ${MESSAGE_BLOCK_LENGTH_TEST}

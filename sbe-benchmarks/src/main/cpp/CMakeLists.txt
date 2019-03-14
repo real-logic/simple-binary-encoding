@@ -29,8 +29,8 @@ endif ()
 set(SRCS_BENCHLET_MAIN benchlet-main.cpp)
 
 set(GENERATED_CODECS
-    ${CODEC_TARGET_DIR}/uk_co_real_logic_sbe_examples_car
-    ${CODEC_TARGET_DIR}/uk_co_real_logic_sbe_samples_fix
+    ${CXX_CODEC_TARGET_DIR}/uk_co_real_logic_sbe_examples_car
+    ${CXX_CODEC_TARGET_DIR}/uk_co_real_logic_sbe_samples_fix
 )
 
 set(SBE_CAR_SCHEMA ${CODEC_PERF_SCHEMA_DIR}/car.xml)
@@ -39,15 +39,15 @@ set(SBE_MD_SCHEMA ${CODEC_PERF_SCHEMA_DIR}/fix-message-samples.xml)
 add_custom_command(
     OUTPUT ${GENERATED_CODECS}
     DEPENDS ${SBE_CAR_SCHEMA} ${SBE_MD_SCHEMA} sbe-jar ${SBE_JAR}
-    COMMAND ${Java_JAVA_EXECUTABLE} -Dsbe.output.dir=${CODEC_TARGET_DIR} -Dsbe.target.language="cpp" -jar ${SBE_JAR} ${SBE_CAR_SCHEMA} ${SBE_MD_SCHEMA}
+    COMMAND ${Java_JAVA_EXECUTABLE} -Dsbe.output.dir=${CXX_CODEC_TARGET_DIR} -Dsbe.target.language="cpp" -jar ${SBE_JAR} ${SBE_CAR_SCHEMA} ${SBE_MD_SCHEMA}
 )
 add_custom_target(perf_codecs DEPENDS ${GENERATED_CODECS})
 
 add_executable(benchlet-sbe-car-runner ${SRCS_BENCHLET_MAIN} CarBench.cpp)
-target_include_directories(benchlet-sbe-car-runner PRIVATE ${CODEC_TARGET_DIR})
+target_include_directories(benchlet-sbe-car-runner PRIVATE ${CXX_CODEC_TARGET_DIR})
 target_link_libraries(benchlet-sbe-car-runner sbe)
 add_executable(benchlet-sbe-md-runner ${SRCS_BENCHLET_MAIN} MarketDataBench.cpp)
-target_include_directories(benchlet-sbe-md-runner PRIVATE ${CODEC_TARGET_DIR})
+target_include_directories(benchlet-sbe-md-runner PRIVATE ${CXX_CODEC_TARGET_DIR})
 target_link_libraries(benchlet-sbe-md-runner sbe)
 add_dependencies(benchlet-sbe-md-runner perf_codecs)
 add_dependencies(benchlet-sbe-car-runner perf_codecs)
