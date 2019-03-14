@@ -512,7 +512,7 @@ public class CGenerator implements CodeGenerator
             "    return %3$d;\n" +
             "}\n\n" +
 
-            "SBE_ONE_DEF bool %2$s_in_acting_version(struct %1$s *const codec)\n" +
+            "SBE_ONE_DEF bool %2$s_in_acting_version(const struct %1$s *const codec)\n" +
             "{\n" +
             "#if defined(__clang__)\n" +
             "#pragma clang diagnostic push\n" +
