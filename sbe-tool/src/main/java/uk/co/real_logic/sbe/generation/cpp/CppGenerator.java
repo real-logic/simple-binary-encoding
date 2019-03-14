@@ -491,7 +491,7 @@ public class CppGenerator implements CodeGenerator
                 className));
 
             sb.append(String.format("\n" +
-                indent + "    const std::string get%1$sAsString()\n" +
+                indent + "    std::string get%1$sAsString()\n" +
                 indent + "    {\n" +
                 "%2$s" +
                 indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
@@ -513,7 +513,7 @@ public class CppGenerator implements CodeGenerator
 
             sb.append(String.format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
-                indent + "    const std::string_view get%1$sAsStringView()\n" +
+                indent + "    std::string_view get%1$sAsStringView()\n" +
                 indent + "    {\n" +
                 "%2$s" +
                 indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
