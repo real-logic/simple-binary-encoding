@@ -314,7 +314,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        ++m_index;\n\n" +
 
             indent + "        return *this;\n" +
-            indent + "    }\n\n",
+            indent + "    }\n",
             dimensionHeaderLength, blockLength, formatClassName(groupName)));
 
         sb.append(indent).append("#if __cplusplus < 201103L\n")
@@ -337,7 +337,7 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("        }\n")
             .append(indent).append("    }\n\n")
 
-            .append(indent).append("#endif\n\n");
+            .append(indent).append("#endif\n");
     }
 
     private static CharSequence generateGroupProperty(
@@ -360,7 +360,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    static SBE_CONSTEXPR std::uint16_t %1$sId() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
-            indent + "    }\n\n",
+            indent + "    }\n",
             groupName,
             token.id()));
 
@@ -439,12 +439,12 @@ public class CppGenerator implements CodeGenerator
                 "%2$s" +
                 indent + "         %4$s lengthFieldValue;\n" +
                 indent + "         std::memcpy(&lengthFieldValue, m_buffer + sbePosition(), sizeof(%4$s));\n" +
-                indent + "         const char *fieldPtr = (m_buffer + sbePosition() + %3$d);\n" +
+                indent + "         const char *fieldPtr = m_buffer + sbePosition() + %3$d;\n" +
                 indent + "         sbePosition(sbePosition() + %3$d + %5$s(lengthFieldValue));\n" +
                 indent + "         return fieldPtr;\n" +
                 indent + "    }\n",
                 formatPropertyName(propertyName),
-                generateTypeFieldNotPresentCondition(token.version(), BASE_INDENT),
+                generateTypeFieldNotPresentCondition(token.version(), indent),
                 lengthOfLengthField,
                 lengthCppType,
                 lengthByteOrderStr));
@@ -466,7 +466,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        return bytesToCopy;\n" +
                 indent + "    }\n",
                 propertyName,
-                generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
+                generateArrayFieldNotPresentCondition(token.version(), indent),
                 lengthOfLengthField,
                 lengthByteOrderStr,
                 lengthCppType));
@@ -506,7 +506,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        return result;\n" +
                 indent + "    }\n",
                 propertyName,
-                generateStringNotPresentCondition(token.version(), BASE_INDENT),
+                generateStringNotPresentCondition(token.version(), indent),
                 lengthOfLengthField,
                 lengthByteOrderStr,
                 lengthCppType));
@@ -529,7 +529,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "    }\n" +
                 indent + "    #endif\n",
                 propertyName,
-                generateStringViewNotPresentCondition(token.version(), BASE_INDENT),
+                generateStringViewNotPresentCondition(token.version(), indent),
                 lengthOfLengthField,
                 lengthByteOrderStr,
                 lengthCppType));
@@ -603,7 +603,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    static SBE_CONSTEXPR std::uint16_t %1$sId() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return %3$d;\n" +
-            indent + "    }\n\n",
+            indent + "    }\n",
             toLowerFirstChar(propertyName),
             token.version(),
             token.id()));
@@ -623,7 +623,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        %4$s length;\n" +
             indent + "        std::memcpy(&length, m_buffer + sbePosition(), sizeof(%4$s));\n" +
             indent + "        return %3$s(length);\n" +
-            indent + "    }\n\n",
+            indent + "    }\n",
             toLowerFirstChar(propertyName),
             generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
             formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
@@ -1010,20 +1010,20 @@ public class CppGenerator implements CodeGenerator
             "#define SBE_NULLVALUE_UINT8 (std::numeric_limits<std::uint8_t>::max)()\n" +
             "#define SBE_NULLVALUE_UINT16 (std::numeric_limits<std::uint16_t>::max)()\n" +
             "#define SBE_NULLVALUE_UINT32 (std::numeric_limits<std::uint32_t>::max)()\n" +
-            "#define SBE_NULLVALUE_UINT64 (std::numeric_limits<std::uint64_t>::max)()\n\n",
+            "#define SBE_NULLVALUE_UINT64 (std::numeric_limits<std::uint64_t>::max)()\n",
             String.join("_", namespaces).toUpperCase(),
             className.toUpperCase()));
 
-        if (typesToInclude != null)
+        if (typesToInclude != null && typesToInclude.size() != 0)
         {
+            sb.append("\n");
             for (final String incName : typesToInclude)
             {
                 sb.append(String.format("#include \"%1$s.h\"\n", toUpperFirstChar(incName)));
             }
-            sb.append("\n");
         }
 
-        sb.append("namespace ");
+        sb.append("\nnamespace ");
         sb.append(String.join(" {\nnamespace ", namespaces));
         sb.append(" {\n\n");
 
@@ -2029,7 +2029,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "    {\n" +
                 "%3$s" +
                 indent + "        return %1$s::Value::%4$s;\n" +
-                indent + "    }\n\n",
+                indent + "    }\n",
                 enumName,
                 propertyName,
                 generateEnumFieldNotPresentCondition(token.version(), enumName, indent),
