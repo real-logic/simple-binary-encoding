@@ -2076,8 +2076,7 @@ public class CGenerator implements CodeGenerator
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             semanticType,
             structName,
-            messageHeaderStruct,
-            formatScopedName(scope, "strerror"));
+            messageHeaderStruct);
     }
 
     private CharSequence generateFieldMembers(final CharSequence[] scope, final List<Token> tokens)
