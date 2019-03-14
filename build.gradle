@@ -198,7 +198,7 @@ project(':sbe-tool') {
     }
 
     sourceSets {
-        generated.java.srcDir 'build/generated'
+        generated.java.srcDir 'build/generated-src'
     }
 
     compileGeneratedJava {
@@ -216,7 +216,7 @@ project(':sbe-tool') {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = sourceSets.main.runtimeClasspath
         systemProperties(
-            'sbe.output.dir': 'build/generated',
+            'sbe.output.dir': 'build/generated-src',
             'sbe.target.language': 'Java',
             'sbe.validation.stop.on.error': 'true',
             'sbe.validation.xsd': validationXsdPath)
@@ -357,7 +357,7 @@ project(':sbe-samples') {
     }
 
     sourceSets {
-        generated.java.srcDir 'build/generated'
+        generated.java.srcDir 'build/generated-src'
     }
 
     compileGeneratedJava {
@@ -377,7 +377,7 @@ project(':sbe-samples') {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
-            'sbe.output.dir': 'build/generated',
+            'sbe.output.dir': 'build/generated-src',
             'sbe.target.language': 'Java',
             'sbe.java.generate.interfaces': 'true',
             'sbe.validation.stop.on.error': 'true',
@@ -451,7 +451,7 @@ project(':sbe-benchmarks') {
     }
 
     sourceSets {
-        generated.java.srcDir 'build/generated'
+        generated.java.srcDir 'build/generated-src'
     }
 
     compileGeneratedJava {
@@ -471,7 +471,7 @@ project(':sbe-benchmarks') {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
-            'sbe.output.dir': 'build/generated',
+            'sbe.output.dir': 'build/generated-src',
             'sbe.target.language': 'Java',
             'sbe.validation.stop.on.error': 'true',
             'sbe.validation.xsd': validationXsdPath,
