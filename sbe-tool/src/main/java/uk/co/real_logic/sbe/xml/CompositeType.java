@@ -32,6 +32,7 @@ import java.util.Map;
 
 import static javax.xml.xpath.XPathConstants.NODESET;
 import static uk.co.real_logic.sbe.PrimitiveType.*;
+import static uk.co.real_logic.sbe.SbeTool.JAVA_GENERATE_INTERFACES;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 
@@ -302,6 +303,8 @@ public class CompositeType extends Type
      */
     public void checkForWellFormedMessageHeader(final Node node)
     {
+        final boolean shouldGenerateInterfaces = Boolean.getBoolean(JAVA_GENERATE_INTERFACES);
+
         final EncodedDataType blockLengthType = (EncodedDataType)containedTypeByNameMap.get("blockLength");
         final EncodedDataType templateIdType = (EncodedDataType)containedTypeByNameMap.get("templateId");
         final EncodedDataType schemaIdType = (EncodedDataType)containedTypeByNameMap.get("schemaId");
@@ -315,36 +318,51 @@ public class CompositeType extends Type
         {
             XmlSchemaParser.handleError(node, "\"blockLength\" must be unsigned");
         }
-        else if (blockLengthType.primitiveType() != UINT16)
-        {
-            XmlSchemaParser.handleWarning(node, "\"blockLength\" should be UINT16");
-        }
 
-        if (templateIdType == null)
-        {
-            XmlSchemaParser.handleError(node, "composite for message header must have \"templateId\"");
-        }
-        else if (templateIdType.primitiveType() != UINT16)
-        {
-            XmlSchemaParser.handleWarning(node, "\"templateId\" should be UINT16");
-        }
+        validateHeaderField(node, "blockLength", blockLengthType, UINT16, shouldGenerateInterfaces);
+        validateHeaderField(node, "templateId", templateIdType, UINT16, shouldGenerateInterfaces);
+        validateHeaderField(node, "schemaId", schemaIdType, UINT16, shouldGenerateInterfaces);
+        validateHeaderField(node, "version", versionType, UINT16, shouldGenerateInterfaces);
+    }
 
-        if (schemaIdType == null)
+    private void validateHeaderField(
+        final Node node,
+        final String fieldName,
+        final EncodedDataType actualType,
+        final PrimitiveType expectedType,
+        final boolean shouldGenerateInterfaces)
+    {
+        if (actualType == null)
         {
-            XmlSchemaParser.handleError(node, "composite for message header must have \"schemaId\"");
+            XmlSchemaParser.handleError(
+                node,
+                String.format("composite for message header must have \"%s\"", fieldName));
         }
-        else if (schemaIdType.primitiveType() != UINT16)
+        else if (actualType.primitiveType() != expectedType)
         {
-            XmlSchemaParser.handleWarning(node, "\"schemaId\" should be UINT16");
-        }
+            XmlSchemaParser.handleWarning(node, String.format("\"%s\" should be %s", fieldName, expectedType.name()));
 
-        if (versionType == null)
-        {
-            XmlSchemaParser.handleError(node, "composite for message header must have \"version\"");
-        }
-        else if (versionType.primitiveType() != UINT16)
-        {
-            XmlSchemaParser.handleWarning(node, "\"version\" should be UINT16");
+            if (shouldGenerateInterfaces)
+            {
+                if (actualType.primitiveType().size() > expectedType.size())
+                {
+                    XmlSchemaParser.handleError(
+                        node,
+                        String.format("\"%s\" must be less than %s bytes to use %s",
+                        fieldName,
+                        expectedType.size(),
+                        JAVA_GENERATE_INTERFACES));
+                }
+                else
+                {
+                    XmlSchemaParser.handleWarning(
+                        node,
+                        String.format("\"%s\" will be cast to %s to use %s",
+                        fieldName,
+                        expectedType.name(),
+                        JAVA_GENERATE_INTERFACES));
+                }
+            }
         }
     }
 
