@@ -2004,7 +2004,7 @@ public class CGenerator implements CodeGenerator
             "        codec,\n" +
             "        buffer + offset + %11$s_encoded_length(),\n" +
             "        0,\n" +
-            "        buffer_length,\n" +
+            "        buffer_length - %11$s_encoded_length(),\n" +
             "        %10$s_sbe_block_length(),\n" +
             "        %10$s_sbe_schema_version());\n" +
             "    return codec;\n" +
