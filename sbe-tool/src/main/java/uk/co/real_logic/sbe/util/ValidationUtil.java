@@ -43,7 +43,7 @@ public class ValidationUtil
      * must have all elements be a letter or digit or '_'. The first character must not be a digit.
      * And must not be a C keyword.
      * <p>
-     * http://en.cppreference.com/w/cpp/keyword
+     * http://en.cppreference.com/w/c/keyword
      *
      * @param value to check
      * @return true for validity as a C name. false if not.
