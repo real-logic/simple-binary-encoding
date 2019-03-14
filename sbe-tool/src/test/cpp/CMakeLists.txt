@@ -44,13 +44,17 @@ add_custom_command(
     OUTPUT ${GENERATED_CODECS}
     DEPENDS ${CODE_GENERATION_SCHEMA} ${CODE_GENERATION_SCHEMA_CPP} ${COMPOSITE_OFFSETS_SCHEMA} ${MESSAGE_BLOCK_LENGTH_TEST}
             sbe-jar ${SBE_JAR}
-    COMMAND ${Java_JAVA_EXECUTABLE}
-        -Dsbe.output.dir=${CXX_CODEC_TARGET_DIR} -Dsbe.generate.ir="true" -Dsbe.target.language="cpp" -jar ${SBE_JAR}
-        ${CODE_GENERATION_SCHEMA}
-        ${COMPOSITE_OFFSETS_SCHEMA}
-        ${MESSAGE_BLOCK_LENGTH_TEST}
-        ${GROUP_WITH_DATA_SCHEMA}
-        ${COMPOSITE_ELEMENTS_SCHEMA}
+    COMMAND
+        ${Java_JAVA_EXECUTABLE}
+            -Dsbe.output.dir=${CXX_CODEC_TARGET_DIR}
+            -Dsbe.generate.ir="true"
+            -Dsbe.target.language="cpp"
+            -jar ${SBE_JAR}
+            ${CODE_GENERATION_SCHEMA}
+            ${COMPOSITE_OFFSETS_SCHEMA}
+            ${MESSAGE_BLOCK_LENGTH_TEST}
+            ${GROUP_WITH_DATA_SCHEMA}
+            ${COMPOSITE_ELEMENTS_SCHEMA}
 )
 
 add_custom_target(codecs DEPENDS ${GENERATED_CODECS})
