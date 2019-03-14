@@ -40,10 +40,13 @@ set(GENERATED_CODECS
 add_custom_command(
     OUTPUT ${GENERATED_CODECS}
     DEPENDS sbe-jar ${SBE_JAR} ${CODE_GENERATION_SCHEMA} ${GROUP_WITH_DATA_SCHEMA}
-    COMMAND ${Java_JAVA_EXECUTABLE}
-        -Dsbe.output.dir=${C_CODEC_TARGET_DIR} -Dsbe.target.language="C" -jar ${SBE_JAR}
-        ${CODE_GENERATION_SCHEMA}
-        ${GROUP_WITH_DATA_SCHEMA}
+    COMMAND
+        ${Java_JAVA_EXECUTABLE}
+            -Dsbe.output.dir=${C_CODEC_TARGET_DIR}
+            -Dsbe.target.language="C"
+            -jar ${SBE_JAR}
+            ${CODE_GENERATION_SCHEMA}
+            ${GROUP_WITH_DATA_SCHEMA}
 )
 
 add_custom_target(c_codecs DEPENDS ${GENERATED_CODECS})
