@@ -2326,8 +2326,10 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateFixedFlyweightCode(
         final String className, final int size, final String bufferImplementation)
     {
-        final String schemaIdType = shouldGenerateInterfaces ? "int" : javaTypeName(ir.headerStructure().schemaIdType());
-        final String schemaVersionType = shouldGenerateInterfaces ? "int" : javaTypeName(ir.headerStructure().schemaVersionType());
+        final String schemaIdType = javaTypeName(ir.headerStructure().schemaIdType());
+        final String schemaIdAccessorType = shouldGenerateInterfaces ? "int" : schemaIdType;
+        final String schemaVersionType = javaTypeName(ir.headerStructure().schemaVersionType());
+        final String schemaVersionAccessorType = shouldGenerateInterfaces ? "int" : schemaVersionType;
 
         return String.format(
             "    public static final %5$s SCHEMA_ID = %6$s;\n" +
@@ -2357,11 +2359,11 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        return ENCODED_LENGTH;\n" +
             "    }\n\n" +
-            "    public %5$s sbeSchemaId()\n" +
+            "    public %9$s sbeSchemaId()\n" +
             "    {\n" +
             "        return SCHEMA_ID;\n" +
             "    }\n\n" +
-            "    public %7$s sbeSchemaVersion()\n" +
+            "    public %10$s sbeSchemaVersion()\n" +
             "    {\n" +
             "        return SCHEMA_VERSION;\n" +
             "    }\n",
@@ -2372,7 +2374,11 @@ public class JavaGenerator implements CodeGenerator
             schemaIdType,
             generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
             schemaVersionType,
-            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())));
+            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
+            schemaIdAccessorType,
+            schemaVersionAccessorType);
+
+
     }
 
     private CharSequence generateDecoderFlyweightCode(final String className, final Token token)
@@ -2405,10 +2411,14 @@ public class JavaGenerator implements CodeGenerator
         final String bufferImplementation)
     {
         final HeaderStructure headerStructure = ir.headerStructure();
-        final String blockLengthType = shouldGenerateInterfaces ? "int" : javaTypeName(headerStructure.blockLengthType());
-        final String templateIdType = shouldGenerateInterfaces ? "int" : javaTypeName(headerStructure.templateIdType());
-        final String schemaIdType = shouldGenerateInterfaces ? "int" : javaTypeName(headerStructure.schemaIdType());
-        final String schemaVersionType = shouldGenerateInterfaces ? "int" : javaTypeName(headerStructure.schemaVersionType());
+        final String blockLengthType = javaTypeName(headerStructure.blockLengthType());
+        final String blockLengthAccessorType = shouldGenerateInterfaces ? "int" : blockLengthType;
+        final String templateIdType = javaTypeName(headerStructure.templateIdType());
+        final String templateIdAccessorType = shouldGenerateInterfaces ? "int" : templateIdType;
+        final String schemaIdType = javaTypeName(headerStructure.schemaIdType());
+        final String schemaIdAccessorType = shouldGenerateInterfaces ? "int" : schemaIdType;
+        final String schemaVersionType = javaTypeName(headerStructure.schemaVersionType());
+        final String schemaVersionAccessorType = shouldGenerateInterfaces ? "int" : schemaVersionType;
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
         final String actingFields = codecType == CodecType.ENCODER ?
             "" :
@@ -2427,19 +2437,19 @@ public class JavaGenerator implements CodeGenerator
             "    protected int limit;\n" +
             "%13$s" +
             "\n" +
-            "    public %1$s sbeBlockLength()\n" +
+            "    public %15$s sbeBlockLength()\n" +
             "    {\n" +
             "        return BLOCK_LENGTH;\n" +
             "    }\n\n" +
-            "    public %3$s sbeTemplateId()\n" +
+            "    public %16$s sbeTemplateId()\n" +
             "    {\n" +
             "        return TEMPLATE_ID;\n" +
             "    }\n\n" +
-            "    public %5$s sbeSchemaId()\n" +
+            "    public %17$s sbeSchemaId()\n" +
             "    {\n" +
             "        return SCHEMA_ID;\n" +
             "    }\n\n" +
-            "    public %7$s sbeSchemaVersion()\n" +
+            "    public %18$s sbeSchemaVersion()\n" +
             "    {\n" +
             "        return SCHEMA_VERSION;\n" +
             "    }\n\n" +
@@ -2481,7 +2491,11 @@ public class JavaGenerator implements CodeGenerator
             bufferImplementation,
             wrapMethod,
             actingFields,
-            ir.byteOrder());
+            ir.byteOrder(),
+            blockLengthAccessorType,
+            templateIdAccessorType,
+            schemaIdAccessorType,
+            schemaVersionAccessorType);
     }
 
     private CharSequence generateEncoderFlyweightCode(final String className, final Token token)
