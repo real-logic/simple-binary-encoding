@@ -322,6 +322,11 @@ public class CGenerator implements CodeGenerator
         final String cTypeForNumInGroup = cTypeName(numInGroupToken.encoding().primitiveType());
 
         sb.append(String.format("\n" +
+            "SBE_ONE_DEF uint64_t *%1$s_sbe_position_ptr(struct %1$s *const codec)\n" +
+            "{\n" +
+            "    return codec->position_ptr;\n" +
+            "}\n\n" +
+
             "SBE_ONE_DEF struct %1$s *%1$s_wrap_for_decode(\n" +
             "    struct %1$s *const codec,\n" +
             "    char *const buffer,\n" +
@@ -482,7 +487,7 @@ public class CGenerator implements CodeGenerator
             "    return %2$s_wrap_for_decode(\n" +
             "        &codec->%3$s,\n" +
             "        codec->buffer,\n" +
-            "        codec->position_ptr,\n" +
+            "        %1$s_sbe_position_ptr(codec),\n" +
             "        codec->acting_version,\n" +
             "        codec->buffer_length);\n" +
             "}\n",
@@ -497,7 +502,7 @@ public class CGenerator implements CodeGenerator
             "        &codec->%3$s,\n" +
             "        codec->buffer,\n" +
             "        count,\n" +
-            "        codec->position_ptr,\n" +
+            "        %1$s_sbe_position_ptr(codec),\n" +
             "        codec->acting_version,\n" +
             "        codec->buffer_length);\n" +
             "}\n",
@@ -1882,10 +1887,8 @@ public class CGenerator implements CodeGenerator
         return String.format(
             "    char *buffer;\n" +
             "    uint64_t buffer_length;\n" +
-            "    uint64_t *position_ptr;\n" +
             "    uint64_t offset;\n" +
             "    uint64_t position;\n" +
-            "    uint64_t acting_block_length;\n" +
             "    uint64_t acting_version;\n");
     }
 
@@ -1934,10 +1937,8 @@ public class CGenerator implements CodeGenerator
             "    codec->buffer = buffer;\n" +
             "    codec->offset = offset;\n" +
             "    codec->buffer_length = buffer_length;\n" +
-            "    codec->acting_block_length = acting_block_length;\n" +
             "    codec->acting_version = acting_version;\n" +
-            "    codec->position_ptr = &codec->position;\n" +
-            "    if (!%10$s_set_sbe_position(codec, offset + codec->acting_block_length))\n" +
+            "    if (!%10$s_set_sbe_position(codec, offset + acting_block_length))\n" +
             "    {\n" +
             "        return NULL;\n" +
             "    }\n" +
@@ -1949,9 +1950,7 @@ public class CGenerator implements CodeGenerator
             "     codec->buffer = other->buffer;\n" +
             "     codec->offset = other->offset;\n" +
             "     codec->buffer_length = other->buffer_length;\n" +
-            "     codec->acting_block_length = other->acting_block_length;\n" +
             "     codec->acting_version = other->acting_version;\n" +
-            "     codec->position_ptr = &codec->position;\n" +
             "     codec->position = other->position;\n" +
             "     return codec;\n" +
             "}\n\n" +
