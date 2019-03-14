@@ -849,9 +849,9 @@ public class CGenerator implements CodeGenerator
 
         return String.format(
             "if (codec->acting_version < %1$d)\n" +
-            "    {\n" +
-            "        return false;\n" +
-            "    }\n\n",
+            "{\n" +
+            "    return false;\n" +
+            "}\n\n",
             sinceVersion);
     }
 
@@ -1014,9 +1014,9 @@ public class CGenerator implements CodeGenerator
 
         return String.format(
             "if (codec->acting_version < %1$d)\n" +
-            "    {\n" +
-            "        return %2$s;\n" +
-            "    }\n\n",
+            "{\n" +
+            "    return %2$s;\n" +
+            "}\n\n",
             sinceVersion,
             generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString()));
     }
@@ -1561,14 +1561,15 @@ public class CGenerator implements CodeGenerator
             "{\n" +
             "    return %3$d;\n" +
             "}\n",
-            containingStructName, propertyName,
+            containingStructName,
+            propertyName,
             token.arrayLength()));
 
         sb.append(String.format("\n" +
             "SBE_ONE_DEF const char *%1$s_%2$s_buffer(const struct %1$s *const codec)\n" +
             "{\n" +
             "%3$s" +
-            "    return (codec->buffer + codec->offset + %4$d);\n" +
+            "    return codec->buffer + codec->offset + %4$d;\n" +
             "}\n",
             containingStructName,
             propertyName,
