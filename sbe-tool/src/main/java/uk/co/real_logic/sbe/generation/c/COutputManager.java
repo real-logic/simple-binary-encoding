@@ -35,7 +35,7 @@ public class COutputManager implements OutputManager
     /**
      * Create a new {@link OutputManager} for generating C11 source files into a given package.
      *
-     * @param baseDirName for the generated source code.
+     * @param baseDirName   for the generated source code.
      * @param namespaceName for the generated source code relative to the baseDirName.
      */
     public COutputManager(final String baseDirName, final String namespaceName)

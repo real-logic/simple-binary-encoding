@@ -151,9 +151,4 @@ public class CUtil
                 return "";
         }
     }
-
-    public static String closingBraces(final int count)
-    {
-        return new String(new char[count]).replace("\0", "}\n");
-    }
 }
