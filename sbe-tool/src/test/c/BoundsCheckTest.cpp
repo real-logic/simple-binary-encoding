@@ -90,32 +90,32 @@ protected:
             CGT(car_set_someNumbers_unsafe)(&m_car, i, (int32_t)(i));
         }
 
-        CGT(optionalExtras) *const extras = CGT(car_extras)(&m_car);
-        if (!extras)
+        CGT(optionalExtras) extras;
+        if (!CGT(car_extras)(&m_car, &extras))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        CGT(optionalExtras_clear)(extras);
-        CGT(optionalExtras_set_cruiseControl)(extras, CRUISE_CONTROL);
-        CGT(optionalExtras_set_sportsPack)(extras, SPORTS_PACK);
-        CGT(optionalExtras_set_sunRoof)(extras, SUNROOF);
+        CGT(optionalExtras_clear)(&extras);
+        CGT(optionalExtras_set_cruiseControl)(&extras, CRUISE_CONTROL);
+        CGT(optionalExtras_set_sportsPack)(&extras, SPORTS_PACK);
+        CGT(optionalExtras_set_sunRoof)(&extras, SUNROOF);
 
-        CGT(engine) *const engine = CGT(car_engine)(&m_car);
-        if (!engine)
+        CGT(engine) engine;
+        if (!CGT(car_engine)(&m_car, &engine))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        CGT(engine_set_capacity)(engine, 2000);
-        CGT(engine_set_numCylinders)(engine, (short)4);
-        CGT(engine_put_manufacturerCode)(engine, MANUFACTURER_CODE);
+        CGT(engine_set_capacity)(&engine, 2000);
+        CGT(engine_set_numCylinders)(&engine, (short)4);
+        CGT(engine_put_manufacturerCode)(&engine, MANUFACTURER_CODE);
 
-        CGT(boosterT) *const booster = CGT(engine_booster)(engine);
-        if (!booster)
+        CGT(boosterT) booster;
+        if (!CGT(engine_booster)(&engine, &booster))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        CGT(boosterT_set_boostType)(booster, CGT(boostType_NITROUS));
-        CGT(boosterT_set_horsePower)(booster, 200);
+        CGT(boosterT_set_boostType)(&booster, CGT(boostType_NITROUS));
+        CGT(boosterT_set_horsePower)(&booster, 200);
 
         return CGT(car_encoded_length)(&m_car);
     }
@@ -285,36 +285,36 @@ protected:
 
         EXPECT_EQ(CGT(car_vehicleCode_length)(), 6u);
         EXPECT_EQ(std::string(CGT(car_vehicleCode_buffer)(&m_carDecoder), 6), std::string(VEHICLE_CODE, 6));
-        CGT(optionalExtras) *const extras = CGT(car_extras)(&m_carDecoder);
-        if (!extras)
+        CGT(optionalExtras) extras;
+        if (!CGT(car_extras)(&m_carDecoder, &extras))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        EXPECT_TRUE(CGT(optionalExtras_cruiseControl)(extras));
-        EXPECT_TRUE(CGT(optionalExtras_sportsPack)(extras));
-        EXPECT_FALSE(CGT(optionalExtras_sunRoof)(extras));
+        EXPECT_TRUE(CGT(optionalExtras_cruiseControl)(&extras));
+        EXPECT_TRUE(CGT(optionalExtras_sportsPack)(&extras));
+        EXPECT_FALSE(CGT(optionalExtras_sunRoof)(&extras));
 
-        CGT(engine) *const engine = CGT(car_engine)(&m_carDecoder);
-        if (!engine)
+        CGT(engine) engine;
+        if (!CGT(car_engine)(&m_carDecoder, &engine))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        EXPECT_EQ(CGT(engine_capacity)(engine), 2000);
-        EXPECT_EQ(CGT(engine_numCylinders)(engine), 4);
+        EXPECT_EQ(CGT(engine_capacity)(&engine), 2000);
+        EXPECT_EQ(CGT(engine_numCylinders)(&engine), 4);
         EXPECT_EQ(CGT(engine_maxRpm)(), 9000);
         EXPECT_EQ(CGT(engine_manufacturerCode_length)(), 3u);
-        EXPECT_EQ(std::string(CGT(engine_manufacturerCode_buffer)(engine), 3), std::string(MANUFACTURER_CODE, 3));
+        EXPECT_EQ(std::string(CGT(engine_manufacturerCode_buffer)(&engine), 3), std::string(MANUFACTURER_CODE, 3));
         EXPECT_EQ(CGT(engine_fuel_length)(), 6u);
         EXPECT_EQ(std::string(CGT(engine_fuel)(), 6), "Petrol");
-        CGT(boosterT) *const booster = CGT(engine_booster)(engine);
-        if (!booster)
+        CGT(boosterT) booster;
+        if (!CGT(engine_booster)(&engine, &booster))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
         CGT(boostType) out;
-        EXPECT_TRUE(CGT(boosterT_boostType)(booster, &out));
+        EXPECT_TRUE(CGT(boosterT_boostType)(&booster, &out));
         EXPECT_EQ(out, CGT(boostType_NITROUS));
-        EXPECT_EQ(CGT(boosterT_horsePower)(booster), 200);
+        EXPECT_EQ(CGT(boosterT_horsePower)(&booster), 200);
 
         return CGT(car_encoded_length)(&m_carDecoder);
     }

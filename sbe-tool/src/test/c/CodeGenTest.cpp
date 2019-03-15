@@ -111,32 +111,32 @@ public:
             CGT(car_set_someNumbers_unsafe)(&car, i, static_cast<std::int32_t>(i));
         }
 
-        CGT(optionalExtras) *const extras = CGT(car_extras)(&car);
-        if (!extras)
+        CGT(optionalExtras) extras;
+        if (!CGT(car_extras)(&car, &extras))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        CGT(optionalExtras_clear)(extras);
-        CGT(optionalExtras_set_cruiseControl)(extras, CRUISE_CONTROL);
-        CGT(optionalExtras_set_sportsPack)(extras, SPORTS_PACK);
-        CGT(optionalExtras_set_sunRoof)(extras, SUNROOF);
+        CGT(optionalExtras_clear)(&extras);
+        CGT(optionalExtras_set_cruiseControl)(&extras, CRUISE_CONTROL);
+        CGT(optionalExtras_set_sportsPack)(&extras, SPORTS_PACK);
+        CGT(optionalExtras_set_sunRoof)(&extras, SUNROOF);
 
-        CGT(engine) *const engine = CGT(car_engine)(&car);
-        if (!engine)
+        CGT(engine) engine;
+        if (!CGT(car_engine)(&car, &engine))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        CGT(engine_set_capacity)(engine, engineCapacity);
-        CGT(engine_set_numCylinders)(engine, engineNumCylinders);
-        CGT(engine_put_manufacturerCode)(engine, MANUFACTURER_CODE);
+        CGT(engine_set_capacity)(&engine, engineCapacity);
+        CGT(engine_set_numCylinders)(&engine, engineNumCylinders);
+        CGT(engine_put_manufacturerCode)(&engine, MANUFACTURER_CODE);
 
-        CGT(boosterT) *const booster = CGT(engine_booster)(engine);
-        if (!booster)
+        CGT(boosterT) booster;
+        if (!CGT(engine_booster)(&engine, &booster))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        CGT(boosterT_set_boostType)(booster, BOOST_TYPE);
-        CGT(boosterT_set_horsePower)(booster, BOOSTER_HORSEPOWER);
+        CGT(boosterT_set_boostType)(&booster, BOOST_TYPE);
+        CGT(boosterT_set_horsePower)(&booster, BOOSTER_HORSEPOWER);
 
         CGT(car_fuelFigures) *const fuelFigures = CGT(car_fuelFigures_set_count)(&car, FUEL_FIGURES_COUNT);
         if (!fuelFigures)
@@ -552,29 +552,29 @@ TEST_F(CodeGenTest, shouldbeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
     EXPECT_EQ(CGT(car_vehicleCode_length)(), VEHICLE_CODE_LENGTH);
     EXPECT_EQ(std::string(CGT(car_vehicleCode_buffer)(&m_carDecoder), VEHICLE_CODE_LENGTH), std::string(VEHICLE_CODE, VEHICLE_CODE_LENGTH));
 
-    CGT(optionalExtras) *const extras = CGT(car_extras)(&m_carDecoder);
-    if (!extras)
+    CGT(optionalExtras) extras;
+    if (!CGT(car_extras)(&m_carDecoder, &extras))
     {
          throw std::runtime_error(sbe_strerror(errno));
     }
 
-    EXPECT_TRUE(CGT(optionalExtras_cruiseControl)(extras));
-    EXPECT_TRUE(CGT(optionalExtras_sportsPack)(extras));
-    EXPECT_FALSE(CGT(optionalExtras_sunRoof)(extras));
+    EXPECT_TRUE(CGT(optionalExtras_cruiseControl)(&extras));
+    EXPECT_TRUE(CGT(optionalExtras_sportsPack)(&extras));
+    EXPECT_FALSE(CGT(optionalExtras_sunRoof)(&extras));
     EXPECT_EQ(CGT(car_discountedModel)(&m_carDecoder), CGT(model_C));
 
-    CGT(engine) *engine = CGT(car_engine)(&m_carDecoder);
-    if (!engine)
+    CGT(engine) engine;
+    if (!CGT(car_engine)(&m_carDecoder, &engine))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
-    EXPECT_EQ(CGT(engine_capacity)(engine), engineCapacity);
-    EXPECT_EQ(CGT(engine_numCylinders)(engine), engineNumCylinders);
+    EXPECT_EQ(CGT(engine_capacity)(&engine), engineCapacity);
+    EXPECT_EQ(CGT(engine_numCylinders)(&engine), engineNumCylinders);
     EXPECT_EQ(CGT(engine_maxRpm)(), 9000);
     EXPECT_EQ(CGT(engine_manufacturerCode_length)(), MANUFACTURER_CODE_LENGTH);
     EXPECT_EQ(
         std::string(
-            CGT(engine_manufacturerCode_buffer)(engine),
+            CGT(engine_manufacturerCode_buffer)(&engine),
             MANUFACTURER_CODE_LENGTH),
         std::string(MANUFACTURER_CODE, MANUFACTURER_CODE_LENGTH));
     EXPECT_EQ(CGT(engine_fuel_length)(), 6u);
