@@ -480,7 +480,7 @@ public class CGenerator implements CodeGenerator
         final String propertyName = formatPropertyName(token.name());
 
         sb.append(String.format("\n" +
-            "SBE_ONE_DEF uint16_t %1$s_id()\n" +
+            "SBE_ONE_DEF uint16_t %1$s_id(void)\n" +
             "{\n" +
             "    return %2$d;\n" +
             "}\n",
@@ -1801,7 +1801,7 @@ public class CGenerator implements CodeGenerator
             containingStructName));
 
         sb.append(String.format("\n" +
-            "SBE_ONE_DEF const char *%3$s_%1$s()\n" +
+            "SBE_ONE_DEF const char *%3$s_%1$s(void)\n" +
             "{\n" +
             "    static uint8_t %1$s_values[] = {%2$s};\n\n" +
 
