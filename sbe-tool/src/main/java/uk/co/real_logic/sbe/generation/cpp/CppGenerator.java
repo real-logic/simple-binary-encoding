@@ -736,7 +736,7 @@ public class CppGenerator implements CodeGenerator
                 sb.append(String.format("\n" +
                     "    static bool %1$s(const %2$s bits)\n" +
                     "    {\n" +
-                    "        return bits & (static_cast<%2$s>(1) << %3$s);\n" +
+                    "        return (bits & (static_cast<%2$s>(1) << %3$s)) != 0;\n" +
                     "    }\n",
                     choiceName,
                     typeName,
@@ -758,7 +758,7 @@ public class CppGenerator implements CodeGenerator
                     "%2$s" +
                     "        %4$s val;\n" +
                     "        std::memcpy(&val, m_buffer + m_offset, sizeof(%4$s));\n" +
-                    "        return %3$s(val) & (static_cast<%4$s>(1) << %5$s);\n" +
+                    "        return (%3$s(val) & (static_cast<%4$s>(1) << %5$s)) != 0;\n" +
                     "    }\n",
                     choiceName,
                     generateChoiceNotPresentCondition(token.version(), BASE_INDENT),

@@ -910,7 +910,7 @@ public class CGenerator implements CodeGenerator
                 sb.append(String.format("\n" +
                     "SBE_ONE_DEF bool %1$s_check_%2$s_bit(const %3$s bits)\n" +
                     "{\n" +
-                    "    return bits & ((%3$s)1 << %4$s);\n" +
+                    "    return (bits & ((%3$s)1 << %4$s)) != 0;\n" +
                     "}\n",
                     bitsetStructName,
                     choiceName,
@@ -934,7 +934,7 @@ public class CGenerator implements CodeGenerator
                     "%3$s" +
                     "    %5$s val;\n" +
                     "    memcpy(&val, codec->buffer + codec->offset, sizeof(%5$s));\n" +
-                    "    return %4$s(val) & ((%5$s)1 << %6$s);\n" +
+                    "    return (%4$s(val) & ((%5$s)1 << %6$s)) != 0;\n" +
                     "}\n",
                     bitsetStructName,
                     choiceName,
