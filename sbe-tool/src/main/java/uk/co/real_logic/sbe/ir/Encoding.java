@@ -213,7 +213,6 @@ public class Encoding
         return primitiveType.minValue();
     }
 
-
     /**
      * The most applicable max value for the encoded type.
      *

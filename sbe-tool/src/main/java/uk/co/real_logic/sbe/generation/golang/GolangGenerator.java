@@ -568,7 +568,6 @@ public class GolangGenerator implements CodeGenerator
         init.append("\treturn\n}\n");
     }
 
-
     // Newer messages and groups can add extra properties before the variable
     // length elements (groups and varData). We read past the difference
     // between the message's blockLength and our (older) schema's blockLength
