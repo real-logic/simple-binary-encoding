@@ -156,6 +156,12 @@ public class CGenerator implements CodeGenerator
                     "{\n" +
                     "    double fp_value;\n" +
                     "    uint64_t uint_value;\n" +
+                    "};\n\n" +
+
+                    "struct %1$s_string_view\n" +
+                    "{\n" +
+                    "    const char* data;\n" +
+                    "    size_t length;\n" +
                     "};\n",
                     structName));
 
@@ -619,6 +625,26 @@ public class CGenerator implements CodeGenerator
                 structName));
 
             sb.append(String.format("\n" +
+                "SBE_ONE_DEF struct %6$s_string_view %5$s_get_%1$s_as_string_view(struct %5$s *const codec)\n" +
+                "{\n" +
+                "%2$s" +
+                "    %4$s length_field_value = %5$s_%1$s_length(codec);\n" +
+                "    const char *field_ptr = codec->buffer + %5$s_sbe_position(codec) + %3$d;\n" +
+                "    if (!%5$s_set_sbe_position(\n" +
+                "        codec, %5$s_sbe_position(codec) + %3$d + length_field_value))\n" +
+                "    {\n" +
+                "        return {NULL, 0};\n" +
+                "    }\n" +
+                "    return {field_ptr, length_field_value};\n" +
+                "}\n",
+                propertyName,
+                generateStringViewNotPresentCondition(token.version()),
+                lengthOfLengthField,
+                lengthCType,
+                structName,
+                outermostStruct));
+
+            sb.append(String.format("\n" +
                 "SBE_ONE_DEF struct %5$s *%5$s_put_%1$s(\n" +
                 "    struct %5$s *const codec,\n" +
                 "    const char *src,\n" +
@@ -834,6 +860,12 @@ public class CGenerator implements CodeGenerator
                 "{\n" +
                 "    double fp_value;\n" +
                 "    uint64_t uint_value;\n" +
+                "};\n\n" +
+
+                "struct %1$s_string_view\n" +
+                "{\n" +
+                "    const char* data;\n" +
+                "    size_t length;\n" +
                 "};\n",
                 compositeName));
 
@@ -1037,6 +1069,21 @@ public class CGenerator implements CodeGenerator
             "if (codec->acting_version < %1$d)\n" +
             "{\n" +
             "    return 0;\n" +
+            "}\n\n",
+            sinceVersion);
+    }
+
+    private static CharSequence generateStringViewNotPresentCondition(final int sinceVersion)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            "if (codec->acting_version < %1$d)\n" +
+            "{\n" +
+            "    return {NULL, 0};\n" +
             "}\n\n",
             sinceVersion);
     }
