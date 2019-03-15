@@ -132,7 +132,6 @@ public class CGenerator implements CodeGenerator
                 out.append(sb);
                 out.append(generateStructDeclaration(structName));
                 out.append(generateMessageFlyweightMembers());
-                out.append(generateFieldMembers(ir.namespaces(), fields));
                 sb.setLength(0);
                 generateGroupPropertyMembers(sb, groups, structName);
                 out.append(sb);
@@ -156,6 +155,12 @@ public class CGenerator implements CodeGenerator
                     "{\n" +
                     "    double fp_value;\n" +
                     "    uint64_t uint_value;\n" +
+                    "};\n\n" +
+
+                    "struct %1$s_string_view\n" +
+                    "{\n" +
+                    "    const char* data;\n" +
+                    "    size_t length;\n" +
                     "};\n",
                     structName));
 
@@ -474,7 +479,7 @@ public class CGenerator implements CodeGenerator
         final String propertyName = formatPropertyName(token.name());
 
         sb.append(String.format("\n" +
-            "SBE_ONE_DEF uint16_t %1$s_id()\n" +
+            "SBE_ONE_DEF uint16_t %1$s_id(void)\n" +
             "{\n" +
             "    return %2$d;\n" +
             "}\n",
@@ -617,6 +622,26 @@ public class CGenerator implements CodeGenerator
                 lengthByteOrderStr,
                 lengthCType,
                 structName));
+
+            sb.append(String.format("\n" +
+                "SBE_ONE_DEF struct %6$s_string_view %5$s_get_%1$s_as_string_view(struct %5$s *const codec)\n" +
+                "{\n" +
+                "%2$s" +
+                "    %4$s length_field_value = %5$s_%1$s_length(codec);\n" +
+                "    const char *field_ptr = codec->buffer + %5$s_sbe_position(codec) + %3$d;\n" +
+                "    if (!%5$s_set_sbe_position(\n" +
+                "        codec, %5$s_sbe_position(codec) + %3$d + length_field_value))\n" +
+                "    {\n" +
+                "        return {NULL, 0};\n" +
+                "    }\n" +
+                "    return {field_ptr, length_field_value};\n" +
+                "}\n",
+                propertyName,
+                generateStringViewNotPresentCondition(token.version()),
+                lengthOfLengthField,
+                lengthCType,
+                structName,
+                outermostStruct));
 
             sb.append(String.format("\n" +
                 "SBE_ONE_DEF struct %5$s *%5$s_put_%1$s(\n" +
@@ -812,8 +837,6 @@ public class CGenerator implements CodeGenerator
                 generateTypesToIncludes(tokens.subList(1, tokens.size() - 1))));
             out.append(generateStructDeclaration(compositeName));
             out.append(generateFixedFlyweightCodeMembers());
-            out.append(generateCompositePropertyMembers(
-                scope, compositeName, tokens.subList(1, tokens.size() - 1)));
             out.append("};\n");
             out.append(String.format("\n" +
                 "enum %1$s_meta_attribute\n" +
@@ -834,6 +857,12 @@ public class CGenerator implements CodeGenerator
                 "{\n" +
                 "    double fp_value;\n" +
                 "    uint64_t uint_value;\n" +
+                "};\n\n" +
+
+                "struct %1$s_string_view\n" +
+                "{\n" +
+                "    const char* data;\n" +
+                "    size_t length;\n" +
                 "};\n",
                 compositeName));
 
@@ -878,7 +907,7 @@ public class CGenerator implements CodeGenerator
                 sb.append(String.format("\n" +
                     "SBE_ONE_DEF bool %1$s_check_%2$s_bit(const %3$s bits)\n" +
                     "{\n" +
-                    "    return bits & ((%3$s)1 << %4$s);\n" +
+                    "    return (bits & ((%3$s)1 << %4$s)) != 0;\n" +
                     "}\n",
                     bitsetStructName,
                     choiceName,
@@ -902,7 +931,7 @@ public class CGenerator implements CodeGenerator
                     "%3$s" +
                     "    %5$s val;\n" +
                     "    memcpy(&val, codec->buffer + codec->offset, sizeof(%5$s));\n" +
-                    "    return %4$s(val) & ((%5$s)1 << %6$s);\n" +
+                    "    return (%4$s(val) & ((%5$s)1 << %6$s)) != 0;\n" +
                     "}\n",
                     bitsetStructName,
                     choiceName,
@@ -1037,6 +1066,21 @@ public class CGenerator implements CodeGenerator
             "if (codec->acting_version < %1$d)\n" +
             "{\n" +
             "    return 0;\n" +
+            "}\n\n",
+            sinceVersion);
+    }
+
+    private static CharSequence generateStringViewNotPresentCondition(final int sinceVersion)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            "if (codec->acting_version < %1$d)\n" +
+            "{\n" +
+            "    return {NULL, 0};\n" +
             "}\n\n",
             sinceVersion);
     }
@@ -1197,25 +1241,6 @@ public class CGenerator implements CodeGenerator
             structName);
     }
 
-    private void generatePropertyMembers(
-        final StringBuilder sb,
-        final CharSequence[] scope,
-        final Token signalToken,
-        final String propertyName,
-        final Token encodingToken)
-    {
-        switch (encodingToken.signal())
-        {
-            case BEGIN_SET:
-                sb.append(generateBitsetPropertyMember(scope, propertyName, encodingToken));
-                break;
-
-            case BEGIN_COMPOSITE:
-                sb.append(generateCompositePropertyMember(scope, propertyName, encodingToken));
-                break;
-        }
-    }
-
     private void generatePropertyFunctions(
         final StringBuilder sb,
         final CharSequence[] scope,
@@ -1260,26 +1285,6 @@ public class CGenerator implements CodeGenerator
                     containingStructName));
                 break;
         }
-    }
-
-    private CharSequence generateCompositePropertyMembers(
-        final CharSequence[] scope,
-        final String containingStructName,
-        final List<Token> tokens)
-    {
-        final StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < tokens.size();)
-        {
-            final Token fieldToken = tokens.get(i);
-            final String propertyName = formatPropertyName(fieldToken.name());
-
-            generatePropertyMembers(sb, scope, fieldToken, propertyName, fieldToken);
-
-            i += tokens.get(i).componentTokenCount();
-        }
-
-        return sb;
     }
 
     private CharSequence generateCompositePropertyFunctions(
@@ -1754,7 +1759,7 @@ public class CGenerator implements CodeGenerator
             containingStructName));
 
         sb.append(String.format("\n" +
-            "SBE_ONE_DEF const char *%3$s_%1$s()\n" +
+            "SBE_ONE_DEF const char *%3$s_%1$s(void)\n" +
             "{\n" +
             "    static uint8_t %1$s_values[] = {%2$s};\n\n" +
 
@@ -2078,25 +2083,6 @@ public class CGenerator implements CodeGenerator
             messageHeaderStruct);
     }
 
-    private CharSequence generateFieldMembers(final CharSequence[] scope, final List<Token> tokens)
-    {
-        final StringBuilder sb = new StringBuilder();
-
-        for (int i = 0, size = tokens.size(); i < size; i++)
-        {
-            final Token signalToken = tokens.get(i);
-            if (signalToken.signal() == Signal.BEGIN_FIELD)
-            {
-                final Token encodingToken = tokens.get(i + 1);
-                final String propertyName = formatPropertyName(signalToken.name());
-
-                generatePropertyMembers(sb, scope, signalToken, propertyName, encodingToken);
-            }
-        }
-
-        return sb;
-    }
-
     private CharSequence generateFieldFunctions(
         final CharSequence[] scope,
         final String containingStructName,
@@ -2319,23 +2305,6 @@ public class CGenerator implements CodeGenerator
         return sb;
     }
 
-    private static Object generateBitsetPropertyMember(
-        final CharSequence[] scope,
-        final String propertyName,
-        final Token token)
-    {
-        final StringBuilder sb = new StringBuilder();
-
-        final String bitsetName = formatScopedName(scope, token.applicableTypeName());
-
-        sb.append(String.format(
-            "    struct %1$s %2$s;\n",
-            bitsetName,
-            propertyName));
-
-        return sb;
-    }
-
     private static Object generateBitsetPropertyFunctions(
         final CharSequence[] scope,
         final String propertyName,
@@ -2348,10 +2317,10 @@ public class CGenerator implements CodeGenerator
         final int offset = token.offset();
 
         sb.append(String.format("\n" +
-            "struct %1$s *%4$s_%2$s(struct %4$s *const codec)\n" +
+            "struct %1$s *%4$s_%2$s(struct %4$s *const codec, struct %1$s *const bitset)\n" +
             "{\n" +
             "    return %1$s_wrap(\n" +
-            "        &codec->extras,\n" +
+            "        bitset,\n" +
             "        codec->buffer,\n" +
             "        codec->offset + %3$d,\n" +
             "        codec->acting_version,\n" +
@@ -2373,20 +2342,6 @@ public class CGenerator implements CodeGenerator
         return sb;
     }
 
-    private static Object generateCompositePropertyMember(
-        final CharSequence[] scope, final String propertyName, final Token token)
-    {
-        final String compositeName = formatScopedName(scope, token.applicableTypeName());
-        final StringBuilder sb = new StringBuilder();
-
-        sb.append(String.format(
-            "    struct %1$s %2$s;\n",
-            compositeName,
-            propertyName));
-
-        return sb;
-    }
-
     private static Object generateCompositePropertyFunction(
         final CharSequence[] scope,
         final String propertyName,
@@ -2398,10 +2353,10 @@ public class CGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format("\n" +
-            "struct %1$s *%4$s_%2$s(struct %4$s *const codec)\n" +
+            "struct %1$s *%4$s_%2$s(struct %4$s *const codec, struct %1$s *const composite)\n" +
             "{\n" +
             "    return %1$s_wrap(\n" +
-            "        &codec->%2$s,\n" +
+            "        composite,\n" +
             "        codec->buffer,\n" +
             "        codec->offset + %3$d,\n" +
             "        codec->acting_version,\n" +
