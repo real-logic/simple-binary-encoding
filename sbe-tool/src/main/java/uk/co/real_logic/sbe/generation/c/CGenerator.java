@@ -1598,13 +1598,12 @@ public class CGenerator implements CodeGenerator
             "    const struct %1$s *const codec,\n" +
             "    const uint64_t index)\n" +
             "{\n" +
-            "%5$s" +
-            "%6$s\n" +
+            "%4$s" +
+            "%5$s\n" +
             "}\n",
             containingStructName,
             cTypeName,
             propertyName,
-            token.arrayLength(),
             generateFieldNotPresentCondition(token.version(), token.encoding()),
             loadValue));
 
@@ -1649,13 +1648,12 @@ public class CGenerator implements CodeGenerator
             "    const uint64_t index,\n" +
             "    const %3$s value)\n" +
             "{\n" +
-            "%5$s\n" +
+            "%4$s\n" +
             "    return codec;\n" +
             "}\n",
             containingStructName,
             propertyName,
             cTypeName,
-            token.arrayLength(),
             storeValue));
 
         sb.append(String.format("\n" +
