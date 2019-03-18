@@ -138,78 +138,77 @@ public:
         CGT(boosterT_set_boostType)(&booster, BOOST_TYPE);
         CGT(boosterT_set_horsePower)(&booster, BOOSTER_HORSEPOWER);
 
-        CGT(car_fuelFigures) *const fuelFigures = CGT(car_fuelFigures_set_count)(&car, FUEL_FIGURES_COUNT);
-        if (!fuelFigures)
+        CGT(car_fuelFigures) fuelFigures;
+        if (!CGT(car_fuelFigures_set_count)(&car, &fuelFigures, FUEL_FIGURES_COUNT))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        CGT(car_fuelFigures_next)(fuelFigures);
-        CGT(car_fuelFigures_set_speed)(fuelFigures, fuel1Speed);
-        CGT(car_fuelFigures_set_mpg)(fuelFigures, fuel1Mpg);
+        CGT(car_fuelFigures_next)(&fuelFigures);
+        CGT(car_fuelFigures_set_speed)(&fuelFigures, fuel1Speed);
+        CGT(car_fuelFigures_set_mpg)(&fuelFigures, fuel1Mpg);
         CGT(car_fuelFigures_put_usageDescription)(
-            fuelFigures,
+            &fuelFigures,
             FUEL_FIGURES_1_USAGE_DESCRIPTION,
             static_cast<int>(strlen(FUEL_FIGURES_1_USAGE_DESCRIPTION)));
 
-        CGT(car_fuelFigures_next)(fuelFigures);
-        CGT(car_fuelFigures_set_speed)(fuelFigures, fuel2Speed);
-        CGT(car_fuelFigures_set_mpg)(fuelFigures, fuel2Mpg);
+        CGT(car_fuelFigures_next)(&fuelFigures);
+        CGT(car_fuelFigures_set_speed)(&fuelFigures, fuel2Speed);
+        CGT(car_fuelFigures_set_mpg)(&fuelFigures, fuel2Mpg);
         CGT(car_fuelFigures_put_usageDescription)(
-            fuelFigures,
+            &fuelFigures,
             FUEL_FIGURES_2_USAGE_DESCRIPTION,
             static_cast<int>(strlen(FUEL_FIGURES_2_USAGE_DESCRIPTION)));
 
-        CGT(car_fuelFigures_next)(fuelFigures);
-        CGT(car_fuelFigures_set_speed)(fuelFigures, fuel3Speed);
-        CGT(car_fuelFigures_set_mpg)(fuelFigures, fuel3Mpg);
+        CGT(car_fuelFigures_next)(&fuelFigures);
+        CGT(car_fuelFigures_set_speed)(&fuelFigures, fuel3Speed);
+        CGT(car_fuelFigures_set_mpg)(&fuelFigures, fuel3Mpg);
         CGT(car_fuelFigures_put_usageDescription)(
-            fuelFigures,
+            &fuelFigures,
             FUEL_FIGURES_3_USAGE_DESCRIPTION,
             static_cast<int>(strlen(FUEL_FIGURES_3_USAGE_DESCRIPTION)));
 
-        CGT(car_performanceFigures) *const perfFigs = CGT(car_performanceFigures_set_count)(
-            &car,
-            PERFORMANCE_FIGURES_COUNT);
-        if (!perfFigs)
+        CGT(car_performanceFigures) perfFigs;
+        if (!CGT(car_performanceFigures_set_count)(
+                &car,
+                &perfFigs,
+                PERFORMANCE_FIGURES_COUNT))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        CGT(car_performanceFigures_next)(perfFigs);
-        CGT(car_performanceFigures_set_octaneRating)(perfFigs, perf1Octane);
+        CGT(car_performanceFigures_next)(&perfFigs);
+        CGT(car_performanceFigures_set_octaneRating)(&perfFigs, perf1Octane);
 
-        CGT(car_performanceFigures_acceleration) *acc =
-            CGT(car_performanceFigures_acceleration_set_count)(perfFigs, ACCELERATION_COUNT);
-        if (!acc)
+        CGT(car_performanceFigures_acceleration) acc;
+        if (!CGT(car_performanceFigures_acceleration_set_count)(&perfFigs, &acc, ACCELERATION_COUNT))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        CGT(car_performanceFigures_acceleration_next)(acc);
-        CGT(car_performanceFigures_acceleration_set_mph)(acc, perf1aMph);
-        CGT(car_performanceFigures_acceleration_set_seconds)(acc, perf1aSeconds);
-        CGT(car_performanceFigures_acceleration_next)(acc);
-        CGT(car_performanceFigures_acceleration_set_mph)(acc, perf1bMph);
-        CGT(car_performanceFigures_acceleration_set_seconds)(acc, perf1bSeconds);
-        CGT(car_performanceFigures_acceleration_next)(acc);
-        CGT(car_performanceFigures_acceleration_set_mph)(acc, perf1cMph);
-        CGT(car_performanceFigures_acceleration_set_seconds)(acc, perf1cSeconds);
+        CGT(car_performanceFigures_acceleration_next)(&acc);
+        CGT(car_performanceFigures_acceleration_set_mph)(&acc, perf1aMph);
+        CGT(car_performanceFigures_acceleration_set_seconds)(&acc, perf1aSeconds);
+        CGT(car_performanceFigures_acceleration_next)(&acc);
+        CGT(car_performanceFigures_acceleration_set_mph)(&acc, perf1bMph);
+        CGT(car_performanceFigures_acceleration_set_seconds)(&acc, perf1bSeconds);
+        CGT(car_performanceFigures_acceleration_next)(&acc);
+        CGT(car_performanceFigures_acceleration_set_mph)(&acc, perf1cMph);
+        CGT(car_performanceFigures_acceleration_set_seconds)(&acc, perf1cSeconds);
 
-        CGT(car_performanceFigures_next)(perfFigs);
-        CGT(car_performanceFigures_set_octaneRating)(perfFigs, perf2Octane);
+        CGT(car_performanceFigures_next)(&perfFigs);
+        CGT(car_performanceFigures_set_octaneRating)(&perfFigs, perf2Octane);
 
-        acc = CGT(car_performanceFigures_acceleration_set_count)(perfFigs, ACCELERATION_COUNT);
-        if (!acc)
+        if (!CGT(car_performanceFigures_acceleration_set_count)(&perfFigs, &acc, ACCELERATION_COUNT))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        CGT(car_performanceFigures_acceleration_next)(acc);
-        CGT(car_performanceFigures_acceleration_set_mph)(acc, perf2aMph);
-        CGT(car_performanceFigures_acceleration_set_seconds)(acc, perf2aSeconds);
-        CGT(car_performanceFigures_acceleration_next)(acc);
-        CGT(car_performanceFigures_acceleration_set_mph)(acc, perf2bMph);
-        CGT(car_performanceFigures_acceleration_set_seconds)(acc, perf2bSeconds);
-        CGT(car_performanceFigures_acceleration_next)(acc);
-        CGT(car_performanceFigures_acceleration_set_mph)(acc, perf2cMph);
-        CGT(car_performanceFigures_acceleration_set_seconds)(acc, perf2cSeconds);
+        CGT(car_performanceFigures_acceleration_next)(&acc);
+        CGT(car_performanceFigures_acceleration_set_mph)(&acc, perf2aMph);
+        CGT(car_performanceFigures_acceleration_set_seconds)(&acc, perf2aSeconds);
+        CGT(car_performanceFigures_acceleration_next)(&acc);
+        CGT(car_performanceFigures_acceleration_set_mph)(&acc, perf2bMph);
+        CGT(car_performanceFigures_acceleration_set_seconds)(&acc, perf2bSeconds);
+        CGT(car_performanceFigures_acceleration_next)(&acc);
+        CGT(car_performanceFigures_acceleration_set_mph)(&acc, perf2cMph);
+        CGT(car_performanceFigures_acceleration_set_seconds)(&acc, perf2cSeconds);
 
         CGT(car_put_manufacturer)(&car, MANUFACTURER, static_cast<int>(strlen(MANUFACTURER)));
         CGT(car_put_model)(&car, MODEL, static_cast<int>(strlen(MODEL)));
@@ -580,74 +579,77 @@ TEST_F(CodeGenTest, shouldbeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
     EXPECT_EQ(CGT(engine_fuel_length)(), 6u);
     EXPECT_EQ(std::string(CGT(engine_fuel)(), 6), std::string("Petrol"));
 
-    CGT(car_fuelFigures) *fuelFigures = CGT(car_get_fuelFigures)(&m_carDecoder);
-    EXPECT_EQ(CGT(car_fuelFigures_count)(fuelFigures), FUEL_FIGURES_COUNT);
+    CGT(car_fuelFigures) fuelFigures;
+    CGT(car_get_fuelFigures)(&m_carDecoder, &fuelFigures);
+    EXPECT_EQ(CGT(car_fuelFigures_count)(&fuelFigures), FUEL_FIGURES_COUNT);
 
-    ASSERT_TRUE(CGT(car_fuelFigures_has_next)(fuelFigures));
-    CGT(car_fuelFigures_next)(fuelFigures);
-    EXPECT_EQ(CGT(car_fuelFigures_speed)(fuelFigures), fuel1Speed);
-    EXPECT_EQ(CGT(car_fuelFigures_mpg)(fuelFigures), fuel1Mpg);
-    EXPECT_EQ(CGT(car_fuelFigures_usageDescription_length)(fuelFigures), FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH);
-    EXPECT_EQ(std::string(CGT(car_fuelFigures_usageDescription)(fuelFigures), FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH), FUEL_FIGURES_1_USAGE_DESCRIPTION);
+    ASSERT_TRUE(CGT(car_fuelFigures_has_next)(&fuelFigures));
+    CGT(car_fuelFigures_next)(&fuelFigures);
+    EXPECT_EQ(CGT(car_fuelFigures_speed)(&fuelFigures), fuel1Speed);
+    EXPECT_EQ(CGT(car_fuelFigures_mpg)(&fuelFigures), fuel1Mpg);
+    EXPECT_EQ(CGT(car_fuelFigures_usageDescription_length)(&fuelFigures), FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH);
+    EXPECT_EQ(std::string(CGT(car_fuelFigures_usageDescription)(&fuelFigures), FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH), FUEL_FIGURES_1_USAGE_DESCRIPTION);
 
-    ASSERT_TRUE(CGT(car_fuelFigures_has_next)(fuelFigures));
-    CGT(car_fuelFigures_next)(fuelFigures);
-    EXPECT_EQ(CGT(car_fuelFigures_speed)(fuelFigures), fuel2Speed);
-    EXPECT_EQ(CGT(car_fuelFigures_mpg)(fuelFigures), fuel2Mpg);
-    EXPECT_EQ(CGT(car_fuelFigures_usageDescription_length)(fuelFigures), FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH);
-    EXPECT_EQ(std::string(CGT(car_fuelFigures_usageDescription)(fuelFigures), FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH), FUEL_FIGURES_2_USAGE_DESCRIPTION);
+    ASSERT_TRUE(CGT(car_fuelFigures_has_next)(&fuelFigures));
+    CGT(car_fuelFigures_next)(&fuelFigures);
+    EXPECT_EQ(CGT(car_fuelFigures_speed)(&fuelFigures), fuel2Speed);
+    EXPECT_EQ(CGT(car_fuelFigures_mpg)(&fuelFigures), fuel2Mpg);
+    EXPECT_EQ(CGT(car_fuelFigures_usageDescription_length)(&fuelFigures), FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH);
+    EXPECT_EQ(std::string(CGT(car_fuelFigures_usageDescription)(&fuelFigures), FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH), FUEL_FIGURES_2_USAGE_DESCRIPTION);
 
-    ASSERT_TRUE(CGT(car_fuelFigures_has_next)(fuelFigures));
-    CGT(car_fuelFigures_next)(fuelFigures);
-    EXPECT_EQ(CGT(car_fuelFigures_speed)(fuelFigures), fuel3Speed);
-    EXPECT_EQ(CGT(car_fuelFigures_mpg)(fuelFigures), fuel3Mpg);
-    EXPECT_EQ(CGT(car_fuelFigures_usageDescription_length)(fuelFigures), FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH);
-    EXPECT_EQ(std::string(CGT(car_fuelFigures_usageDescription)(fuelFigures), FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH), FUEL_FIGURES_3_USAGE_DESCRIPTION);
+    ASSERT_TRUE(CGT(car_fuelFigures_has_next)(&fuelFigures));
+    CGT(car_fuelFigures_next)(&fuelFigures);
+    EXPECT_EQ(CGT(car_fuelFigures_speed)(&fuelFigures), fuel3Speed);
+    EXPECT_EQ(CGT(car_fuelFigures_mpg)(&fuelFigures), fuel3Mpg);
+    EXPECT_EQ(CGT(car_fuelFigures_usageDescription_length)(&fuelFigures), FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH);
+    EXPECT_EQ(std::string(CGT(car_fuelFigures_usageDescription)(&fuelFigures), FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH), FUEL_FIGURES_3_USAGE_DESCRIPTION);
 
-    CGT(car_performanceFigures) *performanceFigures = CGT(car_get_performanceFigures)(&m_carDecoder);
-    EXPECT_EQ(CGT(car_performanceFigures_count)(performanceFigures), PERFORMANCE_FIGURES_COUNT);
+    CGT(car_performanceFigures) performanceFigures;
+    CGT(car_get_performanceFigures)(&m_carDecoder, &performanceFigures);
+    EXPECT_EQ(CGT(car_performanceFigures_count)(&performanceFigures), PERFORMANCE_FIGURES_COUNT);
 
-    ASSERT_TRUE(CGT(car_performanceFigures_has_next)(performanceFigures));
-    CGT(car_performanceFigures_next)(performanceFigures);
-    EXPECT_EQ(CGT(car_performanceFigures_octaneRating)(performanceFigures), perf1Octane);
+    ASSERT_TRUE(CGT(car_performanceFigures_has_next)(&performanceFigures));
+    CGT(car_performanceFigures_next)(&performanceFigures);
+    EXPECT_EQ(CGT(car_performanceFigures_octaneRating)(&performanceFigures), perf1Octane);
 
-    CGT(car_performanceFigures_acceleration) *acc = CGT(car_performanceFigures_get_acceleration)(performanceFigures);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_count)(acc), ACCELERATION_COUNT);
-    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(acc));
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(acc), perf1aMph);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(acc), perf1aSeconds);
+    CGT(car_performanceFigures_acceleration) acc;
+    CGT(car_performanceFigures_get_acceleration)(&performanceFigures, &acc);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_count)(&acc), ACCELERATION_COUNT);
+    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(&acc));
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(&acc), perf1aMph);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(&acc), perf1aSeconds);
 
-    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(acc));
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(acc), perf1bMph);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(acc), perf1bSeconds);
+    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(&acc));
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(&acc), perf1bMph);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(&acc), perf1bSeconds);
 
-    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(acc));
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(acc), perf1cMph);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(acc), perf1cSeconds);
+    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(&acc));
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(&acc), perf1cMph);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(&acc), perf1cSeconds);
 
-    ASSERT_TRUE(CGT(car_performanceFigures_has_next)(performanceFigures));
-    CGT(car_performanceFigures_next)(performanceFigures);
-    EXPECT_EQ(CGT(car_performanceFigures_octaneRating)(performanceFigures), perf2Octane);
+    ASSERT_TRUE(CGT(car_performanceFigures_has_next)(&performanceFigures));
+    CGT(car_performanceFigures_next)(&performanceFigures);
+    EXPECT_EQ(CGT(car_performanceFigures_octaneRating)(&performanceFigures), perf2Octane);
 
-    acc = CGT(car_performanceFigures_get_acceleration)(performanceFigures);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_count)(acc), ACCELERATION_COUNT);
-    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(acc));
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(acc), perf2aMph);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(acc), perf2aSeconds);
+    CGT(car_performanceFigures_get_acceleration)(&performanceFigures, &acc);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_count)(&acc), ACCELERATION_COUNT);
+    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(&acc));
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(&acc), perf2aMph);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(&acc), perf2aSeconds);
 
-    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(acc));
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(acc), perf2bMph);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(acc), perf2bSeconds);
+    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(&acc));
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(&acc), perf2bMph);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(&acc), perf2bSeconds);
 
-    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(acc));
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(acc), perf2cMph);
-    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(acc), perf2cSeconds);
+    ASSERT_TRUE(CGT(car_performanceFigures_acceleration_has_next)(&acc));
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_mph)(&acc), perf2cMph);
+    EXPECT_EQ(CGT(car_performanceFigures_acceleration_seconds)(&acc), perf2cSeconds);
 
     EXPECT_EQ(CGT(car_manufacturer_length)(&m_carDecoder), MANUFACTURER_LENGTH);
     EXPECT_EQ(std::string(CGT(car_manufacturer)(&m_carDecoder), MANUFACTURER_LENGTH), MANUFACTURER);
@@ -723,16 +725,16 @@ TEST_F(CodeGenTest, shouldbeAbleUseOnStackCodecsAndGroupForEach)
 
     CallbacksForEach cbs;
 
-    CGT(car_fuelFigures) *fuelFigures = CGT(car_get_fuelFigures)(&carDecoder);
-    if (!fuelFigures)
+    CGT(car_fuelFigures) fuelFigures;
+    if (!CGT(car_get_fuelFigures)(&carDecoder, &fuelFigures))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
 
-    EXPECT_EQ(CGT(car_fuelFigures_count)(fuelFigures), FUEL_FIGURES_COUNT);
+    EXPECT_EQ(CGT(car_fuelFigures_count)(&fuelFigures), FUEL_FIGURES_COUNT);
 
     ASSERT_TRUE(CGT(car_fuelFigures_for_each)(
-        fuelFigures,
+        &fuelFigures,
         [](CGT(car_fuelFigures) *const figures, void *cbs)
         {
             reinterpret_cast<CallbacksForEach*>(cbs)->countOfFuelFigures++;
@@ -742,27 +744,26 @@ TEST_F(CodeGenTest, shouldbeAbleUseOnStackCodecsAndGroupForEach)
         },
         &cbs));
 
-    CGT(car_performanceFigures) *performanceFigures = CGT(car_get_performanceFigures)(&carDecoder);
-    if (!performanceFigures)
+    CGT(car_performanceFigures) performanceFigures;
+    if (!CGT(car_get_performanceFigures)(&carDecoder, &performanceFigures))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
 
-    EXPECT_EQ(CGT(car_performanceFigures_count)(performanceFigures), PERFORMANCE_FIGURES_COUNT);
+    EXPECT_EQ(CGT(car_performanceFigures_count)(&performanceFigures), PERFORMANCE_FIGURES_COUNT);
 
     ASSERT_TRUE(CGT(car_performanceFigures_for_each)(
-        performanceFigures,
+        &performanceFigures,
         [](CGT(car_performanceFigures) *const figures, void *cbs)
         {
-            CGT(car_performanceFigures_acceleration) *const acceleration =
-                CGT(car_performanceFigures_get_acceleration(figures));
-            if (!acceleration)
+            CGT(car_performanceFigures_acceleration) acceleration;
+            if (!CGT(car_performanceFigures_get_acceleration(figures, &acceleration)))
             {
                 throw std::runtime_error(sbe_strerror(errno));
             }
             reinterpret_cast<CallbacksForEach*>(cbs)->countOfPerformanceFigures++;
             ASSERT_TRUE(CGT(car_performanceFigures_acceleration_for_each)(
-                acceleration,
+                &acceleration,
                 [](CGT(car_performanceFigures_acceleration) *const, void *cbs)
                 {
                     reinterpret_cast<CallbacksForEach*>(cbs)->countOfAccelerations++;
@@ -823,38 +824,39 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
     }
 
     CGT(car_put_vehicleCode)(&car, vehicleCode.c_str());
-    CGT(car_fuelFigures) *const fuelFig = CGT(car_fuelFigures_set_count)(&car, FUEL_FIGURES_COUNT);
-    if (!fuelFig)
+    CGT(car_fuelFigures) fuelFig;
+    if (!CGT(car_fuelFigures_set_count)(&car, &fuelFig, FUEL_FIGURES_COUNT))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
-    CGT(car_fuelFigures_next)(fuelFig);
+    CGT(car_fuelFigures_next)(&fuelFig);
     const char *desc1 = usageDesc1.c_str();
-    CGT(car_fuelFigures_put_usageDescription)(fuelFig, desc1, strlen(desc1));
-    CGT(car_fuelFigures_next)(fuelFig);
+    CGT(car_fuelFigures_put_usageDescription)(&fuelFig, desc1, strlen(desc1));
+    CGT(car_fuelFigures_next)(&fuelFig);
     const char *desc2 = usageDesc2.c_str();
-    CGT(car_fuelFigures_put_usageDescription)(fuelFig, desc2, strlen(desc2));
-    CGT(car_fuelFigures_next)(fuelFig);
+    CGT(car_fuelFigures_put_usageDescription)(&fuelFig, desc2, strlen(desc2));
+    CGT(car_fuelFigures_next)(&fuelFig);
     const char *desc3 = usageDesc3.c_str();
-    CGT(car_fuelFigures_put_usageDescription)(fuelFig, desc3, strlen(desc3));
+    CGT(car_fuelFigures_put_usageDescription)(&fuelFig, desc3, strlen(desc3));
 
 
-    CGT(car_performanceFigures) *perfFigs = CGT(car_performanceFigures_set_count)(&car, PERFORMANCE_FIGURES_COUNT);
-    if (!perfFigs)
+    CGT(car_performanceFigures) perfFigs;
+    if (!CGT(car_performanceFigures_set_count)(&car, &perfFigs, PERFORMANCE_FIGURES_COUNT))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
-    CGT(car_performanceFigures_next)(perfFigs);
-    CGT(car_performanceFigures_acceleration) *acc = CGT(car_performanceFigures_acceleration_set_count)(perfFigs, ACCELERATION_COUNT);
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    CGT(car_performanceFigures_acceleration_next)(acc);
+    CGT(car_performanceFigures_next)(&perfFigs);
+    CGT(car_performanceFigures_acceleration) acc;
+    CGT(car_performanceFigures_acceleration_set_count)(&perfFigs, &acc, ACCELERATION_COUNT);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
 
-    CGT(car_performanceFigures_next)(perfFigs);
-    acc = CGT(car_performanceFigures_acceleration_set_count)(perfFigs, ACCELERATION_COUNT);
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    CGT(car_performanceFigures_acceleration_next)(acc);
+    CGT(car_performanceFigures_next)(&perfFigs);
+    CGT(car_performanceFigures_acceleration_set_count)(&perfFigs, &acc, ACCELERATION_COUNT);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
 
     const char *manu = manufacturer.c_str();
     CGT(car_put_manufacturer)(&car, manu, strlen(manu));
@@ -915,39 +917,39 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForDecode)
 
     EXPECT_EQ(std::string(CGT(car_vehicleCode_buffer)(&carDecoder),CGT(car_vehicleCode_length)()), vehicleCode);
 
-    CGT(car_fuelFigures) *const fuelFigures = CGT(car_get_fuelFigures)(&carDecoder);
-    if (!fuelFigures)
+    CGT(car_fuelFigures) fuelFigures;
+    if (!CGT(car_get_fuelFigures)(&carDecoder, &fuelFigures))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
     testUsageDescription(
-        fuelFigures, std::string(FUEL_FIGURES_1_USAGE_DESCRIPTION, FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH));
+        &fuelFigures, std::string(FUEL_FIGURES_1_USAGE_DESCRIPTION, FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH));
     testUsageDescription(
-        fuelFigures, std::string(FUEL_FIGURES_2_USAGE_DESCRIPTION, FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH));
+        &fuelFigures, std::string(FUEL_FIGURES_2_USAGE_DESCRIPTION, FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH));
     testUsageDescription(
-        fuelFigures, std::string(FUEL_FIGURES_3_USAGE_DESCRIPTION, FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH));
+        &fuelFigures, std::string(FUEL_FIGURES_3_USAGE_DESCRIPTION, FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH));
 
-    CGT(car_performanceFigures) *const perfFigures = CGT(car_get_performanceFigures)(&carDecoder);
-    if (!perfFigures)
+    CGT(car_performanceFigures) perfFigures;
+    if (!CGT(car_get_performanceFigures)(&carDecoder, &perfFigures))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
 
-    CGT(car_performanceFigures_next)(perfFigures);
-    CGT(car_performanceFigures_acceleration) *acc = CGT(car_performanceFigures_get_acceleration)(perfFigures);
-    if (!acc)
+    CGT(car_performanceFigures_next)(&perfFigures);
+    CGT(car_performanceFigures_acceleration) acc;
+    if (!CGT(car_performanceFigures_get_acceleration)(&perfFigures, &acc))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    CGT(car_performanceFigures_next)(perfFigures);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    CGT(car_performanceFigures_next)(&perfFigures);
 
-    acc = CGT(car_performanceFigures_get_acceleration)(perfFigures);
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    CGT(car_performanceFigures_acceleration_next)(acc);
-    CGT(car_performanceFigures_acceleration_next)(acc);
+    CGT(car_performanceFigures_get_acceleration)(&perfFigures, &acc);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
+    CGT(car_performanceFigures_acceleration_next)(&acc);
 
     {
         const uint16_t length = CGT(car_manufacturer_length)(&carDecoder);

@@ -132,9 +132,6 @@ public class CGenerator implements CodeGenerator
                 out.append(sb);
                 out.append(generateStructDeclaration(structName));
                 out.append(generateMessageFlyweightMembers());
-                sb.setLength(0);
-                generateGroupPropertyMembers(sb, groups, structName);
-                out.append(sb);
                 out.append("};\n");
                 out.append(String.format("\n" +
                     "enum %1$s_meta_attribute\n" +
@@ -206,43 +203,7 @@ public class CGenerator implements CodeGenerator
             i = collectVarData(tokens, i, varData);
 
             generateGroupStructMembers(sb, scope, groupName, tokens, currentTokenIdx);
-            generateGroupPropertyMembers(sb, groups, groupName);
             sb.append("};\n");
-        }
-    }
-
-    private static void generateGroupPropertyMembers(
-        final StringBuilder sb, final List<Token> tokens, final String outerStruct)
-    {
-        for (int i = 0, size = tokens.size(); i < size; ++i)
-        {
-            final Token groupToken = tokens.get(i);
-
-            if (groupToken.signal() != Signal.BEGIN_GROUP)
-            {
-                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
-            }
-
-            ++i;
-            final int groupHeaderTokenCount = tokens.get(i).componentTokenCount();
-            i += groupHeaderTokenCount;
-
-            final List<Token> fields = new ArrayList<>();
-            i = collectFields(tokens, i, fields);
-
-            final List<Token> groups = new ArrayList<>();
-            i = collectGroups(tokens, i, groups);
-
-            final List<Token> varData = new ArrayList<>();
-            i = collectVarData(tokens, i, varData);
-
-            final String groupName = outerStruct + '_' + formatName(groupToken.name());
-            final String propertyName = formatPropertyName(groupToken.name());
-
-            sb.append(String.format(
-                "    struct %1$s %2$s;\n",
-                groupName,
-                propertyName));
         }
     }
 
@@ -485,10 +446,11 @@ public class CGenerator implements CodeGenerator
             token.id()));
 
         sb.append(String.format("\n" +
-            "SBE_ONE_DEF struct %2$s *%1$s_get_%3$s(struct %1$s *const codec)\n" +
+            "SBE_ONE_DEF struct %2$s *%1$s_get_%3$s(\n" +
+            "    struct %1$s *const codec, struct %2$s *const property)\n" +
             "{\n" +
             "    return %2$s_wrap_for_decode(\n" +
-            "        &codec->%3$s,\n" +
+            "        property,\n" +
             "        codec->buffer,\n" +
             "        %1$s_sbe_position_ptr(codec),\n" +
             "        codec->acting_version,\n" +
@@ -499,10 +461,11 @@ public class CGenerator implements CodeGenerator
             propertyName));
 
         sb.append(String.format("\n" +
-            "SBE_ONE_DEF struct %2$s *%2$s_set_count(struct %1$s *const codec, const %4$s count)\n" +
+            "SBE_ONE_DEF struct %2$s *%2$s_set_count(\n" +
+            "    struct %1$s *const codec, struct %2$s *const property, const %3$s count)\n" +
             "{\n" +
             "    return %2$s_wrap_for_encode(\n" +
-            "        &codec->%3$s,\n" +
+            "        property,\n" +
             "        codec->buffer,\n" +
             "        count,\n" +
             "        %1$s_sbe_position_ptr(codec),\n" +
@@ -511,7 +474,6 @@ public class CGenerator implements CodeGenerator
             "}\n",
             outerStruct,
             groupName,
-            propertyName,
             cTypeForNumInGroup));
 
         sb.append(String.format("\n" +
