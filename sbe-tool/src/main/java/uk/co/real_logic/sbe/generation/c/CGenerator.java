@@ -2179,7 +2179,7 @@ public class CGenerator implements CodeGenerator
                 "{\n" +
                 "%3$s" +
                 "    return %1$s_%4$s;\n" +
-                "}\n\n",
+                "}\n",
                 enumName,
                 propertyName,
                 generateEnumFieldNotPresentCondition(token.version(), enumName),
