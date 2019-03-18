@@ -125,14 +125,8 @@ public class CGenerator implements CodeGenerator
 
                 final List<Token> varData = new ArrayList<>();
                 collectVarData(messageBody, i, varData);
+                out.append(generateMessageFlyweightStruct(structName));
 
-                final StringBuilder sb = new StringBuilder();
-                generateGroupStructs(sb, ir.namespaces(), groups, structName);
-
-                out.append(sb);
-                out.append(generateStructDeclaration(structName));
-                out.append(generateMessageFlyweightMembers());
-                out.append("};\n");
                 out.append(String.format("\n" +
                     "enum %1$s_meta_attribute\n" +
                     "{\n" +
@@ -164,8 +158,9 @@ public class CGenerator implements CodeGenerator
                 out.append(generateMessageFlyweightFunctions(structName, msgToken, ir.namespaces()));
 
                 out.append(generateFieldFunctions(ir.namespaces(), structName, structName, fields));
-                sb.setLength(0);
-                generateGroupFunctions(sb, ir.namespaces(), groups, structName, structName);
+
+                final StringBuilder sb = new StringBuilder();
+                generateGroups(sb, ir.namespaces(), groups, structName, structName);
                 out.append(sb);
                 out.append(generateVarData(structName, structName, varData));
                 out.append("\n#endif");
@@ -173,41 +168,7 @@ public class CGenerator implements CodeGenerator
         }
     }
 
-    private void generateGroupStructs(
-        final StringBuilder sb, final CharSequence[] scope, final List<Token> tokens, final String outerStruct)
-    {
-        for (int i = 0, size = tokens.size(); i < size; ++i)
-        {
-            final Token groupToken = tokens.get(i);
-
-            if (groupToken.signal() != Signal.BEGIN_GROUP)
-            {
-                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
-            }
-
-            final int currentTokenIdx = i;
-
-            ++i;
-            final int groupHeaderTokenCount = tokens.get(i).componentTokenCount();
-            i += groupHeaderTokenCount;
-
-            final List<Token> fields = new ArrayList<>();
-            i = collectFields(tokens, i, fields);
-
-            final List<Token> groups = new ArrayList<>();
-            i = collectGroups(tokens, i, groups);
-            final String groupName = outerStruct + '_' + formatName(groupToken.name());
-            generateGroupStructs(sb, scope, groups, groupName);
-
-            final List<Token> varData = new ArrayList<>();
-            i = collectVarData(tokens, i, varData);
-
-            generateGroupStructMembers(sb, scope, groupName, tokens, currentTokenIdx);
-            sb.append("};\n");
-        }
-    }
-
-    private void generateGroupFunctions(
+    private void generateGroups(
         final StringBuilder sb,
         final CharSequence[] scope,
         final List<Token> tokens,
@@ -226,6 +187,7 @@ public class CGenerator implements CodeGenerator
             final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, i);
             final String cTypeForNumInGroup = cTypeName(numInGroupToken.encoding().primitiveType());
 
+            generateGroupStruct(sb, scope, groupName, tokens, i);
             generateGroupHeaderFunctions(sb, scope, groupName, tokens, i);
 
             ++i;
@@ -238,7 +200,7 @@ public class CGenerator implements CodeGenerator
 
             final List<Token> groups = new ArrayList<>();
             i = collectGroups(tokens, i, groups);
-            generateGroupFunctions(sb, scope, groups, groupName, outermostStruct);
+            generateGroups(sb, scope, groups, groupName, outermostStruct);
 
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
@@ -248,7 +210,7 @@ public class CGenerator implements CodeGenerator
         }
     }
 
-    private static void generateGroupStructMembers(
+    private static void generateGroupStruct(
         final StringBuilder sb,
         final CharSequence[] scope,
         final String groupName,
@@ -268,7 +230,8 @@ public class CGenerator implements CodeGenerator
             "    uint64_t index;\n" +
             "    uint64_t offset;\n" +
             "    uint64_t acting_version;\n" +
-            "    struct %2$s dimensions;\n",
+            "    struct %2$s dimensions;\n" +
+            "};\n",
             groupName, dimensionsStructName));
     }
 
@@ -715,9 +678,7 @@ public class CGenerator implements CodeGenerator
         {
             final String bitSetName = formatScopedName(scope, bitsetToken.applicableTypeName());
             out.append(generateFileHeader(bitSetName, null));
-            out.append(generateStructDeclaration(bitSetName));
-            out.append(generateFixedFlyweightCodeMembers());
-            out.append("};\n");
+            out.append(generateFixedFlyweightStruct(bitSetName));
             out.append(String.format("\n" +
                 "enum %1$s_meta_attribute\n" +
                 "{\n" +
@@ -795,9 +756,7 @@ public class CGenerator implements CodeGenerator
             out.append(generateFileHeader(
                 compositeName,
                 generateTypesToIncludes(tokens.subList(1, tokens.size() - 1))));
-            out.append(generateStructDeclaration(compositeName));
-            out.append(generateFixedFlyweightCodeMembers());
-            out.append("};\n");
+            out.append(generateFixedFlyweightStruct(compositeName));
             out.append(String.format("\n" +
                 "enum %1$s_meta_attribute\n" +
                 "{\n" +
@@ -1191,14 +1150,6 @@ public class CGenerator implements CodeGenerator
             "#endif\n");
 
         return sb;
-    }
-
-    private static CharSequence generateStructDeclaration(final String structName)
-    {
-        return String.format("\n" +
-            "struct %s\n" +
-            "{\n",
-            structName);
     }
 
     private void generatePropertyFunctions(
@@ -1762,13 +1713,17 @@ public class CGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFixedFlyweightCodeMembers()
+    private CharSequence generateFixedFlyweightStruct(final String structName)
     {
-        return
+        return String.format("\n" +
+            "struct %s\n" +
+            "{\n" +
             "    char *buffer;\n" +
             "    uint64_t buffer_length;\n" +
             "    uint64_t offset;\n" +
-            "    uint64_t acting_version;\n";
+            "    uint64_t acting_version;\n" +
+            "};\n",
+            structName);
     }
 
     private CharSequence generateFixedFlyweightCodeFunctions(final String structName, final int size)
@@ -1848,14 +1803,18 @@ public class CGenerator implements CodeGenerator
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())));
     }
 
-    private CharSequence generateMessageFlyweightMembers()
+    private CharSequence generateMessageFlyweightStruct(final String structName)
     {
-        return
+        return String.format("\n" +
+            "struct %s\n" +
+            "{\n" +
             "    char *buffer;\n" +
             "    uint64_t buffer_length;\n" +
             "    uint64_t offset;\n" +
             "    uint64_t position;\n" +
-            "    uint64_t acting_version;\n";
+            "    uint64_t acting_version;\n" +
+            "};\n",
+            structName);
     }
 
     private CharSequence generateMessageFlyweightFunctions(
