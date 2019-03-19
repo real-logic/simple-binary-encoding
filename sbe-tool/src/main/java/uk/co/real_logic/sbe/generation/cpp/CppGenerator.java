@@ -212,7 +212,7 @@ public class CppGenerator implements CodeGenerator
             indent + "public:\n",
             formatClassName(groupName), dimensionsClassName));
 
-        sb.append(String.format("\n" +
+        sb.append(String.format(
             indent + "    inline void wrapForDecode(char *buffer, std::uint64_t *pos," +
             " const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
             indent + "    {\n" +
@@ -356,7 +356,7 @@ public class CppGenerator implements CodeGenerator
             className,
             propertyName));
 
-        sb.append(String.format("\n" +
+        sb.append(String.format(
             indent + "    static SBE_CONSTEXPR std::uint16_t %1$sId() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
@@ -640,7 +640,7 @@ public class CppGenerator implements CodeGenerator
             out.append(generateClassDeclaration(bitSetName));
             out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).encodedLength()));
 
-            out.append(String.format(
+            out.append(String.format("\n" +
                 "    %1$s &clear()\n" +
                 "    {\n" +
                 "        %2$s zero = 0;\n" +
@@ -679,8 +679,8 @@ public class CppGenerator implements CodeGenerator
 
             out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
 
-            out.append("};\n");
-            out.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
+            out.append("};\n\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length)).append("\n#endif\n");
         }
     }
 
@@ -698,8 +698,8 @@ public class CppGenerator implements CodeGenerator
             out.append(generateCompositePropertyElements(
                 compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
-            out.append("};\n");
-            out.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
+            out.append("};\n\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length)).append("\n#endif\n");
         }
     }
 
@@ -793,7 +793,7 @@ public class CppGenerator implements CodeGenerator
         final Encoding encoding = encodingToken.encoding();
 
         sb.append(
-            "    enum Value \n" +
+            "    enum Value\n" +
             "    {\n");
 
         for (final Token token : tokens)
@@ -1040,7 +1040,7 @@ public class CppGenerator implements CodeGenerator
 
     private static CharSequence generateEnumDeclaration(final String name)
     {
-        return "class " + name + "\n{\npublic:\n\n";
+        return "class " + name + "\n{\npublic:\n";
     }
 
     private CharSequence generateCompositePropertyElements(
@@ -2085,7 +2085,7 @@ public class CppGenerator implements CodeGenerator
             bitsetName,
             propertyName));
 
-        sb.append(String.format("\n" +
+        sb.append(String.format(
             indent + "    %1$s &%2$s()\n" +
             indent + "    {\n" +
             indent + "        m_%2$s.wrap(m_buffer, m_offset + %3$d, m_actingVersion, m_bufferLength);\n" +
@@ -2121,7 +2121,7 @@ public class CppGenerator implements CodeGenerator
             compositeName,
             propertyName));
 
-        sb.append(String.format("\n" +
+        sb.append(String.format(
             indent + "    %1$s &%2$s()\n" +
             indent + "    {\n" +
             indent + "        m_%2$s.wrap(m_buffer, m_offset + %3$d, m_actingVersion, m_bufferLength);\n" +
