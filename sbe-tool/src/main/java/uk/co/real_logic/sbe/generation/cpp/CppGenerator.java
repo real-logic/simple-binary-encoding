@@ -1322,7 +1322,7 @@ public class CppGenerator implements CodeGenerator
             indent);
 
         sb.append(String.format("\n" +
-            indent + "    %1$s %2$s(std::uint64_t index) const\n" +
+            indent + "    %1$s %2$s(const std::uint64_t index) const\n" +
             indent + "    {\n" +
             indent + "        if (index >= %3$d)\n" +
             indent + "        {\n" +
@@ -1344,7 +1344,7 @@ public class CppGenerator implements CodeGenerator
             indent);
 
         sb.append(String.format("\n" +
-            indent + "    %1$s %2$s(std::uint64_t index, %3$s value)\n" +
+            indent + "    %1$s %2$s(const std::uint64_t index, const %3$s value)\n" +
             indent + "    {\n" +
             indent + "        if (index >= %4$d)\n" +
             indent + "        {\n" +
@@ -1361,7 +1361,7 @@ public class CppGenerator implements CodeGenerator
             storeValue));
 
         sb.append(String.format("\n" +
-            indent + "    std::uint64_t get%1$s(char *dst, std::uint64_t length) const\n" +
+            indent + "    std::uint64_t get%1$s(char *const dst, const std::uint64_t length) const\n" +
             indent + "    {\n" +
             indent + "        if (length > %2$d)\n" +
             indent + "        {\n" +
@@ -1379,7 +1379,7 @@ public class CppGenerator implements CodeGenerator
             cppTypeName));
 
         sb.append(String.format("\n" +
-            indent + "    %1$s &put%2$s(const char *src) SBE_NOEXCEPT\n" +
+            indent + "    %1$s &put%2$s(const char *const src) SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        std::memcpy(m_buffer + m_offset + %3$d, src, sizeof(%4$s) * %5$d);\n" +
             indent + "        return *this;\n" +
@@ -1426,7 +1426,7 @@ public class CppGenerator implements CodeGenerator
 
             sb.append(String.format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
-                indent + "    %1$s &put%2$s(std::string_view str)\n" +
+                indent + "    %1$s &put%2$s(const std::string_view str)\n" +
                 indent + "    {\n" +
                 indent + "        const size_t srcLength = str.length();\n" +
                 indent + "        if (srcLength > %4$d)\n" +
