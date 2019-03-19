@@ -2227,10 +2227,11 @@ public class CGenerator implements CodeGenerator
             containingStructName));
 
         sb.append(String.format("\n" +
-            "SBE_ONE_DEF size_t %1$s_encoding_length(void)\n" +
+            "SBE_ONE_DEF size_t %s_%s_encoding_length(void)\n" +
             "{\n" +
-            "    return %2$d;\n" +
+            "    return %d;\n" +
             "}\n",
+            containingStructName,
             propertyName,
             token.encoding().primitiveType().size()));
     }
