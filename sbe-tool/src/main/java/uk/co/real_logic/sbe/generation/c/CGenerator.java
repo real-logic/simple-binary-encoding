@@ -681,27 +681,6 @@ public class CGenerator implements CodeGenerator
             final String bitSetName = formatScopedName(scope, bitsetToken.applicableTypeName());
             out.append(generateFileHeader(bitSetName, null));
             out.append(generateFixedFlyweightStruct(bitSetName));
-            out.append(String.format("\n" +
-                "enum %1$s_meta_attribute\n" +
-                "{\n" +
-                "    %1$s_meta_attribute_EPOCH,\n" +
-                "    %1$s_meta_attribute_TIME_UNIT,\n" +
-                "    %1$s_meta_attribute_SEMANTIC_TYPE,\n" +
-                "    %1$s_meta_attribute_PRESENCE\n" +
-                "};\n\n" +
-
-                "union %1$s_float_as_uint\n" +
-                "{\n" +
-                "    float fp_value;\n" +
-                "    uint32_t uint_value;\n" +
-                "};\n\n" +
-
-                "union %1$s_double_as_uint\n" +
-                "{\n" +
-                "    double fp_value;\n" +
-                "    uint64_t uint_value;\n" +
-                "};\n",
-                bitSetName));
             out.append(generateFixedFlyweightCodeFunctions(bitSetName, bitsetToken.encodedLength()));
 
             out.append(String.format("\n" +
