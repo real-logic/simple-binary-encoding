@@ -2212,7 +2212,7 @@ public class CGenerator implements CodeGenerator
         final int offset = token.offset();
 
         sb.append(String.format("\n" +
-            "struct %1$s *%4$s_%2$s(struct %4$s *const codec, struct %1$s *const bitset)\n" +
+            "SBE_ONE_DEF struct %1$s *%4$s_%2$s(struct %4$s *const codec, struct %1$s *const bitset)\n" +
             "{\n" +
             "    return %1$s_wrap(\n" +
             "        bitset,\n" +
