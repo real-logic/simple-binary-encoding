@@ -1344,7 +1344,7 @@ public class CppGenerator implements CodeGenerator
             indent);
 
         sb.append(String.format("\n" +
-            indent + "    %1$s %2$s(const std::uint64_t index, const %3$s value)\n" +
+            indent + "    %1$s &%2$s(const std::uint64_t index, const %3$s value)\n" +
             indent + "    {\n" +
             indent + "        if (index >= %4$d)\n" +
             indent + "        {\n" +
