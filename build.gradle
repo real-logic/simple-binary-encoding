@@ -29,7 +29,7 @@ defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
-def sbeJavaVersion = '1.8'
+def sbeJavaVersion = JavaVersion.VERSION_1_8
 
 group = sbeGroup
 version = sbeVersion
