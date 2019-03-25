@@ -387,7 +387,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "    static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
-            indent + "         return %2$d;\n" +
+            indent + "        return %2$d;\n" +
             indent + "    }\n\n" +
 
             indent + "    bool %1$sInActingVersion() const SBE_NOEXCEPT\n" +
@@ -437,11 +437,11 @@ public class CppGenerator implements CodeGenerator
                 indent + "    const char *%1$s()\n" +
                 indent + "    {\n" +
                 "%2$s" +
-                indent + "         %4$s lengthFieldValue;\n" +
-                indent + "         std::memcpy(&lengthFieldValue, m_buffer + sbePosition(), sizeof(%4$s));\n" +
-                indent + "         const char *fieldPtr = m_buffer + sbePosition() + %3$d;\n" +
-                indent + "         sbePosition(sbePosition() + %3$d + %5$s(lengthFieldValue));\n" +
-                indent + "         return fieldPtr;\n" +
+                indent + "        %4$s lengthFieldValue;\n" +
+                indent + "        std::memcpy(&lengthFieldValue, m_buffer + sbePosition(), sizeof(%4$s));\n" +
+                indent + "        const char *fieldPtr = m_buffer + sbePosition() + %3$d;\n" +
+                indent + "        sbePosition(sbePosition() + %3$d + %5$s(lengthFieldValue));\n" +
+                indent + "        return fieldPtr;\n" +
                 indent + "    }\n",
                 formatPropertyName(propertyName),
                 generateTypeFieldNotPresentCondition(token.version(), indent),
@@ -539,7 +539,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "    {\n" +
                 indent + "        if (str.length() > %6$d)\n" +
                 indent + "        {\n" +
-                indent + "             throw std::runtime_error(\"std::string too long for length type [E109]\");\n" +
+                indent + "            throw std::runtime_error(\"std::string too long for length type [E109]\");\n" +
                 indent + "        }\n" +
                 indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
                 indent + "        std::uint64_t lengthPosition = sbePosition();\n" +
@@ -585,7 +585,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "    static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
-            indent + "         return %2$d;\n" +
+            indent + "        return %2$d;\n" +
             indent + "    }\n\n" +
 
             indent + "    bool %1$sInActingVersion() SBE_NOEXCEPT\n" +
@@ -1365,7 +1365,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    {\n" +
             indent + "        if (length > %2$d)\n" +
             indent + "        {\n" +
-            indent + "             throw std::runtime_error(\"length too large for get%1$s [E106]\");\n" +
+            indent + "            throw std::runtime_error(\"length too large for get%1$s [E106]\");\n" +
             indent + "        }\n\n" +
 
             "%3$s" +
@@ -1431,7 +1431,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        const size_t srcLength = str.length();\n" +
                 indent + "        if (srcLength > %4$d)\n" +
                 indent + "        {\n" +
-                indent + "             throw std::runtime_error(\"string too large for put%2$s [E106]\");\n" +
+                indent + "            throw std::runtime_error(\"string too large for put%2$s [E106]\");\n" +
                 indent + "        }\n\n" +
 
                 indent + "        size_t length = srcLength < %4$d ? srcLength : %4$d;\n" +
@@ -1449,7 +1449,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        const size_t srcLength = str.length();\n" +
                 indent + "        if (srcLength > %4$d)\n" +
                 indent + "        {\n" +
-                indent + "             throw std::runtime_error(\"string too large for put%2$s [E106]\");\n" +
+                indent + "            throw std::runtime_error(\"string too large for put%2$s [E106]\");\n" +
                 indent + "        }\n\n" +
 
                 indent + "        size_t length = srcLength < %4$d ? srcLength : %4$d;\n" +
@@ -1791,8 +1791,8 @@ public class CppGenerator implements CodeGenerator
             "    }\n\n" +
 
             "    %10$s &wrapForDecode(\n" +
-            "         char *buffer, const std::uint64_t offset, const std::uint64_t actingBlockLength,\n" +
-            "         const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
+            "        char *buffer, const std::uint64_t offset, const std::uint64_t actingBlockLength,\n" +
+            "        const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
             "    {\n" +
             "        return *this = %10$s(buffer, offset, bufferLength, actingBlockLength, actingVersion);\n" +
             "    }\n\n" +
@@ -1916,7 +1916,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "    static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
-            indent + "         return %2$d;\n" +
+            indent + "        return %2$d;\n" +
             indent + "    }\n\n" +
 
             indent + "    bool %1$sInActingVersion() SBE_NOEXCEPT\n" +
@@ -1936,7 +1936,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "    static SBE_CONSTEXPR std::size_t %1$sEncodingOffset() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
-            indent + "         return %2$d;\n" +
+            indent + "        return %2$d;\n" +
             indent + "    }\n",
             propertyName,
             encodingToken.offset()));
