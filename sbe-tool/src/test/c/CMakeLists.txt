@@ -55,3 +55,12 @@ add_custom_target(c_codecs DEPENDS ${GENERATED_CODECS})
 sbe_test(BoundsCheckTest c_codecs)
 sbe_test(CodeGenTest c_codecs)
 sbe_test(GroupWithDataTest c_codecs)
+
+# Compile a dummy C source to test C compliance of generated headers.
+add_executable(CComplianceTest CComplianceTest.c)
+
+target_include_directories(CComplianceTest
+    PRIVATE ${C_CODEC_TARGET_DIR}
+)
+
+add_dependencies(CComplianceTest c_codecs)

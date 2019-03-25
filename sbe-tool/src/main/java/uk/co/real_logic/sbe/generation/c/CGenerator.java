@@ -555,9 +555,11 @@ public class CGenerator implements CodeGenerator
                 "    if (!%5$s_set_sbe_position(\n" +
                 "        codec, %5$s_sbe_position(codec) + %3$d + length_field_value))\n" +
                 "    {\n" +
-                "        return {NULL, 0};\n" +
+                "        struct %6$s_string_view ret = {NULL, 0};\n" +
+                "        return ret;\n" +
                 "    }\n" +
-                "    return {field_ptr, length_field_value};\n" +
+                "    struct %6$s_string_view ret = {field_ptr, length_field_value};\n" +
+                "    return ret;\n" +
                 "}\n",
                 propertyName,
                 generateStringViewNotPresentCondition(token.version()),
@@ -679,27 +681,6 @@ public class CGenerator implements CodeGenerator
             final String bitSetName = formatScopedName(scope, bitsetToken.applicableTypeName());
             out.append(generateFileHeader(bitSetName, null));
             out.append(generateFixedFlyweightStruct(bitSetName));
-            out.append(String.format("\n" +
-                "enum %1$s_meta_attribute\n" +
-                "{\n" +
-                "    %1$s_meta_attribute_EPOCH,\n" +
-                "    %1$s_meta_attribute_TIME_UNIT,\n" +
-                "    %1$s_meta_attribute_SEMANTIC_TYPE,\n" +
-                "    %1$s_meta_attribute_PRESENCE\n" +
-                "};\n\n" +
-
-                "union %1$s_float_as_uint\n" +
-                "{\n" +
-                "    float fp_value;\n" +
-                "    uint32_t uint_value;\n" +
-                "};\n\n" +
-
-                "union %1$s_double_as_uint\n" +
-                "{\n" +
-                "    double fp_value;\n" +
-                "    uint64_t uint_value;\n" +
-                "};\n",
-                bitSetName));
             out.append(generateFixedFlyweightCodeFunctions(bitSetName, bitsetToken.encodedLength()));
 
             out.append(String.format("\n" +
@@ -2231,7 +2212,7 @@ public class CGenerator implements CodeGenerator
         final int offset = token.offset();
 
         sb.append(String.format("\n" +
-            "struct %1$s *%4$s_%2$s(struct %4$s *const codec, struct %1$s *const bitset)\n" +
+            "SBE_ONE_DEF struct %1$s *%4$s_%2$s(struct %4$s *const codec, struct %1$s *const bitset)\n" +
             "{\n" +
             "    return %1$s_wrap(\n" +
             "        bitset,\n" +
@@ -2246,10 +2227,11 @@ public class CGenerator implements CodeGenerator
             containingStructName));
 
         sb.append(String.format("\n" +
-            "SBE_ONE_DEF size_t %1$s_encoding_length(void)\n" +
+            "SBE_ONE_DEF size_t %s_%s_encoding_length(void)\n" +
             "{\n" +
-            "    return %2$d;\n" +
+            "    return %d;\n" +
             "}\n",
+            containingStructName,
             propertyName,
             token.encoding().primitiveType().size()));
     }
