@@ -163,7 +163,7 @@ public class CGenerator implements CodeGenerator
                 generateGroups(sb, ir.namespaces(), groups, structName, structName);
                 out.append(sb);
                 out.append(generateVarData(structName, structName, varData));
-                out.append("\n#endif");
+                out.append("\n#endif\n");
             }
         }
     }
@@ -704,7 +704,7 @@ public class CGenerator implements CodeGenerator
                 cTypeName(bitsetToken.encoding().primitiveType())));
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
-            out.append("\n#endif");
+            out.append("\n#endif\n");
         }
     }
 
@@ -722,7 +722,7 @@ public class CGenerator implements CodeGenerator
 
             out.append(generateEnumLookupFunction(scope, tokens.subList(1, tokens.size() - 1), enumToken));
 
-            out.append("\n#endif");
+            out.append("\n#endif\n");
         }
     }
 
@@ -770,7 +770,7 @@ public class CGenerator implements CodeGenerator
             out.append(generateCompositePropertyFunctions(
                 scope, compositeName, tokens.subList(1, tokens.size() - 1)));
 
-            out.append("\n#endif");
+            out.append("\n#endif\n");
         }
     }
 
