@@ -286,7 +286,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage1Correctly)
     EXPECT_EQ(sz, offset);
 }
 
-TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage1Correctly)
+TEST_F(GroupWithDataTest, shouldBeAbleToEncodeAndDecodeTestMessage1Correctly)
 {
     char buffer[2048];
     std::uint64_t sz = encodeTestMessage1(buffer, 0, sizeof(buffer));
@@ -375,7 +375,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage2Correctly)
     EXPECT_EQ(sz, offset);
 }
 
-TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage2Correctly)
+TEST_F(GroupWithDataTest, shouldBeAbleToEncodeAndDecodeTestMessage2Correctly)
 {
     char buffer[2048];
     std::uint64_t sz = encodeTestMessage2(buffer, 0, sizeof(buffer));
@@ -514,7 +514,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage3Correctly)
     EXPECT_EQ(sz, offset);
 }
 
-TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage3Correctly)
+TEST_F(GroupWithDataTest, shouldBeAbleToEncodeAndDecodeTestMessage3Correctly)
 {
     char buffer[2048];
     std::uint64_t sz = encodeTestMessage3(buffer, 0, sizeof(buffer));
@@ -648,7 +648,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage4Correctly)
     EXPECT_EQ(sz, offset);
 }
 
-TEST_F(GroupWithDataTest, shouldbeAbleToEncodeAndDecodeTestMessage4Correctly)
+TEST_F(GroupWithDataTest, shouldBeAbleToEncodeAndDecodeTestMessage4Correctly)
 {
     char buffer[2048];
     std::uint64_t sz = encodeTestMessage4(buffer, 0, sizeof(buffer));
