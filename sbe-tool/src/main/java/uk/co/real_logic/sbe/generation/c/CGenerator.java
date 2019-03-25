@@ -555,9 +555,11 @@ public class CGenerator implements CodeGenerator
                 "    if (!%5$s_set_sbe_position(\n" +
                 "        codec, %5$s_sbe_position(codec) + %3$d + length_field_value))\n" +
                 "    {\n" +
-                "        return {NULL, 0};\n" +
+                "        struct %6$s_string_view ret = {NULL, 0};\n" +
+                "        return ret;\n" +
                 "    }\n" +
-                "    return {field_ptr, length_field_value};\n" +
+                "    struct %6$s_string_view ret = {field_ptr, length_field_value};\n" +
+                "    return ret;\n" +
                 "}\n",
                 propertyName,
                 generateStringViewNotPresentCondition(token.version()),
