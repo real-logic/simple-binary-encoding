@@ -337,7 +337,14 @@ public class CGenerator implements CodeGenerator
 
             "SBE_ONE_DEF uint64_t %3$s_sbe_position(const struct %3$s *const codec)\n" +
             "{\n" +
+            "#if defined(__GNUG__) && !defined(__clang__)\n" +
+            "#pragma GCC diagnostic push\n" +
+            "#pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n" +
+            "#endif\n" +
             "    return *codec->position_ptr;\n" +
+            "#if defined(__GNUG__) && !defined(__clang__)\n" +
+            "#pragma GCC diagnostic pop\n" +
+            "#endif\n" +
             "}\n\n" +
 
             "SBE_ONE_DEF bool %3$s_set_sbe_position(struct %3$s *const codec, const uint64_t position)\n" +
@@ -358,14 +365,28 @@ public class CGenerator implements CodeGenerator
 
             "SBE_ONE_DEF bool %3$s_has_next(const struct %3$s *const codec)\n" +
             "{\n" +
+            "#if defined(__GNUG__) && !defined(__clang__)\n" +
+            "#pragma GCC diagnostic push\n" +
+            "#pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n" +
+            "#endif\n" +
             "    return codec->index + 1 < codec->count;\n" +
+            "#if defined(__GNUG__) && !defined(__clang__)\n" +
+            "#pragma GCC diagnostic pop\n" +
+            "#endif\n" +
             "}\n\n" +
 
             "SBE_ONE_DEF struct %3$s *%3$s_next(struct %3$s *const codec)\n" +
             "{\n" +
             "    codec->offset = *codec->position_ptr;\n" +
+            "#if defined(__GNUG__) && !defined(__clang__)\n" +
+            "#pragma GCC diagnostic push\n" +
+            "#pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n" +
+            "#endif\n" +
             "    if (SBE_BOUNDS_CHECK_EXPECT(((codec->offset + codec->block_length) " +
             "> codec->buffer_length), false))\n" +
+            "#if defined(__GNUG__) && !defined(__clang__)\n" +
+            "#pragma GCC diagnostic pop\n" +
+            "#endif\n" +
             "    {\n" +
             "        errno = E108;\n" +
             "        return NULL;\n" +
@@ -1341,7 +1362,14 @@ public class CGenerator implements CodeGenerator
         {
             sb.append(String.format(
                 "    %1$s val;\n" +
+                "#if defined(__GNUG__) && !defined(__clang__)\n" +
+                "#pragma GCC diagnostic push\n" +
+                "#pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n" +
+                "#endif\n" +
                 "    memcpy(&val, codec->buffer + codec->offset + %2$s, sizeof(%1$s));\n" +
+                "#if defined(__GNUG__) && !defined(__clang__)\n" +
+                "#pragma GCC diagnostic pop\n" +
+                "#endif\n" +
                 "    %4$s %3$s(val);",
                 cTypeName,
                 offsetStr,
@@ -1400,7 +1428,14 @@ public class CGenerator implements CodeGenerator
         {
             sb.append(String.format(
                 "    %1$s val = %2$s(value);\n" +
-                "    memcpy(codec->buffer + codec->offset + %3$s, &val, sizeof(%1$s));",
+                "#if defined(__GNUG__) && !defined(__clang__)\n" +
+                "#pragma GCC diagnostic push\n" +
+                "#pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n" +
+                "#endif\n" +
+                "    memcpy(codec->buffer + codec->offset + %3$s, &val, sizeof(%1$s));\n" +
+                "#if defined(__GNUG__) && !defined(__clang__)\n" +
+                "#pragma GCC diagnostic pop\n" +
+                "#endif",
                 cTypeName,
                 byteOrderStr,
                 offsetStr));

@@ -20,6 +20,9 @@ function(sbe_test name)
         PRIVATE ${GTEST_SOURCE_DIR}/googletest/include
         PRIVATE ${CXX_CODEC_TARGET_DIR}
     )
+    target_compile_options("${name}" PRIVATE $<$<CXX_COMPILER_ID:AppleClang>:-Werror>)
+    target_compile_options("${name}" PRIVATE $<$<CXX_COMPILER_ID:Clang>:-Werror>)
+    target_compile_options("${name}" PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Werror>)
     target_link_libraries("${name}" sbe ${GTEST_LIBS} ${CMAKE_THREAD_LIBS_INIT})
     add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY ${CXX_CODEC_TARGET_DIR})
     add_dependencies(${name} gtest)
