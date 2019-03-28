@@ -128,7 +128,7 @@ subprojects {
     dependencies {
         checkstyle 'com.puppycrawl.tools:checkstyle:8.18'
 
-        compile 'org.agrona:agrona:0.9.34'
+        compile 'org.agrona:agrona:0.9.35'
 
         testCompile 'junit:junit:4.12'
         testCompile 'org.mockito:mockito-core:2.25.1'
