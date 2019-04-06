@@ -126,14 +126,18 @@ namespace Baseline
             fuelFigures.Next(); // move to the first element
             fuelFigures.Speed = 30;
             fuelFigures.Mpg = 35.9f;
+            fuelFigures.SetUsageDescription(Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding).GetBytes("Urban Cycle"));
 
             fuelFigures.Next(); // second
             fuelFigures.Speed = 55;
             fuelFigures.Mpg = 49.0f;
+            fuelFigures.SetUsageDescription(Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding).GetBytes("Combined Cycle"));
 
             fuelFigures.Next();
             fuelFigures.Speed = 75;
             fuelFigures.Mpg = 40.0f;
+            fuelFigures.SetUsageDescription(Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding).GetBytes("Highway Cycle"));
+
 
             Car.PerformanceFiguresGroup perfFigures = car.PerformanceFiguresCount(2); // demonstrates how to create a nested group
             perfFigures.Next();
@@ -237,6 +241,7 @@ namespace Baseline
                 var fuelFigures = fuelFiguresGroup.Next();
                 sb.Append("\ncar.fuelFigures.speed=").Append(fuelFigures.Speed);
                 sb.Append("\ncar.fuelFigures.mpg=").Append(fuelFigures.Mpg);
+                sb.Append("\ncar.fuelFigures.UsageDescription=").Append(Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding).GetString(fuelFigures.GetUsageDescriptionBytes()));
             }
 
             // The second way to access a repeating group is to use an iterator

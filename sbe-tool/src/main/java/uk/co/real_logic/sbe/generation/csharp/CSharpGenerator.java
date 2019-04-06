@@ -339,7 +339,6 @@ public class CSharpGenerator implements CodeGenerator
             if (token.signal() == Signal.BEGIN_VAR_DATA)
             {
                 generateFieldIdMethod(sb, token, indent);
-
                 final Token varDataToken = Generators.findFirst("varData", tokens, i);
                 final String characterEncoding = varDataToken.encoding().characterEncoding();
                 generateCharacterEncodingMethod(sb, token.name(), characterEncoding, indent);
@@ -358,12 +357,20 @@ public class CSharpGenerator implements CodeGenerator
                     indent + "public const int %sHeaderSize = %d;\n",
                     propertyName,
                     sizeOfLengthField));
-
+                sb.append(String.format(indent + "\n" +
+                    indent + "public int %1$sLength()\n" +
+                    indent + "{\n" +
+                    indent + INDENT + "_buffer.CheckLimit(_parentMessage.Limit + %2$d);\n" +
+                    indent + INDENT + "return (int)_buffer.%3$sGet%4$s(_parentMessage.Limit);\n" +
+                    indent + "}\n",
+                    propertyName,
+                    sizeOfLengthField,
+                    lengthTypePrefix,
+                    byteOrderStr));
                 sb.append(String.format("\n" +
                     indent + "public int Get%1$s(byte[] dst, int dstOffset, int length) =>\n" +
                     indent + INDENT + "Get%1$s(new Span<byte>(dst, dstOffset, length));\n",
                     propertyName));
-
                 sb.append(String.format("\n" +
                     indent + "public int Get%1$s(Span<byte> dst)\n" +
                     indent + "{\n" +
@@ -382,12 +389,28 @@ public class CSharpGenerator implements CodeGenerator
                     sizeOfLengthField,
                     lengthTypePrefix,
                     byteOrderStr));
+                sb.append(String.format(indent + "\n" +
+                    indent + "// Allocates and returns a new byte array\n" +
+                    indent + "public byte[] Get%1$sBytes()\n" +
+                    indent + "{\n" +
+                    indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
+                    indent + INDENT + "int limit = _parentMessage.Limit;\n" +
+                    indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
+                    indent + INDENT + "int dataLength = (int)_buffer.%3$sGet%4$s(limit);\n" +
+                    indent + INDENT + "byte[] data = new byte[dataLength];\n" +
+                    indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + dataLength;\n" +
 
+                    indent + INDENT + "_buffer.GetBytes(limit + sizeOfLengthField, data);\n\n" +
+                    indent + INDENT + "return data;\n" +
+                    indent + "}\n",
+                    propertyName,
+                    sizeOfLengthField,
+                    lengthTypePrefix,
+                    byteOrderStr));
                 sb.append(String.format("\n" +
                     indent + "public int Set%1$s(byte[] src, int srcOffset, int length) =>\n" +
                     indent + INDENT + "Set%1$s(new ReadOnlySpan<byte>(src, srcOffset, length));\n",
                     propertyName));
-
                 sb.append(String.format("\n" +
                     indent + "public int Set%1$s(ReadOnlySpan<byte> src)\n" +
                     indent + "{\n" +
@@ -405,7 +428,6 @@ public class CSharpGenerator implements CodeGenerator
                     byteOrderStr));
             }
         }
-
         return sb;
     }
 
