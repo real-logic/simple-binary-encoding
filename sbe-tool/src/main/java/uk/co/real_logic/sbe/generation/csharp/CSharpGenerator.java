@@ -35,6 +35,7 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 
+@SuppressWarnings("MethodLength")
 public class CSharpGenerator implements CodeGenerator
 {
     private static final String META_ATTRIBUTE_ENUM = "MetaAttribute";
@@ -357,6 +358,7 @@ public class CSharpGenerator implements CodeGenerator
                     indent + "public const int %sHeaderSize = %d;\n",
                     propertyName,
                     sizeOfLengthField));
+
                 sb.append(String.format(indent + "\n" +
                     indent + "public int %1$sLength()\n" +
                     indent + "{\n" +
@@ -367,10 +369,12 @@ public class CSharpGenerator implements CodeGenerator
                     sizeOfLengthField,
                     lengthTypePrefix,
                     byteOrderStr));
+
                 sb.append(String.format("\n" +
                     indent + "public int Get%1$s(byte[] dst, int dstOffset, int length) =>\n" +
                     indent + INDENT + "Get%1$s(new Span<byte>(dst, dstOffset, length));\n",
                     propertyName));
+
                 sb.append(String.format("\n" +
                     indent + "public int Get%1$s(Span<byte> dst)\n" +
                     indent + "{\n" +
@@ -389,6 +393,7 @@ public class CSharpGenerator implements CodeGenerator
                     sizeOfLengthField,
                     lengthTypePrefix,
                     byteOrderStr));
+
                 sb.append(String.format(indent + "\n" +
                     indent + "// Allocates and returns a new byte array\n" +
                     indent + "public byte[] Get%1$sBytes()\n" +
@@ -407,10 +412,12 @@ public class CSharpGenerator implements CodeGenerator
                     sizeOfLengthField,
                     lengthTypePrefix,
                     byteOrderStr));
+
                 sb.append(String.format("\n" +
                     indent + "public int Set%1$s(byte[] src, int srcOffset, int length) =>\n" +
                     indent + INDENT + "Set%1$s(new ReadOnlySpan<byte>(src, srcOffset, length));\n",
                     propertyName));
+
                 sb.append(String.format("\n" +
                     indent + "public int Set%1$s(ReadOnlySpan<byte> src)\n" +
                     indent + "{\n" +
@@ -492,7 +499,7 @@ public class CSharpGenerator implements CodeGenerator
             final Token token = tokens.get(i);
             final String propertyName = formatPropertyName(token.name());
 
-            // FIXME: do I need to pass classname down here for disambiguation
+            // FIXME: do I need to pass class name down here for disambiguation
             switch (token.signal())
             {
                 case ENCODING:
