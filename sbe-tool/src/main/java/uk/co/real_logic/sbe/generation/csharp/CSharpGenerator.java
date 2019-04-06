@@ -359,6 +359,17 @@ public class CSharpGenerator implements CodeGenerator
                     propertyName,
                     sizeOfLengthField));
 
+                sb.append(String.format(indent + "\n" +
+                    indent + "public int %1$sLength()\n" +
+                    indent + "{\n" +
+                    indent + INDENT + "_buffer.CheckLimit(_parentMessage.Limit + %2$d);\n" +
+                    indent + INDENT + "return (int)_buffer.%3$sGet%4$s(_parentMessage.Limit);\n" +
+                    indent + "}\n",
+                    propertyName,
+                    sizeOfLengthField,
+                    lengthTypePrefix,
+                    byteOrderStr));
+
                 sb.append(String.format("\n" +
                     indent + "public int Get%1$s(byte[] dst, int dstOffset, int length) =>\n" +
                     indent + INDENT + "Get%1$s(new Span<byte>(dst, dstOffset, length));\n",
@@ -379,6 +390,25 @@ public class CSharpGenerator implements CodeGenerator
                     indent + "}\n",
                     propertyName,
                     generateArrayFieldNotPresentCondition(token.version(), indent),
+                    sizeOfLengthField,
+                    lengthTypePrefix,
+                    byteOrderStr));
+
+                sb.append(String.format(indent + "\n" +
+                    indent + "// Allocates and returns a new byte array\n" +
+                    indent + "public byte[] Get%1$sBytes()\n" +
+                    indent + "{\n" +
+                    indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
+                    indent + INDENT + "int limit = _parentMessage.Limit;\n" +
+                    indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
+                    indent + INDENT + "int dataLength = (int)_buffer.%3$sGet%4$s(limit);\n" +
+                    indent + INDENT + "byte[] data = new byte[dataLength];\n" +
+                    indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + dataLength;\n" +
+
+                    indent + INDENT + "_buffer.GetBytes(limit + sizeOfLengthField, data);\n\n" +
+                    indent + INDENT + "return data;\n" +
+                    indent + "}\n",
+                    propertyName,
                     sizeOfLengthField,
                     lengthTypePrefix,
                     byteOrderStr));
