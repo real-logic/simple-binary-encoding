@@ -2067,13 +2067,15 @@ public class JavaGenerator implements CodeGenerator
         final String containingClassName, final String propertyName, final Token token, final String indent)
     {
         final Encoding encoding = token.encoding();
-        final String javaTypeName = javaTypeName(encoding.primitiveType());
+        final PrimitiveType primitiveType = encoding.primitiveType();
+        final String javaTypeName = javaTypeName(primitiveType);
         final int offset = token.offset();
         final String byteOrderStr = byteOrderString(encoding);
         final int fieldLength = token.arrayLength();
         final int typeSize = sizeOfPrimitive(encoding);
 
         final StringBuilder sb = new StringBuilder();
+        final String className = formatClassName(containingClassName);
 
         generateArrayLengthMethod(propertyName, indent, fieldLength, sb);
 
@@ -2088,15 +2090,45 @@ public class JavaGenerator implements CodeGenerator
             indent + "        %s;\n\n" +
             indent + "        return this;\n" +
             indent + "    }\n",
-            formatClassName(containingClassName),
+            className,
             propertyName,
             javaTypeName,
             fieldLength,
             offset,
             typeSize,
-            generatePut(encoding.primitiveType(), "pos", "value", byteOrderStr)));
+            generatePut(primitiveType, "pos", "value", byteOrderStr)));
 
-        if (encoding.primitiveType() == PrimitiveType.CHAR)
+        if (fieldLength > 0 && fieldLength <= 4)
+        {
+            sb.append(indent)
+                .append("    public ")
+                .append(className)
+                .append(' ').append(propertyName)
+                .append("(final ").append(javaTypeName).append(" value0");
+
+            for (int i = 1; i < fieldLength; i++)
+            {
+                sb.append(", final ").append(javaTypeName).append(" value").append(i);
+            }
+
+            sb.append(")\n");
+            sb.append(indent).append("    {\n");
+
+            for (int i = 0; i < fieldLength; i++)
+            {
+                final String indexStr = "this.offset + " + (offset + (typeSize * i));
+
+                sb.append(indent).append("        ")
+                    .append(generatePut(primitiveType, indexStr, "value" + i, byteOrderStr))
+                    .append(";\n");
+            }
+
+            sb.append("\n");
+            sb.append(indent).append("        return this;\n");
+            sb.append(indent).append("    }\n");
+        }
+
+        if (primitiveType == PrimitiveType.CHAR)
         {
             generateCharArrayEncodeMethods(
                 containingClassName, propertyName, indent, encoding, offset, fieldLength, sb);
