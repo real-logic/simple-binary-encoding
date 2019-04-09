@@ -1402,14 +1402,16 @@ public class CppGenerator implements CodeGenerator
                 .append("    ")
                 .append(containingClassName)
                 .append(" &put").append(toUpperFirstChar(propertyName))
-                .append("(const ").append(cppTypeName).append(" value0");
+                .append("(\n")
+                .append(indent).append("        ")
+                .append("const ").append(cppTypeName).append(" value0");
 
             for (int i = 1; i < arrayLength; i++)
             {
                 sb.append(", const ").append(cppTypeName).append(" value").append(i);
             }
 
-            sb.append(")\n");
+            sb.append(") SBE_NOEXCEPT\n");
             sb.append(indent).append("    {\n");
 
             for (int i = 0; i < arrayLength; i++)
