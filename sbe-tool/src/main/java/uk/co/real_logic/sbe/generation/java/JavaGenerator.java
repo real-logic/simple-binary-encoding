@@ -2098,12 +2098,12 @@ public class JavaGenerator implements CodeGenerator
             typeSize,
             generatePut(primitiveType, "pos", "value", byteOrderStr)));
 
-        if (arrayLength > 0 && arrayLength <= 4)
+        if (arrayLength > 1 && arrayLength <= 4)
         {
             sb.append(indent)
                 .append("    public ")
                 .append(className)
-                .append(' ').append(propertyName)
+                .append(" put").append(Generators.toUpperFirstChar(propertyName))
                 .append("(final ").append(javaTypeName).append(" value0");
 
             for (int i = 1; i < arrayLength; i++)

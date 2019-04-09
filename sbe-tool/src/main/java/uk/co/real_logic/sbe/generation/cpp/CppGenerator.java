@@ -1206,6 +1206,7 @@ public class CppGenerator implements CodeGenerator
 
     private CharSequence generateStoreValue(
         final PrimitiveType primitiveType,
+        final String valueSuffix,
         final String offsetStr,
         final ByteOrder byteOrder,
         final String indent)
@@ -1220,11 +1221,12 @@ public class CppGenerator implements CodeGenerator
                 "union sbe_float_as_uint_u" : "union sbe_double_as_uint_u";
 
             sb.append(String.format(
-                indent + "        %1$s val;\n" +
-                indent + "        val.fp_value = value;\n" +
-                indent + "        val.uint_value = %2$s(val.uint_value);\n" +
-                indent + "        std::memcpy(m_buffer + m_offset + %3$s, &val, sizeof(%4$s));\n",
+                indent + "        %1$s val%2$s;\n" +
+                indent + "        val%2$s.fp_value = value%2$s;\n" +
+                indent + "        val%2$s.uint_value = %3$s(val%2$s.uint_value);\n" +
+                indent + "        std::memcpy(m_buffer + m_offset + %4$s, &val%2$s, sizeof(%5$s));\n",
                 stackUnion,
+                valueSuffix,
                 byteOrderStr,
                 offsetStr,
                 cppTypeName));
@@ -1232,9 +1234,10 @@ public class CppGenerator implements CodeGenerator
         else
         {
             sb.append(String.format(
-                indent + "        %1$s val = %2$s(value);\n" +
-                indent + "        std::memcpy(m_buffer + m_offset + %3$s, &val, sizeof(%1$s));\n",
+                indent + "        %1$s val%2$s = %3$s(value%2$s);\n" +
+                indent + "        std::memcpy(m_buffer + m_offset + %4$s, &val%2$s, sizeof(%1$s));\n",
                 cppTypeName,
+                valueSuffix,
                 byteOrderStr,
                 offsetStr));
         }
@@ -1262,7 +1265,7 @@ public class CppGenerator implements CodeGenerator
             generateLoadValue(primitiveType, Integer.toString(offset), token.encoding().byteOrder(), indent)));
 
         final CharSequence storeValue = generateStoreValue(
-            primitiveType, Integer.toString(offset), token.encoding().byteOrder(), indent);
+            primitiveType, "", Integer.toString(offset), token.encoding().byteOrder(), indent);
 
         sb.append(String.format("\n" +
             indent + "    %1$s &%2$s(const %3$s value)\n" +
@@ -1287,13 +1290,14 @@ public class CppGenerator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
 
+        final int arrayLength = token.arrayLength();
         sb.append(String.format("\n" +
             indent + "    static SBE_CONSTEXPR std::uint64_t %1$sLength() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n",
             propertyName,
-            token.arrayLength()));
+            arrayLength));
 
         sb.append(String.format("\n" +
             indent + "    const char *%1$s() const SBE_NOEXCEPT\n" +
@@ -1333,12 +1337,13 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n",
             cppTypeName,
             propertyName,
-            token.arrayLength(),
+            arrayLength,
             generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
             loadValue));
 
         final CharSequence storeValue = generateStoreValue(
             primitiveType,
+            "",
             String.format("%d + (index * %d)", offset, primitiveType.size()),
             token.encoding().byteOrder(),
             indent);
@@ -1357,7 +1362,7 @@ public class CppGenerator implements CodeGenerator
             containingClassName,
             propertyName,
             cppTypeName,
-            token.arrayLength(),
+            arrayLength,
             storeValue));
 
         sb.append(String.format("\n" +
@@ -1373,7 +1378,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        return length;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
-            token.arrayLength(),
+            arrayLength,
             generateArrayFieldNotPresentCondition(token.version(), indent),
             offset,
             cppTypeName));
@@ -1388,7 +1393,39 @@ public class CppGenerator implements CodeGenerator
             toUpperFirstChar(propertyName),
             offset,
             cppTypeName,
-            token.arrayLength()));
+            arrayLength));
+
+        if (arrayLength > 1 && arrayLength <= 4)
+        {
+            sb.append("\n")
+                .append(indent)
+                .append("    ")
+                .append(containingClassName)
+                .append(" &put").append(toUpperFirstChar(propertyName))
+                .append("(const ").append(cppTypeName).append(" value0");
+
+            for (int i = 1; i < arrayLength; i++)
+            {
+                sb.append(", const ").append(cppTypeName).append(" value").append(i);
+            }
+
+            sb.append(")\n");
+            sb.append(indent).append("    {\n");
+
+            for (int i = 0; i < arrayLength; i++)
+            {
+                sb.append(generateStoreValue(
+                    primitiveType,
+                    Integer.toString(i),
+                    String.format("%d + (%d * %d)", offset, i, primitiveType.size()),
+                    token.encoding().byteOrder(),
+                    indent));
+            }
+
+            sb.append("\n");
+            sb.append(indent).append("        return *this;\n");
+            sb.append(indent).append("    }\n");
+        }
 
         if (token.encoding().primitiveType() == PrimitiveType.CHAR)
         {
@@ -1405,7 +1442,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "    }\n",
                 toUpperFirstChar(propertyName),
                 offset,
-                token.arrayLength()));
+                arrayLength));
 
             sb.append(String.format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
@@ -1422,7 +1459,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "    #endif\n",
                 toUpperFirstChar(propertyName),
                 offset,
-                token.arrayLength()));
+                arrayLength));
 
             sb.append(String.format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
@@ -1465,7 +1502,7 @@ public class CppGenerator implements CodeGenerator
                 containingClassName,
                 toUpperFirstChar(propertyName),
                 offset,
-                token.arrayLength()));
+                arrayLength));
         }
 
         return sb;
