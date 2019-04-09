@@ -2071,13 +2071,13 @@ public class JavaGenerator implements CodeGenerator
         final String javaTypeName = javaTypeName(primitiveType);
         final int offset = token.offset();
         final String byteOrderStr = byteOrderString(encoding);
-        final int fieldLength = token.arrayLength();
+        final int arrayLength = token.arrayLength();
         final int typeSize = sizeOfPrimitive(encoding);
 
         final StringBuilder sb = new StringBuilder();
         final String className = formatClassName(containingClassName);
 
-        generateArrayLengthMethod(propertyName, indent, fieldLength, sb);
+        generateArrayLengthMethod(propertyName, indent, arrayLength, sb);
 
         sb.append(String.format(
             indent + "    public %s %s(final int index, final %s value)\n" +
@@ -2093,12 +2093,12 @@ public class JavaGenerator implements CodeGenerator
             className,
             propertyName,
             javaTypeName,
-            fieldLength,
+            arrayLength,
             offset,
             typeSize,
             generatePut(primitiveType, "pos", "value", byteOrderStr)));
 
-        if (fieldLength > 0 && fieldLength <= 4)
+        if (arrayLength > 0 && arrayLength <= 4)
         {
             sb.append(indent)
                 .append("    public ")
@@ -2106,7 +2106,7 @@ public class JavaGenerator implements CodeGenerator
                 .append(' ').append(propertyName)
                 .append("(final ").append(javaTypeName).append(" value0");
 
-            for (int i = 1; i < fieldLength; i++)
+            for (int i = 1; i < arrayLength; i++)
             {
                 sb.append(", final ").append(javaTypeName).append(" value").append(i);
             }
@@ -2114,7 +2114,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append(")\n");
             sb.append(indent).append("    {\n");
 
-            for (int i = 0; i < fieldLength; i++)
+            for (int i = 0; i < arrayLength; i++)
             {
                 final String indexStr = "this.offset + " + (offset + (typeSize * i));
 
@@ -2131,7 +2131,7 @@ public class JavaGenerator implements CodeGenerator
         if (primitiveType == PrimitiveType.CHAR)
         {
             generateCharArrayEncodeMethods(
-                containingClassName, propertyName, indent, encoding, offset, fieldLength, sb);
+                containingClassName, propertyName, indent, encoding, offset, arrayLength, sb);
         }
 
         return sb;
