@@ -109,10 +109,7 @@ public class ExampleUsingGeneratedStub
             .code(Model.A)
             .putVehicleCode(VEHICLE_CODE, 0);
 
-        for (int i = 0, size = CarEncoder.someNumbersLength(); i < size; i++)
-        {
-            car.someNumbers(i, i);
-        }
+        car.putSomeNumbers(1, 2, 3, 4);
 
         car.extras()
             .clear()

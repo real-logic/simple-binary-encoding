@@ -12,7 +12,7 @@
         <type name="ModelYear" primitiveType="uint16"/>
         <type name="VehicleCode" primitiveType="char" length="6" characterEncoding="ASCII"/>
         <type name="Ron" primitiveType="uint8" minValue="90" maxValue="110"/>
-        <type name="someNumbers" primitiveType="uint32" length="5"/>
+        <type name="someNumbers" primitiveType="uint32" length="4"/>
         <type name="Percentage" primitiveType="int8" minValue="0" maxValue="100"/>
         <composite name="Booster">
             <enum name="BoostType" encodingType="char">
@@ -47,7 +47,7 @@
             <choice name="sportsPack">1</choice>
             <choice name="cruiseControl">2</choice>
         </set>
-        <type name="uuid_t" primitiveType="uint64" length="2" presence="optional" sinceVersion="1"/>
+        <type name="uuid_t" primitiveType="int64" length="2" presence="optional" sinceVersion="1"/>
         <type name="cupHolderCount_t" primitiveType="uint8" presence="optional" sinceVersion="1"/>
     </types>
     <sbe:message name="Car" id="1" description="Description of a basic Car">
