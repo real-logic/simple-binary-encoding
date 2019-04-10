@@ -89,7 +89,7 @@ public class PyUtil
 
     /**
      * https://docs.python.org/3/library/struct.html
-     * @param primitiveType
+     * @param primitiveType SBE primitive type
      * @return A string representation for python c struct unpacking
      */
     public static String pythonTypeCode(final PrimitiveType primitiveType){
@@ -98,7 +98,7 @@ public class PyUtil
 
     /**
      * https://docs.python.org/3/library/struct.html
-     * @param byteOrder
+     * @param byteOrder byte order for convertion from Java enum to python string
      * @return  python struct unpacking code for endianess
      */
     public static String pythonEndianCode(final ByteOrder byteOrder){
@@ -151,9 +151,9 @@ public class PyUtil
 
     /**
      * Converts CamelCase to snake_case, which is the recommended python case
-     * @param str
-     * @param toUpperFirst
-     * @return
+     * @param str string to transform
+     * @param toUpperFirst whether to make the first char upper case first
+     * @return transformed string
      */
     public static String camToSnake(final String str, boolean toUpperFirst){
         if(toUpperFirst){
@@ -163,7 +163,7 @@ public class PyUtil
     }
 
     /**
-     * @see {@link #camToSnake}
+     * @return transformed strings  with toUpper applied
      */
     public static String camToSnake(final String str){
         return camToSnake(str, true);
