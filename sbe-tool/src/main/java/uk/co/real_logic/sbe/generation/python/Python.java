@@ -24,12 +24,15 @@ import uk.co.real_logic.sbe.ir.Ir;
  * of specifying a TargetCodeGenerator Java class name rather than the language
  * name.
  */
-public class Python implements TargetCodeGenerator {
-    public CodeGenerator newInstance(final Ir ir, final String outputDir) {
+public class Python implements TargetCodeGenerator
+{
+    public CodeGenerator newInstance(final Ir ir, final String outputDir)
+    {
         return defaultPythonGenerator(ir, outputDir);
     }
 
-    public static CodeGenerator defaultPythonGenerator(final Ir ir, final String outputDir) {
+    public static CodeGenerator defaultPythonGenerator(final Ir ir, final String outputDir)
+    {
         return new PyGenerator(ir, new PyOutputManager(outputDir, ir.applicableNamespace()));
     }
 }

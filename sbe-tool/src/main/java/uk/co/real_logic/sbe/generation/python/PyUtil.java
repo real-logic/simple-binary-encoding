@@ -89,19 +89,23 @@ public class PyUtil
 
     /**
      * https://docs.python.org/3/library/struct.html
+     *
      * @param primitiveType SBE primitive type
      * @return A string representation for python c struct unpacking
      */
-    public static String pythonTypeCode(final PrimitiveType primitiveType){
+    public static String pythonTypeCode(final PrimitiveType primitiveType)
+    {
         return PRIMITIVE_TYPE_STRUCT_ENUM_MAP.get(primitiveType);
     }
 
     /**
      * https://docs.python.org/3/library/struct.html
+     *
      * @param byteOrder byte order for convertion from Java enum to python string
-     * @return  python struct unpacking code for endianess
+     * @return python struct unpacking code for endianess
      */
-    public static String pythonEndianCode(final ByteOrder byteOrder){
+    public static String pythonEndianCode(final ByteOrder byteOrder)
+    {
         return BYTE_ORDER_STRING_MAP.get(byteOrder);
     }
 
@@ -151,12 +155,15 @@ public class PyUtil
 
     /**
      * Converts CamelCase to snake_case, which is the recommended python case
-     * @param str string to transform
+     *
+     * @param str          string to transform
      * @param toUpperFirst whether to make the first char upper case first
      * @return transformed string
      */
-    public static String camToSnake(final String str, boolean toUpperFirst){
-        if(toUpperFirst){
+    public static String camToSnake(final String str, final boolean toUpperFirst)
+    {
+        if (toUpperFirst)
+        {
             return CAM_SNAKE_PATTERN.matcher(toUpperFirstChar(str)).replaceAll("$1_$2").toLowerCase();
         }
         return CAM_SNAKE_PATTERN.matcher(str).replaceAll("$1_$2").toLowerCase();
@@ -166,7 +173,8 @@ public class PyUtil
      * @param str string to  transform
      * @return transformed strings  with toUpper applied
      */
-    public static String camToSnake(final String str){
+    public static String camToSnake(final String str)
+    {
         return camToSnake(str, true);
     }
 
@@ -186,9 +194,9 @@ public class PyUtil
         }
 
         return
-                indent + "\"\"\"\n" +
-                        indent + " " + description + '\n' +
-                        indent + "\"\"\"\n";
+            indent + "\"\"\"\n" +
+                indent + " " + description + '\n' +
+                indent + "\"\"\"\n";
     }
 
     /**
@@ -200,7 +208,7 @@ public class PyUtil
      * @return a string representation of the Javadoc comment.
      */
     public static String generateFlyweightPropertyPydoc(
-            final String indent, final Token propertyToken, final String typeName)
+        final String indent, final Token propertyToken, final String typeName)
     {
         final String description = propertyToken.description();
         if (null == description || description.isEmpty())
@@ -209,10 +217,10 @@ public class PyUtil
         }
 
         return
-                indent + "\"\"\"\n" +
-                        indent + description + '\n' +
-                        indent + "@return " + typeName + " : " + description + "\n" +
-                        indent + " \"\"\"\n";
+            indent + "\"\"\"\n" +
+                indent + description + '\n' +
+                indent + "@return " + typeName + " : " + description + "\n" +
+                indent + " \"\"\"\n";
     }
 
     /**
@@ -224,7 +232,7 @@ public class PyUtil
      * @return a string representation of the Javadoc comment.
      */
     public static String generateGroupEncodePropertyPydoc(
-            final String indent, final Token propertyToken, final String typeName)
+        final String indent, final Token propertyToken, final String typeName)
     {
         final String description = propertyToken.description();
         if (null == description || description.isEmpty())
@@ -233,11 +241,11 @@ public class PyUtil
         }
 
         return
-                indent + "/**\n" +
-                        indent + " * " + description + "\n" +
-                        indent + " *\n" +
-                        indent + " * @param count of times the group will be encoded\n" +
-                        indent + " * @return " + typeName + " : encoder for the group\n" +
-                        indent + " */\n";
+            indent + "/**\n" +
+                indent + " * " + description + "\n" +
+                indent + " *\n" +
+                indent + " * @param count of times the group will be encoded\n" +
+                indent + " * @return " + typeName + " : encoder for the group\n" +
+                indent + " */\n";
     }
 }

@@ -12,9 +12,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class PyGeneratorTest {
+public class PyGeneratorTest
+{
     @Test()
-    public void codeGenerationSchemaTest() throws Exception {
+    public void codeGenerationSchemaTest() throws Exception
+    {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final MessageSchema schema = parse(TestUtil.getLocalResource("example-schema.xml"), options);
         final IrGenerator irg = new IrGenerator();

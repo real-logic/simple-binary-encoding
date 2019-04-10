@@ -24,14 +24,14 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 
 import static java.io.File.separatorChar;
 
 /**
  * The character encoding for the {@link Writer} is UTF-8.
  */
-public class PyOutputManager implements OutputManager {
+public class PyOutputManager implements OutputManager
+{
     private final File outputDir;
 
     /**
@@ -41,14 +41,16 @@ public class PyOutputManager implements OutputManager {
      * @param baseDirName for the generated source code.
      * @param packageName for the generated source code relative to the baseDirName.
      */
-    public PyOutputManager(final String baseDirName, final String packageName) {
+    public PyOutputManager(final String baseDirName, final String packageName)
+    {
         Verify.notNull(baseDirName, "baseDirName");
         Verify.notNull(packageName, "packageName");
         final String dirName = baseDirName.endsWith("" + separatorChar) ? baseDirName : baseDirName + separatorChar;
         final String packageDirName = dirName + packageName.replace('.', File.separatorChar);
 
         outputDir = new File(packageDirName);
-        if (!outputDir.exists() && !outputDir.mkdirs()) {
+        if (!outputDir.exists() && !outputDir.mkdirs())
+        {
             throw new IllegalStateException("Unable to create directory: " + packageDirName);
         }
 
@@ -64,7 +66,8 @@ public class PyOutputManager implements OutputManager {
      * @return a {@link Writer} to which the source code should be written.
      * @throws IOException if an issue occurs when creating the file.
      */
-    public Writer createOutput(final String name) throws IOException {
+    public Writer createOutput(final String name) throws IOException
+    {
         final File targetFile = new File(outputDir, name + ".py");
         return Files.newBufferedWriter(targetFile.toPath(), StandardCharsets.UTF_8);
     }
