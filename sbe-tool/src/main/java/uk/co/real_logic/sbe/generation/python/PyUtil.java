@@ -163,6 +163,7 @@ public class PyUtil
     }
 
     /**
+     * @param str string to  transform
      * @return transformed strings  with toUpper applied
      */
     public static String camToSnake(final String str){

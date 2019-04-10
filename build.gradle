@@ -784,11 +784,11 @@ task generatePythonCarExample(type: JavaExec) {
 }
 
 task generatePythonExampleDataFile(type: JavaExec) {
+    mkdir "python/tests/gen/car_example"
     main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
     systemProperties('sbe.encoding.filename': 'python/tests/gen/car_example/car_example_data.sbe')
     args = []
-    standardOutput = new FileOutputStream("python/tests/gen/car_example/car_example_decode.out")
 }
 
 task generatePythonCodecs {
