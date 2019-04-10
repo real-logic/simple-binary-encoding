@@ -1595,7 +1595,8 @@ public class CGenerator implements CodeGenerator
             "    {\n" +
             "        errno = E105;\n" +
             "        return NULL;\n" +
-            "    }\n" +
+            "    }\n\n" +
+
             "%5$s\n" +
             "    return codec;\n" +
             "}\n",
