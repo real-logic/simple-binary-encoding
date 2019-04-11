@@ -1473,8 +1473,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "            throw std::runtime_error(\"string too large for put%2$s [E106]\");\n" +
                 indent + "        }\n\n" +
 
-                indent + "        size_t length = srcLength < %4$d ? srcLength : %4$d;\n" +
-                indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.data(), length);\n" +
+                indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.data(), srcLength);\n" +
                 indent + "        for (size_t start = srcLength; start < %4$d; ++start)\n" +
                 indent + "        {\n" +
                 indent + "            m_buffer[m_offset + %3$d + start] = 0;\n" +
@@ -1491,8 +1490,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "            throw std::runtime_error(\"string too large for put%2$s [E106]\");\n" +
                 indent + "        }\n\n" +
 
-                indent + "        size_t length = srcLength < %4$d ? srcLength : %4$d;\n" +
-                indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), length);\n" +
+                indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), srcLength);\n" +
                 indent + "        for (size_t start = srcLength; start < %4$d; ++start)\n" +
                 indent + "        {\n" +
                 indent + "            m_buffer[m_offset + %3$d + start] = 0;\n" +
