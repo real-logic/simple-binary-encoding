@@ -1397,18 +1397,19 @@ public class CppGenerator implements CodeGenerator
 
         if (arrayLength > 1 && arrayLength <= 4)
         {
-            sb.append("\n")
-                .append(indent)
-                .append("    ")
-                .append(containingClassName)
-                .append(" &put").append(toUpperFirstChar(propertyName))
-                .append("(\n")
-                .append(indent).append("        ")
-                .append("const ").append(cppTypeName).append(" value0");
+            sb.append("\n").append(indent).append("    ")
+                .append(containingClassName).append(" &put").append(toUpperFirstChar(propertyName))
+                .append("(\n");
 
-            for (int i = 1; i < arrayLength; i++)
+            for (int i = 0; i < arrayLength; i++)
             {
-                sb.append(", const ").append(cppTypeName).append(" value").append(i);
+                sb.append(indent).append("        ")
+                    .append("const ").append(cppTypeName).append(" value").append(i);
+
+                if (i < (arrayLength - 1))
+                {
+                    sb.append(",\n");
+                }
             }
 
             sb.append(") SBE_NOEXCEPT\n");
@@ -1419,7 +1420,7 @@ public class CppGenerator implements CodeGenerator
                 sb.append(generateStoreValue(
                     primitiveType,
                     Integer.toString(i),
-                    String.format("%d + (%d * %d)", offset, i, primitiveType.size()),
+                    Integer.toString(offset + (i * primitiveType.size())),
                     token.encoding().byteOrder(),
                     indent));
             }
@@ -1823,7 +1824,7 @@ public class CppGenerator implements CodeGenerator
             "            buffer + offset + MessageHeader::encodedLength(),\n" +
             "            0,\n" +
             "            bufferLength - MessageHeader::encodedLength(),\n" +
-            "            sbeBlockLength()\n," +
+            "            sbeBlockLength(),\n" +
             "            sbeSchemaVersion());\n" +
             "    }\n\n" +
 
