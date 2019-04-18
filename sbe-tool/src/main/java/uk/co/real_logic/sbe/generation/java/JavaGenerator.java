@@ -1323,7 +1323,7 @@ public class JavaGenerator implements CodeGenerator
 
                     case BEGIN_ENUM:
                         out.append(sb).append(generateEnumEncoder(
-                            encoderName, propertyName, encodingToken, BASE_INDENT));
+                            encoderName, encodingToken, propertyName, encodingToken, BASE_INDENT));
                         break;
 
                     case BEGIN_SET:
@@ -2615,7 +2615,8 @@ public class JavaGenerator implements CodeGenerator
                         break;
 
                     case BEGIN_ENUM:
-                        sb.append(generateEnumEncoder(containingClassName, propertyName, typeToken, indent));
+                        sb.append(generateEnumEncoder(
+                            containingClassName, fieldToken, propertyName, typeToken, indent));
                         break;
 
                     case BEGIN_SET:
@@ -2792,16 +2793,20 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generateEnumEncoder(
-        final String containingClassName, final String propertyName, final Token token, final String indent)
+        final String containingClassName,
+        final Token fieldToken,
+        final String propertyName,
+        final Token typeToken,
+        final String indent)
     {
-        if (token.isConstantEncoding())
+        if (fieldToken.isConstantEncoding())
         {
             return "";
         }
 
-        final String enumName = formatClassName(token.applicableTypeName());
-        final Encoding encoding = token.encoding();
-        final int offset = token.offset();
+        final String enumName = formatClassName(typeToken.applicableTypeName());
+        final Encoding encoding = typeToken.encoding();
+        final int offset = typeToken.offset();
 
         return String.format("\n" +
             indent + "    public %s %s(final %s value)\n" +
