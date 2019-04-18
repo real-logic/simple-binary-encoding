@@ -19,7 +19,6 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.util.ValidationUtil;
 
-import java.nio.ByteOrder;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -142,35 +141,5 @@ public class GolangUtil
     public static String formatTypeName(final String value)
     {
         return toUpperFirstChar(value);
-    }
-
-    /**
-     * Return the Golang formatted byte order encoding string to use for a given byte order and primitiveType
-     *
-     * @param byteOrder     of the {@link uk.co.real_logic.sbe.ir.Token}
-     * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}
-     * @return the string formatted as the byte ordering encoding
-     */
-    public static String formatByteOrderEncoding(final ByteOrder byteOrder, final PrimitiveType primitiveType)
-    {
-        switch (primitiveType.size())
-        {
-            case 2:
-                return "binary.Write(buf, order, obj)";
-
-            case 4:
-                return "binary.Write(buf, order, obj)";
-
-            case 8:
-                return "binary.Write(buf, order, obj)";
-
-            default:
-                return "";
-        }
-    }
-
-    public static String closingBraces(final int count)
-    {
-        return new String(new char[count]).replace("\0", "}\n");
     }
 }
