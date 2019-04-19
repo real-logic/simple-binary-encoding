@@ -2030,7 +2030,7 @@ public class CppGenerator implements CodeGenerator
 
     private CharSequence generateEnumProperty(
         final String containingClassName,
-        final Token signalToken,
+        final Token fieldToken,
         final String propertyName,
         final Token token,
         final String indent)
@@ -2047,11 +2047,11 @@ public class CppGenerator implements CodeGenerator
             indent + "        return %2$d;\n" +
             indent + "    }\n",
             propertyName,
-            signalToken.encodedLength()));
+            fieldToken.encodedLength()));
 
-        if (signalToken.isConstantEncoding())
+        if (fieldToken.isConstantEncoding())
         {
-            final String constValue = signalToken.encoding().constValue().toString();
+            final String constValue = fieldToken.encoding().constValue().toString();
 
             sb.append(String.format("\n" +
                 indent + "    static SBE_CONSTEXPR %1$s::Value %2$sConstValue() SBE_NOEXCEPT\n" +
