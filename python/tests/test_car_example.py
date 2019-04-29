@@ -38,7 +38,7 @@ class TestCarExample(unittest.TestCase):
 
     def _encode(self, buf: bytes, header: MessageHeader, car: Car):
         offset = 0
-        header.wrap(buf, offset)
+        header.wrap(buf, offset, Car.SCHEMA_VERSION)
         header.set_block_length(Car.BLOCK_LENGTH)
         header.set_schema_id(Car.SCHEMA_ID)
         header.set_template_id(Car.SCHEMA_ID)
@@ -93,7 +93,7 @@ class TestCarExample(unittest.TestCase):
     def _decode(self, buf: bytes, header: MessageHeader, car: Car):
         offset = 0
         out = ""
-        header.wrap(buf, offset)
+        header.wrap(buf, offset, Car.SCHEMA_VERSION)
         template_id = header.get_template_id()
         if template_id != Car.TEMPLATE_ID:
             raise Exception("Template ID missmatch")

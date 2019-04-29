@@ -118,6 +118,18 @@ Users of CSharp generated code should see the [user documentation](https://githu
 Developers wishing to enhance the CSharp generator should see the [developer documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/README.md)
 
 
+Python Build
+------------
+Python support is experimental and tested against Python >= 3.6. Other python versions and implementations 
+should also work, given that they have  support for the `struct` package and the `buffer protocol`, but they aren't 
+officially supported.
+
+Use the following the build the java stub generator and execute the python tests:
+```bash
+$ ./gradlew
+$ ./gradlew runPythonTests
+```
+
 License (See LICENSE file for full license)
 -------------------------------------------
 Copyright 2013-2019 Real Logic Limited  

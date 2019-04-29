@@ -17,7 +17,6 @@
 package uk.co.real_logic.sbe.generation.python;
 
 import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.ir.Token;
 
 import java.nio.ByteOrder;
 import java.util.EnumMap;
@@ -176,76 +175,5 @@ public class PyUtil
     public static String camToSnake(final String str)
     {
         return camToSnake(str, true);
-    }
-
-    /**
-     * Generate the Pydoc comment header for a type.
-     *
-     * @param indent    level for the comment.
-     * @param typeToken for the type.
-     * @return a string representation of the Javadoc comment.
-     */
-    public static String generateTypePydoc(final String indent, final Token typeToken)
-    {
-        final String description = typeToken.description();
-        if (null == description || description.isEmpty())
-        {
-            return "";
-        }
-
-        return
-            indent + "\"\"\"\n" +
-                indent + " " + description + '\n' +
-                indent + "\"\"\"\n";
-    }
-
-    /**
-     * Generate the Pydoc comment header for flyweight property.
-     *
-     * @param indent        level for the comment.
-     * @param propertyToken for the property name.
-     * @param typeName      for the property type.
-     * @return a string representation of the Javadoc comment.
-     */
-    public static String generateFlyweightPropertyPydoc(
-        final String indent, final Token propertyToken, final String typeName)
-    {
-        final String description = propertyToken.description();
-        if (null == description || description.isEmpty())
-        {
-            return "";
-        }
-
-        return
-            indent + "\"\"\"\n" +
-                indent + description + '\n' +
-                indent + "@return " + typeName + " : " + description + "\n" +
-                indent + " \"\"\"\n";
-    }
-
-    /**
-     * Generate the Javadoc comment header for group encode property.
-     *
-     * @param indent        level for the comment.
-     * @param propertyToken for the property name.
-     * @param typeName      for the property type.
-     * @return a string representation of the Javadoc comment.
-     */
-    public static String generateGroupEncodePropertyPydoc(
-        final String indent, final Token propertyToken, final String typeName)
-    {
-        final String description = propertyToken.description();
-        if (null == description || description.isEmpty())
-        {
-            return "";
-        }
-
-        return
-            indent + "/**\n" +
-                indent + " * " + description + "\n" +
-                indent + " *\n" +
-                indent + " * @param count of times the group will be encoded\n" +
-                indent + " * @return " + typeName + " : encoder for the group\n" +
-                indent + " */\n";
     }
 }

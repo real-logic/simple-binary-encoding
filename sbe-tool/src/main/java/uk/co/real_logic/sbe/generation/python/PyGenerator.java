@@ -1,6 +1,5 @@
 /*
  * Copyright 2013-2019 Real Logic Ltd.
- * Copyright (C) 2017 MarketFactory, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +21,6 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.Generators;
-import uk.co.real_logic.sbe.generation.csharp.CSharpUtil;
 import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Signal;
@@ -92,35 +90,47 @@ public class PyGenerator implements CodeGenerator
             final Token msgToken = tokens.get(0);
             final String className = formatClassName(msgToken.name());
             final String pyModuleName = camToSnake(className);
+
+            modules.add(pyModuleName);
+            final List<Token> messageBody = getMessageBody(tokens);
+            int offset = 0;
+
+            final List<Token> fields = new ArrayList<>();
+            offset = collectFields(messageBody, offset, fields);
+
+            final List<Token> groups = new ArrayList<>();
+            offset = collectGroups(messageBody, offset, groups);
+
+            final List<Token> varData = new ArrayList<>();
+            collectVarData(messageBody, offset, varData);
+
             try (Writer out = outputManager.createOutput(pyModuleName))
             {
-                modules.add(pyModuleName);
-                final List<Token> messageBody = getMessageBody(tokens);
-                int offset = 0;
-
-                final List<Token> fields = new ArrayList<>();
-                offset = collectFields(messageBody, offset, fields);
-
-                out.append(generateFileHeader(ir.applicableNamespace(), messageBody, true));
-                out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(className, msgToken, BASE_INDENT, fields));
-
-                out.append(generateFields(fields, BASE_INDENT, className));
-
-                final StringBuilder sb = new StringBuilder();
-                final List<Token> groups = new ArrayList<>();
-                offset = collectGroups(messageBody, offset, groups);
-                generateGroups(sb, className, groups, BASE_INDENT);
-                out.append(sb);
-
-                final List<Token> varData = new ArrayList<>();
-                collectVarData(messageBody, offset, varData);
-                out.append(generateVarData(varData, BASE_INDENT, className));
+                generateEncoder(out, className, fields, groups, varData, messageBody, msgToken);
             }
         }
         generateStructParsers();
         generatePackageDefinition(modules);
     }
+
+    public void generateEncoder(final Writer out, final String className,
+        final List<Token> fields, final List<Token> groups, final List<Token> varData,
+        final List<Token> msgBody, final Token msgToken) throws IOException
+    {
+        out.append(generateFileHeader(ir.applicableNamespace(), msgBody, true));
+        out.append(generateClassDeclaration(className));
+        out.append(generateMessageFlyweightCode(className, msgToken, BASE_INDENT, fields));
+
+        out.append(generateFields(fields, BASE_INDENT, className));
+
+        final StringBuilder sb = new StringBuilder();
+
+        generateGroups(sb, className, groups, BASE_INDENT);
+        out.append(sb);
+
+        out.append(generateVarData(varData, BASE_INDENT, className));
+    }
+
 
     public void generatePackageDefinition(final List<String> modules) throws IOException
     {
@@ -216,7 +226,7 @@ public class PyGenerator implements CodeGenerator
             " memoryview" + "], acting_version: int):\n" +
             indent + "        self._parent_message = parent_message\n" +
             indent + "        self._buffer = buffer\n" +
-            indent + "        self._dimensions.wrap(buffer, parent_message.limit)\n" +
+            indent + "        self._dimensions.wrap(buffer, parent_message.limit, parent_message._acting_version)\n" +
             indent + "        self._block_length = self._dimensions.get_block_length()\n" +
             indent + "        self._count = self._dimensions.get_num_in_group()\n" +
             indent + "        self._acting_version = acting_version\n" +
@@ -237,7 +247,7 @@ public class PyGenerator implements CodeGenerator
             "max=%3$d')\n" +
             indent + "        self._parent_message = parent_message\n" +
             indent + "        self._buffer = buffer\n" +
-            indent + "        self._dimensions.wrap(buffer, parent_message.limit)\n" +
+            indent + "        self._dimensions.wrap(buffer, parent_message.limit, parent_message._acting_version)\n" +
             indent + "        self._dimensions.set_block_length(%4$s(%5$d))\n" +
             indent + "        self._dimensions.set_num_in_group(%6$s(count))\n" +
             indent + "        self._index = -1\n" +
@@ -294,7 +304,7 @@ public class PyGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        final String className = CSharpUtil.formatClassName(groupName);
+        final String className = PyUtil.formatClassName(groupName);
 
         sb.append(String.format("\n" +
             indent + "%S_ID: int = %d\n",
@@ -459,7 +469,6 @@ public class PyGenerator implements CodeGenerator
             final Token token = tokens.get(i);
             final String propertyName = formatPropertyName(token.name());
 
-            // FIXME: do I need to pass classname down here for disambiguation
             switch (token.signal())
             {
                 case ENCODING:
@@ -576,14 +585,8 @@ public class PyGenerator implements CodeGenerator
 
     private String generateChoiceIsEmptyInner(final PrimitiveType type, final ByteOrder byteOrder)
     {
-        switch (type)
-        {
-            case UINT8:
-                return "0 == " + type.primitiveName().toUpperCase() + "_" + byteOrder.toString() +
-                    ".unpack_from(self._buffer, self._offset)[0]";
-        }
-
-        throw new IllegalArgumentException("primitive type not supported: " + type);
+        return "0 == " + type.primitiveName().toUpperCase() + "_" + byteOrder.toString() +
+            ".unpack_from(self._buffer, self._offset)[0]";
     }
 
     private String generateChoicePut(final PrimitiveType type, final String bitIdx, final ByteOrder byteOrder)
@@ -1113,11 +1116,12 @@ public class PyGenerator implements CodeGenerator
         {
             if (t.signal() == Signal.BEGIN_COMPOSITE || t.signal() == Signal.BEGIN_SET)
             {
-                fieldTypes.put("_" + t.name(), t.referencedName());
+                fieldTypes.put("_" + camToSnake(t.name()), t.referencedName() != null ?
+                    toUpperFirstChar(t.referencedName()) : toUpperFirstChar(t.name()));
             }
         }
         final List<String> fields = new ArrayList<>(fieldTypes.keySet());
-        builder.append(INDENT + "__slots__ = '_offset', '_buffer'");
+        builder.append(INDENT + "__slots__ = '_offset', '_buffer', '_acting_version'");
         if (fields.size() > 0)
         {
             builder.append(", '" + String.join("', '", fields) + "'");
@@ -1127,6 +1131,7 @@ public class PyGenerator implements CodeGenerator
             "    SIZE: int = %d \n\n" +
             "    def __init__(self):\n" +
             "        self._offset: int \n" +
+            "        self._acting_version: int \n" +
             "        self._buffer: int \n", size));
         for (final Map.Entry<String, String> field : fieldTypes.entrySet())
         {
@@ -1135,16 +1140,18 @@ public class PyGenerator implements CodeGenerator
         }
         builder.append("\n");
 
-        builder.append(INDENT + "def wrap(self, buffer: Union[bytes, bytearray, memoryview], offset: int):\n" +
+        builder.append(INDENT + "def wrap(self, buffer: Union[bytes, bytearray, memoryview], offset: int, " +
+            "acting_version: int):\n" +
             INDENT + INDENT + "self._offset = offset\n" +
+            INDENT + INDENT + "self._acting_version = acting_version\n" +
             INDENT + INDENT + "self._buffer = buffer\n" +
             INDENT + INDENT + "return self\n");
         return builder.toString();
     }
 
 
-    private CharSequence generateMessageFlyweightCode(final String className, final Token token, final String indent,
-        final List<Token> fields)
+    private CharSequence generateMessageFlyweightCode(final String className, final Token token,
+        final String indent, final List<Token> fields)
     {
         final String blockLengthType = pythonTypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = pythonTypeName(ir.headerStructure().templateIdType());
@@ -1153,11 +1160,17 @@ public class PyGenerator implements CodeGenerator
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
         final StringBuilder builder = new StringBuilder();
         final Map<String, String> fieldTypes = new LinkedHashMap<>();
-        for (final Token t : fields)
+        for (int i = 0, size = fields.size(); i < size; i++)
         {
-            if (t.signal() == Signal.BEGIN_COMPOSITE || t.signal() == Signal.BEGIN_SET)
+            final Token signalToken = fields.get(i);
+            if (signalToken.signal() == Signal.BEGIN_FIELD)
             {
-                fieldTypes.put("_" + camToSnake(t.name()), t.referencedName() != null ? t.referencedName() : t.name());
+                final Token encodingToken = fields.get(i + 1);
+                final String propertyName = signalToken.name();
+                if (encodingToken.signal() == Signal.BEGIN_SET || encodingToken.signal() == Signal.BEGIN_COMPOSITE)
+                {
+                    fieldTypes.put("_" + camToSnake(propertyName), toUpperFirstChar(encodingToken.name()));
+                }
             }
         }
         builder.append(String.format(
@@ -1231,14 +1244,12 @@ public class PyGenerator implements CodeGenerator
             indent + "def limit(self) -> int:\n" +
             indent + "    return self._limit\n");
         builder.append("\n");
-
         builder.append(
             indent + "def set_limit(self, value):\n" +
             //TODO: make sure the capacity is checked either wrap in bytearray
             indent + "    #self._buffer.CheckLimit(value);\n" +
             indent + "    self._limit = value\n" +
             indent + "    return self\n");
-
         return builder.toString();
     }
 
@@ -1414,8 +1425,8 @@ public class PyGenerator implements CodeGenerator
         final String getter = String.format("\n" +
             indent + "def get_%2$s(self) -> '%1$s':\n" +
             "%3$s" +
-            indent + "    return self._%5$s.wrap_decode(self._buffer, self._offset + %4$d, " +
-            "self._acting_block_length, self._acting_version)\n",
+            indent + "    return self._%2$s.wrap_decode(self._buffer, self._offset + %4$d, %1$s.BLOCK_LENGTH, " +
+            "self._acting_version)\n",
             bitSetName,
             camToSnake(propertyName),
             generateTypeFieldNotPresentCondition(token.version(), indent),
@@ -1424,7 +1435,7 @@ public class PyGenerator implements CodeGenerator
 
         final String setter = String.format("\n" +
             indent + "def set_%3$s(self) -> '%1$s':\n" +
-            indent + "    return self._%2$s.wrap_encode(self._buffer, self._offset + %4$d)\n",
+            indent + "    return self._%3$s.wrap_encode(self._buffer, self._offset + %4$d)\n",
             bitSetName,
             camToSnake(bitSetName),
             camToSnake(propertyName),
@@ -1441,7 +1452,7 @@ public class PyGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "def set_%2$s(self) -> '%1$s':\n" +
             "%3$s" +
-            indent + "    self._%4$s.wrap(self._buffer, self._offset + %5$d)\n" +
+            indent + "    self._%4$s.wrap(self._buffer, self._offset + %5$d, self._acting_version)\n" +
             indent + "    return self._%4$s\n",
             compositeName,
             camToSnake(propertyName),
@@ -1452,7 +1463,7 @@ public class PyGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "def get_%2$s(self) -> '%1$s':\n" +
             "%3$s" +
-            indent + "    self._%4$s.wrap(self._buffer, self._offset + %5$d)\n" +
+            indent + "    self._%4$s.wrap(self._buffer, self._offset + %5$d, self._acting_version)\n" +
             indent + "    return self._%4$s\n",
             compositeName,
             camToSnake(propertyName),

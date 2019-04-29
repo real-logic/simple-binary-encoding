@@ -783,6 +783,48 @@ task generatePythonCarExample(type: JavaExec) {
     args = ['sbe-tool/src/test/resources/example-schema.xml']
 }
 
+task generatePythonIssue435Codecs(type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'python/tests',
+            'sbe.target.language': 'uk.co.real_logic.sbe.generation.python.Python',
+            'sbe.target.namespace': 'gen.issue435')
+    args = ['sbe-tool/src/test/resources/issue435.xml']
+}
+
+task generatePythonIssue483Codecs(type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'python/tests',
+            'sbe.target.language': 'uk.co.real_logic.sbe.generation.python.Python',
+            'sbe.target.namespace': 'gen.issue483')
+    args = ['sbe-tool/src/test/resources/issue483.xml']
+}
+
+task generatePythonIssue560Codecs(type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'python/tests',
+            'sbe.target.language': 'uk.co.real_logic.sbe.generation.python.Python',
+            'sbe.target.namespace': 'gen.issue560')
+    args = ['sbe-tool/src/test/resources/issue560.xml']
+}
+
+task generatePythonFixBinaryCodecs(type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'python/tests',
+            'sbe.target.language': 'uk.co.real_logic.sbe.generation.python.Python',
+            'sbe.target.namespace': 'gen.fix_binary')
+    args = [
+            'sbe-tool/src/test/resources/FixBinary.xml',
+    ]
+}
+
 task generatePythonExampleDataFile(type: JavaExec) {
     mkdir "python/tests/gen/car_example"
     main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
@@ -793,7 +835,9 @@ task generatePythonExampleDataFile(type: JavaExec) {
 
 task generatePythonCodecs {
     description = 'Generate python test codecs'
-    dependsOn 'generatePythonCarExample', 'generatePythonExampleDataFile'
+    delete 'python/tests/gen'
+    dependsOn 'generatePythonCarExample', 'generatePythonExampleDataFile', 'generatePythonIssue435Codecs',
+            'generatePythonIssue483Codecs', 'generatePythonIssue560Codecs', 'generatePythonFixBinaryCodecs'
 }
 
 task runPythonTests(type: Exec) {
