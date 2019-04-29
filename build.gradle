@@ -779,8 +779,9 @@ task generatePythonCarExample(type: JavaExec) {
     systemProperties(
             'sbe.output.dir': 'python/tests',
             'sbe.target.language': 'uk.co.real_logic.sbe.generation.python.Python',
+            'sbe.xinclude.aware': 'true',
             'sbe.target.namespace': 'gen.car_example')
-    args = ['sbe-tool/src/test/resources/example-schema.xml']
+    args = ['sbe-samples/src/main/resources/example-schema.xml']
 }
 
 task generatePythonIssue435Codecs(type: JavaExec) {

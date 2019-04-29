@@ -22,10 +22,10 @@ class TestCarExample(unittest.TestCase):
             py_buf = bytearray(4096)
             self._encode(py_buf, self.MESSAGE_HEADER, self.CAR)
             # Encoded message should match
-            self.assertEqual(buffer, py_buf[:211])
+            self.assertEqual(buffer, py_buf[:207])
             # The empty part of the buffer should be all 0's
             self.assertEqual(bytes(len(py_buf) - len(buffer)), py_buf[len(buffer):])
-            self.assertEqual(211, len(buffer))
+            self.assertEqual(207, len(buffer))
 
     def test_decoding(self):
         self.maxDiff = None
@@ -51,8 +51,10 @@ class TestCarExample(unittest.TestCase):
         car.set_code(Model.A)
         car.set_vehicle_code(self.VEHICLE_CODE)
 
-        for i in range(Car.SOME_NUMBERS_LENGTH):
-            car.put_some_numbers(i, i)
+        car.put_some_numbers(0,1)
+        car.put_some_numbers(1,2)
+        car.put_some_numbers(2,3)
+        car.put_some_numbers(3,4)
 
         car.set_extras() \
             .clear() \
@@ -106,12 +108,11 @@ class TestCarExample(unittest.TestCase):
         self.assertEqual(2013, car.get_model_year())
         self.assertEqual(BooleanType.T, car.get_available())
         self.assertEqual(Model.A, car.get_code())
-        self.assertEqual((0, 1, 2, 3, 4), car.get_multi_some_numbers())
-        self.assertEqual(0, car.get_some_numbers(0))
-        self.assertEqual(1, car.get_some_numbers(1))
-        self.assertEqual(2, car.get_some_numbers(2))
-        self.assertEqual(3, car.get_some_numbers(3))
-        self.assertEqual(4, car.get_some_numbers(4))
+        self.assertEqual((1, 2, 3, 4), car.get_multi_some_numbers())
+        self.assertEqual(1, car.get_some_numbers(0))
+        self.assertEqual(2, car.get_some_numbers(1))
+        self.assertEqual(3, car.get_some_numbers(2))
+        self.assertEqual(4, car.get_some_numbers(3))
         index_oob = False
         try:
             car.get_some_numbers(55)
@@ -185,5 +186,5 @@ class TestCarExample(unittest.TestCase):
         self.assertEqual("Honda", car.get_manufacturer().tobytes().decode(Car.MANUFACTURER_CHAR_ENCODING))
         self.assertEqual("Civic VTi", car.get_model().tobytes().decode(Car.MODEL_CHAR_ENCODING))
         self.assertEqual("abcdef", car.get_activation_code().tobytes().decode(Car.ACTIVATION_CODE_CHAR_ENCODING))
-        self.assertEqual(203, car.size())
+        self.assertEqual(199, car.size())
         return out
