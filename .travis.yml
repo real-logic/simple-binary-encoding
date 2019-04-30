@@ -7,19 +7,21 @@ matrix:
       language: java
       jdk: openjdk8
       os: linux
+      dist: xenial
       script: ./gradlew
 
     - name: "OpenJDK 11"
       language: java
       jdk: openjdk11
       os: linux
+      dist: xenial
       script: ./gradlew
 
     - env: COMPILER=g++-6
       language: cpp
       compiler: gcc
       os: linux
-      jdk: openjdk8
+      dist: xenial
       addons:
         apt:
           packages:
@@ -33,7 +35,7 @@ matrix:
       language: cpp
       compiler: gcc
       os: linux
-      jdk: openjdk8
+      dist: xenial
       addons:
         apt:
           packages:
@@ -47,7 +49,7 @@ matrix:
       language: cpp
       compiler: gcc
       os: linux
-      jdk: openjdk8
+      dist: xenial
       addons:
         apt:
           packages:
@@ -57,27 +59,11 @@ matrix:
             - ubuntu-toolchain-r-test
       script: ./cppbuild/cppbuild
 
-    - env: COMPILER=clang++-4.0
-      language: cpp
-      compiler: clang
-      os: linux
-      jdk: openjdk8
-      addons:
-        apt:
-          packages:
-            - clang-4.0
-            - libstdc++-6-dev
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-4.0
-      script: ./cppbuild/cppbuild
-
     - env: COMPILER=clang++-5.0
       language: cpp
       compiler: clang
       os: linux
-      jdk: openjdk8
+      dist: xenial
       addons:
         apt:
           packages:
@@ -86,14 +72,14 @@ matrix:
             - libsparsehash-dev
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-5.0
+            - llvm-toolchain-xenial-5.0
       script: ./cppbuild/cppbuild
 
     - env: COMPILER=clang++-6.0
       language: cpp
       compiler: clang
       os: linux
-      jdk: openjdk8
+      dist: xenial
       addons:
         apt:
           packages:
@@ -102,14 +88,29 @@ matrix:
             - libsparsehash-dev
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-6.0
+            - llvm-toolchain-xenial-6.0
+      script: ./cppbuild/cppbuild
+
+    - env: COMPILER=clang++-7
+      language: cpp
+      compiler: clang
+      os: linux
+      dist: xenial
+      addons:
+        apt:
+          packages:
+            - clang-7
+            - libstdc++-7-dev
+            - libsparsehash-dev
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-7
       script: ./cppbuild/cppbuild
 
     - env: COMPILER=clang++
       language: c++
       compiler: clang
       os: osx
-      jdk: openjdk8
       script: ./cppbuild/cppbuild
 
 before_cache:
