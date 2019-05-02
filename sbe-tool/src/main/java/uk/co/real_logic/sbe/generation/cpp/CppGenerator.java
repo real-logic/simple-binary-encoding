@@ -1812,7 +1812,7 @@ public class CppGenerator implements CodeGenerator
             "    %10$s &wrapAndApplyHeader(" +
             "char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength)\n" +
             "    {\n" +
-            "        MessageHeader hdr(buffer + offset, bufferLength, sbeSchemaVersion());\n\n" +
+            "        MessageHeader hdr(buffer, offset, bufferLength, sbeSchemaVersion());\n\n" +
 
             "        hdr\n" +
             "            .blockLength(sbeBlockLength())\n" +
@@ -1821,9 +1821,9 @@ public class CppGenerator implements CodeGenerator
             "            .version(sbeSchemaVersion());\n\n" +
 
             "        return *this = %10$s(\n" +
-            "            buffer + offset + MessageHeader::encodedLength(),\n" +
-            "            0,\n" +
-            "            bufferLength - MessageHeader::encodedLength(),\n" +
+            "            buffer,\n" +
+            "            offset + MessageHeader::encodedLength(),\n" +
+            "            bufferLength,\n" +
             "            sbeBlockLength(),\n" +
             "            sbeSchemaVersion());\n" +
             "    }\n\n" +
