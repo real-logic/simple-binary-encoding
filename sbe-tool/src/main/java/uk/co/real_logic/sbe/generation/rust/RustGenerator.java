@@ -1356,6 +1356,16 @@ public class RustGenerator implements CodeGenerator
                     .append(",\n");
             }
 
+            // null value
+            final Token token = messageBody.get(0);
+            final Encoding encoding = token.encoding();
+            final CharSequence nullVal = generateRustLiteral(
+                encoding.primitiveType(), encoding.applicableNullValue().toString());
+            indent(writer, 1).append("NullVal")
+                .append(" = ")
+                .append(nullVal)
+                .append(",\n");
+
             writer.append("}\n");
         }
     }

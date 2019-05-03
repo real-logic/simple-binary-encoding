@@ -124,6 +124,7 @@ public class RustGeneratorTest
             "pub enum ENUM {\n" +
             "  Value1 = 1u8,\n" +
             "  Value10 = 10u8,\n" +
+            "  NullVal = 255u8,\n" +
             "}\n";
         assertTrue(generatedRust.contains(expectedDeclaration));
     }
@@ -144,6 +145,7 @@ public class RustGeneratorTest
             "pub enum BooleanType {\n" +
             "  F = 0u8,\n" +
             "  T = 1u8,\n" +
+            "  NullVal = 255u8,\n" +
             "}\n";
         assertTrue(generatedRust.contains(expectedBooleanTypeDeclaration));
         final String expectedCharTypeDeclaration =
@@ -153,6 +155,7 @@ public class RustGeneratorTest
             "  A = 65i8,\n" +
             "  B = 66i8,\n" +
             "  C = 67i8,\n" +
+            "  NullVal = 0i8,\n" +
             "}\n";
         assertTrue(generatedRust.contains(expectedCharTypeDeclaration));
         assertRustBuildable(generatedRust, Optional.of("example-schema"));
@@ -283,6 +286,7 @@ public class RustGeneratorTest
             "  A = 65i8,\n" +
             "  B = 66i8,\n" +
             "  C = 67i8,\n" +
+            "  NullVal = 0i8,\n" +
             "}\n";
         assertContains(rust, expectedCharTypeDeclaration);
         assertContains(rust, "pub struct ConstantEnumsFields {\n}");
@@ -313,6 +317,7 @@ public class RustGeneratorTest
             "  A = 65i8,\n" +
             "  B = 66i8,\n" +
             "  C = 67i8,\n" +
+            "  NullVal = 0i8,\n" +
             "}\n";
         assertContains(rust, expectedCharTypeDeclaration);
         final String expectedComposite =
