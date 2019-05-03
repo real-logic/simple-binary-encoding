@@ -126,7 +126,7 @@ subprojects {
     jar.enabled = true
 
     dependencies {
-        checkstyle 'com.puppycrawl.tools:checkstyle:8.19'
+        checkstyle 'com.puppycrawl.tools:checkstyle:8.20'
 
         compile 'org.agrona:agrona:0.9.35'
 
@@ -136,7 +136,7 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = '8.19'
+        toolVersion = '8.20'
     }
 
     compileJava {
@@ -158,7 +158,7 @@ subprojects {
             jvmArgs('--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED')
             jvmArgs('--add-opens', 'java.base/sun.nio.ch=ALL-UNNAMED')
         }
-        
+
         testLogging {
             showStandardStreams = true
             exceptionFormat = 'full'
