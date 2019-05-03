@@ -201,8 +201,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    std::uint64_t m_count;\n" +
             indent + "    std::uint64_t m_index;\n" +
             indent + "    std::uint64_t m_offset;\n" +
-            indent + "    std::uint64_t m_actingVersion;\n" +
-            indent + "    %2$s m_dimensions;\n\n" +
+            indent + "    std::uint64_t m_actingVersion;\n\n" +
 
             indent + "    std::uint64_t *sbePositionPtr() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
@@ -210,23 +209,24 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n\n" +
 
             indent + "public:\n",
-            formatClassName(groupName), dimensionsClassName));
+            formatClassName(groupName)));
 
         sb.append(String.format(
             indent + "    inline void wrapForDecode(char *buffer, std::uint64_t *pos," +
             " const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
             indent + "    {\n" +
+            indent + "        %2$s dimensions;\n" +
             indent + "        m_buffer = buffer;\n" +
             indent + "        m_bufferLength = bufferLength;\n" +
-            indent + "        m_dimensions.wrap(m_buffer, *pos, actingVersion, bufferLength);\n" +
-            indent + "        m_blockLength = m_dimensions.blockLength();\n" +
-            indent + "        m_count = m_dimensions.numInGroup();\n" +
+            indent + "        dimensions.wrap(m_buffer, *pos, actingVersion, bufferLength);\n" +
+            indent + "        m_blockLength = dimensions.blockLength();\n" +
+            indent + "        m_count = dimensions.numInGroup();\n" +
             indent + "        m_index = -1;\n" +
             indent + "        m_actingVersion = actingVersion;\n" +
             indent + "        m_positionPtr = pos;\n" +
             indent + "        *m_positionPtr = *m_positionPtr + %1$d;\n" +
             indent + "    }\n",
-            dimensionHeaderLength));
+            dimensionHeaderLength, dimensionsClassName));
 
         final long minCount = numInGroupToken.encoding().applicableMinValue().longValue();
         final String minCheck = minCount > 0 ? "count < " + minCount + " || " : "";
@@ -235,6 +235,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    inline void wrapForEncode(char *buffer, const %3$s count," +
             " std::uint64_t *pos, const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
             indent + "    {\n" +
+            indent + "        %7$s dimensions;\n" +
             indent + "#if defined(__GNUG__) && !defined(__clang__)\n" +
             indent + "#pragma GCC diagnostic push\n" +
             indent + "#pragma GCC diagnostic ignored \"-Wtype-limits\"\n" +
@@ -248,9 +249,9 @@ public class CppGenerator implements CodeGenerator
             indent + "#endif\n" +
             indent + "        m_buffer = buffer;\n" +
             indent + "        m_bufferLength = bufferLength;\n" +
-            indent + "        m_dimensions.wrap(m_buffer, *pos, actingVersion, bufferLength);\n" +
-            indent + "        m_dimensions.blockLength((%1$s)%2$d);\n" +
-            indent + "        m_dimensions.numInGroup((%3$s)count);\n" +
+            indent + "        dimensions.wrap(m_buffer, *pos, actingVersion, bufferLength);\n" +
+            indent + "        dimensions.blockLength((%1$s)%2$d);\n" +
+            indent + "        dimensions.numInGroup((%3$s)count);\n" +
             indent + "        m_index = -1;\n" +
             indent + "        m_count = count;\n" +
             indent + "        m_blockLength = %2$d;\n" +
@@ -260,7 +261,8 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n",
             cppTypeForBlockLength, blockLength, cppTypeForNumInGroup, dimensionHeaderLength,
             minCheck,
-            numInGroupToken.encoding().applicableMaxValue().longValue()));
+            numInGroupToken.encoding().applicableMaxValue().longValue(),
+            dimensionsClassName));
 
         sb.append(String.format("\n" +
             indent + "    static SBE_CONSTEXPR std::uint64_t sbeHeaderSize() SBE_NOEXCEPT\n" +
