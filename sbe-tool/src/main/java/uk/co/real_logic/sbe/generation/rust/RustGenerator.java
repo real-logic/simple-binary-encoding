@@ -648,7 +648,7 @@ public class RustGenerator implements CodeGenerator
             indent(out).append("}\n");
 
             indent(out).append("#[inline]\n");
-            indent(out, 1, "fn after_member(mut self) -> %s {\n", groupLevelNextDecoderType);
+            indent(out, 1, "fn after_member(self) -> %s {\n", groupLevelNextDecoderType);
             indent(out, 2).append("if self.index <= self.max_index {\n");
             indent(out, 3).append("Either::Left(self)\n");
             indent(out, 2).append("} else {\n").append(INDENT).append(INDENT).append(INDENT)
