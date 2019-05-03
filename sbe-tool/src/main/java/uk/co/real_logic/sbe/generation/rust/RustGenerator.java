@@ -197,7 +197,7 @@ public class RustGenerator implements CodeGenerator
         final String setType = formatTypeName(beginToken.applicableTypeName());
         try (Writer writer = outputManager.createOutput(setType + " bit set"))
         {
-            writer.append("#[derive(Debug,Default)]\n");
+            writer.append("#[derive(Default)]\n");
             writer.append("#[repr(C,packed)]\n");
             final String rustPrimitiveType = rustTypeName(beginToken.encoding().primitiveType());
             writer.append(format("pub struct %s(pub %s);\n", setType, rustPrimitiveType));
