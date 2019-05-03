@@ -212,13 +212,15 @@ public class CppGenerator implements CodeGenerator
             formatClassName(groupName)));
 
         sb.append(String.format(
-            indent + "    inline void wrapForDecode(char *buffer, std::uint64_t *pos," +
-            " const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
+            indent + "    inline void wrapForDecode(\n" +
+            indent + "        char *buffer,\n" +
+            indent + "        std::uint64_t *pos,\n" +
+            indent + "        const std::uint64_t actingVersion,\n" +
+            indent + "        const std::uint64_t bufferLength)\n" +
             indent + "    {\n" +
-            indent + "        %2$s dimensions;\n" +
+            indent + "        %2$s dimensions(buffer, *pos, bufferLength, actingVersion);\n" +
             indent + "        m_buffer = buffer;\n" +
             indent + "        m_bufferLength = bufferLength;\n" +
-            indent + "        dimensions.wrap(m_buffer, *pos, actingVersion, bufferLength);\n" +
             indent + "        m_blockLength = dimensions.blockLength();\n" +
             indent + "        m_count = dimensions.numInGroup();\n" +
             indent + "        m_index = -1;\n" +
@@ -232,10 +234,13 @@ public class CppGenerator implements CodeGenerator
         final String minCheck = minCount > 0 ? "count < " + minCount + " || " : "";
 
         sb.append(String.format("\n" +
-            indent + "    inline void wrapForEncode(char *buffer, const %3$s count," +
-            " std::uint64_t *pos, const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
+            indent + "    inline void wrapForEncode(\n" +
+            indent + "        char *buffer,\n" +
+            indent + "        const %3$s count,\n" +
+            indent + "        std::uint64_t *pos,\n" +
+            indent + "        const std::uint64_t actingVersion,\n" +
+            indent + "        const std::uint64_t bufferLength)\n" +
             indent + "    {\n" +
-            indent + "        %7$s dimensions;\n" +
             indent + "#if defined(__GNUG__) && !defined(__clang__)\n" +
             indent + "#pragma GCC diagnostic push\n" +
             indent + "#pragma GCC diagnostic ignored \"-Wtype-limits\"\n" +
@@ -249,7 +254,7 @@ public class CppGenerator implements CodeGenerator
             indent + "#endif\n" +
             indent + "        m_buffer = buffer;\n" +
             indent + "        m_bufferLength = bufferLength;\n" +
-            indent + "        dimensions.wrap(m_buffer, *pos, actingVersion, bufferLength);\n" +
+            indent + "        %7$s dimensions(buffer, *pos, bufferLength, actingVersion);\n" +
             indent + "        dimensions.blockLength((%1$s)%2$d);\n" +
             indent + "        dimensions.numInGroup((%3$s)count);\n" +
             indent + "        m_index = -1;\n" +
