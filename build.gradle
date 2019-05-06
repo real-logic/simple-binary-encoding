@@ -20,9 +20,15 @@ buildscript {
 }
 
 plugins {
+    id 'com.gradle.build-scan' version '2.3'
     id 'java'
     id 'com.github.johnrengelman.shadow' version '5.0.0' apply false
     id "io.freefair.javadoc-links" version "3.2.1" apply false
+}
+
+buildScan {
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    apply from: 'gradle/build-scans.gradle'
 }
 
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
