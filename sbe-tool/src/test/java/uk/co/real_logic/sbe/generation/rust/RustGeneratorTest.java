@@ -234,7 +234,7 @@ public class RustGeneratorTest
     {
         Assume.assumeTrue(cargoExists());
         final File folder = writeCargoFolderWrapper(name.orElse("test"), generatedRust, folderRule.newFolder());
-        assertTrue("Generated Rust should be buildable with cargo", cargoCheckInDirectory(folder));
+        assertTrue(String.format("Generated Rust (%s) should be buildable with cargo", name), cargoCheckInDirectory(folder));
     }
 
     private void assertSchemaInterpretableAsRust(final String localResourceSchema)

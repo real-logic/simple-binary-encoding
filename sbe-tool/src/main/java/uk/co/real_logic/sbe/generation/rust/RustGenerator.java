@@ -1399,9 +1399,24 @@ public class RustGenerator implements CodeGenerator
         }
     }
 
+    private static final class RustStructField
+    {
+        final boolean isPub;
+        final String name;
+        final String value;
+
+        private RustStructField(boolean isPub, String name, String value) {
+            this.isPub = isPub;
+            this.name = name;
+            this.value = value;
+        }
+    }
+
     private static void appendStructFields(final Appendable appendable, final List<NamedToken> namedTokens)
         throws IOException
     {
+        final List<RustStructField> fields = new ArrayList<>();
+        int totalSize = 0;
         for (final NamedToken namedToken : namedTokens)
         {
             final Token typeToken = namedToken.typeToken();
@@ -1411,20 +1426,27 @@ public class RustGenerator implements CodeGenerator
             }
 
             final String propertyName = formatMethodName(namedToken.name());
-            indent(appendable).append("pub ").append(propertyName).append(":");
+
+            // need padding when field offsets imply gaps
+            final int offset = typeToken.offset();
+            if (offset != totalSize) {
+                final String value = getRustStaticArrayString("u8", offset - totalSize);
+                fields.add(new RustStructField(false, propertyName + "_padding", value));
+            }
+            totalSize += typeToken.encodedLength();
 
             switch (typeToken.signal())
             {
                 case ENCODING:
                     final String rustPrimitiveType = RustUtil.rustTypeName(typeToken.encoding().primitiveType());
                     final String rustFieldType = getRustTypeForPrimitivePossiblyArray(typeToken, rustPrimitiveType);
-                    appendable.append(rustFieldType);
+                    fields.add(new RustStructField(true, propertyName, rustFieldType));
                     break;
 
                 case BEGIN_ENUM:
                 case BEGIN_SET:
                 case BEGIN_COMPOSITE:
-                    appendable.append(formatTypeName(typeToken.applicableTypeName()));
+                    fields.add(new RustStructField(true, propertyName, formatTypeName(typeToken.applicableTypeName())));
                     break;
 
                 default:
@@ -1432,7 +1454,12 @@ public class RustGenerator implements CodeGenerator
                         format("Unsupported struct property from %s", typeToken.toString()));
             }
 
-            appendable.append(",\n");
+            for (RustStructField field: fields) {
+                indent(appendable);
+                if (field.isPub) appendable.append("pub ");
+                appendable.append(field.name).append(":").append(field.value).append(",\n");
+            }
+            fields.clear();
         }
     }
 
@@ -1504,13 +1531,18 @@ public class RustGenerator implements CodeGenerator
         appendable.append(format("pub struct %s {\n", structName));
     }
 
+    private static String getRustStaticArrayString(final String rustPrimitiveType, final int length)
+    {
+        return format("[%s;%s]", rustPrimitiveType, length);
+    }
+
     private static String getRustTypeForPrimitivePossiblyArray(
         final Token encodingToken, final String rustPrimitiveType)
     {
         final String rustType;
         if (encodingToken.arrayLength() > 1)
         {
-            rustType = format("[%s;%s]", rustPrimitiveType, encodingToken.arrayLength());
+            rustType = getRustStaticArrayString(rustPrimitiveType, encodingToken.arrayLength());
         }
         else
         {
