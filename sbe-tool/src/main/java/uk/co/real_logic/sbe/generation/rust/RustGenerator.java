@@ -1405,7 +1405,12 @@ public class RustGenerator implements CodeGenerator
     private interface RustTypeDescriptor
     {
         String name();
-        String literal(String valueRep);
+        String literalValue(String valueRep);
+
+        default String defaultValue()
+        {
+            return "Default::default()";
+        }
     }
 
     private static final class RustArrayType implements RustTypeDescriptor
@@ -1413,7 +1418,8 @@ public class RustGenerator implements CodeGenerator
         private final RustTypeDescriptor componentType;
         private final int length;
 
-        private RustArrayType(RustTypeDescriptor component, int length) {
+        private RustArrayType(RustTypeDescriptor component, int length)
+        {
             this.componentType = component;
             this.length = length;
         }
@@ -1425,7 +1431,7 @@ public class RustGenerator implements CodeGenerator
         }
 
         @Override
-        public String literal(String valueRep)
+        public String literalValue(String valueRep)
         {
             return getRustStaticArrayString(valueRep + componentType.name(), length);
         }
@@ -1435,7 +1441,8 @@ public class RustGenerator implements CodeGenerator
     {
         private final String name;
 
-        private RustPrimitiveType(String name) {
+        private RustPrimitiveType(String name)
+        {
             this.name = name;
         }
 
@@ -1446,7 +1453,7 @@ public class RustGenerator implements CodeGenerator
         }
 
         @Override
-        public String literal(String valueRep)
+        public String literalValue(String valueRep)
         {
             return valueRep + name;
         }
@@ -1456,7 +1463,8 @@ public class RustGenerator implements CodeGenerator
     {
         private final String name;
 
-        private AnyRustType(String name) {
+        private AnyRustType(String name)
+        {
             this.name = name;
         }
 
@@ -1467,7 +1475,7 @@ public class RustGenerator implements CodeGenerator
         }
 
         @Override
-        public String literal(String valueRep)
+        public String literalValue(String valueRep)
         {
             final String msg = String.format("Cannot produce a literal value %s of type %s!", valueRep, name);
             throw new UnsupportedOperationException(msg);
@@ -1502,7 +1510,8 @@ public class RustGenerator implements CodeGenerator
 
     private static final class RustStruct
     {
-        enum Modifier {
+        enum Modifier
+        {
             PACKED
         }
 
@@ -1510,30 +1519,66 @@ public class RustGenerator implements CodeGenerator
         final List<RustStructField> fields;
         final EnumSet<Modifier> modifiers;
 
-        private RustStruct(String name, List<RustStructField> fields, EnumSet<Modifier> modifiers) {
+        private RustStruct(String name, List<RustStructField> fields, EnumSet<Modifier> modifiers)
+        {
             this.name = name;
             this.fields = fields;
             this.modifiers = modifiers;
         }
 
-        public static RustStruct fromTokens(String name, List<NamedToken> tokens, EnumSet<Modifier> modifiers) {
+        static RustStruct fromHeader(HeaderStructure header)
+        {
+            final List<Token> tokens = header.tokens();
+            final String originalTypeName = tokens.get(0).applicableTypeName();
+            final String formattedTypeName = formatTypeName(originalTypeName);
+            final SplitCompositeTokens splitTokens = SplitCompositeTokens.splitInnerTokens(tokens);
+            return RustStruct.fromTokens(formattedTypeName,
+                        splitTokens.nonConstantEncodingTokens(),
+                        EnumSet.of(RustStruct.Modifier.PACKED));
+        }
+
+        static RustStruct fromTokens(String name, List<NamedToken> tokens, EnumSet<Modifier> modifiers)
+        {
             return new RustStruct(name, collectStructFields(tokens), modifiers);
         }
 
-        void appendDefinitionTo(final Appendable appendable) throws IOException {
+        void appendDefinitionTo(final Appendable appendable) throws IOException
+        {
             appendStructHeader(appendable, name, modifiers.contains(Modifier.PACKED));
-            for (RustStructField field: fields) {
+            for (RustStructField field: fields)
+            {
                 indent(appendable);
                 if (field.modifiers.contains(RustStructField.Modifier.PUBLIC)) appendable.append("pub ");
                 appendable.append(field.name).append(":").append(field.type.name()).append(",\n");
             }
             appendable.append("}");
         }
+
+        void appendInstanceTo(final Appendable appendable, int indent, Map<String, String> values) throws IOException
+        {
+            appendable.append("MessageHeader {\n");
+            for (RustStructField field: fields) {
+                final String value;
+                if (values.containsKey(field.name))
+                {
+                    value = field.type.literalValue(values.get(field.name));
+                }
+                else
+                {
+                    value = field.type.defaultValue();
+                }
+
+                indent(appendable, indent + 1, "%s: %s,\n", formatMethodName(field.name), value);
+            }
+            indent(appendable, indent, "}\n");
+        }
+
     }
 
     private static final class RustStructField
     {
-        enum Modifier {
+        enum Modifier
+        {
             PUBLIC
         }
 
@@ -1541,13 +1586,15 @@ public class RustGenerator implements CodeGenerator
         final RustTypeDescriptor type;
         final EnumSet<Modifier> modifiers;
 
-        private RustStructField(String name, RustTypeDescriptor type, EnumSet<Modifier> modifiers) {
+        private RustStructField(String name, RustTypeDescriptor type, EnumSet<Modifier> modifiers)
+            {
             this.name = name;
             this.type = type;
             this.modifiers = modifiers;
         }
 
-        private RustStructField(String name, RustTypeDescriptor type) {
+        private RustStructField(String name, RustTypeDescriptor type)
+        {
             this(name, type, EnumSet.noneOf(Modifier.class));
         }
     }
@@ -1604,6 +1651,8 @@ public class RustGenerator implements CodeGenerator
         throws IOException
     {
         final HeaderStructure header = ir.headerStructure();
+        final RustStruct rustHeader = RustStruct.fromHeader(header);
+
         final String messageTypeName = formatTypeName(messageToken.name());
         final String wrapperName = messageTypeName + "MessageHeader";
 
@@ -1617,33 +1666,14 @@ public class RustGenerator implements CodeGenerator
             indent(writer, 1, "fn default() -> %s {\n", wrapperName);
             indent(writer, 2, "%s {\n", wrapperName);
 
-            indent(writer, 3, "message_header: MessageHeader {\n");
-            indent(writer, 4, "%s: %s,\n", formatMethodName("blockLength"),
-                generateRustLiteral(header.blockLengthType(), Integer.toString(messageToken.encodedLength())));
-            indent(writer, 4, "%s: %s,\n", formatMethodName("templateId"),
-                generateRustLiteral(header.templateIdType(), Integer.toString(messageToken.id())));
-            indent(writer, 4, "%s: %s,\n", formatMethodName("schemaId"),
-                generateRustLiteral(header.schemaIdType(), Integer.toString(ir.id())));
-            indent(writer, 4, "%s: %s,\n", formatMethodName("version"),
-                generateRustLiteral(header.schemaVersionType(), Integer.toString(ir.version())));
-
-            // Technically the spec seems to allow non-standard fields in the message header, so we attempt
-            // to provide some sort of default for them
-            final Set<String> reserved = new HashSet<>(Arrays.asList("blockLength", "templateId", "schemaId",
-                "version"));
-
-            final List<NamedToken> nonReservedNamedTokens = SplitCompositeTokens.splitInnerTokens(header.tokens())
-                .nonConstantEncodingTokens()
-                .stream()
-                .filter((namedToken) -> !reserved.contains(namedToken.name()))
-                .collect(Collectors.toList());
-
-            for (final NamedToken namedToken : nonReservedNamedTokens)
-            {
-                indent(writer, 4, "%s: Default::default(),\n", formatMethodName(namedToken.name()));
-            }
-
-            indent(writer, 3, "}\n");
+            indent(writer, 3, "message_header: ");
+            rustHeader.appendInstanceTo(writer, 3,
+                    new HashMap<String, String>() {{
+                        put("block_length", Integer.toString(messageToken.encodedLength()));
+                        put("template_id", Integer.toString(messageToken.id()));
+                        put("schema_id", Integer.toString(ir.id()));
+                        put("version", Integer.toString(ir.version()));
+                    }});
 
             indent(writer, 2, "}\n");
             indent(writer, 1, "}\n");
