@@ -187,7 +187,18 @@ public class RustGeneratorTest
         return folder;
     }
 
-    private static boolean cargoCheckInDirectory(final File folder) throws IOException, InterruptedException
+    private static class CargoCheckResult
+    {
+        final boolean isSuccess;
+        final String error;
+
+        private CargoCheckResult(boolean isSuccess, String error) {
+            this.isSuccess = isSuccess;
+            this.error = error;
+        }
+    }
+
+    private static CargoCheckResult cargoCheckInDirectory(final File folder) throws IOException, InterruptedException
     {
         final ProcessBuilder builder = new ProcessBuilder("cargo", "check");
         builder.directory(folder);
@@ -195,6 +206,7 @@ public class RustGeneratorTest
         process.waitFor(30, TimeUnit.SECONDS);
         final boolean success = process.exitValue() == 0;
 
+        final StringBuilder errorString = new StringBuilder();
         if (!success)
         {
             // Include output as a debugging aid when things go wrong
@@ -206,12 +218,15 @@ public class RustGeneratorTest
                     if (line == null)
                     {
                         break;
+                    } else {
+                        errorString.append(line);
+                        errorString.append('\n');
                     }
                 }
             }
         }
 
-        return success;
+        return new CargoCheckResult(success, errorString.toString());
     }
 
     private static boolean cargoExists()
@@ -234,7 +249,8 @@ public class RustGeneratorTest
     {
         Assume.assumeTrue(cargoExists());
         final File folder = writeCargoFolderWrapper(name.orElse("test"), generatedRust, folderRule.newFolder());
-        assertTrue(String.format("Generated Rust (%s) should be buildable with cargo", name), cargoCheckInDirectory(folder));
+        final CargoCheckResult result = cargoCheckInDirectory(folder);
+        assertTrue(String.format("Generated Rust (%s) should be buildable with cargo", name) + result.error, result.isSuccess);
     }
 
     private void assertSchemaInterpretableAsRust(final String localResourceSchema)

@@ -106,9 +106,10 @@ public class RustGenerator implements CodeGenerator
     {
         for (final GroupTreeNode node : groupTree)
         {
-            appendStructHeader(appendable, node.contextualName + "Member", true);
-            appendStructFields(appendable, node.simpleNamedFields);
-            appendable.append("}\n");
+            final RustStruct struct = RustStruct.fromTokens(node.contextualName + "Member",
+                    node.simpleNamedFields,
+                    EnumSet.of(RustStruct.Modifier.PACKED));
+            struct.appendDefinitionTo(appendable);
 
             generateConstantAccessorImpl(appendable, node.contextualName + "Member", node.rawFields);
 
@@ -138,9 +139,10 @@ public class RustGenerator implements CodeGenerator
         final String representationStruct = messageTypeName + "Fields";
         try (Writer writer = outputManager.createOutput(messageTypeName + " Fixed-size Fields"))
         {
-            appendStructHeader(writer, representationStruct, true);
-            appendStructFields(writer, namedFieldTokens);
-            writer.append("}\n");
+            final RustStruct struct = RustStruct.fromTokens(representationStruct, namedFieldTokens,
+                    EnumSet.of(RustStruct.Modifier.PACKED));
+            struct.appendDefinitionTo(writer);
+            writer.append("\n");
 
             generateConstantAccessorImpl(writer, representationStruct, components.fields);
         }
@@ -1391,29 +1393,166 @@ public class RustGenerator implements CodeGenerator
 
         try (Writer writer = outputManager.createOutput(formattedTypeName))
         {
-            appendStructHeader(writer, formattedTypeName, true);
-            appendStructFields(writer, splitTokens.nonConstantEncodingTokens());
-            writer.append("}\n");
+            final RustStruct struct = RustStruct.fromTokens(formattedTypeName,
+                    splitTokens.nonConstantEncodingTokens(),
+                    EnumSet.of(RustStruct.Modifier.PACKED));
+            struct.appendDefinitionTo(writer);
 
             generateConstantAccessorImpl(writer, formattedTypeName, getMessageBody(tokens));
         }
     }
 
-    private static final class RustStructField
+    private interface RustTypeDescriptor
     {
-        final boolean isPub;
-        final String name;
-        final String value;
+        String name();
+        String literal(String valueRep);
+    }
 
-        private RustStructField(boolean isPub, String name, String value) {
-            this.isPub = isPub;
-            this.name = name;
-            this.value = value;
+    private static final class RustArrayType implements RustTypeDescriptor
+    {
+        private final RustTypeDescriptor componentType;
+        private final int length;
+
+        private RustArrayType(RustTypeDescriptor component, int length) {
+            this.componentType = component;
+            this.length = length;
+        }
+
+        @Override
+        public String name()
+        {
+            return getRustStaticArrayString(componentType.name(), length);
+        }
+
+        @Override
+        public String literal(String valueRep)
+        {
+            return getRustStaticArrayString(valueRep + componentType.name(), length);
         }
     }
 
-    private static void appendStructFields(final Appendable appendable, final List<NamedToken> namedTokens)
-        throws IOException
+    private static final class RustPrimitiveType implements RustTypeDescriptor
+    {
+        private final String name;
+
+        private RustPrimitiveType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String name()
+        {
+            return name;
+        }
+
+        @Override
+        public String literal(String valueRep)
+        {
+            return valueRep + name;
+        }
+    }
+
+    private static final class AnyRustType implements RustTypeDescriptor
+    {
+        private final String name;
+
+        private AnyRustType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String name()
+        {
+            return name;
+        }
+
+        @Override
+        public String literal(String valueRep)
+        {
+            final String msg = String.format("Cannot produce a literal value %s of type %s!", valueRep, name);
+            throw new UnsupportedOperationException(msg);
+        }
+    }
+
+    private static final class RustTypes
+    {
+        static final RustTypeDescriptor u8 = new RustPrimitiveType("u8");
+
+        static RustTypeDescriptor ofPrimitiveToken(Token token)
+        {
+            final PrimitiveType primitiveType = token.encoding().primitiveType();
+            final String rustPrimitiveType = RustUtil.rustTypeName(primitiveType);
+            final RustPrimitiveType type = new RustPrimitiveType(rustPrimitiveType);
+            if (token.arrayLength() > 1) {
+                return new RustArrayType(type, token.arrayLength());
+            }
+            return type;
+        }
+
+        static RustTypeDescriptor ofGeneratedToken(Token token)
+        {
+            return new AnyRustType(formatTypeName(token.applicableTypeName()));
+        }
+
+        static RustTypeDescriptor arrayOf(RustTypeDescriptor type, int len)
+        {
+            return new RustArrayType(type, len);
+        }
+    }
+
+    private static final class RustStruct
+    {
+        enum Modifier {
+            PACKED
+        }
+
+        final String name;
+        final List<RustStructField> fields;
+        final EnumSet<Modifier> modifiers;
+
+        private RustStruct(String name, List<RustStructField> fields, EnumSet<Modifier> modifiers) {
+            this.name = name;
+            this.fields = fields;
+            this.modifiers = modifiers;
+        }
+
+        public static RustStruct fromTokens(String name, List<NamedToken> tokens, EnumSet<Modifier> modifiers) {
+            return new RustStruct(name, collectStructFields(tokens), modifiers);
+        }
+
+        void appendDefinitionTo(final Appendable appendable) throws IOException {
+            appendStructHeader(appendable, name, modifiers.contains(Modifier.PACKED));
+            for (RustStructField field: fields) {
+                indent(appendable);
+                if (field.modifiers.contains(RustStructField.Modifier.PUBLIC)) appendable.append("pub ");
+                appendable.append(field.name).append(":").append(field.type.name()).append(",\n");
+            }
+            appendable.append("}");
+        }
+    }
+
+    private static final class RustStructField
+    {
+        enum Modifier {
+            PUBLIC
+        }
+
+        final String name;
+        final RustTypeDescriptor type;
+        final EnumSet<Modifier> modifiers;
+
+        private RustStructField(String name, RustTypeDescriptor type, EnumSet<Modifier> modifiers) {
+            this.name = name;
+            this.type = type;
+            this.modifiers = modifiers;
+        }
+
+        private RustStructField(String name, RustTypeDescriptor type) {
+            this(name, type, EnumSet.noneOf(Modifier.class));
+        }
+    }
+
+    private static List<RustStructField> collectStructFields(final List<NamedToken> namedTokens)
     {
         final List<RustStructField> fields = new ArrayList<>();
         int totalSize = 0;
@@ -1430,37 +1569,32 @@ public class RustGenerator implements CodeGenerator
             // need padding when field offsets imply gaps
             final int offset = typeToken.offset();
             if (offset != totalSize) {
-                final String value = getRustStaticArrayString("u8", offset - totalSize);
-                fields.add(new RustStructField(false, propertyName + "_padding", value));
+                final RustTypeDescriptor type = RustTypes.arrayOf(RustTypes.u8, offset - totalSize);
+                fields.add(new RustStructField(propertyName + "_padding", type));
             }
-            totalSize += typeToken.encodedLength();
+            totalSize = offset + typeToken.encodedLength();
 
+            final RustTypeDescriptor type;
             switch (typeToken.signal())
             {
                 case ENCODING:
-                    final String rustPrimitiveType = RustUtil.rustTypeName(typeToken.encoding().primitiveType());
-                    final String rustFieldType = getRustTypeForPrimitivePossiblyArray(typeToken, rustPrimitiveType);
-                    fields.add(new RustStructField(true, propertyName, rustFieldType));
+                    type = RustTypes.ofPrimitiveToken(typeToken);
+                    fields.add(new RustStructField(propertyName, type, EnumSet.of(RustStructField.Modifier.PUBLIC)));
                     break;
 
                 case BEGIN_ENUM:
                 case BEGIN_SET:
                 case BEGIN_COMPOSITE:
-                    fields.add(new RustStructField(true, propertyName, formatTypeName(typeToken.applicableTypeName())));
+                    type = RustTypes.ofGeneratedToken(typeToken);
+                    fields.add(new RustStructField(propertyName, type, EnumSet.of(RustStructField.Modifier.PUBLIC)));
                     break;
 
                 default:
                     throw new IllegalStateException(
                         format("Unsupported struct property from %s", typeToken.toString()));
             }
-
-            for (RustStructField field: fields) {
-                indent(appendable);
-                if (field.isPub) appendable.append("pub ");
-                appendable.append(field.name).append(":").append(field.value).append(",\n");
-            }
-            fields.clear();
         }
+        return fields;
     }
 
     private void generateMessageHeaderDefault(
