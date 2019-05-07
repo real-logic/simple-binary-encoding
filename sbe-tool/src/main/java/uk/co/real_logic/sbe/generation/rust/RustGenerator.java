@@ -1318,6 +1318,11 @@ public class RustGenerator implements CodeGenerator
                 .append(",\n");
 
             writer.append("}\n");
+
+            // Default implementation to support Default in other structs
+            indent(writer, 0, "impl Default for %s {\n", enumRustName);
+            indent(writer, 1, "fn default() -> Self { %s::%s }\n", enumRustName, "NullVal");
+            indent(writer, 0, "}\n");
         }
     }
 
@@ -1387,8 +1392,34 @@ public class RustGenerator implements CodeGenerator
         }
 
         @Override
-        public int sizeBytes() {
+        public int sizeBytes()
+        {
             return componentType.sizeBytes() * length;
+        }
+
+        @Override
+        public String defaultValue()
+        {
+            final String defaultValue = RustTypeDescriptor.super.defaultValue();
+            if (length <= 32)
+            {
+                return defaultValue;
+            }
+            else
+            {
+                StringBuilder result = new StringBuilder();
+                result.append('[');
+                for (int i = 0; i < length; i++)
+                {
+                    result.append(defaultValue);
+                    result.append(", ");
+                    if (i % 4 == 0) { // ~80 char lines
+                        result.append('\n');
+                    }
+                }
+                result.append(']');
+                return result.toString();
+            }
         }
     }
 
@@ -1515,6 +1546,20 @@ public class RustGenerator implements CodeGenerator
             return new RustStruct(name, collectStructFields(tokens), modifiers);
         }
 
+        // No way to create struct with default values.
+        // Rust RFC: https://github.com/Centril/rfcs/pull/19
+        // TODO: #[derive(Default)] ?
+        void appendDefaultConstructorTo(final Appendable appendable) throws IOException {
+            indent(appendable, 0, "impl Default for %s {\n", name);
+            indent(appendable, 1, "fn default() -> Self {\n");
+
+            appendInstanceTo(appendable, 2);
+
+            indent(appendable, 1, "}\n");
+
+            appendable.append("}\n");
+        }
+
         void appendDefinitionTo(final Appendable appendable) throws IOException
         {
             appendStructHeader(appendable, name, modifiers.contains(Modifier.PACKED));
@@ -1524,12 +1569,18 @@ public class RustGenerator implements CodeGenerator
                 if (field.modifiers.contains(RustStructField.Modifier.PUBLIC)) appendable.append("pub ");
                 appendable.append(field.name).append(":").append(field.type.name()).append(",\n");
             }
-            appendable.append("}");
+            appendable.append("}\n");
+            appendDefaultConstructorTo(appendable);
+        }
+
+        void appendInstanceTo(final Appendable appendable, int indent) throws IOException
+        {
+            appendInstanceTo(appendable, indent, Collections.emptyMap());
         }
 
         void appendInstanceTo(final Appendable appendable, int indent, Map<String, String> values) throws IOException
         {
-            appendable.append("MessageHeader {\n");
+            indent(appendable, indent, "%s {\n", name);
             for (RustStructField field: fields) {
                 final String value;
                 if (values.containsKey(field.name))
@@ -1635,7 +1686,7 @@ public class RustGenerator implements CodeGenerator
             indent(writer, 1, "pub message_header: MessageHeader\n");
             writer.append("}\n");
 
-            indent(writer, 1, "impl Default for %s {\n", wrapperName);
+            indent(writer, 0, "impl Default for %s {\n", wrapperName);
             indent(writer, 1, "fn default() -> %s {\n", wrapperName);
             indent(writer, 2, "%s {\n", wrapperName);
 
