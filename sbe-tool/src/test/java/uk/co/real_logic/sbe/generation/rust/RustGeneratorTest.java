@@ -39,8 +39,8 @@ public class RustGeneratorTest
     private static Ir generateIrForResource(final String localResourceName)
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final String xmlLocalResourceName = localResourceName.endsWith(".xml") ? localResourceName :
-            localResourceName + ".xml";
+        final String xmlLocalResourceName = localResourceName.endsWith(".xml") ?
+            localResourceName : localResourceName + ".xml";
         final MessageSchema schema;
 
         try
@@ -72,7 +72,7 @@ public class RustGeneratorTest
     @Test
     public void generateSharedImports() throws IOException
     {
-        RustGenerator.generateSharedImports(generateIrForResource(BROAD_USE_CASES_SCHEMA), outputManager);
+        RustGenerator.generateSharedImports(outputManager);
         assertContainsSharedImports(outputManager.toString());
     }
 
@@ -85,13 +85,12 @@ public class RustGeneratorTest
     @Test
     public void generateBasicEnum() throws IOException
     {
-        RustGenerator.generateSharedImports(generateIrForResource(BASIC_TYPES_SCHEMA), outputManager);
+        RustGenerator.generateSharedImports(outputManager);
         assertContainsSharedImports(outputManager.toString());
     }
 
     private static String fullGenerateForResource(
-        final SingleStringOutputManager outputManager,
-        final String localResourceName)
+        final SingleStringOutputManager outputManager, final String localResourceName)
     {
         outputManager.clear();
 
@@ -139,6 +138,7 @@ public class RustGeneratorTest
             "    let v = self.scratch.read_type::<CarFields>(49)?;\n" +
             "    Ok((v, CarFuelFiguresHeaderDecoder::wrap(self.scratch)))\n" +
             "  }");
+
         final String expectedBooleanTypeDeclaration =
             "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
             "#[repr(u8)]\n" +
@@ -148,6 +148,7 @@ public class RustGeneratorTest
             "  NullVal = 255u8,\n" +
             "}\n";
         assertTrue(generatedRust.contains(expectedBooleanTypeDeclaration));
+
         final String expectedCharTypeDeclaration =
             "#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]\n" +
             "#[repr(i8)]\n" +

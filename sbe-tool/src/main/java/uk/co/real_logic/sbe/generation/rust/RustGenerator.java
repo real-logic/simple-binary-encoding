@@ -53,10 +53,10 @@ public class RustGenerator implements CodeGenerator
 
     public void generate() throws IOException
     {
-        generateSharedImports(ir, outputManager);
+        generateSharedImports(outputManager);
         generateResultEnums(outputManager);
         generateDecoderScratchStruct(outputManager);
-        generateEncoderScratchStruct(ir, outputManager);
+        generateEncoderScratchStruct(outputManager);
         generateEitherEnum(outputManager);
         generateEnums(ir, outputManager);
         generateComposites(ir, outputManager);
@@ -203,7 +203,7 @@ public class RustGenerator implements CodeGenerator
             indent(writer, 1, "fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {\n");
             indent(writer, 2, "write!(fmt, \"%s[", setType);
 
-            final StringBuilder string = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             final StringBuilder arguments = new StringBuilder();
             for (final Token token : tokens)
             {
@@ -215,11 +215,11 @@ public class RustGenerator implements CodeGenerator
                 final String choiceName = formatMethodName(token.name());
                 final String choiceBitIndex = token.encoding().constValue().toString();
 
-                string.append(choiceName + "(" + choiceBitIndex + ")={},");
-                arguments.append("self.get_" + choiceName + "(),");
+                builder.append(choiceName).append("(").append(choiceBitIndex).append(")={},");
+                arguments.append("self.get_").append(choiceName).append("(),");
             }
 
-            writer.append(string.toString() + "]\",\n");
+            writer.append(builder.toString()).append("]\",\n");
             indent(writer, 3, arguments.toString() + ")\n");
             indent(writer, 1, "}\n");
             writer.append("}\n");
@@ -308,6 +308,7 @@ public class RustGenerator implements CodeGenerator
                 fieldStruct.name, topType, fieldStruct.sizeBytes(),
                 messageEncodedLength - fieldStruct.sizeBytes());
             writer.append("}\n");
+
             return decoderName;
         }
     }
@@ -535,6 +536,9 @@ public class RustGenerator implements CodeGenerator
         final String fieldsType,
         final String scratchChain) throws IOException
     {
+        final String s = atEndOfParent ?
+            "self.parent" : format("%s::wrap(self.%s)", afterGroupCoderType, contentProperty);
+
         indent(out).append("#[inline]\n");
         indent(out, 1, "pub fn %s_as_slice(mut self, count: %s) -> CodecResult<(&%s mut [%s], %s)> {\n",
             formatMethodName(node.originalName), rustCountType, DATA_LIFETIME, fieldsType,
@@ -548,8 +552,8 @@ public class RustGenerator implements CodeGenerator
         indent(out, 2, "let c = count as usize;\n");
         indent(out, 2, "let group_slice = %s.writable_slice::<%s>(c, %s)?;\n",
             scratchChain, fieldsType, node.blockLength);
-        indent(out, 2, "Ok((group_slice, %s))\n", atEndOfParent ?
-            "self.parent" : format("%s::wrap(self.%s)", afterGroupCoderType, contentProperty));
+
+        indent(out, 2, "Ok((group_slice, %s))\n", s);
         indent(out, 1).append("}\n");
 
         indent(out).append("#[inline]\n");
@@ -568,8 +572,7 @@ public class RustGenerator implements CodeGenerator
             scratchChain, rustCountType, rustCountType, node.dimensionsNumInGroupType().size());
         indent(out, 2, "%s.write_slice_without_count::<%s>(s, %s)?;\n",
             scratchChain, fieldsType, node.blockLength);
-        indent(out, 2, "Ok(%s)\n", atEndOfParent ? "self.parent" :
-            format("%s::wrap(self.%s)", afterGroupCoderType, contentProperty));
+        indent(out, 2, "Ok(%s)\n", s);
         indent(out, 1).append("}\n");
     }
 
@@ -1129,7 +1132,7 @@ public class RustGenerator implements CodeGenerator
         }
     }
 
-    static void generateSharedImports(final Ir ir, final OutputManager outputManager) throws IOException
+    static void generateSharedImports(final OutputManager outputManager) throws IOException
     {
         try (Writer writer = outputManager.createOutput("Imports core rather than std to broaden usable environments."))
         {
@@ -1155,7 +1158,7 @@ public class RustGenerator implements CodeGenerator
         }
     }
 
-    static void generateEncoderScratchStruct(final Ir ir, final OutputManager outputManager) throws IOException
+    static void generateEncoderScratchStruct(final OutputManager outputManager) throws IOException
     {
         try (Writer writer = outputManager.createOutput("Scratch Encoder Data Wrapper - codec internal use only"))
         {
@@ -1464,25 +1467,21 @@ public class RustGenerator implements CodeGenerator
             this.length = length;
         }
 
-        @Override
         public String name()
         {
             return getRustStaticArrayString(componentType.name(), length);
         }
 
-        @Override
         public String literalValue(final String valueRep)
         {
             return getRustStaticArrayString(valueRep + componentType.name(), length);
         }
 
-        @Override
         public int sizeBytes()
         {
             return componentType.sizeBytes() * length;
         }
 
-        @Override
         public String defaultValue()
         {
             final String defaultValue = RustTypeDescriptor.super.defaultValue();
@@ -1504,6 +1503,7 @@ public class RustGenerator implements CodeGenerator
                     }
                 }
                 result.append(']');
+
                 return result.toString();
             }
         }
@@ -1520,19 +1520,16 @@ public class RustGenerator implements CodeGenerator
             this.sizeBytes = sizeBytes;
         }
 
-        @Override
         public String name()
         {
             return name;
         }
 
-        @Override
         public String literalValue(final String valueRep)
         {
             return valueRep + name;
         }
 
-        @Override
         public int sizeBytes()
         {
             return sizeBytes;
@@ -1550,20 +1547,17 @@ public class RustGenerator implements CodeGenerator
             this.sizeBytes = sizeBytes;
         }
 
-        @Override
         public String name()
         {
             return name;
         }
 
-        @Override
         public String literalValue(final String valueRep)
         {
             final String msg = String.format("Cannot produce a literal value %s of type %s!", valueRep, name);
             throw new UnsupportedOperationException(msg);
         }
 
-        @Override
         public int sizeBytes()
         {
             return sizeBytes;
@@ -1583,6 +1577,7 @@ public class RustGenerator implements CodeGenerator
             {
                 return new RustArrayType(type, token.arrayLength());
             }
+
             return type;
         }
 
@@ -1617,7 +1612,7 @@ public class RustGenerator implements CodeGenerator
 
         public int sizeBytes()
         {
-            return fields.stream().mapToInt(v -> v.type.sizeBytes()).sum();
+            return fields.stream().mapToInt((v) -> v.type.sizeBytes()).sum();
         }
 
         static RustStruct fromHeader(final HeaderStructure header)
@@ -1626,13 +1621,15 @@ public class RustGenerator implements CodeGenerator
             final String originalTypeName = tokens.get(0).applicableTypeName();
             final String formattedTypeName = formatTypeName(originalTypeName);
             final SplitCompositeTokens splitTokens = SplitCompositeTokens.splitInnerTokens(tokens);
-            return RustStruct.fromTokens(formattedTypeName,
-                        splitTokens.nonConstantEncodingTokens(),
-                        EnumSet.of(Modifier.PACKED, Modifier.DEFAULT));
+
+            return RustStruct.fromTokens(
+                formattedTypeName,
+                splitTokens.nonConstantEncodingTokens(),
+                EnumSet.of(Modifier.PACKED, Modifier.DEFAULT));
         }
 
-        static RustStruct fromTokens(final String name, final List<NamedToken> tokens,
-            final EnumSet<Modifier> modifiers)
+        static RustStruct fromTokens(
+            final String name, final List<NamedToken> tokens, final EnumSet<Modifier> modifiers)
         {
             return new RustStruct(name, collectStructFields(tokens), modifiers);
         }
@@ -1656,7 +1653,7 @@ public class RustGenerator implements CodeGenerator
         {
             final boolean needsDefault = modifiers.contains(Modifier.DEFAULT);
             final boolean canDeriveDefault = fields.stream()
-                .allMatch(v -> v.type.defaultValue() == RustTypeDescriptor.DEFAULT_VALUE);
+                .allMatch((v) -> v.type.defaultValue() == RustTypeDescriptor.DEFAULT_VALUE);
 
             final Set<Modifier> modifiers = this.modifiers.clone();
             if (needsDefault && !canDeriveDefault)
@@ -1682,8 +1679,8 @@ public class RustGenerator implements CodeGenerator
             }
         }
 
-        void appendInstanceTo(final Appendable appendable, final int indent,
-            final Map<String, String> values) throws IOException
+        void appendInstanceTo(final Appendable appendable, final int indent, final Map<String, String> values)
+            throws IOException
         {
             indent(appendable, indent, "%s {\n", name);
             for (final RustStructField field: fields)
@@ -1702,7 +1699,6 @@ public class RustGenerator implements CodeGenerator
             }
             indent(appendable, indent, "}\n");
         }
-
     }
 
     private static final class RustStructField
@@ -1778,8 +1774,7 @@ public class RustGenerator implements CodeGenerator
                     break;
 
                 default:
-                    throw new IllegalStateException(
-                        format("Unsupported struct property from %s", typeToken.toString()));
+                    throw new IllegalStateException(format("Unsupported struct property from %s", typeToken));
             }
         }
         return fields;
@@ -1832,9 +1827,8 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void appendStructHeader(
-        final Appendable appendable,
-        final String structName,
-        final Set<RustStruct.Modifier> modifiers) throws IOException
+        final Appendable appendable, final String structName, final Set<RustStruct.Modifier> modifiers)
+        throws IOException
     {
         if (!modifiers.isEmpty())
         {
@@ -1873,9 +1867,7 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generateConstantAccessorImpl(
-        final Appendable writer,
-        final String formattedTypeName,
-        final List<Token> unfilteredFields) throws IOException
+        final Appendable writer, final String formattedTypeName, final List<Token> unfilteredFields) throws IOException
     {
         writer.append(format("%nimpl %s {\n", formattedTypeName));
 
