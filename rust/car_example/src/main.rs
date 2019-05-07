@@ -45,11 +45,11 @@ impl std::convert::From<CodecErr> for IoError {
 
 fn decode_car_and_assert_expected_content(buffer: &[u8]) -> CodecResult<()> {
     let (h, dec_fields) = start_decoding_car(&buffer).header()?;
-    assert_eq!(49u16, h.block_length);
+    assert_eq!(45u16, {h.block_length});
     assert_eq!(h.block_length as usize, ::std::mem::size_of::<CarFields>());
-    assert_eq!(1u16, h.template_id);
-    assert_eq!(1u16, h.schema_id);
-    assert_eq!(0u16, h.version);
+    assert_eq!(1u16, {h.template_id});
+    assert_eq!(1u16, {h.schema_id});
+    assert_eq!(0u16, {h.version});
     println!("Header read");
 
     assert_eq!(Model::C, CarFields::discounted_model());
@@ -59,16 +59,16 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> CodecResult<()> {
     let mut found_fuel_figures = Vec::<FuelFigure>::with_capacity(EXPECTED_FUEL_FIGURES.len());
 
     let (fields, dec_fuel_figures_header) = dec_fields.car_fields()?;
-    assert_eq!(1234, fields.serial_number);
-    assert_eq!(2013, fields.model_year);
-    assert_eq!(BooleanType::T, fields.available);
-    assert_eq!([97_i8, 98, 99, 100, 101, 102], fields.vehicle_code); // abcdef
-    assert_eq!([0_u32, 1, 2, 3, 4], fields.some_numbers);
+    assert_eq!(1234, {fields.serial_number});
+    assert_eq!(2013, {fields.model_year});
+    assert_eq!(BooleanType::T, {fields.available});
+    assert_eq!([97_i8, 98, 99, 100, 101, 102], {fields.vehicle_code}); // abcdef
+    assert_eq!([1, 2, 3, 4], {fields.some_numbers});
     assert_eq!(6, fields.extras.0);
     assert!(fields.extras.get_cruise_control());
     assert!(fields.extras.get_sports_pack());
     assert!(!fields.extras.get_sun_roof());
-    assert_eq!(2000, fields.engine.capacity);
+    assert_eq!(2000, {fields.engine.capacity});
     assert_eq!(4, fields.engine.num_cylinders);
     assert_eq!(BoostType::NITROUS, fields.engine.booster.boost_type);
     assert_eq!(200, fields.engine.booster.horse_power);
@@ -82,12 +82,12 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> CodecResult<()> {
                 let (usage_description, next_step) = dec_usage_description.usage_description()?;
                 let usage_str = std::str::from_utf8(usage_description).unwrap();
                 println!("Fuel Figure: Speed: {0}, MPG: {1}, Usage: {2}",
-                         ff_fields.speed,
-                         ff_fields.mpg,
+                         {ff_fields.speed},
+                         {ff_fields.mpg},
                          usage_str);
                 found_fuel_figures.push(FuelFigure {
-                                            speed: ff_fields.speed,
-                                            mpg: ff_fields.mpg,
+                                            speed: {ff_fields.speed},
+                                            mpg: {ff_fields.mpg},
                                             usage_description: usage_str,
                                         });
                 match next_step {
@@ -117,8 +117,8 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> CodecResult<()> {
                 let (accel_slice, next_step) = dec_acceleration_header.acceleration_as_slice()?;
                 for accel_fields in accel_slice {
                     println!("Acceleration: MPH: {0}, Seconds: {1}",
-                             accel_fields.mph,
-                             accel_fields.seconds);
+                             {accel_fields.mph},
+                             {accel_fields.seconds});
                 }
                 match next_step {
                     Either::Left(more_members) => dec_pf_members = more_members,
@@ -165,7 +165,7 @@ fn encode_car_from_scratch() -> CodecResult<Vec<u8>> {
         fields.available = BooleanType::T;
         fields.code = Model::A;
         fields.vehicle_code = [97_i8, 98, 99, 100, 101, 102]; // abcdef
-        fields.some_numbers = [0_u32, 1, 2, 3, 4];
+        fields.some_numbers = [1, 2, 3, 4];
         fields.extras = OptionalExtras::new();
         fields.extras.set_cruise_control(true)
             .set_sports_pack(true)
