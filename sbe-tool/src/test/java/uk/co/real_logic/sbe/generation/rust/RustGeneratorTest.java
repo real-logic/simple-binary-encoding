@@ -291,6 +291,22 @@ public class RustGeneratorTest
     }
 
     @Test
+    public void messageWithOffsets()
+    {
+        final String rust = fullGenerateForResource(outputManager, "composite-offsets-schema");
+        final String expectedHeader =
+                "pub struct MessageHeader {\n" +
+                "  pub block_length:u16,\n" +
+                "  template_id_padding:[u8;2],\n" +
+                "  pub template_id:u16,\n" +
+                "  schema_id_padding:[u8;2],\n" +
+                "  pub schema_id:u16,\n" +
+                "  pub version:u16,\n" +
+                "}";
+        assertContains(rust, expectedHeader);
+    }
+
+    @Test
     public void constantEnumFields() throws IOException, InterruptedException
     {
         final String rust = fullGenerateForResource(outputManager, "constant-enum-fields");

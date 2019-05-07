@@ -25,7 +25,6 @@ import uk.co.real_logic.sbe.ir.*;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.String.format;
@@ -69,16 +68,15 @@ public class RustGenerator implements CodeGenerator
             final MessageComponents components = MessageComponents.collectMessageComponents(tokens);
             final String messageTypeName = formatTypeName(components.messageToken.name());
 
-            final Optional<FieldsRepresentationSummary> fieldsRepresentation =
-                generateFieldsRepresentation(messageTypeName, components, outputManager);
+            final RustStruct fieldStruct = generateMessageFieldStruct(messageTypeName, components, outputManager);
             generateMessageHeaderDefault(ir, outputManager, components.messageToken);
 
             // Avoid the work of recomputing the group tree twice per message
             final List<GroupTreeNode> groupTree = buildGroupTrees(messageTypeName, components.groups);
             generateGroupFieldRepresentations(outputManager, groupTree);
 
-            generateMessageDecoder(outputManager, components, groupTree, fieldsRepresentation, headerSize);
-            generateMessageEncoder(outputManager, components, groupTree, fieldsRepresentation, headerSize);
+            generateMessageDecoder(outputManager, components, groupTree, fieldStruct, headerSize);
+            generateMessageEncoder(outputManager, components, groupTree, fieldStruct, headerSize);
         }
     }
 
@@ -117,19 +115,7 @@ public class RustGenerator implements CodeGenerator
         }
     }
 
-    private static final class FieldsRepresentationSummary
-    {
-        final String typeName;
-        final int numBytes;
-
-        private FieldsRepresentationSummary(final String typeName, final int numBytes)
-        {
-            this.typeName = typeName;
-            this.numBytes = numBytes;
-        }
-    }
-
-    private static Optional<FieldsRepresentationSummary> generateFieldsRepresentation(
+    private static RustStruct generateMessageFieldStruct(
         final String messageTypeName,
         final MessageComponents components,
         final OutputManager outputManager) throws IOException
@@ -137,48 +123,18 @@ public class RustGenerator implements CodeGenerator
         final List<NamedToken> namedFieldTokens = NamedToken.gatherNamedNonConstantFieldTokens(components.fields);
 
         final String representationStruct = messageTypeName + "Fields";
-        try (Writer writer = outputManager.createOutput(messageTypeName + " Fixed-size Fields"))
+        final RustStruct struct = RustStruct.fromTokens(representationStruct, namedFieldTokens,
+                EnumSet.of(RustStruct.Modifier.PACKED));
+
+        try (Writer writer = outputManager.createOutput(
+                messageTypeName + " Fixed-size Fields (" + struct.sizeBytes() + " bytes)"))
         {
-            final RustStruct struct = RustStruct.fromTokens(representationStruct, namedFieldTokens,
-                    EnumSet.of(RustStruct.Modifier.PACKED));
             struct.appendDefinitionTo(writer);
             writer.append("\n");
-
             generateConstantAccessorImpl(writer, representationStruct, components.fields);
         }
 
-        // Compute the total static size in bytes of the fields representation
-        int numBytes = 0;
-        for (int i = 0, size = components.fields.size(); i < size;)
-        {
-            final Token fieldToken = components.fields.get(i);
-            if (fieldToken.signal() == Signal.BEGIN_FIELD)
-            {
-                final int fieldEnd = i + fieldToken.componentTokenCount();
-                if (!fieldToken.isConstantEncoding())
-                {
-                    for (int j = i; j < fieldEnd; j++)
-                    {
-                        final Token t = components.fields.get(j);
-                        if (t.isConstantEncoding())
-                        {
-                            continue;
-                        }
-                        if (t.signal() == ENCODING || t.signal() == BEGIN_ENUM || t.signal() == BEGIN_SET)
-                        {
-                            numBytes += t.encodedLength();
-                        }
-                    }
-                }
-                i += fieldToken.componentTokenCount();
-            }
-            else
-            {
-                throw new IllegalStateException("field tokens must include bounding BEGIN_FIELD and END_FIELD tokens");
-            }
-        }
-
-        return Optional.of(new FieldsRepresentationSummary(representationStruct, numBytes));
+        return struct;
     }
 
     private static void generateBitSets(final Ir ir, final OutputManager outputManager) throws IOException
@@ -246,7 +202,7 @@ public class RustGenerator implements CodeGenerator
         final OutputManager outputManager,
         final MessageComponents components,
         final List<GroupTreeNode> groupTree,
-        final Optional<FieldsRepresentationSummary> fieldsRepresentation,
+        final RustStruct fieldStruct,
         final int headerSize)
         throws IOException
     {
@@ -256,7 +212,7 @@ public class RustGenerator implements CodeGenerator
         String topType = codecType.generateDoneCoderType(outputManager, messageTypeName);
         topType = generateTopVarDataCoders(messageTypeName, components.varData, outputManager, topType, codecType);
         topType = generateGroupsCoders(groupTree, outputManager, topType, codecType);
-        topType = generateFixedFieldCoder(messageTypeName, outputManager, topType, fieldsRepresentation, codecType);
+        topType = generateFixedFieldCoder(messageTypeName, outputManager, topType, fieldStruct, codecType);
         topType = codecType.generateMessageHeaderCoder(messageTypeName, outputManager, topType, headerSize);
         generateEntryPoint(messageTypeName, outputManager, topType, codecType);
     }
@@ -265,7 +221,7 @@ public class RustGenerator implements CodeGenerator
         final OutputManager outputManager,
         final MessageComponents components,
         final List<GroupTreeNode> groupTree,
-        final Optional<FieldsRepresentationSummary> fieldsRepresentation,
+        final RustStruct fieldStruct,
         final int headerSize)
         throws IOException
     {
@@ -275,7 +231,7 @@ public class RustGenerator implements CodeGenerator
         String topType = codecType.generateDoneCoderType(outputManager, messageTypeName);
         topType = generateTopVarDataCoders(messageTypeName, components.varData, outputManager, topType, codecType);
         topType = generateGroupsCoders(groupTree, outputManager, topType, codecType);
-        topType = generateFixedFieldCoder(messageTypeName, outputManager, topType, fieldsRepresentation, codecType);
+        topType = generateFixedFieldCoder(messageTypeName, outputManager, topType, fieldStruct, codecType);
         topType = codecType.generateMessageHeaderCoder(messageTypeName, outputManager, topType, headerSize);
         generateEntryPoint(messageTypeName, outputManager, topType, codecType);
     }
@@ -308,24 +264,17 @@ public class RustGenerator implements CodeGenerator
         final String messageTypeName,
         final OutputManager outputManager,
         final String topType,
-        final Optional<FieldsRepresentationSummary> fieldsRepresentationOptional,
+        final RustStruct fieldStruct,
         final RustCodecType codecType) throws IOException
     {
-        if (!fieldsRepresentationOptional.isPresent())
-        {
-            return topType;
-        }
-
-        final FieldsRepresentationSummary fieldsRepresentation = fieldsRepresentationOptional.get();
         try (Writer writer = outputManager.createOutput(messageTypeName + " Fixed fields " + codecType.name()))
         {
-            final String representationStruct = fieldsRepresentation.typeName;
-            final String decoderName = representationStruct + codecType.name();
+            final String decoderName = fieldStruct.name + codecType.name();
             codecType.appendScratchWrappingStruct(writer, decoderName);
             appendImplWithLifetimeHeader(writer, decoderName);
             codecType.appendWrapMethod(writer, decoderName);
             codecType.appendDirectCodeMethods(writer, formatMethodName(messageTypeName) + "_fields",
-                representationStruct, topType, fieldsRepresentation.numBytes);
+                    fieldStruct.name, topType, fieldStruct.sizeBytes());
             writer.append("}\n");
             // TODO - Move read position further if in-message blockLength exceeds fixed fields representation size
             // will require piping some data from the previously-read message header
@@ -1406,6 +1355,7 @@ public class RustGenerator implements CodeGenerator
     {
         String name();
         String literalValue(String valueRep);
+        int sizeBytes();
 
         default String defaultValue()
         {
@@ -1435,15 +1385,22 @@ public class RustGenerator implements CodeGenerator
         {
             return getRustStaticArrayString(valueRep + componentType.name(), length);
         }
+
+        @Override
+        public int sizeBytes() {
+            return componentType.sizeBytes() * length;
+        }
     }
 
     private static final class RustPrimitiveType implements RustTypeDescriptor
     {
         private final String name;
+        private final int sizeBytes;
 
-        private RustPrimitiveType(String name)
+        private RustPrimitiveType(String name, int sizeBytes)
         {
             this.name = name;
+            this.sizeBytes = sizeBytes;
         }
 
         @Override
@@ -1457,15 +1414,22 @@ public class RustGenerator implements CodeGenerator
         {
             return valueRep + name;
         }
+
+        @Override
+        public int sizeBytes() {
+            return sizeBytes;
+        }
     }
 
     private static final class AnyRustType implements RustTypeDescriptor
     {
         private final String name;
+        private final int sizeBytes;
 
-        private AnyRustType(String name)
+        private AnyRustType(String name, int sizeBytes)
         {
             this.name = name;
+            this.sizeBytes = sizeBytes;
         }
 
         @Override
@@ -1480,17 +1444,22 @@ public class RustGenerator implements CodeGenerator
             final String msg = String.format("Cannot produce a literal value %s of type %s!", valueRep, name);
             throw new UnsupportedOperationException(msg);
         }
+
+        @Override
+        public int sizeBytes() {
+            return sizeBytes;
+        }
     }
 
     private static final class RustTypes
     {
-        static final RustTypeDescriptor u8 = new RustPrimitiveType("u8");
+        static final RustTypeDescriptor u8 = new RustPrimitiveType("u8", 1);
 
         static RustTypeDescriptor ofPrimitiveToken(Token token)
         {
             final PrimitiveType primitiveType = token.encoding().primitiveType();
             final String rustPrimitiveType = RustUtil.rustTypeName(primitiveType);
-            final RustPrimitiveType type = new RustPrimitiveType(rustPrimitiveType);
+            final RustPrimitiveType type = new RustPrimitiveType(rustPrimitiveType, primitiveType.size());
             if (token.arrayLength() > 1) {
                 return new RustArrayType(type, token.arrayLength());
             }
@@ -1499,7 +1468,7 @@ public class RustGenerator implements CodeGenerator
 
         static RustTypeDescriptor ofGeneratedToken(Token token)
         {
-            return new AnyRustType(formatTypeName(token.applicableTypeName()));
+            return new AnyRustType(formatTypeName(token.applicableTypeName()), token.encodedLength());
         }
 
         static RustTypeDescriptor arrayOf(RustTypeDescriptor type, int len)
@@ -1524,6 +1493,10 @@ public class RustGenerator implements CodeGenerator
             this.name = name;
             this.fields = fields;
             this.modifiers = modifiers;
+        }
+
+        public int sizeBytes() {
+            return fields.stream().mapToInt(v -> v.type.sizeBytes()).sum();
         }
 
         static RustStruct fromHeader(HeaderStructure header)
