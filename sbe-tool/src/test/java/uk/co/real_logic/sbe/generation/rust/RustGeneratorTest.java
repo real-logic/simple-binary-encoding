@@ -187,7 +187,19 @@ public class RustGeneratorTest
         return folder;
     }
 
-    private static boolean cargoCheckInDirectory(final File folder) throws IOException, InterruptedException
+    private static final class CargoCheckResult
+    {
+        final boolean isSuccess;
+        final String error;
+
+        private CargoCheckResult(final boolean isSuccess, final String error)
+        {
+            this.isSuccess = isSuccess;
+            this.error = error;
+        }
+    }
+
+    private static CargoCheckResult cargoCheckInDirectory(final File folder) throws IOException, InterruptedException
     {
         final ProcessBuilder builder = new ProcessBuilder("cargo", "check");
         builder.directory(folder);
@@ -195,6 +207,7 @@ public class RustGeneratorTest
         process.waitFor(30, TimeUnit.SECONDS);
         final boolean success = process.exitValue() == 0;
 
+        final StringBuilder errorString = new StringBuilder();
         if (!success)
         {
             // Include output as a debugging aid when things go wrong
@@ -207,11 +220,16 @@ public class RustGeneratorTest
                     {
                         break;
                     }
+                    else
+                    {
+                        errorString.append(line);
+                        errorString.append('\n');
+                    }
                 }
             }
         }
 
-        return success;
+        return new CargoCheckResult(success, errorString.toString());
     }
 
     private static boolean cargoExists()
@@ -234,7 +252,9 @@ public class RustGeneratorTest
     {
         Assume.assumeTrue(cargoExists());
         final File folder = writeCargoFolderWrapper(name.orElse("test"), generatedRust, folderRule.newFolder());
-        assertTrue("Generated Rust should be buildable with cargo", cargoCheckInDirectory(folder));
+        final CargoCheckResult result = cargoCheckInDirectory(folder);
+        assertTrue(String.format("Generated Rust (%s) should be buildable with cargo", name) + result.error,
+            result.isSuccess);
     }
 
     private void assertSchemaInterpretableAsRust(final String localResourceSchema)
@@ -272,6 +292,33 @@ public class RustGeneratorTest
         {
             assertSchemaInterpretableAsRust(s);
         }
+    }
+
+    @Test
+    public void messageWithOffsets()
+    {
+        final String rust = fullGenerateForResource(outputManager, "composite-offsets-schema");
+        final String expectedHeader =
+            "pub struct MessageHeader {\n" +
+            "  pub block_length:u16,\n" +
+            "  template_id_padding_1:[u8;2],\n" +
+            "  pub template_id:u16,\n" +
+            "  schema_id_padding_1:[u8;2],\n" +
+            "  pub schema_id:u16,\n" +
+            "  pub version:u16,\n" +
+            "}";
+        assertContains(rust, expectedHeader);
+    }
+
+    @Test
+    public void messageBlockLengthExceedingSumOfFieldLengths()
+    {
+        final String rust = fullGenerateForResource(outputManager, "message-block-length-test");
+        final String expectedEncoderSegment = "let v = self.scratch.writable_overlay::<MsgNameFields>(9+2)?;";
+        assertContains(rust, expectedEncoderSegment);
+        final String expectedDecoderSegment = "let v = self.scratch.read_type::<MsgNameFields>(9)?;\n" +
+            "    self.scratch.skip_bytes(2)?;";
+        assertContains(rust, expectedDecoderSegment);
     }
 
     @Test

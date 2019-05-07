@@ -542,9 +542,10 @@ task generateRustCarExample(type: JavaExec) {
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'rust/car_example/src',
+        'sbe.xinclude.aware': 'true',
         'sbe.target.language': 'uk.co.real_logic.sbe.generation.rust.Rust',
         'sbe.target.namespace': 'car_example_generated_codec')
-    args = ['sbe-tool/src/test/resources/example-schema.xml']
+    args = ['sbe-samples/src/main/resources/example-schema.xml']
 }
 
 task generateCarExampleDataFile(type: JavaExec) {

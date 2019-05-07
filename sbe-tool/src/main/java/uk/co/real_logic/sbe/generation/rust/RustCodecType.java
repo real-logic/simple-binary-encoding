@@ -44,12 +44,18 @@ enum RustCodecType
             final String methodName,
             final String representationType,
             final String nextCoderType,
-            final int numBytes) throws IOException
+            final int numBytes,
+            final int trailingBytes) throws IOException
         {
             indent(appendable, 1, "pub fn %s(mut self) -> CodecResult<(&%s %s, %s)> {\n",
                 methodName, DATA_LIFETIME, representationType, RustGenerator.withLifetime(nextCoderType));
             indent(appendable, 2, "let v = self.%s.read_type::<%s>(%s)?;\n",
                 RustCodecType.Decoder.scratchProperty(), representationType, numBytes);
+            if (trailingBytes > 0)
+            {
+                indent(appendable, 2, "self.%s.skip_bytes(%s)?;\n",
+                    RustCodecType.Decoder.scratchProperty(), trailingBytes);
+            }
             indent(appendable, 2, "Ok((v, %s::wrap(self.%s)))\n",
                 nextCoderType, RustCodecType.Decoder.scratchProperty());
             indent(appendable).append("}\n");
@@ -78,15 +84,20 @@ enum RustCodecType
             final String methodName,
             final String representationType,
             final String nextCoderType,
-            final int numBytes) throws IOException
+            final int numBytes,
+            final int trailingBytes) throws IOException
         {
             indent(appendable, 1, "\n/// Create a mutable struct reference overlaid atop the data buffer\n");
             indent(appendable, 1, "/// such that changes to the struct directly edit the buffer. \n");
             indent(appendable, 1, "/// Note that the initial content of the struct's fields may be garbage.\n");
             indent(appendable, 1, "pub fn %s(mut self) -> CodecResult<(&%s mut %s, %s)> {\n",
                 methodName, DATA_LIFETIME, representationType, RustGenerator.withLifetime(nextCoderType));
-            indent(appendable, 2, "let v = self.%s.writable_overlay::<%s>(%s)?;\n",
-                RustCodecType.Encoder.scratchProperty(), representationType, numBytes);
+            if (trailingBytes > 0)
+            {
+                indent(appendable, 2, "// add trailing bytes to extend the end position of the scratch buffer\n");
+            }
+            indent(appendable, 2, "let v = self.%s.writable_overlay::<%s>(%s+%s)?;\n",
+                RustCodecType.Encoder.scratchProperty(), representationType, numBytes, trailingBytes);
             indent(appendable, 2, "Ok((v, %s::wrap(self.%s)))\n",
                 nextCoderType, RustCodecType.Encoder.scratchProperty());
             indent(appendable).append("}\n\n");
@@ -97,6 +108,12 @@ enum RustCodecType
             indent(appendable, 2)
                 .append(format("self.%s.write_type::<%s>(t, %s)?;\n",
                 RustCodecType.Encoder.scratchProperty(), representationType, numBytes));
+            if (trailingBytes > 0)
+            {
+                indent(appendable, 2, "// fixed message length > sum of field lengths\n");
+                indent(appendable, 2, "self.%s.skip_bytes(%s)?;\n",
+                    RustCodecType.Decoder.scratchProperty(), trailingBytes);
+            }
             indent(appendable, 2).append(format("Ok(%s::wrap(self.%s))\n",
                 nextCoderType, RustCodecType.Encoder.scratchProperty()));
             indent(appendable).append("}\n");
@@ -125,7 +142,8 @@ enum RustCodecType
         String methodName,
         String representationType,
         String nextCoderType,
-        int numBytes) throws IOException;
+        int numBytes,
+        int trailingBytes) throws IOException;
 
     abstract String gerund();
 
@@ -175,7 +193,7 @@ enum RustCodecType
             appendScratchWrappingStruct(writer, headerCoderType);
             RustGenerator.appendImplWithLifetimeHeader(writer, headerCoderType);
             appendWrapMethod(writer, headerCoderType);
-            appendDirectCodeMethods(writer, "header", messageHeaderRepresentation, topType, headerSize);
+            appendDirectCodeMethods(writer, "header", messageHeaderRepresentation, topType, headerSize, 0);
             writer.append("}\n");
         }
 
