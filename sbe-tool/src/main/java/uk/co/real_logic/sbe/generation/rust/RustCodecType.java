@@ -54,7 +54,7 @@ enum RustCodecType
             if (trailingBytes > 0)
             {
                 indent(appendable, 2, "self.%s.skip_bytes(%s)?;\n",
-                        RustCodecType.Decoder.scratchProperty(), trailingBytes);
+                    RustCodecType.Decoder.scratchProperty(), trailingBytes);
             }
             indent(appendable, 2, "Ok((v, %s::wrap(self.%s)))\n",
                 nextCoderType, RustCodecType.Decoder.scratchProperty());
@@ -112,7 +112,7 @@ enum RustCodecType
             {
                 indent(appendable, 2, "// fixed message length > sum of field lengths\n");
                 indent(appendable, 2, "self.%s.skip_bytes(%s)?;\n",
-                        RustCodecType.Decoder.scratchProperty(), trailingBytes);
+                    RustCodecType.Decoder.scratchProperty(), trailingBytes);
             }
             indent(appendable, 2).append(format("Ok(%s::wrap(self.%s))\n",
                 nextCoderType, RustCodecType.Encoder.scratchProperty()));

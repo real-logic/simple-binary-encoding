@@ -187,12 +187,13 @@ public class RustGeneratorTest
         return folder;
     }
 
-    private static class CargoCheckResult
+    private static final class CargoCheckResult
     {
         final boolean isSuccess;
         final String error;
 
-        private CargoCheckResult(boolean isSuccess, String error) {
+        private CargoCheckResult(final boolean isSuccess, final String error)
+        {
             this.isSuccess = isSuccess;
             this.error = error;
         }
@@ -218,7 +219,9 @@ public class RustGeneratorTest
                     if (line == null)
                     {
                         break;
-                    } else {
+                    }
+                    else
+                    {
                         errorString.append(line);
                         errorString.append('\n');
                     }
@@ -250,7 +253,8 @@ public class RustGeneratorTest
         Assume.assumeTrue(cargoExists());
         final File folder = writeCargoFolderWrapper(name.orElse("test"), generatedRust, folderRule.newFolder());
         final CargoCheckResult result = cargoCheckInDirectory(folder);
-        assertTrue(String.format("Generated Rust (%s) should be buildable with cargo", name) + result.error, result.isSuccess);
+        assertTrue(String.format("Generated Rust (%s) should be buildable with cargo", name) + result.error,
+            result.isSuccess);
     }
 
     private void assertSchemaInterpretableAsRust(final String localResourceSchema)
@@ -295,14 +299,14 @@ public class RustGeneratorTest
     {
         final String rust = fullGenerateForResource(outputManager, "composite-offsets-schema");
         final String expectedHeader =
-                "pub struct MessageHeader {\n" +
-                "  pub block_length:u16,\n" +
-                "  template_id_padding:[u8;2],\n" +
-                "  pub template_id:u16,\n" +
-                "  schema_id_padding:[u8;2],\n" +
-                "  pub schema_id:u16,\n" +
-                "  pub version:u16,\n" +
-                "}";
+            "pub struct MessageHeader {\n" +
+            "  pub block_length:u16,\n" +
+            "  template_id_padding:[u8;2],\n" +
+            "  pub template_id:u16,\n" +
+            "  schema_id_padding:[u8;2],\n" +
+            "  pub schema_id:u16,\n" +
+            "  pub version:u16,\n" +
+            "}";
         assertContains(rust, expectedHeader);
     }
 
@@ -313,7 +317,7 @@ public class RustGeneratorTest
         final String expectedEncoderSegment = "let v = self.scratch.writable_overlay::<MsgNameFields>(9+2)?;";
         assertContains(rust, expectedEncoderSegment);
         final String expectedDecoderSegment = "let v = self.scratch.read_type::<MsgNameFields>(9)?;\n" +
-                "    self.scratch.skip_bytes(2)?;";
+            "    self.scratch.skip_bytes(2)?;";
         assertContains(rust, expectedDecoderSegment);
     }
 
