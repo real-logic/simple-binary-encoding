@@ -617,13 +617,12 @@ public class RustGenerator implements CodeGenerator
 
             indent(out, 1, "pub fn %s_individually(mut self) -> CodecResult<%s> {\n",
                 formatMethodName(node.originalName), groupLevelNextDecoderType);
-            indent(out, 2, "%s.skip_bytes(%s)?; // Skip reading block length for now\n",
-                toScratchChain(node), node.dimensionsBlockLengthType().size());
-            indent(out, 2, "let count = *%s.read_type::<%s>(%s)?;\n",
-                toScratchChain(node), rustTypeName(node.dimensionsNumInGroupType()),
-                    node.dimensionsNumInGroupType().size());
-            indent(out, 2).append("if count > 0 {\n");
-            indent(out, 3, "Ok(Either::Left(%s::new(self.%s, count)))\n",
+            indent(out, 2, "let dim = %s.read_type::<%s>(%s)?;\n",
+                    toScratchChain(node),
+                    formatTypeName(node.dimensionsTypeName()),
+                    node.dimensionsTypeSize());
+            indent(out, 2).append("if dim.num_in_group > 0 {\n");
+            indent(out, 3, "Ok(Either::Left(%s::new(self.%s, dim.num_in_group)))\n",
                 memberDecoderType, contentProperty).append(INDENT).append(INDENT).append("} else {\n");
 
             if (atEndOfParent)
@@ -659,12 +658,11 @@ public class RustGenerator implements CodeGenerator
             formatMethodName(node.originalName), DATA_LIFETIME, node.contextualName + "Member",
             initialNextDecoderType.startsWith("Either") ?
             initialNextDecoderType : withLifetime(initialNextDecoderType));
-        indent(out, 2, "%s.skip_bytes(%s)?; // Skip reading block length for now\n", toScratchChain(node),
-            node.dimensionsBlockLengthType().size());
-        indent(out, 2, "let count = *%s.read_type::<%s>(%s)?;\n",
-            toScratchChain(node), rustTypeName(node.dimensionsNumInGroupType()),
-                node.dimensionsNumInGroupType().size());
-        indent(out, 2, "let s = %s.read_slice::<%s>(count as usize, %s)?;\n",
+        indent(out, 2, "let dim = %s.read_type::<%s>(%s)?;\n",
+                toScratchChain(node),
+                formatTypeName(node.dimensionsTypeName()),
+                node.dimensionsTypeSize());
+        indent(out, 2, "let s = %s.read_slice::<%s>(dim.num_in_group as usize, %s)?;\n",
             toScratchChain(node), node.contextualName + "Member", node.blockLength);
         indent(out, 2, "Ok((s,%s))\n", atEndOfParent ? "self.parent.after_member()" :
             format("%s::wrap(self.%s)", initialNextDecoderType, contentProperty));
@@ -793,19 +791,25 @@ public class RustGenerator implements CodeGenerator
     private static class GroupDimensions
     {
         final String typeName;
+        final int typeSize;
         final PrimitiveType numInGroupType;
         final PrimitiveType blockLengthType;
 
-        private GroupDimensions(String typeName, PrimitiveType numInGroupType, PrimitiveType blockLengthType) {
+        private GroupDimensions(String typeName, int typeSize,
+                                PrimitiveType numInGroupType, PrimitiveType blockLengthType)
+        {
             this.typeName = typeName;
+            this.typeSize = typeSize;
             this.numInGroupType = numInGroupType;
             this.blockLengthType = blockLengthType;
         }
 
-        public static GroupDimensions ofTokens(List<Token> dimensionsTokens) {
+        public static GroupDimensions ofTokens(List<Token> dimensionsTokens)
+        {
             final PrimitiveType numInGroupType = findPrimitiveByTokenName(dimensionsTokens, "numInGroup");
             final PrimitiveType blockLengthType = findPrimitiveByTokenName(dimensionsTokens, "blockLength");
-            return new GroupDimensions(dimensionsTokens.get(0).name(), numInGroupType, blockLengthType);
+            return new GroupDimensions(dimensionsTokens.get(0).name(), dimensionsTokens.get(0).encodedLength(),
+                    numInGroupType, blockLengthType);
         }
     }
 
@@ -871,6 +875,14 @@ public class RustGenerator implements CodeGenerator
 
         public PrimitiveType dimensionsBlockLengthType() {
             return dimensions.blockLengthType;
+        }
+
+        public String dimensionsTypeName() {
+            return dimensions.typeName;
+        }
+
+        public int dimensionsTypeSize() {
+            return dimensions.typeSize;
         }
     }
 
