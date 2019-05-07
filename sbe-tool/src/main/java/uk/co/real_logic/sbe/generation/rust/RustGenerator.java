@@ -196,6 +196,34 @@ public class RustGenerator implements CodeGenerator
 
             writer.append("}\n");
         }
+
+        try (Writer writer = outputManager.createOutput(setType + " bit set debug"))
+        {
+            indent(writer, 0, "impl core::fmt::Debug for %s {\n", setType);
+            indent(writer, 1, "fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {\n");
+            indent(writer, 2, "write!(fmt, \"%s[", setType);
+
+            final StringBuilder string = new StringBuilder();
+            final StringBuilder arguments = new StringBuilder();
+            for (final Token token : tokens)
+            {
+                if (Signal.CHOICE != token.signal())
+                {
+                    continue;
+                }
+
+                final String choiceName = formatMethodName(token.name());
+                final String choiceBitIndex = token.encoding().constValue().toString();
+
+                string.append(choiceName + "(" + choiceBitIndex + ")={},");
+                arguments.append("self.get_" + choiceName + "(),");
+            }
+
+            writer.append(string.toString() + "]\",\n");
+            indent(writer, 3, arguments.toString() + ")\n");
+            indent(writer, 1, "}\n");
+            writer.append("}\n");
+        }
     }
 
     private static void generateMessageEncoder(
