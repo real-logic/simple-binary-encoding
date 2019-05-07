@@ -106,7 +106,7 @@ public class RustGenerator implements CodeGenerator
         {
             final RustStruct struct = RustStruct.fromTokens(node.contextualName + "Member",
                 node.simpleNamedFields,
-                EnumSet.of(RustStruct.Modifier.PACKED));
+                EnumSet.of(RustStruct.Modifier.PACKED, RustStruct.Modifier.DEFAULT));
             struct.appendDefinitionTo(appendable);
 
             generateConstantAccessorImpl(appendable, node.contextualName + "Member", node.rawFields);
@@ -124,7 +124,7 @@ public class RustGenerator implements CodeGenerator
 
         final String representationStruct = messageTypeName + "Fields";
         final RustStruct struct = RustStruct.fromTokens(representationStruct, namedFieldTokens,
-            EnumSet.of(RustStruct.Modifier.PACKED));
+            EnumSet.of(RustStruct.Modifier.PACKED, RustStruct.Modifier.DEFAULT));
 
         try (Writer writer = outputManager.createOutput(
             messageTypeName + " Fixed-size Fields (" + struct.sizeBytes() + " bytes)"))
@@ -410,7 +410,7 @@ public class RustGenerator implements CodeGenerator
         final String headerCoderType = node.contextualName + "HeaderEncoder";
         try (Writer out = outputManager.createOutput(node.contextualName + " Encoder for fields and header"))
         {
-            appendStructHeader(out, withLifetime(memberCoderType), false);
+            appendStructHeader(out, withLifetime(memberCoderType));
             final String rustCountType = rustTypeName(node.dimensionsNumInGroupType());
             final String contentProperty;
             final String contentBearingType;
@@ -460,7 +460,7 @@ public class RustGenerator implements CodeGenerator
                 format("%s::wrap(self.%s)", afterGroupCoderType, contentProperty));
             indent(out).append("}\n").append("}\n");
 
-            appendStructHeader(out, withLifetime(headerCoderType), false);
+            appendStructHeader(out, withLifetime(headerCoderType));
             indent(out, 1, "%s: %s,\n", contentProperty, contentBearingType);
             out.append("}\n");
 
@@ -558,7 +558,7 @@ public class RustGenerator implements CodeGenerator
     {
         try (Writer out = outputManager.createOutput(node.contextualName + " Decoder for fields and header"))
         {
-            appendStructHeader(out, withLifetime(memberDecoderType), false);
+            appendStructHeader(out, withLifetime(memberDecoderType));
             final String rustCountType = rustTypeName(node.dimensionsNumInGroupType());
             final String contentProperty;
             final String contentBearingType;
@@ -609,7 +609,7 @@ public class RustGenerator implements CodeGenerator
                 format("%s::wrap(self.%s)", initialNextDecoderType, contentProperty)));
             indent(out, 2).append("}\n").append(INDENT).append("}\n").append("}\n");
 
-            appendStructHeader(out, withLifetime(headerDecoderType), false);
+            appendStructHeader(out, withLifetime(headerDecoderType));
             indent(out, 1, "%s: %s,\n", contentProperty, contentBearingType).append("}\n");
 
             appendImplWithLifetimeHeader(out, headerDecoderType);
@@ -922,7 +922,7 @@ public class RustGenerator implements CodeGenerator
             final String decoderType = parentContextualName + formatTypeName(name) + codecType.name();
             try (Writer writer = outputManager.createOutput(name + " variable-length data"))
             {
-                appendStructHeader(writer, withLifetime(decoderType), false);
+                appendStructHeader(writer, withLifetime(decoderType));
                 final String contentPropertyName = groupDepth > 0 ? "parent" : codecType.scratchProperty();
                 indent(writer, 1, "%s: %s,\n", contentPropertyName, withLifetime(contentType));
                 writer.append("}\n");
@@ -973,7 +973,7 @@ public class RustGenerator implements CodeGenerator
             final String decoderType = parentContextualName + formatTypeName(name) + "Decoder";
             try (Writer writer = outputManager.createOutput(name + " variable-length data"))
             {
-                appendStructHeader(writer, withLifetime(decoderType), false);
+                appendStructHeader(writer, withLifetime(decoderType));
                 final String contentPropertyName = groupDepth > 0 ? "parent" : SCRATCH_DECODER_PROPERTY;
                 indent(writer, 1, "%s: %s,\n", contentPropertyName, withLifetime(contentType));
                 writer.append("}\n");
@@ -1402,7 +1402,7 @@ public class RustGenerator implements CodeGenerator
         {
             final RustStruct struct = RustStruct.fromTokens(formattedTypeName,
                 splitTokens.nonConstantEncodingTokens(),
-                EnumSet.of(RustStruct.Modifier.PACKED));
+                EnumSet.of(RustStruct.Modifier.PACKED, RustStruct.Modifier.DEFAULT));
             struct.appendDefinitionTo(writer);
 
             generateConstantAccessorImpl(writer, formattedTypeName, getMessageBody(tokens));
@@ -1411,6 +1411,8 @@ public class RustGenerator implements CodeGenerator
 
     private interface RustTypeDescriptor
     {
+        String DEFAULT_VALUE = "Default::default()";
+
         String name();
 
         String literalValue(String valueRep);
@@ -1419,7 +1421,7 @@ public class RustGenerator implements CodeGenerator
 
         default String defaultValue()
         {
-            return "Default::default()";
+            return DEFAULT_VALUE;
         }
     }
 
@@ -1571,7 +1573,7 @@ public class RustGenerator implements CodeGenerator
     {
         enum Modifier
         {
-            PACKED
+            PACKED, DEFAULT
         }
 
         final String name;
@@ -1598,7 +1600,7 @@ public class RustGenerator implements CodeGenerator
             final SplitCompositeTokens splitTokens = SplitCompositeTokens.splitInnerTokens(tokens);
             return RustStruct.fromTokens(formattedTypeName,
                         splitTokens.nonConstantEncodingTokens(),
-                        EnumSet.of(RustStruct.Modifier.PACKED));
+                        EnumSet.of(Modifier.PACKED, Modifier.DEFAULT));
         }
 
         static RustStruct fromTokens(final String name, final List<NamedToken> tokens,
@@ -1609,13 +1611,13 @@ public class RustGenerator implements CodeGenerator
 
         // No way to create struct with default values.
         // Rust RFC: https://github.com/Centril/rfcs/pull/19
-        // TODO: #[derive(Default)] ?
+        // Used when struct contains a field which doesn't have a Default impl
         void appendDefaultConstructorTo(final Appendable appendable) throws IOException
         {
             indent(appendable, 0, "impl Default for %s {\n", name);
             indent(appendable, 1, "fn default() -> Self {\n");
 
-            appendInstanceTo(appendable, 2);
+            appendInstanceTo(appendable, 2, Collections.emptyMap());
 
             indent(appendable, 1, "}\n");
 
@@ -1624,7 +1626,17 @@ public class RustGenerator implements CodeGenerator
 
         void appendDefinitionTo(final Appendable appendable) throws IOException
         {
-            appendStructHeader(appendable, name, modifiers.contains(Modifier.PACKED));
+            final boolean needsDefault = modifiers.contains(Modifier.DEFAULT);
+            final boolean canDeriveDefault = fields.stream()
+                .allMatch(v -> v.type.defaultValue() == RustTypeDescriptor.DEFAULT_VALUE);
+
+            final Set<Modifier> modifiers = this.modifiers.clone();
+            if (needsDefault && !canDeriveDefault)
+            {
+                modifiers.remove(Modifier.DEFAULT);
+            }
+
+            appendStructHeader(appendable, name, modifiers);
             for (final RustStructField field: fields)
             {
                 indent(appendable);
@@ -1635,12 +1647,11 @@ public class RustGenerator implements CodeGenerator
                 appendable.append(field.name).append(":").append(field.type.name()).append(",\n");
             }
             appendable.append("}\n");
-            appendDefaultConstructorTo(appendable);
-        }
 
-        void appendInstanceTo(final Appendable appendable, final int indent) throws IOException
-        {
-            appendInstanceTo(appendable, indent, Collections.emptyMap());
+            if (needsDefault && !canDeriveDefault)
+            {
+                appendDefaultConstructorTo(appendable);
+            }
         }
 
         void appendInstanceTo(final Appendable appendable, final int indent,
@@ -1708,8 +1719,18 @@ public class RustGenerator implements CodeGenerator
             final int offset = typeToken.offset();
             if (offset != totalSize)
             {
-                final RustTypeDescriptor type = RustTypes.arrayOf(RustTypes.U_8, offset - totalSize);
-                fields.add(new RustStructField(propertyName + "_padding", type));
+                int rem = offset - totalSize;
+                int idx = 1;
+                while (rem > 0)
+                {
+                    // split padding arrays to 32 as larger arrays do not have an `impl Default`
+                    final int padding = Math.min(rem, 32);
+                    final RustTypeDescriptor type = RustTypes.arrayOf(RustTypes.U_8, padding);
+                    fields.add(new RustStructField(propertyName + "_padding_" + idx, type));
+
+                    idx += 1;
+                    rem -= padding;
+                }
             }
             totalSize = offset + typeToken.encodedLength();
 
@@ -1750,7 +1771,7 @@ public class RustGenerator implements CodeGenerator
 
         try (Writer writer = outputManager.createOutput(messageTypeName + " specific Message Header "))
         {
-            appendStructHeader(writer, wrapperName, true);
+            appendStructHeader(writer, wrapperName, EnumSet.of(RustStruct.Modifier.PACKED));
             indent(writer, 1, "pub message_header: MessageHeader\n");
             writer.append("}\n");
 
@@ -1777,14 +1798,26 @@ public class RustGenerator implements CodeGenerator
         }
     }
 
+    private static void appendStructHeader(final Appendable appendable, final String structName) throws IOException
+    {
+        appendStructHeader(appendable, structName, EnumSet.noneOf(RustStruct.Modifier.class));
+    }
+
     private static void appendStructHeader(
         final Appendable appendable,
         final String structName,
-        final boolean packedCRepresentation) throws IOException
+        final Set<RustStruct.Modifier> modifiers) throws IOException
     {
-        if (packedCRepresentation)
+        if (!modifiers.isEmpty())
         {
-            appendable.append("#[repr(C,packed)]\n");
+            if (modifiers.contains(RustStruct.Modifier.PACKED))
+            {
+                appendable.append("#[repr(C,packed)]\n");
+            }
+            if (modifiers.contains(RustStruct.Modifier.DEFAULT))
+            {
+                appendable.append("#[derive(Default)]\n");
+            }
         }
 
         appendable.append(format("pub struct %s {\n", structName));

@@ -301,9 +301,9 @@ public class RustGeneratorTest
         final String expectedHeader =
             "pub struct MessageHeader {\n" +
             "  pub block_length:u16,\n" +
-            "  template_id_padding:[u8;2],\n" +
+            "  template_id_padding_1:[u8;2],\n" +
             "  pub template_id:u16,\n" +
-            "  schema_id_padding:[u8;2],\n" +
+            "  schema_id_padding_1:[u8;2],\n" +
             "  pub schema_id:u16,\n" +
             "  pub version:u16,\n" +
             "}";
