@@ -409,7 +409,7 @@ public class RustGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(node.contextualName + " Encoder for fields and header"))
         {
             appendStructHeader(out, withLifetime(memberCoderType), false);
-            final String rustCountType = rustTypeName(node.numInGroupType);
+            final String rustCountType = rustTypeName(node.dimensionsNumInGroupType());
             final String contentProperty;
             final String contentBearingType;
             if (node.parent.isPresent())
@@ -453,7 +453,7 @@ public class RustGenerator implements CodeGenerator
             indent(out, 1, "pub fn done_with_%s(mut self) -> CodecResult<%s> {\n",
                 formatMethodName(node.originalName), withLifetime(afterGroupCoderType));
             indent(out, 2, "%s.write_at_position::<%s>(self.count_write_pos, &self.count, %s)?;\n",
-                scratchChain, rustCountType, node.numInGroupType.size());
+                scratchChain, rustCountType, node.dimensionsNumInGroupType().size());
             indent(out, 2, "Ok(%s)\n", atEndOfParent ? "self.parent" :
                 format("%s::wrap(self.%s)", afterGroupCoderType, contentProperty));
             indent(out).append("}\n").append("}\n");
@@ -473,12 +473,12 @@ public class RustGenerator implements CodeGenerator
             indent(out, 1, "pub fn %s_individually(mut self) -> CodecResult<%s> {\n",
                 formatMethodName(node.originalName), withLifetime(memberCoderType));
             indent(out, 2, "%s.write_type::<%s>(&%s, %s)?; // block length\n",
-                scratchChain, rustTypeName(node.blockLengthType),
-                generateRustLiteral(node.blockLengthType, Integer.toString(node.blockLength)),
-                node.blockLengthType.size());
+                scratchChain, rustTypeName(node.dimensionsBlockLengthType()),
+                generateRustLiteral(node.dimensionsBlockLengthType(), Integer.toString(node.blockLength)),
+                node.dimensionsBlockLengthType().size());
             indent(out, 2, "let count_pos = %s.pos;\n", scratchChain);
             indent(out, 2, "%s.write_type::<%s>(&0, %s)?; // preliminary group member count\n",
-                scratchChain, rustCountType, node.numInGroupType.size());
+                scratchChain, rustCountType, node.dimensionsNumInGroupType().size());
             indent(out, 2, "Ok(%s::new(self.%s, count_pos))\n", memberCoderType, contentProperty);
             indent(out, 1).append("}\n");
 
@@ -510,11 +510,11 @@ public class RustGenerator implements CodeGenerator
             formatMethodName(node.originalName), rustCountType, DATA_LIFETIME, fieldsType,
             withLifetime(afterGroupCoderType));
         indent(out, 2, "%s.write_type::<%s>(&%s, %s)?; // block length\n",
-            scratchChain, rustTypeName(node.blockLengthType),
-            generateRustLiteral(node.blockLengthType, Integer.toString(node.blockLength)),
-            node.blockLengthType.size());
+            scratchChain, rustTypeName(node.dimensionsBlockLengthType()),
+            generateRustLiteral(node.dimensionsBlockLengthType(), Integer.toString(node.blockLength)),
+            node.dimensionsBlockLengthType().size());
         indent(out, 2, "%s.write_type::<%s>(&count, %s)?; // group count\n",
-            scratchChain, rustCountType, node.numInGroupType.size());
+            scratchChain, rustCountType, node.dimensionsNumInGroupType().size());
         indent(out, 2, "let c = count as usize;\n");
         indent(out, 2, "let group_slice = %s.writable_slice::<%s>(c, %s)?;\n",
             scratchChain, fieldsType, node.blockLength);
@@ -527,15 +527,15 @@ public class RustGenerator implements CodeGenerator
             formatMethodName(node.originalName), fieldsType,
             withLifetime(afterGroupCoderType));
         indent(out, 2, "%s.write_type::<%s>(&%s, %s)?; // block length\n",
-            scratchChain, rustTypeName(node.blockLengthType),
-            generateRustLiteral(node.blockLengthType, Integer.toString(node.blockLength)),
-            node.blockLengthType.size());
+            scratchChain, rustTypeName(node.dimensionsBlockLengthType()),
+            generateRustLiteral(node.dimensionsBlockLengthType(), Integer.toString(node.blockLength)),
+            node.dimensionsBlockLengthType().size());
         indent(out, 2, "let count = s.len();\n");
-        indent(out, 2, "if count > %s {\n", node.numInGroupType.maxValue());
+        indent(out, 2, "if count > %s {\n", node.dimensionsNumInGroupType().maxValue());
         indent(out, 3).append("return Err(CodecErr::SliceIsLongerThanAllowedBySchema)\n");
         indent(out, 2).append("}\n");
         indent(out, 2, "%s.write_type::<%s>(&(count as %s), %s)?; // group count\n",
-            scratchChain, rustCountType, rustCountType, node.numInGroupType.size());
+            scratchChain, rustCountType, rustCountType, node.dimensionsNumInGroupType().size());
         indent(out, 2, "%s.write_slice_without_count::<%s>(s, %s)?;\n",
             scratchChain, fieldsType, node.blockLength);
         indent(out, 2, "Ok(%s)\n", atEndOfParent ? "self.parent" :
@@ -557,7 +557,7 @@ public class RustGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(node.contextualName + " Decoder for fields and header"))
         {
             appendStructHeader(out, withLifetime(memberDecoderType), false);
-            final String rustCountType = rustTypeName(node.numInGroupType);
+            final String rustCountType = rustTypeName(node.dimensionsNumInGroupType());
             final String contentProperty;
             final String contentBearingType;
             if (node.parent.isPresent())
@@ -618,9 +618,10 @@ public class RustGenerator implements CodeGenerator
             indent(out, 1, "pub fn %s_individually(mut self) -> CodecResult<%s> {\n",
                 formatMethodName(node.originalName), groupLevelNextDecoderType);
             indent(out, 2, "%s.skip_bytes(%s)?; // Skip reading block length for now\n",
-                toScratchChain(node), node.blockLengthType.size());
+                toScratchChain(node), node.dimensionsBlockLengthType().size());
             indent(out, 2, "let count = *%s.read_type::<%s>(%s)?;\n",
-                toScratchChain(node), rustTypeName(node.numInGroupType), node.numInGroupType.size());
+                toScratchChain(node), rustTypeName(node.dimensionsNumInGroupType()),
+                    node.dimensionsNumInGroupType().size());
             indent(out, 2).append("if count > 0 {\n");
             indent(out, 3, "Ok(Either::Left(%s::new(self.%s, count)))\n",
                 memberDecoderType, contentProperty).append(INDENT).append(INDENT).append("} else {\n");
@@ -659,9 +660,10 @@ public class RustGenerator implements CodeGenerator
             initialNextDecoderType.startsWith("Either") ?
             initialNextDecoderType : withLifetime(initialNextDecoderType));
         indent(out, 2, "%s.skip_bytes(%s)?; // Skip reading block length for now\n", toScratchChain(node),
-            node.blockLengthType.size());
+            node.dimensionsBlockLengthType().size());
         indent(out, 2, "let count = *%s.read_type::<%s>(%s)?;\n",
-            toScratchChain(node), rustTypeName(node.numInGroupType), node.numInGroupType.size());
+            toScratchChain(node), rustTypeName(node.dimensionsNumInGroupType()),
+                node.dimensionsNumInGroupType().size());
         indent(out, 2, "let s = %s.read_slice::<%s>(count as usize, %s)?;\n",
             toScratchChain(node), node.contextualName + "Member", node.blockLength);
         indent(out, 2, "Ok((s,%s))\n", atEndOfParent ? "self.parent.after_member()" :
@@ -738,10 +740,8 @@ public class RustGenerator implements CodeGenerator
             final Token dimensionsToken = groupsTokens.get(i);
             final int groupHeaderTokenCount = dimensionsToken.componentTokenCount();
             final List<Token> dimensionsTokens = groupsTokens.subList(i, i + groupHeaderTokenCount);
-            final PrimitiveType numInGroupType = findPrimitiveByTokenName(dimensionsTokens, "numInGroup");
-            final Token blockLengthToken = findPrimitiveTokenByTokenName(dimensionsTokens, "blockLength");
+            final GroupDimensions dimensions = GroupDimensions.ofTokens(dimensionsTokens);
             final int blockLength = groupToken.encodedLength();
-            final PrimitiveType blockLengthType = blockLengthToken.encoding().primitiveType();
             i += groupHeaderTokenCount;
 
             final List<Token> fields = new ArrayList<>();
@@ -758,8 +758,7 @@ public class RustGenerator implements CodeGenerator
                 parent,
                 originalName,
                 contextualName,
-                numInGroupType,
-                blockLengthType,
+                dimensions,
                 blockLength,
                 fields,
                 varDataSummaries);
@@ -791,13 +790,31 @@ public class RustGenerator implements CodeGenerator
         throw new IllegalStateException(format("%s not specified for group", targetName));
     }
 
+    private static class GroupDimensions
+    {
+        final String typeName;
+        final PrimitiveType numInGroupType;
+        final PrimitiveType blockLengthType;
+
+        private GroupDimensions(String typeName, PrimitiveType numInGroupType, PrimitiveType blockLengthType) {
+            this.typeName = typeName;
+            this.numInGroupType = numInGroupType;
+            this.blockLengthType = blockLengthType;
+        }
+
+        public static GroupDimensions ofTokens(List<Token> dimensionsTokens) {
+            final PrimitiveType numInGroupType = findPrimitiveByTokenName(dimensionsTokens, "numInGroup");
+            final PrimitiveType blockLengthType = findPrimitiveByTokenName(dimensionsTokens, "blockLength");
+            return new GroupDimensions(dimensionsTokens.get(0).name(), numInGroupType, blockLengthType);
+        }
+    }
+
     static class GroupTreeNode
     {
         final Optional<GroupTreeNode> parent;
         final String originalName;
         final String contextualName;
-        final PrimitiveType numInGroupType;
-        final PrimitiveType blockLengthType;
+        final GroupDimensions dimensions;
         final int blockLength;
         final List<Token> rawFields;
         final List<NamedToken> simpleNamedFields;
@@ -808,8 +825,7 @@ public class RustGenerator implements CodeGenerator
             final Optional<GroupTreeNode> parent,
             final String originalName,
             final String contextualName,
-            final PrimitiveType numInGroupType,
-            final PrimitiveType blockLengthType,
+            final GroupDimensions dimensions,
             final int blockLength,
             final List<Token> fields,
             final List<VarDataSummary> varData)
@@ -817,8 +833,7 @@ public class RustGenerator implements CodeGenerator
             this.parent = parent;
             this.originalName = originalName;
             this.contextualName = contextualName;
-            this.numInGroupType = numInGroupType;
-            this.blockLengthType = blockLengthType;
+            this.dimensions = dimensions;
             this.blockLength = blockLength;
             this.rawFields = fields;
             this.simpleNamedFields = NamedToken.gatherNamedNonConstantFieldTokens(fields);
@@ -848,6 +863,14 @@ public class RustGenerator implements CodeGenerator
         boolean hasFixedSizeMembers()
         {
             return groups.isEmpty() && varData.isEmpty();
+        }
+
+        public PrimitiveType dimensionsNumInGroupType() {
+            return dimensions.numInGroupType;
+        }
+
+        public PrimitiveType dimensionsBlockLengthType() {
+            return dimensions.blockLengthType;
         }
     }
 
