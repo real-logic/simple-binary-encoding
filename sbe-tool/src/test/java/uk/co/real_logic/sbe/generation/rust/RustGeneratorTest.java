@@ -307,6 +307,17 @@ public class RustGeneratorTest
     }
 
     @Test
+    public void messageBlockLengthExceedingSumOfFieldLengths()
+    {
+        final String rust = fullGenerateForResource(outputManager, "message-block-length-test");
+        final String expectedEncoderSegment = "let v = self.scratch.writable_overlay::<MsgNameFields>(9+2)?;";
+        assertContains(rust, expectedEncoderSegment);
+        final String expectedDecoderSegment = "let v = self.scratch.read_type::<MsgNameFields>(9)?;\n" +
+                "    self.scratch.skip_bytes(2)?;";
+        assertContains(rust, expectedDecoderSegment);
+    }
+
+    @Test
     public void constantEnumFields() throws IOException, InterruptedException
     {
         final String rust = fullGenerateForResource(outputManager, "constant-enum-fields");

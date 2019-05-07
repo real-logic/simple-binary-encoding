@@ -212,7 +212,7 @@ public class RustGenerator implements CodeGenerator
         String topType = codecType.generateDoneCoderType(outputManager, messageTypeName);
         topType = generateTopVarDataCoders(messageTypeName, components.varData, outputManager, topType, codecType);
         topType = generateGroupsCoders(groupTree, outputManager, topType, codecType);
-        topType = generateFixedFieldCoder(messageTypeName, outputManager, topType, fieldStruct, codecType);
+        topType = generateFixedFieldCoder(messageTypeName, msgToken.encodedLength(), outputManager, topType, fieldStruct, codecType);
         topType = codecType.generateMessageHeaderCoder(messageTypeName, outputManager, topType, headerSize);
         generateEntryPoint(messageTypeName, outputManager, topType, codecType);
     }
@@ -231,7 +231,7 @@ public class RustGenerator implements CodeGenerator
         String topType = codecType.generateDoneCoderType(outputManager, messageTypeName);
         topType = generateTopVarDataCoders(messageTypeName, components.varData, outputManager, topType, codecType);
         topType = generateGroupsCoders(groupTree, outputManager, topType, codecType);
-        topType = generateFixedFieldCoder(messageTypeName, outputManager, topType, fieldStruct, codecType);
+        topType = generateFixedFieldCoder(messageTypeName, msgToken.encodedLength(), outputManager, topType, fieldStruct, codecType);
         topType = codecType.generateMessageHeaderCoder(messageTypeName, outputManager, topType, headerSize);
         generateEntryPoint(messageTypeName, outputManager, topType, codecType);
     }
@@ -262,6 +262,7 @@ public class RustGenerator implements CodeGenerator
 
     private static String generateFixedFieldCoder(
         final String messageTypeName,
+        final int messageEncodedLength,
         final OutputManager outputManager,
         final String topType,
         final RustStruct fieldStruct,
@@ -274,10 +275,9 @@ public class RustGenerator implements CodeGenerator
             appendImplWithLifetimeHeader(writer, decoderName);
             codecType.appendWrapMethod(writer, decoderName);
             codecType.appendDirectCodeMethods(writer, formatMethodName(messageTypeName) + "_fields",
-                    fieldStruct.name, topType, fieldStruct.sizeBytes());
+                    fieldStruct.name, topType, fieldStruct.sizeBytes(),
+                    messageEncodedLength - fieldStruct.sizeBytes());
             writer.append("}\n");
-            // TODO - Move read position further if in-message blockLength exceeds fixed fields representation size
-            // will require piping some data from the previously-read message header
             return decoderName;
         }
     }
@@ -1144,6 +1144,18 @@ public class RustGenerator implements CodeGenerator
             indent(writer, 4).append("core::slice::from_raw_parts(t as *const T as *const u8, num_bytes)\n");
             indent(writer, 3).append("};\n");
             indent(writer, 3).append("(&mut self.data[self.pos..end]).copy_from_slice(source_bytes);\n");
+            indent(writer, 3).append("self.pos = end;\n");
+            indent(writer, 3).append("Ok(())\n");
+            indent(writer, 2).append("} else {\n");
+            indent(writer, 3).append("Err(CodecErr::NotEnoughBytes)\n");
+            indent(writer, 2).append("}\n");
+            indent(writer).append("}\n\n");
+
+            indent(writer, 1, "/// Advances the `pos` index by a set number of bytes.\n");
+            indent(writer).append("#[inline]\n");
+            indent(writer).append("fn skip_bytes(&mut self, num_bytes: usize) -> CodecResult<()> {\n");
+            indent(writer, 2).append("let end = self.pos + num_bytes;\n");
+            indent(writer, 2).append("if end <= self.data.len() {\n");
             indent(writer, 3).append("self.pos = end;\n");
             indent(writer, 3).append("Ok(())\n");
             indent(writer, 2).append("} else {\n");
