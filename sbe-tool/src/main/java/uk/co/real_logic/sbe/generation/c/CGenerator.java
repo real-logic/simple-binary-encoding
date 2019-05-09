@@ -217,10 +217,8 @@ public class CGenerator implements CodeGenerator
         final List<Token> tokens,
         final int index)
     {
-        final String dimensionsStructName = formatScopedName(scope, tokens.get(index + 1).name());
-
         sb.append(String.format("\n" +
-            "struct %1$s\n" +
+            "struct %s\n" +
             "{\n" +
             "    char *buffer;\n" +
             "    uint64_t buffer_length;\n" +
@@ -230,9 +228,8 @@ public class CGenerator implements CodeGenerator
             "    uint64_t index;\n" +
             "    uint64_t offset;\n" +
             "    uint64_t acting_version;\n" +
-            "    struct %2$s dimensions;\n" +
             "};\n",
-            groupName, dimensionsStructName));
+            groupName));
     }
 
     private static void generateGroupHeaderFunctions(
@@ -265,12 +262,13 @@ public class CGenerator implements CodeGenerator
             "{\n" +
             "    codec->buffer = buffer;\n" +
             "    codec->buffer_length = buffer_length;\n" +
-            "    if (!%2$s_wrap(&codec->dimensions, codec->buffer, *pos, acting_version, buffer_length))\n" +
+            "    struct %2$s dimensions;\n" +
+            "    if (!%2$s_wrap(&dimensions, codec->buffer, *pos, acting_version, buffer_length))\n" +
             "    {\n" +
             "        return NULL;\n" +
             "    }\n" +
-            "    codec->block_length = %2$s_blockLength(&codec->dimensions);\n" +
-            "    codec->count = %2$s_numInGroup(&codec->dimensions);\n" +
+            "    codec->block_length = %2$s_blockLength(&dimensions);\n" +
+            "    codec->count = %2$s_numInGroup(&dimensions);\n" +
             "    codec->index = -1;\n" +
             "    codec->acting_version = acting_version;\n" +
             "    codec->position_ptr = pos;\n" +
@@ -305,12 +303,13 @@ public class CGenerator implements CodeGenerator
             "#endif\n" +
             "    codec->buffer = buffer;\n" +
             "    codec->buffer_length = buffer_length;\n" +
-            "    if (!%5$s_wrap(&codec->dimensions, codec->buffer, *pos, acting_version, buffer_length))\n" +
+            "    struct %5$s dimensions;\n" +
+            "    if (!%5$s_wrap(&dimensions, codec->buffer, *pos, acting_version, buffer_length))\n" +
             "    {\n" +
             "        return NULL;\n" +
             "    }\n" +
-            "    %5$s_set_blockLength(&codec->dimensions, (%2$s)%3$d);\n" +
-            "    %5$s_set_numInGroup(&codec->dimensions, (%4$s)count);\n" +
+            "    %5$s_set_blockLength(&dimensions, (%2$s)%3$d);\n" +
+            "    %5$s_set_numInGroup(&dimensions, (%4$s)count);\n" +
             "    codec->index = -1;\n" +
             "    codec->count = count;\n" +
             "    codec->block_length = %3$d;\n" +
@@ -1595,7 +1594,8 @@ public class CGenerator implements CodeGenerator
             "    {\n" +
             "        errno = E105;\n" +
             "        return NULL;\n" +
-            "    }\n" +
+            "    }\n\n" +
+
             "%5$s\n" +
             "    return codec;\n" +
             "}\n",
