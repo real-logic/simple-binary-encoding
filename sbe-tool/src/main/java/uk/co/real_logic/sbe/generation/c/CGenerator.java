@@ -187,7 +187,7 @@ public class CGenerator implements CodeGenerator
             final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, i);
             final String cTypeForNumInGroup = cTypeName(numInGroupToken.encoding().primitiveType());
 
-            generateGroupStruct(sb, scope, groupName, tokens, i);
+            generateGroupStruct(sb, groupName);
             generateGroupHeaderFunctions(sb, scope, groupName, tokens, i);
 
             ++i;
@@ -210,12 +210,7 @@ public class CGenerator implements CodeGenerator
         }
     }
 
-    private static void generateGroupStruct(
-        final StringBuilder sb,
-        final CharSequence[] scope,
-        final String groupName,
-        final List<Token> tokens,
-        final int index)
+    private static void generateGroupStruct(final StringBuilder sb, final String groupName)
     {
         sb.append(String.format("\n" +
             "struct %s\n" +
@@ -484,9 +479,7 @@ public class CGenerator implements CodeGenerator
     }
 
     private CharSequence generateVarData(
-        final String structName,
-        final String outermostStruct,
-        final List<Token> tokens)
+        final String structName, final String outermostStruct, final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -755,8 +748,7 @@ public class CGenerator implements CodeGenerator
             final String compositeName = formatScopedName(scope, compositeToken.applicableTypeName());
 
             out.append(generateFileHeader(
-                compositeName,
-                generateTypesToIncludes(tokens.subList(1, tokens.size() - 1))));
+                compositeName, generateTypesToIncludes(tokens.subList(1, tokens.size() - 1))));
             out.append(generateFixedFlyweightStruct(compositeName));
             out.append(String.format("\n" +
                 "enum %1$s_meta_attribute\n" +
@@ -882,9 +874,7 @@ public class CGenerator implements CodeGenerator
     }
 
     private CharSequence generateEnumValues(
-        final CharSequence[] scope,
-        final List<Token> tokens,
-        final Token encodingToken)
+        final CharSequence[] scope, final List<Token> tokens, final Token encodingToken)
     {
         final StringBuilder sb = new StringBuilder();
         final Encoding encoding = encodingToken.encoding();
@@ -917,9 +907,7 @@ public class CGenerator implements CodeGenerator
     }
 
     private static CharSequence generateEnumLookupFunction(
-        final CharSequence[] scope,
-        final List<Token> tokens,
-        final Token encodingToken)
+        final CharSequence[] scope, final List<Token> tokens, final Token encodingToken)
     {
         final String enumName = formatScopedName(scope, encodingToken.applicableTypeName());
         final StringBuilder sb = new StringBuilder();
@@ -958,8 +946,7 @@ public class CGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateFieldNotPresentCondition(
-        final int sinceVersion, final Encoding encoding)
+    private CharSequence generateFieldNotPresentCondition(final int sinceVersion, final Encoding encoding)
     {
         if (0 == sinceVersion)
         {
@@ -1020,9 +1007,7 @@ public class CGenerator implements CodeGenerator
             sinceVersion);
     }
 
-    private static CharSequence generateFileHeader(
-        final String structName,
-        final List<String> typesToInclude)
+    private static CharSequence generateFileHeader(final String structName, final List<String> typesToInclude)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1111,7 +1096,7 @@ public class CGenerator implements CodeGenerator
             "#define SBE_NULLVALUE_UINT64 UINT64_MAX\n\n" +
 
             "#define E100 -50100 // E_BUF_SHORT\n" +
-            "#define E103 -50103 // VAL_UNKNWN_ENUM\n" +
+            "#define E103 -50103 // VAL_UNKNOWN_ENUM\n" +
             "#define E104 -50104 // I_OUT_RANGE_NUM\n" +
             "#define E105 -50105 // I_OUT_RANGE_NUM\n" +
             "#define E106 -50106 // I_OUT_RANGE_NUM\n" +
@@ -1204,9 +1189,7 @@ public class CGenerator implements CodeGenerator
     }
 
     private CharSequence generateCompositePropertyFunctions(
-        final CharSequence[] scope,
-        final String containingStructName,
-        final List<Token> tokens)
+        final CharSequence[] scope, final String containingStructName, final List<Token> tokens)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1220,12 +1203,14 @@ public class CGenerator implements CodeGenerator
                 fieldToken,
                 containingStructName,
                 containingStructName);
+
             generateFieldCommonFunctions(
                 sb,
                 fieldToken,
                 fieldToken,
                 propertyName,
                 containingStructName);
+
             generatePropertyFunctions(
                 sb,
                 scope,
@@ -1834,9 +1819,7 @@ public class CGenerator implements CodeGenerator
     }
 
     private CharSequence generateMessageFlyweightFunctions(
-        final String structName,
-        final Token token,
-        final CharSequence[] scope)
+        final String structName, final Token token, final CharSequence[] scope)
     {
         final String blockLengthType = cTypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = cTypeName(ir.headerStructure().templateIdType());
@@ -2137,9 +2120,7 @@ public class CGenerator implements CodeGenerator
             outermostStruct));
     }
 
-    private static CharSequence generateEnumFieldNotPresentCondition(
-        final int sinceVersion,
-        final String enumName)
+    private static CharSequence generateEnumFieldNotPresentCondition(final int sinceVersion, final String enumName)
     {
         if (0 == sinceVersion)
         {

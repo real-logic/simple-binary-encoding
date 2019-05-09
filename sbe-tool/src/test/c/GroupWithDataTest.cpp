@@ -296,7 +296,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeAndDecodeTestMessage1Correctly)
     GWD(testMessage1) msg1Decoder;
     if (!GWD(testMessage1_reset)(&msg1Decoder, buffer, 0, sizeof(buffer), GWD(testMessage1_sbe_block_length)(), GWD(testMessage1_sbe_schema_version)()))
     {
-            throw std::runtime_error(sbe_strerror(errno));
+        throw std::runtime_error(sbe_strerror(errno));
     }
 
     EXPECT_EQ(GWD(testMessage1_tag1)(&msg1Decoder), TAG_1);

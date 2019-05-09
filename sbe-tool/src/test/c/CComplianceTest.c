@@ -6,5 +6,6 @@
 #include <group_with_data/testMessage3.h>
 #include <group_with_data/testMessage4.h>
 
-int main() {
+int main()
+{
 }
