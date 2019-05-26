@@ -59,6 +59,7 @@ public class IrEncoder implements AutoCloseable
         try
         {
             channel = FileChannel.open(Paths.get(fileName), READ, WRITE, CREATE);
+            channel.truncate(0);
             resultBuffer = null;
             buffer = ByteBuffer.allocateDirect(CAPACITY);
             directBuffer = new UnsafeBuffer(buffer);
