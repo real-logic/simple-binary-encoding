@@ -309,6 +309,7 @@ int main(int argc, const char* argv[])
     std::size_t encodeMsgLength = encodeCar(car, buffer, hdr.encodedLength(), sizeof(buffer));
 
     cout << "Encoded Lengths are " << encodeHdrLength << " + " << encodeMsgLength << endl;
+    cout << "Encoded json: '" << car << "'" << endl;
 
     std::size_t decodeHdrLength = decodeHdr(hdr, buffer, 0, sizeof(buffer));
     std::size_t decodeMsgLength = decodeCar(car, buffer, hdr.encodedLength(), hdr.blockLength(), hdr.version(), sizeof(buffer));

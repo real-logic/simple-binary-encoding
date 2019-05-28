@@ -136,6 +136,7 @@ public class CppGenerator implements CodeGenerator
                 generateGroups(sb, groups, BASE_INDENT);
                 out.append(sb);
                 out.append(generateVarData(className, varData, BASE_INDENT));
+                out.append(generateDisplay(msgToken.name(), fields, groups, varData, BASE_INDENT + INDENT));
                 out.append("};\n");
                 out.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
             }
@@ -173,6 +174,8 @@ public class CppGenerator implements CodeGenerator
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
             sb.append(generateVarData(formatClassName(groupName), varData, indent + INDENT));
+
+            sb.append(generateGroupDisplay(groupName, fields, groups, varData, indent + INDENT + INDENT));
 
             sb.append(indent).append("    };\n");
             sb.append(generateGroupProperty(groupName, groupToken, cppTypeForNumInGroup, indent));
@@ -667,6 +670,7 @@ public class CppGenerator implements CodeGenerator
                 cppTypeName(tokens.get(0).encoding().primitiveType())));
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
+            out.append(generateChoicesDisplay(bitSetName, tokens.subList(1, tokens.size() - 1)));
             out.append("};\n");
             out.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
         }
@@ -686,6 +690,8 @@ public class CppGenerator implements CodeGenerator
 
             out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
 
+            out.append(generateEnumDisplay(tokens.subList(1, tokens.size() - 1), enumToken));
+
             out.append("};\n\n");
             out.append(CppUtil.closingBraces(ir.namespaces().length)).append("\n#endif\n");
         }
@@ -704,6 +710,11 @@ public class CppGenerator implements CodeGenerator
 
             out.append(generateCompositePropertyElements(
                 compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+
+            out.append(generateCompositeDisplay(
+                tokens.get(0).applicableTypeName(),
+                tokens.subList(1, tokens.size() - 1),
+                BASE_INDENT + INDENT));
 
             out.append("};\n\n");
             out.append(CppUtil.closingBraces(ir.namespaces().length)).append("\n#endif\n");
@@ -975,6 +986,7 @@ public class CppGenerator implements CodeGenerator
             "#include <cstring>\n" +
             "#include <limits>\n" +
             "#include <stdexcept>\n\n" +
+            "#include <ostream>\n\n" +
 
             "#if defined(WIN32) || defined(_WIN32)\n" +
             "#  define SBE_BIG_ENDIAN_ENCODE_16(v) _byteswap_ushort(v)\n" +
@@ -2256,5 +2268,378 @@ public class CppGenerator implements CodeGenerator
         }
 
         return literal;
+    }
+
+    private CharSequence generateDisplay(
+        final String name,
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData,
+        final String indent)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("\n" +
+            indent + "template<typename CharT, typename Traits>\n" +
+            indent + "friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
+            indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s _writer)\n" +
+            indent + "{\n" +
+            indent + "    %1$s writer(_writer.m_buffer, _writer.m_offset,\n" +
+            indent + "        _writer.m_bufferLength, _writer.sbeBlockLength(), _writer.m_actingVersion);\n" +
+            indent + "    builder << '{';\n" +
+            indent + "    builder << \"\\\"Name\\\": \\\"%1$s\\\", \";\n" +
+            indent + "    builder << \"\\\"sbeTemplateId\\\": \";\n" +
+            indent + "    builder << writer.sbeTemplateId();\n" +
+            indent + "    builder << \", \";\n\n" +
+            "%2$s" +
+            indent + "    builder << '}';\n" +
+            indent + "    return builder;\n" +
+            indent + "}\n",
+            formatClassName(name),
+            appendDisplay(fields, groups, varData, indent + INDENT)));
+
+        return sb.toString();
+    }
+
+    private CharSequence generateGroupDisplay(
+        final String name,
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData,
+        final String indent)
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(String.format("\n" +
+            indent + "template<typename CharT, typename Traits>\n" +
+            indent + "friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
+            indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s writer)\n" +
+            indent + "{\n" +
+            indent + "    builder << '{';\n" +
+            "%2$s" +
+            indent + "    builder << '}';\n" +
+            indent + "    return builder;\n" +
+            indent + "}\n",
+            formatClassName(name),
+            appendDisplay(fields, groups, varData, indent + INDENT)));
+
+        return sb.toString();
+    }
+
+    private CharSequence generateCompositeDisplay(
+        final String name,
+        final List<Token> tokens,
+        final String indent)
+    {
+        final StringBuilder sb = new StringBuilder();
+        final boolean[] atLeastOne = {false};
+        sb.append(String.format("\n" +
+            indent + "template<typename CharT, typename Traits>\n" +
+            indent + "friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
+            indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s writer)\n" +
+            indent + "{\n" +
+            indent + "    builder << '{';\n" +
+            "%2$s" +
+            indent + "    builder << '}';\n" +
+            indent + "    return builder;\n" +
+            indent + "}\n\n",
+            formatClassName(name),
+            appendDisplay(tokens, new ArrayList<>(), new ArrayList<>(), indent + INDENT)));
+
+        return sb.toString();
+    }
+
+    private CharSequence appendDisplay(
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData,
+        final String indent)
+    {
+        final StringBuilder sb = new StringBuilder();
+        final boolean[] atLeastOne = {false};
+        for (int i = 0, size = fields.size(); i < size;)
+        {
+            final Token fieldToken = fields.get(i);
+
+            if (fieldToken.signal() == Signal.BEGIN_FIELD)
+            {
+                final Token encodingToken = fields.get(i + 1);
+
+                sb.append(
+                    writeTokenDisplay(fieldToken.name(), encodingToken, atLeastOne, indent) + "\n");
+
+                i += fieldToken.componentTokenCount();
+            }
+            else
+            {
+                final Token encodingToken = fields.get(i);
+
+                sb.append(
+                    writeTokenDisplay(fieldToken.name(), encodingToken, atLeastOne, indent) + "\n");
+
+                i += fieldToken.componentTokenCount();
+            }
+        }
+
+        for (int i = 0, size = groups.size(); i < size; i++)
+        {
+            final Token groupToken = groups.get(i);
+            if (groupToken.signal() != Signal.BEGIN_GROUP)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
+            }
+
+            sb.append(indent + "//" + groupToken + "\n");
+
+            if (atLeastOne[0])
+            {
+                sb.append(
+                    indent + "builder << \", \";\n");
+            }
+            atLeastOne[0] = true;
+
+            sb.append(String.format(
+                indent + "{\n" +
+                indent + "    bool atLeastOne = false;\n" +
+                indent + "    builder << \"\\\"%3$s\\\": [\";\n" +
+                indent + "    writer.%2$s().forEach([&](%1$s& %2$s)\n" +
+                indent + "    {\n" +
+                indent + "        if (atLeastOne)\n" +
+                indent + "            builder << \", \";\n" +
+                indent + "        atLeastOne = true;\n" +
+                indent + "        builder << %2$s;\n" +
+                indent + "    });\n" +
+                indent + "    builder << ']';\n" +
+                indent + "}\n\n",
+                formatClassName(groupToken.name()),
+                formatPropertyName(groupToken.name()),
+                groupToken.name()));
+
+
+            i = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
+        }
+
+        for (int i = 0, size = varData.size(); i < size;)
+        {
+            final Token varDataToken = varData.get(i);
+            if (varDataToken.signal() != Signal.BEGIN_VAR_DATA)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
+            }
+
+            sb.append(indent + "//" + varDataToken + "\n");
+
+            if (atLeastOne[0])
+            {
+                sb.append(
+                    indent + "builder << \", \";\n");
+            }
+            atLeastOne[0] = true;
+
+            final String characterEncoding = varData.get(i + 3).encoding().characterEncoding();
+            final String getAsStringFunction = "get" + toUpperFirstChar(varDataToken.name()) + "AsString().c_str()";
+            sb.append(indent + "builder << \"\\\"" + varDataToken.name() + "\\\": \";\n");
+            if (null == characterEncoding)
+            {
+                sb.append(
+                    indent + "builder << '\"' <<\n" +
+                    indent + INDENT + "writer." + getAsStringFunction + " << '\"';\n\n");
+                /*sb.append(indent + "builder << " + varDataName + "Length() << \" bytes of raw data\";\n");
+                append(sb, indent,
+                    "parentMessage.limit(parentMessage.limit() + " + varDataName + "HeaderLength() + " +
+                    varDataName + "Length());");*/
+            }
+            else
+            {
+                sb.append(
+                    indent + "builder << '\"' <<\n" +
+                    indent + INDENT + "writer." + getAsStringFunction + " << '\"';\n\n");
+            }
+
+            i += varDataToken.componentTokenCount();
+        }
+        return sb.toString();
+    }
+
+    private CharSequence writeTokenDisplay(
+        final String fieldTokenName,
+        final Token typeToken,
+        final boolean[] atLeastOne,
+        final String indent)
+    {
+        final StringBuilder sb = new StringBuilder();
+        final String fieldName = "writer." + formatPropertyName(fieldTokenName);
+
+        sb.append(indent + "//" + typeToken + "\n");
+
+        if (typeToken.encodedLength() <= 0 || typeToken.isConstantEncoding())
+        {
+            return sb.toString();
+        }
+
+        if (atLeastOne[0])
+        {
+            sb.append(
+                indent + "builder << \", \";\n");
+        }
+        else
+        {
+            atLeastOne[0] = true;
+        }
+
+        sb.append(indent + "builder << \"\\\"" + fieldTokenName + "\\\": \";\n");
+
+        switch (typeToken.signal())
+        {
+            case ENCODING:
+                if (typeToken.arrayLength() > 1)
+                {
+                    if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
+                    {
+                        sb.append(
+                            indent + "builder << '\"';\n" +
+                            indent + "for (size_t i = 0;\n" +
+                            indent + "    i < " + fieldName + "Length() && " + fieldName + "(i) > 0;\n" +
+                            indent + "    i++)\n" +
+                            indent + "{\n" +
+                            indent + "    builder << (char)" + fieldName + "(i);\n" +
+                            indent + "}\n" +
+                            indent + "builder << '\"';\n");
+                    }
+                    else
+                    {
+                        sb.append(
+                            indent + "builder << '[';\n" +
+                            indent + "if (" + fieldName + "Length() > 0)\n" +
+                            indent + "{\n" +
+                            indent + "    for (size_t i = 0; i < " + fieldName + "Length(); i++)\n" +
+                            indent + "    {\n" +
+                            indent + "        if (i)\n" +
+                            indent + "            builder << ',';\n" +
+                            indent + "        builder << +" + fieldName + "(i);\n" +
+                            indent + "    }\n" +
+                            indent + "}\n" +
+                            indent + "builder << ']';\n");
+                    }
+                }
+                else
+                {
+                    // have to duplicate because of checkstyle :/
+                    if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
+                    {
+                        sb.append(indent + "builder << '\"' << (char)" + fieldName + "() << '\"';\n");
+                    }
+                    else
+                    {
+                        sb.append(indent + "builder << +" + fieldName + "();\n");
+                    }
+                }
+                break;
+
+            case BEGIN_ENUM:
+                sb.append(indent + "builder << '\"' << " + fieldName + "() << '\"';\n");
+                break;
+            case BEGIN_SET:
+                sb.append(indent + "builder << " + fieldName + "();\n");
+                break;
+            case BEGIN_COMPOSITE:
+                sb.append(indent + "builder << " + fieldName + "();\n");
+                break;
+        }
+
+        return sb.toString();
+    }
+
+    private CharSequence generateChoicesDisplay(final String name, final List<Token> tokens)
+    {
+        final String indent = INDENT;
+        final StringBuilder sb = new StringBuilder();
+        final List<Token> choiceTokens = new ArrayList<>();
+
+        collect(Signal.CHOICE, tokens, 0, choiceTokens);
+
+        sb.append(String.format("\n" +
+            indent + "template<typename CharT, typename Traits>\n" +
+            indent + "friend std::basic_ostream<CharT, Traits>& operator<<(" +
+            indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s writer)\n" +
+            indent + "{\n" +
+            indent + "    builder << '[';\n",
+            name));
+
+        if (choiceTokens.size() > 1)
+        {
+            sb.append(indent + "    bool atLeastOne = false;\n");
+        }
+
+        for (int i = 0, size = choiceTokens.size(); i < size; i++)
+        {
+            final Token token = choiceTokens.get(i);
+            sb.append(indent + "    //" + token + "\n");
+            final String choiceName = "writer." + formatPropertyName(token.name());
+            sb.append(
+                indent + "    if (" + choiceName + "())\n" +
+                indent + "    {\n");
+            if (i > 0)
+            {
+                sb.append(
+                    indent + "        if (atLeastOne)\n" +
+                    indent + "        {\n" +
+                    indent + "            builder << \",\";\n" +
+                    indent + "        }\n");
+            }
+            sb.append(
+                indent + "        builder << \"\\\"" + formatPropertyName(token.name()) + "\\\"\";\n");
+            if (i < (size - 1))
+            {
+                sb.append(indent + "        atLeastOne = true;\n");
+            }
+            sb.append(
+                indent + "    }\n");
+        }
+
+        sb.append(
+            indent + "    builder << ']';\n" +
+            indent + "    return builder;\n" +
+            indent + "}\n");
+
+        return sb.toString();
+    }
+
+    private CharSequence generateEnumDisplay(final List<Token> tokens, final Token encodingToken)
+    {
+        final String enumName = formatClassName(encodingToken.applicableTypeName());
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("\n" +
+            "    static const char* c_str(const %1$s::Value value)\n" +
+            "    {\n" +
+            "        switch (value)\n" +
+            "        {\n",
+            enumName
+        ));
+
+        for (final Token token : tokens)
+        {
+            sb.append(String.format(
+                "            case %1$s: return \"%1$s\";\n",
+                token.name())
+            );
+        }
+
+        sb.append(String.format(
+            "            case NULL_VALUE: return \"NULL_VALUE\";\n" +
+            "        }\n\n" +
+            "        throw std::runtime_error(\"unknown value for enum %1$s [E103]:\");\n" +
+            "    }\n\n" +
+
+            "    template<typename CharT, typename Traits>\n" +
+            "    friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
+            "        std::basic_ostream<CharT, Traits>& os, %1$s::Value m)\n" +
+            "    {\n" +
+            "        return os << %1$s::c_str(m);\n" +
+            "    }\n",
+            enumName
+        ));
+
+        return sb;
     }
 }
