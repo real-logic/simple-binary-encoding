@@ -291,8 +291,8 @@ public class RustGenerator implements CodeGenerator
         final OutputManager outputManager,
         final int headerSize) throws IOException
     {
-        String messageTypeName = "MessageHeader";
-        RustCodecType codecType = RustCodecType.Decoder;
+        final String messageTypeName = "MessageHeader";
+        final RustCodecType codecType = RustCodecType.Decoder;
         try (Writer writer = outputManager.createOutput(messageTypeName + format(" %s entry point", codecType.name())))
         {
             final String gerund = codecType.gerund();
@@ -1821,7 +1821,7 @@ public class RustGenerator implements CodeGenerator
             indent(writer, 1, "pub message_header: MessageHeader\n");
             writer.append("}\n");
 
-            final String blockLength =  Integer.toString(messageToken.encodedLength());
+            final String blockLength = Integer.toString(messageToken.encodedLength());
             final String templateId = Integer.toString(messageToken.id());
             final String schemaId = Integer.toString(ir.id());
             final String version = Integer.toString(ir.version());
