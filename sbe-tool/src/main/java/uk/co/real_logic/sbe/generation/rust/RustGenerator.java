@@ -53,6 +53,8 @@ public class RustGenerator implements CodeGenerator
 
     public void generate() throws IOException
     {
+        final int headerSize = totalByteSize(ir.headerStructure());
+
         generateSharedImports(outputManager);
         generateResultEnums(outputManager);
         generateDecoderScratchStruct(outputManager);
@@ -61,7 +63,7 @@ public class RustGenerator implements CodeGenerator
         generateEnums(ir, outputManager);
         generateComposites(ir, outputManager);
         generateBitSets(ir, outputManager);
-        final int headerSize = totalByteSize(ir.headerStructure());
+        generateMessageHeaderDecoder(outputManager, headerSize);
 
         for (final List<Token> tokens : ir.messages())
         {
@@ -281,6 +283,27 @@ public class RustGenerator implements CodeGenerator
                 withLifetime(topType)));
             indent(writer, 1, "%s::wrap(%s { data: data, pos: 0 })\n",
                 topType, codecType.scratchType());
+            writer.append("}\n");
+        }
+    }
+
+    static void generateMessageHeaderDecoder(
+        final OutputManager outputManager,
+        final int headerSize) throws IOException
+    {
+        String messageTypeName = "MessageHeader";
+        RustCodecType codecType = RustCodecType.Decoder;
+        try (Writer writer = outputManager.createOutput(messageTypeName + format(" %s entry point", codecType.name())))
+        {
+            final String gerund = codecType.gerund();
+            writer.append(format("pub fn start_%s_%s<%s>(data: &%s%s [u8]) -> CodecResult<(&%s %s, %s)> {\n", gerund,
+                formatMethodName(messageTypeName), DATA_LIFETIME, DATA_LIFETIME,
+                codecType == RustCodecType.Encoder ? " mut" : "",
+                DATA_LIFETIME, messageTypeName,
+                withLifetime(codecType.scratchType())));
+            indent(writer, 1, format("let mut scratch = %s { data: data, pos: 0 };\n", codecType.scratchType()));
+            indent(writer, 1, format("let v = scratch.read_type::<%s>(%s)?;\n", messageTypeName, headerSize));
+            indent(writer, 1, "Ok((v, scratch))\n");
             writer.append("}\n");
         }
     }
@@ -1163,7 +1186,7 @@ public class RustGenerator implements CodeGenerator
         try (Writer writer = outputManager.createOutput("Scratch Encoder Data Wrapper - codec internal use only"))
         {
             writer.append("#[derive(Debug)]\n");
-            writer.append(format("struct %s<%s> {\n", SCRATCH_ENCODER_TYPE, DATA_LIFETIME));
+            writer.append(format("pub struct %s<%s> {\n", SCRATCH_ENCODER_TYPE, DATA_LIFETIME));
             indent(writer, 1, "data: &%s mut [u8],\n", DATA_LIFETIME);
             indent(writer).append("pos: usize,\n");
             writer.append("}\n");
@@ -1291,7 +1314,7 @@ public class RustGenerator implements CodeGenerator
         try (Writer writer = outputManager.createOutput("Scratch Decoder Data Wrapper - codec internal use only"))
         {
             writer.append("#[derive(Debug)]\n");
-            writer.append(format("struct %s<%s> {\n", SCRATCH_DECODER_TYPE, DATA_LIFETIME));
+            writer.append(format("pub struct %s<%s> {\n", SCRATCH_DECODER_TYPE, DATA_LIFETIME));
             indent(writer, 1, "data: &%s [u8],\n", DATA_LIFETIME);
             indent(writer).append("pos: usize,\n");
             writer.append("}\n");
@@ -1798,6 +1821,18 @@ public class RustGenerator implements CodeGenerator
             indent(writer, 1, "pub message_header: MessageHeader\n");
             writer.append("}\n");
 
+            final String blockLength =  Integer.toString(messageToken.encodedLength());
+            final String templateId = Integer.toString(messageToken.id());
+            final String schemaId = Integer.toString(ir.id());
+            final String version = Integer.toString(ir.version());
+
+            indent(writer, 0, "impl %s {\n", wrapperName);
+            indent(writer, 1, "pub const BLOCK_LENGTH : u16 = " + blockLength + ";\n");
+            indent(writer, 1, "pub const TEMPLATE_ID : u16 = " + templateId + ";\n");
+            indent(writer, 1, "pub const SCHEMA_ID : u16 = " + schemaId + ";\n");
+            indent(writer, 1, "pub const VERSION : u16 = " + version + ";\n");
+            indent(writer, 0, "}\n");
+
             indent(writer, 0, "impl Default for %s {\n", wrapperName);
             indent(writer, 1, "fn default() -> %s {\n", wrapperName);
             indent(writer, 2, "%s {\n", wrapperName);
@@ -1807,10 +1842,10 @@ public class RustGenerator implements CodeGenerator
                 new HashMap<String, String>()
                 {
                     {
-                        put("block_length", Integer.toString(messageToken.encodedLength()));
-                        put("template_id", Integer.toString(messageToken.id()));
-                        put("schema_id", Integer.toString(ir.id()));
-                        put("version", Integer.toString(ir.version()));
+                        put("block_length", blockLength);
+                        put("template_id", templateId);
+                        put("schema_id", schemaId);
+                        put("version", version);
                     }
                 });
 

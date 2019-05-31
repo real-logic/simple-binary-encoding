@@ -173,7 +173,7 @@ enum RustCodecType
         throws IOException
     {
         appendable.append("\n").append(INDENT).append(String.format(
-            "fn wrap(%s: %s) -> %s {%n", scratchProperty(), RustGenerator.withLifetime(scratchType()),
+            "pub fn wrap(%s: %s) -> %s {%n", scratchProperty(), RustGenerator.withLifetime(scratchType()),
             RustGenerator.withLifetime(structName)));
         indent(appendable, 2, "%s { %s: %s }\n",
             structName, scratchProperty(), scratchProperty());
