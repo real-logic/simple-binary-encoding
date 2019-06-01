@@ -135,12 +135,12 @@ subprojects {
     jar.enabled = true
 
     dependencies {
-        checkstyle 'com.puppycrawl.tools:checkstyle:8.20'
+        checkstyle 'com.puppycrawl.tools:checkstyle:8.21'
 
         compile 'org.agrona:agrona:1.0.1'
 
         testCompile 'org.hamcrest:hamcrest:2.1'
-        testCompile 'org.mockito:mockito-core:2.27.0'
+        testCompile 'org.mockito:mockito-core:2.28.2'
         testCompile 'junit:junit:4.12'
     }
 
