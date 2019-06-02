@@ -13,7 +13,7 @@
 # Build tools
 build-local.properties
 deps
-/bin
+*/bin
 build
 .gradle
 target
@@ -23,6 +23,7 @@ GPATH
 prop
 out
 .vs/
+.vscode
 
 # cmake
 

@@ -237,7 +237,7 @@ public class RustGeneratorTest
     {
         try
         {
-            final ProcessBuilder builder = new ProcessBuilder("cargo", "-v");
+            final ProcessBuilder builder = new ProcessBuilder("cargo", "-V");
             final Process process = builder.start();
             process.waitFor(5, TimeUnit.SECONDS);
             return process.exitValue() == 0;

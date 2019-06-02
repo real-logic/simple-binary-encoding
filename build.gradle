@@ -569,7 +569,8 @@ def cargo_exists() {
     try {
         def result = project.exec {
             executable = 'cargo'
-            args = '-v'
+            args = [ '-V' ]
+            standardOutput = new ByteArrayOutputStream()
         }
         return result.exitValue == 0
     }
