@@ -15,7 +15,7 @@
             <type name="blockLength" primitiveType="uint16"/>
             <type name="numInGroup" primitiveType="uint8" semanticType="NumInGroup"/>
         </composite>
-        <set name="event" encodingType="uint8">
+        <set name="eventType" encodingType="uint8">
             <choice name="choice0">0</choice>
             <choice name="choice1">1</choice>
             <choice name="choice2">2</choice>
@@ -28,7 +28,7 @@
     </types>
     <message name="msgName" id="10" blockLength="11" semanticType="M">
         <field name="field1" id="11" type="uint64" offset="0" semanticType="UTCTimestamp"/>
-        <field name="field2" id="12" type="event" offset="8" semanticType="MultipleCharValue"/>
+        <field name="field2" id="12" type="eventType" offset="8" semanticType="MultipleCharValue"/>
         <group name="grName" id="20" dimensionType="groupSizeEncoding">
             <field name="grField1" id="21" type="uint64" semanticType="int"/>
             <field name="grField2" id="22" type="int64" semanticType="int"/>
