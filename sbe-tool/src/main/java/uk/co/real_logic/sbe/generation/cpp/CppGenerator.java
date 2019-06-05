@@ -2287,8 +2287,8 @@ public class CppGenerator implements CodeGenerator
             indent + "    %1$s writer(_writer.m_buffer, _writer.m_offset,\n" +
             indent + "        _writer.m_bufferLength, _writer.sbeBlockLength(), _writer.m_actingVersion);\n" +
             indent + "    builder << '{';\n" +
-            indent + "    builder << \"\\\"Name\\\": \\\"%1$s\\\", \";\n" +
-            indent + "    builder << \"\\\"sbeTemplateId\\\": \";\n" +
+            indent + "    builder << R\"(\"Name\": \"%1$s\", )\";\n" +
+            indent + "    builder << R\"(\"sbeTemplateId\": )\";\n" +
             indent + "    builder << writer.sbeTemplateId();\n" +
             indent + "    builder << \", \";\n\n" +
             "%2$s" +
@@ -2400,7 +2400,7 @@ public class CppGenerator implements CodeGenerator
             sb.append(String.format(
                 indent + "{\n" +
                 indent + "    bool atLeastOne = false;\n" +
-                indent + "    builder << \"\\\"%3$s\\\": [\";\n" +
+                indent + "    builder << R\"(\"%3$s\": [)\";\n" +
                 indent + "    writer.%2$s().forEach([&](%1$s& %2$s)\n" +
                 indent + "    {\n" +
                 indent + "        if (atLeastOne)\n" +
@@ -2437,7 +2437,7 @@ public class CppGenerator implements CodeGenerator
 
             final String characterEncoding = varData.get(i + 3).encoding().characterEncoding();
             final String getAsStringFunction = "get" + toUpperFirstChar(varDataToken.name()) + "AsString().c_str()";
-            sb.append(indent + "builder << \"\\\"" + varDataToken.name() + "\\\": \";\n");
+            sb.append(indent + "builder << R\"(\"" + varDataToken.name() + "\": )\";\n");
             if (null == characterEncoding)
             {
                 sb.append(
@@ -2486,7 +2486,7 @@ public class CppGenerator implements CodeGenerator
             atLeastOne[0] = true;
         }
 
-        sb.append(indent + "builder << \"\\\"" + fieldTokenName + "\\\": \";\n");
+        sb.append(indent + "builder << R\"(\"" + fieldTokenName + "\": )\";\n");
 
         switch (typeToken.signal())
         {
@@ -2587,7 +2587,7 @@ public class CppGenerator implements CodeGenerator
                     indent + "        }\n");
             }
             sb.append(
-                indent + "        builder << \"\\\"" + formatPropertyName(token.name()) + "\\\"\";\n");
+                indent + "        builder << R\"(\"" + formatPropertyName(token.name()) + "\")\";\n");
             if (i < (size - 1))
             {
                 sb.append(indent + "        atLeastOne = true;\n");
