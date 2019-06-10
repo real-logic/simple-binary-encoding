@@ -17,6 +17,19 @@ matrix:
       os: linux
       script: ./gradlew --scan
 
+    - env: COMPILER=g++-5
+      language: cpp
+      compiler: gcc
+      os: linux
+      addons:
+        apt:
+          packages:
+            - g++-5
+            - libsparsehash-dev
+          sources:
+            - ubuntu-toolchain-r-test
+      script: ./cppbuild/cppbuild
+
     - env: COMPILER=g++-6
       language: cpp
       compiler: gcc
@@ -56,6 +69,32 @@ matrix:
             - ubuntu-toolchain-r-test
       script: ./cppbuild/cppbuild
 
+    - env: COMPILER=g++-9
+      language: cpp
+      compiler: gcc
+      os: linux
+      addons:
+        apt:
+          packages:
+            - g++-9
+            - libsparsehash-dev
+          sources:
+            - ubuntu-toolchain-r-test
+      script: ./cppbuild/cppbuild
+
+    - env: COMPILER=clang++-4.0
+      language: cpp
+      compiler: clang
+      os: linux
+      addons:
+        apt:
+          packages:
+            - clang-4.0
+            - libsparsehash-dev
+          sources:
+            - llvm-toolchain-xenial-4.0
+      script: ./cppbuild/cppbuild
+
     - env: COMPILER=clang++-5.0
       language: cpp
       compiler: clang
@@ -64,10 +103,8 @@ matrix:
         apt:
           packages:
             - clang-5.0
-            - libstdc++-7-dev
             - libsparsehash-dev
           sources:
-            - ubuntu-toolchain-r-test
             - llvm-toolchain-xenial-5.0
       script: ./cppbuild/cppbuild
 
@@ -79,10 +116,8 @@ matrix:
         apt:
           packages:
             - clang-6.0
-            - libstdc++-7-dev
             - libsparsehash-dev
           sources:
-            - ubuntu-toolchain-r-test
             - llvm-toolchain-xenial-6.0
       script: ./cppbuild/cppbuild
 
@@ -94,11 +129,22 @@ matrix:
         apt:
           packages:
             - clang-7
-            - libstdc++-7-dev
             - libsparsehash-dev
           sources:
-            - ubuntu-toolchain-r-test
             - llvm-toolchain-xenial-7
+      script: ./cppbuild/cppbuild
+
+    - env: COMPILER=clang++-8
+      language: cpp
+      compiler: clang
+      os: linux
+      addons:
+        apt:
+          packages:
+            - clang-8
+            - libsparsehash-dev
+          sources:
+            - llvm-toolchain-xenial-8
       script: ./cppbuild/cppbuild
 
     - env: COMPILER=clang++
