@@ -1,3 +1,5 @@
+dist: xenial
+
 sudo: false
 
 matrix:
@@ -7,21 +9,18 @@ matrix:
       language: java
       jdk: openjdk8
       os: linux
-      dist: xenial
       script: ./gradlew --scan
 
     - name: "OpenJDK 11"
       language: java
       jdk: openjdk11
       os: linux
-      dist: xenial
       script: ./gradlew --scan
 
     - env: COMPILER=g++-6
       language: cpp
       compiler: gcc
       os: linux
-      dist: xenial
       addons:
         apt:
           packages:
@@ -35,7 +34,6 @@ matrix:
       language: cpp
       compiler: gcc
       os: linux
-      dist: xenial
       addons:
         apt:
           packages:
@@ -49,7 +47,6 @@ matrix:
       language: cpp
       compiler: gcc
       os: linux
-      dist: xenial
       addons:
         apt:
           packages:
@@ -63,7 +60,6 @@ matrix:
       language: cpp
       compiler: clang
       os: linux
-      dist: xenial
       addons:
         apt:
           packages:
@@ -79,7 +75,6 @@ matrix:
       language: cpp
       compiler: clang
       os: linux
-      dist: xenial
       addons:
         apt:
           packages:
@@ -95,7 +90,6 @@ matrix:
       language: cpp
       compiler: clang
       os: linux
-      dist: xenial
       addons:
         apt:
           packages:
