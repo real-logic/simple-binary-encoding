@@ -76,6 +76,6 @@
         </group>
         <data name="manufacturer" id="18" type="varStringEncoding"/>
         <data name="model" id="19" type="varStringEncoding"/>
-        <data name="activationCode" id="20" type="varStringEncoding"/>
+        <data name="activationCode" id="20" type="varAsciiEncoding"/>
     </sbe:message>
 </sbe:messageSchema>

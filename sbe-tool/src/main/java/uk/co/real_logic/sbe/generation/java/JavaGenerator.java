@@ -36,6 +36,7 @@ import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.ENCOD
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
+@SuppressWarnings("MethodLength")
 public class JavaGenerator implements CodeGenerator
 {
     enum CodecType
@@ -910,26 +911,16 @@ public class JavaGenerator implements CodeGenerator
             if (characterEncoding.contains("ASCII"))
             {
                 sb.append(String.format("\n" +
-                    indent + "    public void get%1$s(final Appendable value)\n" +
+                    indent + "    public int get%1$s(final Appendable appendable)\n" +
                     indent + "    {\n" +
                     "%2$s" +
                     indent + "        final int headerLength = %3$d;\n" +
                     indent + "        final int limit = parentMessage.limit();\n" +
                     indent + "        final int dataLength = (int)%4$s;\n" +
-                    indent + "        final int dataOffset = limit + headerLength;\n" +
+                    indent + "        final int dataOffset = limit + headerLength;\n\n" +
                     indent + "        parentMessage.limit(dataOffset + dataLength);\n" +
-                    indent + "        for (int i = 0; i < dataLength; ++i)\n" +
-                    indent + "        {\n" +
-                    indent + "            try\n" +
-                    indent + "            {\n" +
-                    indent + "                final int c = buffer.getByte(dataOffset + i) & 0xFF;\n" +
-                    indent + "                value.append(c > 127 ? '?' : (char)c);\n" +
-                    indent + "            }\n" +
-                    indent + "            catch (final java.io.IOException e)\n" +
-                    indent + "            {\n" +
-                    indent + "                throw new java.io.UncheckedIOException(e);\n" +
-                    indent + "            }\n" +
-                    indent + "        }\n" +
+                    indent + "        buffer.getStringWithoutLengthAscii(dataOffset, dataLength, appendable);\n\n" +
+                    indent + "        return dataLength;\n" +
                     indent + "    }\n",
                     Generators.toUpperFirstChar(propertyName),
                     generateStringNotPresentConditionForAppendable(token.version(), indent),
@@ -1898,7 +1889,7 @@ public class JavaGenerator implements CodeGenerator
         return String.format(
             indent + "        if (parentMessage.actingVersion < %d)\n" +
             indent + "        {\n" +
-            indent + "            return;\n" +
+            indent + "            return 0;\n" +
             indent + "        }\n\n",
             sinceVersion);
     }
@@ -2010,36 +2001,40 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n\n",
                 propertyName,
                 generateStringNotPresentCondition(propertyToken.version(), indent),
-                fieldLength, offset,
-                fieldLength, fieldLength,
+                fieldLength,
+                offset,
+                fieldLength,
+                fieldLength,
                 charset(encoding.characterEncoding())));
 
             if (encoding.characterEncoding().contains("ASCII"))
             {
                 sb.append(String.format("\n" +
-                    indent + "    public void get%s(final Appendable value)\n" +
+                    indent + "    public int get%1$s(final Appendable value)\n" +
                     indent + "    {\n" +
-                    "%s" +
-                    indent + "        for (int i = 0; i < %d ; ++i)\n" +
+                    "%2$s" +
+                    indent + "        for (int i = 0; i < %3$d; ++i)\n" +
                     indent + "        {\n" +
-                    indent + "            final int c = buffer.getByte(this.offset + %d + i) & 0xFF;\n" +
+                    indent + "            final int c = buffer.getByte(this.offset + %4$d + i) & 0xFF;\n" +
                     indent + "            if (c == 0)\n" +
                     indent + "            {\n" +
-                    indent + "                break;\n" +
-                    indent + "            }\n" +
+                    indent + "                return i;\n" +
+                    indent + "            }\n\n" +
                     indent + "            try\n" +
                     indent + "            {\n" +
                     indent + "                value.append(c > 127 ? '?' : (char)c);\n" +
                     indent + "            }\n" +
-                    indent + "            catch (final java.io.IOException e)\n" +
+                    indent + "            catch (final java.io.IOException ex)\n" +
                     indent + "            {\n" +
-                    indent + "                throw new java.io.UncheckedIOException(e);\n" +
+                    indent + "                throw new java.io.UncheckedIOException(ex);\n" +
                     indent + "            }\n" +
-                    indent + "        }\n" +
+                    indent + "        }\n\n" +
+                    indent + "        return %3$d;\n" +
                     indent + "    }\n\n",
                     Generators.toUpperFirstChar(propertyName),
                     generateStringNotPresentConditionForAppendable(propertyToken.version(), indent),
-                    fieldLength, offset));
+                    fieldLength,
+                    offset));
             }
         }
 
@@ -2409,8 +2404,6 @@ public class JavaGenerator implements CodeGenerator
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             schemaIdAccessorType,
             schemaVersionAccessorType);
-
-
     }
 
     private CharSequence generateDecoderFlyweightCode(final String className, final Token token)
