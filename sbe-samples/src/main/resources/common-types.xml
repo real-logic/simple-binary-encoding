@@ -14,6 +14,10 @@
         <type name="length" primitiveType="uint32" maxValue="1073741824"/>
         <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
     </composite>
+    <composite name="varAsciiEncoding">
+        <type name="length" primitiveType="uint32" maxValue="1073741824"/>
+        <type name="varData" primitiveType="uint8" length="0" characterEncoding="ASCII"/>
+    </composite>
     <composite name="varDataEncoding">
         <type name="length" primitiveType="uint32" maxValue="1073741824"/>
         <type name="varData" primitiveType="uint8" length="0"/>
