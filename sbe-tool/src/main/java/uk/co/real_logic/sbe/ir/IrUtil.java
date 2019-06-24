@@ -27,6 +27,9 @@ import uk.co.real_logic.sbe.ir.generated.SignalCodec;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
 
+/**
+ * Utility functions for working with {@link Ir}.
+ */
 public class IrUtil
 {
     public static final byte[] EMPTY_BUFFER = new byte[0];

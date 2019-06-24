@@ -1,6 +1,9 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
+/**
+ * Number encoding byte order
+ */
 public enum ByteOrderCodec
 {
     SBE_LITTLE_ENDIAN((short)0),

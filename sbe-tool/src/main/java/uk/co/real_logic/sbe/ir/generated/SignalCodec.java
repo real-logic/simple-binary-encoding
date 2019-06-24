@@ -1,6 +1,9 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
 package uk.co.real_logic.sbe.ir.generated;
 
+/**
+ * Token signal type in IR
+ */
 public enum SignalCodec
 {
     BEGIN_MESSAGE((short)1),

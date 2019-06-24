@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Collect the message components (fields, groups, data) to help with generating codecs.
+ */
 public class MessageComponents
 {
     public final Token messageToken;

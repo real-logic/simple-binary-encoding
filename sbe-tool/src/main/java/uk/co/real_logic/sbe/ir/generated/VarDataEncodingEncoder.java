@@ -3,6 +3,9 @@ package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.MutableDirectBuffer;
 
+/**
+ * Header for var data fields
+ */
 @SuppressWarnings("all")
 public class VarDataEncodingEncoder
 {

@@ -34,6 +34,9 @@ import java.util.List;
 import static java.nio.file.StandardOpenOption.READ;
 import static uk.co.real_logic.sbe.ir.IrUtil.*;
 
+/**
+ * Decoder for encoded {@link Ir} representing an SBE schema which can be read from a buffer or file.
+ */
 public class IrDecoder implements AutoCloseable
 {
     private static final int CAPACITY = 4096;
@@ -53,6 +56,11 @@ public class IrDecoder implements AutoCloseable
     private final byte[] valArray = new byte[CAPACITY];
     private final MutableDirectBuffer valBuffer = new UnsafeBuffer(valArray);
 
+    /**
+     * Construct a {@link Ir} decoder by opening a file for a given name.
+     *
+     * @param fileName containing the encoded {@link Ir}.
+     */
     public IrDecoder(final String fileName)
     {
         try
@@ -70,6 +78,11 @@ public class IrDecoder implements AutoCloseable
         }
     }
 
+    /**
+     * Construct a {@link Ir} decoder for data encoded in a {@link ByteBuffer}.
+     *
+     * @param buffer containing the serialised {@link Ir}.
+     */
     public IrDecoder(final ByteBuffer buffer)
     {
         channel = null;
@@ -78,11 +91,19 @@ public class IrDecoder implements AutoCloseable
         offset = 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void close()
     {
         CloseHelper.quietClose(channel);
     }
 
+    /**
+     * Decode the serialised {@link Ir} and return the decoded instance.
+     *
+     * @return the decoded serialised {@link Ir} instance.
+     */
     public Ir decode()
     {
         decodeFrame();

@@ -21,7 +21,8 @@ import org.agrona.Verify;
 import java.util.List;
 
 /**
- * Metadata description for a message headerStructure
+ * Metadata description for a message header structure expected before messages to understand the type requiring
+ * decoding.
  */
 public class HeaderStructure
 {
@@ -36,6 +37,10 @@ public class HeaderStructure
     private PrimitiveType schemaIdType;
     private PrimitiveType schemaVersionType;
 
+    /**
+     * Construct the header structure from a list of tokens containing the minimum expected set of fields.
+     * @param tokens for the header structure.
+     */
     public HeaderStructure(final List<Token> tokens)
     {
         Verify.notNull(tokens, "tokens");
@@ -47,6 +52,56 @@ public class HeaderStructure
         Verify.notNull(templateIdType, "templateIdType");
         Verify.notNull(schemaIdType, "schemaIdType");
         Verify.notNull(schemaVersionType, "schemaVersionType");
+    }
+
+    /**
+     * The IR tokens for the header.
+     *
+     * @return the IR tokens for the header.
+     */
+    public List<Token> tokens()
+    {
+        return tokens;
+    }
+
+    /**
+     * The declared data type for the block length field.
+     *
+     * @return the declared data type for the block length field.
+     */
+    public PrimitiveType blockLengthType()
+    {
+        return blockLengthType;
+    }
+
+    /**
+     * The declared data type for the template id field.
+     *
+     * @return the declared data type for the template id field.
+     */
+    public PrimitiveType templateIdType()
+    {
+        return templateIdType;
+    }
+
+    /**
+     * The declared data type for the SBE schema id field.
+     *
+     * @return the declared data type for the SBE schema id field.
+     */
+    public PrimitiveType schemaIdType()
+    {
+        return schemaIdType;
+    }
+
+    /**
+     * The declared data type for the SBE schema version field.
+     *
+     * @return the declared data type for the SBE schema version field.
+     */
+    public PrimitiveType schemaVersionType()
+    {
+        return schemaVersionType;
     }
 
     private void captureEncodings(final List<Token> tokens)
@@ -72,30 +127,5 @@ public class HeaderStructure
                     break;
             }
         }
-    }
-
-    public List<Token> tokens()
-    {
-        return tokens;
-    }
-
-    public PrimitiveType blockLengthType()
-    {
-        return blockLengthType;
-    }
-
-    public PrimitiveType templateIdType()
-    {
-        return templateIdType;
-    }
-
-    public PrimitiveType schemaIdType()
-    {
-        return schemaIdType;
-    }
-
-    public PrimitiveType schemaVersionType()
-    {
-        return schemaVersionType;
     }
 }

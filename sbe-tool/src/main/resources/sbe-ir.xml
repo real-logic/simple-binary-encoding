@@ -12,15 +12,15 @@
             <type name="schemaId" primitiveType="uint16"/>
             <type name="version" primitiveType="uint16"/>
         </composite>
-        <composite name="groupSizeEncoding">
+        <composite name="groupSizeEncoding" description="Header for repeating groups">
             <type name="blockLength" primitiveType="uint16"/>
             <type name="numInGroup" primitiveType="uint16"/>
         </composite>
-        <composite name="varDataEncoding">
+        <composite name="varDataEncoding" description="Header for var data fields">
             <type name="length" primitiveType="uint16"/>
             <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
         </composite>
-        <enum name="PrimitiveTypeCodec" encodingType="uint8">
+        <enum name="PrimitiveTypeCodec" encodingType="uint8" description="Primitive types in type system">
             <validValue name="NONE">0</validValue>
             <validValue name="CHAR">1</validValue>
             <validValue name="INT8">2</validValue>
@@ -34,7 +34,7 @@
             <validValue name="FLOAT">10</validValue>
             <validValue name="DOUBLE">11</validValue>
         </enum>
-        <enum name="SignalCodec" encodingType="uint8">
+        <enum name="SignalCodec" encodingType="uint8" description="Token signal type in IR">
             <validValue name="BEGIN_MESSAGE">1</validValue>
             <validValue name="END_MESSAGE">2</validValue>
             <validValue name="BEGIN_COMPOSITE">3</validValue>
@@ -53,11 +53,11 @@
             <validValue name="END_VAR_DATA">16</validValue>
             <validValue name="ENCODING">17</validValue>
         </enum>
-        <enum name="ByteOrderCodec" encodingType="uint8">
+        <enum name="ByteOrderCodec" encodingType="uint8" description="Number encoding byte order">
             <validValue name="SBE_LITTLE_ENDIAN">0</validValue>
             <validValue name="SBE_BIG_ENDIAN">1</validValue>
         </enum>
-        <enum name="PresenceCodec" encodingType="uint8">
+        <enum name="PresenceCodec" encodingType="uint8" description="Field presence declaration">
             <validValue name="SBE_REQUIRED">0</validValue>
             <validValue name="SBE_OPTIONAL">1</validValue>
             <validValue name="SBE_CONSTANT">2</validValue>

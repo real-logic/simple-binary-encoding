@@ -39,6 +39,9 @@ import static uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder.packageNameCha
 import static uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder.semanticVersionCharacterEncoding;
 import static uk.co.real_logic.sbe.ir.generated.TokenCodecEncoder.*;
 
+/**
+ * Encoder for {@link Ir} representing an SBE schema which can be written to a buffer or file.
+ */
 public class IrEncoder implements AutoCloseable
 {
     private static final int CAPACITY = 4096;
@@ -54,6 +57,12 @@ public class IrEncoder implements AutoCloseable
     private final UnsafeBuffer valBuffer = new UnsafeBuffer(valArray);
     private int totalLength = 0;
 
+    /**
+     * Construct an encoder for {@link Ir} to a file. An existing file will be overwritten.
+     *
+     * @param fileName into which the {@link Ir} will be encoded.
+     * @param ir       to be encoded into the file.
+     */
     public IrEncoder(final String fileName, final Ir ir)
     {
         try
@@ -71,6 +80,12 @@ public class IrEncoder implements AutoCloseable
         }
     }
 
+    /**
+     * Construct an encoder for {@link Ir} to a {@link ByteBuffer}.
+     *
+     * @param buffer into which the {@link Ir} will be encoded.
+     * @param ir     to be encoded into the buffer.
+     */
     public IrEncoder(final ByteBuffer buffer, final Ir ir)
     {
         channel = null;
@@ -80,11 +95,19 @@ public class IrEncoder implements AutoCloseable
         this.ir = ir;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void close()
     {
         CloseHelper.quietClose(channel);
     }
 
+    /**
+     * Encode the provided {@link Ir} and return the length in bytes encoded.
+     *
+     * @return encode the provided {@link Ir} and return the length in bytes encoded.
+     */
     public int encode()
     {
         Verify.notNull(ir, "ir");
