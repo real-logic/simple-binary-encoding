@@ -177,7 +177,8 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "private int _actingVersion;\n" +
             indent + INDENT + "private int _count;\n" +
             indent + INDENT + "private int _index;\n" +
-            indent + INDENT + "private int _offset;\n",
+            indent + INDENT + "private int _offset;\n" +
+            indent + INDENT + "private int _startOfGroup;\n",
             formatClassName(groupName),
             dimensionsClassName,
             parentMessageClassName));
@@ -195,14 +196,21 @@ public class CSharpGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + INDENT + "public void WrapForDecode(%s parentMessage, DirectBuffer buffer, int actingVersion)\n" +
             indent + INDENT + "{\n" +
+            indent + INDENT + INDENT + "_index = -1;\n" +
+            indent + INDENT + INDENT + "if (_buffer != null)\n" +
+            indent + INDENT + INDENT + "{\n" +
+            indent + INDENT + INDENT + INDENT + "_offset = _startOfGroup + SbeHeaderSize;\n" +
+            indent + INDENT + INDENT + INDENT + "return;\n" +
+            indent + INDENT + INDENT + "}\n\n" +
             indent + INDENT + INDENT + "_parentMessage = parentMessage;\n" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);\n" +
             indent + INDENT + INDENT + "_blockLength = _dimensions.BlockLength;\n" +
             indent + INDENT + INDENT + "_count = (int) _dimensions.NumInGroup;\n" + // cast safety checked above
             indent + INDENT + INDENT + "_actingVersion = actingVersion;\n" +
-            indent + INDENT + INDENT + "_index = -1;\n" +
-            indent + INDENT + INDENT + "_parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
+            indent + INDENT + INDENT + "_startOfGroup = _parentMessage.Limit;\n" +
+            indent + INDENT + INDENT + "_offset = _startOfGroup + SbeHeaderSize;\n" +
+            indent + INDENT + INDENT + "_parentMessage.Limit = _offset + (_count * _blockLength);\n" +
             indent + INDENT + "}\n",
             parentMessageClassName));
 
@@ -219,16 +227,23 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + INDENT + INDENT + "\"Outside allowed range: count=\" + count +\n" +
             indent + INDENT + INDENT + INDENT + INDENT + "\", min=%2$d, max=%3$d\");\n" +
             indent + INDENT + INDENT + "}\n\n" +
+            indent + INDENT + INDENT + "_index = -1;\n" +
+            indent + INDENT + INDENT + "if (_buffer != null)\n" +
+            indent + INDENT + INDENT + "{\n" +
+            indent + INDENT + INDENT + INDENT + "_offset = _startOfGroup + SbeHeaderSize;\n" +
+            indent + INDENT + INDENT + INDENT + "return;\n" +
+            indent + INDENT + INDENT + "}\n\n" +
             indent + INDENT + INDENT + "_parentMessage = parentMessage;\n" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);\n" +
             indent + INDENT + INDENT + "_dimensions.BlockLength = (%4$s)%5$d;\n" +
             indent + INDENT + INDENT + "_dimensions.NumInGroup = (%6$s)count;\n" +
-            indent + INDENT + INDENT + "_index = -1;\n" +
             indent + INDENT + INDENT + "_count = count;\n" +
             indent + INDENT + INDENT + "_blockLength = %5$d;\n" +
+            indent + INDENT + INDENT + "_startOfGroup = _parentMessage.Limit;\n" +
+            indent + INDENT + INDENT + "_offset = _startOfGroup + SbeHeaderSize;\n" +
             indent + INDENT + INDENT + "_actingVersion = SchemaVersion;\n" +
-            indent + INDENT + INDENT + "parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
+            indent + INDENT + INDENT + "parentMessage.Limit = _offset + (_count * _blockLength);\n" +
             indent + INDENT + "}\n",
             parentMessageClassName,
             numInGroupToken.encoding().applicableMinValue().longValue(),
@@ -260,9 +275,11 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "{\n" +
             indent + INDENT + INDENT + INDENT + "throw new InvalidOperationException();\n" +
             indent + INDENT + INDENT + "}\n\n" +
-            indent + INDENT + INDENT + "_offset = _parentMessage.Limit;\n" +
-            indent + INDENT + INDENT + "_parentMessage.Limit = _offset + _blockLength;\n" +
-            indent + INDENT + INDENT + "++_index;\n\n" +
+            indent + INDENT + INDENT + "_index += 1;\n\n" +
+            indent + INDENT + INDENT + "if (_index > 0)\n" +
+            indent + INDENT + INDENT + "{\n" +
+            indent + INDENT + INDENT + INDENT + "_offset += _blockLength;\n" +
+            indent + INDENT + INDENT + "}\n" +
             indent + INDENT + INDENT + "return this;\n" +
             indent + INDENT + "}\n",
             formatClassName(groupName)));
