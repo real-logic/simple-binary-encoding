@@ -30,9 +30,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.READ;
-import static java.nio.file.StandardOpenOption.WRITE;
+import static java.nio.file.StandardOpenOption.*;
 import static uk.co.real_logic.sbe.ir.IrUtil.*;
 import static uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder.namespaceNameCharacterEncoding;
 import static uk.co.real_logic.sbe.ir.generated.FrameCodecEncoder.packageNameCharacterEncoding;
@@ -67,8 +65,7 @@ public class IrEncoder implements AutoCloseable
     {
         try
         {
-            channel = FileChannel.open(Paths.get(fileName), READ, WRITE, CREATE);
-            channel.truncate(0);
+            channel = FileChannel.open(Paths.get(fileName), READ, WRITE, CREATE, TRUNCATE_EXISTING);
             resultBuffer = null;
             buffer = ByteBuffer.allocateDirect(CAPACITY);
             directBuffer = new UnsafeBuffer(buffer);
