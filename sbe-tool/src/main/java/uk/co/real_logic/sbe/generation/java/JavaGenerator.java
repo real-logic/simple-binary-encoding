@@ -1657,13 +1657,28 @@ public class JavaGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(META_ATTRIBUTE_ENUM))
         {
             out.append(String.format(
-                "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
+                "/* Generated SBE (Simple Binary Encoding) message codec. */\n" +
                 "package %s;\n\n" +
+                "/**\n" +
+                " * Meta attribute enum for selecting a particular meta attribute value.\n" +
+                " */\n" +
                 "public enum MetaAttribute\n" +
                 "{\n" +
-                "    EPOCH,\n" +
-                "    TIME_UNIT,\n" +
-                "    SEMANTIC_TYPE,\n" +
+                "    /**\n" +
+                "     * The epoch or start of time. Default is 'UNIX' which is midnight January 1, 1970 UTC\n" +
+                "     */\n" +
+                "    EPOCH,\n\n" +
+                "    /**\n" +
+                "     * Time unit applied to the epoch. Can be second, millisecond, microsecond, or nanosecond.\n" +
+                "     */\n" +
+                "    TIME_UNIT,\n\n" +
+                "    /**\n" +
+                "     * The type relationship to a FIX tag value encoded type. For reference only.\n" +
+                "     */\n" +
+                "    SEMANTIC_TYPE,\n\n" +
+                "    /**\n" +
+                "     * Field presence indication. Can be optional, required, or constant.\n" +
+                "     */\n" +
                 "    PRESENCE\n" +
                 "}\n",
                 ir.applicableNamespace()));
