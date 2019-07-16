@@ -210,14 +210,16 @@ public class CSharpGenerator implements CodeGenerator
         final String typeForBlockLength = cSharpTypeName(tokens.get(index + 2).encoding().primitiveType());
         final String typeForNumInGroup = cSharpTypeName(numInGroupToken.encoding().primitiveType());
 
+        final String throwCondition = numInGroupToken.encoding().applicableMinValue().longValue() == 0 ?
+            "if ((uint) count > %3$d)\n" :
+            "if (count < %2$d || count > %3$d)\n";
+
         sb.append(String.format("\n" +
             indent + INDENT + "public void WrapForEncode(%1$s parentMessage, DirectBuffer buffer, int count)\n" +
             indent + INDENT + "{\n" +
-            indent + INDENT + INDENT + "if (count < %2$d || count > %3$d)\n" +
+            indent + INDENT + INDENT + throwCondition +
             indent + INDENT + INDENT + "{\n" +
-            indent + INDENT + INDENT + INDENT + "throw new ArgumentOutOfRangeException(\"count\",\n" +
-            indent + INDENT + INDENT + INDENT + INDENT + "\"Outside allowed range: count=\" + count +\n" +
-            indent + INDENT + INDENT + INDENT + INDENT + "\", min=%2$d, max=%3$d\");\n" +
+            indent + INDENT + INDENT + INDENT + "ThrowHelper.ThrowCountOutOfRangeException(count);\n" +
             indent + INDENT + INDENT + "}\n\n" +
             indent + INDENT + INDENT + "_parentMessage = parentMessage;\n" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
@@ -258,7 +260,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "if (_index + 1 >= _count)\n" +
             indent + INDENT + INDENT + "{\n" +
-            indent + INDENT + INDENT + INDENT + "throw new InvalidOperationException();\n" +
+            indent + INDENT + INDENT + INDENT + "ThrowHelper.ThrowInvalidOperationException();\n" +
             indent + INDENT + INDENT + "}\n\n" +
             indent + INDENT + INDENT + "_offset = _parentMessage.Limit;\n" +
             indent + INDENT + INDENT + "_parentMessage.Limit = _offset + _blockLength;\n" +
@@ -811,9 +813,9 @@ public class CSharpGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "public %1$s Get%2$s(int index)\n" +
             indent + "{\n" +
-            indent + INDENT + "if (index < 0 || index >= %3$d)\n" +
+            indent + INDENT + "if ((uint) index >= %3$d)\n" +
             indent + INDENT + "{\n" +
-            indent + INDENT + INDENT + "throw new IndexOutOfRangeException(\"index out of range: index=\" + index);\n" +
+            indent + INDENT + INDENT + "ThrowHelper.ThrowIndexOutOfRangeException(index);\n" +
             indent + INDENT + "}\n\n" +
             "%4$s" +
             indent + INDENT + "return _buffer.%5$sGet%8$s(_offset + %6$d + (index * %7$d));\n" +
@@ -825,9 +827,9 @@ public class CSharpGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "public void Set%1$s(int index, %2$s value)\n" +
             indent + "{\n" +
-            indent + INDENT + "if (index < 0 || index >= %3$d)\n" +
+            indent + INDENT + "if ((uint) index >= %3$d)\n" +
             indent + INDENT + "{\n" +
-            indent + INDENT + INDENT + "throw new IndexOutOfRangeException(\"index out of range: index=\" + index);\n" +
+            indent + INDENT + INDENT + "ThrowHelper.ThrowIndexOutOfRangeException(index);\n" +
             indent + INDENT + "}\n\n" +
             indent + INDENT + "_buffer.%4$sPut%7$s(_offset + %5$d + (index * %6$d), value);\n" +
             indent + "}\n",
@@ -852,8 +854,7 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + "const int length = %2$d;\n" +
                 indent + INDENT + "if (dst.Length < length)\n" +
                 indent + INDENT + "{\n" +
-                indent + INDENT + INDENT +
-                "throw new ArgumentOutOfRangeException($\"dst.Length={dst.Length} is too large.\");\n" +
+                indent + INDENT + INDENT + "ThrowHelper.ThrowWhenSpanLengthTooSmall(dst.Length);\n" +
                 indent + INDENT + "}\n\n" +
                 "%3$s" +
                 indent + INDENT + "_buffer.GetBytes(_offset + %4$d, dst);\n" +
@@ -874,8 +875,7 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + "const int length = %2$d;\n" +
                 indent + INDENT + "if (src.Length > length)\n" +
                 indent + INDENT + "{\n" +
-                indent + INDENT + INDENT +
-                "throw new ArgumentOutOfRangeException($\"src.Length={src.Length} is too large.\");\n" +
+                indent + INDENT + INDENT + "ThrowHelper.ThrowWhenSpanLengthTooLarge(src.Length);\n" +
                 indent + INDENT + "}\n\n" +
                 indent + INDENT + "_buffer.SetBytes(_offset + %3$d, src);\n" +
                 indent + "}\n",
