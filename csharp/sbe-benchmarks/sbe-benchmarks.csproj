@@ -1,21 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net45;netcoreapp2.2</TargetFrameworks>
     <RootNamespace>Org.SbeTool.Sbe.Benchmarks</RootNamespace>
     <AssemblyName>Org.SbeTool.Sbe.Benchmarks</AssemblyName>
     <OutputTypeEx>exe</OutputTypeEx>
     <Copyright>Copyright (C) Bill Segall 2018, MarketFactory Inc 2017, Adaptive 2014. All rights reserved.</Copyright>
-    <Description />
     <Product>SBE</Product>
-    <ApplicationIcon />
     <OutputType>Exe</OutputType>
-    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\sbe-dll\sbe-dll.csproj" />
     <ProjectReference Include="..\sbe-generated\sbe-generated.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0-preview.2" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-dll", "sbe-dll\sbe-dll.csproj", "{CE883FD9-14A5-409C-AEBC-86BEA4E3C502}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-samples-car", "sbe-samples\sbe-samples-car.csproj", "{1B325F15-0C54-49F5-A4B9-16088222CC0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-samples-car", "sbe-samples-car\sbe-samples-car.csproj", "{1B325F15-0C54-49F5-A4B9-16088222CC0E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-samples-extension", "sbe-samples\sbe-samples-extension.csproj", "{3B325F15-0C54-49F5-A4B9-16088222CC0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-samples-extension", "sbe-samples-extension\sbe-samples-extension.csproj", "{3B325F15-0C54-49F5-A4B9-16088222CC0E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-benchmarks", "sbe-benchmarks\sbe-benchmarks.csproj", "{B4A22C65-AC09-43A7-B7D6-141A0B9EC0E0}"
 EndProject
