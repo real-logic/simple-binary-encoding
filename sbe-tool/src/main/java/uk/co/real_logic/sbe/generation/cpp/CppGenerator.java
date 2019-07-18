@@ -206,7 +206,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    std::uint64_t m_offset;\n" +
             indent + "    std::uint64_t m_actingVersion;\n\n" +
 
-            indent + "    std::uint64_t *sbePositionPtr() SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD std::uint64_t *sbePositionPtr() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return m_positionPtr;\n" +
             indent + "    }\n\n" +
@@ -283,7 +283,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        return %2$d;\n" +
             indent + "    }\n\n" +
 
-            indent + "    std::uint64_t sbePosition() const\n" +
+            indent + "    SBE_NODISCARD std::uint64_t sbePosition() const\n" +
             indent + "    {\n" +
             indent + "        return *m_positionPtr;\n" +
             indent + "    }\n\n" +
@@ -302,12 +302,12 @@ public class CppGenerator implements CodeGenerator
             indent + "        *m_positionPtr = sbeCheckPosition(position);\n" +
             indent + "    }\n\n" +
 
-            indent + "    inline std::uint64_t count() const SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD inline std::uint64_t count() const SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return m_count;\n" +
             indent + "    }\n\n" +
 
-            indent + "    inline bool hasNext() const SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD inline bool hasNext() const SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return m_index + 1 < m_count;\n" +
             indent + "    }\n\n" +
@@ -367,7 +367,7 @@ public class CppGenerator implements CodeGenerator
             propertyName));
 
         sb.append(String.format(
-            indent + "    static SBE_CONSTEXPR std::uint16_t %1$sId() SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t %1$sId() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n",
@@ -375,7 +375,7 @@ public class CppGenerator implements CodeGenerator
             token.id()));
 
         sb.append(String.format("\n" +
-            indent + "    inline %1$s &%2$s()\n" +
+            indent + "    SBE_NODISCARD inline %1$s &%2$s()\n" +
             indent + "    {\n" +
             indent + "        m_%2$s.wrapForDecode(m_buffer, sbePositionPtr(), m_actingVersion, m_bufferLength);\n" +
             indent + "        return m_%2$s;\n" +
@@ -395,12 +395,12 @@ public class CppGenerator implements CodeGenerator
             cppTypeForNumInGroup));
 
         sb.append(String.format("\n" +
-            indent + "    static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n" +
 
-            indent + "    bool %1$sInActingVersion() const SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD bool %1$sInActingVersion() const SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "#if defined(__clang__)\n" +
             indent + "#pragma clang diagnostic push\n" +
@@ -444,7 +444,7 @@ public class CppGenerator implements CodeGenerator
                 sb, token, propertyName, characterEncoding, lengthToken, lengthOfLengthField, lengthCppType, indent);
 
             sb.append(String.format("\n" +
-                indent + "    const char *%1$s()\n" +
+                indent + "    SBE_NODISCARD const char *%1$s()\n" +
                 indent + "    {\n" +
                 "%2$s" +
                 indent + "        %4$s lengthFieldValue;\n" +
@@ -661,7 +661,7 @@ public class CppGenerator implements CodeGenerator
                 cppTypeName(tokens.get(0).encoding().primitiveType())));
 
             out.append(String.format("\n" +
-                "    bool isEmpty() const\n" +
+                "    SBE_NODISCARD bool isEmpty() const\n" +
                 "    {\n" +
                 "        %1$s val;\n" +
                 "        std::memcpy(&val, m_buffer + m_offset, sizeof(%1$s));\n" +
@@ -771,7 +771,7 @@ public class CppGenerator implements CodeGenerator
                     choiceBitPosition));
 
                 sb.append(String.format("\n" +
-                    "    bool %1$s() const\n" +
+                    "    SBE_NODISCARD bool %1$s() const\n" +
                     "    {\n" +
                     "%2$s" +
                     "        %4$s val;\n" +
@@ -977,6 +977,12 @@ public class CppGenerator implements CodeGenerator
             "#else\n" +
             "#  define SBE_CONSTEXPR\n" +
             "#  define SBE_NOEXCEPT\n" +
+            "#endif\n\n" +
+
+            "#if __cplusplus >= 201703L\n" +
+            "#  define SBE_NODISCARD [[nodiscard]]\n" +
+            "#else\n" +
+            "#  define SBE_NODISCARD\n" +
             "#endif\n\n" +
 
             "#if !defined(__STDC_LIMIT_MACROS)\n" +
@@ -1273,7 +1279,7 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format("\n" +
-            indent + "    %1$s %2$s() const\n" +
+            indent + "    SBE_NODISCARD %1$s %2$s() const\n" +
             indent + "    {\n" +
             "%3$s" +
             "%4$s" +
@@ -1319,7 +1325,7 @@ public class CppGenerator implements CodeGenerator
             arrayLength));
 
         sb.append(String.format("\n" +
-            indent + "    const char *%1$s() const SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD const char *%1$s() const SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             "%2$s" +
             indent + "        return m_buffer + m_offset + %3$d;\n" +
@@ -1329,7 +1335,7 @@ public class CppGenerator implements CodeGenerator
             offset));
 
         sb.append(String.format("\n" +
-            indent + "    char *%1$s() SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD char *%1$s() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             "%2$s" +
             indent + "        return m_buffer + m_offset + %3$d;\n" +
@@ -1345,7 +1351,7 @@ public class CppGenerator implements CodeGenerator
             indent);
 
         sb.append(String.format("\n" +
-            indent + "    %1$s %2$s(const std::uint64_t index) const\n" +
+            indent + "    SBE_NODISCARD %1$s %2$s(const std::uint64_t index) const\n" +
             indent + "    {\n" +
             indent + "        if (index >= %3$d)\n" +
             indent + "        {\n" +
@@ -1536,7 +1542,7 @@ public class CppGenerator implements CodeGenerator
         if (token.encoding().primitiveType() != PrimitiveType.CHAR)
         {
             return String.format("\n" +
-                indent + "    static SBE_CONSTEXPR %1$s %2$s() SBE_NOEXCEPT\n" +
+                indent + "    SBE_NODISCARD static SBE_CONSTEXPR %1$s %2$s() SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
                 indent + "        return %3$s;\n" +
                 indent + "    }\n",
@@ -1568,7 +1574,7 @@ public class CppGenerator implements CodeGenerator
             constantValue.length));
 
         sb.append(String.format("\n" +
-            indent + "    const char *%1$s() const\n" +
+            indent + "    SBE_NODISCARD const char *%1$s() const\n" +
             indent + "    {\n" +
             indent + "        static std::uint8_t %1$sValues[] = {%2$s};\n\n" +
 
@@ -1674,42 +1680,42 @@ public class CppGenerator implements CodeGenerator
             "        return *this = %1$s(buffer, offset, bufferLength, actingVersion);\n" +
             "    }\n\n" +
 
-            "    static SBE_CONSTEXPR std::uint64_t encodedLength() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t encodedLength() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %2$s;\n" +
             "    }\n\n" +
 
-            "    std::uint64_t offset() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD std::uint64_t offset() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_offset;\n" +
             "    }\n\n" +
 
-            "    const char * buffer() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD const char * buffer() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
 
-            "    char * buffer() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD char * buffer() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
 
-            "    std::uint64_t bufferLength() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD std::uint64_t bufferLength() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_bufferLength;\n" +
             "    }\n\n" +
 
-            "    std::uint64_t actingVersion() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD std::uint64_t actingVersion() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_actingVersion;\n" +
             "    }\n\n" +
 
-            "    static SBE_CONSTEXPR %3$s sbeSchemaId() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD static SBE_CONSTEXPR %3$s sbeSchemaId() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %4$s;\n" +
             "    }\n\n" +
 
-            "    static SBE_CONSTEXPR %5$s sbeSchemaVersion() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD static SBE_CONSTEXPR %5$s sbeSchemaVersion() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %6$s;\n" +
             "    }\n",
@@ -1793,32 +1799,32 @@ public class CppGenerator implements CodeGenerator
             "    };\n\n" +
 
             "%11$s" +
-            "    static SBE_CONSTEXPR %1$s sbeBlockLength() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD static SBE_CONSTEXPR %1$s sbeBlockLength() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %2$s;\n" +
             "    }\n\n" +
 
-            "    static SBE_CONSTEXPR %3$s sbeTemplateId() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD static SBE_CONSTEXPR %3$s sbeTemplateId() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %4$s;\n" +
             "    }\n\n" +
 
-            "    static SBE_CONSTEXPR %5$s sbeSchemaId() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD static SBE_CONSTEXPR %5$s sbeSchemaId() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %6$s;\n" +
             "    }\n\n" +
 
-            "    static SBE_CONSTEXPR %7$s sbeSchemaVersion() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD static SBE_CONSTEXPR %7$s sbeSchemaVersion() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %8$s;\n" +
             "    }\n\n" +
 
-            "    static SBE_CONSTEXPR const char * sbeSemanticType() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD static SBE_CONSTEXPR const char * sbeSemanticType() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return \"%9$s\";\n" +
             "    }\n\n" +
 
-            "    std::uint64_t offset() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD std::uint64_t offset() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_offset;\n" +
             "    }\n\n" +
@@ -1854,7 +1860,7 @@ public class CppGenerator implements CodeGenerator
             "        return *this = %10$s(buffer, offset, bufferLength, actingBlockLength, actingVersion);\n" +
             "    }\n\n" +
 
-            "    std::uint64_t sbePosition() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD std::uint64_t sbePosition() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_position;\n" +
             "    }\n\n" +
@@ -1873,27 +1879,27 @@ public class CppGenerator implements CodeGenerator
             "        m_position = sbeCheckPosition(position);\n" +
             "    }\n\n" +
 
-            "    std::uint64_t encodedLength() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD std::uint64_t encodedLength() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return sbePosition() - m_offset;\n" +
             "    }\n\n" +
 
-            "    const char * buffer() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD const char * buffer() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
 
-            "    char * buffer() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD char * buffer() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
 
-            "    std::uint64_t bufferLength() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD std::uint64_t bufferLength() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_bufferLength;\n" +
             "    }\n\n" +
 
-            "    std::uint64_t actingVersion() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD std::uint64_t actingVersion() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_actingVersion;\n" +
             "    }\n",
@@ -1971,12 +1977,12 @@ public class CppGenerator implements CodeGenerator
         }
 
         sb.append(String.format("\n" +
-            indent + "    static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n\n" +
 
-            indent + "    bool %1$sInActingVersion() SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD bool %1$sInActingVersion() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "#if defined(__clang__)\n" +
             indent + "#pragma clang diagnostic push\n" +
@@ -1991,7 +1997,7 @@ public class CppGenerator implements CodeGenerator
             fieldToken.version()));
 
         sb.append(String.format("\n" +
-            indent + "    static SBE_CONSTEXPR std::size_t %1$sEncodingOffset() SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD static SBE_CONSTEXPR std::size_t %1$sEncodingOffset() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n",
@@ -2008,7 +2014,7 @@ public class CppGenerator implements CodeGenerator
         final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
 
         sb.append(String.format("\n" +
-            indent + "    static const char * %sMetaAttribute(const MetaAttribute metaAttribute)" +
+            indent + "    SBE_NODISCARD static const char * %sMetaAttribute(const MetaAttribute metaAttribute)" +
             " SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        switch (metaAttribute)\n" +
@@ -2061,7 +2067,7 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format("\n" +
-            indent + "    static SBE_CONSTEXPR std::size_t %1$sEncodingLength() SBE_NOEXCEPT\n" +
+            indent + "    SBE_NODISCARD static SBE_CONSTEXPR std::size_t %1$sEncodingLength() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return %2$d;\n" +
             indent + "    }\n",
@@ -2073,7 +2079,7 @@ public class CppGenerator implements CodeGenerator
             final String constValue = fieldToken.encoding().constValue().toString();
 
             sb.append(String.format("\n" +
-                indent + "    static SBE_CONSTEXPR %1$s::Value %2$sConstValue() SBE_NOEXCEPT\n" +
+                indent + "    SBE_NODISCARD static SBE_CONSTEXPR %1$s::Value %2$sConstValue() SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
                 indent + "        return %1$s::Value::%3$s;\n" +
                 indent + "    }\n",
@@ -2082,7 +2088,7 @@ public class CppGenerator implements CodeGenerator
                 constValue.substring(constValue.indexOf(".") + 1)));
 
             sb.append(String.format("\n" +
-                indent + "    %1$s::Value %2$s() const SBE_NOEXCEPT\n" +
+                indent + "    SBE_NODISCARD %1$s::Value %2$s() const SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
                 "%3$s" +
                 indent + "        return %1$s::Value::%4$s;\n" +
@@ -2095,7 +2101,7 @@ public class CppGenerator implements CodeGenerator
         else
         {
             sb.append(String.format("\n" +
-                indent + "    %1$s::Value %2$s() const\n" +
+                indent + "    SBE_NODISCARD %1$s::Value %2$s() const\n" +
                 indent + "    {\n" +
                 "%3$s" +
                 indent + "        %5$s val;\n" +
@@ -2143,7 +2149,7 @@ public class CppGenerator implements CodeGenerator
             propertyName));
 
         sb.append(String.format(
-            indent + "    %1$s &%2$s()\n" +
+            indent + "    SBE_NODISCARD %1$s &%2$s()\n" +
             indent + "    {\n" +
             indent + "        m_%2$s.wrap(m_buffer, m_offset + %3$d, m_actingVersion, m_bufferLength);\n" +
             indent + "        return m_%2$s;\n" +
@@ -2179,7 +2185,7 @@ public class CppGenerator implements CodeGenerator
             propertyName));
 
         sb.append(String.format(
-            indent + "    %1$s &%2$s()\n" +
+            indent + "    SBE_NODISCARD %1$s &%2$s()\n" +
             indent + "    {\n" +
             indent + "        m_%2$s.wrap(m_buffer, m_offset + %3$d, m_actingVersion, m_bufferLength);\n" +
             indent + "        return m_%2$s;\n" +
