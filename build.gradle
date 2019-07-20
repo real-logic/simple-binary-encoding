@@ -398,17 +398,20 @@ project(':sbe-samples') {
     task runExampleUsingGeneratedStub(dependsOn: 'compileJava', type: JavaExec) {
         classpath = sourceSets.main.runtimeClasspath
         main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
+        systemProperties System.getProperties()
     }
 
     task runExampleUsingGeneratedStubExtension(dependsOn: 'compileJava', type: JavaExec) {
         classpath = sourceSets.main.runtimeClasspath
         main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
+        systemProperties System.getProperties()
     }
 
     task runOtfExample(dependsOn: 'compileJava', type: JavaExec) {
         classpath = sourceSets.main.runtimeClasspath
         main = 'uk.co.real_logic.sbe.examples.OtfExample'
         workingDir = 'src/main/resources'
+        systemProperties System.getProperties()
     }
 
     task runJavaExamples {

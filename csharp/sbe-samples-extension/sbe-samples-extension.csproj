@@ -1,24 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
-    <OutputType>exe</OutputType>
-  </PropertyGroup>
-
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
     <OutputTypeEx>exe</OutputTypeEx>
     <RootNamespace>Org.SbeTool.Sbe.Example.Extension</RootNamespace>
     <AssemblyName>Org.SbeTool.Sbe.Example.Extension</AssemblyName>
     <Copyright>Copyright (C) Bill Segall 2018, MarketFactory Inc 2017, Adaptive 2014. All rights reserved.</Copyright>
-    <Description />
-    <Product>SBE</Product>
-    <ApplicationIcon />
-    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="..\..\sbe-samples\src\main\resources\example-extension-schema.xml" Link="example-extension-schema.xml" />
-    <Content Include="..\..\sbe-samples\src\main\resources\example-schema.xml" Link="example-schema.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,7 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="CarExample.cs" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0-preview.2" PrivateAssets="All" />
+
   </ItemGroup>
 
 </Project>

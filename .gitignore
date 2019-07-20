@@ -86,16 +86,8 @@ gocode/src/extension2
 # csharp
 csharp/*/bin
 csharp/*/obj
-csharp/.nuget/nuget.exe
-csharp/.nuget/sbe-tool*.nupkg
-csharp/.nuget/sbe-tool-all.jar
-csharp/.nuget/examples/bin
-csharp/.nuget/examples/obj
-csharp/.nuget/examples/packages
-csharp/.nuget/examples/.vs
 csharp/.vs
 csharp/TestResults
-csharp/packages
 csharp/sbe-generated/baseline
 csharp/sbe-generated/baseline-bigendian
 csharp/sbe-generated/extension
@@ -106,6 +98,8 @@ csharp/sbe-generated/issue661
 csharp/sbe-generated/since-deprecated
 csharp/sbe-generated/mktdata/*.cs
 csharp/sbe-generated/uk_co_real_logic_sbe_benchmarks_fix
+csharp/sbe-tests/*.sbe
+csharp/nuget/
 
 # rust
 rust/car_example/.vscode
