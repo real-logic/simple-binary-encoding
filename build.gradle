@@ -127,7 +127,7 @@ subprojects {
     apply plugin: 'signing'
     apply plugin: 'checkstyle'
     apply plugin: 'eclipse'
-    //apply plugin: 'io.freefair.javadoc-links'
+    apply plugin: 'io.freefair.javadoc-links'
 
     group = sbeGroup
     version = sbeVersion
