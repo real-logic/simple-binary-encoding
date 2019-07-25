@@ -96,19 +96,6 @@ matrix:
             - ubuntu-toolchain-r-test
       script: ./cppbuild/cppbuild
 
-    - env: COMPILER=clang++-4.0
-      language: cpp
-      compiler: clang
-      os: linux
-      addons:
-        apt:
-          packages:
-            - clang-4.0
-            - libsparsehash-dev
-          sources:
-            - llvm-toolchain-xenial-4.0
-      script: ./cppbuild/cppbuild
-
     - env: COMPILER=clang++-5.0
       language: cpp
       compiler: clang
