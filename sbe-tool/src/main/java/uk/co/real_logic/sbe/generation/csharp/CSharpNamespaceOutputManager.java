@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import static java.io.File.separatorChar;
+import static uk.co.real_logic.sbe.SbeTool.CSHARP_GENERATE_NAMESPACE_DIR;
 
 /**
  * {@link OutputManager} for managing the creation of C# source files
@@ -48,7 +49,13 @@ public class CSharpNamespaceOutputManager implements OutputManager
         Verify.notNull(packageName, "packageName");
 
         final String dirName = baseDirName.endsWith("" + separatorChar) ? baseDirName : baseDirName + separatorChar;
-        final String packageDirName = dirName + packageName.replace('.', '_');
+
+        final String packageComponment =
+            Boolean.parseBoolean(System.getProperty(CSHARP_GENERATE_NAMESPACE_DIR, "true")) ?
+            packageName.replace('.', '_') :
+            "";
+
+        final String packageDirName = dirName + packageComponment;
 
         outputDir = new File(packageDirName);
         if (!outputDir.exists() && !outputDir.mkdirs())

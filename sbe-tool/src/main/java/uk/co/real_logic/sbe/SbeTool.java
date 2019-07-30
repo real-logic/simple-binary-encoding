@@ -66,6 +66,8 @@ import org.xml.sax.InputSource;
  * <li>
  * <b>sbe.java.generate.group-order.annotation</b>: Should the GroupOrder annotation be added to generated stubs.
  * </li>
+ * <li><b>sbe.csharp.generate.namespace.dir</b>: Should a directory be created for the namespace under
+ * the output directory? Defaults to true</li>
  * <li><b>sbe.keyword.append.token</b>: Token to be appended to keywords.</li>
  * <li><b>sbe.decode.unknown.enum.values</b>: Support unknown decoded enum values.</li>
  * <li><b>sbe.xinclude.aware</b>: Is XInclude supported for the schema. Defaults to false.</li>
@@ -162,6 +164,12 @@ public class SbeTool
      * Should the {@link uk.co.real_logic.sbe.codec.java.GroupOrder} annotation be added to generated stubs.
      */
     public static final String JAVA_GROUP_ORDER_ANNOTATION = "sbe.java.generate.group-order.annotation";
+
+    /**
+     * Boolean system property to turn on or off generation of namespace directories during csharp code generation.
+     * Defaults to true
+     */
+    public static final String CSHARP_GENERATE_NAMESPACE_DIR = "sbe.csharp.generate.namespace.dir";
 
     /**
      * Specifies token that should be appended to keywords to avoid compilation errors.
