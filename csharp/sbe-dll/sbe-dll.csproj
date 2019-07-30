@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/real-logic/simple-binary-encoding</RepositoryUrl>
     <PackageTags>SBE;Marshaling;Low;Latency;Simple;Binary;Encoding</PackageTags>
     <PackageId>sbe-dll</PackageId>
-    <PackageVersion>0.1.12.1-beta-2</PackageVersion>
+    <PackageVersion>0.1.12.1-beta-3</PackageVersion>
     <Title>Simple Binary Encoding for .NET</Title>
     <Description>This package contains all you need to define SBE messages and generate C# encoders and decoders. See https://github.com/real-logic/simple-binary-encoding for more detailed instructions</Description>
     <RepositoryType>git</RepositoryType>
