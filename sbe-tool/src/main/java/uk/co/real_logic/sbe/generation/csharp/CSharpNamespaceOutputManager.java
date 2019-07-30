@@ -49,13 +49,9 @@ public class CSharpNamespaceOutputManager implements OutputManager
         Verify.notNull(packageName, "packageName");
 
         final String dirName = baseDirName.endsWith("" + separatorChar) ? baseDirName : baseDirName + separatorChar;
-
-        final String packageComponment =
-            Boolean.parseBoolean(System.getProperty(CSHARP_GENERATE_NAMESPACE_DIR, "true")) ?
-            packageName.replace('.', '_') :
-            "";
-
-        final String packageDirName = dirName + packageComponment;
+        final boolean genNamespace = Boolean.parseBoolean(System.getProperty(CSHARP_GENERATE_NAMESPACE_DIR, "true"));
+        final String packageComponent = genNamespace ? packageName.replace('.', '_') : "";
+        final String packageDirName = dirName + packageComponent;
 
         outputDir = new File(packageDirName);
         if (!outputDir.exists() && !outputDir.mkdirs())
