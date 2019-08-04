@@ -185,17 +185,14 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> varData = new ArrayList<>();
             collectVarData(messageBody, i, varData);
 
-            generateDecoder(BASE_INDENT, fields, groups, varData, msgToken);
-            generateEncoder(BASE_INDENT, fields, groups, varData, msgToken);
+            generateDecoder(fields, groups, varData, msgToken);
+            generateEncoder(fields, groups, varData, msgToken);
         }
     }
 
     private void generateEncoder(
-        final String indent,
-        final List<Token> fields,
-        final List<Token> groups,
-        final List<Token> varData,
-        final Token msgToken) throws IOException
+        final List<Token> fields, final List<Token> groups, final List<Token> varData, final Token msgToken)
+        throws IOException
     {
         final String className = formatClassName(encoderName(msgToken.name()));
         final String implementsString = implementsInterface(MESSAGE_ENCODER_FLYWEIGHT);
@@ -204,29 +201,26 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateMainHeader(ir.applicableNamespace()));
 
-            generateAnnotations(indent, className, groups, out, 0, this::encoderName);
+            generateAnnotations(BASE_INDENT, className, groups, out, 0, this::encoderName);
             out.append(generateDeclaration(className, implementsString, msgToken));
             out.append(generateEncoderFlyweightCode(className, msgToken));
 
             final StringBuilder sb = new StringBuilder();
-            generateEncoderFields(sb, className, fields, indent);
-            generateEncoderGroups(sb, className, groups, indent, false);
-            generateEncoderVarData(sb, className, varData, indent);
+            generateEncoderFields(sb, className, fields, BASE_INDENT);
+            generateEncoderGroups(sb, className, groups, BASE_INDENT, false);
+            generateEncoderVarData(sb, className, varData, BASE_INDENT);
 
             out.append(sb);
 
-            out.append(generateEncoderDisplay(formatClassName(decoderName(msgToken.name())), indent));
+            out.append(generateEncoderDisplay(formatClassName(decoderName(msgToken.name()))));
 
             out.append("}\n");
         }
     }
 
     private void generateDecoder(
-        final String indent,
-        final List<Token> fields,
-        final List<Token> groups,
-        final List<Token> varData,
-        final Token msgToken) throws IOException
+        final List<Token> fields, final List<Token> groups, final List<Token> varData, final Token msgToken)
+        throws IOException
     {
         final String className = formatClassName(decoderName(msgToken.name()));
         final String implementsString = implementsInterface(MESSAGE_DECODER_FLYWEIGHT);
@@ -235,17 +229,17 @@ public class JavaGenerator implements CodeGenerator
         {
             out.append(generateMainHeader(ir.applicableNamespace()));
 
-            generateAnnotations(indent, className, groups, out, 0, this::decoderName);
+            generateAnnotations(BASE_INDENT, className, groups, out, 0, this::decoderName);
             out.append(generateDeclaration(className, implementsString, msgToken));
             out.append(generateDecoderFlyweightCode(className, msgToken));
 
             final StringBuilder sb = new StringBuilder();
-            generateDecoderFields(sb, fields, indent);
-            generateDecoderGroups(sb, className, groups, indent, false);
-            generateDecoderVarData(sb, varData, indent);
+            generateDecoderFields(sb, fields, BASE_INDENT);
+            generateDecoderGroups(sb, className, groups, BASE_INDENT, false);
+            generateDecoderVarData(sb, varData, BASE_INDENT);
             out.append(sb);
 
-            out.append(generateDecoderDisplay(msgToken.name(), fields, groups, varData, indent));
+            out.append(generateDecoderDisplay(msgToken.name(), fields, groups, varData));
 
             out.append("}\n");
         }
@@ -1280,7 +1274,7 @@ public class JavaGenerator implements CodeGenerator
                 i += encodingToken.componentTokenCount();
             }
 
-            out.append(generateCompositeDecoderDisplay(tokens, BASE_INDENT));
+            out.append(generateCompositeDecoderDisplay(tokens));
 
             out.append("}\n");
         }
@@ -1326,7 +1320,7 @@ public class JavaGenerator implements CodeGenerator
                 i += encodingToken.componentTokenCount();
             }
 
-            out.append(generateCompositeEncoderDisplay(decoderName, BASE_INDENT));
+            out.append(generateCompositeEncoderDisplay(decoderName));
             out.append("}\n");
         }
     }
@@ -3033,11 +3027,7 @@ public class JavaGenerator implements CodeGenerator
         switch (type)
         {
             case UINT8:
-                return "0 != (value & (1 << " + bitIndex + "))";
-
             case UINT16:
-                return "0 != (value & (1 << " + bitIndex + "))";
-
             case UINT32:
                 return "0 != (value & (1 << " + bitIndex + "))";
 
@@ -3104,9 +3094,9 @@ public class JavaGenerator implements CodeGenerator
         throw new IllegalArgumentException("primitive type not supported: " + type);
     }
 
-    private CharSequence generateEncoderDisplay(final String decoderName, final String baseIndent)
+    private CharSequence generateEncoderDisplay(final String decoderName)
     {
-        final String indent = baseIndent + INDENT;
+        final String indent = INDENT;
         final StringBuilder sb = new StringBuilder();
 
         sb.append('\n');
@@ -3123,9 +3113,9 @@ public class JavaGenerator implements CodeGenerator
         return sb.toString();
     }
 
-    private CharSequence generateCompositeEncoderDisplay(final String decoderName, final String baseIndent)
+    private CharSequence generateCompositeEncoderDisplay(final String decoderName)
     {
-        final String indent = baseIndent + INDENT;
+        final String indent = INDENT;
         final StringBuilder sb = new StringBuilder();
         appendToString(sb, indent);
         sb.append('\n');
@@ -3140,9 +3130,9 @@ public class JavaGenerator implements CodeGenerator
         return sb.toString();
     }
 
-    private CharSequence generateCompositeDecoderDisplay(final List<Token> tokens, final String baseIndent)
+    private CharSequence generateCompositeDecoderDisplay(final List<Token> tokens)
     {
-        final String indent = baseIndent + INDENT;
+        final String indent = INDENT;
         final StringBuilder sb = new StringBuilder();
 
         appendToString(sb, indent);
@@ -3212,13 +3202,9 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generateDecoderDisplay(
-        final String name,
-        final List<Token> tokens,
-        final List<Token> groups,
-        final List<Token> varData,
-        final String baseIndent)
+        final String name, final List<Token> tokens, final List<Token> groups, final List<Token> varData)
     {
-        final String indent = baseIndent + INDENT;
+        final String indent = INDENT;
         final StringBuilder sb = new StringBuilder();
 
         sb.append('\n');
