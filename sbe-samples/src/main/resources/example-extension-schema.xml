@@ -5,7 +5,7 @@
                    id="1"
                    version="1"
                    semanticVersion="5.2"
-                   description="Example schema with extension"
+                   description="Example schema which extends baseline schema."
                    byteOrder="littleEndian">
     <xi:include href="common-types.xml"/>
     <types>

@@ -43,7 +43,7 @@ public class RustTest
 
     static Ir minimalDummyIr()
     {
-        return new Ir("a", "b", 0, 1, "2", ByteOrder.BIG_ENDIAN,
+        return new Ir("a", "b", 0, 1, null, "2", ByteOrder.BIG_ENDIAN,
             Arrays.asList(
                 dummyToken(Signal.ENCODING, HeaderStructure.BLOCK_LENGTH),
                 dummyToken(Signal.ENCODING, HeaderStructure.SCHEMA_ID),

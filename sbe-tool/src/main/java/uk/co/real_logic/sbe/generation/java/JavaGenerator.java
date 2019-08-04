@@ -46,6 +46,7 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private static final String META_ATTRIBUTE_ENUM = "MetaAttribute";
+    private static final String PACKAGE_INFO = "package-info";
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
     private static final String FLYWEIGHT = "Flyweight";
@@ -165,6 +166,7 @@ public class JavaGenerator implements CodeGenerator
 
     public void generate() throws IOException
     {
+        generatePackageInfo();
         generateTypeStubs();
         generateMessageHeaderStub();
 
@@ -1652,13 +1654,28 @@ public class JavaGenerator implements CodeGenerator
             implementsString);
     }
 
+    private void generatePackageInfo() throws IOException
+    {
+        try (Writer out = outputManager.createOutput(PACKAGE_INFO))
+        {
+            out.append(
+                "/* Generated SBE (Simple Binary Encoding) message codecs.*/\n" +
+                "/**\n" +
+                " * ").append(ir.description()).append("\n")
+                .append(
+                " */\n" +
+                "package ").append(ir.applicableNamespace()).append(";\n");
+        }
+    }
+
     private void generateMetaAttributeEnum() throws IOException
     {
         try (Writer out = outputManager.createOutput(META_ATTRIBUTE_ENUM))
         {
-            out.append(String.format(
+            out.append(
                 "/* Generated SBE (Simple Binary Encoding) message codec. */\n" +
-                "package %s;\n\n" +
+                "package ").append(ir.applicableNamespace()).append(";\n\n")
+                .append(
                 "/**\n" +
                 " * Meta attribute enum for selecting a particular meta attribute value.\n" +
                 " */\n" +
@@ -1680,8 +1697,7 @@ public class JavaGenerator implements CodeGenerator
                 "     * Field presence indication. Can be optional, required, or constant.\n" +
                 "     */\n" +
                 "    PRESENCE\n" +
-                "}\n",
-                ir.applicableNamespace()));
+                "}\n");
         }
     }
 

@@ -409,7 +409,6 @@ project(':sbe-samples') {
         classpath = sourceSets.main.runtimeClasspath
         main = 'uk.co.real_logic.sbe.examples.OtfExample'
         workingDir = 'src/main/resources'
-        systemProperties System.getProperties()
     }
 
     task runJavaExamples {

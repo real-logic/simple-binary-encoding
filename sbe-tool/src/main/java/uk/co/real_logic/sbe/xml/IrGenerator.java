@@ -50,6 +50,7 @@ public class IrGenerator
             namespace,
             schema.id(),
             schema.version(),
+            schema.description(),
             schema.semanticVersion(),
             schema.byteOrder(),
             headerTokens);
