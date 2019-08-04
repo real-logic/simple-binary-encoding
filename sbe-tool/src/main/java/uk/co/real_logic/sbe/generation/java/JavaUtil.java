@@ -252,22 +252,22 @@ public class JavaUtil
     /**
      * Generate the Javadoc comment header for a type.
      *
+     * @param sb        to append to.
      * @param indent    level for the comment.
      * @param typeToken for the type.
-     * @return a string representation of the Javadoc comment.
      */
-    public static String generateTypeJavadoc(final String indent, final Token typeToken)
+    public static void generateTypeJavadoc(
+        final StringBuilder sb, final String indent, final Token typeToken)
     {
         final String description = typeToken.description();
         if (null == description || description.isEmpty())
         {
-            return "";
+            return;
         }
 
-        return
-            indent + "/**\n" +
-            indent + " * " + description + '\n' +
-            indent + " */\n";
+        sb.append(indent).append("/**\n")
+            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" */\n");
     }
 
     /**
