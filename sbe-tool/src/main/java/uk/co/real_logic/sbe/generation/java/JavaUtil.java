@@ -273,97 +273,96 @@ public class JavaUtil
     /**
      * Generate the Javadoc comment header for a bitset choice option decode method.
      *
+     * @param sb          to append to.
      * @param indent      level for the comment.
      * @param optionToken for the type.
-     * @return a string representation of the Javadoc comment.
      */
-    public static String generateOptionDecodeJavadoc(final String indent, final Token optionToken)
+    public static void generateOptionDecodeJavadoc(
+        final StringBuilder sb, final String indent, final Token optionToken)
     {
         final String description = optionToken.description();
         if (null == description || description.isEmpty())
         {
-            return "";
+            return;
         }
 
-        return
-            indent + "/**\n" +
-            indent + " * " + description + '\n' +
-            indent + " *\n" +
-            indent + " * @return true if " + optionToken.name() + " is set or false if not\n" +
-            indent + " */\n";
+        sb.append(indent).append("/**\n")
+            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" *\n")
+            .append(indent).append(" * @return true if ").append(optionToken.name()).append(" is set or false if not\n")
+            .append(indent).append(" */\n");
     }
 
     /**
      * Generate the Javadoc comment header for a bitset choice option encode method.
      *
+     * @param sb          to append to.
      * @param indent      level for the comment.
      * @param optionToken for the type.
-     * @return a string representation of the Javadoc comment.
      */
-    public static String generateOptionEncodeJavadoc(final String indent, final Token optionToken)
+    public static void generateOptionEncodeJavadoc(
+        final StringBuilder sb, final String indent, final Token optionToken)
     {
         final String description = optionToken.description();
         if (null == description || description.isEmpty())
         {
-            return "";
+            return;
         }
 
-        return
-            indent + "/**\n" +
-            indent + " * " + description + '\n' +
-            indent + " *\n" +
-            indent + " * @param value true if " + optionToken.name() + " is set or false if not\n" +
-            indent + " */\n";
+        final String name = optionToken.name();
+        sb.append(indent).append("/**\n")
+            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" *\n")
+            .append(indent).append(" * @param value true if ").append(name).append(" is set or false if not.\n")
+            .append(indent).append(" */\n");
     }
 
     /**
      * Generate the Javadoc comment header for flyweight property.
      *
+     * @param sb            to append to.
      * @param indent        level for the comment.
      * @param propertyToken for the property name.
      * @param typeName      for the property type.
-     * @return a string representation of the Javadoc comment.
      */
-    public static String generateFlyweightPropertyJavadoc(
-        final String indent, final Token propertyToken, final String typeName)
+    public static void generateFlyweightPropertyJavadoc(
+        final StringBuilder sb, final String indent, final Token propertyToken, final String typeName)
     {
         final String description = propertyToken.description();
         if (null == description || description.isEmpty())
         {
-            return "";
+            return;
         }
 
-        return
-            indent + "/**\n" +
-            indent + " * " + description + '\n' +
-            indent + " *\n" +
-            indent + " * @return " + typeName + " : " + description + "\n" +
-            indent + " */\n";
+        sb.append(indent).append("/**\n")
+            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" *\n")
+            .append(indent).append(" * @return ").append(typeName).append(" : ").append(description).append("\n")
+            .append(indent).append(" */\n");
     }
 
     /**
      * Generate the Javadoc comment header for group encode property.
      *
+     * @param sb            to append to.
      * @param indent        level for the comment.
      * @param propertyToken for the property name.
      * @param typeName      for the property type.
-     * @return a string representation of the Javadoc comment.
      */
-    public static String generateGroupEncodePropertyJavadoc(
-        final String indent, final Token propertyToken, final String typeName)
+    public static void generateGroupEncodePropertyJavadoc(
+        final StringBuilder sb, final String indent, final Token propertyToken, final String typeName)
     {
         final String description = propertyToken.description();
         if (null == description || description.isEmpty())
         {
-            return "";
+            return;
         }
 
-        return
-            indent + "/**\n" +
-            indent + " * " + description + "\n" +
-            indent + " *\n" +
-            indent + " * @param count of times the group will be encoded\n" +
-            indent + " * @return " + typeName + " : encoder for the group\n" +
-            indent + " */\n";
+        sb.append(indent).append("/**\n")
+            .append(indent).append(" * ").append(description).append("\n")
+            .append(indent).append(" *\n")
+            .append(indent).append(" * @param count of times the group will be encoded\n")
+            .append(indent).append(" * @return ").append(typeName).append(" : encoder for the group\n")
+            .append(indent).append(" */\n");
     }
 }

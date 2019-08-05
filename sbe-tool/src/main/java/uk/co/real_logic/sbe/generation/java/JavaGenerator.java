@@ -681,15 +681,14 @@ public class JavaGenerator implements CodeGenerator
             indent + "            return " + propertyName + ";\n" +
             indent + "        }\n\n";
 
+        generateFlyweightPropertyJavadoc(sb, indent + INDENT, token, className);
         sb.append(String.format("\n" +
-            "%1$s" +
-            indent + "    public %2$s %3$s()\n" +
+            indent + "    public %1$s %2$s()\n" +
             indent + "    {\n" +
-            "%4$s" +
-            indent + "        %3$s.wrap(buffer);\n" +
-            indent + "        return %3$s;\n" +
+            "%3$s" +
+            indent + "        %2$s.wrap(buffer);\n" +
+            indent + "        return %2$s;\n" +
             indent + "    }\n",
-            generateFlyweightPropertyJavadoc(indent + INDENT, token, className),
             className,
             propertyName,
             actingVersionGuard));
@@ -722,14 +721,13 @@ public class JavaGenerator implements CodeGenerator
             formatPropertyName(groupName),
             token.id()));
 
+        generateGroupEncodePropertyJavadoc(sb, indent + INDENT, token, className);
         sb.append(String.format("\n" +
-            "%1$s" +
-            indent + "    public %2$s %3$sCount(final int count)\n" +
+            indent + "    public %1$s %2$sCount(final int count)\n" +
             indent + "    {\n" +
-            indent + "        %3$s.wrap(buffer, count);\n" +
-            indent + "        return %3$s;\n" +
+            indent + "        %2$s.wrap(buffer, count);\n" +
+            indent + "        return %2$s;\n" +
             indent + "    }\n",
-            generateGroupEncodePropertyJavadoc(indent + INDENT, token, className),
             className,
             propertyName));
     }
@@ -1347,10 +1345,11 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateChoiceDecoders(final List<Token> tokens)
     {
-        return concatTokens(
-            tokens,
-            Signal.CHOICE,
-            (token) ->
+        final StringBuilder sb = new StringBuilder();
+
+        for (final Token token : tokens)
+        {
+            if (token.signal() == Signal.CHOICE)
             {
                 final String choiceName = formatPropertyName(token.name());
                 final Encoding encoding = token.encoding();
@@ -1359,30 +1358,33 @@ public class JavaGenerator implements CodeGenerator
                 final PrimitiveType primitiveType = encoding.primitiveType();
                 final String argType = bitsetArgType(primitiveType);
 
-                return String.format("\n" +
-                    "%1$s" +
-                    "    public boolean %2$s()\n" +
+                generateOptionDecodeJavadoc(sb, INDENT, token);
+                sb.append(String.format("\n" +
+                    "    public boolean %1$s()\n" +
                     "    {\n" +
-                    "        return %3$s;\n" +
+                    "        return %2$s;\n" +
                     "    }\n\n" +
-                    "    public static boolean %2$s(final %4$s value)\n" +
+                    "    public static boolean %1$s(final %3$s value)\n" +
                     "    {\n" +
-                    "        return %5$s;\n" +
+                    "        return %4$s;\n" +
                     "    }\n",
-                    generateOptionDecodeJavadoc(INDENT, token),
                     choiceName,
                     generateChoiceGet(primitiveType, choiceBitIndex, byteOrderStr),
                     argType,
-                    generateStaticChoiceGet(primitiveType, choiceBitIndex));
-            });
+                    generateStaticChoiceGet(primitiveType, choiceBitIndex)));
+            }
+        }
+
+        return sb;
     }
 
     private CharSequence generateChoiceEncoders(final String bitSetClassName, final List<Token> tokens)
     {
-        return concatTokens(
-            tokens,
-            Signal.CHOICE,
-            (token) ->
+        final StringBuilder sb = new StringBuilder();
+
+        for (final Token token : tokens)
+        {
+            if (token.signal() == Signal.CHOICE)
             {
                 final String choiceName = formatPropertyName(token.name());
                 final Encoding encoding = token.encoding();
@@ -1391,24 +1393,26 @@ public class JavaGenerator implements CodeGenerator
                 final PrimitiveType primitiveType = encoding.primitiveType();
                 final String argType = bitsetArgType(primitiveType);
 
-                return String.format("\n" +
-                    "%1$s" +
-                    "    public %2$s %3$s(final boolean value)\n" +
+                generateOptionEncodeJavadoc(sb, INDENT, token);
+                sb.append(String.format("\n" +
+                    "    public %1$s %2$s(final boolean value)\n" +
                     "    {\n" +
-                    "%4$s\n" +
+                    "%3$s\n" +
                     "        return this;\n" +
                     "    }\n\n" +
-                    "    public static %5$s %3$s(final %5$s bits, final boolean value)\n" +
+                    "    public static %4$s %2$s(final %4$s bits, final boolean value)\n" +
                     "    {\n" +
-                    "%6$s" +
+                    "%5$s" +
                     "    }\n",
-                    generateOptionEncodeJavadoc(INDENT, token),
                     bitSetClassName,
                     choiceName,
                     generateChoicePut(encoding.primitiveType(), choiceBitIndex, byteOrderStr),
                     argType,
-                    generateStaticChoicePut(encoding.primitiveType(), choiceBitIndex));
-            });
+                    generateStaticChoicePut(encoding.primitiveType(), choiceBitIndex)));
+            }
+        }
+
+        return sb;
     }
 
     private String bitsetArgType(final PrimitiveType primitiveType)
@@ -1638,7 +1642,7 @@ public class JavaGenerator implements CodeGenerator
             .append("public class ").append(className).append(implementsString).append('\n')
             .append("{\n");
 
-        return sb.toString();
+        return sb;
     }
 
     private void generatePackageInfo() throws IOException
@@ -1695,7 +1699,7 @@ public class JavaGenerator implements CodeGenerator
         generateTypeJavadoc(sb, BASE_INDENT, typeToken);
         sb.append("public enum  ").append(name).append("\n{\n");
 
-        return sb.toString();
+        return sb;
     }
 
     private CharSequence generatePrimitiveDecoder(
@@ -2843,15 +2847,14 @@ public class JavaGenerator implements CodeGenerator
             propertyName,
             bitSetName));
 
+        generateFlyweightPropertyJavadoc(sb, indent + INDENT, propertyToken, bitSetName);
         sb.append(String.format("\n" +
-            "%s" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
             "%s" +
             indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
-            generateFlyweightPropertyJavadoc(indent + INDENT, propertyToken, bitSetName),
             bitSetName,
             propertyName,
             generatePropertyNotPresentCondition(inComposite, codecType, propertyToken, null, indent),
@@ -2879,15 +2882,14 @@ public class JavaGenerator implements CodeGenerator
             propertyName,
             compositeName));
 
+        generateFlyweightPropertyJavadoc(sb, indent + INDENT, propertyToken, compositeName);
         sb.append(String.format("\n" +
-            "%s" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
             "%s" +
             indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
-            generateFlyweightPropertyJavadoc(indent + INDENT, propertyToken, compositeName),
             compositeName,
             propertyName,
             generatePropertyNotPresentCondition(inComposite, codecType, propertyToken, null, indent),
