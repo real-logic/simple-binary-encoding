@@ -21,6 +21,7 @@ import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.util.ValidationUtil;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -273,12 +274,14 @@ public class JavaUtil
     /**
      * Generate the Javadoc comment header for a bitset choice option decode method.
      *
-     * @param sb          to append to.
+     * @param out         to append to.
      * @param indent      level for the comment.
      * @param optionToken for the type.
+     * @throws IOException on failing to write to output.
      */
     public static void generateOptionDecodeJavadoc(
-        final StringBuilder sb, final String indent, final Token optionToken)
+        final Appendable out, final String indent, final Token optionToken)
+        throws IOException
     {
         final String description = optionToken.description();
         if (null == description || description.isEmpty())
@@ -286,7 +289,7 @@ public class JavaUtil
             return;
         }
 
-        sb.append(indent).append("/**\n")
+        out.append(indent).append("/**\n")
             .append(indent).append(" * ").append(description).append('\n')
             .append(indent).append(" *\n")
             .append(indent).append(" * @return true if ").append(optionToken.name()).append(" is set or false if not\n")
@@ -296,12 +299,14 @@ public class JavaUtil
     /**
      * Generate the Javadoc comment header for a bitset choice option encode method.
      *
-     * @param sb          to append to.
+     * @param out         to append to.
      * @param indent      level for the comment.
      * @param optionToken for the type.
+     * @throws IOException on failing to write to output.
      */
     public static void generateOptionEncodeJavadoc(
-        final StringBuilder sb, final String indent, final Token optionToken)
+        final Appendable out, final String indent, final Token optionToken)
+        throws IOException
     {
         final String description = optionToken.description();
         if (null == description || description.isEmpty())
@@ -310,7 +315,7 @@ public class JavaUtil
         }
 
         final String name = optionToken.name();
-        sb.append(indent).append("/**\n")
+        out.append(indent).append("/**\n")
             .append(indent).append(" * ").append(description).append('\n')
             .append(indent).append(" *\n")
             .append(indent).append(" * @param value true if ").append(name).append(" is set or false if not.\n")
