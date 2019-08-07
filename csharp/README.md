@@ -68,8 +68,7 @@ The csharp generator is as of March 2018 a beta release. The current roadmap con
 
 Nuget Package
 -------------
-The nuget package can be built using ~csharp/.nuget/do-release.sh. It has a dependency on the [nuget.exe]
-(https://dist.nuget.org/index.html).
+The nuget package can be built using ~csharp/.nuget/do-release.sh. It has a dependency on the [nuget.exe](https://dist.nuget.org/index.html).
 
 Before release it will probbalty be necessary to copy in changed files for the example contained in the published nuget
 package. This is a manual process for now.
