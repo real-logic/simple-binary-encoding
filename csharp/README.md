@@ -11,7 +11,7 @@ Java and gradlew are used to build the generator.
 
 git bash and shell scripts are used for scripting.
 
-The C# code is built using Visual Studio Community 2017.
+The C# code was originally built using Visual Studio Community 2017.
 
 The code, samples, tests and nuget package can be built/run using the [dotnet core sdk](https://www.microsoft.com/net/download):
 
@@ -19,6 +19,13 @@ The code, samples, tests and nuget package can be built/run using the [dotnet co
 * On Mac/Linux, the Mono framework is also required for producing release nuget packages / .NET Framework compatible DLLs.
 
 ## Release Notes
+
+### 1.13.0
+
+* Many build system improvements
+* Better inlining support
+* Issue #660 Add Length() and GetBytes() methods for VarStrings
+* Add csharp code-gen time property that allows squashing of namespace 
 
 ### 0.1.8.1-beta-2
 
@@ -78,8 +85,6 @@ For now you can:
 
  * build the SBE csharp generator using `gradlew`
  * generate the csharp codecs using `gradlew GenerateCSharpCodecs`
- * Use the [Visual Studio 2017 Community solution](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharp.sln) to build the solution, run the unit tests, examples and benchmarks
- * Use the command script
- * [csharpbuild.cmd](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharpbuild.cmd) to build the dotnet core support
+ * Use the bash script [build.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/build.sh) to run the tests
  * Use the bash script [runtests.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/runtests.sh) to run the tests
- * Build the nuget package via [do-release.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/.nuget/do-release.sh) although this remains a largely manual process.
+ * Use the bash script [pack.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/pack.sh) to create the nuget package
