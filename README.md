@@ -113,18 +113,9 @@ documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/
 
 C# Build
 --------
-As of May 2017, the CSharp build is considered a preview release. API stability is not yet guaranteed. User and Developer guides are not yet released or are incomplete.
+Users of CSharp generated code should see the [user documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide).
 
-First build using Gradle to generate the SBE jar and then use it to generate the C# code used for testing and the examples.
-
-    $ ./gradlew
-    $ ./gradlew generateCSharpCodecs
-
-You can then use the [Visual Studio 2017 Community solution](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharp.sln) to build and explore the example. This solution also builds some tests which can be run via the provided [runtests.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/runtests.sh) script.
-
-Users of CSharp generated code should see the [user documentation (coming)](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide).
-
-Developers wishing to enhance the CSharp generator should see the [developer documentation (coming)](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/README.md)
+Developers wishing to enhance the CSharp generator should see the [developer documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/README.md)
 
 
 License (See LICENSE file for full license)
