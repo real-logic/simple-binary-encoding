@@ -20,7 +20,7 @@ The code, samples, tests and nuget package can be built/run using the [dotnet co
 
 ## Release Notes
 
-### 0.13
+### 1.13.0
 
 * Many build system improvements
 * Better inlining support
