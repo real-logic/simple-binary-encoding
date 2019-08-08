@@ -33,6 +33,7 @@ public class Python implements TargetCodeGenerator
 
     public static CodeGenerator defaultPythonGenerator(final Ir ir, final String outputDir)
     {
-        return new PyGenerator(ir, new PyOutputManager(outputDir, ir.applicableNamespace()));
+        return new PythonGenerator(ir, false, false,
+            false, new PyOutputManager(outputDir, ir.applicableNamespace()));
     }
 }

@@ -17,6 +17,7 @@
 package uk.co.real_logic.sbe.generation.python;
 
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.ir.Token;
 
 import java.nio.ByteOrder;
 import java.util.EnumMap;
@@ -33,7 +34,7 @@ public class PyUtil
     public static final Map<PrimitiveType, String> PRIMITIVE_TYPE_STRUCT_ENUM_MAP = new EnumMap<>(PrimitiveType.class);
     public static final Map<PrimitiveType, Integer> PRIMITIVE_TYPE_SIZE_ENUM_MAP = new EnumMap<>(PrimitiveType.class);
     public static final Map<ByteOrder, String> BYTE_ORDER_STRING_MAP = new HashMap<>();
-    public static final Pattern CAM_SNAKE_PATTERN = Pattern.compile("([a-z])([A-Z]+)");
+    public static final Pattern CAM_SNAKE_PATTERN = Pattern.compile("([^_A-Z])([A-Z])");
 
     // Ref: https://docs.python.org/3.7/library/struct.html#format-characters
     static
@@ -73,6 +74,45 @@ public class PyUtil
         PRIMITIVE_TYPE_SIZE_ENUM_MAP.put(PrimitiveType.DOUBLE, 8);
         BYTE_ORDER_STRING_MAP.put(ByteOrder.LITTLE_ENDIAN, "<");
         BYTE_ORDER_STRING_MAP.put(ByteOrder.BIG_ENDIAN, ">");
+    }
+
+    public enum Separators
+    {
+        BEGIN_GROUP('['),
+        END_GROUP(']'),
+        BEGIN_COMPOSITE('('),
+        END_COMPOSITE(')'),
+        BEGIN_SET('{'),
+        END_SET('}'),
+        BEGIN_ARRAY('['),
+        END_ARRAY(']'),
+        FIELD('|'),
+        KEY_VALUE('='),
+        ENTRY(',');
+
+        public final char symbol;
+
+        Separators(final char symbol)
+        {
+            this.symbol = symbol;
+        }
+
+        /**
+         * Add separator to a generated StringBuilder
+         *
+         * @param builder     the code generation builder to which information should be added
+         * @param indent      the current generated code indentation
+         * @param builderName of the generated StringBuilder to which separator should be added
+         */
+        public void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String builderName)
+        {
+            append(builder, indent, builderName + " += str('" + symbol + "')");
+        }
+
+        public String toString()
+        {
+            return String.valueOf(symbol);
+        }
     }
 
     /**
@@ -138,7 +178,7 @@ public class PyUtil
      */
     public static String formatPropertyName(final String str)
     {
-        return toUpperFirstChar(str);
+        return toLowerFirstChar(str);
     }
 
     /**
@@ -150,6 +190,17 @@ public class PyUtil
     public static String formatClassName(final String str)
     {
         return toUpperFirstChar(str);
+    }
+
+    /**
+     * Format a String as a module name.
+     *
+     * @param str to be formatted.
+     * @return the string formatted as a class name.
+     */
+    public static String formatModuleName(final String str)
+    {
+        return camToSnake(str);
     }
 
     /**
@@ -175,5 +226,59 @@ public class PyUtil
     public static String camToSnake(final String str)
     {
         return camToSnake(str, true);
+    }
+
+    public static String generatePyDoc(final String indend, final Token token)
+    {
+        return "";
+    }
+
+    public static String generateLiteral(final PrimitiveType type, final String value)
+    {
+        String literal = "";
+
+        switch (type)
+        {
+            case CHAR:
+                literal = "\"" + value + "\"";
+                break;
+            case UINT8:
+            case INT8:
+            case INT16:
+            case UINT16:
+            case UINT32:
+            case INT64:
+            case INT32:
+                literal = value;
+                break;
+            case UINT64:
+                literal = Long.toUnsignedString(Long.parseLong(value));
+                break;
+            case FLOAT:
+            case DOUBLE:
+                if (value.endsWith("NaN"))
+                {
+                    literal = "float('nan')";
+                }
+                else
+                {
+                    literal = value;
+                }
+                break;
+        }
+
+        return literal;
+    }
+
+    /**
+     * Shortcut to append a line of generated code
+     *
+     * @param builder string builder to which to append the line
+     * @param indent  current text indentation
+     * @param line    line to be appended
+     */
+    public static void append(final StringBuilder builder, final String indent, final String line)
+    {
+        builder.append(indent).append(line).append('\n');
     }
 }
