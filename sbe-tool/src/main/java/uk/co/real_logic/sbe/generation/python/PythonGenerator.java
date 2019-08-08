@@ -28,6 +28,7 @@ import java.nio.ByteOrder;
 import java.util.*;
 import java.util.function.Function;
 
+import static java.util.stream.Collectors.joining;
 import static uk.co.real_logic.sbe.generation.python.PyUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
@@ -1226,6 +1227,16 @@ public class PythonGenerator implements CodeGenerator
                     argType,
                     generateStaticChoicePut(encoding.primitiveType(), choiceBitIndex));
             });
+    }
+
+    public static CharSequence concatTokens(
+        final List<Token> tokens, final Signal signal, final Function<Token, CharSequence> mapper)
+    {
+        return tokens
+            .stream()
+            .filter((token) -> token.signal() == signal)
+            .map(mapper)
+            .collect(joining());
     }
 
     private String bitsetArgType(final PrimitiveType primitiveType)
