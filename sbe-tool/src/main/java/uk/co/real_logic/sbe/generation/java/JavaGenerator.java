@@ -3207,9 +3207,7 @@ public class JavaGenerator implements CodeGenerator
             if (fieldToken.signal() == Signal.BEGIN_FIELD)
             {
                 final Token encodingToken = fields.get(i + 1);
-
                 final String fieldName = formatPropertyName(fieldToken.name());
-                append(sb, indent, "//" + fieldToken);
                 lengthBeforeLastGeneratedSeparator = writeTokenDisplay(fieldName, encodingToken, sb, indent);
 
                 i += fieldToken.componentTokenCount();
@@ -3227,8 +3225,6 @@ public class JavaGenerator implements CodeGenerator
             {
                 throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
             }
-
-            append(sb, indent, "//" + groupToken);
 
             final String groupName = formatPropertyName(groupToken.name());
             final String groupDecoderName = decoderName(formatClassName(groupToken.name()));
@@ -3261,8 +3257,6 @@ public class JavaGenerator implements CodeGenerator
                 throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
             }
 
-            append(sb, indent, "//" + varDataToken);
-
             final String characterEncoding = varData.get(i + 3).encoding().characterEncoding();
             final String varDataName = formatPropertyName(varDataToken.name());
             append(sb, indent, "builder.append(\"" + varDataName + Separators.KEY_VALUE + "\");");
@@ -3293,8 +3287,6 @@ public class JavaGenerator implements CodeGenerator
     private int writeTokenDisplay(
         final String fieldName, final Token typeToken, final StringBuilder sb, final String indent)
     {
-        append(sb, indent, "//" + typeToken);
-
         if (typeToken.encodedLength() <= 0 || typeToken.isConstantEncoding())
         {
             return -1;
@@ -3343,8 +3335,19 @@ public class JavaGenerator implements CodeGenerator
                 break;
 
             case BEGIN_COMPOSITE:
-                append(sb, indent, fieldName + "().appendTo(builder);");
+            {
+                final String typeName = formatClassName(decoderName(typeToken.applicableTypeName()));
+                append(sb, indent, "final " + typeName + " " + fieldName + " = " + fieldName + "();");
+                append(sb, indent, "if (" + fieldName + " != null)");
+                append(sb, indent, "{");
+                append(sb, indent, "    " + fieldName + ".appendTo(builder);");
+                append(sb, indent, "}");
+                append(sb, indent, "else");
+                append(sb, indent, "{");
+                append(sb, indent, "    builder.append(\"null\");");
+                append(sb, indent, "}");
                 break;
+            }
         }
 
         final int lengthBeforeFieldSeparator = sb.length();
