@@ -205,19 +205,15 @@ public class MessageHeaderDecoder
     public StringBuilder appendTo(final StringBuilder builder)
     {
         builder.append('(');
-        //Token{signal=ENCODING, name='blockLength', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=2, offset=0, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=UINT16, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("blockLength=");
         builder.append(blockLength());
         builder.append('|');
-        //Token{signal=ENCODING, name='templateId', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=2, offset=2, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=UINT16, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("templateId=");
         builder.append(templateId());
         builder.append('|');
-        //Token{signal=ENCODING, name='schemaId', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=2, offset=4, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=UINT16, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("schemaId=");
         builder.append(schemaId());
         builder.append('|');
-        //Token{signal=ENCODING, name='version', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=2, offset=6, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=UINT16, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("version=");
         builder.append(version());
         builder.append(')');
