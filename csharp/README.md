@@ -20,6 +20,9 @@ The code, samples, tests and nuget package can be built/run using the [dotnet co
 
 ## Release Notes
 
+### 1.13.1
+* Fix nuget package name (back to sbe-tool)
+
 ### 1.13.0
 
 * Many build system improvements
