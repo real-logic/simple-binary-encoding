@@ -1279,7 +1279,7 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format("\n" +
-            indent + "    SBE_NODISCARD %1$s %2$s() const\n" +
+            indent + "    SBE_NODISCARD %1$s %2$s() const SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             "%3$s" +
             "%4$s" +
@@ -1293,7 +1293,7 @@ public class CppGenerator implements CodeGenerator
             primitiveType, "", Integer.toString(offset), token.encoding().byteOrder(), indent);
 
         sb.append(String.format("\n" +
-            indent + "    %1$s &%2$s(const %3$s value)\n" +
+            indent + "    %1$s &%2$s(const %3$s value) SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             "%4$s" +
             indent + "        return *this;\n" +
@@ -2101,7 +2101,7 @@ public class CppGenerator implements CodeGenerator
         else
         {
             sb.append(String.format("\n" +
-                indent + "    SBE_NODISCARD %1$s::Value %2$s() const\n" +
+                indent + "    SBE_NODISCARD %1$s::Value %2$s() const SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
                 "%3$s" +
                 indent + "        %5$s val;\n" +
@@ -2116,7 +2116,7 @@ public class CppGenerator implements CodeGenerator
                 offset));
 
             sb.append(String.format("\n" +
-                indent + "    %1$s &%2$s(const %3$s::Value value)\n" +
+                indent + "    %1$s &%2$s(const %3$s::Value value) SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
                 indent + "        %4$s val = %6$s(value);\n" +
                 indent + "        std::memcpy(m_buffer + m_offset + %5$d, &val, sizeof(%4$s));\n" +
