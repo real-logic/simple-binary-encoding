@@ -226,7 +226,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        m_bufferLength = bufferLength;\n" +
             indent + "        m_blockLength = dimensions.blockLength();\n" +
             indent + "        m_count = dimensions.numInGroup();\n" +
-            indent + "        m_index = -1;\n" +
+            indent + "        m_index = std::numeric_limits<std::uint64_t>::max();\n" +
             indent + "        m_actingVersion = actingVersion;\n" +
             indent + "        m_positionPtr = pos;\n" +
             indent + "        *m_positionPtr = *m_positionPtr + %1$d;\n" +
@@ -260,7 +260,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        %7$s dimensions(buffer, *pos, bufferLength, actingVersion);\n" +
             indent + "        dimensions.blockLength((%1$s)%2$d);\n" +
             indent + "        dimensions.numInGroup((%3$s)count);\n" +
-            indent + "        m_index = -1;\n" +
+            indent + "        m_index = std::numeric_limits<std::uint64_t>::max();\n" +
             indent + "        m_count = count;\n" +
             indent + "        m_blockLength = %2$d;\n" +
             indent + "        m_actingVersion = actingVersion;\n" +
