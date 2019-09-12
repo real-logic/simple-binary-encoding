@@ -2532,7 +2532,12 @@ public class CppGenerator implements CodeGenerator
                     // have to duplicate because of checkstyle :/
                     if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
                     {
-                        sb.append(indent + "builder << '\"' << (char)" + fieldName + "() << '\"';\n");
+                        sb.append(
+                            indent + "if (std::isprint(" + fieldName + "())) {\n" +
+                            indent + "    builder << '\"' << (char)" + fieldName + "() << '\"';\n" +
+                            indent + "} else {\n" +
+                            indent + "    builder << (int)" + fieldName + "();\n" +
+                            indent + "}\n");
                     }
                     else
                     {
