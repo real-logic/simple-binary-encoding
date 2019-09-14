@@ -2283,9 +2283,7 @@ public class CppGenerator implements CodeGenerator
         final List<Token> varData,
         final String indent)
     {
-        final StringBuilder sb = new StringBuilder();
-
-        sb.append(String.format("\n" +
+        return String.format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
             indent + "friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
             indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s _writer)\n" +
@@ -2302,9 +2300,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    return builder;\n" +
             indent + "}\n",
             formatClassName(name),
-            appendDisplay(fields, groups, varData, indent + INDENT)));
-
-        return sb.toString();
+            appendDisplay(fields, groups, varData, indent + INDENT));
     }
 
     private CharSequence generateGroupDisplay(
@@ -2314,8 +2310,7 @@ public class CppGenerator implements CodeGenerator
         final List<Token> varData,
         final String indent)
     {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(String.format("\n" +
+        return String.format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
             indent + "friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
             indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s writer)\n" +
@@ -2326,9 +2321,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    return builder;\n" +
             indent + "}\n",
             formatClassName(name),
-            appendDisplay(fields, groups, varData, indent + INDENT)));
-
-        return sb.toString();
+            appendDisplay(fields, groups, varData, indent + INDENT));
     }
 
     private CharSequence generateCompositeDisplay(
@@ -2336,9 +2329,7 @@ public class CppGenerator implements CodeGenerator
         final List<Token> tokens,
         final String indent)
     {
-        final StringBuilder sb = new StringBuilder();
-        final boolean[] atLeastOne = {false};
-        sb.append(String.format("\n" +
+        return String.format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
             indent + "friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
             indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s writer)\n" +
@@ -2349,9 +2340,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    return builder;\n" +
             indent + "}\n\n",
             formatClassName(name),
-            appendDisplay(tokens, new ArrayList<>(), new ArrayList<>(), indent + INDENT)));
-
-        return sb.toString();
+            appendDisplay(tokens, new ArrayList<>(), new ArrayList<>(), indent + INDENT));
     }
 
     private CharSequence appendDisplay(
@@ -2362,6 +2351,7 @@ public class CppGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
         final boolean[] atLeastOne = {false};
+
         for (int i = 0, size = fields.size(); i < size;)
         {
             final Token fieldToken = fields.get(i);
@@ -2394,8 +2384,6 @@ public class CppGenerator implements CodeGenerator
                 throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
             }
 
-            sb.append(indent + "//" + groupToken + "\n");
-
             if (atLeastOne[0])
             {
                 sb.append(
@@ -2410,7 +2398,9 @@ public class CppGenerator implements CodeGenerator
                 indent + "    writer.%2$s().forEach([&](%1$s& %2$s)\n" +
                 indent + "    {\n" +
                 indent + "        if (atLeastOne)\n" +
+                indent + "        {\n" +
                 indent + "            builder << \", \";\n" +
+                indent + "        }\n" +
                 indent + "        atLeastOne = true;\n" +
                 indent + "        builder << %2$s;\n" +
                 indent + "    });\n" +
@@ -2419,7 +2409,6 @@ public class CppGenerator implements CodeGenerator
                 formatClassName(groupToken.name()),
                 formatPropertyName(groupToken.name()),
                 groupToken.name()));
-
 
             i = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
         }
@@ -2432,8 +2421,6 @@ public class CppGenerator implements CodeGenerator
                 throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
             }
 
-            sb.append(indent + "//" + varDataToken + "\n");
-
             if (atLeastOne[0])
             {
                 sb.append(
@@ -2444,15 +2431,12 @@ public class CppGenerator implements CodeGenerator
             final String characterEncoding = varData.get(i + 3).encoding().characterEncoding();
             final String getAsStringFunction = "get" + toUpperFirstChar(varDataToken.name()) + "AsString().c_str()";
             sb.append(indent + "builder << R\"(\"" + varDataToken.name() + "\": )\";\n");
+
             if (null == characterEncoding)
             {
                 sb.append(
                     indent + "builder << '\"' <<\n" +
                     indent + INDENT + "writer." + getAsStringFunction + " << '\"';\n\n");
-                /*sb.append(indent + "builder << " + varDataName + "Length() << \" bytes of raw data\";\n");
-                append(sb, indent,
-                    "parentMessage.limit(parentMessage.limit() + " + varDataName + "HeaderLength() + " +
-                    varDataName + "Length());");*/
             }
             else
             {
@@ -2463,7 +2447,7 @@ public class CppGenerator implements CodeGenerator
 
             i += varDataToken.componentTokenCount();
         }
-        return sb.toString();
+        return sb;
     }
 
     private CharSequence writeTokenDisplay(
@@ -2474,8 +2458,6 @@ public class CppGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
         final String fieldName = "writer." + formatPropertyName(fieldTokenName);
-
-        sb.append(indent + "//" + typeToken + "\n");
 
         if (typeToken.encodedLength() <= 0 || typeToken.isConstantEncoding())
         {
@@ -2520,7 +2502,9 @@ public class CppGenerator implements CodeGenerator
                             indent + "    for (size_t i = 0; i < " + fieldName + "Length(); i++)\n" +
                             indent + "    {\n" +
                             indent + "        if (i)\n" +
+                            indent + "        {\n" +
                             indent + "            builder << ',';\n" +
+                            indent + "        }\n" +
                             indent + "        builder << +" + fieldName + "(i);\n" +
                             indent + "    }\n" +
                             indent + "}\n" +
@@ -2533,9 +2517,12 @@ public class CppGenerator implements CodeGenerator
                     if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
                     {
                         sb.append(
-                            indent + "if (std::isprint(" + fieldName + "())) {\n" +
+                            indent + "if (std::isprint(" + fieldName + "()))\n" +
+                            indent + "{\n" +
                             indent + "    builder << '\"' << (char)" + fieldName + "() << '\"';\n" +
-                            indent + "} else {\n" +
+                            indent + "}\n" +
+                            indent + "else\n" +
+                            indent + "{\n" +
                             indent + "    builder << (int)" + fieldName + "();\n" +
                             indent + "}\n");
                     }
@@ -2549,15 +2536,17 @@ public class CppGenerator implements CodeGenerator
             case BEGIN_ENUM:
                 sb.append(indent + "builder << '\"' << " + fieldName + "() << '\"';\n");
                 break;
+
             case BEGIN_SET:
                 sb.append(indent + "builder << " + fieldName + "();\n");
                 break;
+
             case BEGIN_COMPOSITE:
                 sb.append(indent + "builder << " + fieldName + "();\n");
                 break;
         }
 
-        return sb.toString();
+        return sb;
     }
 
     private CharSequence generateChoicesDisplay(final String name, final List<Token> tokens)
@@ -2584,8 +2573,8 @@ public class CppGenerator implements CodeGenerator
         for (int i = 0, size = choiceTokens.size(); i < size; i++)
         {
             final Token token = choiceTokens.get(i);
-            sb.append(indent + "    //" + token + "\n");
             final String choiceName = "writer." + formatPropertyName(token.name());
+
             sb.append(
                 indent + "    if (" + choiceName + "())\n" +
                 indent + "    {\n");
@@ -2612,7 +2601,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    return builder;\n" +
             indent + "}\n");
 
-        return sb.toString();
+        return sb;
     }
 
     private CharSequence generateEnumDisplay(final List<Token> tokens, final Token encodingToken)
@@ -2625,15 +2614,13 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        switch (value)\n" +
             "        {\n",
-            enumName
-        ));
+            enumName));
 
         for (final Token token : tokens)
         {
             sb.append(String.format(
                 "            case %1$s: return \"%1$s\";\n",
-                token.name())
-            );
+                token.name()));
         }
 
         sb.append(String.format(
@@ -2648,8 +2635,7 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "        return os << %1$s::c_str(m);\n" +
             "    }\n",
-            enumName
-        ));
+            enumName));
 
         return sb;
     }
