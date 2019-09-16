@@ -57,7 +57,7 @@ public class COutputManager implements OutputManager
      * Create a new output which will be a C11 source file in the given package.
      * <p>
      * The {@link java.io.Writer} should be closed once the caller has finished with it. The Writer is
-     * buffer for efficient IO operations.
+     * buffered for efficient IO operations.
      *
      * @param name the name of the C struct.
      * @return a {@link java.io.Writer} to which the source code should be written.
