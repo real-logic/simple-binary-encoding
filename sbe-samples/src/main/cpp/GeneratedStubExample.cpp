@@ -85,6 +85,8 @@ std::size_t encodeCar(Car &car, char *buffer, std::uint64_t offset, std::uint64_
        .capacity(2000)
        .numCylinders((short)4)
        .putManufacturerCode(MANUFACTURER_CODE)
+       .efficiency((std::int8_t)35)
+       .boosterEnabled(BooleanType::T)
        .booster().boostType(BoostType::NITROUS).horsePower(200);
 
     Car::FuelFigures& fuelFigures = car.fuelFiguresCount(3);
@@ -250,6 +252,8 @@ std::size_t decodeCar(
 
     char tmp[1024];
     std::uint64_t bytesCopied = engine.getFuel(tmp, sizeof(tmp));
+    std::cout << "\ncar.engine.effifiency=" << (int)engine.efficiency();
+    std::cout << "\ncar.engine.boosterEnabled=" << format(engine.boosterEnabled());
     std::cout << "\ncar.engine.fuelLength=" << bytesCopied;
     std::cout << "\ncar.engine.fuel=" << std::string(tmp, bytesCopied);
     std::cout << "\ncar.engine.booster.boostType=" << format(engine.booster().boostType());
