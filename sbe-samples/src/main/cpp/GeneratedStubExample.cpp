@@ -312,7 +312,6 @@ int main(int argc, const char* argv[])
 
     std::size_t decodeHdrLength = decodeHdr(hdr, buffer, 0, sizeof(buffer));
     std::size_t decodeMsgLength = decodeCar(car, buffer, hdr.encodedLength(), hdr.blockLength(), hdr.version(), sizeof(buffer));
-    cout << "Encoded json: '" << car << "'" << endl;
 
     cout << "Decoded Lengths are " << decodeHdrLength << " + " << decodeMsgLength << endl;
 
@@ -327,6 +326,9 @@ int main(int argc, const char* argv[])
         cerr << "Encode/Decode message lengths do not match\n";
         return EXIT_FAILURE;
     }
+
+    car.wrapForDecode(buffer, hdr.encodedLength(), hdr.blockLength(), hdr.version(), sizeof(buffer));
+    cout << "Encoded json: '" << car << "'" << endl;
 
     return EXIT_SUCCESS;
 }
