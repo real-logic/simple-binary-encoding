@@ -669,6 +669,24 @@ public class CppGenerator implements CodeGenerator
                 "    }\n",
                 cppTypeName(tokens.get(0).encoding().primitiveType())));
 
+            out.append(String.format("\n" +
+                "    SBE_NODISCARD %1$s rawValue() const\n" +
+                "    {\n" +
+                "        %1$s val;\n" +
+                "        std::memcpy(&val, m_buffer + m_offset, sizeof(%1$s));\n" +
+                "        return val;\n" +
+                "    }\n",
+                cppTypeName(tokens.get(0).encoding().primitiveType())));
+
+            out.append(String.format("\n" +
+                "    %1$s &rawValue(%2$s value)\n" +
+                "    {\n" +
+                "        std::memcpy(m_buffer + m_offset, &value, sizeof(%2$s));\n" +
+                "        return *this;\n" +
+                "    }\n",
+                bitSetName,
+                cppTypeName(tokens.get(0).encoding().primitiveType())));
+
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
             out.append(generateChoicesDisplay(bitSetName, tokens.subList(1, tokens.size() - 1)));
             out.append("};\n");
