@@ -1594,7 +1594,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "    SBE_NODISCARD const char *%1$s() const\n" +
             indent + "    {\n" +
-            indent + "        static const std::uint8_t %1$sValues[] = {%2$s};\n\n" +
+            indent + "        static const std::uint8_t %1$sValues[] = { %2$s };\n\n" +
 
             indent + "        return (const char *)%1$sValues;\n" +
             indent + "    }\n",
@@ -1604,7 +1604,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "    SBE_NODISCARD %1$s %2$s(const std::uint64_t index) const\n" +
             indent + "    {\n" +
-            indent + "        static const std::uint8_t %2$sValues[] = {%3$s};\n\n" +
+            indent + "        static const std::uint8_t %2$sValues[] = { %3$s };\n\n" +
 
             indent + "        return (char)%2$sValues[index];\n" +
             indent + "    }\n",
@@ -1615,7 +1615,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "    std::uint64_t get%1$s(char *dst, const std::uint64_t length) const\n" +
             indent + "    {\n" +
-            indent + "        static std::uint8_t %2$sValues[] = {%3$s};\n" +
+            indent + "        static std::uint8_t %2$sValues[] = { %3$s };\n" +
             indent + "        std::uint64_t bytesToCopy = " +
             "length < sizeof(%2$sValues) ? length : sizeof(%2$sValues);\n\n" +
 
@@ -2465,6 +2465,7 @@ public class CppGenerator implements CodeGenerator
 
             i += varDataToken.componentTokenCount();
         }
+
         return sb;
     }
 
@@ -2474,13 +2475,12 @@ public class CppGenerator implements CodeGenerator
         final boolean[] atLeastOne,
         final String indent)
     {
-        final StringBuilder sb = new StringBuilder();
-        final String fieldName = "writer." + formatPropertyName(fieldTokenName);
-
         if (typeToken.encodedLength() <= 0 || typeToken.isConstantEncoding())
         {
-            return sb.toString();
+            return "";
         }
+
+        final StringBuilder sb = new StringBuilder();
 
         if (atLeastOne[0])
         {
@@ -2493,6 +2493,7 @@ public class CppGenerator implements CodeGenerator
         }
 
         sb.append(indent + "builder << R\"(\"" + fieldTokenName + "\": )\";\n");
+        final String fieldName = "writer." + formatPropertyName(fieldTokenName);
 
         switch (typeToken.signal())
         {
@@ -2596,6 +2597,7 @@ public class CppGenerator implements CodeGenerator
             sb.append(
                 indent + "    if (" + choiceName + "())\n" +
                 indent + "    {\n");
+
             if (i > 0)
             {
                 sb.append(
@@ -2606,10 +2608,12 @@ public class CppGenerator implements CodeGenerator
             }
             sb.append(
                 indent + "        builder << R\"(\"" + formatPropertyName(token.name()) + "\")\";\n");
+
             if (i < (size - 1))
             {
                 sb.append(indent + "        atLeastOne = true;\n");
             }
+
             sb.append(
                 indent + "    }\n");
         }
