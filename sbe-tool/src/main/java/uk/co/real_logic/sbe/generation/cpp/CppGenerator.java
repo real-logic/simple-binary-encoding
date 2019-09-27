@@ -772,7 +772,7 @@ public class CppGenerator implements CodeGenerator
                 sb.append(String.format("\n" +
                     "    static bool %1$s(const %2$s bits)\n" +
                     "    {\n" +
-                    "        return (bits & (static_cast<%2$s>(1) << %3$s)) != 0;\n" +
+                    "        return (bits & (1u << %3$su)) != 0;\n" +
                     "    }\n",
                     choiceName,
                     typeName,
@@ -782,7 +782,7 @@ public class CppGenerator implements CodeGenerator
                     "    static %2$s %1$s(const %2$s bits, const bool value)\n" +
                     "    {\n" +
                     "        return value ?" +
-                    " (bits | (static_cast<%2$s>(1) << %3$s)) : (bits & ~(static_cast<%2$s>(1) << %3$s));\n" +
+                    " static_cast<%2$s>(bits | (1u << %3$su)) : static_cast<%2$s>(bits & ~(1u << %3$su));\n" +
                     "    }\n",
                     choiceName,
                     typeName,
@@ -794,7 +794,7 @@ public class CppGenerator implements CodeGenerator
                     "%2$s" +
                     "        %4$s val;\n" +
                     "        std::memcpy(&val, m_buffer + m_offset, sizeof(%4$s));\n" +
-                    "        return (%3$s(val) & (static_cast<%4$s>(1) << %5$s)) != 0;\n" +
+                    "        return (%3$s(val) & (1u << %5$su)) != 0;\n" +
                     "    }\n",
                     choiceName,
                     generateChoiceNotPresentCondition(token.version(), BASE_INDENT),
@@ -808,8 +808,8 @@ public class CppGenerator implements CodeGenerator
                     "        %3$s bits;\n" +
                     "        std::memcpy(&bits, m_buffer + m_offset, sizeof(%3$s));\n" +
                     "        bits = %4$s(value ?" +
-                    " (%4$s(bits) | (static_cast<%3$s>(1) << %5$s)) " +
-                    ": (%4$s(bits) & ~(static_cast<%3$s>(1) << %5$s)));\n" +
+                    " static_cast<%3$s>(%4$s(bits) | (1u << %5$su)) " +
+                    ": static_cast<%3$s>(%4$s(bits) & ~(1u << %5$su)));\n" +
                     "        std::memcpy(m_buffer + m_offset, &bits, sizeof(%3$s));\n" +
                     "        return *this;\n" +
                     "    }\n",
@@ -1594,7 +1594,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "    SBE_NODISCARD const char *%1$s() const\n" +
             indent + "    {\n" +
-            indent + "        static std::uint8_t %1$sValues[] = {%2$s};\n\n" +
+            indent + "        static const std::uint8_t %1$sValues[] = {%2$s};\n\n" +
 
             indent + "        return (const char *)%1$sValues;\n" +
             indent + "    }\n",
@@ -1602,11 +1602,11 @@ public class CppGenerator implements CodeGenerator
             values));
 
         sb.append(String.format("\n" +
-            indent + "    %1$s %2$s(const std::uint64_t index) const\n" +
+            indent + "    SBE_NODISCARD %1$s %2$s(const std::uint64_t index) const\n" +
             indent + "    {\n" +
-            indent + "        static std::uint8_t %2$sValues[] = {%3$s};\n\n" +
+            indent + "        static const std::uint8_t %2$sValues[] = {%3$s};\n\n" +
 
-            indent + "        return %2$sValues[index];\n" +
+            indent + "        return (char)%2$sValues[index];\n" +
             indent + "    }\n",
             cppTypeName,
             propertyName,
