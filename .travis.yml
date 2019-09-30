@@ -9,13 +9,13 @@ matrix:
       language: java
       jdk: openjdk8
       os: linux
-      script: ./gradlew --scan
+      script: ./gradlew
 
     - name: "OpenJDK 11"
       language: java
       jdk: openjdk11
       os: linux
-      script: ./gradlew --scan
+      script: ./gradlew
 
     - name: "C#"
       language: csharp
@@ -157,7 +157,7 @@ matrix:
             - llvm-toolchain-xenial-8
       script: ./cppbuild/cppbuild
 
-    - name: "macOS"
+    - name: "Clang macOS"
       env: COMPILER=clang++
       language: c++
       compiler: clang
