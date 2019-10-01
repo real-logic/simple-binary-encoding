@@ -131,7 +131,7 @@ subprojects {
         compile 'org.agrona:agrona:1.0.7'
 
         testCompile 'org.hamcrest:hamcrest:2.1'
-        testCompile 'org.mockito:mockito-core:3.0.0'
+        testCompile 'org.mockito:mockito-core:3.1.0'
         testCompile 'junit:junit:4.12'
     }
 
