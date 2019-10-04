@@ -197,14 +197,14 @@ public class CppGenerator implements CodeGenerator
             indent + "class %1$s\n" +
             indent + "{\n" +
             indent + "private:\n" +
-            indent + "    char *m_buffer;\n" +
-            indent + "    std::uint64_t m_bufferLength;\n" +
-            indent + "    std::uint64_t *m_positionPtr;\n" +
-            indent + "    std::uint64_t m_blockLength;\n" +
-            indent + "    std::uint64_t m_count;\n" +
-            indent + "    std::uint64_t m_index;\n" +
-            indent + "    std::uint64_t m_offset;\n" +
-            indent + "    std::uint64_t m_actingVersion;\n\n" +
+            indent + "    char *m_buffer = nullptr;\n" +
+            indent + "    std::uint64_t m_bufferLength = 0;\n" +
+            indent + "    std::uint64_t *m_positionPtr = nullptr;\n" +
+            indent + "    std::uint64_t m_blockLength = 0;\n" +
+            indent + "    std::uint64_t m_count = 0;\n" +
+            indent + "    std::uint64_t m_index = 0;\n" +
+            indent + "    std::uint64_t m_offset = 0;\n" +
+            indent + "    std::uint64_t m_actingVersion = 0;\n\n" +
 
             indent + "    SBE_NODISCARD std::uint64_t *sbePositionPtr() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
@@ -1637,9 +1637,9 @@ public class CppGenerator implements CodeGenerator
         return String.format(
             "private:\n" +
             "    char *m_buffer = nullptr;\n" +
-            "    std::uint64_t m_bufferLength;\n" +
+            "    std::uint64_t m_bufferLength = 0;\n" +
             "    std::uint64_t m_offset = 0;\n" +
-            "    std::uint64_t m_actingVersion;\n\n" +
+            "    std::uint64_t m_actingVersion = 0;\n\n" +
 
             "public:\n" +
             "    enum MetaAttribute\n" +
@@ -1790,8 +1790,8 @@ public class CppGenerator implements CodeGenerator
             "    char *m_buffer = nullptr;\n" +
             "    std::uint64_t m_bufferLength = 0;\n" +
             "    std::uint64_t m_offset = 0;\n" +
-            "    std::uint64_t m_position;\n" +
-            "    std::uint64_t m_actingVersion;\n\n" +
+            "    std::uint64_t m_position = 0;\n" +
+            "    std::uint64_t m_actingVersion = 0;\n\n" +
 
             "    inline std::uint64_t *sbePositionPtr() SBE_NOEXCEPT\n" +
             "    {\n" +
