@@ -31,21 +31,7 @@ matrix:
         - ./csharp/runtests.sh
         - ./csharp/pack.sh
 
-    - name: "GCC 5" 
-      env: COMPILER=g++-5
-      language: cpp
-      compiler: gcc
-      os: linux
-      addons:
-        apt:
-          packages:
-            - g++-5
-            - libsparsehash-dev
-          sources:
-            - ubuntu-toolchain-r-test
-      script: ./cppbuild/cppbuild
-
-    - name: "GCC 6" 
+    - name: "GCC 6"
       env: COMPILER=g++-6
       language: cpp
       compiler: gcc
@@ -59,7 +45,7 @@ matrix:
             - ubuntu-toolchain-r-test
       script: ./cppbuild/cppbuild
 
-    - name: "GCC 7" 
+    - name: "GCC 7"
       env: COMPILER=g++-7
       language: cpp
       compiler: gcc
@@ -73,7 +59,7 @@ matrix:
             - ubuntu-toolchain-r-test
       script: ./cppbuild/cppbuild
 
-    - name: "GCC 8" 
+    - name: "GCC 8"
       env: COMPILER=g++-8
       language: cpp
       compiler: gcc
@@ -87,7 +73,7 @@ matrix:
             - ubuntu-toolchain-r-test
       script: ./cppbuild/cppbuild
 
-    - name: "GCC 9" 
+    - name: "GCC 9"
       env: COMPILER=g++-9
       language: cpp
       compiler: gcc
@@ -101,7 +87,7 @@ matrix:
             - ubuntu-toolchain-r-test
       script: ./cppbuild/cppbuild
 
-    - name: "Clang 5" 
+    - name: "Clang 5"
       env: COMPILER=clang++-5.0
       language: cpp
       compiler: clang
@@ -115,7 +101,7 @@ matrix:
             - llvm-toolchain-xenial-5.0
       script: ./cppbuild/cppbuild
 
-    - name: "Clang 6" 
+    - name: "Clang 6"
       env: COMPILER=clang++-6.0
       language: cpp
       compiler: clang
@@ -129,7 +115,7 @@ matrix:
             - llvm-toolchain-xenial-6.0
       script: ./cppbuild/cppbuild
 
-    - name: "Clang 7" 
+    - name: "Clang 7"
       env: COMPILER=clang++-7
       language: cpp
       compiler: clang
@@ -143,7 +129,7 @@ matrix:
             - llvm-toolchain-xenial-7
       script: ./cppbuild/cppbuild
 
-    - name: "Clang 8" 
+    - name: "Clang 8"
       env: COMPILER=clang++-8
       language: cpp
       compiler: clang
