@@ -37,7 +37,7 @@ public class EncodedCarTestBase
     {
         try
         {
-            vehicleCode = "abcdef".getBytes(CarEncoder.vehicleCodeCharacterEncoding());
+            vehicleCode = "ab\"def".getBytes(CarEncoder.vehicleCodeCharacterEncoding());
             manufacturerCode = "123".getBytes(EngineEncoder.manufacturerCodeCharacterEncoding());
             manufacturer = "Honda".getBytes(CarEncoder.manufacturerCharacterEncoding());
             model = "Civic VTi".getBytes(CarEncoder.modelCharacterEncoding());
@@ -108,6 +108,7 @@ public class EncodedCarTestBase
 
         CAR.manufacturer(new String(manufacturer));
         CAR.putModel(model, srcOffset, model.length);
+        CAR.activationCode("315\\8");
 
         bufferOffset += CAR.encodedLength();
 

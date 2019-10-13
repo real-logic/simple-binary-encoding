@@ -60,7 +60,7 @@ public class JsonPrinterTest extends EncodedCarTestBase
             "    \"available\": \"T\",\n" +
             "    \"code\": \"A\",\n" +
             "    \"someNumbers\": [0, 1, 2, 3, 4],\n" +
-            "    \"vehicleCode\": \"abcdef\",\n" +
+            "    \"vehicleCode\": \"ab\\\"def\",\n" +
             "    \"extras\": { \"sunRoof\": false, \"sportsPack\": true, \"cruiseControl\": true },\n" +
             "    \"engine\": \n" +
             "    {\n" +
@@ -118,7 +118,7 @@ public class JsonPrinterTest extends EncodedCarTestBase
             "    }],\n" +
             "    \"manufacturer\": \"Honda\",\n" +
             "    \"model\": \"Civic VTi\",\n" +
-            "    \"activationCode\": \"\"\n" +
+            "    \"activationCode\": \"315\\\\8\"\n" +
             "}",
             result);
     }
