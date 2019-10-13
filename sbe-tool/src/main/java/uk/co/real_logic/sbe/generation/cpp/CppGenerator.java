@@ -1769,8 +1769,11 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "    }\n\n" +
 
-            "    %1$s(char *buffer, const std::uint64_t bufferLength, const std::uint64_t actingBlockLength," +
-            " const std::uint64_t actingVersion) :\n" +
+            "    %1$s(\n" +
+            "        char *buffer,\n" +
+            "        const std::uint64_t bufferLength,\n" +
+            "        const std::uint64_t actingBlockLength,\n" +
+            "        const std::uint64_t actingVersion) :\n" +
             "        %1$s(buffer, 0, bufferLength, actingBlockLength, actingVersion)\n" +
             "    {\n" +
             "    }\n\n",
@@ -1872,8 +1875,11 @@ public class CppGenerator implements CodeGenerator
             "    }\n\n" +
 
             "    %10$s &wrapForDecode(\n" +
-            "        char *buffer, const std::uint64_t offset, const std::uint64_t actingBlockLength,\n" +
-            "        const std::uint64_t actingVersion, const std::uint64_t bufferLength)\n" +
+            "        char *buffer,\n" +
+            "        const std::uint64_t offset,\n" +
+            "        const std::uint64_t actingBlockLength,\n" +
+            "        const std::uint64_t actingVersion,\n" +
+            "        const std::uint64_t bufferLength)\n" +
             "    {\n" +
             "        return *this = %10$s(buffer, offset, bufferLength, actingBlockLength, actingVersion);\n" +
             "    }\n\n" +
