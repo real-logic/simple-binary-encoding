@@ -302,11 +302,6 @@ public class CppGenerator implements CodeGenerator
             indent + "        *m_positionPtr = sbeCheckPosition(position);\n" +
             indent + "    }\n\n" +
 
-            indent + "    SBE_NODISCARD std::string sbeEscapeJson(const std::string &s) const SBE_NOEXCEPT\n" +
-            indent + "    {\n" +
-            indent + "        return ::sbeEscapeJsonString(s);\n" +
-            indent + "    }\n\n" +
-
             indent + "    SBE_NODISCARD inline std::uint64_t count() const SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return m_count;\n" +
@@ -525,6 +520,29 @@ public class CppGenerator implements CodeGenerator
                 lengthOfLengthField,
                 lengthByteOrderStr,
                 lengthCppType));
+
+            sb.append(String.format("\n" +
+                indent + "    std::string get%1$sAsJsonEscapedString()\n" +
+                indent + "    {\n" +
+                "%2$s" +
+                indent + "        std::ostringstream oss;\n" +
+                indent + "        std::string s = get%1$sAsString();\n\n" +
+                indent + "        for (auto c = s.cbegin(); c != s.cend(); c++)\n" +
+                indent + "        {\n" +
+                indent + "            if (*c == '\"' || *c == '\\\\' || ('\\x00' <= *c && *c <= '\\x1f'))\n" +
+                indent + "            {\n" +
+                indent + "                oss << \"\\\\u\"" + " << std::hex << std::setw(4)\n" +
+                indent + "                    << std::setfill('0') << (int)(*c);\n" +
+                indent + "            }\n" +
+                indent + "            else\n" +
+                indent + "            {\n" +
+                indent + "                oss << *c;\n" +
+                indent + "            }\n" +
+                indent + "        }\n\n" +
+                indent + "        return oss.str();\n" +
+                indent + "    }\n",
+                propertyName,
+                generateStringNotPresentCondition(token.version(), indent)));
 
             sb.append(String.format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
@@ -1064,8 +1082,6 @@ public class CppGenerator implements CodeGenerator
             String.join("_", namespaces).toUpperCase(),
             className.toUpperCase()));
 
-        sb.append(generateEscapeFunction());
-
         if (typesToInclude != null && typesToInclude.size() != 0)
         {
             sb.append("\n");
@@ -1082,35 +1098,11 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private static CharSequence generateEscapeFunction()
-    {
-        return
-            "#ifndef _SBE_JSON_ESCAPE_FUNC_H_\n" +
-            "#define _SBE_JSON_ESCAPE_FUNC_H_\n" +
-            "static inline std::string sbeEscapeJsonString(const std::string &s)\n" +
-            "{\n" +
-            "    std::ostringstream oss;\n\n" +
-            "    for (auto c = s.cbegin(); c != s.cend(); c++)\n" +
-            "    {\n" +
-            "        if (*c == '\"' || *c == '\\\\' || ('\\x00' <= *c && *c <= '\\x1f'))\n" +
-            "        {\n" +
-            "            oss << \"\\\\u\"" + " << std::hex << std::setw(4) << std::setfill('0') << (int)*c;\n" +
-            "        }\n" +
-            "        else\n" +
-            "        {\n" +
-            "            oss << *c;\n" +
-            "        }\n" +
-            "    }\n\n" +
-            "    return oss.str();\n" +
-            "}\n" +
-            "#endif\n\n";
-    }
-
     private static CharSequence generateClassDeclaration(final String className)
     {
         return
-                "class " + className + "\n" +
-                "{\n";
+            "class " + className + "\n" +
+            "{\n";
     }
 
     private static CharSequence generateEnumDeclaration(final String name)
@@ -1724,8 +1716,11 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "    }\n\n" +
 
-            "    %1$s &wrap(char *buffer, const std::uint64_t offset, const std::uint64_t actingVersion," +
-            " const std::uint64_t bufferLength)\n" +
+            "    %1$s &wrap(\n" +
+            "        char *buffer,\n" +
+            "        const std::uint64_t offset,\n" +
+            "        const std::uint64_t actingVersion,\n" +
+            "        const std::uint64_t bufferLength)\n" +
             "    {\n" +
             "        return *this = %1$s(buffer, offset, bufferLength, actingVersion);\n" +
             "    }\n\n" +
@@ -1933,11 +1928,6 @@ public class CppGenerator implements CodeGenerator
             "    void sbePosition(const std::uint64_t position)\n" +
             "    {\n" +
             "        m_position = sbeCheckPosition(position);\n" +
-            "    }\n\n" +
-
-            "    SBE_NODISCARD std::string sbeEscapeJson(const std::string &s) const SBE_NOEXCEPT\n" +
-            "    {\n" +
-            "        return ::sbeEscapeJsonString(s);\n" +
             "    }\n\n" +
 
             "    SBE_NODISCARD std::uint64_t encodedLength() const SBE_NOEXCEPT\n" +
@@ -2494,17 +2484,20 @@ public class CppGenerator implements CodeGenerator
 
             if (null == characterEncoding)
             {
-                final String getAsStringFunction =
-                    "writer.get" + toUpperFirstChar(varDataToken.name()) + "AsString().c_str()";
+                final String propertyName = toLowerFirstChar(varDataToken.name());
+                final String getLengthFunction = "writer." + propertyName + "Length()";
 
                 sb.append(
                     indent + "builder << '\"' <<\n" +
-                    indent + INDENT + getAsStringFunction + " << '\"';\n\n");
+                    indent + INDENT + getLengthFunction + " << \" bytes of raw data\\\"\";\n");
+
+                sb.append(
+                    indent + "writer." + propertyName + "();\n\n");
             }
             else
             {
                 final String getAsStringFunction =
-                    "writer.sbeEscapeJson(writer.get" + toUpperFirstChar(varDataToken.name()) + "AsString()).c_str()";
+                    "writer.get" + toUpperFirstChar(varDataToken.name()) + "AsJsonEscapedString().c_str()";
 
                 sb.append(
                     indent + "builder << '\"' <<\n" +
