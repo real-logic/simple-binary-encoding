@@ -472,7 +472,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        std::uint64_t bytesToCopy = length < dataLength ? length : dataLength;\n" +
                 indent + "        std::uint64_t pos = sbePosition();\n" +
                 indent + "        sbePosition(pos + dataLength);\n" +
-                indent + "        std::memcpy(dst, m_buffer + pos, bytesToCopy);\n" +
+                indent + "        std::memcpy(dst, m_buffer + pos, static_cast<size_t>(bytesToCopy));\n" +
                 indent + "        return bytesToCopy;\n" +
                 indent + "    }\n",
                 propertyName,
@@ -1452,7 +1452,8 @@ public class CppGenerator implements CodeGenerator
             indent + "        }\n\n" +
 
             "%3$s" +
-            indent + "        std::memcpy(dst, m_buffer + m_offset + %4$d, sizeof(%5$s) * length);\n" +
+            indent + "        std::memcpy(dst, m_buffer + m_offset + %4$d, " +
+            "sizeof(%5$s) * static_cast<size_t>(length));\n" +
             indent + "        return length;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
@@ -1654,7 +1655,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        std::uint64_t bytesToCopy = " +
             "length < sizeof(%2$sValues) ? length : sizeof(%2$sValues);\n\n" +
 
-            indent + "        std::memcpy(dst, %2$sValues, bytesToCopy);\n" +
+            indent + "        std::memcpy(dst, %2$sValues, static_cast<size_t>(bytesToCopy));\n" +
             indent + "        return bytesToCopy;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
