@@ -529,14 +529,25 @@ public class CppGenerator implements CodeGenerator
                 indent + "        std::string s = get%1$sAsString();\n\n" +
                 indent + "        for (auto c = s.cbegin(); c != s.cend(); c++)\n" +
                 indent + "        {\n" +
-                indent + "            if (*c == '\"' || *c == '\\\\' || ('\\x00' <= *c && *c <= '\\x1f'))\n" +
+                indent + "            switch (*c)\n" +
                 indent + "            {\n" +
-                indent + "                oss << \"\\\\u\"" + " << std::hex << std::setw(4)\n" +
-                indent + "                    << std::setfill('0') << (int)(*c);\n" +
-                indent + "            }\n" +
-                indent + "            else\n" +
-                indent + "            {\n" +
-                indent + "                oss << *c;\n" +
+                indent + "                case '\"': oss << \"\\\\\\\"\"; break;\n" +
+                indent + "                case '\\\\': oss << \"\\\\\\\\\"; break;\n" +
+                indent + "                case '\\b': oss << \"\\\\b\"; break;\n" +
+                indent + "                case '\\f': oss << \"\\\\f\"; break;\n" +
+                indent + "                case '\\n': oss << \"\\\\n\"; break;\n" +
+                indent + "                case '\\r': oss << \"\\\\r\"; break;\n" +
+                indent + "                case '\\t': oss << \"\\\\t\"; break;\n\n" +
+                indent + "                default:\n" +
+                indent + "                    if ('\\x00' <= *c && *c <= '\\x1f')\n" +
+                indent + "                    {\n" +
+                indent + "                        oss << \"\\\\u\"" + " << std::hex << std::setw(4)\n" +
+                indent + "                            << std::setfill('0') << (int)(*c);\n" +
+                indent + "                    }\n" +
+                indent + "                    else\n" +
+                indent + "                    {\n" +
+                indent + "                        oss << *c;\n" +
+                indent + "                    }\n" +
                 indent + "            }\n" +
                 indent + "        }\n\n" +
                 indent + "        return oss.str();\n" +
