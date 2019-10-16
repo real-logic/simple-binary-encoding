@@ -668,7 +668,7 @@ public class CppGenerator implements CodeGenerator
             sizeOfLengthField);
 
         new Formatter(sb).format("\n" +
-            indent + "    %4$s %1$sLength() const\n" +
+            indent + "    SBE_NODISCARD %4$s %1$sLength() const\n" +
             indent + "    {\n" +
             "%2$s" +
             indent + "        %4$s length;\n" +
@@ -1524,7 +1524,7 @@ public class CppGenerator implements CodeGenerator
         if (encodingToken.encoding().primitiveType() == PrimitiveType.CHAR)
         {
             new Formatter(sb).format("\n" +
-                indent + "    std::string get%1$sAsString() const\n" +
+                indent + "    SBE_NODISCARD std::string get%1$sAsString() const\n" +
                 indent + "    {\n" +
                 indent + "        const char *buffer = m_buffer + m_offset + %2$d;\n" +
                 indent + "        size_t length = 0;\n\n" +
@@ -1542,7 +1542,7 @@ public class CppGenerator implements CodeGenerator
 
             new Formatter(sb).format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
-                indent + "    std::string_view get%1$sAsStringView() const SBE_NOEXCEPT\n" +
+                indent + "    SBE_NODISCARD std::string_view get%1$sAsStringView() const SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
                 indent + "        const char *buffer = m_buffer + m_offset + %2$d;\n" +
                 indent + "        size_t length = 0;\n\n" +
