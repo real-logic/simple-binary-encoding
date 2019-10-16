@@ -521,39 +521,7 @@ public class CppGenerator implements CodeGenerator
                 lengthByteOrderStr,
                 lengthCppType);
 
-            new Formatter(sb).format("\n" +
-                indent + "    std::string get%1$sAsJsonEscapedString()\n" +
-                indent + "    {\n" +
-                "%2$s" +
-                indent + "        std::ostringstream oss;\n" +
-                indent + "        std::string s = get%1$sAsString();\n\n" +
-                indent + "        for (auto c = s.cbegin(); c != s.cend(); c++)\n" +
-                indent + "        {\n" +
-                indent + "            switch (*c)\n" +
-                indent + "            {\n" +
-                indent + "                case '\"': oss << \"\\\\\\\"\"; break;\n" +
-                indent + "                case '\\\\': oss << \"\\\\\\\\\"; break;\n" +
-                indent + "                case '\\b': oss << \"\\\\b\"; break;\n" +
-                indent + "                case '\\f': oss << \"\\\\f\"; break;\n" +
-                indent + "                case '\\n': oss << \"\\\\n\"; break;\n" +
-                indent + "                case '\\r': oss << \"\\\\r\"; break;\n" +
-                indent + "                case '\\t': oss << \"\\\\t\"; break;\n\n" +
-                indent + "                default:\n" +
-                indent + "                    if ('\\x00' <= *c && *c <= '\\x1f')\n" +
-                indent + "                    {\n" +
-                indent + "                        oss << \"\\\\u\"" + " << std::hex << std::setw(4)\n" +
-                indent + "                            << std::setfill('0') << (int)(*c);\n" +
-                indent + "                    }\n" +
-                indent + "                    else\n" +
-                indent + "                    {\n" +
-                indent + "                        oss << *c;\n" +
-                indent + "                    }\n" +
-                indent + "            }\n" +
-                indent + "        }\n\n" +
-                indent + "        return oss.str();\n" +
-                indent + "    }\n",
-                propertyName,
-                generateStringNotPresentCondition(token.version(), indent));
+            generateJsonEscapedStringGetter(sb, token, indent, propertyName);
 
             new Formatter(sb).format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
@@ -1524,6 +1492,8 @@ public class CppGenerator implements CodeGenerator
                 offset,
                 arrayLength);
 
+            generateJsonEscapedStringGetter(sb, token, indent, propertyName);
+
             new Formatter(sb).format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
                 indent + "    std::string_view get%1$sAsStringView() const SBE_NOEXCEPT\n" +
@@ -1582,6 +1552,44 @@ public class CppGenerator implements CodeGenerator
                 offset,
                 arrayLength);
         }
+    }
+
+    private void generateJsonEscapedStringGetter(
+        final StringBuilder sb, final Token token, final String indent, final String propertyName)
+    {
+        new Formatter(sb).format("\n" +
+            indent + "    std::string get%1$sAsJsonEscapedString()\n" +
+            indent + "    {\n" +
+            "%2$s" +
+            indent + "        std::ostringstream oss;\n" +
+            indent + "        std::string s = get%1$sAsString();\n\n" +
+            indent + "        for (auto c = s.cbegin(); c != s.cend(); c++)\n" +
+            indent + "        {\n" +
+            indent + "            switch (*c)\n" +
+            indent + "            {\n" +
+            indent + "                case '\"': oss << \"\\\\\\\"\"; break;\n" +
+            indent + "                case '\\\\': oss << \"\\\\\\\\\"; break;\n" +
+            indent + "                case '\\b': oss << \"\\\\b\"; break;\n" +
+            indent + "                case '\\f': oss << \"\\\\f\"; break;\n" +
+            indent + "                case '\\n': oss << \"\\\\n\"; break;\n" +
+            indent + "                case '\\r': oss << \"\\\\r\"; break;\n" +
+            indent + "                case '\\t': oss << \"\\\\t\"; break;\n\n" +
+            indent + "                default:\n" +
+            indent + "                    if ('\\x00' <= *c && *c <= '\\x1f')\n" +
+            indent + "                    {\n" +
+            indent + "                        oss << \"\\\\u\"" + " << std::hex << std::setw(4)\n" +
+            indent + "                            << std::setfill('0') << (int)(*c);\n" +
+            indent + "                    }\n" +
+            indent + "                    else\n" +
+            indent + "                    {\n" +
+            indent + "                        oss << *c;\n" +
+            indent + "                    }\n" +
+            indent + "            }\n" +
+            indent + "        }\n\n" +
+            indent + "        return oss.str();\n" +
+            indent + "    }\n",
+            toUpperFirstChar(propertyName),
+            generateStringNotPresentCondition(token.version(), indent));
     }
 
     private void generateConstPropertyMethods(
@@ -1657,6 +1665,18 @@ public class CppGenerator implements CodeGenerator
             toUpperFirstChar(propertyName),
             propertyName,
             values);
+
+        new Formatter(sb).format("\n" +
+            indent + "    std::string get%1$sAsString() const\n" +
+            indent + "    {\n" +
+            indent + "        static const std::uint8_t %1$sValues[] = { %2$s };\n\n" +
+            indent + "        return std::string((const char *)%1$sValues, %3$s);\n" +
+            indent + "    }\n",
+            toUpperFirstChar(propertyName),
+            values,
+            constantValue.length);
+
+        generateJsonEscapedStringGetter(sb, token, indent, propertyName);
     }
 
     private CharSequence generateFixedFlyweightCode(final String className, final int size)
@@ -2392,7 +2412,7 @@ public class CppGenerator implements CodeGenerator
         final List<Token> fields, final List<Token> groups, final List<Token> varData, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
-        final boolean[] atLeastOne = {false};
+        final boolean[] atLeastOne = { false };
 
         for (int i = 0, size = fields.size(); i < size;)
         {
@@ -2402,8 +2422,7 @@ public class CppGenerator implements CodeGenerator
             {
                 final Token encodingToken = fields.get(i + 1);
 
-                sb.append(
-                    writeTokenDisplay(fieldToken.name(), encodingToken, atLeastOne, indent) + "\n");
+                writeTokenDisplay(sb, fieldToken.name(), encodingToken, atLeastOne, indent);
 
                 i += fieldToken.componentTokenCount();
             }
@@ -2411,8 +2430,7 @@ public class CppGenerator implements CodeGenerator
             {
                 final Token encodingToken = fields.get(i);
 
-                sb.append(
-                    writeTokenDisplay(fieldToken.name(), encodingToken, atLeastOne, indent) + "\n");
+                writeTokenDisplay(sb, fieldToken.name(), encodingToken, atLeastOne, indent);
 
                 i += fieldToken.componentTokenCount();
             }
@@ -2501,7 +2519,8 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence writeTokenDisplay(
+    private void writeTokenDisplay(
+        final StringBuilder sb,
         final String fieldTokenName,
         final Token typeToken,
         final boolean[] atLeastOne,
@@ -2509,10 +2528,8 @@ public class CppGenerator implements CodeGenerator
     {
         if (typeToken.encodedLength() <= 0 || typeToken.isConstantEncoding())
         {
-            return "";
+            return;
         }
-
-        final StringBuilder sb = new StringBuilder();
 
         if (atLeastOne[0])
         {
@@ -2534,15 +2551,12 @@ public class CppGenerator implements CodeGenerator
                 {
                     if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
                     {
+                        final String getAsStringFunction =
+                            "writer.get" + toUpperFirstChar(fieldTokenName) + "AsJsonEscapedString().c_str()";
+
                         sb.append(
-                            indent + "builder << '\"';\n" +
-                            indent + "for (size_t i = 0, length = " + fieldName + "Length();\n" +
-                            indent + "    i < length && " + fieldName + "(i) > 0;\n" +
-                            indent + "    i++)\n" +
-                            indent + "{\n" +
-                            indent + "    builder << (char)" + fieldName + "(i);\n" +
-                            indent + "}\n" +
-                            indent + "builder << '\"';\n");
+                            indent + "builder << '\"' <<\n" +
+                            indent + INDENT + getAsStringFunction + " << '\"';\n");
                     }
                     else
                     {
@@ -2564,7 +2578,6 @@ public class CppGenerator implements CodeGenerator
                 }
                 else
                 {
-                    // have to duplicate because of checkstyle :/
                     if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
                     {
                         sb.append(
@@ -2597,7 +2610,7 @@ public class CppGenerator implements CodeGenerator
                 break;
         }
 
-        return sb;
+        sb.append('\n');
     }
 
     private CharSequence generateChoicesDisplay(final String name, final List<Token> tokens)
