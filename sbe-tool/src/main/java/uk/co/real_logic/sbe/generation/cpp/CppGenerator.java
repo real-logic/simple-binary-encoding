@@ -132,13 +132,13 @@ public class CppGenerator implements CodeGenerator
                 collectVarData(messageBody, i, varData);
 
                 final StringBuilder sb = new StringBuilder();
-                out.append(generateFields(className, fields, BASE_INDENT, false));
+                generateFields(sb, className, fields, BASE_INDENT, false);
                 generateGroups(sb, groups, BASE_INDENT);
+                generateVarData(sb, className, varData, BASE_INDENT);
+                generateDisplay(sb, msgToken.name(), fields, groups, varData, BASE_INDENT + INDENT);
+                sb.append("};\n");
+                sb.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
                 out.append(sb);
-                out.append(generateVarData(className, varData, BASE_INDENT));
-                out.append(generateDisplay(msgToken.name(), fields, groups, varData, BASE_INDENT + INDENT));
-                out.append("};\n");
-                out.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
             }
         }
     }
@@ -165,7 +165,7 @@ public class CppGenerator implements CodeGenerator
 
             final List<Token> fields = new ArrayList<>();
             i = collectFields(tokens, i, fields);
-            sb.append(generateFields(formatClassName(groupName), fields, indent + INDENT, false));
+            generateFields(sb, formatClassName(groupName), fields, indent + INDENT, false);
 
             final List<Token> groups = new ArrayList<>();
             i = collectGroups(tokens, i, groups);
@@ -173,12 +173,12 @@ public class CppGenerator implements CodeGenerator
 
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
-            sb.append(generateVarData(formatClassName(groupName), varData, indent + INDENT));
+            generateVarData(sb, formatClassName(groupName), varData, indent + INDENT);
 
             sb.append(generateGroupDisplay(groupName, fields, groups, varData, indent + INDENT + INDENT));
 
             sb.append(indent).append("    };\n");
-            sb.append(generateGroupProperty(groupName, groupToken, cppTypeForNumInGroup, indent));
+            generateGroupProperty(sb, groupName, groupToken, cppTypeForNumInGroup, indent);
         }
     }
 
@@ -350,11 +350,13 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("#endif\n");
     }
 
-    private static CharSequence generateGroupProperty(
-        final String groupName, final Token token, final String cppTypeForNumInGroup, final String indent)
+    private static void generateGroupProperty(
+        final StringBuilder sb,
+        final String groupName,
+        final Token token,
+        final String cppTypeForNumInGroup,
+        final String indent)
     {
-        final StringBuilder sb = new StringBuilder();
-
         final String className = formatClassName(groupName);
         final String propertyName = formatPropertyName(groupName);
 
@@ -413,14 +415,11 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n",
             propertyName,
             token.version()));
-
-        return sb;
     }
 
-    private CharSequence generateVarData(final String className, final List<Token> tokens, final String indent)
+    private void generateVarData(
+        final StringBuilder sb, final String className, final List<Token> tokens, final String indent)
     {
-        final StringBuilder sb = new StringBuilder();
-
         for (int i = 0, size = tokens.size(); i < size;)
         {
             final Token token = tokens.get(i);
@@ -604,8 +603,6 @@ public class CppGenerator implements CodeGenerator
 
             i += token.componentTokenCount();
         }
-
-        return sb;
     }
 
     private void generateVarDataDescriptors(
@@ -1979,11 +1976,13 @@ public class CppGenerator implements CodeGenerator
             generateConstructorsAndOperators(className));
     }
 
-    private CharSequence generateFields(
-        final String containingClassName, final List<Token> tokens, final String indent, final boolean inComposite)
+    private void generateFields(
+        final StringBuilder sb,
+        final String containingClassName,
+        final List<Token> tokens,
+        final String indent,
+        final boolean inComposite)
     {
-        final StringBuilder sb = new StringBuilder();
-
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
             final Token signalToken = tokens.get(i);
@@ -2016,8 +2015,6 @@ public class CppGenerator implements CodeGenerator
                 }
             }
         }
-
-        return sb;
     }
 
     private void generateFieldCommonMethods(
@@ -2339,14 +2336,15 @@ public class CppGenerator implements CodeGenerator
         return literal;
     }
 
-    private CharSequence generateDisplay(
+    private void generateDisplay(
+        final StringBuilder sb,
         final String name,
         final List<Token> fields,
         final List<Token> groups,
         final List<Token> varData,
         final String indent)
     {
-        return String.format("\n" +
+        sb.append(String.format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
             indent + "friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
             indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s _writer)\n" +
@@ -2363,7 +2361,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    return builder;\n" +
             indent + "}\n",
             formatClassName(name),
-            appendDisplay(fields, groups, varData, indent + INDENT));
+            appendDisplay(fields, groups, varData, indent + INDENT)));
     }
 
     private CharSequence generateGroupDisplay(
@@ -2387,10 +2385,7 @@ public class CppGenerator implements CodeGenerator
             appendDisplay(fields, groups, varData, indent + INDENT));
     }
 
-    private CharSequence generateCompositeDisplay(
-        final String name,
-        final List<Token> tokens,
-        final String indent)
+    private CharSequence generateCompositeDisplay(final String name, final List<Token> tokens, final String indent)
     {
         return String.format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
@@ -2407,10 +2402,7 @@ public class CppGenerator implements CodeGenerator
     }
 
     private CharSequence appendDisplay(
-        final List<Token> fields,
-        final List<Token> groups,
-        final List<Token> varData,
-        final String indent)
+        final List<Token> fields, final List<Token> groups, final List<Token> varData, final String indent)
     {
         final StringBuilder sb = new StringBuilder();
         final boolean[] atLeastOne = {false};
