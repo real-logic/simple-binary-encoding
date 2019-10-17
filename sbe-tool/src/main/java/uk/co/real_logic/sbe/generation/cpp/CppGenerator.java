@@ -296,6 +296,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        return *m_positionPtr;\n" +
             indent + "    }\n\n" +
 
+            indent + "    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)\n" +
             indent + "    std::uint64_t sbeCheckPosition(const std::uint64_t position)\n" +
             indent + "    {\n" +
             indent + "        if (SBE_BOUNDS_CHECK_EXPECT((position > m_bufferLength), false))\n" +
@@ -1988,6 +1989,7 @@ public class CppGenerator implements CodeGenerator
             "        return m_position;\n" +
             "    }\n\n" +
 
+            "    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)\n" +
             "    std::uint64_t sbeCheckPosition(const std::uint64_t position)\n" +
             "    {\n" +
             "        if (SBE_BOUNDS_CHECK_EXPECT((position > m_bufferLength), false))\n" +
