@@ -904,7 +904,7 @@ public class JavaGenerator implements CodeGenerator
                     generateGet(lengthType, "limit", byteOrderStr),
                     byteOrderStr);
             }
-            if (characterEncoding.contains("UTF8"))
+            if (characterEncoding.contains("UTF"))
             {
                 new Formatter(sb).format("\n" +
                     indent + "    public int get%1$s(final Appendable appendable)\n" +
