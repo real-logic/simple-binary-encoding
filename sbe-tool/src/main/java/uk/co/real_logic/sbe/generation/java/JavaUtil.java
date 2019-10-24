@@ -159,6 +159,18 @@ public class JavaUtil
     }
 
     /**
+     * Format a Getter name for generated code.
+     * <p>
+     *
+     * @param value to be formatted.
+     * @return the string formatted as a getter name.
+     */
+    public static String formatGetterName(final String value)
+    {
+        return "get" + Generators.toUpperFirstChar(value);
+    }
+
+    /**
      * Format a class name for the generated code.
      *
      * @param value to be formatted.

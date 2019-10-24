@@ -3269,7 +3269,16 @@ public class JavaGenerator implements CodeGenerator
             }
             else
             {
-                append(sb, indent, "builder.append('\\'').append(" + varDataName + "()).append('\\'');");
+                if (characterEncoding.contains("ASCII"))
+                {
+                    append(sb, indent, "builder.append('\\'');");
+                    append(sb, indent, formatGetterName(varDataToken.name()) + "(builder);");
+                    append(sb, indent, "builder.append('\\'');");
+                }
+                else
+                {
+                    append(sb, indent, "builder.append('\\'').append(" + varDataName + "()).append('\\'');");
+                }
             }
 
             lengthBeforeLastGeneratedSeparator = sb.length();
