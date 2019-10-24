@@ -3274,7 +3274,9 @@ public class JavaGenerator implements CodeGenerator
                     append(sb, indent, "builder.append('\\'');");
                     append(sb, indent, formatGetterName(varDataToken.name()) + "(builder);");
                     append(sb, indent, "builder.append('\\'');");
-                } else {
+                }
+                else
+                {
                     append(sb, indent, "builder.append('\\'').append(" + varDataName + "()).append('\\'');");
                 }
             }
