@@ -3284,7 +3284,7 @@ public class JavaGenerator implements CodeGenerator
             append(sb, indent, "builder.append(\"" + varDataName + Separators.KEY_VALUE + "\");");
             if (null == characterEncoding)
             {
-                append(sb, indent, "builder.append(" + varDataName + "Length() + \" bytes of raw data\");");
+                append(sb, indent, "builder.append(" + varDataName + "Length()).append(\" bytes of raw data\");");
                 append(sb, indent,
                     "parentMessage.limit(parentMessage.limit() + " + varDataName + "HeaderLength() + " +
                     varDataName + "Length());");
