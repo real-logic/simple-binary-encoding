@@ -160,25 +160,24 @@ public class JavaUtil
 
     /**
      * Format a Getter name for generated code.
-     * <p>
      *
-     * @param value to be formatted.
-     * @return the string formatted as a getter name.
+     * @param propertyName to be formatted.
+     * @return the property name formatted as a getter name.
      */
-    public static String formatGetterName(final String value)
+    public static String formatGetterName(final String propertyName)
     {
-        return "get" + Generators.toUpperFirstChar(value);
+        return "get" + Generators.toUpperFirstChar(propertyName);
     }
 
     /**
      * Format a class name for the generated code.
      *
-     * @param value to be formatted.
-     * @return the string formatted as a class name.
+     * @param className to be formatted.
+     * @return the formatted class name.
      */
-    public static String formatClassName(final String value)
+    public static String formatClassName(final String className)
     {
-        return Generators.toUpperFirstChar(value);
+        return Generators.toUpperFirstChar(className);
     }
 
     /**
