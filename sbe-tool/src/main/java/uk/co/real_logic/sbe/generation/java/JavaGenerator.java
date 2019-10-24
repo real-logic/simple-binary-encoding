@@ -904,28 +904,6 @@ public class JavaGenerator implements CodeGenerator
                     generateGet(lengthType, "limit", byteOrderStr),
                     byteOrderStr);
             }
-            if (characterEncoding.contains("UTF"))
-            {
-                new Formatter(sb).format("\n" +
-                    indent + "    public int get%1$s(final Appendable appendable)\n" +
-                    indent + "    {\n" +
-                    "%2$s" +
-                    indent + "        final int headerLength = %3$d;\n" +
-                    indent + "        final int limit = parentMessage.limit();\n" +
-                    indent + "        final int dataLength = (int)%4$s;\n" +
-                    indent + "        final int dataOffset = limit + headerLength;\n\n" +
-                    indent + "        parentMessage.limit(dataOffset + dataLength);\n" +
-                    indent + "        appendable.append(buffer.getStringWithoutLengthUtf8(dataOffset, dataLength));\n\n" +
-                    //TODO: wait for signature below, similar to getStringWithoutLengthAscii(offset,length,appendable)
-                    indent + "        //buffer.getStringWithoutLengthUtf8(dataOffset, dataLength, appendable);\n\n" +
-                    indent + "        return dataLength;\n" +
-                    indent + "    }\n",
-                    Generators.toUpperFirstChar(propertyName),
-                    generateStringNotPresentConditionForAppendable(token.version(), indent),
-                    sizeOfLengthField,
-                    generateGet(lengthType, "limit", byteOrderStr),
-                    byteOrderStr);
-            }
         }
     }
 
