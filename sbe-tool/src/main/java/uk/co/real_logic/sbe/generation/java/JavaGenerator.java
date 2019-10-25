@@ -3269,7 +3269,7 @@ public class JavaGenerator implements CodeGenerator
             }
             else
             {
-                if (characterEncoding.contains("ASCII"))
+                if (characterEncoding.contains("ASCII") || characterEncoding.contains("ascii"))
                 {
                     append(sb, indent, "builder.append('\\'');");
                     append(sb, indent, formatGetterName(varDataToken.name()) + "(builder);");
