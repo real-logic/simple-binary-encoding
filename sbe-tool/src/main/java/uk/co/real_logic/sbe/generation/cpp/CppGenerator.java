@@ -1609,9 +1609,9 @@ public class CppGenerator implements CodeGenerator
             "%2$s" +
             indent + "        std::ostringstream oss;\n" +
             indent + "        std::string s = get%1$sAsString();\n\n" +
-            indent + "        for (auto c = s.cbegin(); c != s.cend(); c++)\n" +
+            indent + "        for (const auto c : s)\n" +
             indent + "        {\n" +
-            indent + "            switch (*c)\n" +
+            indent + "            switch (c)\n" +
             indent + "            {\n" +
             indent + "                case '\"': oss << \"\\\\\\\"\"; break;\n" +
             indent + "                case '\\\\': oss << \"\\\\\\\\\"; break;\n" +
@@ -1621,14 +1621,14 @@ public class CppGenerator implements CodeGenerator
             indent + "                case '\\r': oss << \"\\\\r\"; break;\n" +
             indent + "                case '\\t': oss << \"\\\\t\"; break;\n\n" +
             indent + "                default:\n" +
-            indent + "                    if ('\\x00' <= *c && *c <= '\\x1f')\n" +
+            indent + "                    if ('\\x00' <= c && c <= '\\x1f')\n" +
             indent + "                    {\n" +
             indent + "                        oss << \"\\\\u\"" + " << std::hex << std::setw(4)\n" +
-            indent + "                            << std::setfill('0') << (int)(*c);\n" +
+            indent + "                            << std::setfill('0') << (int)(c);\n" +
             indent + "                    }\n" +
             indent + "                    else\n" +
             indent + "                    {\n" +
-            indent + "                        oss << *c;\n" +
+            indent + "                        oss << c;\n" +
             indent + "                    }\n" +
             indent + "            }\n" +
             indent + "        }\n\n" +
