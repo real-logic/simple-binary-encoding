@@ -1477,16 +1477,14 @@ public class JavaGenerator implements CodeGenerator
             sb.append("            case ").append(constStr).append(": return ").append(name).append(";\n");
         }
 
+        final String nullValue = tokens.get(0).encoding().applicableNullValue().toString();
+        sb.append("            case ").append(nullValue).append(": return NULL_VAL").append(";\n");
+
         final String handleUnknownLogic = shouldDecodeUnknownEnumValues ?
             INDENT + INDENT + "return SBE_UNKNOWN;\n" :
             INDENT + INDENT + "throw new IllegalArgumentException(\"Unknown value: \" + value);\n";
 
-        final String nullValue = tokens.get(0).encoding().applicableNullValue().toString();
         sb.append("        }\n\n")
-            .append("        if (").append(generateLiteral(primitiveType, nullValue)).append(" == value)\n")
-            .append("        {\n")
-            .append("            return NULL_VAL;\n")
-            .append("        }\n\n")
             .append(handleUnknownLogic)
             .append("    }\n");
 
