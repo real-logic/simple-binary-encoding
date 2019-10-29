@@ -592,13 +592,13 @@ public class FrameCodecDecoder
         builder.append(schemaVersion());
         builder.append('|');
         builder.append("packageName=");
-        builder.append('\'' + packageName() + '\'');
+        builder.append('\'').append(packageName()).append('\'');
         builder.append('|');
         builder.append("namespaceName=");
-        builder.append('\'' + namespaceName() + '\'');
+        builder.append('\'').append(namespaceName()).append('\'');
         builder.append('|');
         builder.append("semanticVersion=");
-        builder.append('\'' + semanticVersion() + '\'');
+        builder.append('\'').append(semanticVersion()).append('\'');
 
         limit(originalLimit);
 
