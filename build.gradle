@@ -449,8 +449,8 @@ project(':sbe-benchmarks') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile 'org.openjdk.jmh:jmh-core:1.21'
-        annotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
+        compile 'org.openjdk.jmh:jmh-core:1.22'
+        annotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.22'
         compile project(':sbe-tool')
         compile files('build/classes/java/generated')
     }
