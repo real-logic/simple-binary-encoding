@@ -78,11 +78,7 @@ public enum SignalCodec
             case 15: return BEGIN_VAR_DATA;
             case 16: return END_VAR_DATA;
             case 17: return ENCODING;
-        }
-
-        if ((short)255 == value)
-        {
-            return NULL_VAL;
+            case 255: return NULL_VAL;
         }
 
         throw new IllegalArgumentException("Unknown value: " + value);

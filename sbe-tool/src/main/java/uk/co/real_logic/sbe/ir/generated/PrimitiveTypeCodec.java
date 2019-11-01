@@ -63,11 +63,7 @@ public enum PrimitiveTypeCodec
             case 9: return UINT64;
             case 10: return FLOAT;
             case 11: return DOUBLE;
-        }
-
-        if ((short)255 == value)
-        {
-            return NULL_VAL;
+            case 255: return NULL_VAL;
         }
 
         throw new IllegalArgumentException("Unknown value: " + value);
