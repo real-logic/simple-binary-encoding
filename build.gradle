@@ -30,6 +30,7 @@ defaultTasks 'clean', 'build', 'shadowJar', 'install'
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
 def sbeJavaVersion = JavaVersion.VERSION_1_8
+def sbeJavaReleaseVersion = '8'
 
 group = sbeGroup
 version = sbeVersion
@@ -138,15 +139,25 @@ subprojects {
     checkstyle.toolVersion = '8.25'
 
     compileJava {
-        sourceCompatibility = sbeJavaVersion
-        targetCompatibility = sbeJavaVersion
+        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
+            options.compilerArgs.addAll(['--release', sbeJavaReleaseVersion])
+        }
+        else {
+            sourceCompatibility = sbeJavaVersion
+            targetCompatibility = sbeJavaVersion
+        }
         options.encoding = 'UTF-8'
         options.deprecation = true
     }
 
     compileTestJava {
-        sourceCompatibility = sbeJavaVersion
-        targetCompatibility = sbeJavaVersion
+        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
+            options.compilerArgs.addAll(['--release', sbeJavaReleaseVersion])
+        }
+        else {
+            sourceCompatibility = sbeJavaVersion
+            targetCompatibility = sbeJavaVersion
+        }
         options.encoding = 'UTF-8'
         options.deprecation = true
     }
@@ -206,8 +217,13 @@ project(':sbe-tool') {
 
     compileGeneratedJava {
         dependsOn 'generateCodecs'
-        sourceCompatibility = sbeJavaVersion
-        targetCompatibility = sbeJavaVersion
+        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
+            options.compilerArgs.addAll(['--release', sbeJavaReleaseVersion])
+        }
+        else {
+            sourceCompatibility = sbeJavaVersion
+            targetCompatibility = sbeJavaVersion
+        }
         options.encoding = 'UTF-8'
         options.deprecation = true
         classpath += sourceSets.main.runtimeClasspath
@@ -365,8 +381,13 @@ project(':sbe-samples') {
 
     compileGeneratedJava {
         dependsOn 'generateCodecs'
-        sourceCompatibility = sbeJavaVersion
-        targetCompatibility = sbeJavaVersion
+        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
+            options.compilerArgs.addAll(['--release', sbeJavaReleaseVersion])
+        }
+        else {
+            sourceCompatibility = sbeJavaVersion
+            targetCompatibility = sbeJavaVersion
+        }
         options.encoding = 'UTF-8'
         options.deprecation = true
         classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
@@ -461,8 +482,13 @@ project(':sbe-benchmarks') {
 
     compileGeneratedJava {
         dependsOn 'generateCodecs'
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
+            options.compilerArgs.addAll(['--release', sbeJavaReleaseVersion])
+        }
+        else {
+            sourceCompatibility = sbeJavaVersion
+            targetCompatibility = sbeJavaVersion
+        }
         options.encoding = 'UTF-8'
         options.deprecation = true
         classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
