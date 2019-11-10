@@ -1,7 +1,6 @@
 # editors
 *~
 *.swp
-.idea
 .project
 .classpath
 .factorypath
@@ -9,6 +8,12 @@
 .settings
 *.sublime-project
 *.sublime-workspace
+
+# intellij
+.idea
+*.iml
+*.ipr
+*.iws
 
 # Build tools
 build-local.properties
