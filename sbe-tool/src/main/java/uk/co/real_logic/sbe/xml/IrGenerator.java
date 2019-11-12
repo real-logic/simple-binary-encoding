@@ -117,7 +117,7 @@ public class IrGenerator
         tokenList.add(token);
     }
 
-    private void addFieldSignal(final Field field, final Signal signal)
+    private void addFieldSignal(final Field field, final Signal signal, final int typeSinceVersion)
     {
         final Encoding.Builder encodingBuilder = new Encoding.Builder()
             .epoch(field.epoch())
@@ -142,7 +142,7 @@ public class IrGenerator
             .description(field.description())
             .id(field.id())
             .offset(field.computedOffset())
-            .version(field.sinceVersion())
+            .version(Math.max(field.sinceVersion(), typeSinceVersion))
             .deprecated(field.deprecated())
             .encoding(encodingBuilder.build())
             .build();
@@ -158,20 +158,22 @@ public class IrGenerator
 
             if (null == type)
             {
-                addFieldSignal(field, Signal.BEGIN_GROUP);
+                addFieldSignal(field, Signal.BEGIN_GROUP, 0);
                 add(field.dimensionType(), 0, field);
                 addAllFields(field.groupFields());
-                addFieldSignal(field, Signal.END_GROUP);
+                addFieldSignal(field, Signal.END_GROUP, 0);
             }
             else if (type instanceof CompositeType && field.isVariableLength())
             {
-                addFieldSignal(field, Signal.BEGIN_VAR_DATA);
+                addFieldSignal(field, Signal.BEGIN_VAR_DATA, 0);
                 add((CompositeType)type, field.computedOffset(), field);
-                addFieldSignal(field, Signal.END_VAR_DATA);
+                addFieldSignal(field, Signal.END_VAR_DATA, 0);
             }
             else
             {
-                addFieldSignal(field, Signal.BEGIN_FIELD);
+                final int typeSinceVersion = type.sinceVersion();
+
+                addFieldSignal(field, Signal.BEGIN_FIELD, typeSinceVersion);
 
                 if (type instanceof EncodedDataType)
                 {
@@ -194,7 +196,7 @@ public class IrGenerator
                     throw new IllegalStateException("Unknown type: " + type);
                 }
 
-                addFieldSignal(field, Signal.END_FIELD);
+                addFieldSignal(field, Signal.END_FIELD, typeSinceVersion);
             }
         }
     }
