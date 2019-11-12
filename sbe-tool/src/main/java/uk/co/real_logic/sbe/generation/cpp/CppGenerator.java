@@ -1103,7 +1103,7 @@ public class CppGenerator implements CodeGenerator
             switch (fieldToken.signal())
             {
                 case ENCODING:
-                    generatePrimitiveProperty(sb, containingClassName, propertyName, fieldToken, indent);
+                    generatePrimitiveProperty(sb, containingClassName, propertyName, fieldToken, fieldToken, indent);
                     break;
 
                 case BEGIN_ENUM:
@@ -1129,18 +1129,20 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb,
         final String containingClassName,
         final String propertyName,
-        final Token token,
+        final Token propertyToken,
+        final Token encodingToken,
         final String indent)
     {
-        generatePrimitiveFieldMetaData(sb, propertyName, token, indent);
+        generatePrimitiveFieldMetaData(sb, propertyName, encodingToken, indent);
 
-        if (token.isConstantEncoding())
+        if (encodingToken.isConstantEncoding())
         {
-            generateConstPropertyMethods(sb, propertyName, token, indent);
+            generateConstPropertyMethods(sb, propertyName, encodingToken, indent);
         }
         else
         {
-            generatePrimitivePropertyMethods(sb, containingClassName, propertyName, token, indent);
+            generatePrimitivePropertyMethods(
+                sb, containingClassName, propertyName, propertyToken, encodingToken, indent);
         }
     }
 
@@ -1148,17 +1150,18 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb,
         final String containingClassName,
         final String propertyName,
-        final Token token,
+        final Token propertyToken,
+        final Token encodingToken,
         final String indent)
     {
-        final int arrayLength = token.arrayLength();
+        final int arrayLength = encodingToken.arrayLength();
         if (arrayLength == 1)
         {
-            generateSingleValueProperty(sb, containingClassName, propertyName, token, indent);
+            generateSingleValueProperty(sb, containingClassName, propertyName, propertyToken, encodingToken, indent);
         }
         else if (arrayLength > 1)
         {
-            generateArrayProperty(sb, containingClassName, propertyName, token, indent);
+            generateArrayProperty(sb, containingClassName, propertyName, propertyToken, encodingToken, indent);
         }
     }
 
@@ -1290,12 +1293,13 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb,
         final String containingClassName,
         final String propertyName,
-        final Token token,
+        final Token propertyToken,
+        final Token encodingToken,
         final String indent)
     {
-        final PrimitiveType primitiveType = token.encoding().primitiveType();
+        final PrimitiveType primitiveType = encodingToken.encoding().primitiveType();
         final String cppTypeName = cppTypeName(primitiveType);
-        final int offset = token.offset();
+        final int offset = encodingToken.offset();
 
         new Formatter(sb).format("\n" +
             indent + "    SBE_NODISCARD %1$s %2$s() const SBE_NOEXCEPT\n" +
@@ -1305,11 +1309,11 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n",
             cppTypeName,
             propertyName,
-            generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
-            generateLoadValue(primitiveType, Integer.toString(offset), token.encoding().byteOrder(), indent));
+            generateFieldNotPresentCondition(propertyToken.version(), encodingToken.encoding(), indent),
+            generateLoadValue(primitiveType, Integer.toString(offset), encodingToken.encoding().byteOrder(), indent));
 
         final CharSequence storeValue = generateStoreValue(
-            primitiveType, "", Integer.toString(offset), token.encoding().byteOrder(), indent);
+            primitiveType, "", Integer.toString(offset), encodingToken.encoding().byteOrder(), indent);
 
         new Formatter(sb).format("\n" +
             indent + "    %1$s &%2$s(const %3$s value) SBE_NOEXCEPT\n" +
@@ -1327,14 +1331,15 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb,
         final String containingClassName,
         final String propertyName,
-        final Token token,
+        final Token propertyToken,
+        final Token encodingToken,
         final String indent)
     {
-        final PrimitiveType primitiveType = token.encoding().primitiveType();
+        final PrimitiveType primitiveType = encodingToken.encoding().primitiveType();
         final String cppTypeName = cppTypeName(primitiveType);
-        final int offset = token.offset();
+        final int offset = encodingToken.offset();
 
-        final int arrayLength = token.arrayLength();
+        final int arrayLength = encodingToken.arrayLength();
         new Formatter(sb).format("\n" +
             indent + "    static SBE_CONSTEXPR std::uint64_t %1$sLength() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
@@ -1350,7 +1355,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        return m_buffer + m_offset + %3$d;\n" +
             indent + "    }\n",
             propertyName,
-            generateTypeFieldNotPresentCondition(token.version(), indent),
+            generateTypeFieldNotPresentCondition(propertyToken.version(), indent),
             offset);
 
         new Formatter(sb).format("\n" +
@@ -1360,13 +1365,13 @@ public class CppGenerator implements CodeGenerator
             indent + "        return m_buffer + m_offset + %3$d;\n" +
             indent + "    }\n",
             propertyName,
-            generateTypeFieldNotPresentCondition(token.version(), indent),
+            generateTypeFieldNotPresentCondition(propertyToken.version(), indent),
             offset);
 
         final CharSequence loadValue = generateLoadValue(
             primitiveType,
             String.format("%d + (index * %d)", offset, primitiveType.size()),
-            token.encoding().byteOrder(),
+            encodingToken.encoding().byteOrder(),
             indent);
 
         new Formatter(sb).format("\n" +
@@ -1382,14 +1387,14 @@ public class CppGenerator implements CodeGenerator
             cppTypeName,
             propertyName,
             arrayLength,
-            generateFieldNotPresentCondition(token.version(), token.encoding(), indent),
+            generateFieldNotPresentCondition(propertyToken.version(), encodingToken.encoding(), indent),
             loadValue);
 
         final CharSequence storeValue = generateStoreValue(
             primitiveType,
             "",
             String.format("%d + (index * %d)", offset, primitiveType.size()),
-            token.encoding().byteOrder(),
+            encodingToken.encoding().byteOrder(),
             indent);
 
         new Formatter(sb).format("\n" +
@@ -1424,7 +1429,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n",
             toUpperFirstChar(propertyName),
             arrayLength,
-            generateArrayFieldNotPresentCondition(token.version(), indent),
+            generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
             offset,
             cppTypeName);
 
@@ -1466,7 +1471,7 @@ public class CppGenerator implements CodeGenerator
                     primitiveType,
                     Integer.toString(i),
                     Integer.toString(offset + (i * primitiveType.size())),
-                    token.encoding().byteOrder(),
+                    encodingToken.encoding().byteOrder(),
                     indent));
             }
 
@@ -1475,7 +1480,7 @@ public class CppGenerator implements CodeGenerator
             sb.append(indent).append("    }\n");
         }
 
-        if (token.encoding().primitiveType() == PrimitiveType.CHAR)
+        if (encodingToken.encoding().primitiveType() == PrimitiveType.CHAR)
         {
             new Formatter(sb).format("\n" +
                 indent + "    std::string get%1$sAsString() const\n" +
@@ -1492,7 +1497,7 @@ public class CppGenerator implements CodeGenerator
                 offset,
                 arrayLength);
 
-            generateJsonEscapedStringGetter(sb, token, indent, propertyName);
+            generateJsonEscapedStringGetter(sb, encodingToken, indent, propertyName);
 
             new Formatter(sb).format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
@@ -2014,7 +2019,8 @@ public class CppGenerator implements CodeGenerator
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
-                        generatePrimitiveProperty(sb, containingClassName, propertyName, encodingToken, indent);
+                        generatePrimitiveProperty(
+                            sb, containingClassName, propertyName, signalToken, encodingToken, indent);
                         break;
 
                     case BEGIN_ENUM:
@@ -2170,7 +2176,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "    }\n",
                 enumName,
                 propertyName,
-                generateEnumFieldNotPresentCondition(token.version(), enumName, indent),
+                generateEnumFieldNotPresentCondition(fieldToken.version(), enumName, indent),
                 constValue.substring(constValue.indexOf(".") + 1));
         }
         else
@@ -2185,7 +2191,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "    }\n",
                 enumName,
                 propertyName,
-                generateEnumFieldNotPresentCondition(token.version(), enumName, indent),
+                generateEnumFieldNotPresentCondition(fieldToken.version(), enumName, indent),
                 formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
                 typeName,
                 offset);
@@ -2243,7 +2249,6 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb, final String propertyName, final Token token, final String indent)
     {
         final String compositeName = formatClassName(token.applicableTypeName());
-        final int offset = token.offset();
 
         new Formatter(sb).format("\n" +
             "private:\n" +
@@ -2261,7 +2266,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n",
             compositeName,
             propertyName,
-            offset);
+            token.offset());
     }
 
     private CharSequence generateNullValueLiteral(final PrimitiveType primitiveType, final Encoding encoding)
@@ -2623,7 +2628,7 @@ public class CppGenerator implements CodeGenerator
 
         new Formatter(sb).format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
-            indent + "friend std::basic_ostream<CharT, Traits>& operator<<(" +
+            indent + "friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
             indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s writer)\n" +
             indent + "{\n" +
             indent + "    builder << '[';\n",
