@@ -2422,23 +2422,10 @@ public class CppGenerator implements CodeGenerator
         for (int i = 0, size = fields.size(); i < size;)
         {
             final Token fieldToken = fields.get(i);
+            final Token encodingToken = fields.get(fieldToken.signal() == Signal.BEGIN_FIELD ? i + 1 : i);
 
-            if (fieldToken.signal() == Signal.BEGIN_FIELD)
-            {
-                final Token encodingToken = fields.get(i + 1);
-
-                writeTokenDisplay(sb, fieldToken.name(), encodingToken, atLeastOne, indent);
-
-                i += fieldToken.componentTokenCount();
-            }
-            else
-            {
-                final Token encodingToken = fields.get(i);
-
-                writeTokenDisplay(sb, fieldToken.name(), encodingToken, atLeastOne, indent);
-
-                i += fieldToken.componentTokenCount();
-            }
+            writeTokenDisplay(sb, fieldToken.name(), encodingToken, atLeastOne, indent);
+            i += fieldToken.componentTokenCount();
         }
 
         for (int i = 0, size = groups.size(); i < size; i++)
@@ -2607,9 +2594,6 @@ public class CppGenerator implements CodeGenerator
                 break;
 
             case BEGIN_SET:
-                sb.append(indent + "builder << " + fieldName + "();\n");
-                break;
-
             case BEGIN_COMPOSITE:
                 sb.append(indent + "builder << " + fieldName + "();\n");
                 break;
