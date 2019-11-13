@@ -259,7 +259,7 @@ public class JsonTokenListener implements TokenListener
 
             for (int i = 0; i < size; i++)
             {
-                Types.appendAsString(output, buffer, index + (i * elementSize), encoding);
+                Types.appendAsJsonString(output, buffer, index + (i * elementSize), encoding);
                 output.append(", ");
             }
 
