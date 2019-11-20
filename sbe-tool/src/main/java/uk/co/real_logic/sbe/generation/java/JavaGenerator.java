@@ -829,6 +829,23 @@ public class JavaGenerator implements CodeGenerator
         final String characterEncoding,
         final String indent)
     {
+        new Formatter(sb).format("\n" +
+            indent + "    public int skip%1$s()\n" +
+            indent + "    {\n" +
+            "%2$s" +
+            indent + "        final int headerLength = %3$d;\n" +
+            indent + "        final int limit = parentMessage.limit();\n" +
+            indent + "        final int dataLength = (int)%4$s;\n" +
+            indent + "        final int dataOffset = limit + headerLength;\n\n" +
+            indent + "        parentMessage.limit(dataOffset + dataLength);\n\n" +
+            indent + "        return dataLength;\n" +
+            indent + "    }\n",
+            Generators.toUpperFirstChar(propertyName),
+            generateStringNotPresentConditionForAppendable(token.version(), indent),
+            sizeOfLengthField,
+            generateGet(lengthType, "limit", byteOrderStr),
+            byteOrderStr);
+
         generateVarDataTypedDecoder(
             sb,
             token,

@@ -610,6 +610,18 @@ public class TokenCodecDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
+    public int skipName()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
+    }
+
     public int getName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
@@ -708,6 +720,18 @@ public class TokenCodecDecoder
     {
         final int limit = parentMessage.limit();
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    }
+
+    public int skipConstValue()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
     }
 
     public int getConstValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
@@ -810,6 +834,18 @@ public class TokenCodecDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
+    public int skipMinValue()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
+    }
+
     public int getMinValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
@@ -908,6 +944,18 @@ public class TokenCodecDecoder
     {
         final int limit = parentMessage.limit();
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    }
+
+    public int skipMaxValue()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
     }
 
     public int getMaxValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
@@ -1010,6 +1058,18 @@ public class TokenCodecDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
+    public int skipNullValue()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
+    }
+
     public int getNullValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
@@ -1108,6 +1168,18 @@ public class TokenCodecDecoder
     {
         final int limit = parentMessage.limit();
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    }
+
+    public int skipCharacterEncoding()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
     }
 
     public int getCharacterEncoding(final MutableDirectBuffer dst, final int dstOffset, final int length)
@@ -1210,6 +1282,18 @@ public class TokenCodecDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
+    public int skipEpoch()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
+    }
+
     public int getEpoch(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
@@ -1308,6 +1392,18 @@ public class TokenCodecDecoder
     {
         final int limit = parentMessage.limit();
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    }
+
+    public int skipTimeUnit()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
     }
 
     public int getTimeUnit(final MutableDirectBuffer dst, final int dstOffset, final int length)
@@ -1410,6 +1506,18 @@ public class TokenCodecDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
+    public int skipSemanticType()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
+    }
+
     public int getSemanticType(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
@@ -1510,6 +1618,18 @@ public class TokenCodecDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
+    public int skipDescription()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
+    }
+
     public int getDescription(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
@@ -1608,6 +1728,18 @@ public class TokenCodecDecoder
     {
         final int limit = parentMessage.limit();
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    }
+
+    public int skipReferencedName()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
     }
 
     public int getReferencedName(final MutableDirectBuffer dst, final int dstOffset, final int length)

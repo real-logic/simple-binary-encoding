@@ -292,6 +292,18 @@ public class FrameCodecDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
+    public int skipPackageName()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
+    }
+
     public int getPackageName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
@@ -392,6 +404,18 @@ public class FrameCodecDecoder
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
+    public int skipNamespaceName()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
+    }
+
     public int getNamespaceName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
@@ -490,6 +514,18 @@ public class FrameCodecDecoder
     {
         final int limit = parentMessage.limit();
         return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    }
+
+    public int skipSemanticVersion()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
     }
 
     public int getSemanticVersion(final MutableDirectBuffer dst, final int dstOffset, final int length)
