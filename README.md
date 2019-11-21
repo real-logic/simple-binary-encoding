@@ -24,7 +24,6 @@ The Java and C++ SBE implementations are designed with work very efficiently wit
 high-throughput communications. The Java SBE implementation has a dependency on
 [Agrona](https://github.com/real-logic/agrona) for its buffer implementations.
 
-
 Binaries
 --------
 Binaries and dependency information for Maven, Ivy, Gradle, and others can be found at 
@@ -53,7 +52,6 @@ Run the Java examples
 
     $ ./gradlew runJavaExamples
 
-
 Distribution
 ------------
 Jars for the executable, source, and javadoc for the various modules can be found in the following directories:
@@ -65,8 +63,7 @@ Jars for the executable, source, and javadoc for the various modules can be foun
 
 An example to execute a Jar from command line using the 'all' jar which includes the Agrona dependency:
 
-    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-1.14.2-SNAPSHOT.jar my-sbe-input.xml
-
+    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-1.15.0.jar my-sbe-input.xml
 
 C++ Build using CMake
 ---------------------
@@ -86,8 +83,8 @@ If you are comfortable with using CMake, then a full clean, build, and test look
     $ cmake --build . --clean-first
     $ ctest
 
-__Note__: A C generator is included with the C++ build. And is built with the C++ build. Currently, the C generator is a work
-in progress.
+__Note__: A C generator is included with the C++ build. And is built with the C++ build. Currently, the C generator is
+ a work in progress.
 
 Golang Build
 ------------
@@ -110,13 +107,11 @@ documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Golang-
 Developers wishing to enhance the golang generator should see the [developer
 documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/gocode/README.md)
 
-
 C# Build
 --------
 Users of CSharp generated code should see the [user documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide).
 
 Developers wishing to enhance the CSharp generator should see the [developer documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/README.md)
-
 
 License (See LICENSE file for full license)
 -------------------------------------------
