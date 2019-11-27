@@ -22,12 +22,19 @@ buildscript {
 plugins {
     id 'java'
     id 'idea'
-    id 'io.freefair.javadoc-links' version '4.1.4' apply false
+    id 'io.freefair.javadoc-links' version '4.1.5' apply false
     id 'com.github.johnrengelman.shadow' version '5.2.0' apply false
     id "com.github.ben-manes.versions" version "0.27.0"
 }
 
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
+
+def checkstyleVersion = '8.26'
+def hamcrestVersion = '2.2'
+def mockitoVersion = '3.1.0'
+def junitVersion = '4.12'
+def jmhVersion = '1.22'
+def agronaVersion = '1.1.0'
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
@@ -127,16 +134,16 @@ subprojects {
     jar.enabled = true
 
     dependencies {
-        checkstyle 'com.puppycrawl.tools:checkstyle:8.26'
+        checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
 
-        compile 'org.agrona:agrona:1.1.0'
+        compile "org.agrona:agrona:${agronaVersion}"
 
-        testCompile 'org.hamcrest:hamcrest:2.2'
-        testCompile 'org.mockito:mockito-core:3.1.0'
-        testCompile 'junit:junit:4.12'
+        testCompile "org.hamcrest:hamcrest:${hamcrestVersion}"
+        testCompile "org.mockito:mockito-core:${mockitoVersion}"
+        testCompile "junit:junit:${junitVersion}"
     }
 
-    checkstyle.toolVersion = '8.26'
+    checkstyle.toolVersion = "${checkstyleVersion}"
 
     compileJava {
         if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
@@ -461,8 +468,8 @@ project(':sbe-benchmarks') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile 'org.openjdk.jmh:jmh-core:1.22'
-        annotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.22'
+        compile "org.openjdk.jmh:jmh-core:${jmhVersion}"
+        annotationProcessor "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
         compile project(':sbe-tool')
         compile files('build/classes/java/generated')
     }
