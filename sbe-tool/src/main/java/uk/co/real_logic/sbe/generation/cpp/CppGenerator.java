@@ -2509,9 +2509,6 @@ public class CppGenerator implements CodeGenerator
                 sb.append(
                     indent + "builder << '\"' <<\n" +
                     indent + INDENT + getLengthFunction + " << \" bytes of raw data\\\"\";\n");
-
-                sb.append(
-                    indent + "writer." + propertyName + "();\n\n");
             }
             else
             {
