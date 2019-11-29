@@ -2503,14 +2503,11 @@ public class CppGenerator implements CodeGenerator
 
             if (null == characterEncoding)
             {
-                final String getLengthFunction = "writer." + toLowerFirstChar(varDataToken.name()) + "Length()";
+                final String skipFunction = "writer.skip" + toUpperFirstChar(varDataToken.name()) + "()";
 
                 sb.append(
                     indent + "builder << '\"' <<\n" +
-                    indent + INDENT + getLengthFunction + " << \" bytes of raw data\\\"\";\n");
-
-                sb.append(
-                    indent + "writer.skip" + toUpperFirstChar(varDataToken.name()) + "();\n\n");
+                    indent + INDENT + skipFunction + " << \" bytes of raw data\\\"\";\n");
             }
             else
             {
