@@ -203,18 +203,6 @@ project(':sbe-tool') {
         testCompile files('build/classes/java/generated')
     }
 
-    jar {
-        manifest.attributes(
-            'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
-            'Specification-Title': 'Simple Binary Encoding',
-            'Specification-Version': '1.0',
-            'Implementation-Title': 'SBE',
-            'Implementation-Version': "${sbeVersion}",
-            'Implementation-Vendor': 'Real Logic Limited',
-            'Automatic-Module-Name': 'uk.co.real_logic.sbe.tool'
-        )
-    }
-
     sourceSets {
         generated.java.srcDir 'build/generated-src'
     }
@@ -260,6 +248,18 @@ project(':sbe-tool') {
                 pom.project(projectPom)
             }
         }
+    }
+
+    jar {
+        manifest.attributes(
+            'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
+            'Specification-Title': 'Simple Binary Encoding',
+            'Specification-Version': '1.0',
+            'Implementation-Title': 'SBE',
+            'Implementation-Version': "${sbeVersion}",
+            'Implementation-Vendor': 'Real Logic Limited',
+            'Automatic-Module-Name': 'uk.co.real_logic.sbe.tool'
+        )
     }
 
     task copyCppFiles(type: Copy) {
@@ -309,6 +309,7 @@ project(':sbe-all') {
     }
 
     shadowJar {
+        mustRunAfter jar
         archiveClassifier = ''
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
@@ -507,6 +508,7 @@ project(':sbe-benchmarks') {
     }
 
     shadowJar {
+        mustRunAfter jar
         archiveFileName = 'sbe-benchmarks.jar'
         archiveClassifier = 'benchmarks'
         manifest.attributes('Main-Class': 'org.openjdk.jmh.Main')
