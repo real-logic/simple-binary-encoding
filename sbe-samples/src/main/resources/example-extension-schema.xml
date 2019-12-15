@@ -65,7 +65,7 @@
         <group name="fuelFigures" id="10" dimensionType="groupSizeEncoding">
             <field name="speed" id="11" type="uint16"/>
             <field name="mpg" id="12" type="float"/>
-            <data name="usageDescription" id="200" type="varStringEncoding"/>
+            <data name="usageDescription" id="200" type="varAsciiEncoding"/>
         </group>
         <group name="performanceFigures" id="13" dimensionType="groupSizeEncoding">
             <field name="octaneRating" id="14" type="Ron"/>

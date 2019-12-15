@@ -58,7 +58,7 @@ public class JavaUtil
         }
 
         /**
-         * Add separator to a generated StringBuilder
+         * Add separator to a generated append to a {@link StringBuilder}.
          *
          * @param builder     the code generation builder to which information should be added
          * @param indent      the current generated code indentation
@@ -66,7 +66,7 @@ public class JavaUtil
          */
         public void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String builderName)
         {
-            append(builder, indent, builderName + ".append('" + symbol + "');");
+            builder.append(indent).append(builderName).append(".append('").append(symbol).append("');").append('\n');
         }
 
         public String toString()

@@ -3203,6 +3203,7 @@ public class JavaGenerator implements CodeGenerator
         Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
         appendDecoderDisplay(sb, fields, groups, varData, indent + INDENT);
         Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+        sb.append('\n');
         append(sb, indent, "    return builder;");
         append(sb, indent, "}");
     }
@@ -3383,7 +3384,7 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public String toString()");
         append(sb, indent, "{");
-        append(sb, indent, "    return appendTo(new StringBuilder(100)).toString();");
+        append(sb, indent, "    return appendTo(new StringBuilder()).toString();");
         append(sb, indent, "}");
     }
 }
