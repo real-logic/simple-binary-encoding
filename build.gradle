@@ -31,7 +31,7 @@ defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
 def checkstyleVersion = '8.27'
 def hamcrestVersion = '2.2'
-def mockitoVersion = '3.2.0'
+def mockitoVersion = '3.2.4'
 def junitVersion = '4.12'
 def jmhVersion = '1.22'
 def agronaVersion = '1.1.0'
