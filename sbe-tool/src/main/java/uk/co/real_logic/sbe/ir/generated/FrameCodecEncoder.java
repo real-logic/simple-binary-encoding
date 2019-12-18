@@ -18,6 +18,7 @@ public class FrameCodecEncoder
 
     private final FrameCodecEncoder parentMessage = this;
     private MutableDirectBuffer buffer;
+    protected int initialOffset;
     protected int offset;
     protected int limit;
 
@@ -51,6 +52,11 @@ public class FrameCodecEncoder
         return buffer;
     }
 
+    public int initialOffset()
+    {
+        return initialOffset;
+    }
+
     public int offset()
     {
         return offset;
@@ -62,6 +68,7 @@ public class FrameCodecEncoder
         {
             this.buffer = buffer;
         }
+        this.initialOffset = offset;
         this.offset = offset;
         limit(offset + BLOCK_LENGTH);
 
@@ -522,16 +529,15 @@ public class FrameCodecEncoder
         return this;
     }
 
-
     public String toString()
     {
-        return appendTo(new StringBuilder(100)).toString();
+        return appendTo(new StringBuilder()).toString();
     }
 
     public StringBuilder appendTo(final StringBuilder builder)
     {
         FrameCodecDecoder writer = new FrameCodecDecoder();
-        writer.wrap(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);
+        writer.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);
 
         return writer.appendTo(builder);
     }

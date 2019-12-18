@@ -121,7 +121,7 @@ public class VarDataEncodingDecoder
 
     public String toString()
     {
-        return appendTo(new StringBuilder(100)).toString();
+        return appendTo(new StringBuilder()).toString();
     }
 
     public StringBuilder appendTo(final StringBuilder builder)

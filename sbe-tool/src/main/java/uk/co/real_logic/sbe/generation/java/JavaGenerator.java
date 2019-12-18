@@ -1940,7 +1940,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
             "%s" +
-            indent + "        final int pos = this.offset + %d + (index * %d);\n\n" +
+            indent + "        final int pos = offset + %d + (index * %d);\n\n" +
             indent + "        return %s;\n" +
             indent + "    }\n\n",
             javaTypeName,
@@ -1965,7 +1965,7 @@ public class JavaGenerator implements CodeGenerator
                 "\"Copy will go out of range: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
                 "%s" +
-                indent + "        buffer.getBytes(this.offset + %d, dst, dstOffset, length);\n\n" +
+                indent + "        buffer.getBytes(offset + %d, dst, dstOffset, length);\n\n" +
                 indent + "        return length;\n" +
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
@@ -1978,7 +1978,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    {\n" +
                 "%s" +
                 indent + "        final byte[] dst = new byte[%d];\n" +
-                indent + "        buffer.getBytes(this.offset + %d, dst, 0, %d);\n\n" +
+                indent + "        buffer.getBytes(offset + %d, dst, 0, %d);\n\n" +
                 indent + "        int end = 0;\n" +
                 indent + "        for (; end < %d && dst[end] != 0; ++end);\n\n" +
                 indent + "        return new String(dst, 0, end, %s);\n" +
@@ -1999,7 +1999,7 @@ public class JavaGenerator implements CodeGenerator
                     "%2$s" +
                     indent + "        for (int i = 0; i < %3$d; ++i)\n" +
                     indent + "        {\n" +
-                    indent + "            final int c = buffer.getByte(this.offset + %4$d + i) & 0xFF;\n" +
+                    indent + "            final int c = buffer.getByte(offset + %4$d + i) & 0xFF;\n" +
                     indent + "            if (c == 0)\n" +
                     indent + "            {\n" +
                     indent + "                return i;\n" +
@@ -2064,7 +2064,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
-            indent + "        final int pos = this.offset + %d + (index * %d);\n" +
+            indent + "        final int pos = offset + %d + (index * %d);\n" +
             indent + "        %s;\n\n" +
             indent + "        return this;\n" +
             indent + "    }\n",
@@ -2094,7 +2094,7 @@ public class JavaGenerator implements CodeGenerator
 
             for (int i = 0; i < arrayLength; i++)
             {
-                final String indexStr = "this.offset + " + (offset + (typeSize * i));
+                final String indexStr = "offset + " + (offset + (typeSize * i));
 
                 sb.append(indent).append("        ")
                     .append(generatePut(primitiveType, indexStr, "value" + i, byteOrderStr))
@@ -2135,7 +2135,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            throw new IndexOutOfBoundsException(" +
             "\"Copy will go out of range: offset=\" + srcOffset);\n" +
             indent + "        }\n\n" +
-            indent + "        buffer.putBytes(this.offset + %d, src, srcOffset, length);\n\n" +
+            indent + "        buffer.putBytes(offset + %d, src, srcOffset, length);\n\n" +
             indent + "        return this;\n" +
             indent + "    }\n",
             formatClassName(containingClassName),
@@ -2155,10 +2155,10 @@ public class JavaGenerator implements CodeGenerator
                 indent + "            throw new IndexOutOfBoundsException(" +
                 "\"String too large for copy: byte length=\" + srcLength);\n" +
                 indent + "        }\n\n" +
-                indent + "        buffer.putStringWithoutLengthAscii(this.offset + %4$d, src);\n\n" +
+                indent + "        buffer.putStringWithoutLengthAscii(offset + %4$d, src);\n\n" +
                 indent + "        for (int start = srcLength; start < length; ++start)\n" +
                 indent + "        {\n" +
-                indent + "            buffer.putByte(this.offset + %4$d + start, (byte)0);\n" +
+                indent + "            buffer.putByte(offset + %4$d + start, (byte)0);\n" +
                 indent + "        }\n\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
@@ -2181,11 +2181,11 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        {\n" +
                 indent + "            final char charValue = src.charAt(i);\n" +
                 indent + "            final byte byteValue = charValue > 127 ? (byte)'?' : (byte)charValue;\n" +
-                indent + "            buffer.putByte(this.offset + %4$d + i, byteValue);\n" +
+                indent + "            buffer.putByte(offset + %4$d + i, byteValue);\n" +
                 indent + "        }\n\n" +
                 indent + "        for (int i = srcLength; i < length; ++i)\n" +
                 indent + "        {\n" +
-                indent + "            buffer.putByte(this.offset + %4$d + i, (byte)0);\n" +
+                indent + "            buffer.putByte(offset + %4$d + i, (byte)0);\n" +
                 indent + "        }\n\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
@@ -2206,10 +2206,10 @@ public class JavaGenerator implements CodeGenerator
                 indent + "            throw new IndexOutOfBoundsException(" +
                 "\"String too large for copy: byte length=\" + bytes.length);\n" +
                 indent + "        }\n\n" +
-                indent + "        buffer.putBytes(this.offset + %d, bytes, 0, bytes.length);\n\n" +
+                indent + "        buffer.putBytes(offset + %d, bytes, 0, bytes.length);\n\n" +
                 indent + "        for (int start = bytes.length; start < length; ++start)\n" +
                 indent + "        {\n" +
-                indent + "            buffer.putByte(this.offset + %d + start, (byte)0);\n" +
+                indent + "            buffer.putByte(offset + %d + start, (byte)0);\n" +
                 indent + "        }\n\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
@@ -2400,6 +2400,7 @@ public class JavaGenerator implements CodeGenerator
             "        {\n" +
             "            this.buffer = buffer;\n" +
             "        }\n" +
+            "        this.initialOffset = offset;\n" +
             "        this.offset = offset;\n" +
             "        this.actingBlockLength = actingBlockLength;\n" +
             "        this.actingVersion = actingVersion;\n" +
@@ -2440,6 +2441,7 @@ public class JavaGenerator implements CodeGenerator
             "    public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.%14$s;\n\n" +
             "    private final %9$s parentMessage = this;\n" +
             "    private %11$s buffer;\n" +
+            "    protected int initialOffset;\n" +
             "    protected int offset;\n" +
             "    protected int limit;\n" +
             "%13$s" +
@@ -2467,6 +2469,10 @@ public class JavaGenerator implements CodeGenerator
             "    public %11$s buffer()\n" +
             "    {\n" +
             "        return buffer;\n" +
+            "    }\n\n" +
+            "    public int initialOffset()\n" +
+            "    {\n" +
+            "        return initialOffset;\n" +
             "    }\n\n" +
             "    public int offset()\n" +
             "    {\n" +
@@ -2514,6 +2520,7 @@ public class JavaGenerator implements CodeGenerator
             "        {\n" +
             "            this.buffer = buffer;\n" +
             "        }\n" +
+            "        this.initialOffset = offset;\n" +
             "        this.offset = offset;\n" +
             "        limit(offset + BLOCK_LENGTH);\n\n" +
             "        return this;\n" +
@@ -3043,13 +3050,12 @@ public class JavaGenerator implements CodeGenerator
     private void generateEncoderDisplay(final StringBuilder sb, final String decoderName)
     {
         final String indent = INDENT;
-        sb.append('\n');
         appendToString(sb, indent);
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
         append(sb, indent, INDENT + decoderName + " writer = new " + decoderName + "();");
-        append(sb, indent, "    writer.wrap(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);");
+        append(sb, indent, "    writer.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);");
         sb.append('\n');
         append(sb, indent, "    return writer.appendTo(builder);");
         append(sb, indent, "}");
@@ -3152,13 +3158,12 @@ public class JavaGenerator implements CodeGenerator
     {
         final String indent = INDENT;
 
-        sb.append('\n');
-        appendToString(sb, indent);
+        appendMessageToString(sb, indent, name + "Decoder");
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
         append(sb, indent, "    final int originalLimit = limit();");
-        append(sb, indent, "    limit(offset + actingBlockLength);");
+        append(sb, indent, "    limit(initialOffset + actingBlockLength);");
         append(sb, indent, "    builder.append(\"[" + name + "](sbeTemplateId=\");");
         append(sb, indent, "    builder.append(TEMPLATE_ID);");
         append(sb, indent, "    builder.append(\"|sbeSchemaId=\");");
@@ -3195,8 +3200,6 @@ public class JavaGenerator implements CodeGenerator
     {
         final String indent = baseIndent + INDENT;
 
-        sb.append('\n');
-        appendToString(sb, indent);
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
@@ -3385,6 +3388,18 @@ public class JavaGenerator implements CodeGenerator
         append(sb, indent, "public String toString()");
         append(sb, indent, "{");
         append(sb, indent, "    return appendTo(new StringBuilder()).toString();");
+        append(sb, indent, "}");
+    }
+
+    private void appendMessageToString(final StringBuilder sb, final String indent, final String decoderName)
+    {
+        sb.append('\n');
+        append(sb, indent, "public String toString()");
+        append(sb, indent, "{");
+        append(sb, indent, "    " + decoderName + " decoder = new " + decoderName + "();");
+        append(sb, indent, "    decoder.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);");
+        sb.append('\n');
+        append(sb, indent, "    return decoder.appendTo(new StringBuilder()).toString();");
         append(sb, indent, "}");
     }
 }
