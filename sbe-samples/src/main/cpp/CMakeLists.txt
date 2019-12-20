@@ -17,8 +17,7 @@
 find_package(Java REQUIRED)
 
 set(GENERATED_CODECS
-    ${CXX_CODEC_TARGET_DIR}/baseline
-)
+    ${CXX_CODEC_TARGET_DIR}/baseline)
 
 set(EXAMPLES_SCHEMA ${CODEC_EXAMPLES_SCHEMA_DIR}/example-schema.xml)
 

@@ -25,9 +25,9 @@ project("sbe" VERSION "${SBE_VERSION_NUMERIC}")
 include(ExternalProject)
 include(CheckLibraryExists)
 
-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
-   set(STANDALONE_BUILD TRUE)
-endif()
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+    set(STANDALONE_BUILD TRUE)
+endif ()
 
 option(SBE_TESTS "Enable tests" ${STANDALONE_BUILD})
 option(SBE_BUILD_SAMPLES "Enable building the sample projects" ${STANDALONE_BUILD})
@@ -35,32 +35,32 @@ option(SBE_BUILD_BENCHMARKS "Enable building the benchmarks" ${STANDALONE_BUILD}
 
 unset(STANDALONE_BUILD)
 
-if(SBE_TESTS)
+if (SBE_TESTS)
     enable_testing()
-endif()
+endif ()
 
 # default built type is Release
-if(NOT CMAKE_BUILD_TYPE)
+if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build" FORCE)
-endif(NOT CMAKE_BUILD_TYPE)
+endif (NOT CMAKE_BUILD_TYPE)
 
-if(NOT DEFINED CMAKE_CXX_STANDARD)
-   set(CMAKE_CXX_STANDARD 11)
-endif()
+if (NOT DEFINED CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 11)
+endif ()
 
-if(NOT DEFINED CMAKE_CXX_EXTENSIONS)
-   set(CMAKE_CXX_EXTENSIONS OFF)
-endif()
+if (NOT DEFINED CMAKE_CXX_EXTENSIONS)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+endif ()
 
-if(NOT DEFINED CMAKE_C_STANDARD)
-   set(CMAKE_C_STANDARD 11)
-endif()
+if (NOT DEFINED CMAKE_C_STANDARD)
+    set(CMAKE_C_STANDARD 11)
+endif ()
 
-if(NOT DEFINED CMAKE_C_EXTENSIONS)
-   set(CMAKE_C_EXTENSIONS OFF)
-endif()
+if (NOT DEFINED CMAKE_C_EXTENSIONS)
+    set(CMAKE_C_EXTENSIONS OFF)
+endif ()
 
-if(SBE_TESTS)
+if (SBE_TESTS)
     set(SBE_THIRDPARTY_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/thirdparty")
 
     ExternalProject_Add(
@@ -85,26 +85,26 @@ if(SBE_TESTS)
         ${GTEST_BINARY_DIR}/lib/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}
         ${GTEST_BINARY_DIR}/lib/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}
     )
-endif()
+endif ()
 
 find_package(Threads)
 
-if(UNIX)
+if (UNIX)
     add_compile_options(-Wall -Wpedantic -Wextra -Wno-unused-parameter)
-endif()
+endif ()
 
-if(APPLE)
+if (APPLE)
     # -Wall doesn't enable everything we want to see
     add_compile_options(-Wsign-compare)
     add_definitions(-DDarwin)
-elseif(MSVC)
+elseif (MSVC)
     add_definitions(-DWIN32)
 
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /Od /Zi")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-else()
+else ()
     add_definitions(-D_GNU_SOURCE)
-endif()
+endif ()
 
 set(LIBPREFIX "${CMAKE_STATIC_LIBRARY_PREFIX}")
 set(LIBSUFFIX "${CMAKE_STATIC_LIBRARY_SUFFIX}")
@@ -126,7 +126,7 @@ add_custom_command(OUTPUT ${SBE_JAR}
 )
 
 add_custom_target(sbe-jar
-   DEPENDS ${SBE_JAR}
+    DEPENDS ${SBE_JAR}
 )
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
@@ -138,15 +138,15 @@ set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp)
 
-if(SBE_TESTS)
+if (SBE_TESTS)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/c)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/cpp)
-endif()
+endif ()
 
-if(SBE_BUILD_SAMPLES)
-   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/cpp)
-endif()
+if (SBE_BUILD_SAMPLES)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/cpp)
+endif ()
 
-if(SBE_BUILD_BENCHMARKS)
-   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/cpp)
-endif()
+if (SBE_BUILD_BENCHMARKS)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/cpp)
+endif ()
