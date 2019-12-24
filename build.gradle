@@ -784,7 +784,6 @@ task runJavaBenchmarks(type: Exec) {
 task uploadToMavenCentral {
     dependsOn 'sbe-tool:uploadArchives',
         'sbe-samples:uploadArchives',
-        'sbe-benchmarks:uploadArchives',
         'sbe-all:uploadArchives',
         'sbe-all:uploadShadow'
 }
