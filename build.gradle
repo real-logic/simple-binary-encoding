@@ -29,7 +29,7 @@ plugins {
 
 defaultTasks 'clean', 'build', 'shadowJar', 'install'
 
-def checkstyleVersion = '8.27'
+def checkstyleVersion = '8.28'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '3.2.4'
 def junitVersion = '4.12'
