@@ -1,13 +1,13 @@
-name: Java CI
+name: Continuos Integration
 on: [push, pull_request]
 
 jobs:
-  build:
+  java-build:
+    name: Java ${{ matrix.java }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 8, 11 ]
-    name: Java ${{ matrix.java }}
+      java: [ 8, 11 ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
