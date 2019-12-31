@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-      java: [ 8, 11 ]
+        java: [ 8, 11 ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
