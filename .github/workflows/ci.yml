@@ -29,3 +29,33 @@ jobs:
           java-version: ${{ matrix.java }}
       - name: Build with Gradle
         run: ./gradlew
+
+  csharp-build:
+    name: C# ${{ matrix.dotnet }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet: [ '2.2.103', '3.0.100', '3.1.100' ]
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Cache NuGet dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('csharp/**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+      - name: Build
+        run: ./csharp/build.sh
+      - name: Run tests
+        run: ./csharp/runtests.sh
+      - name: Pack
+        run: ./csharp/pack.sh
