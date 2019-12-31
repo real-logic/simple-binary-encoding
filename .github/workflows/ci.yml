@@ -46,7 +46,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('csharp/**/packages.lock.json') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/csharp/**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
       - name: Setup dotnet
