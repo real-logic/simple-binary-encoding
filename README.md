@@ -116,7 +116,7 @@ Developers wishing to enhance the CSharp generator should see the [developer doc
 
 License (See LICENSE file for full license)
 -------------------------------------------
-Copyright 2013-2019 Real Logic Limited  
+Copyright 2013-2020 Real Logic Limited  
 Copyright 2017 MarketFactory Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
