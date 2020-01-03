@@ -28,7 +28,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
       - name: Build with Gradle
-        run: ./gradlew
+        run: ./gradlew --no-daemon
 
   csharp-build:
     name: C# ${{ matrix.dotnet }}
