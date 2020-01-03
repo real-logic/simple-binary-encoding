@@ -137,7 +137,7 @@ jobs:
         run: ./cppbuild/cppbuild
 
   cpp-clang-macos-build:
-    name: C++ Clang ${{ matrix.version }} (macOS)
+    name: C++ Xcode ${{ matrix.version }} (macOS)
     runs-on: macOS-latest
     strategy:
       matrix:
@@ -146,6 +146,8 @@ jobs:
       CC: clang
       CXX: clang++
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Install compiler
         run: |
           sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
