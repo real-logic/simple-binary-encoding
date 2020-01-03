@@ -73,14 +73,14 @@ jobs:
         run: ./csharp/pack.sh
 
   gcc-build:
-    name: C++ GCC ${{ matrix.gcc }}
+    name: C++ GCC ${{ matrix.version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gcc: [ 6, 7, 8, 9 ]
+        version: [ 6, 7, 8, 9 ]
     env:
-      CC: gcc-${{ matrix.gcc }}
-      CXX: g++-${{ matrix.gcc }}
+      CC: gcc-${{ matrix.version }}
+      CXX: g++-${{ matrix.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -96,5 +96,8 @@ jobs:
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper
+      - name: Install compiler
+        run: |
+          sudo apt-get install -y g++-${{ matrix.version }}
       - name: Build
         run: ./cppbuild/cppbuild
