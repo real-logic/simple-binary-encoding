@@ -128,6 +128,13 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper
       - name: Install compiler
         run: |
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
+
+          if [ "${{ matrix.version }}" = "9" ]; then
+            sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
+          fi
+
           sudo apt-get install -y clang-${{ matrix.version }}
       - name: Build
         run: ./cppbuild/cppbuild
