@@ -73,13 +73,13 @@ jobs:
         run: ./csharp/pack.sh
 
   gcc-build:
-    name: GCC ${{ matrix.gcc }}
+    name: C++ GCC ${{ matrix.gcc }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gcc: [ 6, 7 ]
+        gcc: [ 6, 7, 8, 9 ]
     env:
-      CXX: g++-${{ matrix.gcc }}
+      CMAKE_CXX_COMPILER: g++-${{ matrix.gcc }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
