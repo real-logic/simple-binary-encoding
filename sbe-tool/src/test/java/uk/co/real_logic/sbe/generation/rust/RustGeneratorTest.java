@@ -14,8 +14,8 @@ import java.nio.file.Files;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static uk.co.real_logic.sbe.generation.rust.RustTest.minimalDummyIr;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;

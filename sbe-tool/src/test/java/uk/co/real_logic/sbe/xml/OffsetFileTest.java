@@ -21,9 +21,8 @@ import uk.co.real_logic.sbe.TestUtil;
 
 import java.util.List;
 
-import static java.lang.Integer.valueOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 /*
@@ -39,16 +38,16 @@ public class OffsetFileTest
             "basic-types-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
 
-        assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().encodedLength()), is(valueOf(8)));
-        assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(8)));
-        assertThat(valueOf(fields.get(1).type().encodedLength()), is(valueOf(20)));
-        assertThat(valueOf(fields.get(2).computedOffset()), is(valueOf(28)));
-        assertThat(valueOf(fields.get(2).type().encodedLength()), is(valueOf(1)));
-        assertThat(valueOf(fields.get(3).computedOffset()), is(valueOf(29)));
-        assertThat(valueOf(fields.get(3).type().encodedLength()), is(valueOf(4)));
-        assertThat(valueOf(fields.get(4).computedOffset()), is(valueOf(33)));
-        assertThat(valueOf(fields.get(4).type().encodedLength()), is(valueOf(8)));
+        assertThat(fields.get(0).computedOffset(), is(0));
+        assertThat(fields.get(0).type().encodedLength(), is(8));
+        assertThat(fields.get(1).computedOffset(), is(8));
+        assertThat(fields.get(1).type().encodedLength(), is(20));
+        assertThat(fields.get(2).computedOffset(), is(28));
+        assertThat(fields.get(2).type().encodedLength(), is(1));
+        assertThat(fields.get(3).computedOffset(), is(29));
+        assertThat(fields.get(3).type().encodedLength(), is(4));
+        assertThat(fields.get(4).computedOffset(), is(33));
+        assertThat(fields.get(4).type().encodedLength(), is(8));
     }
 
     @Test
@@ -59,16 +58,16 @@ public class OffsetFileTest
             "basic-types-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(2).fields();
 
-        assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().encodedLength()), is(valueOf(8)));
-        assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(8)));
-        assertThat(valueOf(fields.get(1).type().encodedLength()), is(valueOf(20)));
-        assertThat(valueOf(fields.get(2).computedOffset()), is(valueOf(32)));
-        assertThat(valueOf(fields.get(2).type().encodedLength()), is(valueOf(1)));
-        assertThat(valueOf(fields.get(3).computedOffset()), is(valueOf(128)));
-        assertThat(valueOf(fields.get(3).type().encodedLength()), is(valueOf(4)));
-        assertThat(valueOf(fields.get(4).computedOffset()), is(valueOf(136)));
-        assertThat(valueOf(fields.get(4).type().encodedLength()), is(valueOf(8)));
+        assertThat(fields.get(0).computedOffset(), is(0));
+        assertThat(fields.get(0).type().encodedLength(), is(8));
+        assertThat(fields.get(1).computedOffset(), is(8));
+        assertThat(fields.get(1).type().encodedLength(), is(20));
+        assertThat(fields.get(2).computedOffset(), is(32));
+        assertThat(fields.get(2).type().encodedLength(), is(1));
+        assertThat(fields.get(3).computedOffset(), is(128));
+        assertThat(fields.get(3).type().encodedLength(), is(4));
+        assertThat(fields.get(4).computedOffset(), is(136));
+        assertThat(fields.get(4).type().encodedLength(), is(8));
     }
 
     @Test
@@ -79,20 +78,20 @@ public class OffsetFileTest
             "block-length-schema.xml"), ParserOptions.DEFAULT);
         final Message msg = schema.getMessage(1);
 
-        assertThat(valueOf(msg.blockLength()), is(valueOf(8)));
+        assertThat(msg.blockLength(), is(8));
 
         final List<Field> fields = msg.fields();
-        assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().encodedLength()), is(valueOf(8)));
-        assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(8)));
+        assertThat(fields.get(0).computedOffset(), is(0));
+        assertThat(fields.get(0).type().encodedLength(), is(8));
+        assertThat(fields.get(1).computedOffset(), is(8));
         Assert.assertNull(fields.get(1).type());
 
         final List<Field> groupFields = fields.get(1).groupFields();
-        assertThat(valueOf(groupFields.size()), is(valueOf(2)));
-        assertThat(valueOf(groupFields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(groupFields.get(0).type().encodedLength()), is(valueOf(4)));
-        assertThat(valueOf(groupFields.get(1).computedOffset()), is(valueOf(4)));
-        assertThat(valueOf(groupFields.get(1).type().encodedLength()), is(valueOf(8)));
+        assertThat(groupFields.size(), is(2));
+        assertThat(groupFields.get(0).computedOffset(), is(0));
+        assertThat(groupFields.get(0).type().encodedLength(), is(4));
+        assertThat(groupFields.get(1).computedOffset(), is(4));
+        assertThat(groupFields.get(1).type().encodedLength(), is(8));
     }
 
     @Test
@@ -103,19 +102,19 @@ public class OffsetFileTest
             "block-length-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(2).fields();
 
-        assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().encodedLength()), is(valueOf(8)));
-        assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(64)));
+        assertThat(fields.get(0).computedOffset(), is(0));
+        assertThat(fields.get(0).type().encodedLength(), is(8));
+        assertThat(fields.get(1).computedOffset(), is(64));
         Assert.assertNull(fields.get(1).type());
-        assertThat(valueOf(fields.get(1).computedBlockLength()), is(valueOf(12)));
+        assertThat(fields.get(1).computedBlockLength(), is(12));
 
         final List<Field> groupFields = fields.get(1).groupFields();
 
-        assertThat(valueOf(groupFields.size()), is(valueOf(2)));
-        assertThat(valueOf(groupFields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(groupFields.get(0).type().encodedLength()), is(valueOf(4)));
-        assertThat(valueOf(groupFields.get(1).computedOffset()), is(valueOf(4)));
-        assertThat(valueOf(groupFields.get(1).type().encodedLength()), is(valueOf(8)));
+        assertThat(groupFields.size(), is(2));
+        assertThat(groupFields.get(0).computedOffset(), is(0));
+        assertThat(groupFields.get(0).type().encodedLength(), is(4));
+        assertThat(groupFields.get(1).computedOffset(), is(4));
+        assertThat(groupFields.get(1).type().encodedLength(), is(8));
     }
 
     @Test
@@ -126,19 +125,19 @@ public class OffsetFileTest
             "block-length-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(3).fields();
 
-        assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().encodedLength()), is(valueOf(8)));
-        assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(64)));
+        assertThat(fields.get(0).computedOffset(), is(0));
+        assertThat(fields.get(0).type().encodedLength(), is(8));
+        assertThat(fields.get(1).computedOffset(), is(64));
         Assert.assertNull(fields.get(1).type());
-        assertThat(valueOf(fields.get(1).computedBlockLength()), is(valueOf(16)));
+        assertThat(fields.get(1).computedBlockLength(), is(16));
 
         final List<Field> groupFields = fields.get(1).groupFields();
 
-        assertThat(valueOf(groupFields.size()), is(valueOf(2)));
-        assertThat(valueOf(groupFields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(groupFields.get(0).type().encodedLength()), is(valueOf(4)));
-        assertThat(valueOf(groupFields.get(1).computedOffset()), is(valueOf(4)));
-        assertThat(valueOf(groupFields.get(1).type().encodedLength()), is(valueOf(8)));
+        assertThat(groupFields.size(), is(2));
+        assertThat(groupFields.get(0).computedOffset(), is(0));
+        assertThat(groupFields.get(0).type().encodedLength(), is(4));
+        assertThat(groupFields.get(1).computedOffset(), is(4));
+        assertThat(groupFields.get(1).type().encodedLength(), is(8));
     }
 
     @Test
@@ -149,10 +148,10 @@ public class OffsetFileTest
             "block-length-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(4).fields();
 
-        assertThat(valueOf(fields.get(0).computedOffset()), is(valueOf(0)));
-        assertThat(valueOf(fields.get(0).type().encodedLength()), is(valueOf(8)));
-        assertThat(valueOf(fields.get(1).computedOffset()), is(valueOf(64)));
-        assertThat(valueOf(fields.get(1).type().encodedLength()), is(valueOf(-1)));
+        assertThat(fields.get(0).computedOffset(), is(0));
+        assertThat(fields.get(0).type().encodedLength(), is(8));
+        assertThat(fields.get(1).computedOffset(), is(64));
+        assertThat(fields.get(1).type().encodedLength(), is(-1));
     }
 
     @Test
@@ -163,7 +162,7 @@ public class OffsetFileTest
             "composite-offsets-schema.xml"), ParserOptions.DEFAULT);
         final CompositeType header = schema.messageHeader();
 
-        assertThat(valueOf(header.encodedLength()), is(valueOf(12)));
+        assertThat(header.encodedLength(), is(12));
     }
 
     @Test
@@ -174,6 +173,6 @@ public class OffsetFileTest
             "composite-offsets-schema.xml"), ParserOptions.DEFAULT);
         final CompositeType dimensions = schema.getMessage(1).fields().get(0).dimensionType();
 
-        assertThat(valueOf(dimensions.encodedLength()), is(valueOf(8)));
+        assertThat(dimensions.encodedLength(), is(8));
     }
 }

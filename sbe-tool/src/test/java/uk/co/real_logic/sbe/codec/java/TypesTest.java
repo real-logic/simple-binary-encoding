@@ -21,10 +21,7 @@ import org.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteOrder;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TypesTest
 {
@@ -67,7 +64,7 @@ public class TypesTest
             bits = (byte)(bits | (1 << i));
             buffer.putByte(bufferIndex, bits);
             total += (1 << i);
-            assertThat(buffer.getByte(bufferIndex), is((byte)total));
+            assertEquals((byte)total, buffer.getByte(bufferIndex));
         }
     }
 
@@ -105,7 +102,7 @@ public class TypesTest
             bits = (short)(bits | (1 << i));
             buffer.putShort(bufferIndex, bits, BYTE_ORDER);
             total += (1 << i);
-            assertThat(buffer.getShort(bufferIndex, BYTE_ORDER), is((short)total));
+            assertEquals((short)total, buffer.getShort(bufferIndex, BYTE_ORDER));
         }
     }
 
@@ -143,7 +140,7 @@ public class TypesTest
             bits = bits | (1 << i);
             buffer.putInt(bufferIndex, bits, BYTE_ORDER);
             total += (1 << i);
-            assertThat(buffer.getInt(bufferIndex, BYTE_ORDER), is((int)total));
+            assertEquals((int)total, buffer.getInt(bufferIndex, BYTE_ORDER));
         }
     }
 }

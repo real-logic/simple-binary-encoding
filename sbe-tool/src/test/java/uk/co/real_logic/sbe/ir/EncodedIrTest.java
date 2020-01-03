@@ -24,8 +24,8 @@ import uk.co.real_logic.sbe.xml.ParserOptions;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class EncodedIrTest

@@ -15,27 +15,31 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import uk.co.real_logic.sbe.TestUtil;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class CyclicReferencesTest
 {
-    @Rule
-    public final ExpectedException exceptionRule = ExpectedException.none();
-
     @Test
     public void shouldTestForCyclicRefs()
         throws Exception
     {
-        exceptionRule.expect(IllegalStateException.class);
-        exceptionRule.expectMessage("ref types cannot create circular dependencies");
+        try
+        {
+            final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
-        final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
+            parse(TestUtil.getLocalResource("cyclic-refs-schema.xml"), options);
+        }
+        catch (final IllegalStateException ex)
+        {
+            assertEquals(ex.getMessage(), "ref types cannot create circular dependencies");
+            return;
+        }
 
-        parse(TestUtil.getLocalResource("cyclic-refs-schema.xml"), options);
+        fail("Expected IllegalStateException");
     }
 }

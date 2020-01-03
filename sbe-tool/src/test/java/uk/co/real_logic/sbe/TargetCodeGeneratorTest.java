@@ -18,8 +18,7 @@ package uk.co.real_logic.sbe;
 import org.junit.Test;
 import uk.co.real_logic.sbe.ir.Ir;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -40,7 +39,7 @@ public class TargetCodeGeneratorTest
         SbeTool.generate(ir, outputDir, "uk.co.real_logic.sbe.TestTargetLanguage");
 
         verify(TestTargetLanguage.SINGLETON).generate();
-        assertThat(ir, is(TestTargetLanguage.ir));
-        assertThat(outputDir, is(TestTargetLanguage.outputDir));
+        assertEquals(TestTargetLanguage.ir, ir);
+        assertEquals(TestTargetLanguage.outputDir, outputDir);
     }
 }

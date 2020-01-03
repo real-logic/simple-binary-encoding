@@ -20,8 +20,8 @@ import java.util.List;
 import org.junit.Test;
 import uk.co.real_logic.sbe.TestUtil;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class BasicSchemaFileTest
@@ -60,6 +60,7 @@ public class BasicSchemaFileTest
     {
         final MessageSchema schema = parse(TestUtil.getLocalResource("basic-types-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
+
         assertThat(fields.get(0).name(), is("header"));
         assertThat(fields.get(1).name(), is("EDTField"));
         assertThat(fields.get(2).name(), is("ENUMField"));
