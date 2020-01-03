@@ -79,7 +79,8 @@ jobs:
       matrix:
         gcc: [ 6, 7, 8, 9 ]
     env:
-      COMPILER: g++-${{ matrix.gcc }}
+      CC: gcc-${{ matrix.gcc }}
+      CXX: g++-${{ matrix.gcc }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
