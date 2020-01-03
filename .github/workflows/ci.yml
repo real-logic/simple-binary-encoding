@@ -128,7 +128,7 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper
       - name: Install compiler
         run: |
-          sudo add-apt-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-${{ matrix.version }} main"
+          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${{ matrix.version }} main"
 
           sudo apt-get update
 
