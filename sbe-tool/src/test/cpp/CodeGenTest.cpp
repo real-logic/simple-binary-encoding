@@ -41,6 +41,7 @@ static const char *FUEL_FIGURES_3_USAGE_DESCRIPTION = "Highway Cycle";
 static const char *MANUFACTURER = "Honda";
 static const char *MODEL = "Civic VTi";
 static const char *ACTIVATION_CODE = "deadbeef";
+static const char *COLOR = "racing green";
 
 static const std::uint64_t VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
 static const std::uint64_t MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
@@ -50,12 +51,13 @@ static const std::uint64_t FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH = 13;
 static const std::uint64_t MANUFACTURER_LENGTH = 5;
 static const std::uint64_t MODEL_LENGTH = 9;
 static const std::uint64_t ACTIVATION_CODE_LENGTH = 8;
+static const std::uint64_t COLOR_LENGTH = 12;
 static const std::uint8_t PERFORMANCE_FIGURES_COUNT = 2;
 static const std::uint8_t FUEL_FIGURES_COUNT = 3;
 static const std::uint8_t ACCELERATION_COUNT = 3;
 
 static const std::uint64_t expectedHeaderSize = 8;
-static const std::uint64_t expectedCarSize = 191;
+static const std::uint64_t expectedCarSize = 207;
 
 static const std::uint16_t fuel1Speed = 30;
 static const float fuel1Mpg = 35.9f;
@@ -156,7 +158,8 @@ public:
 
         car.putManufacturer(MANUFACTURER, static_cast<int>(strlen(MANUFACTURER)))
             .putModel(MODEL, static_cast<int>(strlen(MODEL)))
-            .putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)));
+            .putActivationCode(ACTIVATION_CODE, static_cast<int>(strlen(ACTIVATION_CODE)))
+            .putColor(COLOR, static_cast<int>(strlen(COLOR)));
 
         return car.encodedLength();
     }
@@ -171,6 +174,15 @@ public:
     {
         m_car.wrapForEncode(buffer, offset, bufferLength);
         return encodeCar(m_car);
+    }
+
+    void expectDisplayString(const char *expectedDisplayString, Car& carDecoder)
+    {
+        std::stringstream displayStream;
+
+        displayStream << carDecoder;
+        EXPECT_STREQ(expectedDisplayString, displayStream.str().c_str());
+        displayStream.clear();
     }
 
     MessageHeader m_hdr;
@@ -408,6 +420,10 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
     offset += sizeof(std::uint16_t);
     EXPECT_EQ(std::string(bp + offset, ACTIVATION_CODE_LENGTH), ACTIVATION_CODE);
     offset += ACTIVATION_CODE_LENGTH;
+    EXPECT_EQ(*(std::uint32_t *)(bp + offset), COLOR_LENGTH);
+    offset += sizeof(std::uint32_t);
+    EXPECT_EQ(std::string(bp + offset, COLOR_LENGTH), COLOR);
+    offset += COLOR_LENGTH;
 
     EXPECT_EQ(sz, offset);
 }
@@ -424,7 +440,8 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeHeaderPlusCarCorrectly)
     EXPECT_EQ(carSz, expectedCarSize);
 
     EXPECT_EQ(*((std::uint16_t *)bp), Car::sbeBlockLength());
-    const size_t activationCodePosition = hdrSz + carSz - ACTIVATION_CODE_LENGTH;
+    const size_t activationCodePosition =
+        (hdrSz + carSz) - (ACTIVATION_CODE_LENGTH + sizeof(std::uint32_t) + COLOR_LENGTH);
     const size_t activationCodeLengthPosition = activationCodePosition - sizeof(std::uint16_t);
     EXPECT_EQ(*(std::uint16_t *)(bp + activationCodeLengthPosition), ACTIVATION_CODE_LENGTH);
     EXPECT_EQ(std::string(bp + activationCodePosition, ACTIVATION_CODE_LENGTH), ACTIVATION_CODE);
@@ -557,6 +574,9 @@ TEST_F(CodeGenTest, shouldbeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
     EXPECT_EQ(m_carDecoder.activationCodeLength(), ACTIVATION_CODE_LENGTH);
     EXPECT_EQ(std::string(m_carDecoder.activationCode(), ACTIVATION_CODE_LENGTH), ACTIVATION_CODE);
 
+    EXPECT_EQ(m_carDecoder.colorLength(), COLOR_LENGTH);
+    EXPECT_EQ(std::string(m_carDecoder.color(), COLOR_LENGTH), COLOR);
+
     EXPECT_EQ(m_carDecoder.encodedLength(), expectedCarSize);
 }
 
@@ -659,6 +679,9 @@ TEST_F(CodeGenTest, shouldbeAbleUseOnStackCodecsAndGroupForEach)
     EXPECT_EQ(carDecoder.getManufacturer(tmp, sizeof(tmp)), ACTIVATION_CODE_LENGTH);
     EXPECT_EQ(std::string(tmp, ACTIVATION_CODE_LENGTH), ACTIVATION_CODE);
 
+    EXPECT_EQ(carDecoder.getColor(tmp, sizeof(tmp)), COLOR_LENGTH);
+    EXPECT_EQ(std::string(tmp, COLOR_LENGTH), COLOR);
+
     EXPECT_EQ(carDecoder.encodedLength(), expectedCarSize);
 }
 
@@ -675,6 +698,8 @@ static const std::size_t offsetModelLength = 170;
 static const std::size_t offsetModelData = offsetModelLength + sizeof(std::uint16_t);
 static const std::size_t offsetActivationCodeLength = 181;
 static const std::size_t offsetActivationCodeData = offsetActivationCodeLength + sizeof(std::uint16_t);
+static const std::size_t offsetColorLength = 191;
+static const std::size_t offsetColorData = offsetColorLength + sizeof(std::uint32_t);
 
 TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
 {
@@ -685,6 +710,7 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
     std::string manufacturer(MANUFACTURER, MANUFACTURER_LENGTH);
     std::string model(MODEL, MODEL_LENGTH);
     std::string activationCode(ACTIVATION_CODE, ACTIVATION_CODE_LENGTH);
+    std::string color(COLOR, COLOR_LENGTH);
 
     char buffer[BUFFER_LEN];
     std::uint64_t baseOffset = MessageHeader::encodedLength();
@@ -708,7 +734,8 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
 
     car.putManufacturer(manufacturer)
         .putModel(model)
-        .putActivationCode(activationCode);
+        .putActivationCode(activationCode)
+        .putColor(color);
 
     EXPECT_EQ(car.encodedLength(), expectedCarSize);
 
@@ -731,6 +758,9 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
 
     EXPECT_EQ(*(std::uint16_t *)(buffer + baseOffset + offsetActivationCodeLength), ACTIVATION_CODE_LENGTH);
     EXPECT_EQ(std::string(buffer + baseOffset + offsetActivationCodeData, ACTIVATION_CODE_LENGTH), activationCode);
+
+    EXPECT_EQ(*(std::uint16_t *)(buffer + baseOffset + offsetColorLength), COLOR_LENGTH);
+    EXPECT_EQ(std::string(buffer + baseOffset + offsetColorData, COLOR_LENGTH), color);
 }
 
 TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForDecode)
@@ -751,6 +781,7 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForDecode)
     std::string manufacturer(MANUFACTURER, MANUFACTURER_LENGTH);
     std::string model(MODEL, MODEL_LENGTH);
     std::string activationCode(ACTIVATION_CODE, ACTIVATION_CODE_LENGTH);
+    std::string color(COLOR, COLOR_LENGTH);
 
     EXPECT_EQ(carDecoder.getVehicleCodeAsString(), vehicleCode);
 
@@ -779,6 +810,86 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForDecode)
     EXPECT_EQ(carDecoder.getManufacturerAsString(), manufacturer);
     EXPECT_EQ(carDecoder.getModelAsString(), model);
     EXPECT_EQ(carDecoder.getActivationCodeAsString(), activationCode);
+    EXPECT_EQ(carDecoder.getColorAsString(), color);
+
+    EXPECT_EQ(carDecoder.encodedLength(), expectedCarSize);
+}
+
+TEST_F(CodeGenTest, shouldPrintFullDecodedFlyweightRegardlessOfReadPosition)
+{
+    const char *expectedDisplayString =
+        "{\"Name\": \"Car\", \"sbeTemplateId\": 1, \"serialNumber\": 1234, \"modelYear\": 2013, \"available\": \"T\", "
+        "\"code\": \"A\", \"someNumbers\": [0,1,2,3,4], \"vehicleCode\": \"abcdef\", "
+        "\"extras\": [\"sportsPack\",\"cruiseControl\"], \"discountedModel\": \"C\", "
+        "\"engine\": {\"capacity\": 2000, \"numCylinders\": 4, \"manufacturerCode\": \"123\", "
+        "\"booster\": {\"BoostType\": \"NITROUS\", \"horsePower\": 200}}, "
+        "\"fuelFigures\": [{\"speed\": 30, \"mpg\": 35.9, \"usageDescription\": \"Urban Cycle\"}, "
+        "{\"speed\": 55, \"mpg\": 49, \"usageDescription\": \"Combined Cycle\"}, "
+        "{\"speed\": 75, \"mpg\": 40, \"usageDescription\": \"Highway Cycle\"}], "
+        "\"performanceFigures\": [{\"octaneRating\": 95, \"acceleration\": ["
+        "{\"mph\": 30, \"seconds\": 4}, {\"mph\": 60, \"seconds\": 7.5}, {\"mph\": 100, \"seconds\": 12.2}]}, "
+        "{\"octaneRating\": 99, \"acceleration\": [{\"mph\": 30, \"seconds\": 3.8}, {\"mph\": 60, \"seconds\": 7.1}, "
+        "{\"mph\": 100, \"seconds\": 11.8}]}], \"manufacturer\": \"Honda\", \"model\": \"Civic VTi\", "
+        "\"activationCode\": \"deadbeef\", \"color\": \"racing green\"}";
+
+    char buffer[2048];
+    memset(buffer, 0, 2048);
+    Car carEncoder(buffer, sizeof(buffer));
+
+    std::uint64_t carSz = encodeCar(carEncoder);
+
+    EXPECT_EQ(carSz, expectedCarSize);
+
+    Car carDecoder(buffer, carSz, Car::sbeBlockLength(), Car::sbeSchemaVersion());
+
+    std::string vehicleCode(VEHICLE_CODE, Car::vehicleCodeLength());
+    std::string usageDesc1(FUEL_FIGURES_1_USAGE_DESCRIPTION, FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH);
+    std::string usageDesc2(FUEL_FIGURES_2_USAGE_DESCRIPTION, FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH);
+    std::string usageDesc3(FUEL_FIGURES_3_USAGE_DESCRIPTION, FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH);
+    std::string manufacturer(MANUFACTURER, MANUFACTURER_LENGTH);
+    std::string model(MODEL, MODEL_LENGTH);
+    std::string activationCode(ACTIVATION_CODE, ACTIVATION_CODE_LENGTH);
+    std::string color(COLOR, COLOR_LENGTH);
+
+    expectDisplayString(expectedDisplayString, carDecoder);
+
+    EXPECT_EQ(carDecoder.getVehicleCodeAsString(), vehicleCode);
+
+    Car::FuelFigures &fuelFigures = carDecoder.fuelFigures();
+
+    fuelFigures.next();
+    EXPECT_EQ(fuelFigures.getUsageDescriptionAsString(), usageDesc1);
+
+    fuelFigures.next();
+    EXPECT_EQ(fuelFigures.getUsageDescriptionAsString(), usageDesc2);
+
+    fuelFigures.next();
+    EXPECT_EQ(fuelFigures.getUsageDescriptionAsString(), usageDesc3);
+
+    expectDisplayString(expectedDisplayString, carDecoder);
+
+    Car::PerformanceFigures &perfFigures = carDecoder.performanceFigures();
+
+    perfFigures.next();
+    Car::PerformanceFigures::Acceleration &acceleration = perfFigures.acceleration();
+
+    acceleration.next().next().next();
+
+    expectDisplayString(expectedDisplayString, carDecoder);
+
+    perfFigures.next();
+    acceleration = perfFigures.acceleration();
+    acceleration.next().next().next();
+
+    EXPECT_EQ(carDecoder.getManufacturerAsString(), manufacturer);
+    EXPECT_EQ(carDecoder.getModelAsString(), model);
+
+    expectDisplayString(expectedDisplayString, carDecoder);
+
+    EXPECT_EQ(carDecoder.getActivationCodeAsString(), activationCode);
+    EXPECT_EQ(carDecoder.getColorAsString(), color);
+
+    expectDisplayString(expectedDisplayString, carDecoder);
 
     EXPECT_EQ(carDecoder.encodedLength(), expectedCarSize);
 }
