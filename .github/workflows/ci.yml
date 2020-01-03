@@ -79,7 +79,7 @@ jobs:
       matrix:
         gcc: [ 6, 7, 8, 9 ]
     env:
-      CMAKE_CXX_COMPILER: g++-${{ matrix.gcc }}
+      COMPILER: g++-${{ matrix.gcc }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
