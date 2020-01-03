@@ -141,7 +141,7 @@ jobs:
     runs-on: macOS-latest
     strategy:
       matrix:
-        version: [ '11.1' ]
+        version: [ '11.2.1' ]
     env:
       CC: clang
       CXX: clang++
