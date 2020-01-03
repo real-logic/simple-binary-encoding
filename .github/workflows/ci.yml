@@ -77,9 +77,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gcc: [ 6, 7, 8, 9 ]
+        gcc: [ 6, 7 ]
     env:
-      COMPILER: g++-${{ matrix.gcc }}
+      CC: g++-${{ matrix.gcc }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
