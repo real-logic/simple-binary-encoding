@@ -98,7 +98,7 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper
       - name: Install compiler
         run: |
-          sudo apt-get install -y g++-${{ matrix.version }}
+          sudo apt-get install -y g++-${{ matrix.version }} libsparsehash-dev
       - name: Build
         run: ./cppbuild/cppbuild
 
@@ -132,6 +132,6 @@ jobs:
 
           sudo apt-get update
 
-          sudo apt-get install -y clang-${{ matrix.version }}
+          sudo apt-get install -y clang-${{ matrix.version }} libsparsehash-dev
       - name: Build
         run: ./cppbuild/cppbuild
