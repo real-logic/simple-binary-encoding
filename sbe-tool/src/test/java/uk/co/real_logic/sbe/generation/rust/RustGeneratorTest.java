@@ -1,8 +1,9 @@
 package uk.co.real_logic.sbe.generation.rust;
 
-import junit.framework.AssertionFailedError;
-import org.junit.*;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
@@ -16,7 +17,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.co.real_logic.sbe.generation.rust.RustTest.minimalDummyIr;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
@@ -27,10 +29,10 @@ public class RustGeneratorTest
     private static final String NESTED_GROUP_SCHEMA = "nested-group-schema";
     private SingleStringOutputManager outputManager;
 
-    @Rule
-    public final TemporaryFolder folderRule = new TemporaryFolder();
+    @TempDir
+    File tempDir;
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         outputManager = new SingleStringOutputManager();
@@ -57,16 +59,16 @@ public class RustGeneratorTest
         return irg.generate(schema);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullOutputManagerTossesNpe()
     {
-        new RustGenerator(minimalDummyIr(), null);
+        assertThrows(NullPointerException.class, () -> new RustGenerator(minimalDummyIr(), null));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullIrTossesNpe()
     {
-        new RustGenerator(null, outputManager);
+        assertThrows(NullPointerException.class, () -> new RustGenerator(null, outputManager));
     }
 
     @Test
@@ -90,25 +92,17 @@ public class RustGeneratorTest
     }
 
     private static String fullGenerateForResource(
-        final SingleStringOutputManager outputManager, final String localResourceName)
+        final SingleStringOutputManager outputManager, final String localResourceName) throws IOException
     {
         outputManager.clear();
 
         final RustGenerator rustGenerator = new RustGenerator(generateIrForResource(localResourceName), outputManager);
-        try
-        {
-            rustGenerator.generate();
-        }
-        catch (final IOException e)
-        {
-            throw new AssertionFailedError("Unexpected IOException during generation. " + e.getMessage());
-        }
-
+        rustGenerator.generate();
         return outputManager.toString();
     }
 
     @Test
-    public void fullGenerateBasicTypes()
+    public void fullGenerateBasicTypes() throws IOException
     {
         final String generatedRust = fullGenerateForResource(outputManager, BASIC_TYPES_SCHEMA);
         assertContainsSharedImports(generatedRust);
@@ -251,11 +245,11 @@ public class RustGeneratorTest
     private void assertRustBuildable(final String generatedRust, final Optional<String> name)
         throws IOException, InterruptedException
     {
-        Assume.assumeTrue(cargoExists());
-        final File folder = writeCargoFolderWrapper(name.orElse("test"), generatedRust, folderRule.newFolder());
+        Assumptions.assumeTrue(cargoExists());
+        final File folder = writeCargoFolderWrapper(name.orElse("test"), generatedRust, tempDir);
         final CargoCheckResult result = cargoCheckInDirectory(folder);
-        assertTrue(String.format("Generated Rust (%s) should be buildable with cargo", name) + result.error,
-            result.isSuccess);
+        assertTrue(result.isSuccess,
+            () -> String.format("Generated Rust (%s) should be buildable with cargo", name) + result.error);
     }
 
     private void assertSchemaInterpretableAsRust(final String localResourceSchema)
@@ -296,7 +290,7 @@ public class RustGeneratorTest
     }
 
     @Test
-    public void messageWithOffsets()
+    public void messageWithOffsets() throws IOException
     {
         final String rust = fullGenerateForResource(outputManager, "composite-offsets-schema");
         final String expectedHeader =
@@ -312,7 +306,7 @@ public class RustGeneratorTest
     }
 
     @Test
-    public void messageBlockLengthExceedingSumOfFieldLengths()
+    public void messageBlockLengthExceedingSumOfFieldLengths() throws IOException
     {
         final String rust = fullGenerateForResource(outputManager, "message-block-length-test");
         final String expectedEncoderSegment = "let v = self.scratch.writable_overlay::<MsgNameFields>(9+2)?;";

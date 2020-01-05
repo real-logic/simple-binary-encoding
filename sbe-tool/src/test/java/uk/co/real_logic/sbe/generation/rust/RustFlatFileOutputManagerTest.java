@@ -1,8 +1,7 @@
 package uk.co.real_logic.sbe.generation.rust;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.Writer;
@@ -11,12 +10,12 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RustFlatFileOutputManagerTest
 {
-    @Rule
-    public final TemporaryFolder folderRule = new TemporaryFolder();
+    @TempDir
+    File tempDir;
 
     static final String PACKAGE_NAME = "uk.co.real_logic.test";
     static final String EXAMPLE_CLASS_NAME = "ExampleClassName";
@@ -24,7 +23,6 @@ public class RustFlatFileOutputManagerTest
     @Test
     public void shouldCreateFileUponConstruction() throws Exception
     {
-        final File tempDir = folderRule.getRoot();
         final String tempDirName = tempDir.getAbsolutePath();
         final RustFlatFileOutputManager om = new RustFlatFileOutputManager(tempDirName, PACKAGE_NAME);
 
@@ -48,16 +46,17 @@ public class RustFlatFileOutputManagerTest
         assertTrue(postOutputContents.contains(arbitraryInput));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullDirectoryParamThrowsNPE()
     {
-        new RustFlatFileOutputManager(null, PACKAGE_NAME);
+        assertThrows(NullPointerException.class, () -> new RustFlatFileOutputManager(null, PACKAGE_NAME));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullPackageParamThrowsNpe()
     {
-        new RustFlatFileOutputManager(folderRule.getRoot().getAbsolutePath(), null);
+        assertThrows(NullPointerException.class,
+            () -> new RustFlatFileOutputManager(tempDir.getAbsolutePath(), null));
     }
 
     private static String getExpectedFullFileName(final String tempDirName)

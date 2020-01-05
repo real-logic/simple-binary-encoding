@@ -15,7 +15,7 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -35,6 +35,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CompositeTypeTest
 {
@@ -158,7 +159,7 @@ public class CompositeTypeTest
         assertThat(mantissa.nullValue(), is(PrimitiveValue.parse(nullValStr, PrimitiveType.INT64)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenCompositeTypeHasTypeNameDuplicates()
         throws Exception
     {
@@ -171,7 +172,8 @@ public class CompositeTypeTest
             "</composite>" +
             "</types>";
 
-        parseTestXmlWithMap("/types/composite", testXmlString);
+        assertThrows(IllegalArgumentException.class,
+            () -> parseTestXmlWithMap("/types/composite", testXmlString));
     }
 
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)

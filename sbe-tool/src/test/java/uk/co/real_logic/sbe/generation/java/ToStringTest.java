@@ -16,12 +16,12 @@
 package uk.co.real_logic.sbe.generation.java;
 
 import org.agrona.concurrent.UnsafeBuffer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.EncodedCarTestBase;
 
 import java.nio.ByteBuffer;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ToStringTest extends EncodedCarTestBase
 {

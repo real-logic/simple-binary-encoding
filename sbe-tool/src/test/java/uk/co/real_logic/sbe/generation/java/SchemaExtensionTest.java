@@ -20,8 +20,8 @@ import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.generation.CompilerUtil;
 import org.agrona.generation.StringWriterOutputManager;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
@@ -32,7 +32,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.get;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.set;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
@@ -48,7 +48,7 @@ public class SchemaExtensionTest
 
     private Ir ir;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();

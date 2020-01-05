@@ -32,7 +32,7 @@ defaultTasks 'clean', 'build', 'shadowJar', 'install'
 def checkstyleVersion = '8.28'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '3.2.4'
-def junitVersion = '4.13'
+def junitVersion = '5.5.2'
 def jmhVersion = '1.22'
 def agronaVersion = '1.1.0'
 
@@ -150,9 +150,11 @@ subprojects {
 
         compile "org.agrona:agrona:${agronaVersion}"
 
-        testCompile "org.hamcrest:hamcrest:${hamcrestVersion}"
-        testCompile "org.mockito:mockito-core:${mockitoVersion}"
-        testCompile "junit:junit:${junitVersion}"
+        testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
+        testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+        testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
     }
 
     checkstyle.toolVersion = "${checkstyleVersion}"
@@ -180,6 +182,8 @@ subprojects {
             jvmArgs('--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED')
             jvmArgs('--add-exports', 'jdk.unsupported/sun.misc=ALL-UNNAMED')
         }
+
+        useJUnitPlatform()
 
         testLogging {
             showStandardStreams = true

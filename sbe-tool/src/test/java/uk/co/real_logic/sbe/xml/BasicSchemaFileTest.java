@@ -17,7 +17,7 @@ package uk.co.real_logic.sbe.xml;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.TestUtil;
 
 import static org.hamcrest.MatcherAssert.assertThat;

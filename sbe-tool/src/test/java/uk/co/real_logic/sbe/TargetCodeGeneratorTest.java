@@ -15,19 +15,21 @@
  */
 package uk.co.real_logic.sbe;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.ir.Ir;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 public class TargetCodeGeneratorTest
 {
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowOnNoTargetLanguage() throws Exception
     {
-        SbeTool.generate(mock(Ir.class), ".", "none");
+        assertThrows(IllegalArgumentException.class, () ->
+            SbeTool.generate(mock(Ir.class), ".", "none"));
     }
 
     @Test

@@ -15,13 +15,13 @@
  */
 package uk.co.real_logic.sbe.codec.java;
 
-import org.junit.Test;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
+import org.junit.jupiter.api.Test;
 
 import java.nio.ByteOrder;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TypesTest
 {
@@ -47,7 +47,7 @@ public class TypesTest
             }
             else
             {
-                assertFalse("bit set i = " + i, result);
+                assertFalse(result, "bit set i = " + i);
             }
         }
     }
@@ -85,7 +85,7 @@ public class TypesTest
             }
             else
             {
-                assertFalse("bit set i = " + i, result);
+                assertFalse(result, "bit set i = " + i);
             }
         }
     }
@@ -123,7 +123,7 @@ public class TypesTest
             }
             else
             {
-                assertFalse("bit set i = " + i, result);
+                assertFalse(result, "bit set i = " + i);
             }
         }
     }

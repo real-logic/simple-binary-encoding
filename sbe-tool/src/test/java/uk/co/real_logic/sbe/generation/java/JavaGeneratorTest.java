@@ -15,13 +15,13 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.generation.CompilerUtil;
 import org.agrona.generation.StringWriterOutputManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.TestUtil;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
@@ -34,11 +34,9 @@ import java.nio.ByteOrder;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.co.real_logic.sbe.generation.CodeGenerator.MESSAGE_HEADER_DECODER_TYPE;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_ENCODER_TYPE;
@@ -58,7 +56,7 @@ public class JavaGeneratorTest
 
     private Ir ir;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
@@ -480,28 +478,32 @@ public class JavaGeneratorTest
         return decoder;
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldValidateMissingMutableBufferClass()
     {
-        new JavaGenerator(ir, "dasdsads", BUFFER_NAME, false, false, false, outputManager);
+        assertThrows(IllegalArgumentException.class, () ->
+            new JavaGenerator(ir, "dasdsads", BUFFER_NAME, false, false, false, outputManager));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldValidateNotImplementedMutableBufferClass()
     {
-        new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, false, false, false, outputManager);
+        assertThrows(IllegalArgumentException.class, () ->
+            new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, false, false, false, outputManager));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldValidateMissingReadOnlyBufferClass()
     {
-        new JavaGenerator(ir, BUFFER_NAME, "dasdsads", false, false, false, outputManager);
+        assertThrows(IllegalArgumentException.class, () ->
+            new JavaGenerator(ir, BUFFER_NAME, "dasdsads", false, false, false, outputManager));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldValidateNotImplementedReadOnlyBufferClass()
     {
-        new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", false, false, false, outputManager);
+        assertThrows(IllegalArgumentException.class, () ->
+            new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", false, false, false, outputManager));
     }
 
     private Class<?> compileCarEncoder() throws Exception

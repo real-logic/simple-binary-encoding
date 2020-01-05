@@ -1,30 +1,34 @@
 package uk.co.real_logic.sbe.generation.rust;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.PrimitiveType;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.co.real_logic.sbe.generation.rust.RustUtil.formatMethodName;
 import static uk.co.real_logic.sbe.generation.rust.RustUtil.generateRustLiteral;
 
 public class RustUtilTest
 {
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullParamToEightBitCharacterThrowsNPE()
     {
-        RustUtil.eightBitCharacter(null);
+        assertThrows(NullPointerException.class, () ->
+            RustUtil.eightBitCharacter(null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void emptyParamToEightBitCharacterThrowsIAE()
     {
-        RustUtil.eightBitCharacter("");
+        assertThrows(IllegalArgumentException.class, () ->
+            RustUtil.eightBitCharacter(""));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void tooManyCharactersParamToEightBitCharacterThrowsIAE()
     {
-        RustUtil.eightBitCharacter("ABC");
+        assertThrows(IllegalArgumentException.class, () ->
+            RustUtil.eightBitCharacter("ABC"));
     }
 
     @Test
@@ -53,16 +57,16 @@ public class RustUtilTest
         assertEquals("65u64", generateRustLiteral(PrimitiveType.UINT64, "65"));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void generateRustLiteralNullPrimitiveTypeParam()
     {
-        generateRustLiteral(null, "65");
+        assertThrows(NullPointerException.class, () -> generateRustLiteral(null, "65"));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void generateRustLiteralNullValueParam()
     {
-        generateRustLiteral(PrimitiveType.INT8, null);
+        assertThrows(NullPointerException.class, () -> generateRustLiteral(PrimitiveType.INT8, null));
     }
 
     @Test

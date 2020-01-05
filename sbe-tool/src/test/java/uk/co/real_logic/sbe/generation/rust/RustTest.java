@@ -1,8 +1,7 @@
 package uk.co.real_logic.sbe.generation.rust;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.ir.*;
@@ -12,29 +11,30 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RustTest
 {
-    @Rule
-    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    File temporaryFolder;
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullIRParamShouldTossNPE()
     {
-        new Rust().newInstance(null, temporaryFolder.toString());
+        assertThrows(NullPointerException.class, () -> new Rust().newInstance(null, temporaryFolder.toString()));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void nullOutputDirParamShouldTossNPE()
     {
-        new Rust().newInstance(minimalDummyIr(), null);
+        assertThrows(NullPointerException.class, () -> new Rust().newInstance(minimalDummyIr(), null));
     }
 
     @Test
     public void happyPathRustGeneratorThatThrowsNoExceptions() throws IOException
     {
-        final File newFolder = temporaryFolder.newFolder();
+        final File newFolder = temporaryFolder;
         final CodeGenerator codeGenerator = new Rust().newInstance(minimalDummyIr(), newFolder.toString());
         assertNotNull(codeGenerator);
         codeGenerator.generate();

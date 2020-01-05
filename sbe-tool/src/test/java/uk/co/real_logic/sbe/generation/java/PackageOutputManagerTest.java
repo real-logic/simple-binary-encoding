@@ -15,7 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.agrona.generation.PackageOutputManager;
 
 import java.io.File;
@@ -24,7 +24,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PackageOutputManagerTest
 {
