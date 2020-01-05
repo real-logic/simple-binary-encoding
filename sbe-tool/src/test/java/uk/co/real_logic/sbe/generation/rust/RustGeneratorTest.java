@@ -12,6 +12,7 @@ import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +31,7 @@ public class RustGeneratorTest
     private SingleStringOutputManager outputManager;
 
     @TempDir
-    File tempDir;
+    Path tempDir;
 
     @BeforeEach
     public void setUp()
@@ -246,7 +247,8 @@ public class RustGeneratorTest
         throws IOException, InterruptedException
     {
         Assumptions.assumeTrue(cargoExists());
-        final File folder = writeCargoFolderWrapper(name.orElse("test"), generatedRust, tempDir);
+        final File parentDir = Files.createTempDirectory(tempDir, "rust-build").toFile();
+        final File folder = writeCargoFolderWrapper(name.orElse("test"), generatedRust, parentDir);
         final CargoCheckResult result = cargoCheckInDirectory(folder);
         assertTrue(result.isSuccess,
             () -> String.format("Generated Rust (%s) should be buildable with cargo", name) + result.error);
