@@ -15,7 +15,7 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -37,7 +37,8 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class EnumTypeTest
@@ -180,7 +181,7 @@ public class EnumTypeTest
         assertThat(e.getValidValue("Eee").primitiveValue(), is(PrimitiveValue.parse("E", PrimitiveType.CHAR)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
         throws Exception
     {
@@ -192,10 +193,11 @@ public class EnumTypeTest
             "</enum>" +
             "</types>";
 
-        parseTestXmlWithMap("/types/enum", testXmlString);
+        assertThrows(IllegalArgumentException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenDuplicateValueSpecified()
         throws Exception
     {
@@ -208,10 +210,11 @@ public class EnumTypeTest
             "</enum>" +
             "</types>";
 
-        parseTestXmlWithMap("/types/enum", testXmlString);
+        assertThrows(IllegalArgumentException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenDuplicateNameSpecified()
         throws Exception
     {
@@ -224,7 +227,8 @@ public class EnumTypeTest
             "</enum>" +
             "</types>";
 
-        parseTestXmlWithMap("/types/enum", testXmlString);
+        assertThrows(IllegalArgumentException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
     }
 
     @Test

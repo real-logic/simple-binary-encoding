@@ -19,7 +19,7 @@ import composite.elements.EnumOne;
 import composite.elements.MessageHeaderEncoder;
 import composite.elements.MsgDecoder;
 import composite.elements.MsgEncoder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.agrona.BitUtil;
 import org.agrona.DirectBuffer;

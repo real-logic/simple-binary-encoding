@@ -15,14 +15,14 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.TestUtil;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 /*
@@ -84,7 +84,7 @@ public class OffsetFileTest
         assertThat(fields.get(0).computedOffset(), is(0));
         assertThat(fields.get(0).type().encodedLength(), is(8));
         assertThat(fields.get(1).computedOffset(), is(8));
-        Assert.assertNull(fields.get(1).type());
+        assertNull(fields.get(1).type());
 
         final List<Field> groupFields = fields.get(1).groupFields();
         assertThat(groupFields.size(), is(2));
@@ -105,7 +105,7 @@ public class OffsetFileTest
         assertThat(fields.get(0).computedOffset(), is(0));
         assertThat(fields.get(0).type().encodedLength(), is(8));
         assertThat(fields.get(1).computedOffset(), is(64));
-        Assert.assertNull(fields.get(1).type());
+        assertNull(fields.get(1).type());
         assertThat(fields.get(1).computedBlockLength(), is(12));
 
         final List<Field> groupFields = fields.get(1).groupFields();
@@ -128,7 +128,7 @@ public class OffsetFileTest
         assertThat(fields.get(0).computedOffset(), is(0));
         assertThat(fields.get(0).type().encodedLength(), is(8));
         assertThat(fields.get(1).computedOffset(), is(64));
-        Assert.assertNull(fields.get(1).type());
+        assertNull(fields.get(1).type());
         assertThat(fields.get(1).computedBlockLength(), is(16));
 
         final List<Field> groupFields = fields.get(1).groupFields();

@@ -15,14 +15,14 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.TestUtil;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class EmbeddedLengthAndCountFileTest
@@ -37,10 +37,10 @@ public class EmbeddedLengthAndCountFileTest
 
         assertThat(fields.get(1).name(), is("ListOrdGrp"));
         assertThat(fields.get(1).id(), is(73));
-        Assert.assertNotNull(fields.get(1).dimensionType());
+        assertNotNull(fields.get(1).dimensionType());
 
         final List<Field> groupFields = fields.get(1).groupFields();
-        Assert.assertNotNull(groupFields);
+        assertNotNull(groupFields);
     }
 
     @Test
