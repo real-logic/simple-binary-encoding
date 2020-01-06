@@ -189,6 +189,8 @@ subprojects {
             showStandardStreams = true
             exceptionFormat = 'full'
         }
+
+        reports.html.enabled = false // Disable individual test reports
     }
 
     javadoc {
@@ -764,6 +766,12 @@ task uploadToMavenCentral {
         'sbe-samples:uploadArchives',
         'sbe-all:uploadArchives',
         'sbe-all:uploadShadow'
+}
+
+task testReport(type: TestReport) {
+    destinationDir = file("$buildDir/reports/allTests")
+    // Include the results from the `test` task in all subprojects
+    reportOn subprojects*.test
 }
 
 wrapper {
