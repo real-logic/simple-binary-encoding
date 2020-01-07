@@ -16,6 +16,7 @@ jobs:
     name: Java ${{ matrix.java }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         java: [ '8', '11' ]
     steps:
@@ -44,6 +45,7 @@ jobs:
     name: C# ${{ matrix.dotnet }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         dotnet: [ '2.2.103' ]
     env:
@@ -86,6 +88,7 @@ jobs:
     name: C++ GCC ${{ matrix.version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         version: [ '6', '7', '8', '9' ]
     env:
@@ -116,6 +119,7 @@ jobs:
     name: C++ Clang ${{ matrix.version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         version: [ '6.0', '7', '8', '9' ]
     env:
@@ -150,6 +154,7 @@ jobs:
     name: C++ Xcode ${{ matrix.version }} (macOS)
     runs-on: macOS-latest
     strategy:
+      fail-fast: false
       matrix:
         version: [ '11.2.1' ]
     env:
