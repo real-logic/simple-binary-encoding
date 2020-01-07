@@ -20,7 +20,7 @@ buildscript {
 }
 
 plugins {
-    id 'java'
+    id 'java-library'
     id 'idea'
     id 'io.freefair.javadoc-links' version '4.1.6' apply false
     id 'com.github.johnrengelman.shadow' version '5.2.0' apply false
@@ -133,7 +133,7 @@ configurations {
 jar.enabled = false
 
 subprojects {
-    apply plugin: 'java'
+    apply plugin: 'java-library'
     apply plugin: 'maven'
     apply plugin: 'signing'
     apply plugin: 'checkstyle'
@@ -146,9 +146,7 @@ subprojects {
     jar.enabled = true
 
     dependencies {
-        checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
-
-        compile "org.agrona:agrona:${agronaVersion}"
+        api "org.agrona:agrona:${agronaVersion}"
 
         testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
         testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
@@ -218,7 +216,7 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
-        testCompile files('build/classes/java/generated')
+        testImplementation files('build/classes/java/generated')
     }
 
     sourceSets {
@@ -309,7 +307,7 @@ project(':sbe-all') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile project(':sbe-tool')
+        implementation project(':sbe-tool')
     }
 
     task sourcesJar(type: Jar) {
@@ -391,8 +389,8 @@ project(':sbe-all') {
 
 project(':sbe-samples') {
     dependencies {
-        compile project(':sbe-tool')
-        compile files('build/classes/java/generated')
+        api project(':sbe-tool')
+        api files('build/classes/java/generated')
     }
 
     sourceSets {
@@ -487,10 +485,10 @@ project(':sbe-benchmarks') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile "org.openjdk.jmh:jmh-core:${jmhVersion}"
+        implementation "org.openjdk.jmh:jmh-core:${jmhVersion}"
         annotationProcessor "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
-        compile project(':sbe-tool')
-        compile files('build/classes/java/generated')
+        implementation project(':sbe-tool')
+        implementation files('build/classes/java/generated')
     }
 
     sourceSets {
