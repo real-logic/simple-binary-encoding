@@ -2701,25 +2701,36 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("    public static String ")
             .append(propertyName).append("MetaAttribute(final MetaAttribute metaAttribute)\n")
             .append(indent).append("    {\n")
-            .append(indent).append("        switch (metaAttribute)\n")
-            .append(indent).append("        {\n");
+            .append(indent).append("        if (MetaAttribute.PRESENCE == metaAttribute)\n")
+            .append(indent).append("        {\n")
+            .append(indent).append("            return \"").append(presence).append("\";\n")
+            .append(indent).append("        }\n");
 
         if (!Strings.isEmpty(epoch))
         {
-            sb.append(indent).append("            case EPOCH: return \"").append(epoch).append("\";\n");
-        }
-        if (!Strings.isEmpty(timeUnit))
-        {
-            sb.append(indent).append("            case TIME_UNIT: return \"").append(timeUnit).append("\";\n");
-        }
-        if (!Strings.isEmpty(semanticType))
-        {
-            sb.append(indent).append("            case SEMANTIC_TYPE: return \"").append(semanticType).append("\";\n");
+            sb.append(indent).append("        if (MetaAttribute.EPOCH == metaAttribute)\n")
+                .append(indent).append("        {\n")
+                .append(indent).append("            return \"").append(epoch).append("\";\n")
+                .append(indent).append("        }\n");
         }
 
-        sb
-            .append(indent).append("            case PRESENCE: return \"").append(presence).append("\";\n")
-            .append(indent).append("        }\n\n")
+        if (!Strings.isEmpty(timeUnit))
+        {
+            sb.append(indent).append("        if (MetaAttribute.TIME_UNIT == metaAttribute)\n")
+                .append(indent).append("        {\n")
+                .append(indent).append("            return \"").append(timeUnit).append("\";\n")
+                .append(indent).append("        }\n");
+        }
+
+        if (!Strings.isEmpty(semanticType))
+        {
+            sb.append(indent).append("        if (MetaAttribute.SEMANTIC_TYPE == metaAttribute)\n")
+                .append(indent).append("        {\n")
+                .append(indent).append("            return \"").append(semanticType).append("\";\n")
+                .append(indent).append("        }\n");
+        }
+
+        sb.append("\n")
             .append(indent).append("        return \"\";\n")
             .append(indent).append("    }\n");
     }

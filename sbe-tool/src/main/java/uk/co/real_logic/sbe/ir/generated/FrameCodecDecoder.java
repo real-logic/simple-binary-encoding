@@ -120,9 +120,9 @@ public class FrameCodecDecoder
 
     public static String irIdMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
@@ -171,9 +171,9 @@ public class FrameCodecDecoder
 
     public static String irVersionMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
@@ -222,9 +222,9 @@ public class FrameCodecDecoder
 
     public static String schemaVersionMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
@@ -268,9 +268,9 @@ public class FrameCodecDecoder
 
     public static String packageNameMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
@@ -376,9 +376,9 @@ public class FrameCodecDecoder
 
     public static String namespaceNameMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
@@ -484,9 +484,9 @@ public class FrameCodecDecoder
 
     public static String semanticVersionMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
