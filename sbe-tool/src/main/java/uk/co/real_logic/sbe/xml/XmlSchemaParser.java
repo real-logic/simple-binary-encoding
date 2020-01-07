@@ -69,7 +69,7 @@ public class XmlSchemaParser
         "//*[local-name() = 'message']";
 
     /**
-     * Validate the document against a given schema. Error will be written to {@link java.lang.System#err}
+     * Validate the document against a given schema. Error will be written to {@link java.lang.System#err}.
      *
      * @param xsdFilename schema to validate against.
      * @param is          source from which schema is read. Ideally it will have the systemId property set to resolve
@@ -170,7 +170,7 @@ public class XmlSchemaParser
     }
 
     /**
-     * Scan XML for all types (encodedDataType, compositeType, enumType, and setType) and save in map
+     * Scan XML for all types (encodedDataType, compositeType, enumType, and setType) and save in map.
      *
      * @param document for the XML parsing
      * @param xPath    for XPath expression reuse
@@ -209,7 +209,7 @@ public class XmlSchemaParser
     }
 
     /**
-     * Scan XML for all message definitions and save in map
+     * Scan XML for all message definitions and save in map.
      *
      * @param document      for the XML parsing
      * @param xPath         for XPath expression reuse
@@ -311,7 +311,7 @@ public class XmlSchemaParser
     }
 
     /**
-     * Helper function that hides the null return from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}
+     * Helper function that hides the null return from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}.
      *
      * @param elementNode that could be null
      * @param attrName    that is to be looked up
@@ -334,7 +334,7 @@ public class XmlSchemaParser
     }
 
     /**
-     * Helper function to convert a schema byteOrderName into a {@link ByteOrder}
+     * Helper function to convert a schema byteOrderName into a {@link ByteOrder}.
      *
      * @param byteOrderName specified as a FIX SBE string
      * @return ByteOrder representation
@@ -435,7 +435,7 @@ public class XmlSchemaParser
         void execute(Node node) throws XPathExpressionException;
     }
 
-    private static void forEach(final NodeList nodeList, final NodeFunction func)
+    static void forEach(final NodeList nodeList, final NodeFunction func)
         throws XPathExpressionException
     {
         for (int i = 0, size = nodeList.getLength(); i < size; i++)

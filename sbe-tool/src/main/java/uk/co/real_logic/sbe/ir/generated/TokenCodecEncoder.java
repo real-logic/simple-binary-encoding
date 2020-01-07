@@ -127,9 +127,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -182,9 +179,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -237,9 +231,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -292,9 +283,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -347,9 +335,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -402,9 +387,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -441,9 +423,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -480,9 +459,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -519,9 +495,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -558,9 +531,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "optional";
         }
 
@@ -603,9 +573,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -690,9 +657,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -777,9 +741,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -864,9 +825,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -951,9 +909,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -1038,9 +993,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -1125,9 +1077,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -1212,9 +1161,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -1299,9 +1245,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -1386,9 +1329,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 
@@ -1473,9 +1413,6 @@ public class TokenCodecEncoder
     {
         switch (metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
             case PRESENCE: return "required";
         }
 

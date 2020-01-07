@@ -15,9 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import org.agrona.DirectBuffer;
-import org.agrona.MutableDirectBuffer;
-import org.agrona.Verify;
+import org.agrona.*;
 import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
@@ -2704,10 +2702,22 @@ public class JavaGenerator implements CodeGenerator
             .append(propertyName).append("MetaAttribute(final MetaAttribute metaAttribute)\n")
             .append(indent).append("    {\n")
             .append(indent).append("        switch (metaAttribute)\n")
-            .append(indent).append("        {\n")
-            .append(indent).append("            case EPOCH: return \"").append(epoch).append("\";\n")
-            .append(indent).append("            case TIME_UNIT: return \"").append(timeUnit).append("\";\n")
-            .append(indent).append("            case SEMANTIC_TYPE: return \"").append(semanticType).append("\";\n")
+            .append(indent).append("        {\n");
+
+        if (!Strings.isEmpty(epoch))
+        {
+            sb.append(indent).append("            case EPOCH: return \"").append(epoch).append("\";\n");
+        }
+        if (!Strings.isEmpty(timeUnit))
+        {
+            sb.append(indent).append("            case TIME_UNIT: return \"").append(timeUnit).append("\";\n");
+        }
+        if (!Strings.isEmpty(semanticType))
+        {
+            sb.append(indent).append("            case SEMANTIC_TYPE: return \"").append(semanticType).append("\";\n");
+        }
+
+        sb
             .append(indent).append("            case PRESENCE: return \"").append(presence).append("\";\n")
             .append(indent).append("        }\n\n")
             .append(indent).append("        return \"\";\n")
