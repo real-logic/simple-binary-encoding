@@ -146,8 +146,6 @@ subprojects {
     jar.enabled = true
 
     dependencies {
-        api "org.agrona:agrona:${agronaVersion}"
-
         testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
         testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
         testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
@@ -216,6 +214,7 @@ def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/
 
 project(':sbe-tool') {
     dependencies {
+        api "org.agrona:agrona:${agronaVersion}"
         testImplementation files('build/classes/java/generated')
     }
 
