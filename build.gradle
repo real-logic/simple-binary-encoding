@@ -302,7 +302,7 @@ project(':sbe-all') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        compile project(':sbe-tool')
+        implementation project(':sbe-tool')
     }
 
     task sourcesJar(type: Jar) {
