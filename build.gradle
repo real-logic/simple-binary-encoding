@@ -280,7 +280,7 @@ project(':sbe-tool') {
     }
 
     task sourcesJar(type: Jar) {
-        archiveClassifier = 'sources'
+        archiveClassifier.set 'sources'
         from sourceSets.main.allSource
 
         dependsOn 'copyCppFiles'
@@ -288,7 +288,7 @@ project(':sbe-tool') {
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        archiveClassifier = 'javadoc'
+        archiveClassifier.set 'javadoc'
         from javadoc.destinationDir
     }
 
@@ -306,7 +306,7 @@ project(':sbe-all') {
     }
 
     task sourcesJar(type: Jar) {
-        archiveClassifier = 'sources'
+        archiveClassifier.set 'sources'
         from project(':sbe-tool').sourceSets.main.allSource
     }
 
@@ -315,13 +315,13 @@ project(':sbe-all') {
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        archiveClassifier = 'javadoc'
+        archiveClassifier.set 'javadoc'
         from javadoc.destinationDir
     }
 
     shadowJar {
         mustRunAfter jar
-        archiveClassifier = ''
+        archiveClassifier.set ''
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
             'Specification-Title': 'Simple Binary Encoding',
@@ -461,12 +461,12 @@ project(':sbe-samples') {
     }
 
     task sourcesJar(type: Jar) {
-        archiveClassifier = 'sources'
+        archiveClassifier.set 'sources'
         from sourceSets.main.allSource
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        archiveClassifier = 'javadoc'
+        archiveClassifier.set'javadoc'
         from javadoc.destinationDir
     }
 
@@ -521,7 +521,7 @@ project(':sbe-benchmarks') {
     shadowJar {
         mustRunAfter jar
         archiveFileName = 'sbe-benchmarks.jar'
-        archiveClassifier = 'benchmarks'
+        archiveClassifier.set 'benchmarks'
         manifest.attributes('Main-Class': 'org.openjdk.jmh.Main')
     }
 }
