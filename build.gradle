@@ -307,7 +307,6 @@ project(':sbe-all') {
 
     dependencies {
         customCompile project(':sbe-tool')
-        customCompile "org.agrona:agrona:${agronaVersion}"
     }
 
     sourceSets {
