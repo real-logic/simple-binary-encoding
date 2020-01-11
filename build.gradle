@@ -174,6 +174,14 @@ subprojects {
 
     install {
         repositories.mavenInstaller.pom.project(projectPom)
+
+        repositories.mavenInstaller.pom.whenConfigured {
+            p -> p.dependencies = p.dependencies.findAll {
+                dep -> !(dep.artifactId.contains("hamcrest") ||
+                         dep.artifactId.contains("mockito") ||
+                         dep.artifactId.contains("junit"))
+            }
+        }
     }
 }
 
@@ -301,19 +309,8 @@ project(':sbe-tool') {
 project(':sbe-all') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
-    configurations {
-        customCompile
-    }
-
     dependencies {
-        customCompile project(':sbe-tool')
-    }
-
-    sourceSets {
-        main {
-            compileClasspath += configurations.customCompile
-            runtimeClasspath += compileClasspath
-        }
+        implementation project(':sbe-tool')
     }
 
     task sourcesJar(type: Jar) {
@@ -322,7 +319,6 @@ project(':sbe-all') {
     }
 
     javadoc {
-        classpath += configurations.customCompile
         source += project(':sbe-tool').sourceSets.main.allJava
     }
 
@@ -332,7 +328,6 @@ project(':sbe-all') {
     }
 
     shadowJar {
-        configurations = [project.configurations.customCompile]
         archiveClassifier.set ''
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
@@ -390,6 +385,12 @@ project(':sbe-all') {
         archives javadocJar
     }
 
+    install {
+        repositories.mavenInstaller.pom.whenConfigured {
+            p -> p.dependencies = []
+        }
+    }
+    
     signing {
         required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
         sign configurations.shadow
