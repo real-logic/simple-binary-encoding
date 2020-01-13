@@ -144,7 +144,6 @@ subprojects {
     version = sbeVersion
 
     jar.enabled = true
-
     checkstyle.toolVersion = "${checkstyleVersion}"
 
     compileJava {
@@ -174,12 +173,25 @@ subprojects {
 
     install {
         repositories.mavenInstaller.pom.project(projectPom)
-
         repositories.mavenInstaller.pom.whenConfigured {
             p -> p.dependencies = p.dependencies.findAll {
                 dep -> !(dep.artifactId.contains("hamcrest") ||
                          dep.artifactId.contains("mockito") ||
                          dep.artifactId.contains("junit"))
+            }
+        }
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                pom.whenConfigured {
+                    p -> p.dependencies = p.dependencies.findAll {
+                        dep ->!(dep.artifactId.contains("hamcrest") ||
+                                dep.artifactId.contains("mockito") ||
+                                dep.artifactId.contains("junit"))
+                    }
+                }
             }
         }
     }
@@ -345,7 +357,13 @@ project(':sbe-all') {
     uploadArchives {
         repositories {
             mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                pom.whenConfigured {
+                    p -> p.dependencies = []
+                }
+
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
 
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: ossrhUsername, password: ossrhPassword)
@@ -363,7 +381,13 @@ project(':sbe-all') {
     uploadShadow {
         repositories {
             mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                pom.whenConfigured {
+                    p -> p.dependencies = []
+                }
+
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
 
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: ossrhUsername, password: ossrhPassword)
