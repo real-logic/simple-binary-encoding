@@ -115,12 +115,12 @@ public class JavaGenerator implements CodeGenerator
 
     private String encoderName(final String className)
     {
-        return className + "Encoder";
+        return formatClassName(className) + "Encoder";
     }
 
     private String decoderName(final String className)
     {
-        return className + "Decoder";
+        return formatClassName(className) + "Decoder";
     }
 
     private String implementsInterface(final String interfaceName)
@@ -209,7 +209,7 @@ public class JavaGenerator implements CodeGenerator
             generateEncoderGroups(sb, className, groups, BASE_INDENT, false);
             generateEncoderVarData(sb, className, varData, BASE_INDENT);
 
-            generateEncoderDisplay(sb, formatClassName(decoderName(msgToken.name())));
+            generateEncoderDisplay(sb, decoderName(msgToken.name()));
 
             out.append(sb);
             out.append("}\n");
@@ -305,7 +305,7 @@ public class JavaGenerator implements CodeGenerator
 
             final int groupIndex = i;
             final String groupName = groupToken.name();
-            final String groupClassName = formatClassName(encoderName(groupName));
+            final String groupClassName = encoderName(groupName);
 
             ++i;
             final int groupHeaderTokenCount = tokens.get(i).componentTokenCount();
@@ -503,7 +503,7 @@ public class JavaGenerator implements CodeGenerator
             .append(ind).append("    }\n");
 
         sb.append("\n")
-            .append(ind).append("    public ").append(formatClassName(encoderName(groupName))).append(" next()\n")
+            .append(ind).append("    public ").append(encoderName(groupName)).append(" next()\n")
             .append(ind).append("    {\n")
             .append(ind).append("        if (index + 1 >= count)\n")
             .append(ind).append("        {\n")
@@ -584,7 +584,7 @@ public class JavaGenerator implements CodeGenerator
         final String indent,
         final int dimensionHeaderSize)
     {
-        final String className = formatClassName(encoderName(groupName));
+        final String className = encoderName(groupName);
 
         generateTypeJavadoc(sb, indent, groupToken);
         new Formatter(sb).format("\n" +
@@ -603,7 +603,7 @@ public class JavaGenerator implements CodeGenerator
 
         for (final String subGroupName : subGroupNames)
         {
-            final String type = formatClassName(encoderName(subGroupName));
+            final String type = encoderName(subGroupName);
             final String field = formatPropertyName(subGroupName);
             sb.append(indent).append("    private final ").append(type).append(" ").append(field).append(";\n");
         }
@@ -617,7 +617,7 @@ public class JavaGenerator implements CodeGenerator
 
         for (final String subGroupName : subGroupNames)
         {
-            final String type = formatClassName(encoderName(subGroupName));
+            final String type = encoderName(subGroupName);
             final String field = formatPropertyName(subGroupName);
             sb
                 .append(indent).append("        ")
@@ -1157,7 +1157,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateBitSet(final List<Token> tokens) throws IOException
     {
         final Token token = tokens.get(0);
-        final String bitSetName = formatClassName(token.applicableTypeName());
+        final String bitSetName = token.applicableTypeName();
         final String decoderName = decoderName(bitSetName);
         final String encoderName = encoderName(bitSetName);
         final List<Token> messageBody = getMessageBody(tokens);
@@ -1229,7 +1229,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateComposite(final List<Token> tokens) throws IOException
     {
         final Token token = tokens.get(0);
-        final String compositeName = formatClassName(token.applicableTypeName());
+        final String compositeName = token.applicableTypeName();
         final String decoderName = decoderName(compositeName);
         final String encoderName = encoderName(compositeName);
 
@@ -1243,7 +1243,7 @@ public class JavaGenerator implements CodeGenerator
             {
                 final Token encodingToken = tokens.get(i);
                 final String propertyName = formatPropertyName(encodingToken.name());
-                final String typeName = formatClassName(decoderName(encodingToken.applicableTypeName()));
+                final String typeName = decoderName(encodingToken.applicableTypeName());
 
                 final StringBuilder sb = new StringBuilder();
                 generateEncodingOffsetMethod(sb, propertyName, encodingToken.offset(), BASE_INDENT);
@@ -1290,7 +1290,7 @@ public class JavaGenerator implements CodeGenerator
             {
                 final Token encodingToken = tokens.get(i);
                 final String propertyName = formatPropertyName(encodingToken.name());
-                final String typeName = formatClassName(encoderName(encodingToken.applicableTypeName()));
+                final String typeName = encoderName(encodingToken.applicableTypeName());
 
                 final StringBuilder sb = new StringBuilder();
                 generateEncodingOffsetMethod(sb, propertyName, encodingToken.offset(), BASE_INDENT);
@@ -2576,7 +2576,7 @@ public class JavaGenerator implements CodeGenerator
             (fieldToken, typeToken) ->
             {
                 final String propertyName = formatPropertyName(fieldToken.name());
-                final String typeName = formatClassName(encoderName(typeToken.name()));
+                final String typeName = encoderName(typeToken.name());
 
                 generateFieldIdMethod(sb, fieldToken, indent);
                 generateFieldSinceVersionMethod(sb, fieldToken, indent);
@@ -2615,7 +2615,7 @@ public class JavaGenerator implements CodeGenerator
             (fieldToken, typeToken) ->
             {
                 final String propertyName = formatPropertyName(fieldToken.name());
-                final String typeName = decoderName(formatClassName(typeToken.name()));
+                final String typeName = decoderName(typeToken.name());
 
                 generateFieldIdMethod(sb, fieldToken, indent);
                 generateFieldSinceVersionMethod(sb, fieldToken, indent);
@@ -3178,8 +3178,9 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> varData)
     {
         final String indent = INDENT;
+        final String decoderName = decoderName(name);
 
-        appendMessageToString(sb, indent, name + "Decoder");
+        appendMessageToString(sb, indent, decoderName);
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
@@ -3267,7 +3268,7 @@ public class JavaGenerator implements CodeGenerator
             }
 
             final String groupName = formatPropertyName(groupToken.name());
-            final String groupDecoderName = decoderName(formatClassName(groupToken.name()));
+            final String groupDecoderName = decoderName(groupToken.name());
 
             append(
                 sb, indent, "builder.append(\"" + groupName + Separators.KEY_VALUE + Separators.BEGIN_GROUP + "\");");
