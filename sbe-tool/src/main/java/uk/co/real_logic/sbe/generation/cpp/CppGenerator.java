@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation.cpp;
 
+import org.agrona.Strings;
 import org.agrona.Verify;
 import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
@@ -2113,25 +2114,38 @@ public class CppGenerator implements CodeGenerator
         final String timeUnit = encoding.timeUnit() == null ? "" : encoding.timeUnit();
         final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
 
-        new Formatter(sb).format("\n" +
-            indent + "    SBE_NODISCARD static const char * %sMetaAttribute(const MetaAttribute metaAttribute)" +
-            " SBE_NOEXCEPT\n" +
-            indent + "    {\n" +
-            indent + "        switch (metaAttribute)\n" +
-            indent + "        {\n" +
-            indent + "            case MetaAttribute::EPOCH: return \"%s\";\n" +
-            indent + "            case MetaAttribute::TIME_UNIT: return \"%s\";\n" +
-            indent + "            case MetaAttribute::SEMANTIC_TYPE: return \"%s\";\n" +
-            indent + "            case MetaAttribute::PRESENCE: return \"%s\";\n" +
-            indent + "        }\n\n" +
+        sb.append("\n")
+            .append(indent).append("    SBE_NODISCARD static const char * ")
+            .append(token.name()).append("MetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT\n")
+            .append(indent).append("    {\n")
+            .append(indent).append("        switch (metaAttribute)\n")
+            .append(indent).append("        {\n");
 
-            indent + "        return \"\";\n" +
-            indent + "    }\n",
-            token.name(),
-            epoch,
-            timeUnit,
-            semanticType,
-            encoding.presence().toString().toLowerCase());
+        if (!Strings.isEmpty(epoch))
+        {
+            sb.append(indent)
+                .append("            case MetaAttribute::EPOCH: return \"").append(epoch).append("\";\n");
+        }
+
+        if (!Strings.isEmpty(timeUnit))
+        {
+            sb.append(indent)
+                .append("            case MetaAttribute::TIME_UNIT: return \"").append(timeUnit).append("\";\n");
+        }
+
+        if (!Strings.isEmpty(semanticType))
+        {
+            sb.append(indent)
+                .append("            case MetaAttribute::SEMANTIC_TYPE: return \"").append(semanticType)
+                .append("\";\n");
+        }
+
+        sb
+            .append(indent).append("            case MetaAttribute::PRESENCE: return \"")
+            .append(encoding.presence().toString().toLowerCase()).append("\";\n")
+            .append(indent).append("            default: return \"\";\n")
+            .append(indent).append("        }\n")
+            .append(indent).append("    }\n");
     }
 
     private static CharSequence generateEnumFieldNotPresentCondition(
