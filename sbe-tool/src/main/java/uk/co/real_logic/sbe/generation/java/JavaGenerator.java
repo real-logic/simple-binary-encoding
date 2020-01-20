@@ -342,6 +342,7 @@ public class JavaGenerator implements CodeGenerator
         final String indent)
     {
         final Token groupToken = tokens.get(index);
+        final String className = formatClassName(groupName);
         final int dimensionHeaderLen = tokens.get(index + 1).encodedLength();
 
         final Token blockLengthToken = Generators.findFirst("blockLength", tokens, index);
@@ -372,12 +373,25 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("        if (buffer != this.buffer)\n")
             .append(indent).append("        {\n")
             .append(indent).append("            this.buffer = buffer;\n")
-            .append(indent).append("        }\n")
-            .append(indent).append("        index = -1;\n")
+            .append(indent).append("        }\n\n")
+            .append(indent).append("        index = 0;\n")
             .append(indent).append("        final int limit = parentMessage.limit();\n")
             .append(indent).append("        parentMessage.limit(limit + HEADER_SIZE);\n")
             .append(indent).append("        blockLength = (int)").append(blockLengthGet).append(";\n")
             .append(indent).append("        count = (int)").append(numInGroupGet).append(";\n")
+            .append(indent).append("    }\n");
+
+        sb.append("\n")
+            .append(indent).append("    public ").append(className).append(" next()\n")
+            .append(indent).append("    {\n")
+            .append(indent).append("        if (index >= count)\n")
+            .append(indent).append("        {\n")
+            .append(indent).append("            throw new java.util.NoSuchElementException();\n")
+            .append(indent).append("        }\n\n")
+            .append(indent).append("        offset = parentMessage.limit();\n")
+            .append(indent).append("        parentMessage.limit(offset + blockLength);\n")
+            .append(indent).append("        ++index;\n\n")
+            .append(indent).append("        return this;\n")
             .append(indent).append("    }\n");
 
         sb.append("\n")
@@ -392,7 +406,6 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("        return ").append(tokens.get(index).encodedLength()).append(";\n")
             .append(indent).append("    }\n");
 
-        final String className = formatClassName(groupName);
         sb.append("\n")
             .append(indent).append("    public int actingBlockLength()\n")
             .append(indent).append("    {\n")
@@ -412,20 +425,7 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("    }\n\n")
             .append(indent).append("    public boolean hasNext()\n")
             .append(indent).append("    {\n")
-            .append(indent).append("        return (index + 1) < count;\n")
-            .append(indent).append("    }\n");
-
-        sb.append("\n")
-            .append(indent).append("    public ").append(className).append(" next()\n")
-            .append(indent).append("    {\n")
-            .append(indent).append("        if (index + 1 >= count)\n")
-            .append(indent).append("        {\n")
-            .append(indent).append("            throw new java.util.NoSuchElementException();\n")
-            .append(indent).append("        }\n\n")
-            .append(indent).append("        offset = parentMessage.limit();\n")
-            .append(indent).append("        parentMessage.limit(offset + blockLength);\n")
-            .append(indent).append("        ++index;\n\n")
-            .append(indent).append("        return this;\n")
+            .append(indent).append("        return index < count;\n")
             .append(indent).append("    }\n");
     }
 
@@ -477,13 +477,14 @@ public class JavaGenerator implements CodeGenerator
             ind + "        {\n" +
             ind + "            this.buffer = buffer;\n" +
             ind + "        }\n\n" +
-            ind + "        index = -1;\n" +
+            ind + "        index = 0;\n" +
             ind + "        this.count = count;\n" +
             ind + "        final int limit = parentMessage.limit();\n" +
+            ind + "        initialLimit = limit;\n" +
             ind + "        parentMessage.limit(limit + HEADER_SIZE);\n" +
             ind + "        %5$s;\n" +
             ind + "        %6$s;\n" +
-            ind + "    }\n\n",
+            ind + "    }\n",
             parentMessageClassName,
             mutableBuffer,
             numInGroupToken.encoding().applicableMinValue().longValue(),
@@ -491,21 +492,10 @@ public class JavaGenerator implements CodeGenerator
             blockLengthPut,
             numInGroupPut);
 
-        sb.append(ind).append("    public static int sbeHeaderSize()\n")
-          .append(ind).append("    {\n")
-          .append(ind).append("        return HEADER_SIZE;\n")
-          .append(ind).append("    }\n");
-
-        sb.append("\n")
-            .append(ind).append("    public static int sbeBlockLength()\n")
-            .append(ind).append("    {\n")
-            .append(ind).append("        return ").append(blockLength).append(";\n")
-            .append(ind).append("    }\n");
-
         sb.append("\n")
             .append(ind).append("    public ").append(encoderName(groupName)).append(" next()\n")
             .append(ind).append("    {\n")
-            .append(ind).append("        if (index + 1 >= count)\n")
+            .append(ind).append("        if (index >= count)\n")
             .append(ind).append("        {\n")
             .append(ind).append("            throw new java.util.NoSuchElementException();\n")
             .append(ind).append("        }\n\n")
@@ -513,6 +503,30 @@ public class JavaGenerator implements CodeGenerator
             .append(ind).append("        parentMessage.limit(offset + sbeBlockLength());\n")
             .append(ind).append("        ++index;\n\n")
             .append(ind).append("        return this;\n")
+            .append(ind).append("    }\n");
+
+        final String countOffset = "initialLimit + " + numInGroupToken.offset();
+        final String resetCountPut = generatePut(
+            numInGroupType, countOffset, numInGroupValue, byteOrderString(numInGroupToken.encoding()));
+
+        sb.append("\n")
+            .append(ind).append("    public int resetCountToIndex()\n")
+            .append(ind).append("    {\n")
+            .append(ind).append("        count = index;\n")
+            .append(ind).append("        ").append(resetCountPut).append(";\n\n")
+            .append(ind).append("        return count;\n")
+            .append(ind).append("    }\n");
+
+        sb.append("\n")
+            .append(ind).append("    public static int sbeHeaderSize()\n")
+            .append(ind).append("    {\n")
+            .append(ind).append("        return HEADER_SIZE;\n")
+            .append(ind).append("    }\n");
+
+        sb.append("\n")
+            .append(ind).append("    public static int sbeBlockLength()\n")
+            .append(ind).append("    {\n")
+            .append(ind).append("        return ").append(blockLength).append(";\n")
             .append(ind).append("    }\n");
     }
 
@@ -595,7 +609,8 @@ public class JavaGenerator implements CodeGenerator
             indent + "    private %4$s buffer;\n" +
             indent + "    private int count;\n" +
             indent + "    private int index;\n" +
-            indent + "    private int offset;\n",
+            indent + "    private int offset;\n" +
+            indent + "    private int initialLimit;\n",
             className,
             dimensionHeaderSize,
             parentMessageClassName,
