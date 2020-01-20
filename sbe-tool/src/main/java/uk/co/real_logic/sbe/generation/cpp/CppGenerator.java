@@ -192,8 +192,8 @@ public class CppGenerator implements CodeGenerator
         final int blockLength = tokens.get(index).encodedLength();
         final Token blockLengthToken = Generators.findFirst("blockLength", tokens, index);
         final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, index);
-        final String cppTypeForBlockLength = cppTypeName(blockLengthToken.encoding().primitiveType());
-        final String cppTypeForNumInGroup = cppTypeName(numInGroupToken.encoding().primitiveType());
+        final String cppTypeBlockLength = cppTypeName(blockLengthToken.encoding().primitiveType());
+        final String cppTypeNumInGroup = cppTypeName(numInGroupToken.encoding().primitiveType());
 
         new Formatter(sb).format("\n" +
             indent + "class %1$s\n" +
@@ -201,6 +201,7 @@ public class CppGenerator implements CodeGenerator
             indent + "private:\n" +
             indent + "    char *m_buffer = nullptr;\n" +
             indent + "    std::uint64_t m_bufferLength = 0;\n" +
+            indent + "    std::uint64_t m_initialPosition = 0;\n" +
             indent + "    std::uint64_t *m_positionPtr = nullptr;\n" +
             indent + "    std::uint64_t m_blockLength = 0;\n" +
             indent + "    std::uint64_t m_count = 0;\n" +
@@ -228,8 +229,9 @@ public class CppGenerator implements CodeGenerator
             indent + "        m_bufferLength = bufferLength;\n" +
             indent + "        m_blockLength = dimensions.blockLength();\n" +
             indent + "        m_count = dimensions.numInGroup();\n" +
-            indent + "        m_index = std::numeric_limits<std::uint64_t>::max();\n" +
+            indent + "        m_index = 0;\n" +
             indent + "        m_actingVersion = actingVersion;\n" +
+            indent + "        m_initialPosition = *pos;\n" +
             indent + "        m_positionPtr = pos;\n" +
             indent + "        *m_positionPtr = *m_positionPtr + %1$d;\n" +
             indent + "    }\n",
@@ -262,14 +264,18 @@ public class CppGenerator implements CodeGenerator
             indent + "        %7$s dimensions(buffer, *pos, bufferLength, actingVersion);\n" +
             indent + "        dimensions.blockLength((%1$s)%2$d);\n" +
             indent + "        dimensions.numInGroup((%3$s)count);\n" +
-            indent + "        m_index = std::numeric_limits<std::uint64_t>::max();\n" +
+            indent + "        m_index = 0;\n" +
             indent + "        m_count = count;\n" +
             indent + "        m_blockLength = %2$d;\n" +
             indent + "        m_actingVersion = actingVersion;\n" +
+            indent + "        m_initialPosition = *pos;\n" +
             indent + "        m_positionPtr = pos;\n" +
             indent + "        *m_positionPtr = *m_positionPtr + %4$d;\n" +
             indent + "    }\n",
-            cppTypeForBlockLength, blockLength, cppTypeForNumInGroup, dimensionHeaderLength,
+            cppTypeBlockLength,
+            blockLength,
+            cppTypeNumInGroup,
+            dimensionHeaderLength,
             minCheck,
             numInGroupToken.encoding().applicableMaxValue().longValue(),
             dimensionsClassName);
@@ -311,25 +317,41 @@ public class CppGenerator implements CodeGenerator
 
             indent + "    SBE_NODISCARD inline bool hasNext() const SBE_NOEXCEPT\n" +
             indent + "    {\n" +
-            indent + "        return m_index + 1 < m_count;\n" +
+            indent + "        return m_index < m_count;\n" +
             indent + "    }\n\n" +
 
             indent + "    inline %3$s &next()\n" +
             indent + "    {\n" +
+            indent + "        if (m_index >= m_count)\n" +
+            indent + "        {\n" +
+            indent + "            throw std::runtime_error(\"index >= count [E108]\");\n" +
+            indent + "        }\n" +
             indent + "        m_offset = *m_positionPtr;\n" +
             indent + "        if (SBE_BOUNDS_CHECK_EXPECT(((m_offset + m_blockLength) > m_bufferLength), false))\n" +
             indent + "        {\n" +
-            indent + "            throw std::runtime_error(\"" +
-            "buffer too short to support next group index [E108]\");\n" +
+            indent + "            throw std::runtime_error(\"buffer too short for next group index [E108]\");\n" +
             indent + "        }\n" +
             indent + "        *m_positionPtr = m_offset + m_blockLength;\n" +
             indent + "        ++m_index;\n\n" +
 
             indent + "        return *this;\n" +
             indent + "    }\n",
-            dimensionHeaderLength, blockLength, formatClassName(groupName));
+            dimensionHeaderLength,
+            blockLength,
+            formatClassName(groupName));
 
-        sb.append(indent).append("#if __cplusplus < 201103L\n")
+        sb.append("\n")
+            .append(indent).append("    inline std::uint64_t resetCountToIndex() SBE_NOEXCEPT\n")
+            .append(indent).append("    {\n")
+            .append(indent).append("        m_count = m_index;\n")
+            .append(indent).append("        ").append(dimensionsClassName)
+            .append(" dimensions(m_buffer, m_initialPosition, m_bufferLength, m_actingVersion);\n")
+            .append(indent).append("        dimensions.numInGroup((").append(cppTypeNumInGroup).append(")m_count);\n")
+            .append(indent).append("        return m_count;\n")
+            .append(indent).append("    }\n");
+
+        sb.append("\n")
+            .append(indent).append("#if __cplusplus < 201103L\n")
             .append(indent).append("    template<class Func> inline void forEach(Func& func)\n")
             .append(indent).append("    {\n")
             .append(indent).append("        while (hasNext())\n")

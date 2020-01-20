@@ -126,7 +126,6 @@ std::size_t encodeCar(Car &car, char *buffer, std::uint64_t offset, std::uint64_
     return car.encodedLength();
 }
 
-
 const char *format(BooleanType::Value value)
 {
     if (value == BooleanType::T)
@@ -176,8 +175,12 @@ const char *format(bool value)
 }
 
 std::size_t decodeCar(
-    Car &car, char *buffer, std::uint64_t offset, std::uint64_t actingBlockLength,
-    std::uint64_t actingVersion, std::uint64_t bufferLength)
+    Car &car,
+    char *buffer,
+    std::uint64_t offset,
+    std::uint64_t actingBlockLength,
+    std::uint64_t actingVersion,
+    std::uint64_t bufferLength)
 {
     car.wrapForDecode(buffer, offset, actingBlockLength, actingVersion, bufferLength);
 
@@ -252,7 +255,7 @@ std::size_t decodeCar(
 
     char tmp[1024];
     std::uint64_t bytesCopied = engine.getFuel(tmp, sizeof(tmp));
-    std::cout << "\ncar.engine.effifiency=" << (int)engine.efficiency();
+    std::cout << "\ncar.engine.efficiency=" << (int)engine.efficiency();
     std::cout << "\ncar.engine.boosterEnabled=" << format(engine.boosterEnabled());
     std::cout << "\ncar.engine.fuelLength=" << bytesCopied;
     std::cout << "\ncar.engine.fuel=" << std::string(tmp, bytesCopied);
