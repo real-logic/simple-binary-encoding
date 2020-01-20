@@ -201,7 +201,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_blockLength = _dimensions.BlockLength;\n" +
             indent + INDENT + INDENT + "_count = (int) _dimensions.NumInGroup;\n" + // cast safety checked above
             indent + INDENT + INDENT + "_actingVersion = actingVersion;\n" +
-            indent + INDENT + INDENT + "_index = -1;\n" +
+            indent + INDENT + INDENT + "_index = 0;\n" +
             indent + INDENT + INDENT + "_parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + INDENT + "}\n",
             parentMessageClassName));
@@ -224,11 +224,11 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_parentMessage = parentMessage;\n" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);\n" +
-            indent + INDENT + INDENT + "_dimensions.BlockLength = (%4$s)%5$d;\n" +
-            indent + INDENT + INDENT + "_dimensions.NumInGroup = (%6$s)count;\n" +
-            indent + INDENT + INDENT + "_index = -1;\n" +
+            indent + INDENT + INDENT + "_dimensions.BlockLength = SbeBlockLength;\n" +
+            indent + INDENT + INDENT + "_dimensions.NumInGroup = (%5$s) count;\n" +
+            indent + INDENT + INDENT + "_index = 0;\n" +
             indent + INDENT + INDENT + "_count = count;\n" +
-            indent + INDENT + INDENT + "_blockLength = %5$d;\n" +
+            indent + INDENT + INDENT + "_blockLength = SbeBlockLength;\n" +
             indent + INDENT + INDENT + "_actingVersion = SchemaVersion;\n" +
             indent + INDENT + INDENT + "parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + INDENT + "}\n",
@@ -236,7 +236,6 @@ public class CSharpGenerator implements CodeGenerator
             numInGroupToken.encoding().applicableMinValue().longValue(),
             numInGroupToken.encoding().applicableMaxValue().longValue(),
             typeForBlockLength,
-            blockLength,
             typeForNumInGroup));
 
         sb.append(String.format("\n" +
@@ -245,20 +244,33 @@ public class CSharpGenerator implements CodeGenerator
             blockLength,
             dimensionHeaderLength));
 
-        generateGroupEnumerator(sb, groupName, indent);
+        generateGroupEnumerator(sb, groupName, typeForNumInGroup, indent);
     }
 
-    private void generateGroupEnumerator(final StringBuilder sb, final String groupName, final String indent)
+    private void generateGroupEnumerator(
+        final StringBuilder sb,
+        final String groupName,
+        final String typeForNumInGroup,
+        final String indent)
     {
         sb.append(
             indent + INDENT + "public int ActingBlockLength { get { return _blockLength; } }\n\n" +
             indent + INDENT + "public int Count { get { return _count; } }\n\n" +
-            indent + INDENT + "public bool HasNext { get { return (_index + 1) < _count; } }\n");
+            indent + INDENT + "public bool HasNext { get { return _index < _count; } }\n");
+
+        sb.append(String.format("\n" +
+            indent + INDENT + "public int ResetCountToIndex()\n" +
+            indent + INDENT + "{\n" +
+            indent + INDENT + INDENT + "_count = _index;\n" +
+            indent + INDENT + INDENT + "_dimensions.NumInGroup = (%s) _count;\n\n" +
+            indent + INDENT + INDENT + "return _count;\n" +
+            indent + INDENT + "}\n",
+            typeForNumInGroup));
 
         sb.append(String.format("\n" +
             indent + INDENT + "public %sGroup Next()\n" +
             indent + INDENT + "{\n" +
-            indent + INDENT + INDENT + "if (_index + 1 >= _count)\n" +
+            indent + INDENT + INDENT + "if (_index >= _count)\n" +
             indent + INDENT + INDENT + "{\n" +
             indent + INDENT + INDENT + INDENT + "ThrowHelper.ThrowInvalidOperationException();\n" +
             indent + INDENT + INDENT + "}\n\n" +
