@@ -291,7 +291,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        return %2$d;\n" +
             indent + "    }\n\n" +
 
-            indent + "    SBE_NODISCARD std::uint64_t sbePosition() const\n" +
+            indent + "    SBE_NODISCARD std::uint64_t sbePosition() const SBE_NOEXCEPT\n" +
             indent + "    {\n" +
             indent + "        return *m_positionPtr;\n" +
             indent + "    }\n\n" +
