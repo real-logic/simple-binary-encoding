@@ -567,7 +567,7 @@ task generateRustCodecs {
  */
 task generateGolangCodecTestComposite(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src',
         'sbe.target.language': 'golang')
@@ -576,7 +576,7 @@ task generateGolangCodecTestComposite(type: JavaExec) {
 
 task generateGolangCodecTestBasic(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src/basic',
         'sbe.target.language': 'golang')
@@ -585,7 +585,7 @@ task generateGolangCodecTestBasic(type: JavaExec) {
 
 task generateGolangCodecTestGroup(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src/group',
         'sbe.target.language': 'golang')
@@ -594,7 +594,7 @@ task generateGolangCodecTestGroup(type: JavaExec) {
 
 task generateGolangCodecTestVarData(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src/vardata',
         'sbe.target.language': 'golang')
@@ -603,7 +603,7 @@ task generateGolangCodecTestVarData(type: JavaExec) {
 
 task generateGolangCodecsWithXIncludes(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src',
         'sbe.target.language': 'golang',
@@ -615,7 +615,7 @@ task generateGolangCodecsWithXIncludes(type: JavaExec) {
 
 task generateGolangCodecsWithXSD(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src',
         'sbe.target.language': 'golang',
@@ -653,7 +653,7 @@ task generateGolangCodecs {
  */
 task generateCSharpCodecsWithXIncludes(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'csharp/sbe-generated',
         'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
@@ -665,7 +665,7 @@ task generateCSharpCodecsWithXIncludes(type: JavaExec) {
 
 task generateCSharpCodecsTests(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'csharp/sbe-generated',
         'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
@@ -698,7 +698,7 @@ task generateJavaIrCodecs(type: JavaExec) {
 
 task generateCppIrCodecs(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'sbe-tool/src/main/cpp',
         'sbe.target.language': 'cpp',
@@ -708,7 +708,7 @@ task generateCppIrCodecs(type: JavaExec) {
 
 task generateGolangIrCodecs(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'sbe-tool/src/main/golang',
         'sbe.target.language': 'golang',
