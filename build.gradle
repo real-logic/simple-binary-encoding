@@ -27,7 +27,7 @@ plugins {
     id "com.github.ben-manes.versions" version "0.27.0"
 }
 
-defaultTasks 'clean', 'build', 'shadowJar', 'install'
+defaultTasks 'clean', 'build'
 
 def checkstyleVersion = '8.28'
 def hamcrestVersion = '2.2'
@@ -39,11 +39,13 @@ def agronaVersion = '1.3.0'
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
 
-group = sbeGroup
-version = sbeVersion
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
-
 ext {
+    group = sbeGroup
+    version = sbeVersion
+    isReleaseVersion = !version.endsWith('-SNAPSHOT')
+    releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+
     if (!project.hasProperty('ossrhUsername')) {
         ossrhUsername = ''
     }
@@ -126,16 +128,10 @@ allprojects {
     }
 }
 
-configurations {
-    shadow
-}
-
 jar.enabled = false
 
 subprojects {
     apply plugin: 'java-library'
-    apply plugin: 'maven'
-    apply plugin: 'signing'
     apply plugin: 'checkstyle'
     apply plugin: 'eclipse'
     apply plugin: 'io.freefair.javadoc-links'
@@ -143,11 +139,21 @@ subprojects {
     group = sbeGroup
     version = sbeVersion
 
-    jar.enabled = true
     checkstyle.toolVersion = "${checkstyleVersion}"
 
-    compileJava {
-        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
+    tasks.withType(Sign) {
+        onlyIf {
+            isReleaseVersion && gradle.taskGraph.hasTask(tasks.publish)
+        }
+    }
+
+    tasks.withType(Jar) {
+        enabled = true
+        includeEmptyDirs = false
+    }
+
+    tasks.withType(JavaCompile) {
+        if (JavaVersion.current().isJava9Compatible()) {
             options.compilerArgs.addAll(['--add-exports', 'java.base/java.lang.reflect=ALL-UNNAMED'])
             options.compilerArgs.addAll(['--add-exports', 'jdk.unsupported/sun.misc=ALL-UNNAMED'])
         }
@@ -161,82 +167,13 @@ subprojects {
         options.encoding = 'UTF-8'
         options.docEncoding = 'UTF-8'
         options.charSet = 'UTF-8'
-        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_10.ordinal()) {
+        if (JavaVersion.current().isJava10Compatible()) {
             options.addBooleanOption 'html5', true
         }
     }
 
-    signing {
-        required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
-        sign configurations.archives
-    }
-
-    install {
-        repositories.mavenInstaller.pom.project(projectPom)
-        repositories.mavenInstaller.pom.whenConfigured {
-            p -> p.dependencies = p.dependencies.findAll {
-                dep -> !(dep.artifactId.contains("hamcrest") ||
-                         dep.artifactId.contains("mockito") ||
-                         dep.artifactId.contains("junit"))
-            }
-        }
-    }
-
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                pom.whenConfigured {
-                    p -> p.dependencies = p.dependencies.findAll {
-                        dep ->!(dep.artifactId.contains("hamcrest") ||
-                                dep.artifactId.contains("mockito") ||
-                                dep.artifactId.contains("junit"))
-                    }
-                }
-            }
-        }
-    }
-}
-
-def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/resources/fpl/sbe.xsd'
-
-project(':sbe-tool') {
-    dependencies {
-        api "org.agrona:agrona:${agronaVersion}"
-        testImplementation files('build/classes/java/generated')
-        testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
-        testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
-        testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-        testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-    }
-
-    sourceSets {
-        generated.java.srcDir 'build/generated-src'
-    }
-
-    compileGeneratedJava {
-        dependsOn 'generateCodecs'
-        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
-            options.compilerArgs.addAll(['--add-exports', 'java.base/java.lang.reflect=ALL-UNNAMED'])
-            options.compilerArgs.addAll(['--add-exports', 'jdk.unsupported/sun.misc=ALL-UNNAMED'])
-        }
-        options.encoding = 'UTF-8'
-        options.deprecation = true
-        classpath += sourceSets.main.runtimeClasspath
-    }
-
-    compileTestJava {
-        dependsOn 'compileGeneratedJava'
-        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
-            options.compilerArgs.addAll(['--add-exports', 'java.base/java.lang.reflect=ALL-UNNAMED'])
-            options.compilerArgs.addAll(['--add-exports', 'jdk.unsupported/sun.misc=ALL-UNNAMED'])
-        }
-        options.encoding = 'UTF-8'
-        options.deprecation = true
-    }
-
     test {
-        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
+        if (JavaVersion.current().isJava9Compatible()) {
             jvmArgs('--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED')
             jvmArgs('--add-exports', 'jdk.unsupported/sun.misc=ALL-UNNAMED')
         }
@@ -250,12 +187,39 @@ project(':sbe-tool') {
 
         reports.html.enabled = false // Disable individual test reports
     }
+}
 
-    task generateCodecs(dependsOn: 'compileJava', type: JavaExec) {
+def validationXsdPath = project(':sbe-tool').projectDir.toString() + '/src/main/resources/fpl/sbe.xsd'
+
+project(':sbe-tool') {
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
+    dependencies {
+        api "org.agrona:agrona:${agronaVersion}"
+        testImplementation files('build/classes/java/generated')
+        testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
+        testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+        testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    }
+
+    def generatedDir = 'build/generated-src'
+    sourceSets {
+        generated.java.srcDir generatedDir
+    }
+
+    compileGeneratedJava {
+        dependsOn 'generateTestCodecs'
+        classpath += sourceSets.main.runtimeClasspath
+    }
+
+    task generateTestCodecs(dependsOn: 'compileJava', type: JavaExec) {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = sourceSets.main.runtimeClasspath
         systemProperties(
-            'sbe.output.dir': 'build/generated-src',
+            'sbe.output.dir': generatedDir,
             'sbe.target.language': 'Java',
             'sbe.validation.stop.on.error': 'true',
             'sbe.validation.xsd': validationXsdPath)
@@ -263,27 +227,10 @@ project(':sbe-tool') {
                 'src/test/resources/composite-elements-schema.xml']
     }
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project(projectPom)
-            }
-        }
-    }
-
     jar {
+        exclude 'golang/templates'
+
         manifest.attributes(
-            'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
             'Specification-Title': 'Simple Binary Encoding',
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
@@ -293,50 +240,52 @@ project(':sbe-tool') {
         )
     }
 
-    task copyCppFiles(type: Copy) {
-        from 'src/main/cpp/sbe'
-        from 'src/main/cpp/otf'
-        into 'build/generated/cpp/cpp'
-    }
-
     task sourcesJar(type: Jar) {
         archiveClassifier.set 'sources'
         from sourceSets.main.allSource
+        from ('src/main/cpp/otf') {
+            into 'cpp'
 
-        dependsOn 'copyCppFiles'
-        from 'build/generated/cpp'
+        }
+        exclude 'golang/templates'
     }
 
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        archiveClassifier.set 'javadoc'
-        from javadoc.destinationDir
+    java {
+        withSourcesJar()
+        withJavadocJar()
     }
 
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
+    publishing {
+        publications {
+            sbe(MavenPublication) {
+                from components.java
+                pom(projectPom)
+            }
+        }
+
+        repositories {
+            maven {
+                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                    username = ossrhUsername
+                    password = ossrhPassword
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.sbe
     }
 }
 
 project(':sbe-all') {
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
     apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
         implementation project(':sbe-tool')
-    }
-
-    task sourcesJar(type: Jar) {
-        archiveClassifier.set 'sources'
-        from project(':sbe-tool').sourceSets.main.allSource
-    }
-
-    javadoc {
-        source += project(':sbe-tool').sourceSets.main.allJava
-    }
-
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        archiveClassifier.set 'javadoc'
-        from javadoc.destinationDir
     }
 
     shadowJar {
@@ -354,103 +303,77 @@ project(':sbe-all') {
 
     jar.finalizedBy shadowJar
 
-    uploadArchives {
+    task sourcesJar(type: Jar) {
+        archiveClassifier.set 'sources'
+        from project(':sbe-tool').sourceSets.main.allSource
+        from (project(':sbe-tool').file('src/main/cpp/otf')) {
+            into 'cpp'
+        }
+        exclude 'golang/templates'
+    }
+
+    javadoc {
+        source += project(':sbe-tool').sourceSets.main.allJava
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        archiveClassifier.set 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    publishing {
+        publications {
+            sbeAll(MavenPublication) {
+                artifact shadowJar
+                artifact sourcesJar
+                artifact javadocJar
+                pom(projectPom)
+            }
+        }
         repositories {
-            mavenDeployer {
-                pom.whenConfigured {
-                    p -> p.dependencies = []
+            maven {
+                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                    username = ossrhUsername
+                    password = ossrhPassword
                 }
-
-                beforeDeployment {
-                    MavenDeployment deployment -> signing.signPom(deployment)
-                }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project(projectPom)
             }
         }
     }
 
-    uploadShadow {
-        repositories {
-            mavenDeployer {
-                pom.whenConfigured {
-                    p -> p.dependencies = []
-                }
-
-                beforeDeployment {
-                    MavenDeployment deployment -> signing.signPom(deployment)
-                }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project(projectPom)
-            }
-        }
-
-        mustRunAfter 'uploadArchives'
-    }
-
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
-    }
-
-    install {
-        repositories.mavenInstaller.pom.whenConfigured {
-            p -> p.dependencies = []
-        }
-    }
-    
     signing {
-        required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
-        sign configurations.shadow
+        sign publishing.publications.sbeAll
     }
 }
 
 project(':sbe-samples') {
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
     dependencies {
         api project(':sbe-tool')
-        api files('build/classes/java/generated')
+        implementation files('build/classes/java/generated')
     }
 
+    def generatedDir = 'build/generated-src'
     sourceSets {
-        generated.java.srcDir 'build/generated-src'
-    }
-
-    compileGeneratedJava {
-        dependsOn 'generateCodecs'
-        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
-            options.compilerArgs.addAll(['--add-exports', 'java.base/java.lang.reflect=ALL-UNNAMED'])
-            options.compilerArgs.addAll(['--add-exports', 'jdk.unsupported/sun.misc=ALL-UNNAMED'])
-        }
-        options.encoding = 'UTF-8'
-        options.deprecation = true
-        classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+        generated.java.srcDir generatedDir
     }
 
     compileJava {
         dependsOn 'compileGeneratedJava'
     }
 
+    compileGeneratedJava {
+        dependsOn 'generateCodecs'
+        classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
+    }
+
     task generateCodecs(type: JavaExec) {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
-            'sbe.output.dir': 'build/generated-src',
+            'sbe.output.dir': generatedDir,
             'sbe.target.language': 'Java',
             'sbe.java.generate.interfaces': 'true',
             'sbe.validation.stop.on.error': 'true',
@@ -481,37 +404,56 @@ project(':sbe-samples') {
         dependsOn 'runExampleUsingGeneratedStub', 'runExampleUsingGeneratedStubExtension', 'runOtfExample'
     }
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+    jar {
+        from sourceSets.generated.output
 
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project(projectPom)
-            }
-        }
+        manifest.attributes(
+                'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
+                'Specification-Title': 'Simple Binary Encoding',
+                'Specification-Version': '1.0',
+                'Implementation-Title': 'SBE',
+                'Implementation-Version': "${sbeVersion}",
+                'Implementation-Vendor': 'Real Logic Limited',
+                'Automatic-Module-Name': 'uk.co.real_logic.sbe.samples'
+        )
     }
 
     task sourcesJar(type: Jar) {
         archiveClassifier.set 'sources'
         from sourceSets.main.allSource
+        from sourceSets.generated.allSource
     }
 
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        archiveClassifier.set'javadoc'
-        from javadoc.destinationDir
+    javadoc {
+        source += sourceSets.generated.allJava
     }
 
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    publishing {
+        publications {
+            sbeSamples(MavenPublication) {
+                from components.java
+                pom(projectPom)
+            }
+        }
+
+        repositories {
+            maven {
+                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                    username = ossrhUsername
+                    password = ossrhPassword
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.sbeSamples
     }
 }
 
@@ -531,12 +473,6 @@ project(':sbe-benchmarks') {
 
     compileGeneratedJava {
         dependsOn 'generateCodecs'
-        if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
-            options.compilerArgs.addAll(['--add-exports', 'java.base/java.lang.reflect=ALL-UNNAMED'])
-            options.compilerArgs.addAll(['--add-exports', 'jdk.unsupported/sun.misc=ALL-UNNAMED'])
-        }
-        options.encoding = 'UTF-8'
-        options.deprecation = true
         classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
     }
 
@@ -794,16 +730,9 @@ task runJavaBenchmarks(type: Exec) {
         '-w', '1s', '-r', '1s','-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
 }
 
-task uploadToMavenCentral {
-    dependsOn 'sbe-tool:uploadArchives',
-        'sbe-samples:uploadArchives',
-        'sbe-all:uploadArchives',
-        'sbe-all:uploadShadow'
-}
-
 task testReport(type: TestReport) {
     destinationDir = file("$buildDir/reports/allTests")
-    // Include the results from the `test` task in all subprojects
+    // Include the results from the `test` task in all sub-projects
     reportOn subprojects*.test
 }
 
