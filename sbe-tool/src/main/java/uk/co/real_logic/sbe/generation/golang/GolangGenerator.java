@@ -494,10 +494,23 @@ public class GolangGenerator implements CodeGenerator
         final Encoding encoding = token.encoding();
 
         // Optional items get initialized to their NullValue
-        sb.append(String.format(
-            "\t%1$s = %2$s\n",
-            varName,
-            generateNullValueLiteral(encoding.primitiveType(), encoding)));
+        if (token.arrayLength() > 1)
+        {
+            sb.append(String.format(
+                "\tfor idx := 0; idx < %1$d; idx++ {\n" +
+                "\t\t%2$s[idx] = %3$s\n" +
+                "\t}\n",
+                token.arrayLength(),
+                varName,
+                generateNullValueLiteral(encoding.primitiveType(), encoding)));
+        }
+        else
+        {
+            sb.append(String.format(
+                "\t%1$s = %2$s\n",
+                varName,
+                generateNullValueLiteral(encoding.primitiveType(), encoding)));
+        }
     }
 
     private void generateConstantInitPrimitive(
