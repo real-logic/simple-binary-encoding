@@ -59,7 +59,7 @@ src/baseline/SbeMarshalling.go: $(DEP)
 # they geenrate into the same directory but golang doesn't allow that
 test: $(DEP)
 	(export GOPATH=$(GOPATH) && \
-		(for t in baseline extension extension2; do \
+		(for t in baseline extension; do \
 		export GOPATH=$(GOPATH) && \
 	        cd $(GOPATH)/src/$$t && \
 		go build && \
