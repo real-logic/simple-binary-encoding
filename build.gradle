@@ -206,6 +206,10 @@ project(':sbe-tool') {
     def generatedDir = 'build/generated-src'
     sourceSets {
         generated.java.srcDir generatedDir
+        test {
+            compileClasspath += generated.output
+            runtimeClasspath += generated.output
+        }
     }
 
     compileGeneratedJava {
