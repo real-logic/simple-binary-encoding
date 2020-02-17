@@ -77,16 +77,16 @@ public:
         car.putModel(MODEL, MODELLEN);
 
         return car.encodedLength();
-    };
+    }
 
     virtual std::uint64_t decode(const char *buffer, const std::uint64_t bufferLength)
     {
         car.wrapForDecode((char *)buffer, 0, Car::sbeBlockLength(), Car::sbeSchemaVersion(), bufferLength);
 
-        int64_t tmpInt;
-        const char *tmpChar;
-        double tmpDouble;
-        bool tmpBool;
+        volatile int64_t tmpInt;
+        volatile const char *tmpChar;
+        volatile double tmpDouble;
+        volatile bool tmpBool;
 
         tmpInt = car.serialNumber();
         tmpInt = car.modelYear();
@@ -139,7 +139,7 @@ public:
         (void)tmpBool;
 
         return car.encodedLength();
-    };
+    }
 
 private:
     Car car;
