@@ -682,7 +682,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        if (parentMessage.actingVersion < " + token.version() + ")\n" +
             indent + "        {\n" +
             indent + "            " + propertyName + ".count = 0;\n" +
-            indent + "            " + propertyName + ".index = -1;\n" +
+            indent + "            " + propertyName + ".index = 0;\n" +
             indent + "            return " + propertyName + ";\n" +
             indent + "        }\n\n";
 
