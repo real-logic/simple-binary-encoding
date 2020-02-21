@@ -3393,8 +3393,11 @@ public class JavaGenerator implements CodeGenerator
                 break;
 
             case BEGIN_ENUM:
-            case BEGIN_SET:
                 append(sb, indent, "builder.append(" + fieldName + "());");
+                break;
+
+            case BEGIN_SET:
+                append(sb, indent, fieldName + "().appendTo(builder);");
                 break;
 
             case BEGIN_COMPOSITE:
