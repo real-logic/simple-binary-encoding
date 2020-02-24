@@ -296,6 +296,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        return *m_positionPtr;\n" +
             indent + "    }\n\n" +
 
+            indent + "    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)\n" +
             indent + "    std::uint64_t sbeCheckPosition(const std::uint64_t position)\n" +
             indent + "    {\n" +
             indent + "        if (SBE_BOUNDS_CHECK_EXPECT((position > m_bufferLength), false))\n" +
@@ -668,7 +669,7 @@ public class CppGenerator implements CodeGenerator
             sizeOfLengthField);
 
         new Formatter(sb).format("\n" +
-            indent + "    %4$s %1$sLength() const\n" +
+            indent + "    SBE_NODISCARD %4$s %1$sLength() const\n" +
             indent + "    {\n" +
             "%2$s" +
             indent + "        %4$s length;\n" +
@@ -1524,7 +1525,7 @@ public class CppGenerator implements CodeGenerator
         if (encodingToken.encoding().primitiveType() == PrimitiveType.CHAR)
         {
             new Formatter(sb).format("\n" +
-                indent + "    std::string get%1$sAsString() const\n" +
+                indent + "    SBE_NODISCARD std::string get%1$sAsString() const\n" +
                 indent + "    {\n" +
                 indent + "        const char *buffer = m_buffer + m_offset + %2$d;\n" +
                 indent + "        size_t length = 0;\n\n" +
@@ -1542,7 +1543,7 @@ public class CppGenerator implements CodeGenerator
 
             new Formatter(sb).format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
-                indent + "    std::string_view get%1$sAsStringView() const SBE_NOEXCEPT\n" +
+                indent + "    SBE_NODISCARD std::string_view get%1$sAsStringView() const SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
                 indent + "        const char *buffer = m_buffer + m_offset + %2$d;\n" +
                 indent + "        size_t length = 0;\n\n" +
@@ -1609,9 +1610,9 @@ public class CppGenerator implements CodeGenerator
             "%2$s" +
             indent + "        std::ostringstream oss;\n" +
             indent + "        std::string s = get%1$sAsString();\n\n" +
-            indent + "        for (auto c = s.cbegin(); c != s.cend(); c++)\n" +
+            indent + "        for (const auto c : s)\n" +
             indent + "        {\n" +
-            indent + "            switch (*c)\n" +
+            indent + "            switch (c)\n" +
             indent + "            {\n" +
             indent + "                case '\"': oss << \"\\\\\\\"\"; break;\n" +
             indent + "                case '\\\\': oss << \"\\\\\\\\\"; break;\n" +
@@ -1621,14 +1622,14 @@ public class CppGenerator implements CodeGenerator
             indent + "                case '\\r': oss << \"\\\\r\"; break;\n" +
             indent + "                case '\\t': oss << \"\\\\t\"; break;\n\n" +
             indent + "                default:\n" +
-            indent + "                    if ('\\x00' <= *c && *c <= '\\x1f')\n" +
+            indent + "                    if ('\\x00' <= c && c <= '\\x1f')\n" +
             indent + "                    {\n" +
             indent + "                        oss << \"\\\\u\"" + " << std::hex << std::setw(4)\n" +
-            indent + "                            << std::setfill('0') << (int)(*c);\n" +
+            indent + "                            << std::setfill('0') << (int)(c);\n" +
             indent + "                    }\n" +
             indent + "                    else\n" +
             indent + "                    {\n" +
-            indent + "                        oss << *c;\n" +
+            indent + "                        oss << c;\n" +
             indent + "                    }\n" +
             indent + "            }\n" +
             indent + "        }\n\n" +
@@ -1988,6 +1989,7 @@ public class CppGenerator implements CodeGenerator
             "        return m_position;\n" +
             "    }\n\n" +
 
+            "    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)\n" +
             "    std::uint64_t sbeCheckPosition(const std::uint64_t position)\n" +
             "    {\n" +
             "        if (SBE_BOUNDS_CHECK_EXPECT((position > m_bufferLength), false))\n" +
