@@ -3090,7 +3090,12 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
-        append(sb, indent, INDENT + decoderName + " writer = new " + decoderName + "();");
+        append(sb, indent, "    if (null == buffer)");
+        append(sb, indent, "    {");
+        append(sb, indent, "        return builder;");
+        append(sb, indent, "    }");
+        sb.append('\n');
+        append(sb, indent, "    final " + decoderName + " writer = new " + decoderName + "();");
         append(sb, indent, "    writer.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);");
         sb.append('\n');
         append(sb, indent, "    return writer.appendTo(builder);");
@@ -3105,7 +3110,12 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
-        append(sb, indent, INDENT + decoderName + " writer = new " + decoderName + "();");
+        append(sb, indent, "    if (null == buffer)");
+        append(sb, indent, "    {");
+        append(sb, indent, "        return builder;");
+        append(sb, indent, "    }");
+        sb.append('\n');
+        append(sb, indent, "    final " + decoderName + " writer = new " + decoderName + "();");
         append(sb, indent, "    writer.wrap(buffer, offset);");
         sb.append('\n');
         append(sb, indent, "    return writer.appendTo(builder);");
@@ -3123,6 +3133,11 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
+        append(sb, indent, "    if (null == buffer)");
+        append(sb, indent, "    {");
+        append(sb, indent, "        return builder;");
+        append(sb, indent, "    }");
+        sb.append('\n');
         Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
 
         int lengthBeforeLastGeneratedSeparator = -1;
@@ -3199,6 +3214,11 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
+        append(sb, indent, "    if (null == buffer)");
+        append(sb, indent, "    {");
+        append(sb, indent, "        return builder;");
+        append(sb, indent, "    }");
+        sb.append('\n');
         append(sb, indent, "    final int originalLimit = limit();");
         append(sb, indent, "    limit(initialOffset + actingBlockLength);");
         append(sb, indent, "    builder.append(\"[" + name + "](sbeTemplateId=\");");
@@ -3240,6 +3260,11 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, indent, "{");
+        append(sb, indent, "    if (null == buffer)");
+        append(sb, indent, "    {");
+        append(sb, indent, "        return builder;");
+        append(sb, indent, "    }");
+        sb.append('\n');
         Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
         appendDecoderDisplay(sb, fields, groups, varData, indent + INDENT);
         Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
@@ -3427,6 +3452,11 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public String toString()");
         append(sb, indent, "{");
+        append(sb, indent, "    if (null == buffer)");
+        append(sb, indent, "    {");
+        append(sb, indent, "        return \"\";");
+        append(sb, indent, "    }");
+        sb.append('\n');
         append(sb, indent, "    return appendTo(new StringBuilder()).toString();");
         append(sb, indent, "}");
     }
@@ -3436,7 +3466,12 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, indent, "public String toString()");
         append(sb, indent, "{");
-        append(sb, indent, "    " + decoderName + " decoder = new " + decoderName + "();");
+        append(sb, indent, "    if (null == buffer)");
+        append(sb, indent, "    {");
+        append(sb, indent, "        return \"\";");
+        append(sb, indent, "    }");
+        sb.append('\n');
+        append(sb, indent, "    final " + decoderName + " decoder = new " + decoderName + "();");
         append(sb, indent, "    decoder.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);");
         sb.append('\n');
         append(sb, indent, "    return decoder.appendTo(new StringBuilder()).toString();");
