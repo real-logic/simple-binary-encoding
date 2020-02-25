@@ -243,7 +243,7 @@ project(':sbe-tool') {
     }
 
     task sourcesJar(type: Jar) {
-        archiveClassifier.set 'sources'
+        archiveClassifier.set('sources')
         from sourceSets.main.allSource
         from ('src/main/cpp/otf') {
             into 'cpp'
@@ -291,7 +291,7 @@ project(':sbe-all') {
     }
 
     shadowJar {
-        archiveClassifier.set ''
+        archiveClassifier.set('')
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
             'Specification-Title': 'Simple Binary Encoding',
@@ -306,7 +306,7 @@ project(':sbe-all') {
     jar.finalizedBy shadowJar
 
     task sourcesJar(type: Jar) {
-        archiveClassifier.set 'sources'
+        archiveClassifier.set('sources')
         from project(':sbe-tool').sourceSets.main.allSource
         from (project(':sbe-tool').file('src/main/cpp/otf')) {
             into 'cpp'
@@ -319,7 +319,7 @@ project(':sbe-all') {
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        archiveClassifier.set 'javadoc'
+        archiveClassifier.set('javadoc')
         from javadoc.destinationDir
     }
 
@@ -421,7 +421,7 @@ project(':sbe-samples') {
     }
 
     task sourcesJar(type: Jar) {
-        archiveClassifier.set 'sources'
+        archiveClassifier.set('sources')
         from sourceSets.main.allSource
         from sourceSets.generated.allSource
     }
@@ -497,7 +497,7 @@ project(':sbe-benchmarks') {
 
     shadowJar {
         archiveFileName = 'sbe-benchmarks.jar'
-        archiveClassifier.set 'benchmarks'
+        archiveClassifier.set('benchmarks')
         manifest.attributes('Main-Class': 'org.openjdk.jmh.Main')
     }
 
