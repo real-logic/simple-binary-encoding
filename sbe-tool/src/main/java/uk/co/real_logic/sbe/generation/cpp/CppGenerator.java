@@ -602,6 +602,22 @@ public class CppGenerator implements CodeGenerator
                 lengthCppType,
                 lengthToken.encoding().applicableMaxValue().longValue());
 
+            new Formatter(sb).format("\n" +
+                indent + "    #if __cplusplus >= 201703L\n" +
+                indent + "    %1$s &put%2$s(const std::string_view str)\n" +
+                indent + "    {\n" +
+                indent + "        if (str.length() > %4$d)\n" +
+                indent + "        {\n" +
+                indent + "            throw std::runtime_error(\"std::string too long for length type [E109]\");\n" +
+                indent + "        }\n" +
+                indent + "        return put%2$s(str.data(), static_cast<%3$s>(str.length()));" +
+                indent + "    }\n" +
+                indent + "    #endif\n",
+                className,
+                propertyName,
+                lengthCppType,
+                lengthToken.encoding().applicableMaxValue().longValue());
+
             i += token.componentTokenCount();
         }
     }
