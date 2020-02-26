@@ -531,9 +531,12 @@ public class CppGenerator implements CodeGenerator
                 indent + "        %3$s lengthFieldValue = %4$s(length);\n" +
                 indent + "        sbePosition(lengthPosition + lengthOfLengthField);\n" +
                 indent + "        std::memcpy(m_buffer + lengthPosition, &lengthFieldValue, sizeof(%3$s));\n" +
-                indent + "        std::uint64_t pos = sbePosition();\n" +
-                indent + "        sbePosition(pos + length);\n" +
-                indent + "        std::memcpy(m_buffer + pos, src, length);\n" +
+                indent + "        if (length != %3$s(0))" +
+                indent + "        {" +
+                indent + "            std::uint64_t pos = sbePosition();\n" +
+                indent + "            sbePosition(pos + length);\n" +
+                indent + "            std::memcpy(m_buffer + pos, src, length);\n" +
+                indent + "        }" +
                 indent + "        return *this;\n" +
                 indent + "    }\n",
                 propertyName,
