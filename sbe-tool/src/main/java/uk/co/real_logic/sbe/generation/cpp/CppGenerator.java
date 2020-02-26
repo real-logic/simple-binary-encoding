@@ -591,25 +591,15 @@ public class CppGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    %1$s &put%2$s(const std::string& str)\n" +
                 indent + "    {\n" +
-                indent + "        if (str.length() > %6$d)\n" +
+                indent + "        if (str.length() > %4$d)\n" +
                 indent + "        {\n" +
                 indent + "            throw std::runtime_error(\"std::string too long for length type [E109]\");\n" +
                 indent + "        }\n" +
-                indent + "        std::uint64_t lengthOfLengthField = %3$d;\n" +
-                indent + "        std::uint64_t lengthPosition = sbePosition();\n" +
-                indent + "        %4$s lengthFieldValue = %5$s(static_cast<%4$s>(str.length()));\n" +
-                indent + "        sbePosition(lengthPosition + lengthOfLengthField);\n" +
-                indent + "        std::memcpy(m_buffer + lengthPosition, &lengthFieldValue, sizeof(%4$s));\n" +
-                indent + "        std::uint64_t pos = sbePosition();\n" +
-                indent + "        sbePosition(pos + str.length());\n" +
-                indent + "        std::memcpy(m_buffer + pos, str.c_str(), str.length());\n" +
-                indent + "        return *this;\n" +
+                indent + "        return put%2$s(str.data(), static_cast<%3$s>(str.length()));" +
                 indent + "    }\n",
                 className,
                 propertyName,
-                lengthOfLengthField,
                 lengthCppType,
-                lengthByteOrderStr,
                 lengthToken.encoding().applicableMaxValue().longValue());
 
             i += token.componentTokenCount();
