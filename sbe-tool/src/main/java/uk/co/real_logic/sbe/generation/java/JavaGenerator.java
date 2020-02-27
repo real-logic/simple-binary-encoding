@@ -3095,10 +3095,10 @@ public class JavaGenerator implements CodeGenerator
         append(sb, indent, "        return builder;");
         append(sb, indent, "    }");
         sb.append('\n');
-        append(sb, indent, "    final " + decoderName + " writer = new " + decoderName + "();");
-        append(sb, indent, "    writer.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);");
+        append(sb, indent, "    final " + decoderName + " decoder = new " + decoderName + "();");
+        append(sb, indent, "    decoder.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);");
         sb.append('\n');
-        append(sb, indent, "    return writer.appendTo(builder);");
+        append(sb, indent, "    return decoder.appendTo(builder);");
         append(sb, indent, "}");
     }
 
@@ -3115,10 +3115,10 @@ public class JavaGenerator implements CodeGenerator
         append(sb, indent, "        return builder;");
         append(sb, indent, "    }");
         sb.append('\n');
-        append(sb, indent, "    final " + decoderName + " writer = new " + decoderName + "();");
-        append(sb, indent, "    writer.wrap(buffer, offset);");
+        append(sb, indent, "    final " + decoderName + " decoder = new " + decoderName + "();");
+        append(sb, indent, "    decoder.wrap(buffer, offset);");
         sb.append('\n');
-        append(sb, indent, "    return writer.appendTo(builder);");
+        append(sb, indent, "    return decoder.appendTo(builder);");
         append(sb, indent, "}");
 
         return sb;
@@ -3472,7 +3472,7 @@ public class JavaGenerator implements CodeGenerator
         append(sb, indent, "    }");
         sb.append('\n');
         append(sb, indent, "    final " + decoderName + " decoder = new " + decoderName + "();");
-        append(sb, indent, "    decoder.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);");
+        append(sb, indent, "    decoder.wrap(buffer, initialOffset, actingBlockLength, actingVersion);");
         sb.append('\n');
         append(sb, indent, "    return decoder.appendTo(new StringBuilder()).toString();");
         append(sb, indent, "}");

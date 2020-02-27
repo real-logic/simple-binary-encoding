@@ -577,14 +577,24 @@ public class FrameCodecDecoder
 
     public String toString()
     {
-        FrameCodecDecoder decoder = new FrameCodecDecoder();
-        decoder.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);
+        if (null == buffer)
+        {
+            return "";
+        }
+
+        final FrameCodecDecoder decoder = new FrameCodecDecoder();
+        decoder.wrap(buffer, initialOffset, actingBlockLength, actingVersion);
 
         return decoder.appendTo(new StringBuilder()).toString();
     }
 
     public StringBuilder appendTo(final StringBuilder builder)
     {
+        if (null == buffer)
+        {
+            return builder;
+        }
+
         final int originalLimit = limit();
         limit(initialOffset + actingBlockLength);
         builder.append("[FrameCodec](sbeTemplateId=");
