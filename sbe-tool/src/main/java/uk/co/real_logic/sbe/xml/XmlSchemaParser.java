@@ -341,17 +341,12 @@ public class XmlSchemaParser
      */
     public static ByteOrder getByteOrder(final String byteOrderName)
     {
-        switch (byteOrderName)
+        if ("bigEndian".equals(byteOrderName))
         {
-            case "littleEndian":
-                return ByteOrder.LITTLE_ENDIAN;
-
-            case "bigEndian":
-                return ByteOrder.BIG_ENDIAN;
-
-            default:
-                return ByteOrder.LITTLE_ENDIAN;
+            return ByteOrder.BIG_ENDIAN;
         }
+
+        return ByteOrder.LITTLE_ENDIAN;
     }
 
     /**
