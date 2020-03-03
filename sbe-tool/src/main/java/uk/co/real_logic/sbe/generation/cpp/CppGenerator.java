@@ -1934,6 +1934,11 @@ public class CppGenerator implements CodeGenerator
             "        return %2$s;\n" +
             "    }\n\n" +
 
+            "    SBE_NODISCARD static SBE_CONSTEXPR %1$s sbeBlockAndHeaderLength() SBE_NOEXCEPT\n" +
+            "    {\n" +
+            "        return MessageHeader::encodedLength() + sbeBlockLength();\n" +
+            "    }\n\n" +
+
             "    SBE_NODISCARD static SBE_CONSTEXPR %3$s sbeTemplateId() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %4$s;\n" +
