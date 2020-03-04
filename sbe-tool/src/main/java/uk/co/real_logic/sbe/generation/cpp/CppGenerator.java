@@ -1042,6 +1042,12 @@ public class CppGenerator implements CodeGenerator
             "#  define SBE_NOEXCEPT\n" +
             "#endif\n\n" +
 
+            "#if __cplusplus >= 201402L\n" +
+            "#  define SBE_CONSTEXPR_14 constexpr\n" +
+            "#else\n" +
+            "#  define SBE_CONSTEXPR_14\n" +
+            "#endif\n\n" +
+
             "#if __cplusplus >= 201703L\n" +
             "#  include <string_view>\n" +
             "#  define SBE_NODISCARD [[nodiscard]]\n" +
