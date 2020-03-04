@@ -1035,12 +1035,6 @@ public class CppGenerator implements CodeGenerator
             "#endif\n\n" +
 
             "#if __cplusplus >= 201103L\n" +
-            "#  include <cstdint>\n" +
-            "#  include <string>\n" +
-            "#  include <cstring>\n" +
-            "#endif\n\n" +
-
-            "#if __cplusplus >= 201103L\n" +
             "#  define SBE_CONSTEXPR constexpr\n" +
             "#  define SBE_NOEXCEPT noexcept\n" +
             "#else\n" +
