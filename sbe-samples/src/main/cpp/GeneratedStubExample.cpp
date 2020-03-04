@@ -314,8 +314,9 @@ int main(int argc, const char* argv[])
 
     std::size_t encodeHdrLength = encodeHdr(hdr, car, buffer, 0, sizeof(buffer));
     std::size_t encodeMsgLength = encodeCar(car, buffer, hdr.encodedLength(), sizeof(buffer));
+    std::size_t predictedLength = Car::computeLength({11, 14, 13}, {3, 3}, 5, 9, 8);
 
-    cout << "Encoded Lengths are " << encodeHdrLength << " + " << encodeMsgLength << endl;
+    cout << "Encoded Lengths are " << encodeHdrLength << " + " << encodeMsgLength << " (" << predictedLength << ")" << endl;
 
     std::size_t decodeHdrLength = decodeHdr(hdr, buffer, 0, sizeof(buffer));
     std::size_t decodeMsgLength = decodeCar(car, buffer, hdr.encodedLength(), hdr.blockLength(), hdr.version(), sizeof(buffer));
