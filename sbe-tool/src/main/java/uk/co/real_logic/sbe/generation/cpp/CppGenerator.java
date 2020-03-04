@@ -1049,6 +1049,7 @@ public class CppGenerator implements CodeGenerator
             "#endif\n\n" +
 
             "#if __cplusplus >= 201703L\n" +
+            "#  include <string_view>\n" +
             "#  define SBE_NODISCARD [[nodiscard]]\n" +
             "#else\n" +
             "#  define SBE_NODISCARD\n" +
@@ -1056,14 +1057,17 @@ public class CppGenerator implements CodeGenerator
 
             "#if !defined(__STDC_LIMIT_MACROS)\n" +
             "#  define __STDC_LIMIT_MACROS 1\n" +
-            "#endif\n" +
+            "#endif\n\n" +
+
             "#include <cstdint>\n" +
             "#include <cstring>\n" +
+            "#include <iomanip>\n" +
             "#include <limits>\n" +
-            "#include <stdexcept>\n\n" +
             "#include <ostream>\n" +
+            "#include <stdexcept>\n" +
             "#include <sstream>\n" +
-            "#include <iomanip>\n\n" +
+            "#include <string>\n" +
+            "\n" +
 
             "#if defined(WIN32) || defined(_WIN32)\n" +
             "#  define SBE_BIG_ENDIAN_ENCODE_16(v) _byteswap_ushort(v)\n" +
