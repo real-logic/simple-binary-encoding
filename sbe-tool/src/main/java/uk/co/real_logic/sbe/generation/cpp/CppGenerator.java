@@ -2915,6 +2915,7 @@ public class CppGenerator implements CodeGenerator
         final String indent)
     {
         final StringBuilder sbEncode = new StringBuilder();
+        final StringBuilder sbSkip = new StringBuilder();
 
         for (int i = 0, size = groups.size(); i < size; i++)
         {
@@ -2979,6 +2980,15 @@ public class CppGenerator implements CodeGenerator
                     generateMessageLengthCallPre17Helper(thisGroup));
             }
 
+            new Formatter(sbSkip).format(
+                indent + "    %2$s().forEach([](%1$s e)" +
+                indent + "    {\n" +
+                indent + "        e.skip();\n" +
+                indent + "    });\n",
+                formatClassName(groupToken.name()),
+                formatPropertyName(groupToken.name()),
+                groupToken.name());
+
             i = endSignal;
         }
 
@@ -2991,6 +3001,7 @@ public class CppGenerator implements CodeGenerator
                 throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
             }
 
+            final String propertyName = toUpperFirstChar(varDataToken.name());
             final Token lengthToken = Generators.findFirst("length", varData, i);
 
             new Formatter(sbEncode).format("\n" +
@@ -3003,12 +3014,21 @@ public class CppGenerator implements CodeGenerator
                 varDataToken.name(),
                 lengthToken.encoding().applicableMaxValue().longValue());
 
+            new Formatter(sbSkip).format(
+                indent + "    skip%1$s();\n",
+                propertyName);
+
             i += varDataToken.componentTokenCount();
         }
 
         final StringBuilder sb = new StringBuilder();
 
         new Formatter(sb).format("\n" +
+            indent + "void skip()\n" +
+            indent + "{\n" +
+            "%3$s" +
+            indent + "}\n\n" +
+
             indent + "SBE_NODISCARD static SBE_CONSTEXPR bool isConstLength() SBE_NOEXCEPT\n" +
             indent + "{\n" +
             indent + "    return " + ((groups.isEmpty() && varData.isEmpty()) ? "true" : "false") + ";\n" +
@@ -3028,7 +3048,8 @@ public class CppGenerator implements CodeGenerator
             "#endif\n" +
             indent + "}\n",
             generateMessageLengthArgs(fields, groups, varData, indent + INDENT, true)[0],
-            sbEncode.toString());
+            sbEncode.toString(),
+            sbSkip.toString());
 
         return sb;
     }
