@@ -3009,6 +3009,11 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         new Formatter(sb).format("\n" +
+            indent + "SBE_NODISCARD static SBE_CONSTEXPR bool isConstLength() SBE_NOEXCEPT\n" +
+            indent + "{\n" +
+            indent + "    return " + ((groups.isEmpty() && varData.isEmpty()) ? "true" : "false") + ";\n" +
+            indent + "}\n\n" +
+
             indent + "SBE_NODISCARD static SBE_CONSTEXPR_14 size_t computeLength(%1$s)\n" +
             indent + "{\n" +
             "#if defined(__GNUG__) && !defined(__clang__)\n" +
