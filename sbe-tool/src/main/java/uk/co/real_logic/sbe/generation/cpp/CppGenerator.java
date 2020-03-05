@@ -2030,6 +2030,14 @@ public class CppGenerator implements CodeGenerator
             "        return sbePosition() - m_offset;\n" +
             "    }\n\n" +
 
+            "    SBE_NODISCARD std::uint64_t decodeLength() const\n" +
+            "    {\n" +
+            "        %10$s skipper(m_buffer, m_offset,\n" +
+            "            m_bufferLength, sbeBlockLength(), m_actingVersion);\n" +
+            "        skipper.skip();\n" +
+            "        return skipper.encodedLength();\n" +
+            "    }\n\n" +
+
             "    SBE_NODISCARD const char * buffer() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
