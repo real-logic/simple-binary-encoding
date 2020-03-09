@@ -410,13 +410,13 @@ project(':sbe-samples') {
         from sourceSets.generated.output
 
         manifest.attributes(
-                'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
-                'Specification-Title': 'Simple Binary Encoding',
-                'Specification-Version': '1.0',
-                'Implementation-Title': 'SBE',
-                'Implementation-Version': "${sbeVersion}",
-                'Implementation-Vendor': 'Real Logic Limited',
-                'Automatic-Module-Name': 'uk.co.real_logic.sbe.samples'
+            'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
+            'Specification-Title': 'Simple Binary Encoding',
+            'Specification-Version': '1.0',
+            'Implementation-Title': 'SBE',
+            'Implementation-Version': "${sbeVersion}",
+            'Implementation-Vendor': 'Real Logic Limited',
+            'Automatic-Module-Name': 'uk.co.real_logic.sbe.samples'
         )
     }
 
@@ -502,62 +502,6 @@ project(':sbe-benchmarks') {
     }
 
     jar.finalizedBy shadowJar
-}
-
-/*
- * Rust codec targets used for testing and demonstration
- */
-task generateRustCarExample(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
-    systemProperties(
-        'sbe.output.dir': 'rust/car_example/src',
-        'sbe.xinclude.aware': 'true',
-        'sbe.target.language': 'uk.co.real_logic.sbe.generation.rust.Rust',
-        'sbe.target.namespace': 'car_example_generated_codec')
-    args = ['sbe-samples/src/main/resources/example-schema.xml']
-}
-
-task generateCarExampleDataFile(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
-    classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
-    systemProperties('sbe.encoding.filename': 'rust/car_example/car_example_data.sbe')
-    args = []
-    standardOutput = new ByteArrayOutputStream()
-}
-
-task runRustCarExample(type: Exec) {
-    workingDir = './rust/car_example'
-    executable = 'cargo'
-    args = ['run']
-    standardOutput = new ByteArrayOutputStream()
-    errorOutput = new ByteArrayOutputStream()
-    dependsOn 'generateRustCarExample', 'generateCarExampleDataFile'
-}
-
-def cargo_exists() {
-    try {
-        def result = project.exec {
-            executable = 'cargo'
-            args = [ '-V' ]
-            standardOutput = new ByteArrayOutputStream()
-        }
-        return result.exitValue == 0
-    }
-    catch (Exception ignore) {
-        return false
-    }
-}
-
-if (cargo_exists() && !project.hasProperty('sbe.skipRust')) {
-    test.dependsOn('runRustCarExample')
-} else {
-    println 'Skipping Rust integration test due to absent cargo command or sbe.skipRust property'
-}
-
-task generateRustCodecs {
-    description = 'Generate rust test codecs'
-    dependsOn 'generateRustCarExample', 'generateCarExampleDataFile'
 }
 
 /*
