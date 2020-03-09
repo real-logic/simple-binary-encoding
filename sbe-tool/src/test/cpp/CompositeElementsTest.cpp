@@ -267,7 +267,7 @@ TEST_F(CompositeElementsTest, shouldEncodeAndDecodeMsgCorrectly)
     EXPECT_EQ(msg.encodedLength(), sz - MessageHeader::encodedLength());
 }
 
-TEST_F(CompositeElementsTest, shouldHandleAllEventsCorrectltInOrder)
+TEST_F(CompositeElementsTest, shouldHandleAllEventsCorrectlyInOrder)
 {
     std::uint64_t sz = encodeHdrAndMsg();
 

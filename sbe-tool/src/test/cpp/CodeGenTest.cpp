@@ -447,7 +447,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeHeaderPlusCarCorrectly)
     EXPECT_EQ(std::string(bp + activationCodePosition, ACTIVATION_CODE_LENGTH), ACTIVATION_CODE);
 }
 
-TEST_F(CodeGenTest, shouldbeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
+TEST_F(CodeGenTest, shouldBeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
 {
     char buffer[BUFFER_LEN];
 
@@ -591,7 +591,7 @@ struct CallbacksForEach
     void operator()(Car::FuelFigures& fuelFigures)
     {
         countOfFuelFigures++;
-        fuelFigures.usageDescription();
+        static_cast<void>(fuelFigures.usageDescription());
     }
 
     void operator()(Car::PerformanceFigures& performanceFigures)
@@ -608,7 +608,7 @@ struct CallbacksForEach
     }
 };
 
-TEST_F(CodeGenTest, shouldbeAbleUseOnStackCodecsAndGroupForEach)
+TEST_F(CodeGenTest, shouldBeAbleUseOnStackCodecsAndGroupForEach)
 {
     char buffer[BUFFER_LEN];
     MessageHeader hdr(buffer, sizeof(buffer), 0);

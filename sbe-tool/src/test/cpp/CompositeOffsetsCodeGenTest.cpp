@@ -155,4 +155,3 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToDecodeHeaderAndMsgCorrectly)
 
     EXPECT_EQ(m_msgDecoder.encodedLength(), 40u);
 }
-

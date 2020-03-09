@@ -133,10 +133,10 @@ public:
         tmpChar = car.manufacturer();
         tmpChar = car.model();
 
-        (void)tmpInt;
-        (void)tmpChar;
-        (void)tmpDouble;
-        (void)tmpBool;
+        static_cast<void>(tmpInt);
+        static_cast<void>(tmpChar);
+        static_cast<void>(tmpDouble);
+        static_cast<void>(tmpBool);
 
         return car.encodedLength();
     }
