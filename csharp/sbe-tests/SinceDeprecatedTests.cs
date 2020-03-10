@@ -64,15 +64,13 @@ namespace Org.SbeTool.Sbe.Tests
             sinceDeprecated.WrapForDecode(directBuffer, SinceDeprecated.MessageHeader.Size, SinceDeprecated.SinceDeprecated.BlockLength, 2);
             Assert.AreEqual(sinceDeprecated.V1, 1UL, "Incorrect V1 schemaversion:2");
             Assert.AreEqual(sinceDeprecated.V2, 2UL, "Incorrect V2 schemaversion:2");
-            // FIXME: broken
-            // Assert.AreEqual(sinceDeprecated.V3, SinceDeprecated.SinceDeprecated.V3NullValue, "Incorrect V3 schemaversion:2");
+            Assert.AreEqual(sinceDeprecated.V3, SinceDeprecated.SinceDeprecated.V3NullValue, "Incorrect V3 schemaversion:2");
             
             // SchemaVersion is 1
             sinceDeprecated.WrapForDecode(directBuffer, SinceDeprecated.MessageHeader.Size, SinceDeprecated.SinceDeprecated.BlockLength, 1);
             Assert.AreEqual(sinceDeprecated.V1, 1UL, "Incorrect V1 schemaversion:1");
-            // FIXME: broken
-            // Assert.AreEqual(sinceDeprecated.V2, SinceDeprecated.SinceDeprecated.V2NullValue, "Incorrect V2 schemaversion:1");
-            // Assert.AreEqual(sinceDeprecated.V3, SinceDeprecated.SinceDeprecated.V3NullValue, "Incorrect V3 schemaversion:1");
+            Assert.AreEqual(sinceDeprecated.V2, SinceDeprecated.SinceDeprecated.V2NullValue, "Incorrect V2 schemaversion:1");
+            Assert.AreEqual(sinceDeprecated.V3, SinceDeprecated.SinceDeprecated.V3NullValue, "Incorrect V3 schemaversion:1");
         }
     }
 }
