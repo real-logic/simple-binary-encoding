@@ -33,7 +33,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Setup java
         uses: actions/setup-java@v1
         with:
@@ -65,7 +65,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Cache NuGet dependencies
         uses: actions/cache@v1
         with:
@@ -108,7 +108,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Install compiler
         run: |
           sudo apt-get install -y g++-${{ matrix.version }} libsparsehash-dev
@@ -139,7 +139,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Install compiler
         run: |
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${{ matrix.version }} main"
