@@ -138,6 +138,7 @@ public class CppGenerator implements CodeGenerator
                 generateGroups(sb, groups, BASE_INDENT);
                 generateVarData(sb, className, varData, BASE_INDENT);
                 generateDisplay(sb, msgToken.name(), fields, groups, varData, BASE_INDENT + INDENT);
+                sb.append(generateMessageLength(fields, groups, varData, BASE_INDENT + INDENT));
                 sb.append("};\n");
                 sb.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
                 out.append(sb);
@@ -178,6 +179,7 @@ public class CppGenerator implements CodeGenerator
             generateVarData(sb, formatClassName(groupName), varData, indent + INDENT);
 
             sb.append(generateGroupDisplay(groupName, fields, groups, varData, indent + INDENT + INDENT));
+            sb.append(generateMessageLength(fields, groups, varData, indent + INDENT + INDENT));
 
             sb.append(indent).append("    };\n");
             generateGroupProperty(sb, groupName, groupToken, cppTypeForNumInGroup, indent);
@@ -1035,12 +1037,6 @@ public class CppGenerator implements CodeGenerator
             "#endif\n\n" +
 
             "#if __cplusplus >= 201103L\n" +
-            "#  include <cstdint>\n" +
-            "#  include <string>\n" +
-            "#  include <cstring>\n" +
-            "#endif\n\n" +
-
-            "#if __cplusplus >= 201103L\n" +
             "#  define SBE_CONSTEXPR constexpr\n" +
             "#  define SBE_NOEXCEPT noexcept\n" +
             "#else\n" +
@@ -1048,7 +1044,14 @@ public class CppGenerator implements CodeGenerator
             "#  define SBE_NOEXCEPT\n" +
             "#endif\n\n" +
 
+            "#if __cplusplus >= 201402L\n" +
+            "#  define SBE_CONSTEXPR_14 constexpr\n" +
+            "#else\n" +
+            "#  define SBE_CONSTEXPR_14\n" +
+            "#endif\n\n" +
+
             "#if __cplusplus >= 201703L\n" +
+            "#  include <string_view>\n" +
             "#  define SBE_NODISCARD [[nodiscard]]\n" +
             "#else\n" +
             "#  define SBE_NODISCARD\n" +
@@ -1056,14 +1059,18 @@ public class CppGenerator implements CodeGenerator
 
             "#if !defined(__STDC_LIMIT_MACROS)\n" +
             "#  define __STDC_LIMIT_MACROS 1\n" +
-            "#endif\n" +
+            "#endif\n\n" +
+
             "#include <cstdint>\n" +
             "#include <cstring>\n" +
+            "#include <iomanip>\n" +
             "#include <limits>\n" +
-            "#include <stdexcept>\n\n" +
             "#include <ostream>\n" +
+            "#include <stdexcept>\n" +
             "#include <sstream>\n" +
-            "#include <iomanip>\n\n" +
+            "#include <string>\n" +
+            "#include <vector>\n" +
+            "\n" +
 
             "#if defined(WIN32) || defined(_WIN32)\n" +
             "#  define SBE_BIG_ENDIAN_ENCODE_16(v) _byteswap_ushort(v)\n" +
@@ -1934,6 +1941,11 @@ public class CppGenerator implements CodeGenerator
             "        return %2$s;\n" +
             "    }\n\n" +
 
+            "    SBE_NODISCARD static SBE_CONSTEXPR %1$s sbeBlockAndHeaderLength() SBE_NOEXCEPT\n" +
+            "    {\n" +
+            "        return MessageHeader::encodedLength() + sbeBlockLength();\n" +
+            "    }\n\n" +
+
             "    SBE_NODISCARD static SBE_CONSTEXPR %3$s sbeTemplateId() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %4$s;\n" +
@@ -2016,6 +2028,14 @@ public class CppGenerator implements CodeGenerator
             "    SBE_NODISCARD std::uint64_t encodedLength() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return sbePosition() - m_offset;\n" +
+            "    }\n\n" +
+
+            "    SBE_NODISCARD std::uint64_t decodeLength() const\n" +
+            "    {\n" +
+            "        %10$s skipper(m_buffer, m_offset,\n" +
+            "            m_bufferLength, sbeBlockLength(), m_actingVersion);\n" +
+            "        skipper.skip();\n" +
+            "        return skipper.encodedLength();\n" +
             "    }\n\n" +
 
             "    SBE_NODISCARD const char * buffer() const SBE_NOEXCEPT\n" +
@@ -2753,6 +2773,291 @@ public class CppGenerator implements CodeGenerator
             "        return os << %1$s::c_str(m);\n" +
             "    }\n",
             enumName);
+
+        return sb;
+    }
+
+    private Object[] generateMessageLengthArgs(
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData,
+        final String indent,
+        final boolean withName)
+    {
+        final StringBuilder sb = new StringBuilder();
+        int count = 0;
+
+        for (int i = 0, size = groups.size(); i < size; i++)
+        {
+            final Token groupToken = groups.get(i);
+            if (groupToken.signal() != Signal.BEGIN_GROUP)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
+            }
+
+            final int endSignal = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
+
+            if (count > 0)
+            {
+                sb.append(",\n" + indent);
+            }
+
+            final List<Token> thisGroup = groups.subList(i, endSignal + 1);
+
+            if (isMessageConstLength(thisGroup))
+            {
+                sb.append("std::size_t");
+                if (withName)
+                {
+                    sb.append(" " + groupToken.name() + "Length = 0");
+                }
+            }
+            else
+            {
+                sb.append("const std::vector<std::tuple<");
+                sb.append(generateMessageLengthArgs(thisGroup, indent + INDENT, false)[0]);
+                sb.append(">>&");
+
+                if (withName)
+                {
+                    sb.append(" " + groupToken.name() + "ItemLengths = {}");
+                }
+            }
+
+            count += 1;
+
+            i = endSignal;
+        }
+
+        for (int i = 0, size = varData.size(); i < size;)
+        {
+            final Token varDataToken = varData.get(i);
+            if (varDataToken.signal() != Signal.BEGIN_VAR_DATA)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
+            }
+
+            if (count > 0)
+            {
+                sb.append(",\n" + indent);
+            }
+
+            sb.append("std::size_t");
+            if (withName)
+            {
+                sb.append(" " + varDataToken.name() + "Length = 0");
+            }
+
+            count += 1;
+
+            i += varDataToken.componentTokenCount();
+        }
+
+        CharSequence result = sb;
+        if (count > 1)
+        {
+            result = "\n" + indent + result;
+        }
+
+        return new Object[]{result, count};
+    }
+
+    private Object[] generateMessageLengthArgs(
+        final List<Token> tokens,
+        final String indent,
+        final boolean withName)
+    {
+        int i = 0;
+
+        final Token groupToken = tokens.get(i);
+        if (groupToken.signal() != Signal.BEGIN_GROUP)
+        {
+            throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
+        }
+
+        ++i;
+        final int groupHeaderTokenCount = tokens.get(i).componentTokenCount();
+        i += groupHeaderTokenCount;
+
+        final List<Token> fields = new ArrayList<>();
+        i = collectFields(tokens, i, fields);
+
+        final List<Token> groups = new ArrayList<>();
+        i = collectGroups(tokens, i, groups);
+
+        final List<Token> varData = new ArrayList<>();
+        i = collectVarData(tokens, i, varData);
+
+        return generateMessageLengthArgs(fields, groups, varData, indent, withName);
+    }
+
+    private boolean isMessageConstLength(final List<Token> tokens)
+    {
+        final Integer count = (Integer)generateMessageLengthArgs(tokens, "", false)[1];
+
+        return (count == 0);
+    }
+
+    private CharSequence generateMessageLengthCallPre17Helper(final List<Token> tokens)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        final Integer count = (Integer)generateMessageLengthArgs(tokens, "", false)[1];
+
+        for (int i = 0; i < count; i++)
+        {
+            if (i > 0)
+            {
+                sb.append(", ");
+            }
+            new Formatter(sb).format("std::get<%1$d>(e)", i);
+        }
+
+        return sb;
+    }
+
+    private CharSequence generateMessageLength(
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData,
+        final String indent)
+    {
+        final StringBuilder sbEncode = new StringBuilder();
+        final StringBuilder sbSkip = new StringBuilder();
+
+        for (int i = 0, size = groups.size(); i < size; i++)
+        {
+            final Token groupToken = groups.get(i);
+
+            if (groupToken.signal() != Signal.BEGIN_GROUP)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
+            }
+
+            final int endSignal = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
+            final List<Token> thisGroup = groups.subList(i, endSignal + 1);
+
+            final Token numInGroupToken = Generators.findFirst("numInGroup", groups, i);
+            final long minCount = numInGroupToken.encoding().applicableMinValue().longValue();
+            final long maxCount = numInGroupToken.encoding().applicableMaxValue().longValue();
+
+            final String countName = groupToken.name() +
+                (isMessageConstLength(thisGroup) ? "Length" : "ItemLengths.size()");
+
+            final String minCheck = minCount > 0 ? countName + " < " + minCount + " || " : "";
+            final String maxCheck = countName + " > " + maxCount;
+
+            new Formatter(sbEncode).format("\n" +
+                indent + "    length += %1$s::sbeHeaderSize();\n",
+                formatClassName(groupToken.name()));
+
+            if (isMessageConstLength(thisGroup))
+            {
+                new Formatter(sbEncode).format(
+                    indent + "    if (%3$s%4$s)\n" +
+                    indent + "    {\n" +
+                    indent + "        throw std::runtime_error(\"%5$s outside of allowed range [E110]\");\n" +
+                    indent + "    }\n" +
+                    indent + "    length += %1$sLength * %2$s::sbeBlockLength();\n",
+                    groupToken.name(),
+                    formatClassName(groupToken.name()),
+                    minCheck,
+                    maxCheck,
+                    countName);
+            }
+            else
+            {
+                new Formatter(sbEncode).format(
+                    indent + "    if (%3$s%4$s)\n" +
+                    indent + "    {\n" +
+                    indent + "        throw std::runtime_error(\"%5$s outside of allowed range [E110]\");\n" +
+                    indent + "    }\n" +
+                    indent + "    for (const auto& e: %1$sItemLengths)\n" +
+                    indent + "    {\n" +
+                    indent + "        #if __cpluplus >= 201703L\n" +
+                    indent + "        length += std::apply(%2$s::computeLength, e);\n" +
+                    indent + "        #else\n" +
+                    indent + "        length += %2$s::computeLength(%6$s);\n" +
+                    indent + "        #endif\n" +
+                    indent + "    }\n",
+                    groupToken.name(),
+                    formatClassName(groupToken.name()),
+                    minCheck,
+                    maxCheck,
+                    countName,
+                    generateMessageLengthCallPre17Helper(thisGroup));
+            }
+
+            new Formatter(sbSkip).format(
+                indent + "    %2$s().forEach([](%1$s e)" +
+                indent + "    {\n" +
+                indent + "        e.skip();\n" +
+                indent + "    });\n",
+                formatClassName(groupToken.name()),
+                formatPropertyName(groupToken.name()),
+                groupToken.name());
+
+            i = endSignal;
+        }
+
+        for (int i = 0, size = varData.size(); i < size;)
+        {
+            final Token varDataToken = varData.get(i);
+
+            if (varDataToken.signal() != Signal.BEGIN_VAR_DATA)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
+            }
+
+            final String propertyName = toUpperFirstChar(varDataToken.name());
+            final Token lengthToken = Generators.findFirst("length", varData, i);
+
+            new Formatter(sbEncode).format("\n" +
+                indent + "    length += %1$sHeaderLength();\n" +
+                indent + "    if (%1$sLength > %2$d)\n" +
+                indent + "    {\n" +
+                indent + "        throw std::runtime_error(\"%1$sLength too long for length type [E109]\");\n" +
+                indent + "    }\n" +
+                indent + "    length += %1$sLength;\n",
+                varDataToken.name(),
+                lengthToken.encoding().applicableMaxValue().longValue());
+
+            new Formatter(sbSkip).format(
+                indent + "    skip%1$s();\n",
+                propertyName);
+
+            i += varDataToken.componentTokenCount();
+        }
+
+        final StringBuilder sb = new StringBuilder();
+
+        new Formatter(sb).format("\n" +
+            indent + "void skip()\n" +
+            indent + "{\n" +
+            "%3$s" +
+            indent + "}\n\n" +
+
+            indent + "SBE_NODISCARD static SBE_CONSTEXPR bool isConstLength() SBE_NOEXCEPT\n" +
+            indent + "{\n" +
+            indent + "    return " + ((groups.isEmpty() && varData.isEmpty()) ? "true" : "false") + ";\n" +
+            indent + "}\n\n" +
+
+            indent + "SBE_NODISCARD static SBE_CONSTEXPR_14 size_t computeLength(%1$s)\n" +
+            indent + "{\n" +
+            "#if defined(__GNUG__) && !defined(__clang__)\n" +
+            "#pragma GCC diagnostic push\n" +
+            "#pragma GCC diagnostic ignored \"-Wtype-limits\"\n" +
+            "#endif\n" +
+            indent + "    size_t length = sbeBlockLength();\n\n" +
+            "%2$s" +
+            indent + "    return length;\n" +
+            "#if defined(__GNUG__) && !defined(__clang__)\n" +
+            "#pragma GCC diagnostic pop\n" +
+            "#endif\n" +
+            indent + "}\n",
+            generateMessageLengthArgs(fields, groups, varData, indent + INDENT, true)[0],
+            sbEncode.toString(),
+            sbSkip.toString());
 
         return sb;
     }

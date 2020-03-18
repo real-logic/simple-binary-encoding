@@ -426,6 +426,25 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
     offset += COLOR_LENGTH;
 
     EXPECT_EQ(sz, offset);
+
+    std::uint64_t predictedCarSz = Car::computeLength(
+        {
+            FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH,
+            FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH,
+            FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH
+        },
+        {
+            ACCELERATION_COUNT,
+            ACCELERATION_COUNT
+        },
+        MANUFACTURER_LENGTH,
+        MODEL_LENGTH,
+        ACTIVATION_CODE_LENGTH,
+        COLOR_LENGTH
+    );
+    EXPECT_EQ(sz, predictedCarSz);
+    EXPECT_EQ(Car::isConstLength(), false);
+    EXPECT_EQ(Car::PerformanceFigures::Acceleration::isConstLength(), true);
 }
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeHeaderPlusCarCorrectly)
@@ -466,6 +485,8 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
     EXPECT_EQ(m_hdrDecoder.encodedLength(), expectedHeaderSize);
 
     m_carDecoder.wrapForDecode(buffer, m_hdrDecoder.encodedLength(), Car::sbeBlockLength(), Car::sbeSchemaVersion(), hdrSz + carSz);
+
+    EXPECT_EQ(m_carDecoder.decodeLength(), expectedCarSize);
 
     EXPECT_EQ(m_carDecoder.serialNumber(), SERIAL_NUMBER);
     EXPECT_EQ(m_carDecoder.modelYear(), MODEL_YEAR);
@@ -578,6 +599,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
     EXPECT_EQ(std::string(m_carDecoder.color(), COLOR_LENGTH), COLOR);
 
     EXPECT_EQ(m_carDecoder.encodedLength(), expectedCarSize);
+    EXPECT_EQ(m_carDecoder.decodeLength(), expectedCarSize);
 }
 
 struct CallbacksForEach
