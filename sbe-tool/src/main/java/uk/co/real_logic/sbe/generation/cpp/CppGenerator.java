@@ -2470,7 +2470,7 @@ public class CppGenerator implements CodeGenerator
     {
         return String.format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
-            indent + "friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
+            indent + "friend std::basic_ostream<CharT, Traits>& operator << (\n" +
             indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s writer)\n" +
             indent + "{\n" +
             indent + "    builder << '{';\n" +
@@ -2693,7 +2693,7 @@ public class CppGenerator implements CodeGenerator
 
         new Formatter(sb).format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
-            indent + "friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
+            indent + "friend std::basic_ostream<CharT, Traits>& operator << (\n" +
             indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s writer)\n" +
             indent + "{\n" +
             indent + "    builder << '[';\n",
@@ -2767,7 +2767,7 @@ public class CppGenerator implements CodeGenerator
             "    }\n\n" +
 
             "    template<typename CharT, typename Traits>\n" +
-            "    friend std::basic_ostream<CharT, Traits>& operator<<(\n" +
+            "    friend std::basic_ostream<CharT, Traits>& operator << (\n" +
             "        std::basic_ostream<CharT, Traits>& os, %1$s::Value m)\n" +
             "    {\n" +
             "        return os << %1$s::c_str(m);\n" +
@@ -2989,7 +2989,7 @@ public class CppGenerator implements CodeGenerator
             }
 
             new Formatter(sbSkip).format(
-                indent + "    %2$s().forEach([](%1$s e)" +
+                indent + "    %2$s().forEach([](%1$s e)\n" +
                 indent + "    {\n" +
                 indent + "        e.skip();\n" +
                 indent + "    });\n",
