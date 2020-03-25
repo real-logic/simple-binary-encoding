@@ -367,6 +367,9 @@ public class JavaGenerator implements CodeGenerator
             indent,
             dimensionHeaderLen);
 
+        final String blockLenCast = PrimitiveType.UINT32 == blockLengthType ? "(int)" : "";
+        final String numInGroupCast = PrimitiveType.UINT32 == numInGroupType ? "(int)" : "";
+
         sb.append("\n")
             .append(indent).append("    public void wrap(final ").append(readOnlyBuffer).append(" buffer)\n")
             .append(indent).append("    {\n")
@@ -377,8 +380,8 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("        index = 0;\n")
             .append(indent).append("        final int limit = parentMessage.limit();\n")
             .append(indent).append("        parentMessage.limit(limit + HEADER_SIZE);\n")
-            .append(indent).append("        blockLength = ").append(blockLengthGet).append(";\n")
-            .append(indent).append("        count = ").append(numInGroupGet).append(";\n")
+            .append(indent).append("        blockLength = ").append(blockLenCast).append(blockLengthGet).append(";\n")
+            .append(indent).append("        count = ").append(numInGroupCast).append(numInGroupGet).append(";\n")
             .append(indent).append("    }\n");
 
         sb.append("\n")
