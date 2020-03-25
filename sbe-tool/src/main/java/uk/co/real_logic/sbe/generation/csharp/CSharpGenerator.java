@@ -1180,7 +1180,7 @@ public class CSharpGenerator implements CodeGenerator
         final ByteOrder byteOrder = typeToken.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, typeToken.encoding().primitiveType().size());
 
-        if (fieldToken != null && fieldToken.isConstantEncoding())
+        if (fieldToken.isConstantEncoding())
         {
             final String constValue = fieldToken.encoding().constValue().toString();
 
