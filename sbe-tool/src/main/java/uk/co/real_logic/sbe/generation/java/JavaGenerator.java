@@ -459,15 +459,17 @@ public class JavaGenerator implements CodeGenerator
 
         final PrimitiveType blockLengthType = blockLengthToken.encoding().primitiveType();
         final String blockLengthOffset = "limit + " + blockLengthToken.offset();
-        final String blockLengthValue = "(" + primitiveTypeName(blockLengthToken) + ")" + blockLength;
+        final String blockLengthValue = Integer.toString(blockLength);
         final String blockLengthPut = generatePut(
             blockLengthType, blockLengthOffset, blockLengthValue, byteOrderString(blockLengthToken.encoding()));
 
         final PrimitiveType numInGroupType = numInGroupToken.encoding().primitiveType();
+        final PrimitiveType newInGroupTypeCast = PrimitiveType.UINT32 == numInGroupType ?
+            PrimitiveType.INT32 : numInGroupType;
         final String numInGroupOffset = "limit + " + numInGroupToken.offset();
-        final String numInGroupValue = "(" + primitiveTypeName(numInGroupToken) + ")count";
+        final String numInGroupValue = "count";
         final String numInGroupPut = generatePut(
-            numInGroupType, numInGroupOffset, numInGroupValue, byteOrderString(numInGroupToken.encoding()));
+            newInGroupTypeCast, numInGroupOffset, numInGroupValue, byteOrderString(numInGroupToken.encoding()));
 
         new Formatter(sb).format("\n" +
             ind + "    public void wrap(final %2$s buffer, final int count)\n" +
@@ -510,7 +512,7 @@ public class JavaGenerator implements CodeGenerator
 
         final String countOffset = "initialLimit + " + numInGroupToken.offset();
         final String resetCountPut = generatePut(
-            numInGroupType, countOffset, numInGroupValue, byteOrderString(numInGroupToken.encoding()));
+            newInGroupTypeCast, countOffset, numInGroupValue, byteOrderString(numInGroupToken.encoding()));
 
         sb.append("\n")
             .append(ind).append("    public int resetCountToIndex()\n")
