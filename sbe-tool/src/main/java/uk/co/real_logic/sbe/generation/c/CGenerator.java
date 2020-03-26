@@ -449,10 +449,11 @@ public class CGenerator implements CodeGenerator
             sb.append(String.format("\n" +
                 "SBE_ONE_DEF const char *%6$s_%1$s(struct %6$s *const codec)\n" +
                 "{\n" +
-                "%2$s" +
+                "    const char *field_ptr;\n" +
                 "    %4$s length_field_value;\n" +
+                "%2$s" +
                 "    memcpy(&length_field_value, codec->buffer + %6$s_sbe_position(codec), sizeof(%4$s));\n" +
-                "    const char *field_ptr = (codec->buffer + %6$s_sbe_position(codec) + %3$d);\n" +
+                "    field_ptr = (codec->buffer + %6$s_sbe_position(codec) + %3$d);\n" +
                 "    if (!%6$s_set_sbe_position(\n" +
                 "        codec, %6$s_sbe_position(codec) + %3$d + %5$s(length_field_value)))\n" +
                 "    {\n" +
@@ -474,23 +475,25 @@ public class CGenerator implements CodeGenerator
                 "    const uint64_t length)\n" +
                 "{\n" +
                 "%2$s" +
+                "    %5$s length_field_value;\n" +
                 "    uint64_t length_of_length_field = %3$d;\n" +
                 "    uint64_t length_position = %6$s_sbe_position(codec);\n" +
                 "    if (!%6$s_set_sbe_position(codec, length_position + length_of_length_field))\n" +
                 "    {\n" +
                 "        return 0;\n" +
                 "    }\n" +
-                "    %5$s length_field_value;\n" +
                 "    memcpy(&length_field_value, codec->buffer + length_position, sizeof(%5$s));\n" +
-                "    uint64_t data_length = %4$s(length_field_value);\n" +
-                "    uint64_t bytes_to_copy = length < data_length ? length : data_length;\n" +
-                "    uint64_t pos = %6$s_sbe_position(codec);\n" +
-                "    if (!%6$s_set_sbe_position(codec, pos + data_length))\n" +
                 "    {\n" +
-                "        return 0;\n" +
+                "        uint64_t data_length = %4$s(length_field_value);\n" +
+                "        uint64_t bytes_to_copy = length < data_length ? length : data_length;\n" +
+                "        uint64_t pos = %6$s_sbe_position(codec);\n" +
+                "        if (!%6$s_set_sbe_position(codec, pos + data_length))\n" +
+                "        {\n" +
+                "            return 0;\n" +
+                "        }\n" +
+                "        memcpy(dst, codec->buffer + pos, (size_t)bytes_to_copy);\n" +
+                "        return bytes_to_copy;\n" +
                 "    }\n" +
-                "    memcpy(dst, codec->buffer + pos, (size_t)bytes_to_copy);\n" +
-                "    return bytes_to_copy;\n" +
                 "}\n",
                 propertyName,
                 generateArrayFieldNotPresentCondition(token.version()),
@@ -529,6 +532,7 @@ public class CGenerator implements CodeGenerator
                 "    const char *src,\n" +
                 "    const %3$s length)\n" +
                 "{\n" +
+                "    uint64_t pos;\n" +
                 "    uint64_t length_of_length_field = %2$d;\n" +
                 "    uint64_t length_position = %5$s_sbe_position(codec);\n" +
                 "    %3$s length_field_value = %4$s(length);\n" +
@@ -537,7 +541,7 @@ public class CGenerator implements CodeGenerator
                 "        return NULL;\n" +
                 "    }\n" +
                 "    memcpy(codec->buffer + length_position, &length_field_value, sizeof(%3$s));\n" +
-                "    uint64_t pos = %5$s_sbe_position(codec);\n" +
+                "    pos = %5$s_sbe_position(codec);\n" +
                 "    if (!%5$s_set_sbe_position(codec, pos + length))\n" +
                 "    {\n" +
                 "        return NULL;\n" +
