@@ -113,6 +113,7 @@ public class CGenerator implements CodeGenerator
             {
                 final String structName = formatScopedName(ir.namespaces(), msgToken.name());
                 out.append(generateFileHeader(structName, typesToInclude));
+                out.append(generateDiagnosticPush());
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int i = 0;
@@ -126,35 +127,6 @@ public class CGenerator implements CodeGenerator
                 final List<Token> varData = new ArrayList<>();
                 collectVarData(messageBody, i, varData);
                 out.append(generateMessageFlyweightStruct(structName));
-
-                out.append(String.format("\n" +
-                    "enum %1$s_meta_attribute\n" +
-                    "{\n" +
-                    "    %1$s_meta_attribute_EPOCH,\n" +
-                    "    %1$s_meta_attribute_TIME_UNIT,\n" +
-                    "    %1$s_meta_attribute_SEMANTIC_TYPE,\n" +
-                    "    %1$s_meta_attribute_PRESENCE\n" +
-                    "};\n\n" +
-
-                    "union %1$s_float_as_uint\n" +
-                    "{\n" +
-                    "    float fp_value;\n" +
-                    "    uint32_t uint_value;\n" +
-                    "};\n\n" +
-
-                    "union %1$s_double_as_uint\n" +
-                    "{\n" +
-                    "    double fp_value;\n" +
-                    "    uint64_t uint_value;\n" +
-                    "};\n\n" +
-
-                    "struct %1$s_string_view\n" +
-                    "{\n" +
-                    "    const char* data;\n" +
-                    "    size_t length;\n" +
-                    "};\n",
-                    structName));
-
                 out.append(generateMessageFlyweightFunctions(structName, msgToken, ir.namespaces()));
 
                 out.append(generateFieldFunctions(ir.namespaces(), structName, structName, fields));
@@ -163,6 +135,8 @@ public class CGenerator implements CodeGenerator
                 generateGroups(sb, ir.namespaces(), groups, structName, structName);
                 out.append(sb);
                 out.append(generateVarData(structName, structName, varData));
+
+                out.append(generateDiagnosticPop());
                 out.append("\n#endif\n");
             }
         }
@@ -213,7 +187,7 @@ public class CGenerator implements CodeGenerator
     private static void generateGroupStruct(final StringBuilder sb, final String groupName)
     {
         sb.append(String.format("\n" +
-            "struct %s\n" +
+            "struct %1$s\n" +
             "{\n" +
             "    char *buffer;\n" +
             "    uint64_t buffer_length;\n" +
@@ -223,7 +197,8 @@ public class CGenerator implements CodeGenerator
             "    uint64_t index;\n" +
             "    uint64_t offset;\n" +
             "    uint64_t acting_version;\n" +
-            "};\n",
+            "};\n" +
+            "typedef struct %1$s %1$s;\n",
             groupName));
     }
 
@@ -255,9 +230,9 @@ public class CGenerator implements CodeGenerator
             "    const uint64_t acting_version,\n" +
             "    const uint64_t buffer_length)\n" +
             "{\n" +
+            "    struct %2$s dimensions;\n" +
             "    codec->buffer = buffer;\n" +
             "    codec->buffer_length = buffer_length;\n" +
-            "    struct %2$s dimensions;\n" +
             "    if (!%2$s_wrap(&dimensions, codec->buffer, *pos, acting_version, buffer_length))\n" +
             "    {\n" +
             "        return NULL;\n" +
@@ -284,21 +259,14 @@ public class CGenerator implements CodeGenerator
             "    const uint64_t acting_version,\n" +
             "    const uint64_t buffer_length)\n" +
             "{\n" +
-            "#if defined(__GNUG__) && !defined(__clang__)\n" +
-            "#pragma GCC diagnostic push\n" +
-            "#pragma GCC diagnostic ignored \"-Wtype-limits\"\n" +
-            "#endif\n" +
+            "    struct %5$s dimensions;\n" +
             "    if (%7$scount > %8$d)\n" +
             "    {\n" +
             "        errno = E110;\n" +
             "        return NULL;\n" +
             "    }\n" +
-            "#if defined(__GNUG__) && !defined(__clang__)\n" +
-            "#pragma GCC diagnostic pop\n" +
-            "#endif\n" +
             "    codec->buffer = buffer;\n" +
             "    codec->buffer_length = buffer_length;\n" +
-            "    struct %5$s dimensions;\n" +
             "    if (!%5$s_wrap(&dimensions, codec->buffer, *pos, acting_version, buffer_length))\n" +
             "    {\n" +
             "        return NULL;\n" +
@@ -331,14 +299,7 @@ public class CGenerator implements CodeGenerator
 
             "SBE_ONE_DEF uint64_t %3$s_sbe_position(const struct %3$s *const codec)\n" +
             "{\n" +
-            "#if defined(__GNUG__) && !defined(__clang__)\n" +
-            "#pragma GCC diagnostic push\n" +
-            "#pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n" +
-            "#endif\n" +
             "    return *codec->position_ptr;\n" +
-            "#if defined(__GNUG__) && !defined(__clang__)\n" +
-            "#pragma GCC diagnostic pop\n" +
-            "#endif\n" +
             "}\n\n" +
 
             "SBE_ONE_DEF bool %3$s_set_sbe_position(struct %3$s *const codec, const uint64_t position)\n" +
@@ -359,28 +320,14 @@ public class CGenerator implements CodeGenerator
 
             "SBE_ONE_DEF bool %3$s_has_next(const struct %3$s *const codec)\n" +
             "{\n" +
-            "#if defined(__GNUG__) && !defined(__clang__)\n" +
-            "#pragma GCC diagnostic push\n" +
-            "#pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n" +
-            "#endif\n" +
             "    return codec->index + 1 < codec->count;\n" +
-            "#if defined(__GNUG__) && !defined(__clang__)\n" +
-            "#pragma GCC diagnostic pop\n" +
-            "#endif\n" +
             "}\n\n" +
 
             "SBE_ONE_DEF struct %3$s *%3$s_next(struct %3$s *const codec)\n" +
             "{\n" +
             "    codec->offset = *codec->position_ptr;\n" +
-            "#if defined(__GNUG__) && !defined(__clang__)\n" +
-            "#pragma GCC diagnostic push\n" +
-            "#pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n" +
-            "#endif\n" +
             "    if (SBE_BOUNDS_CHECK_EXPECT(((codec->offset + codec->block_length) " +
             "> codec->buffer_length), false))\n" +
-            "#if defined(__GNUG__) && !defined(__clang__)\n" +
-            "#pragma GCC diagnostic pop\n" +
-            "#endif\n" +
             "    {\n" +
             "        errno = E108;\n" +
             "        return NULL;\n" +
@@ -462,14 +409,7 @@ public class CGenerator implements CodeGenerator
 
             "SBE_ONE_DEF bool %2$s_in_acting_version(const struct %1$s *const codec)\n" +
             "{\n" +
-            "#if defined(__clang__)\n" +
-            "#pragma clang diagnostic push\n" +
-            "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
-            "#endif\n" +
             "    return codec->acting_version >= %2$s_since_version();\n" +
-            "#if defined(__clang__)\n" +
-            "#pragma clang diagnostic pop\n" +
-            "#endif\n" +
             "}\n",
             outerStruct,
             groupName,
@@ -549,7 +489,7 @@ public class CGenerator implements CodeGenerator
                 "    {\n" +
                 "        return 0;\n" +
                 "    }\n" +
-                "    memcpy(dst, codec->buffer + pos, bytes_to_copy);\n" +
+                "    memcpy(dst, codec->buffer + pos, (size_t)bytes_to_copy);\n" +
                 "    return bytes_to_copy;\n" +
                 "}\n",
                 propertyName,
@@ -560,7 +500,7 @@ public class CGenerator implements CodeGenerator
                 structName));
 
             sb.append(String.format("\n" +
-                "SBE_ONE_DEF struct %6$s_string_view %5$s_get_%1$s_as_string_view(struct %5$s *const codec)\n" +
+                "SBE_ONE_DEF struct sbec_string_view %5$s_get_%1$s_as_string_view(struct %5$s *const codec)\n" +
                 "{\n" +
                 "%2$s" +
                 "    %4$s length_field_value = %5$s_%1$s_length(codec);\n" +
@@ -568,11 +508,13 @@ public class CGenerator implements CodeGenerator
                 "    if (!%5$s_set_sbe_position(\n" +
                 "        codec, %5$s_sbe_position(codec) + %3$d + length_field_value))\n" +
                 "    {\n" +
-                "        struct %6$s_string_view ret = {NULL, 0};\n" +
+                "        struct sbec_string_view ret = {NULL, 0};\n" +
                 "        return ret;\n" +
                 "    }\n" +
-                "    struct %6$s_string_view ret = {field_ptr, length_field_value};\n" +
-                "    return ret;\n" +
+                "    {\n" +
+                "        struct sbec_string_view ret = {field_ptr, length_field_value};\n" +
+                "        return ret;\n" +
+                "    }\n" +
                 "}\n",
                 propertyName,
                 generateStringViewNotPresentCondition(token.version()),
@@ -600,7 +542,7 @@ public class CGenerator implements CodeGenerator
                 "    {\n" +
                 "        return NULL;\n" +
                 "    }\n" +
-                "    memcpy(codec->buffer + pos, src, length);\n" +
+                "    memcpy(codec->buffer + pos, src, (size_t)length);\n" +
                 "    return codec;\n" +
                 "}\n",
                 propertyName,
@@ -643,14 +585,7 @@ public class CGenerator implements CodeGenerator
 
             "SBE_ONE_DEF bool %1$s_in_acting_version(const struct %4$s *const codec)\n" +
             "{\n" +
-            "#if defined(__clang__)\n" +
-            "#pragma clang diagnostic push\n" +
-            "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
-            "#endif\n" +
             "    return codec->acting_version >= %1$s_since_version();\n" +
-            "#if defined(__clang__)\n" +
-            "#pragma clang diagnostic pop\n" +
-            "#endif\n" +
             "}\n\n" +
 
             "SBE_ONE_DEF uint16_t %1$s_id(void)\n" +
@@ -749,41 +684,41 @@ public class CGenerator implements CodeGenerator
 
             out.append(generateFileHeader(
                 compositeName, generateTypesToIncludes(tokens.subList(1, tokens.size() - 1))));
+            out.append(generateDiagnosticPush());
+
             out.append(generateFixedFlyweightStruct(compositeName));
-            out.append(String.format("\n" +
-                "enum %1$s_meta_attribute\n" +
-                "{\n" +
-                "    %1$s_meta_attribute_EPOCH,\n" +
-                "    %1$s_meta_attribute_TIME_UNIT,\n" +
-                "    %1$s_meta_attribute_SEMANTIC_TYPE,\n" +
-                "    %1$s_meta_attribute_PRESENCE\n" +
-                "};\n\n" +
-
-                "union %1$s_float_as_uint\n" +
-                "{\n" +
-                "    float fp_value;\n" +
-                "    uint32_t uint_value;\n" +
-                "};\n\n" +
-
-                "union %1$s_double_as_uint\n" +
-                "{\n" +
-                "    double fp_value;\n" +
-                "    uint64_t uint_value;\n" +
-                "};\n\n" +
-
-                "struct %1$s_string_view\n" +
-                "{\n" +
-                "    const char* data;\n" +
-                "    size_t length;\n" +
-                "};\n",
-                compositeName));
-
             out.append(generateFixedFlyweightCodeFunctions(compositeName, compositeToken.encodedLength()));
             out.append(generateCompositePropertyFunctions(
                 scope, compositeName, tokens.subList(1, tokens.size() - 1)));
 
+            out.append(generateDiagnosticPop());
             out.append("\n#endif\n");
         }
+    }
+
+    private static CharSequence generateDiagnosticPush()
+    {
+        return "\n" +
+            "#if defined(__clang__)\n" +
+            "#pragma clang diagnostic push\n" +
+            "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
+            "#endif\n" +
+            "#if defined(__GNUG__) && !defined(__clang__)\n" +
+            "#pragma GCC diagnostic push\n" +
+            "#pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n" +
+            "#pragma GCC diagnostic ignored \"-Wtype-limits\"\n" +
+            "#endif\n";
+    }
+
+    private static CharSequence generateDiagnosticPop()
+    {
+        return "\n" +
+            "#if defined(__GNUG__) && !defined(__clang__)\n" +
+            "#pragma GCC diagnostic pop\n" +
+            "#endif\n" +
+            "#if defined(__clang__)\n" +
+            "#pragma clang diagnostic pop\n" +
+            "#endif\n";
     }
 
     private static CharSequence generateChoiceNotPresentCondition(final int sinceVersion)
@@ -840,8 +775,8 @@ public class CGenerator implements CodeGenerator
                 sb.append(String.format("\n" +
                     "SBE_ONE_DEF bool %1$s_%2$s(const struct %1$s *const codec)\n" +
                     "{\n" +
-                    "%3$s" +
                     "    %5$s val;\n" +
+                    "%3$s" +
                     "    memcpy(&val, codec->buffer + codec->offset, sizeof(%5$s));\n" +
                     "    return (%4$s(val) & ((%5$s)1 << %6$s)) != 0;\n" +
                     "}\n",
@@ -1017,17 +952,7 @@ public class CGenerator implements CodeGenerator
             "#ifndef _%1$s_H_\n" +
             "#define _%1$s_H_\n\n" +
 
-            "#include <errno.h>\n" +
-            "#if !defined(__STDC_LIMIT_MACROS)\n" +
-            "#define __STDC_LIMIT_MACROS 1\n" +
-            "#endif\n" +
-            "#include <limits.h>\n" +
-            "#define SBE_FLOAT_NAN NAN\n" +
-            "#define SBE_DOUBLE_NAN NAN\n" +
-            "#include <math.h>\n" +
-            "#include <stdbool.h>\n" +
-            "#include <stdint.h>\n" +
-            "#include <string.h>\n",
+            "#include \"sbec.h\"\n",
             structName.toUpperCase()));
 
         if (typesToInclude != null && typesToInclude.size() != 0)
@@ -1038,102 +963,6 @@ public class CGenerator implements CodeGenerator
                 sb.append(String.format("#include \"%1$s.h\"\n", toLowerFirstChar(incName)));
             }
         }
-
-        sb.append("\n" +
-            "#ifdef __cplusplus\n" +
-            "#define SBE_ONE_DEF inline\n" +
-            "#else\n" +
-            "#define SBE_ONE_DEF static inline\n" +
-            "#endif\n\n" +
-
-            "/*\n" +
-            " * Define some byte ordering macros\n" +
-            " */\n" +
-            "#if defined(WIN32) || defined(_WIN32)\n" +
-            "    #define SBE_BIG_ENDIAN_ENCODE_16(v) _byteswap_ushort(v)\n" +
-            "    #define SBE_BIG_ENDIAN_ENCODE_32(v) _byteswap_ulong(v)\n" +
-            "    #define SBE_BIG_ENDIAN_ENCODE_64(v) _byteswap_uint64(v)\n" +
-            "    #define SBE_LITTLE_ENDIAN_ENCODE_16(v) (v)\n" +
-            "    #define SBE_LITTLE_ENDIAN_ENCODE_32(v) (v)\n" +
-            "    #define SBE_LITTLE_ENDIAN_ENCODE_64(v) (v)\n" +
-            "#elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__\n" +
-            "    #define SBE_BIG_ENDIAN_ENCODE_16(v) __builtin_bswap16(v)\n" +
-            "    #define SBE_BIG_ENDIAN_ENCODE_32(v) __builtin_bswap32(v)\n" +
-            "    #define SBE_BIG_ENDIAN_ENCODE_64(v) __builtin_bswap64(v)\n" +
-            "    #define SBE_LITTLE_ENDIAN_ENCODE_16(v) (v)\n" +
-            "    #define SBE_BIG_ENDIAN_ENCODE_32(v) __builtin_bswap32(v)\n" +
-            "    #define SBE_BIG_ENDIAN_ENCODE_64(v) __builtin_bswap64(v)\n" +
-            "    #define SBE_LITTLE_ENDIAN_ENCODE_16(v) (v)\n" +
-            "    #define SBE_LITTLE_ENDIAN_ENCODE_32(v) (v)\n" +
-            "    #define SBE_LITTLE_ENDIAN_ENCODE_64(v) (v)\n" +
-            "#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__\n" +
-            "    #define SBE_LITTLE_ENDIAN_ENCODE_16(v) __builtin_bswap16(v)\n" +
-            "    #define SBE_LITTLE_ENDIAN_ENCODE_32(v) __builtin_bswap32(v)\n" +
-            "    #define SBE_LITTLE_ENDIAN_ENCODE_64(v) __builtin_bswap64(v)\n" +
-            "    #define SBE_BIG_ENDIAN_ENCODE_16(v) (v)\n" +
-            "    #define SBE_BIG_ENDIAN_ENCODE_32(v) (v)\n" +
-            "    #define SBE_BIG_ENDIAN_ENCODE_64(v) (v)\n" +
-            "#else\n" +
-            "    #error \"Byte Ordering of platform not determined." +
-            " Set __BYTE_ORDER__ manually before including this file.\"\n" +
-            "#endif\n\n" +
-
-            "#if defined(SBE_NO_BOUNDS_CHECK)\n" +
-            "    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (false)\n" +
-            "#elif defined(_MSC_VER)\n" +
-            "    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (exp)\n" +
-            "#else\n" +
-            "    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))\n" +
-            "#endif\n\n" +
-
-            "#define SBE_NULLVALUE_INT8 INT8_MIN\n" +
-            "#define SBE_NULLVALUE_INT16 INT16_MIN\n" +
-            "#define SBE_NULLVALUE_INT32 INT32_MIN\n" +
-            "#define SBE_NULLVALUE_INT64 INT64_MIN\n" +
-            "#define SBE_NULLVALUE_UINT8 UINT8_MAX\n" +
-            "#define SBE_NULLVALUE_UINT16 UINT16_MAX\n" +
-            "#define SBE_NULLVALUE_UINT32 UINT32_MAX\n" +
-            "#define SBE_NULLVALUE_UINT64 UINT64_MAX\n\n" +
-
-            "#define E100 -50100 // E_BUF_SHORT\n" +
-            "#define E103 -50103 // VAL_UNKNOWN_ENUM\n" +
-            "#define E104 -50104 // I_OUT_RANGE_NUM\n" +
-            "#define E105 -50105 // I_OUT_RANGE_NUM\n" +
-            "#define E106 -50106 // I_OUT_RANGE_NUM\n" +
-            "#define E107 -50107 // BUF_SHORT_FLYWEIGHT\n" +
-            "#define E108 -50108 // BUF_SHORT_NXT_GRP_IND\n" +
-            "#define E109 -50109 // STR_TOO_LONG_FOR_LEN_TYP\n" +
-            "#define E110 -50110 // CNT_OUT_RANGE\n\n" +
-
-            "#ifndef SBE_STRERROR_DEFINED\n" +
-            "#define SBE_STRERROR_DEFINED\n" +
-            "SBE_ONE_DEF const char *sbe_strerror(const int errnum)\n" +
-            "{\n" +
-            "    switch (errnum)\n" +
-            "    {\n" +
-            "        case E100:\n" +
-            "            return \"buffer too short\";\n" +
-            "        case E103:\n" +
-            "            return \"unknown value for enum\";\n" +
-            "        case E104:\n" +
-            "            return \"index out of range\";\n" +
-            "        case E105:\n" +
-            "            return \"index out of range\";\n" +
-            "        case E106:\n" +
-            "            return \"length too large\";\n" +
-            "        case E107:\n" +
-            "            return \"buffer too short for flyweight\";\n" +
-            "        case E108:\n" +
-            "            return \"buffer too short to support next group index\";\n" +
-            "        case E109:\n" +
-            "            return \"std::string too long for length type\";\n" +
-            "        case E110:\n" +
-            "            return \"count outside of allowed range\";\n" +
-            "        default:\n" +
-            "            return \"unknown error\";\n" +
-            "    }\n" +
-            "}\n" +
-            "#endif\n");
 
         return sb;
     }
@@ -1331,10 +1160,12 @@ public class CGenerator implements CodeGenerator
                 (primitiveType == PrimitiveType.FLOAT) ? "float" : "double";
 
             sb.append(String.format(
-                "    union %1$s_%2$s_as_uint val;\n" +
-                "    memcpy(&val, codec->buffer + codec->offset + %3$s, sizeof(%4$s));\n" +
-                "    val.uint_value = %5$s(val.uint_value);\n" +
-                "    %6$s val.fp_value;",
+                "    {\n" +
+                "        union sbec_%2$s_as_uint val;\n" +
+                "        memcpy(&val, codec->buffer + codec->offset + %3$s, sizeof(%4$s));\n" +
+                "        val.uint_value = %5$s(val.uint_value);\n" +
+                "        %6$s val.fp_value;" +
+                "    }\n",
                 outermostStruct,
                 stackUnion,
                 offsetStr,
@@ -1345,16 +1176,11 @@ public class CGenerator implements CodeGenerator
         else
         {
             sb.append(String.format(
-                "    %1$s val;\n" +
-                "#if defined(__GNUG__) && !defined(__clang__)\n" +
-                "#pragma GCC diagnostic push\n" +
-                "#pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n" +
-                "#endif\n" +
-                "    memcpy(&val, codec->buffer + codec->offset + %2$s, sizeof(%1$s));\n" +
-                "#if defined(__GNUG__) && !defined(__clang__)\n" +
-                "#pragma GCC diagnostic pop\n" +
-                "#endif\n" +
-                "    %4$s %3$s(val);",
+                "    {\n" +
+                "        %1$s val;\n" +
+                "        memcpy(&val, codec->buffer + codec->offset + %2$s, sizeof(%1$s));\n" +
+                "        %4$s %3$s(val);\n" +
+                "    }\n",
                 cTypeName,
                 offsetStr,
                 byteOrderStr,
@@ -1398,10 +1224,12 @@ public class CGenerator implements CodeGenerator
                 (primitiveType == PrimitiveType.FLOAT) ? "float" : "double";
 
             sb.append(String.format(
-                "    union %1$s_%2$s_as_uint val;\n" +
-                "    val.fp_value = value;\n" +
-                "    val.uint_value = %3$s(val.uint_value);\n" +
-                "    memcpy(codec->buffer + codec->offset + %4$s, &val, sizeof(%5$s));",
+                "    {\n" +
+                "        union sbec_%2$s_as_uint val;\n" +
+                "        val.fp_value = value;\n" +
+                "        val.uint_value = %3$s(val.uint_value);\n" +
+                "        memcpy(codec->buffer + codec->offset + %4$s, &val, sizeof(%5$s));\n" +
+                "    }\n",
                 outermostStruct,
                 stackUnion,
                 byteOrderStr,
@@ -1411,15 +1239,10 @@ public class CGenerator implements CodeGenerator
         else
         {
             sb.append(String.format(
-                "    %1$s val = %2$s(value);\n" +
-                "#if defined(__GNUG__) && !defined(__clang__)\n" +
-                "#pragma GCC diagnostic push\n" +
-                "#pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n" +
-                "#endif\n" +
-                "    memcpy(codec->buffer + codec->offset + %3$s, &val, sizeof(%1$s));\n" +
-                "#if defined(__GNUG__) && !defined(__clang__)\n" +
-                "#pragma GCC diagnostic pop\n" +
-                "#endif",
+                "    {\n" +
+                "        %1$s val = %2$s(value);\n" +
+                "        memcpy(codec->buffer + codec->offset + %3$s, &val, sizeof(%1$s));\n" +
+                "    }\n",
                 cTypeName,
                 byteOrderStr,
                 offsetStr));
@@ -1603,13 +1426,27 @@ public class CGenerator implements CodeGenerator
             "    }\n\n" +
 
             "%4$s" +
-            "    memcpy(dst, codec->buffer + codec->offset + %5$d, sizeof(%6$s) * length);\n" +
+            "    memcpy(dst, codec->buffer + codec->offset + %5$d, (size_t)(sizeof(%6$s) * length));\n" +
             "    return dst;\n" +
             "}\n",
             containingStructName,
             propertyName,
             token.arrayLength(),
             generateArrayFieldNotPresentCondition(token.version()),
+            offset,
+            cTypeName));
+
+        sb.append(String.format("\n" +
+            "SBE_ONE_DEF struct sbec_string_view %1$s_get_%2$s_as_string_view(const struct %1$s *const codec)\n" +
+            "{\n" +
+            "%4$s" +
+            "    struct sbec_string_view ret = {codec->buffer + codec->offset + %5$d, sizeof(%6$s) * %3$d};\n" +
+            "    return ret;\n" +
+            "}\n",
+            containingStructName,
+            propertyName,
+            token.arrayLength(),
+            generateStringViewNotPresentCondition(token.version()),
             offset,
             cTypeName));
 
@@ -1703,7 +1540,7 @@ public class CGenerator implements CodeGenerator
             "    static uint8_t %2$s_values[] = {%3$s};\n" +
             "    uint64_t bytes_to_copy = length < sizeof(%2$s_values) ? length : sizeof(%2$s_values);\n\n" +
 
-            "    memcpy(dst, %2$s_values, bytes_to_copy);\n" +
+            "    memcpy(dst, %2$s_values, (size_t)bytes_to_copy);\n" +
             "    return bytes_to_copy;\n" +
             "}\n",
             toUpperFirstChar(propertyName),
@@ -1717,13 +1554,14 @@ public class CGenerator implements CodeGenerator
     private CharSequence generateFixedFlyweightStruct(final String structName)
     {
         return String.format("\n" +
-            "struct %s\n" +
+            "struct %1$s\n" +
             "{\n" +
             "    char *buffer;\n" +
             "    uint64_t buffer_length;\n" +
             "    uint64_t offset;\n" +
             "    uint64_t acting_version;\n" +
-            "};\n",
+            "};\n" +
+            "typedef struct %1$s %1$s;\n",
             structName);
     }
 
@@ -1807,14 +1645,15 @@ public class CGenerator implements CodeGenerator
     private CharSequence generateMessageFlyweightStruct(final String structName)
     {
         return String.format("\n" +
-            "struct %s\n" +
+            "struct %1$s\n" +
             "{\n" +
             "    char *buffer;\n" +
             "    uint64_t buffer_length;\n" +
             "    uint64_t offset;\n" +
             "    uint64_t position;\n" +
             "    uint64_t acting_version;\n" +
-            "};\n",
+            "};\n" +
+            "typedef struct %1$s %1$s;\n",
             structName);
     }
 
@@ -2067,14 +1906,7 @@ public class CGenerator implements CodeGenerator
 
             "SBE_ONE_DEF bool %3$s_%1$s_in_acting_version(const struct %3$s *const codec)\n" +
             "{\n" +
-            "#if defined(__clang__)\n" +
-            "#pragma clang diagnostic push\n" +
-            "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
-            "#endif\n" +
             "    return codec->acting_version >= %3$s_%1$s_since_version();\n" +
-            "#if defined(__clang__)\n" +
-            "#pragma clang diagnostic pop\n" +
-            "#endif\n" +
             "}\n",
             propertyName,
             fieldToken.version(),
@@ -2099,14 +1931,14 @@ public class CGenerator implements CodeGenerator
         final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
 
         sb.append(String.format("\n" +
-            "SBE_ONE_DEF const char *%6$s_%s_meta_attribute(const enum %7$s_meta_attribute attribute)\n" +
+            "SBE_ONE_DEF const char *%6$s_%s_meta_attribute(const enum sbec_meta_attribute attribute)\n" +
             "{\n" +
             "    switch (attribute)\n" +
             "    {\n" +
-            "        case %7$s_meta_attribute_EPOCH: return \"%s\";\n" +
-            "        case %7$s_meta_attribute_TIME_UNIT: return \"%s\";\n" +
-            "        case %7$s_meta_attribute_SEMANTIC_TYPE: return \"%s\";\n" +
-            "        case %7$s_meta_attribute_PRESENCE: return \"%s\";\n" +
+            "        case sbec_meta_attribute_EPOCH: return \"%s\";\n" +
+            "        case sbec_meta_attribute_TIME_UNIT: return \"%s\";\n" +
+            "        case sbec_meta_attribute_SEMANTIC_TYPE: return \"%s\";\n" +
+            "        case sbec_meta_attribute_PRESENCE: return \"%s\";\n" +
             "    }\n\n" +
 
             "    return \"\";\n" +
@@ -2116,8 +1948,7 @@ public class CGenerator implements CodeGenerator
             timeUnit,
             semanticType,
             encoding.presence().toString().toLowerCase(),
-            containingStructName,
-            outermostStruct));
+            containingStructName));
     }
 
     private static CharSequence generateEnumFieldNotPresentCondition(final int sinceVersion, final String enumName)
@@ -2192,6 +2023,13 @@ public class CGenerator implements CodeGenerator
                 "    %5$s val;\n" +
                 "    memcpy(&val, codec->buffer + codec->offset + %6$d, sizeof(%5$s));\n" +
                 "    return %1$s_get(%4$s(val), out);\n" +
+                "}\n\n" +
+                "SBE_ONE_DEF enum %1$s %7$s_%2$s_direct(const struct %7$s *const codec)\n" +
+                "{\n" +
+                "%3$s" +
+                "    %5$s val;\n" +
+                "    memcpy(&val, codec->buffer + codec->offset + %6$d, sizeof(%5$s));\n" +
+                "    return (enum %1$s)val;\n" +
                 "}\n",
                 enumName,
                 propertyName,
