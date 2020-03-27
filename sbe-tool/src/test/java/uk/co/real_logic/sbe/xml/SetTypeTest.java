@@ -118,7 +118,6 @@ public class SetTypeTest
 
     @Test
     public void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -134,7 +133,6 @@ public class SetTypeTest
 
     @Test
     public void shouldThrowExceptionWhenDuplicateValueSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -150,7 +148,6 @@ public class SetTypeTest
 
     @Test
     public void shouldThrowExceptionWhenDuplicateNameSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -166,7 +163,6 @@ public class SetTypeTest
 
     @Test
     public void shouldThrowExceptionWhenValueOutOfBoundsSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +

@@ -183,7 +183,6 @@ public class EnumTypeTest
 
     @Test
     public void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -199,7 +198,6 @@ public class EnumTypeTest
 
     @Test
     public void shouldThrowExceptionWhenDuplicateValueSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -216,7 +214,6 @@ public class EnumTypeTest
 
     @Test
     public void shouldThrowExceptionWhenDuplicateNameSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +

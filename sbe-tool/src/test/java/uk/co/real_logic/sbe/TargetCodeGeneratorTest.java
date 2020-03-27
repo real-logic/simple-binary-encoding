@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 public class TargetCodeGeneratorTest
 {
     @Test
-    public void shouldThrowOnNoTargetLanguage() throws Exception
+    public void shouldThrowOnNoTargetLanguage()
     {
         assertThrows(IllegalArgumentException.class, () ->
             SbeTool.generate(mock(Ir.class), ".", "none"));

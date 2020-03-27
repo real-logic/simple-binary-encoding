@@ -128,7 +128,6 @@ public class EncodedDataTypeTest
 
     @Test
     public void shouldThrowExceptionWhenUnknownPresenceSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -140,7 +139,6 @@ public class EncodedDataTypeTest
 
     @Test
     public void shouldThrowExceptionWhenNoPrimitiveTypeSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -152,7 +150,6 @@ public class EncodedDataTypeTest
 
     @Test
     public void shouldThrowExceptionWhenNoNameSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -198,7 +195,6 @@ public class EncodedDataTypeTest
 
     @Test
     public void shouldThrowExceptionWhenUnknownPrimitiveTypeSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -303,7 +299,6 @@ public class EncodedDataTypeTest
 
     @Test
     public void shouldThrowExceptionWhenConstantPresenceButNoDataSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +

@@ -81,9 +81,6 @@ public class GolangGenerator implements CodeGenerator
                     generateComposite(tokens, "");
                     break;
 
-                case BEGIN_MESSAGE:
-                    break;
-
                 default:
                     break;
             }
@@ -2112,24 +2109,10 @@ public class GolangGenerator implements CodeGenerator
                 generateSinceActingDeprecated(sb, containingTypeName, propertyName, signalToken);
                 generateFieldMetaAttributeMethod(sb, containingTypeName, propertyName, signalToken);
 
-                switch (encodingToken.signal())
+                if (encodingToken.signal() == Signal.ENCODING)
                 {
-                    case ENCODING:
-                        generateMinMaxNull(sb, containingTypeName, propertyName, encodingToken);
-                        generateCharacterEncoding(sb, containingTypeName, propertyName, encodingToken);
-                        break;
-
-                    case BEGIN_ENUM:
-                        break;
-
-                    case BEGIN_SET:
-                        break;
-
-                    case BEGIN_COMPOSITE:
-                        break;
-
-                    default:
-                        break;
+                    generateMinMaxNull(sb, containingTypeName, propertyName, encodingToken);
+                    generateCharacterEncoding(sb, containingTypeName, propertyName, encodingToken);
                 }
             }
         }

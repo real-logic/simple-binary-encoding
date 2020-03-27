@@ -22,8 +22,8 @@ public class Issue567GroupSizeTest
     public static final String ERR_MSG =
         "WARNING: at <sbe:message name=\"issue567\"> <group name=\"group\"> \"numInGroup\" should be UINT8 or UINT16";
 
+    private final PrintStream mockErr = mock(PrintStream.class);
     private PrintStream err;
-    private PrintStream mockErr = mock(PrintStream.class);
 
     @BeforeEach
     public void before()
@@ -40,7 +40,7 @@ public class Issue567GroupSizeTest
     }
 
     @Test
-    public void shouldThrowWhenUsingATypeThatIsNotConstrainedToFitInAnIntAsTheGroupSize() throws Exception
+    public void shouldThrowWhenUsingATypeThatIsNotConstrainedToFitInAnIntAsTheGroupSize()
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         assertThrows(IllegalArgumentException.class,

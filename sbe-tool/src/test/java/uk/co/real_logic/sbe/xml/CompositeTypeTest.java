@@ -161,7 +161,6 @@ public class CompositeTypeTest
 
     @Test
     public void shouldThrowExceptionWhenCompositeTypeHasTypeNameDuplicates()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
