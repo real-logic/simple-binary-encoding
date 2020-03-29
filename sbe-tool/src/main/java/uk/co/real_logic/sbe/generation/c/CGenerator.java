@@ -2191,6 +2191,18 @@ public class CGenerator implements CodeGenerator
                 "    %5$s val;\n" +
                 "    memcpy(&val, codec->buffer + codec->offset + %6$d, sizeof(%5$s));\n" +
                 "    return %1$s_get(%4$s(val), out);\n" +
+                "}\n\n" +
+                "SBE_ONE_DEF enum %1$s %7$s_%2$s_unsafe(const struct %7$s *const codec)\n" +
+                "{\n" +
+                "    %5$s val;\n" +
+                "    memcpy(&val, codec->buffer + codec->offset + %6$d, sizeof(%5$s));\n" +
+                "    return (enum %1$s)val;\n" +
+                "}\n\n" +
+                "SBE_ONE_DEF struct %7$s *%7$s_set_%2$s(struct %7$s *const codec, const enum %1$s value)\n" +
+                "{\n" +
+                "    %5$s val = %4$s(value);\n" +
+                "    memcpy(codec->buffer + codec->offset + %6$d, &val, sizeof(%5$s));\n" +
+                "    return codec;\n" +
                 "}\n",
                 enumName,
                 propertyName,
@@ -2199,20 +2211,6 @@ public class CGenerator implements CodeGenerator
                 typeName,
                 offset,
                 containingStructName));
-
-            sb.append(String.format("\n" +
-                "SBE_ONE_DEF struct %1$s *%1$s_set_%2$s(struct %1$s *const codec, const enum %3$s value)\n" +
-                "{\n" +
-                "    %4$s val = %6$s(value);\n" +
-                "    memcpy(codec->buffer + codec->offset + %5$d, &val, sizeof(%4$s));\n" +
-                "    return codec;\n" +
-                "}\n",
-                containingStructName,
-                propertyName,
-                enumName,
-                typeName,
-                offset,
-                formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType())));
         }
     }
 
