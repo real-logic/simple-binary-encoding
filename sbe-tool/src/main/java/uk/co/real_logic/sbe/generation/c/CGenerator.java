@@ -2188,7 +2188,6 @@ public class CGenerator implements CodeGenerator
             sb.append(String.format("\n" +
                 "SBE_ONE_DEF bool %7$s_%2$s(const struct %7$s *const codec, enum %1$s *const out)\n" +
                 "{\n" +
-                "%3$s" +
                 "    %5$s val;\n" +
                 "    memcpy(&val, codec->buffer + codec->offset + %6$d, sizeof(%5$s));\n" +
                 "    return %1$s_get(%4$s(val), out);\n" +
