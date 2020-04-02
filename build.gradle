@@ -40,7 +40,7 @@ def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
 
 ext {
-    isReleaseVersion = !version.endsWith('-SNAPSHOT')
+    isReleaseVersion = !sbeVersion.endsWith('-SNAPSHOT')
     releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
     snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
 
