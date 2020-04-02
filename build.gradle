@@ -194,7 +194,11 @@ project(':sbe-tool') {
     apply plugin: 'signing'
 
     dependencies {
-        api "org.agrona:agrona:${agronaVersion}"
+        api("org.agrona:agrona") {
+            version {
+                strictly(agronaVersion)
+            }
+        }
         testImplementation files('build/classes/java/generated')
         testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
         testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
