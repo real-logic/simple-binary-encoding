@@ -1087,7 +1087,7 @@ public class CSharpGenerator implements CodeGenerator
                 final Token encodingToken = tokens.get(i + 1);
                 final String propertyName = signalToken.name();
 
-                generateFieldIdMethod(sb, signalToken, indent + INDENT);
+                generateFieldIdMethod(sb, signalToken, indent + INDENT);            
                 generateFieldMetaAttributeMethod(sb, signalToken, indent + INDENT);
 
                 switch (encodingToken.signal())
@@ -1122,6 +1122,11 @@ public class CSharpGenerator implements CodeGenerator
             token.id()));
 
         generateSinceActingDeprecated(sb, indent, CSharpUtil.formatPropertyName(token.name()), token);
+
+        sb.append(String.format("\n" +
+            indent + "public const int %sOffset = %d;\n",
+            CSharpUtil.formatPropertyName(token.name()),
+            token.offset()));
     }
 
     private void generateFieldMetaAttributeMethod(final StringBuilder sb, final Token token, final String indent)
