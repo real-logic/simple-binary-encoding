@@ -352,7 +352,7 @@ public class CSharpGenerator implements CodeGenerator
             final Token token = tokens.get(i);
             if (token.signal() == Signal.BEGIN_VAR_DATA)
             {
-                generateFieldIdMethod(sb, token, indent);
+                generateCommonFieldMethods(sb, token, indent);
                 final Token varDataToken = Generators.findFirst("varData", tokens, i);
                 final String characterEncoding = varDataToken.encoding().characterEncoding();
                 generateCharacterEncodingMethod(sb, token.name(), characterEncoding, indent);
@@ -1098,7 +1098,7 @@ public class CSharpGenerator implements CodeGenerator
                 final Token encodingToken = tokens.get(i + 1);
                 final String propertyName = signalToken.name();
 
-                generateFieldIdMethod(sb, signalToken, indent + INDENT);
+                generateCommonFieldMethods(sb, signalToken, indent + INDENT);
                 generateFieldMetaAttributeMethod(sb, signalToken, indent + INDENT);
 
                 switch (encodingToken.signal())
@@ -1125,7 +1125,7 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
-    private void generateFieldIdMethod(final StringBuilder sb, final Token token, final String indent)
+    private void generateCommonFieldMethods(final StringBuilder sb, final Token token, final String indent)
     {
         sb.append(String.format("\n" +
             indent + "public const int %sId = %d;\n",
