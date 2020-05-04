@@ -1035,6 +1035,16 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_actingVersion = SchemaVersion;\n" +
             indent + INDENT + INDENT + "Limit = offset + _actingBlockLength;\n" +
             indent + INDENT + "}\n\n" +
+            indent + INDENT + "public void WrapForEncodeAndApplyHeader(DirectBuffer buffer, int offset, MessageHeader headerEncoder)\n" +
+            indent + INDENT + "{\n" +
+            indent + INDENT + INDENT + "headerEncoder.Wrap(buffer, offset, SchemaVersion);\n" +
+            indent + INDENT + INDENT + "headerEncoder.BlockLength = BlockLength;\n" +
+            indent + INDENT + INDENT + "headerEncoder.TemplateId = TemplateId;\n" +
+            indent + INDENT + INDENT + "headerEncoder.SchemaId = SchemaId;\n" +
+            indent + INDENT + INDENT + "headerEncoder.Version = SchemaVersion;\n" +
+            indent + INDENT + INDENT + "\n" +
+            indent + INDENT + INDENT + "WrapForEncode(buffer, offset + MessageHeader.Size);\n" +
+            indent + INDENT + "}\n\n" +
             indent + INDENT + "public void WrapForDecode(DirectBuffer buffer, int offset, " +
                 "int actingBlockLength, int actingVersion)\n" +
             indent + INDENT + "{\n" +
